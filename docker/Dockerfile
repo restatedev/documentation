@@ -1,4 +1,4 @@
-FROM node:lts as builder
+FROM --platform=$BUILDPLATFORM node:lts as builder
 
 # Reduce npm log spam and colour during install within Docker
 ENV NPM_CONFIG_LOGLEVEL=warn
