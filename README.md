@@ -1,6 +1,21 @@
-# Website
+# Restate documentation
 
-This website is built using [Docusaurus 2](https://docusaurus.io/), a modern static website generator.
+This repository contains Restate's documentation.
+
+In order to serve the documentation under `localhost:3000` you can run the documentation container image:
+
+```shell
+docker run --rm -p 3000:80 ghcr.io/restatedev/documentation:latest
+```
+
+> **Note**
+> Make sure that you have access to Github's container registry by [following these instructions](https://github.com/restatedev/restate-dist#container-registry).
+
+You can also check this repository out and build the documentation yourself by following the instructions below.
+
+## Building the documentation
+
+The documentation is built using [Docusaurus 2](https://docusaurus.io/).
 
 ### Installation
 
@@ -24,18 +39,8 @@ $ yarn build
 
 This command generates static content into the `build` directory and can be served using any static contents hosting service.
 
-### Deployment
+## Releasing the documentation
 
-Using SSH:
-
-```
-$ USE_SSH=true yarn deploy
-```
-
-Not using SSH:
-
-```
-$ GIT_USER=<Your GitHub username> yarn deploy
-```
-
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+In order to release the documentation you have to push a tag of the form `vX.Y.Z`.
+This will trigger the [release workflow](.github/workflows/release.yml), which builds and publishes and new `restatedev/documentation:vX.Y.Z` container image.
+Moreover, it will create a draft [release on Github](https://github.com/restatedev/documentation/releases) that needs manual approval.
