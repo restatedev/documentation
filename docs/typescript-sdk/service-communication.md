@@ -3,7 +3,7 @@ sidebar_position: 5
 description: "Find out how Restate services can send requests to each other."
 ---
 
-# Calling other services
+# Service communication
 A Restate service can call another service either synchronously or asynchronously.
 
 ## Synchronous calls

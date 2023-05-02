@@ -38,13 +38,12 @@ const config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {
+          routeBasePath: '/', // Set this value to '/'.
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
          },
-        blog: {
-          showReadingTime: true,
-         },
+        blog: false,
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },
@@ -67,17 +66,17 @@ const config = {
           {
             position: 'left',
             label: 'Get started',
-            to: '/docs/getting-started'
+            to: '/getting-started'
           },
           {
             position: 'left',
             label: 'Tutorials',
-            to: '/docs/category/tutorials'
+            to: '/category/tutorials'
           },
           {
             position: 'left',
             label: 'Docs',
-            to: '/docs/intro'
+            to: '/intro'
           },
           {
             href: 'https://github.com/restatedev/restate-dist',

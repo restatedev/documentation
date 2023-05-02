@@ -29,8 +29,8 @@ you can call the following method on the Restate context object from within your
 ctx.set("my-key", "my-value");
 ```
 
-Replace `"my-key"` with the key that you are setting.
-And replace `"my-value"` with the value that you want to set.
+Replace `my-key` with the key that you are setting.
+And replace `my-value` with the value that you want to set.
 The value can be of any type that can be serialized as a Buffer.
 
 ## Clearing state
@@ -41,4 +41,4 @@ you can call the following method on the Restate context object from within your
 ctx.clear("my-key");
 ```
 
-Replace `"my-key"` with the key that you are setting.
+Replace `my-key` with the key that you are setting.

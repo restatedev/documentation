@@ -2,7 +2,7 @@
 sidebar_position: 2
 ---
 
-# Getting started
+# Get started
 [//]: # (TODO This should be a more interesting example)
 [//]: # (TODO Add extra explanation about what we are doing)
 This guide will take you through your first steps with Restate. Let's build a small example from scratch!
