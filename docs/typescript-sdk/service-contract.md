@@ -7,9 +7,10 @@ description: "Generate Typescript code from your Protobuf definitions."
 If you're developing a Restate service, the first step is to define the Protobuf schema.
 This schema is used as the contract for all communication between the Restate runtime and the service.
 
-To write the Protobuf files, you should follow the guidelines provided in the documentation.
-// TODO add link
-The guidelines will help you to write the schema in a way that is compatible with Restate.
+:::note
+To write the Protobuf files in a way that is compatible with Restate, you should follow the guidelines provided [here](./).
+[//]: # (TODO add link)
+:::
 
 Once you have written the proto files, you can use a build tool such as [buf](https://buf.build/) or [protoc](https://grpc.io/docs/protoc-installation/) to build the files.
 If you are developing your service based on the Restate node template,

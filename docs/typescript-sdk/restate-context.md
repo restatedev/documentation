@@ -20,7 +20,7 @@ Once you have imported the module, you can retrieve the context object from with
 
 ```typescript
 async greet(request: Request): Promise<Response> {
-const ctx = restate.useContext(this);
+const restateContext = restate.useContext(this);
 
     //...the rest of your code...
 }
@@ -28,6 +28,17 @@ const ctx = restate.useContext(this);
 
 The `useContext` method retrieves the context object for the current service instance,
 which you can then use to call the various Restate methods.
-All method calls made through the context object are durably stored in the execution log
-and can be replayed in case of failure,
-ensuring that your service is always reliable and fault-tolerant.
+
+:::info
+The code blocks in the Typescript documentation assume that the context has been assigned to `restateContext` as
+```typescript
+const restateContext = restate.useContext(this);
+```
+:::
+
+:::caution 
+All method calls made through the Restate context are durably stored in the execution log
+and can be replayed in case of failure, ensuring that your service is always reliable and fault-tolerant.
+This means that if you do actions (e.g. calling other services, sleep) without making use of the Restate SDK,
+you do not have these benefits.
+:::

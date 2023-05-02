@@ -17,7 +17,7 @@ This Greeter service has a method called `Greet` that takes a `Request` as input
 To make synchronous calls to the Greeter service, do the following:
 
 ```typescript
-const client = new GreeterClientImpl(ctx);
+const client = new GreeterClientImpl(restateContext);
 const greeting = await client.greet(
   Request.create({ name: "Pete" })
 );
@@ -27,8 +27,8 @@ const greeting = await client.greet(
 To make an asynchronous call, where the client does not wait for a response, use a similar syntax to synchronous calls. Create a client using the one provided by Protobuf and call the method on that client, but wrap the call with `ctx.inBackground` as shown below:
 
 ```typescript
-const client = new GreeterClientImpl(ctx);
-await ctx.inBackground(() =>
+const client = new GreeterClientImpl(restateContext);
+await restateContext.inBackground(() =>
   client.greet(TestRequest.create({ name: "Pete" }))
 );
 ```

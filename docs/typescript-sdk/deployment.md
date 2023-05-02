@@ -4,3 +4,51 @@ description: "Discover how you can deploy Restate across diverse infrastructures
 ---
 
 # Deployment
+
+## Deploying long-running services
+
+
+## Deploying Lambda functions
+
+You can run your Restate services as serverless functions on [AWS Lambda](https://aws.amazon.com/lambda/). 
+
+:::tip
+Please take a look at [this example](https://github.com/restatedev/example-lambda-ts-greeter) to learn how to deploy your Restate service as a Lambda function.
+:::
+
+### Deploying Lambda services
+To deploy a Restate service as a Lambda function,
+you can follow the [guidelines of AWS](https://docs.aws.amazon.com/lambda/latest/dg/typescript-package.html)
+for deploying plain Typescript NodeJS functions. Restate does not add any complexity to this. You build a zip file containing the application code and dependencies and upload this to AWS Lambda.
+
+AWS Lambda assumes that the handler can be found under `index.handler` in the uploaded code.
+By default, this is also the case for the Lambda functions developed with the Restate SDK.
+
+
+:::caution
+Restate assumes that requests come through API Gateway.
+So you have to configure API Gateway to sit in front of your Lambda function.
+:::
+
+### Discovery of services
+
+To let Restate discover the services, execute the following curl command,
+pointed at the Restate runtime and with the Lambda function endpoint as the URI in the data field. 
+
+
+```shell
+curl -X POST http://<your-restate-runtime-endpoint>:8081/endpoint/discover -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/<my-service>"}'
+```
+
+If your Lambda function requires authentication via an API key,
+then you can add this API key to the discovery request to the Restate runtime, as follows:
+
+```shell
+curl -X POST http://<your-restate-runtime-endpoint>:8081/endpoint/discover -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/<my-service>","additional_headers": {"x-api-key": "someapikey"} }'
+```
+
+Here, we added the API key as an additional header to the JSON data of the request.
+Replace `someapikey` by your API key.
+The Restate runtime will use this API key for all subsequent requests to the Lambda function.
+
+

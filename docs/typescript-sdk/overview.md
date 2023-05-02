@@ -7,9 +7,17 @@ description: "Get an idea of what a Restate Typescript service looks like."
 
 Restate offers a Typescript SDK to author Restate services using Typescript.
 
+:::tip
+To get started quickly, have a look at our [Typescript service template](https://github.com/restatedev/node-template)!
+:::
+
 ## Example of a service
 Below is an example of a Restate Typescript service to get a better understanding of the potential end result. 
-This service is a greeter service comprising of two methods. The first method, `greet`, returns a greeting as a response without performing any additional operations. The second method, `countGreetings`, maintains a record of the number of times it has received a request for a given name.
+
+This example shows a greeter service comprising of two methods:
+- `greet`: returns a greeting as a response without performing any additional operations. 
+- `countGreetings`: maintains a record of the number of times it has received a request for a given name.
+
 ```typescript
 import * as restate from "@restatedev/restate-sdk";
 import {
@@ -27,12 +35,12 @@ export class GreeterService implements Greeter {
 
     async countGreetings(request: GreetRequest): Promise<GreetResponse> {
         // Retrieving the Restate context
-        const ctx = restate.useContext(this);
+        const restateContext = restate.useContext(this);
     
         // State management
-        let seen = (await ctx.get<number>("seen")) || 0;
+        let seen = (await restateContext.get<number>("seen")) || 0;
         seen += 1;
-        await ctx.set("seen", seen);
+        await restateContext.set("seen", seen);
     
         // Return the final response
         return GreetResponse.create({
@@ -54,9 +62,11 @@ restate
 ```
 
 Initially, the required imports, including the Restate SDK, are imported.
+
 Then the gRPC service is implemented as defined in the Protobuf service contracts.
 Within the method, the Restate context is retrieved, enabling state-based operations such as getting and setting state. 
+
 Finally, the Restate server is set up to serve both methods of the greeter service.
 The server listens on port 8000 for incoming connections and requests.
 
-Now that you have a high-level idea of what a Restate service might look like, let's dive into the details. 
+Now that you have a high-level idea of what a Restate service might look like, let's dive into the details! 
