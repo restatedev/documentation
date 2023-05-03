@@ -66,7 +66,7 @@ const config = {
           {
             position: 'left',
             label: 'Get started',
-            to: '/getting-started'
+            to: '/get-started'
           },
           {
             position: 'left',
@@ -76,7 +76,7 @@ const config = {
           {
             position: 'left',
             label: 'Docs',
-            to: '/intro'
+            to: '/'
           },
           {
             href: 'https://github.com/restatedev/restate-dist',
@@ -93,19 +93,19 @@ const config = {
             items: [
               {
                 label: 'Getting started',
-                to: '/docs/getting-started',
+                to: '/get-started',
               },
               {
                 label: 'Tutorial',
-                to: '/docs/category/tutorials',
+                to: '/category/tutorials',
               },
               {
                 label: 'Documentation',
-                to: '/docs/intro',
+                to: '/',
               },
               {
                 label: 'Examples',
-                to: '/docs/examples',
+                to: '/examples',
               },
             ],
           },
