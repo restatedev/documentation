@@ -11,6 +11,13 @@ Restate offers a Typescript SDK to author Restate services using Typescript.
 To get started quickly, have a look at our [Typescript service template](https://github.com/restatedev/node-template)!
 :::
 
+## Installation
+
+Add the `@restatedev/restate-sdk` dependency to your NodeJS project to start developing Restate services. 
+
+The Typescript SDK uses the `protobufjs` and `ts-proto` dependencies to work with the Protobuf-generated Typescript code. 
+So add these as well to your project. 
+
 ## Example of a service
 Below is an example of a Restate Typescript service to get a better understanding of the potential end result. 
 

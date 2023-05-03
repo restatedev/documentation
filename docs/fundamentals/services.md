@@ -2,11 +2,11 @@
 sidebar_position: 2
 ---
 
-# Service contract
+# Services
 
-# NOTE: COPIED OVER FROM POC DOCS - REWORK THIS!
+Let's first have a look at what Restate understands under services and the types of Restate services that exist.  
 
-How you define the proto files
+This is important for many things. For state, for concurrency of requests. 
 
 ## Service instance
 

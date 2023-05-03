@@ -62,7 +62,7 @@ Replace `someapikey` by your API key.
 The Restate runtime will use this API key for all subsequent requests to the Lambda function.
 
 
-# 🏁 You're done!
+# 🏁 Finished reading?
 You should now have a good understanding of how Restate Typescript services are implemented. 
 
 :::note Looking for next steps?
