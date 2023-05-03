@@ -38,19 +38,12 @@ const config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {
+          routeBasePath: '/', // Set this value to '/'.
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-        },
-        blog: {
-          showReadingTime: true,
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-        },
+         },
+        blog: false,
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },
@@ -64,17 +57,26 @@ const config = {
       // Replace with your project's social card
       image: 'img/docusaurus-social-card.jpg',
       navbar: {
-        title: 'My Site',
+        title: '',
         logo: {
-          alt: 'My Site Logo',
-          src: 'img/logo.svg',
+          alt: 'Restate Logo',
+          src: 'img/restate.png',
         },
         items: [
           {
-            type: 'docSidebar',
-            sidebarId: 'tutorialSidebar',
             position: 'left',
-            label: 'Tutorial',
+            label: 'Get started',
+            to: '/get-started'
+          },
+          {
+            position: 'left',
+            label: 'Tutorials',
+            to: '/category/tutorials'
+          },
+          {
+            position: 'left',
+            label: 'Docs',
+            to: '/'
           },
           {
             href: 'https://github.com/restatedev/restate-dist',
@@ -90,8 +92,20 @@ const config = {
             title: 'Docs',
             items: [
               {
+                label: 'Getting started',
+                to: '/get-started',
+              },
+              {
                 label: 'Tutorial',
-                to: '/docs/intro',
+                to: '/category/tutorials',
+              },
+              {
+                label: 'Documentation',
+                to: '/',
+              },
+              {
+                label: 'Examples',
+                to: '/examples',
               },
             ],
           },
@@ -123,6 +137,11 @@ const config = {
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
+      },
+      colorMode: {
+        defaultMode: 'light',
+        disableSwitch: true,
+        respectPrefersColorScheme: false,
       },
     }),
 };
