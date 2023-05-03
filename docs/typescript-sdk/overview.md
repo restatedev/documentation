@@ -61,12 +61,45 @@ restate
 .listen(8000);
 ```
 
-Initially, the required imports, including the Restate SDK, are imported.
 
-Then the gRPC service is implemented as defined in the Protobuf service contracts.
-Within the method, the Restate context is retrieved, enabling state-based operations such as getting and setting state. 
+Initially, the Typescript code does the required imports, including the Restate SDK.
+
+Then the gRPC service is implemented as defined in the Protobuf service contracts, that are shown below.
+
+Within the method, the Restate context is retrieved, enabling state-based operations such as getting and setting state.
 
 Finally, the Restate server is set up to serve both methods of the greeter service.
 The server listens on port 8000 for incoming connections and requests.
 
-Now that you have a high-level idea of what a Restate service might look like, let's dive into the details! 
+This is what corresponding Protobuf definition would look like for this service:
+
+```protobuf
+syntax = "proto3";
+
+package example;
+
+import "dev/restate/ext.proto";
+
+service Greeter {
+  option (dev.restate.ext.service_type) = KEYED;
+
+  rpc Greet(GreetRequest) returns (GreetResponse) {};
+
+  rpc CountGreetings(GreetRequest) returns (GreetResponse) {};
+}
+
+message GreetRequest {
+  string name = 1 [(dev.restate.ext.field) = KEY];
+}
+
+message GreetResponse {
+  string greeting = 1;
+}
+```
+
+
+To understand the Restate-specific parts of this Protobuf definition, have a look at the documentation here.  
+
+[//]: # (TODO Add link)
+
+Now that you have a high-level idea of what a Restate Typescript service might look like, let's dive into the details! 

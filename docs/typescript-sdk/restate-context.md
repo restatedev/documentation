@@ -20,7 +20,7 @@ Once you have imported the module, you can retrieve the context object from with
 
 ```typescript
 async greet(request: Request): Promise<Response> {
-const restateContext = restate.useContext(this);
+    const restateContext = restate.useContext(this);
 
     //...the rest of your code...
 }

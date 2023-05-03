@@ -69,5 +69,5 @@ That's all you need to do to enable running on AWS Lambda!
 The implementation of your service methods remains the same for both deployment options.
 :::
 
-Have a look at the deployment section of the documentation
+Have a look at the next section on deployment
 for guidance on how to deploy your services on AWS Lambda.

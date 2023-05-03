@@ -6,14 +6,24 @@ description: "Discover how you can deploy Restate across diverse infrastructures
 # Deployment
 
 ## Deploying long-running services
+You can deploy long-running Restate Typescript services in any preferred way,
+as long as the Restate runtime can communicate with them.
+Besides that, Restate does not add any requirements on how they are deployed. 
 
+For example, you can package them as a Docker container and run them on Kubernetes or on any other container platform
+(e.g. AWS ECS, AWS Fargate).
+
+:::tip 
+Have a look at the [shopping cart example](https://github.com/restatedev/example-shopping-cart-typescript) to see some possible deployment options in action: 
+Kubernetes, AWS ECS and a local Docker setup.
+:::
 
 ## Deploying Lambda functions
 
 You can run your Restate services as serverless functions on [AWS Lambda](https://aws.amazon.com/lambda/). 
 
 :::tip
-Please take a look at [this example](https://github.com/restatedev/example-lambda-ts-greeter) to learn how to deploy your Restate service as a Lambda function.
+Please take a look at [the Greeter example](https://github.com/restatedev/example-lambda-ts-greeter) to learn how to deploy your Restate service as a Lambda function.
 :::
 
 ### Deploying Lambda services
@@ -52,3 +62,9 @@ Replace `someapikey` by your API key.
 The Restate runtime will use this API key for all subsequent requests to the Lambda function.
 
 
+# 🏁 You're done!
+You should now have a good understanding of how Restate Typescript services are implemented. 
+
+:::note Looking for next steps?
+Have a look at [our examples](/examples) to take your understanding of Restate to the next level!
+:::

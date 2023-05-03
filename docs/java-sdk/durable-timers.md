@@ -3,6 +3,6 @@ sidebar_position: 8
 description: "Let your service sleep for a specified time, guaranteed by Restate."
 ---
 
-# Timers
+# Durable timers
 
 Don't use your own
