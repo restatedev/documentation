@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 1
 ---
 
 # Configuration
@@ -10,5 +10,3 @@ sidebar_position: 5
 - Logging environment variables
 - ??
 -------------------------
-
-
