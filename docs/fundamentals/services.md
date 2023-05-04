@@ -5,17 +5,17 @@ sidebar_position: 2
 # Services
 
 -------------------------
-**What to write here**:  
-- What we consider to be a service vs. service instance. 
+**What to write here**:
+- What we consider to be a service vs. service instance.
 - Keyed/unkeyed/singleton services and how to define them in Protobuf
-- 
+-
 -------------------------
 
 # NOTE: mostly copied over from POC docs: REWRITE!
 
-Let's first have a look at what Restate understands under services and the types of Restate services that exist.  
+Let's first have a look at what Restate understands under services and the types of Restate services that exist.
 
-This is important for many things. For state, for concurrency of requests. 
+This is important for many things. For state, for concurrency of requests.
 
 ## Service instance
 

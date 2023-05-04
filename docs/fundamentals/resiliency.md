@@ -1,15 +1,15 @@
 ---
-sidebar_position: 6
+sidebar_position: 5
 ---
 
 -------------------------
 **What to write here**:
 
-- Resilience of service invocations: 
+- Resilience of service invocations:
   - guarantees
   - retries
   - What happens when an invocation fails: network failure vs user code (vs possible SDK bugs)
-  - retries + side effects: how users should use retry logic together with side effects to 
+  - retries + side effects: how users should use retry logic together with side effects to
   - configs we have for retries etc
 
 - Runtime
