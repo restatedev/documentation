@@ -2,6 +2,14 @@
 sidebar_position: 1
 ---
 
+-------------------------
+**What to write here**:  
+In addition to what has been written:
+- A word on the design of Restate: meta + worker and their responsabilities
+- Some diagram of how Restate fits in the system (e.g. Restate in the middle, some services around it, possible ingress options, ...)
+- Maybe programming model is not the right name. Maybe overview or "The essentials" would be better. TBD...
+-------------------------
+
 # Programming model
 
 Restate's programming model involves breaking down an application into services,
@@ -28,7 +36,6 @@ We currently offer a [Typescript/Javascript SDK](/category/typescript-sdk) and a
 Have a look at the documentation of your preferred language, after you finish reading the fundamentals.
 :::
 
-
 Each Restate service has an associated service contract, which can be used both by external clients and other Restate services to invoke the given service.
 
 Restate service contracts are defined by using [gRPC](https://grpc.io/), a well-known IDL (Interface description language) with a wide range of programming language and tooling support.
@@ -43,7 +50,7 @@ Restate services don't exist by themselves.
 They are driven by Restate's runtime.
 The Restate runtime sits in between your services like an event broker on steroids.
 If we abstract away the details, we can describe the flow as follows.
-Whenever a request comes in, Restate makes sure 
+Whenever a request comes in, Restate ensures
 - that it is durably recorded
 - that the right service is triggered
 - that the invoked method has access to its isolated, keyed application state

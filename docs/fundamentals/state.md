@@ -4,6 +4,12 @@ sidebar_position: 4
 
 # State
 
+-------------------------
+**What to write here:**  
+- How state works (readers should already know what keyed/unkeyed/singleton services are and that they define a key in the proto)
+- Querying state
+-------------------------
+
 # NOTE: COPIED OVER FROM POC DOCS - REWORK THIS!
 
 Restate brings state to serverless applications, thanks to its built-in state support.

@@ -1,10 +1,14 @@
 ---
 sidebar_position: 2
 ---
-
 # Get started
-[//]: # (TODO This should be a more interesting example)
-[//]: # (TODO Add extra explanation about what we are doing)
+-------------------------
+**What to write here**:
+- This should be a more interesting example
+- Should convey why Restate helps with the development of distributed applications
+-------------------------
+
+
 This guide will take you through your first steps with Restate. Let's build a small example from scratch!
 
 ## Prerequisites
@@ -59,7 +63,7 @@ npm run app
 
 
 ```shell
-docker run -e RUST_LOG=info,restate=debug --network=host ghcr.io/restatedev/restate:latest
+docker run -e RUST_LOG=info,restate=debug --network=host ghcr.io/restatedev/restate-dist:latest
 ```
 
 Discover the services

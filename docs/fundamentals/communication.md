@@ -4,8 +4,27 @@ sidebar_position: 3
 
 # Communication
 
-# NOTE: COPIED OVER FROM POC DOCS - REWORK THIS!
+-------------------------
+**What to write here**  
+Communication from external systems to Restate:
+- Ingress options
+    - gRPC 
+    - connect: maybe also explain things extra config options such as that you can add additionalHeaders etc
+- Local development tooling: e.g. grpcurl and grpc web ui
 
+Communication between Restate and service and inter-service communcation
+- Service discovery
+- Sync vs async communication
+- Concurrency 
+- Scaling: how services can scale. How Restate spreads invocations over service instances
+- Should we put something on suspensions here?
+- Something on discovering/resolving deadlocks?
+
+External systems
+- Maybe a note on that you still use an external database / read-write to Kafka etc.
+-------------------------
+
+# NOTE: COPIED OVER FROM POC DOCS - REWORK THIS!
 
 In every Restate application services need to communicate with each other and need to interact with the outside world.
 
