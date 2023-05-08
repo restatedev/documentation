@@ -40,5 +40,5 @@ Note that the Promise gets resolved as soon as the message gets send to the runt
 
 :::caution
 You can only use `inBackground()` to do background calls to other services via the proto-ts clients that are generated. 
-You cannot use `inBackground()` for any other types of operation!
+You cannot wrap any other types of operations with `inBackground()`! This is invalid code.
 :::
