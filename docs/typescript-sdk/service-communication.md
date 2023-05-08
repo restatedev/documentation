@@ -34,3 +34,11 @@ await restateContext.inBackground(() =>
 ```
 
 This ensures the call is made in the background, freeing up the client to execute other tasks.
+
+You need to await the Promise that is returned from `inBackground()`, otherwise a failure in sending the message does not get propagated back to your user code. 
+Note that the Promise gets resolved as soon as the message gets send to the runtime, so awaiting the promise does not mean it is a synchronous call.
+
+:::caution
+You can only use `inBackground()` to do background calls to other services via the proto-ts clients that are generated. 
+You cannot use `inBackground()` for any other types of operation!
+:::
