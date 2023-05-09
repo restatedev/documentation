@@ -4,6 +4,19 @@
 const lightCodeTheme = require('prism-react-renderer/themes/github');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
+const redocusaurus = [
+  'redocusaurus',
+  {
+    config: 'redocly.yaml',
+    specs: [
+      {
+        id: 'meta-rest-api',
+        spec: 'static/schemas/openapi-meta.json',
+      },
+    ]
+  },
+]
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Restate documentation',
@@ -49,6 +62,7 @@ const config = {
         },
       }),
     ],
+    redocusaurus
   ],
 
   themeConfig:
