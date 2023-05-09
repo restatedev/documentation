@@ -1,0 +1,47 @@
+shutdown_grace_period: 1m
+observability:
+  jaeger: null
+  jaeger_file: null
+  log:
+    filter: warn,restate=info
+    format: Pretty
+    disable_ansi_codes: false
+meta:
+  rest_address: 0.0.0.0:8081
+  rest_concurrency_limit: 1000
+  storage_path: target/meta/
+worker:
+  channel_size: 64
+  timers:
+    num_timers_in_memory_limit: null
+  storage_grpc:
+    bind_address: 0.0.0.0:9091
+  storage_rocksdb:
+    path: target/db/
+    threads: 4
+    compression: Zstd
+  ingress_grpc:
+    bind_address: 0.0.0.0:9090
+    concurrency_limit: 1000
+    json:
+      deserialize_deny_unknown_fields: true
+      serialize_stringify_64_bit_integers: true
+      serialize_use_enum_numbers: false
+      serialize_use_proto_field_name: false
+      serialize_skip_default_fields: false
+  invoker:
+    retry_policy:
+      type: Exponential
+      initial_interval: 50ms
+      factor: 2.0
+      max_attempts: 77
+      max_interval: 10s
+    suspension_timeout: 1m
+    response_abort_timeout: 1h
+    message_size_warning: 10485760
+    message_size_limit: null
+  partitions: 1024
+tokio_runtime:
+  worker_threads: null
+  max_blocking_threads: null
+
