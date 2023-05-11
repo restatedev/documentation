@@ -48,12 +48,6 @@ When testing Restate locally, we recommend keeping the default configuration.
 
 When deploying in production, we recommend setting the log level to `info` and enabling the `Json` format in conjunction with a log collector, so you can later inspect and filter logs based on its event fields.
 
-We also suggest the following setups when debugging:
-
-* `info,restate_ingress_grpc=trace,restate_invoker=trace,restate=debug,hyper=debug` for network related issues
-* `info,restate_worker::partition::effects=debug` to get insights on the state machine effects
-* `info,restate_meta=trace` to check service discovery and registration
-
 ## Tracing
 
 Restate supports the following tracing features:
@@ -90,4 +84,14 @@ The spans `ingress_service_invocation` informs when the gRPC/Connect HTTP reques
 
 When a service invokes another service, the child invocation will be automatically linked to the span `service_invocation` of the parent invocation.
 
-You can get further information on the state of the invocation by setting the filter to `info,restate_worker::partition::effects=debug`.
+## Troubleshooting
+
+Restate's observability features can help debug the execution of your application, to find out eventual bugs in your codebase, problems with network and/or deployment, or even Restate bugs.
+
+In general, we reccomend to:
+
+* Setup either Jaeger or Jaeger File trace exporter with filter `info,restate_worker::partition::effects=debug`. With this filter, the traces will also contain all the steps executed by the Restate internal state machine to drive the invocation to completion.
+* Setup logging to a more verbose filter, and use the `Pretty` format. Some example filters:
+    * `info,restate_ingress_grpc=trace,restate_invoker=trace,restate=debug,hyper=debug` for network related issues
+    * `info,restate_worker::partition::effects=debug` to get insights on the state machine effects
+    * `info,restate_meta=trace` to check service discovery and registration
