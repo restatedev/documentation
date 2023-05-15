@@ -4,28 +4,21 @@ description: "Discover and learn Restate's key features."
 ---
 
 # A Tour of Restate
+
+
+**This is work in progress...**
+
 To get you started with Restate, this tutorial will help you develop an end-to-end example, covering all important Restate features.
 After this tutorial,
 you should have a firm understanding of how Restate can help you
 and feel comfortable to tackle your next application on your own.
 
-In essence, Restate is a tool that makes it easier to develop distributed applications. Distributed applications are applications that are decomposed into several independent services (microservices) that talk to each other. Each service does a specific set of tasks and communicates to other services for its inputs and outputs. In this tutorial, we will develop such an application.
+In essence, Restate is a tool that makes it easier to develop distributed applications. Distributed applications are applications that are decomposed into several independent services (microservices) that talk to each other. Each service does a specific set of tasks and communicates with other services.
 
-The application that we will be implementing is a ticket reservation application for a theatre. We will implement a subset of this e-commerce application.
-The application allows a user to add tickets for specific seats to his shopping cart. After a ticket has been added, the seat is reserved for 15 minutes, and then it becomes available again to other users.
+In this tutorial, you implement a ticket reservation application for a theatre. You can see it as a subset of the services of a larger e-commerce application.
+Users can add tickets for specific seats to their shopping cart. After a ticket has been added, the seat is reserved for 15 minutes. If it hasn't been bought and paid within that time interval, then it becomes available again to other users.
 
 As we go, you will discover how Restate can help you with some intricacies in this application.
-
-[//]: # (We will implement a ticket reservation example.
-[//]: # (- get/set/clear state
-[//]: # (- async calls
-[//]: # (- retry with backoff
-[//]: # (- delayed call
-[//]: # (- side effects
-[//]: # (- uuid creation for payment and saving that
-[//]: # (
-[//]: # (- all keyed services: no singleton/unkeyed
-[//]: # (unkeyed service for checkout)
 
 ## 🚀 Let's get started!
 
@@ -37,21 +30,94 @@ Run the runtime
 
 Do the discovery 
 
-Call some of the services 
+Call some of the services and see the BoolValue response.
 
+Starting point: 
+- Skeleton of the applications. No methods implemented but just empty responses. 
+- Only the ticket service and the user session service. The checkout service will be added later.
+
+Explain the layout of the project.
+
+## Suspendable synchronous communication
+The first thing we implement is service-to-service communication, so one service sending a request to another one. 
+The `addTicket` method of the user session will call the `reserve` method of the ticket service.
+
+### Implementing synchronous calls
+The first type of call that we do is an sync call, where we do not wait for the response of the request.
+
+Let's have a look at how to do this in Restate:
+```typescript
+const ctx = restate.useContext(this);
+const ticketServiceClient = new TicketServiceClientImpl(ctx);
+const success = await ticketServiceClient.reserve(
+  Ticket.create({ ticketId: request.ticketId })
+);
+```
+The first thing you need to do in any method that interacts with Restate, is retrieve the `RestateContext`.
+This is the entrypoint of all communication with the runtime. 
+You can retrieve the `RestateContext` in your method as follows:
+```   typescript
+const ctx = restate.useContext(this);
+```
+
+Once the `RestateContext` has been retrieved, we can call the other service.
+The first line we see is: 
+
+```typescript
+const ticketServiceClient = new TicketServiceClientImpl(ctx);
+```
+
+This line loads the `proto-ts` client that was generated when we ran `npm run proto`.
+We can now use this client to call the `reserve`  method of the ticket service as follows:
+
+```typescript
+const success = await ticketServiceClient.reserve(
+  Ticket.create({ ticketId: request.ticketId })
+);
+```
+The reserve method returns a BoolValue that is equal to true if the ticket reservation was successful.
+
+### Testing communication
+Show that this works.
+- Run both services in separate terminals
+- Then call the user session service addTicket method.
+- Show the logs of both services.
+
+### What happens under-the-hood
+Explain what happens. 
+- Connection is setup by runtime 
+- Request is send over that connection to the addTicket method of the user session service
+- The user session service then sends a request to the ticket service. It sends this request over the open connection to the runtime. 
+- The response of the other service can take long so the user session service suspends. 
+- The runtime forwards the connection to the ticket service. (Note: the runtime makes sure these requests are done and takes care of retries. The details on retries will be covered later. )
+- Once the runtime has received the response, it wakes up the user session service. 
+- The code gets replayed up to the point of the request. And then the rest of the method gets executed.
+
+The suspension mechanism of Restate is especially beneficial if you run with AWS Lambda.
+You can do synchronous calls without paying for the idle time when waiting for a response.
+But also for long-running services this system can be helpful because Restate makes sure that an invocation is durably recorded and can survive any failures.
+
+To show how this works in practice and mimic that the ticket service is doing some processing for a certain amount of time, we can add a sleep call to the `reserve` method of the ticket service.
+```typescript
+await setTimeout(5000);
+```
+Then run the example and call the `addTicket` method, which calls the `reserve` method.
+Show in the logs that the `addTicket` method gets suspended for 5 seconds.
+
+:::note
+This is not the proper way to sleep in a Restate application! The Restate SDK offers you a way to do sleeps that are suspendable! Read on to find out how to do this.
+:::
+
+Explain how replay works.
+
+Maybe include a little video demo of knative on minikube to show how containers are spun up and torn down.
 
 ## Reliable async communication without queues
-Let's implement some of the methods. 
 
-We have 2 services and let's make them call each other 
-- user session: one method: addTicket()
-- ticket manager: one method reserve()
+The calls we did in the previous section always waited for a response to the request (albeit in suspended mode). 
+It is also possible to do async calls via Restate, where you do not wait for the response.
 
-And we want them to call each other. 
-Call the second service from the first service async without a queue
-
-First do the call async
-
+The syntax is very similar. All we need to do is wrap the call with `inBackground`, as follows:
 ```   typescript
 const ctx = restate.useContext(this);
 const ticketServiceClient = new TicketDbServiceClientImpl(ctx);
@@ -60,48 +126,12 @@ await inBackground(() =>  ticketServiceClient.reserve(
 ));
 ```
 
-## Suspendable synchronous communication
-Show that this works.
-- Run both services in separate terminals
-- Then call the usersession service addTicket method.
-- Show the logs of both services.
 
-Then say that we want to know if it was successful so make the call sync
-```   typescript
-const ctx = restate.useContext(this);
-const ticketServiceClient = new TicketDbServiceClientImpl(ctx);
-const reserveResult: ResultValue = await ticketServiceClient.reserve(
-  Ticket.create({ ticketId: request.ticketId })
-);
-const success = reserveResult.value;
-```
 
 Show that this works.
 - Run both services in separate terminals 
 - Then call the usersession service addTicket method. 
 - Show the logs of both services. 
-
-All interaction goes through the Restate Context.
-
-The Restate runtime is the one contacting the service. And when it does so, it has a connection to the service. So you in your service don't need to do anything to establish that connection.
-
-## Suspendable async/await
-
-Explain how the user session service gets suspended when it is waiting for the response of the ticket service.
-
-Implement a sleep in the reserve method of the ticket service to show this.
-```typescript
-await setTimeout(5000);
-```
-Explain how this can help with serverless.
-
-:::note
-This is not the proper way to sleep in a Restate application! The Restate SDK offers you a way to do sleeps that are suspendable! Read on to discover how to do this. 
-:::
-
-Explain how replay works. 
-
-Maybe include a little video demo of knative on minikube to show how containers are spun up and torn down. 
 
 ## Awakeables
 In essence sync/async calls are about tying services together and executing workflows by having several services execute some tasks. The calls we were now talking about are executed in between Restate services. But what if you want to do a part of the tasks in an external service. For example, you want a Restate service to put a message on Kafka, have it ingested by a non-Restate service. Do some processing. And then invoke the Restate service again to continue its work. For this, you could use awakeables. This works similar as what is known as the callback task token pattern. You generate an ID. You supply that ID to the external service. Once the external service is done with the work, it sends the ID back to Restate. And when Restate receives the ID, it continues processing. 
@@ -138,7 +168,7 @@ Show how the services are now both suspended During the sleep. Then the ticket o
 ### Delayed calls
 After a timeout we want the reserved ticket to become available again. What we want to do there is implement a delayed call after a duration that expires the reservation and calls unreserve(). 
 ```typescript
-await callAsync(() => ticketService.unreserve(), 15*60*1000);
+await inBackground(() => ticketService.unreserve(), 15*60*1000);
 ```
 
 Put the delayed call on a low duration and show that it takes place. 
@@ -150,7 +180,10 @@ Put the delayed call on a low duration and show that it takes place.
 
 If you have a keyed service, you have the guarantee that there is at most one concurrent invocation per key.
 If you have an unkeyed service, then
-In a singleton service, there is always at most one invocation going on. You don't have keys. So
+In a singleton service, there is always at most one invocation going on. Y
+
+Add checkout service
+
 
 ## Persistent application state
 In our user session we actually also want to keep track of which tickets were reserved by the user. 
@@ -193,22 +226,49 @@ await ctx.sideEffect<boolean>(async () => await stripe.call(idempotencyKey, amou
 
 
 ## Resiliency
+
+### Runtime configuration
   => configuring retries, retryWithBackoff,
 
   => show in the logs
 
+
+### SDK utilities for retries
 
 ```typescript
 const doPayment = async () => stripe.call(idempotencyKey, amount);
 const success: boolean = await RestateUtils.retryExceptionalSideEffectWithBackoff(ctx, doPayment, 100, 500)
 ```
 
-
 ## Observability with Jaeger
+Enabling tracing
 
+
+Having a look at the traces. 
+
+
+## 🏁 The end
+What did we cover:
+- reliable synchronous calls that can be suspended
+- asynchronous calls without the need for queues
+- suspensions for external communication
+- awakeables: how to do tasks in external systems and resume processing
+- durable timers for sleep or for calling other services
+- concurrency guarantees of restate for keyed/unkeyed/singleton services
+- persistent application state
+- state introspection
+- storing the results of non-deterministic operations or external calls as side effects
+- resiliency: retries
+- observability with Jaeger
 
 ## Next steps
-follow up tutorials: Lambda & minikube
+This tutorial did not cover anything related to deployment. 
+In this tutorial, we ran the services as long-running services in Docker containers.
+But Restate services can run with minimal changes on AWS Lambda. 
+
+Have a look at these follow-up tutorials:
+- Deployment on AWS Lambda
+- Deployment on Kubernetes (minikube)
 
 
 
