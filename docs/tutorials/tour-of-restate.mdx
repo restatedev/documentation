@@ -3,9 +3,10 @@ sidebar_position: 1
 description: "Discover and learn Restate's key features."
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # A Tour of Restate
-
-
 **This is work in progress...**
 
 To get you started with Restate, this tutorial will help you develop an end-to-end example, covering all important Restate features.
@@ -18,56 +19,169 @@ In essence, Restate is a tool that makes it easier to develop distributed applic
 In this tutorial, you implement a ticket reservation application for a theatre. You can see it as a subset of the services of a larger e-commerce application.
 Users can add tickets for specific seats to their shopping cart. After a ticket has been added, the seat is reserved for 15 minutes. If it hasn't been bought and paid within that time interval, then it becomes available again to other users.
 
+The final application will have three services:
+1. User session service: keeps track of which tickets are currently in the cart of the user. 
+2. Ticket service: manages all tickets that are being sold or have been sold. 
+3. Checkout service: handles the checkout process of the ticket sale. This service will be added later on in the tutorial.
+
 As we go, you will discover how Restate can help you with some intricacies in this application.
+
+## Prerequisites
+> &#x1F4DD; As long as Restate hasn't been launched publicly, you need to have access to the private Restate npm packages and Docker container. Please follow the instructions in the `restate-dist` Readme to set up access: https://github.com/restatedev/restate-dist
+
+- [NodeJS (and npm)](https://nodejs.org) installed.
+- [Docker Engine](https://docs.docker.com/engine/install/) to launch the Restate runtime (not needed for the app implementation itself).
 
 ## 🚀 Let's get started!
 
-Clone the github repo of the tour of Restate tutorial 
+### Setting up the tutorial
+Clone the GitHub repository of the [tutorial](https://github.com/restatedev/tour-of-restate-typescript) and checkout branch `part1`:
+```shell
+git clone git@github.com:restatedev/tour-of-restate-typescript.git
+git checkout part1
+```
 
-Let's run the app 
+This GitHub repository contains the basic skeleton of the NodeJS/Typescript services that we develop in this tutorial. 
 
-Run the runtime
+First, get all dependencies and build tools:
+```shell
+npm install
+```
 
-Do the discovery 
+Next, generates the Typescript Protobuf code to help you write services according to your service contract.
+```shell
+npm run proto
+```
 
-Call some of the services and see the BoolValue response.
+Build the services:
+```shell
+npm run build
+```
 
-Starting point: 
-- Skeleton of the applications. No methods implemented but just empty responses. 
-- Only the ticket service and the user session service. The checkout service will be added later.
+### Running the services and runtime
+Run the user session service:
+```shell
+npm run user_session_service
+```
 
-Explain the layout of the project.
+In a separate terminal, run the ticket service:
+```shell
+npm run ticket_service
+```
+
+Launch the runtime:
+<Tabs groupId="operating-systems">
+<TabItem value="lin" label="Linux">
+
+```shell
+docker run -e RUST_LOG=info,restate=debug --network=host ghcr.io/restatedev/restate-dist:latest
+```
+
+</TabItem>
+<TabItem value="mac" label="macOS">
+
+```shell
+docker run -e RUST_LOG=info,restate=debug ghcr.io/restatedev/restate-dist:latest
+```
+
+</TabItem>
+</Tabs>
+
+
+Discover the services:
+<Tabs groupId="operating-systems">
+<TabItem value="lin" label="Linux">
+
+```shell
+curl -X POST http://localhost:8081/services/discover -H 'content-type: application/json' -d '{"uri": "http://localhost:8080"}'
+curl -X POST http://localhost:8081/services/discover -H 'content-type: application/json' -d '{"uri": "http://localhost:8082"}'
+```
+
+</TabItem>
+<TabItem value="mac" label="macOS">
+
+```shell
+curl -X POST http://localhost:8081/services/discover -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:8080"}'
+curl -X POST http://localhost:8081/services/discover -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:8082"}'
+```
+
+</TabItem>
+</Tabs>
+
+You should now see the registered services printed out to your terminal:
+```shell
+{"services":["example.UserSessionService"]}
+{"services":["example.TicketService"]}
+```
+
+Mimic adding a ticket to a cart, by calling the `AddTicket` method of the user session service as follows:
+```shell
+curl -X POST http://localhost:9090/example.UserSessionService/AddTicket -H 'content-type: application/json' -d '{"user_id": "dkd111", "ticket_id": "Rolling-stones-A22"}'
+```
+This gives us back a boolean return value:
+```
+true
+```
+
+If the value was printed successfully, then you have a working setup. 
+
+The repository that you cloned, contains the basis of the ticket reservation app. When you look at the `src` folder you see two Typescript files: `ticket_service.ts` and `user_session_service.ts`.
+
+Both files contain the skeleton of a Restate service with some empty methods defined in it. 
+These methods will be implemented throughout the tutorial.
+
+The services and methods, that are exposed as RPC handlers to the runtime, are defined in the `example.proto` file. 
+
+Remember the curl command we did earlier?
+```shell
+curl -X POST http://localhost:9090/example.UserSessionService/AddTicket -H 'content-type: application/json' -d '{"user_id": "123", "ticket_id": "456"}'
+```
+The URL `http://localhost:9090` points to the ingress endpoint of the Restate runtime. This is then followed by `/package-name.service-name/method-name`. In `proto/example.proto`, we defined `example` as the package name, `UserSessionService` as the service name, and `AddTicket` as one of the methods. The data that is added to the request (i.e. `'{"user_id": "123", "ticket_id": "456"}'`) is the JSON representation of the messages that have been defined in `proto/example.proto`.
+
+That's all you need to know right now about the Protobuf service definition. We will come back to this later.
+
+Try calling some other methods and let's then move on to implementing our first Restate service. 
 
 ## Suspendable synchronous communication
-The first thing we implement is service-to-service communication, so one service sending a request to another one. 
-The `addTicket` method of the user session will call the `reserve` method of the ticket service.
+One of the key parts of distributed applications is service-to-service communication. 
 
-### Implementing synchronous calls
-The first type of call that we do is an sync call, where we do not wait for the response of the request.
+Let's start with synchronous calls, where a service calls another service and waits for the response. 
 
-Let's have a look at how to do this in Restate:
+### Synchronous calls
+When the user adds a ticket to his cart, this invokes the `addTicket` method in the user session service.
+The `addTicket` method first needs to reserve the ticket if it is available. It does that by calling the `reserve` method of the ticket service.
+
+Let's have a look at how to do this in Restate. Add the highlighted code snippet to the `addTicket` method in the user session service.
 ```typescript
-const ctx = restate.useContext(this);
-const ticketServiceClient = new TicketServiceClientImpl(ctx);
-const success = await ticketServiceClient.reserve(
-  Ticket.create({ ticketId: request.ticketId })
-);
+async addTicket(request: ReserveTicket): Promise<BoolValue> {
+    
+  // highlight-start
+    const ctx = restate.useContext(this);
+    const ticketServiceClient = new TicketServiceClientImpl(ctx);
+    const success = await ticketServiceClient.reserve(
+            Ticket.create({ ticketId: request.ticketId })
+    );
+  // highlight-end
+  
+    return Promise.resolve(BoolValue.create({ value: true }));
+}
 ```
-The first thing you need to do in any method that interacts with Restate, is retrieve the `RestateContext`.
-This is the entrypoint of all communication with the runtime. 
-You can retrieve the `RestateContext` in your method as follows:
+
+To interact with Restate, you first need to retrieve the `RestateContext`. This is the entrypoint of all communication with the runtime.  You can do this as follows:
 ```   typescript
 const ctx = restate.useContext(this);
 ```
 
 Once the `RestateContext` has been retrieved, we can call the other service.
-The first line we see is: 
+For this, we need to create a client for the ticket service. 
 
 ```typescript
 const ticketServiceClient = new TicketServiceClientImpl(ctx);
 ```
 
-This line loads the `proto-ts` client that was generated when we ran `npm run proto`.
+We supply the RestateContext of the current invocation (`ctx`) to the client to make sure that it sends the requests to Restate, in a way that Restate understands them.
+
+The client is an instance of the `proto-ts` client that was generated when we ran `npm run proto` earlier.
 We can now use this client to call the `reserve`  method of the ticket service as follows:
 
 ```typescript
@@ -75,17 +189,17 @@ const success = await ticketServiceClient.reserve(
   Ticket.create({ ticketId: request.ticketId })
 );
 ```
-The reserve method returns a BoolValue that is equal to true if the ticket reservation was successful.
+The reserve method returns a BoolValue that is equal to `true` if the ticket reservation was successful.
 
 ### Testing communication
-Show that this works.
+Let's see if this works.
 - Run both services in separate terminals
 - Then call the user session service addTicket method.
 - Show the logs of both services.
 
 ### What happens under-the-hood
 Explain what happens. 
-- Connection is setup by runtime 
+- Connection is established by runtime
 - Request is send over that connection to the addTicket method of the user session service
 - The user session service then sends a request to the ticket service. It sends this request over the open connection to the runtime. 
 - The response of the other service can take long so the user session service suspends. 
@@ -118,15 +232,13 @@ The calls we did in the previous section always waited for a response to the req
 It is also possible to do async calls via Restate, where you do not wait for the response.
 
 The syntax is very similar. All we need to do is wrap the call with `inBackground`, as follows:
-```   typescript
+```typescript
 const ctx = restate.useContext(this);
 const ticketServiceClient = new TicketDbServiceClientImpl(ctx);
 await inBackground(() =>  ticketServiceClient.reserve(
   Ticket.create({ ticketId: request.ticketId })
 ));
 ```
-
-
 
 Show that this works.
 - Run both services in separate terminals 
@@ -156,14 +268,16 @@ Similar to synchronous and asynchronous communication, the function is suspended
 ## Durable timers
 
 ### Suspendable sleep
-But the way we were sleeping in the  ticket service does not make sense. Restate gives you sleep that also suspends.
+Earlier in this tutorial, we showed how Restate suspensions work by letting the ticket service sleep. 
+The sleep that we implemented in the ticket service. 
+Restate gives you sleep that suspends.
 ```typescript
 const ctx = restate.useContext(this);
 
 await ctx.sleep(5000);
 ```
 
-Show how the services are now both suspended During the sleep. Then the ticket one comes back. Then the user session service comes back. Then the response comes back. 
+Show how the services are now both suspended During the sleep. Then the ticket service comes back. Then the user session service comes back. Then the response comes back. 
 
 ### Delayed calls
 After a timeout we want the reserved ticket to become available again. What we want to do there is implement a delayed call after a duration that expires the reservation and calls unreserve(). 
@@ -171,8 +285,7 @@ After a timeout we want the reserved ticket to become available again. What we w
 await inBackground(() => ticketService.unreserve(), 15*60*1000);
 ```
 
-Put the delayed call on a low duration and show that it takes place. 
-
+Put the delayed call on a low duration and show that it takes place.
 
 ## Concurrency
 - writing the proto files
@@ -183,7 +296,6 @@ If you have an unkeyed service, then
 In a singleton service, there is always at most one invocation going on. Y
 
 Add checkout service
-
 
 ## Persistent application state
 In our user session we actually also want to keep track of which tickets were reserved by the user. 
@@ -224,14 +336,12 @@ const idempotencyKey = await ctx.sideEffect<string>(async () => uuid());
 await ctx.sideEffect<boolean>(async () => await stripe.call(idempotencyKey, amount));
 ```
 
-
 ## Resiliency
 
 ### Runtime configuration
   => configuring retries, retryWithBackoff,
 
   => show in the logs
-
 
 ### SDK utilities for retries
 
@@ -243,9 +353,7 @@ const success: boolean = await RestateUtils.retryExceptionalSideEffectWithBackof
 ## Observability with Jaeger
 Enabling tracing
 
-
-Having a look at the traces. 
-
+Having a look at the traces.
 
 ## 🏁 The end
 What did we cover:
