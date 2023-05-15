@@ -74,14 +74,14 @@ Launch the runtime:
 <TabItem value="lin" label="Linux">
 
 ```shell
-docker run -e RUST_LOG=info,restate=debug --network=host ghcr.io/restatedev/restate-dist:latest
+docker run -e RUST_LOG=info,restate=info --network=host ghcr.io/restatedev/restate-dist:latest
 ```
 
 </TabItem>
 <TabItem value="mac" label="macOS">
 
 ```shell
-docker run -e RUST_LOG=info,restate=debug ghcr.io/restatedev/restate-dist:latest
+docker run -e RUST_LOG=info,restate=info ghcr.io/restatedev/restate-dist:latest
 ```
 
 </TabItem>
@@ -113,6 +113,20 @@ You should now see the registered services printed out to your terminal:
 {"services":["example.UserSessionService"]}
 {"services":["example.TicketService"]}
 ```
+
+When we look at the logs of the runtime we see:
+```
+2023-05-15T14:36:03.767790Z INFO restate_meta::service
+  Discovered service
+    rpc.service: "example.UserSessionService"
+    restate.service_endpoint.url: http://localhost:8080/
+
+2023-05-15T14:36:06.224985Z INFO restate_meta::service
+  Discovered service
+    rpc.service: "example.TicketService"
+    restate.service_endpoint.url: http://localhost:8082/
+```
+
 
 Mimic adding a ticket to a cart, by calling the `AddTicket` method of the user session service as follows:
 ```shell
@@ -167,12 +181,17 @@ async addTicket(request: ReserveTicket): Promise<BoolValue> {
 }
 ```
 
-To interact with Restate, you first need to retrieve the `RestateContext`. This is the entrypoint of all communication with the runtime.  You can do this as follows:
+To interact with Restate, we need to retrieve the `RestateContext`. This is the entrypoint of all communication with the runtime. That is done in the first line of the code snippet:
 ```   typescript
 const ctx = restate.useContext(this);
 ```
 
-Once the `RestateContext` has been retrieved, we can call the other service.
+To resolve this, make sure you have the following import:
+```typescript
+import * as restate from "@restatedev/restate-sdk";
+```
+
+Once we have access to the `RestateContext`, we can call the ticket service.
 For this, we need to create a client for the ticket service. 
 
 ```typescript
@@ -191,18 +210,23 @@ const success = await ticketServiceClient.reserve(
 ```
 The reserve method returns a BoolValue that is equal to `true` if the ticket reservation was successful.
 
-### Testing communication
 Let's see if this works.
-- Run both services in separate terminals
-- Then call the user session service addTicket method.
-- Show the logs of both services.
 
-### What happens under-the-hood
-Explain what happens. 
-- Connection is established by runtime
-- Request is send over that connection to the addTicket method of the user session service
+Make sure that both services are running and send a request to the `addTicket` method of the user session service, as we did [previously](#running-the-services-and-runtime).
+
+Have a look at the Restate runtime logs, to see how our ingress request is processed and triggers the execution of the `addTicket` and `reserve` methods.
+
+### What actually happened?
+The call we just did, seems like a regular RPC call. But under-the-hood, Restate does a number of things to make sure that this call is executed durably and ...
+
+When we do a call like this, a series of steps get executed.
+- The runtime receives our request and persists it.
+- The runtime establishes a connection to the user session service.
+- The runtime invokes the service method, by sending the request over the connection.
+- The user session service starts executing the `addTicket` method.
 - The user session service then sends a request to the ticket service. It sends this request over the open connection to the runtime. 
-- The response of the other service can take long so the user session service suspends. 
+- The response of the other service can take long so the user session service suspends.
+- The runtime durably logs the call.
 - The runtime forwards the connection to the ticket service. (Note: the runtime makes sure these requests are done and takes care of retries. The details on retries will be covered later. )
 - Once the runtime has received the response, it wakes up the user session service. 
 - The code gets replayed up to the point of the request. And then the rest of the method gets executed.
@@ -218,7 +242,7 @@ await setTimeout(5000);
 Then run the example and call the `addTicket` method, which calls the `reserve` method.
 Show in the logs that the `addTicket` method gets suspended for 5 seconds.
 
-:::note
+:::caution
 This is not the proper way to sleep in a Restate application! The Restate SDK offers you a way to do sleeps that are suspendable! Read on to find out how to do this.
 :::
 
@@ -246,7 +270,16 @@ Show that this works.
 - Show the logs of both services. 
 
 ## Awakeables
-In essence sync/async calls are about tying services together and executing workflows by having several services execute some tasks. The calls we were now talking about are executed in between Restate services. But what if you want to do a part of the tasks in an external service. For example, you want a Restate service to put a message on Kafka, have it ingested by a non-Restate service. Do some processing. And then invoke the Restate service again to continue its work. For this, you could use awakeables. This works similar as what is known as the callback task token pattern. You generate an ID. You supply that ID to the external service. Once the external service is done with the work, it sends the ID back to Restate. And when Restate receives the ID, it continues processing. 
+TODO: not yet included in the ticket reservation example
+
+Synchronous and asynchronous calls tie services together and allow executing workflows by having several services execute parts of it.
+The calls we did until now were always in between Restate services.
+But what if you want to do a part of the tasks in an external service.
+For example, you want a Restate service to put a message on Kafka, have it ingested by a non-Restate service.
+Do some processing. And then invoke the Restate service again to continue its work. For this, you could use awakeables.
+This works similar as what is known as the callback task token pattern. You generate an ID.
+You supply that ID to the external service. Once the external service is done with the work, it sends the ID back to Restate.
+And when Restate receives the ID, it continues processing.
 
 So how can you do this with the Typescript SDK?
 
@@ -261,7 +294,8 @@ const id = awakeable.id
 const result = await awakeable.promise;
 ```
 
-Calling `ctx.awakeable` gives you an object with two entries. A String ID and a promise. The promise gets resolved with a payload that the external service can attach to it. You need to supply the data return type when you create the awakeable. In this case, the return payload will be a String.
+Calling `ctx.awakeable` gives you an object with two entries. A String ID and a promise. The promise gets resolved with a payload that the external service can attach to it.
+You need to supply the data return type when you create the awakeable. In this case, the return payload will be a String.
 
 Similar to synchronous and asynchronous communication, the function is suspended while it is waiting on the return of the ID.
 
@@ -269,7 +303,7 @@ Similar to synchronous and asynchronous communication, the function is suspended
 
 ### Suspendable sleep
 Earlier in this tutorial, we showed how Restate suspensions work by letting the ticket service sleep. 
-The sleep that we implemented in the ticket service. 
+
 Restate gives you sleep that suspends.
 ```typescript
 const ctx = restate.useContext(this);
@@ -280,7 +314,8 @@ await ctx.sleep(5000);
 Show how the services are now both suspended During the sleep. Then the ticket service comes back. Then the user session service comes back. Then the response comes back. 
 
 ### Delayed calls
-After a timeout we want the reserved ticket to become available again. What we want to do there is implement a delayed call after a duration that expires the reservation and calls unreserve(). 
+After a timeout we want the reserved ticket to become available again.
+What we want to do there is implement a delayed call after a duration that expires the reservation and calls unreserve().
 ```typescript
 await inBackground(() => ticketService.unreserve(), 15*60*1000);
 ```
@@ -302,7 +337,9 @@ In our user session we actually also want to keep track of which tickets were re
 
 For this we can use application state. 
 
-When the user calls the addTicket method, we also want it to save the ticket in the userSession shopping cart. We don't need a session database such as Redis for this. We can use the Restate application state to persistently store the application state. Currently we support key value state. 
+When the user calls the addTicket method, we also want it to save the ticket in the userSession shopping cart.
+We don't need a session database such as Redis for this. We can use the Restate application state to persistently store the application state.
+Currently we support key value state.
 To read the state, do the following
 
 ```typescript
