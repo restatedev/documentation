@@ -137,6 +137,24 @@ const config = {
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
+        magicComments: [
+          // Remember to extend the default highlight class name as well!
+          {
+            className: 'theme-code-block-highlighted-line',
+            line: 'highlight-next-line',
+            block: {start: 'highlight-start', end: 'highlight-end'},
+          },
+          {
+            className: 'bad-code-block',
+            line: 'bad-code',
+            block: {start: 'bad-code-start', end: 'bad-code-end'},
+          },
+          {
+            className: 'good-code-block',
+            line: 'good-code',
+            block: {start: 'good-code-start', end: 'good-code-end'},
+          },
+        ],
       },
       colorMode: {
         defaultMode: 'light',

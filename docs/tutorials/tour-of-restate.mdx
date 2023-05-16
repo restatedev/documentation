@@ -14,10 +14,11 @@ After this tutorial,
 you should have a firm understanding of how Restate can help you
 and feel comfortable to tackle your next application on your own.
 
-In essence, Restate is a tool that makes it easier to develop distributed applications. Distributed applications are applications that are decomposed into several independent services (microservices) that talk to each other. Each service does a specific set of tasks and communicates with other services.
-
-In this tutorial, you implement a ticket reservation application for a theatre. You can see it as a subset of the services of a larger e-commerce application.
-Users can add tickets for specific seats to their shopping cart. After a ticket has been added, the seat is reserved for 15 minutes. If it hasn't been bought and paid within that time interval, then it becomes available again to other users.
+This tutorial implements a ticket reservation application for a theatre.
+You can see it as a subset of the services of a larger e-commerce application.
+Users can add tickets for specific seats to their shopping cart.
+After a ticket has been added, the seat is reserved for 15 minutes.
+If it hasn't been bought and paid within that time interval, then it becomes available again to other users.
 
 The final application will have three services:
 1. User session service: keeps track of which tickets are currently in the cart of the user. 
@@ -168,16 +169,15 @@ The `addTicket` method first needs to reserve the ticket if it is available. It 
 Let's have a look at how to do this in Restate. Add the highlighted code snippet to the `addTicket` method in the user session service.
 ```typescript
 async addTicket(request: ReserveTicket): Promise<BoolValue> {
-    
-  // highlight-start
+    //highlight-start
     const ctx = restate.useContext(this);
     const ticketServiceClient = new TicketServiceClientImpl(ctx);
     const success = await ticketServiceClient.reserve(
-            Ticket.create({ ticketId: request.ticketId })
+        Ticket.create({ ticketId: request.ticketId })
     );
-  // highlight-end
-  
-    return Promise.resolve(BoolValue.create({ value: true }));
+    //highlight-end
+
+    return success;
 }
 ```
 
@@ -237,7 +237,12 @@ But also for long-running services this system can be helpful because Restate ma
 
 To show how this works in practice and mimic that the ticket service is doing some processing for a certain amount of time, we can add a sleep call to the `reserve` method of the ticket service.
 ```typescript
-await setTimeout(5000);
+async reserve(request: Ticket): Promise<BoolValue> {
+    //bad-code-start
+    await setTimeout(5000);
+    //bad-code-end
+    return BoolValue.create({value: true});
+}
 ```
 Then run the example and call the `addTicket` method, which calls the `reserve` method.
 Show in the logs that the `addTicket` method gets suspended for 5 seconds.
@@ -252,22 +257,28 @@ Maybe include a little video demo of knative on minikube to show how containers 
 
 ## Reliable async communication without queues
 
-The calls we did in the previous section always waited for a response to the request (albeit in suspended mode). 
-It is also possible to do async calls via Restate, where you do not wait for the response.
+The calls we did in the previous section, always waited for a response to the request (albeit in suspended mode).
+You can also do async calls via Restate, where you do not wait for the response. The syntax is very similar.
+All we need to do is wrap the call with `inBackground`, as follows:
 
-The syntax is very similar. All we need to do is wrap the call with `inBackground`, as follows:
 ```typescript
-const ctx = restate.useContext(this);
-const ticketServiceClient = new TicketDbServiceClientImpl(ctx);
-await inBackground(() =>  ticketServiceClient.reserve(
-  Ticket.create({ ticketId: request.ticketId })
-));
+async addTicket(request: ReserveTicket): Promise<BoolValue> {
+    const ctx = restate.useContext(this);
+    //highlight-start
+    const ticketServiceClient = new TicketServiceClientImpl(ctx);
+    await ctx.inBackground(() =>  ticketServiceClient.reserve(
+        Ticket.create({ ticketId: request.ticketId })
+    ));
+    //highlight-end
+
+    return BoolValue.create({ value: true });
+}
 ```
 
-Show that this works.
-- Run both services in separate terminals 
-- Then call the usersession service addTicket method. 
-- Show the logs of both services. 
+Make sure both services are running, as [explained earlier](#running-the-services-and-runtime).
+Then call the `addTicket` method of the user session service.
+
+If you look at the logs of the runtime, you see that the `addTicket` method doesn't wait for a response and finishes before the `reserve` method.
 
 ## Awakeables
 TODO: not yet included in the ticket reservation example
@@ -300,37 +311,131 @@ You need to supply the data return type when you create the awakeable. In this c
 Similar to synchronous and asynchronous communication, the function is suspended while it is waiting on the return of the ID.
 
 ## Durable timers
+As we explained earlier, Restate suspends a service invocation when it's waiting on external input.
+The partial progress of the service invocation is durable stored in the log and can be resumed once
+the external input has arrived.
+Restate offers the same mechanism for timers.
 
 ### Suspendable sleep
-Earlier in this tutorial, we showed how Restate suspensions work by letting the ticket service sleep. 
-
-Restate gives you sleep that suspends.
+You can do a durable, suspendable sleep with the Typescript SDK.
+Earlier in this tutorial, we showed how Restate suspensions work by letting the ticket service sleep:
 ```typescript
-const ctx = restate.useContext(this);
+async reserve(request: Ticket): Promise<BoolValue> {
+    //bad-code-start
+    await setTimeout(5000);
+    //bad-code-end
+    return BoolValue.create({value: true});
+}
+```
+This line of code would keep the service invocation running idly, and would not survive service restarts.
 
-await ctx.sleep(5000);
+To use a durable, suspendable sleep, use the sleep functionality of the Restate SDK:
+```typescript
+async reserve(request: Ticket): Promise<BoolValue> {
+    //good-code-start
+    await ctx.sleep(5000);
+    //good-code-end
+    return BoolValue.create({value: true});
+}
 ```
 
-Show how the services are now both suspended During the sleep. Then the ticket service comes back. Then the user session service comes back. Then the response comes back. 
+Run both services and send the `addTicket` request, as [we did earlier](#running-the-services-and-runtime).
+Now we see that both services get suspended. The user session service gets suspended because it does a
+synchronous call to the `reserve` method of the ticket service and waits for a response and the
+ticket service gets suspended because it waits for the sleep to be completed.
+
+:::caution
+As you will learn in the section on [concurrency](#concurrency), Restate has the concept of keyed services.
+In these services, all the invocations for a specific key are guaranteed to be executed sequentially.
+This means that the max number of concurrent invocations for a single key is one.
+When you sleep in a keyed service, that invocation will be blocking any other invocations for the same key.
+So be careful with sleeping in keyed services and singleton services!
+You can use it in unkeyed services without any worries.
+:::
+
+Restate keeps track of how long the service should sleep and then resumes the invocation.
+Once the invocation has been resumed, we see the responses of both methods coming in.
+
+TODO: show this on minikube with knative in a little video
 
 ### Delayed calls
-After a timeout we want the reserved ticket to become available again.
-What we want to do there is implement a delayed call after a duration that expires the reservation and calls unreserve().
+
+Let's have a look at a slightly different usage of timers.
+In our application, we want a ticket to be reserved for 15 minutes.
+If it hasn't been bought and paid within that time interval, then it becomes available again to other users.
+
+
+The Restate SDK allows doing delayed async calls by adding a delay in milliseconds to the
+`inBackground` wrapper.
 ```typescript
-await inBackground(() => ticketService.unreserve(), 15*60*1000);
+async addTicket(request: ReserveTicket): Promise<BoolValue> {
+    const ctx = restate.useContext(this);
+
+    const ticketServiceClient = new TicketServiceClientImpl(ctx);
+    const reserveResult: BoolValue = await ticketServiceClient.reserve(
+      Ticket.create({ ticketId: request.ticketId })
+    );
+
+    if (reserveResult.value) {
+        //highlight-start
+      await ctx.inBackground(() =>
+        ticketServiceClient.unreserve(
+          ExpireTicketRequest.create({
+            userId: request.userId,
+            ticketId: request.ticketId,
+          })
+        ),
+        15 * 60 * 1000 // 15 minutes delay
+      );
+      //highlight-end
+    }
+
+return BoolValue.create({ value: true });
+}
 ```
 
-Put the delayed call on a low duration and show that it takes place.
+To test it out, put the delay to a lower value (e.g. 10 seconds) and see how the call comes in later.
+
+:::caution
+Another way to implement this, would be to sleep for 15 minutes at the end of the `addTicket` method
+and then call the  `unreserve` method of the ticket service.
+
+```typescript
+await ctx.sleep(15 * 60 * 1000);
+await ctx.inBackground(() =>
+ticketServiceClient.unreserve(
+  ExpireTicketRequest.create({
+    userId: request.userId,
+    ticketId: request.ticketId,
+  })
+));
+```
+But this would block any invocations for that key. So the user would not be able to add any other tickets, nor buy
+the tickets.
+:::
 
 ## Concurrency
+Earlier, we covered Restate's sleep functionality and we mentioned keyed, unkeyed, and singleton services. Let's
+have a look at what they are.
+
+There are three types of Restate services:
+1. **Keyed service**: All service invocations are sharded on a user-defined key. There is at most one concurrent
+invocation per key.
+2. **Unkeyed service**: No key defined. No concurrency guarantees or limitations. Invocations are processed as they
+come in. You would get the same behavior with a keyed service with random keys.
+3. **Singleton service**: No key defined. There is at most one concurrent invocation for this entire service. You can
+see this as a keyed service where all invocations have an identical key. This service type does not scale up, so
+don't use it for heavy load.
+
+The service type and key are defined in the Protobuf definition of the service. 
+
+
+
 - writing the proto files
-  => how to write them, keyed/unkeyed/singleton, key specification
-
-If you have a keyed service, you have the guarantee that there is at most one concurrent invocation per key.
-If you have an unkeyed service, then
-In a singleton service, there is always at most one invocation going on. Y
-
+=> how to write them, keyed/unkeyed/singleton, key specification
 Add checkout service
+
+Sleeping blocks the key of a keyed service
 
 ## Persistent application state
 In our user session we actually also want to keep track of which tickets were reserved by the user. 
@@ -338,19 +443,20 @@ In our user session we actually also want to keep track of which tickets were re
 For this we can use application state. 
 
 When the user calls the addTicket method, we also want it to save the ticket in the userSession shopping cart.
-We don't need a session database such as Redis for this. We can use the Restate application state to persistently store the application state.
+We don't need a session database such as Redis for this. We can use the Restate application state to persistently
+store the application state.
 Currently we support key value state.
 To read the state, do the following
 
 ```typescript
-const cart = Cart.fromCartData(await ctx.get<CartData>("cart"));
+const cart = await ctx.get<string[]>("cart") || [];
 ```
 
 Then we add the ticket and set the state to the new value:
 
 ```typescript
-cart.addToCart(request.ticketId);
-ctx.set("cart", cart.toCartData())
+cart.push(request.ticketId);
+ctx.set("cart", cart);
 ```
 
 Add a clear cart method with clear state:
