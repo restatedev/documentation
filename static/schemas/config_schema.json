@@ -1,0 +1,631 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "Restate configuration file",
+  "description": "Configuration for the Restate single binary deployment.\n\nYou can specify the configuration file to use through the `--config-file <PATH>` argument or with `RESTATE_CONFIG=<PATH>` environment variable.\n\nEach configuration entry can be overridden using environment variables, prefixing them with `RESTATE_` and separating nested structs with `__` (double underscore). For example, to configure `meta.rest_address`, the corresponding environment variable is `RESTATE_META__REST_ADDRESS`.",
+  "type": "object",
+  "properties": {
+    "shutdown_grace_period": {
+      "title": "Shutdown grace timeout",
+      "description": "This timeout is used when shutting down the various Restate components to drain all the internal queues.\n\nCan be configured using the [`humantime`](https://docs.rs/humantime/latest/humantime/fn.parse_duration.html) format.",
+      "default": "1m",
+      "type": "string"
+    },
+    "observability": {
+      "default": {
+        "jaeger": null,
+        "jaeger_file": null,
+        "log": {
+          "disable_ansi_codes": false,
+          "filter": "warn,restate=info",
+          "format": "Pretty"
+        }
+      },
+      "$ref": "#/definitions/ObservabilityOptions"
+    },
+    "meta": {
+      "default": {
+        "rest_address": "0.0.0.0:8081",
+        "rest_concurrency_limit": 1000,
+        "storage_path": "target/meta/"
+      },
+      "$ref": "#/definitions/MetaOptions"
+    },
+    "worker": {
+      "default": {
+        "channel_size": 64,
+        "ingress_grpc": {
+          "bind_address": "0.0.0.0:9090",
+          "concurrency_limit": 1000,
+          "json": {
+            "deserialize_deny_unknown_fields": true,
+            "serialize_skip_default_fields": false,
+            "serialize_stringify_64_bit_integers": true,
+            "serialize_use_enum_numbers": false,
+            "serialize_use_proto_field_name": false
+          }
+        },
+        "invoker": {
+          "message_size_limit": null,
+          "message_size_warning": 10485760,
+          "response_abort_timeout": "1h",
+          "retry_policy": {
+            "factor": 2.0,
+            "initial_interval": "50ms",
+            "max_attempts": 77,
+            "max_interval": "10s",
+            "type": "Exponential"
+          },
+          "suspension_timeout": "1m"
+        },
+        "partitions": 1024,
+        "storage_grpc": {
+          "bind_address": "0.0.0.0:9091"
+        },
+        "storage_rocksdb": {
+          "compression": "Zstd",
+          "path": "target/db/",
+          "threads": 4
+        },
+        "timers": {
+          "num_timers_in_memory_limit": null
+        }
+      },
+      "$ref": "#/definitions/WorkerOptions"
+    },
+    "tokio_runtime": {
+      "default": {
+        "max_blocking_threads": null,
+        "worker_threads": null
+      },
+      "$ref": "#/definitions/Options"
+    }
+  },
+  "definitions": {
+    "ObservabilityOptions": {
+      "title": "Observability options",
+      "type": "object",
+      "required": [
+        "log"
+      ],
+      "properties": {
+        "jaeger": {
+          "title": "Jaeger options",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/JaegerOptions"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "jaeger_file": {
+          "title": "Jaeger file exporter options",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/JaegerFileOptions"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "log": {
+          "title": "Logging options",
+          "$ref": "#/definitions/LogOptions"
+        }
+      }
+    },
+    "JaegerOptions": {
+      "title": "Jaeger Options",
+      "description": "Configuration for the [Jaeger Agent exporter](https://www.jaegertracing.io/docs/1.6/deployment/#agent).\n\nTo configure the sampling, please refer to the [opentelemetry autoconfigure docs](https://github.com/open-telemetry/opentelemetry-java/blob/main/sdk-extensions/autoconfigure/README.md#sampler).",
+      "type": "object",
+      "required": [
+        "endpoint"
+      ],
+      "properties": {
+        "endpoint": {
+          "title": "Endpoint",
+          "description": "Specify the Jaeger endpoint to use to send traces. Traces will be exported using the [Jaeger Agent UDP protocol](https://www.jaegertracing.io/docs/1.6/deployment/#agent) through [opentelemetry_jaeger](https://docs.rs/opentelemetry-jaeger/latest/opentelemetry_jaeger/config/agent/struct.AgentPipeline.html).",
+          "type": "string"
+        },
+        "filter": {
+          "title": "Filter",
+          "description": "Exporter filter configuration. Check the [`RUST_LOG` documentation](https://docs.rs/tracing-subscriber/latest/tracing_subscriber/filter/struct.EnvFilter.html) for more details how to configure it.",
+          "default": "info",
+          "type": "string"
+        }
+      }
+    },
+    "JaegerFileOptions": {
+      "title": "Jaeger File Options",
+      "description": "Configuration for the Jaeger file exporter. This exporter writes traces as JSON in the Jaeger format.\n\nIt can be used to export traces in a structured format without configuring a Jaeger agent. To inspect the traces, open the Jaeger UI and use the Upload JSON feature to load and inspect them.\n\nAll spans will be sampled.",
+      "type": "object",
+      "required": [
+        "path"
+      ],
+      "properties": {
+        "path": {
+          "title": "Path",
+          "description": "Specify the path where all the traces will be exported. Each trace file will start with the `trace` prefix.",
+          "type": "string"
+        },
+        "filter": {
+          "title": "Filter",
+          "description": "Exporter filter configuration. Check the [`RUST_LOG` documentation](https://docs.rs/tracing-subscriber/latest/tracing_subscriber/filter/struct.EnvFilter.html) for more details how to configure it.",
+          "default": "info",
+          "type": "string"
+        }
+      }
+    },
+    "LogOptions": {
+      "title": "Log options",
+      "type": "object",
+      "properties": {
+        "filter": {
+          "title": "Filter",
+          "description": "Log filter configuration. Can be overridden by the `RUST_LOG` environment variable. Check the [`RUST_LOG` documentation](https://docs.rs/tracing-subscriber/latest/tracing_subscriber/filter/struct.EnvFilter.html) for more details how to configure it.",
+          "default": "warn,restate=info",
+          "type": "string"
+        },
+        "format": {
+          "title": "Log format",
+          "description": "Format to use when logging.",
+          "default": "Pretty",
+          "$ref": "#/definitions/LogFormat"
+        },
+        "disable_ansi_codes": {
+          "title": "Disable ANSI log",
+          "description": "Disable ANSI terminal codes for logs. This is useful when the log collector doesn't support processing ANSI terminal codes.",
+          "default": false,
+          "type": "boolean"
+        }
+      }
+    },
+    "LogFormat": {
+      "title": "Log format",
+      "oneOf": [
+        {
+          "title": "Pretty",
+          "description": "Enables verbose logging. Not recommended in production.",
+          "type": "string",
+          "enum": [
+            "Pretty"
+          ]
+        },
+        {
+          "title": "Compact",
+          "description": "Enables compact logging.",
+          "type": "string",
+          "enum": [
+            "Compact"
+          ]
+        },
+        {
+          "title": "Json",
+          "description": "Enables json logging. You can use a json log collector to ingest these logs and further process them.",
+          "type": "string",
+          "enum": [
+            "Json"
+          ]
+        }
+      ]
+    },
+    "MetaOptions": {
+      "title": "Meta options",
+      "type": "object",
+      "properties": {
+        "rest_address": {
+          "title": "Rest endpoint address",
+          "description": "Address to bind for the Meta Operational REST APIs.",
+          "default": "0.0.0.0:8081",
+          "type": "string"
+        },
+        "rest_concurrency_limit": {
+          "title": "Rest concurrency limit",
+          "description": "Concurrency limit for the Meta Operational REST APIs.",
+          "default": 1000,
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0.0
+        },
+        "storage_path": {
+          "title": "Storage path",
+          "description": "Root path for Meta storage.",
+          "default": "target/meta/",
+          "type": "string"
+        }
+      }
+    },
+    "WorkerOptions": {
+      "title": "Worker options",
+      "type": "object",
+      "properties": {
+        "channel_size": {
+          "title": "Bounded channel size",
+          "default": 64,
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0.0
+        },
+        "timers": {
+          "default": {
+            "num_timers_in_memory_limit": null
+          },
+          "$ref": "#/definitions/TimerOptions"
+        },
+        "storage_grpc": {
+          "default": {
+            "bind_address": "0.0.0.0:9091"
+          },
+          "$ref": "#/definitions/StorageGrpcOptions"
+        },
+        "storage_rocksdb": {
+          "default": {
+            "compression": "Zstd",
+            "path": "target/db/",
+            "threads": 4
+          },
+          "$ref": "#/definitions/StorageOptions"
+        },
+        "ingress_grpc": {
+          "default": {
+            "bind_address": "0.0.0.0:9090",
+            "concurrency_limit": 1000,
+            "json": {
+              "deserialize_deny_unknown_fields": true,
+              "serialize_skip_default_fields": false,
+              "serialize_stringify_64_bit_integers": true,
+              "serialize_use_enum_numbers": false,
+              "serialize_use_proto_field_name": false
+            }
+          },
+          "$ref": "#/definitions/IngressOptions"
+        },
+        "invoker": {
+          "default": {
+            "message_size_limit": null,
+            "message_size_warning": 10485760,
+            "response_abort_timeout": "1h",
+            "retry_policy": {
+              "factor": 2.0,
+              "initial_interval": "50ms",
+              "max_attempts": 77,
+              "max_interval": "10s",
+              "type": "Exponential"
+            },
+            "suspension_timeout": "1m"
+          },
+          "$ref": "#/definitions/InvokerOptions"
+        },
+        "partitions": {
+          "title": "Partitions",
+          "description": "Number of partitions to be used to process messages.\n\nNote: This config entry **will be removed** in future Restate releases, as the partitions number will be dynamically configured depending on the load.",
+          "default": 1024,
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0.0
+        }
+      }
+    },
+    "TimerOptions": {
+      "title": "Timer options",
+      "type": "object",
+      "properties": {
+        "num_timers_in_memory_limit": {
+          "title": "Num timers in memory limit",
+          "description": "The number of timers in memory limit is used to bound the amount of timers loaded in memory. If this limit is set, when exceeding it, the timers farther in the future will be spilled to disk.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint",
+          "minimum": 0.0
+        }
+      }
+    },
+    "StorageGrpcOptions": {
+      "title": "Storage GRPC options",
+      "type": "object",
+      "properties": {
+        "bind_address": {
+          "title": "Bind address",
+          "description": "The address to bind for the storage grpc service.",
+          "default": "0.0.0.0:9091",
+          "type": "string"
+        }
+      }
+    },
+    "StorageOptions": {
+      "title": "Storage options",
+      "type": "object",
+      "properties": {
+        "path": {
+          "title": "Storage path",
+          "description": "The root path to use for the Rocksdb storage",
+          "default": "target/db/",
+          "type": "string"
+        },
+        "threads": {
+          "title": "Threads",
+          "description": "The number of threads to reserve to Rocksdb background tasks",
+          "default": 4,
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0.0
+        },
+        "compression": {
+          "title": "Compression type",
+          "description": "The type of compression to use",
+          "default": "Zstd",
+          "$ref": "#/definitions/CompressionType"
+        }
+      }
+    },
+    "CompressionType": {
+      "oneOf": [
+        {
+          "description": "No compression",
+          "type": "string",
+          "enum": [
+            "None"
+          ]
+        },
+        {
+          "description": "Compression using lz4",
+          "type": "string",
+          "enum": [
+            "Lz4"
+          ]
+        },
+        {
+          "description": "Compression using zlib",
+          "type": "string",
+          "enum": [
+            "Zstd"
+          ]
+        }
+      ]
+    },
+    "IngressOptions": {
+      "title": "Ingress options",
+      "type": "object",
+      "properties": {
+        "bind_address": {
+          "title": "Bind address",
+          "description": "The address to bind for the ingress.",
+          "default": "0.0.0.0:9090",
+          "type": "string"
+        },
+        "concurrency_limit": {
+          "title": "Concurrency limit",
+          "description": "Local concurrency limit to use to limit the amount of concurrent requests. If exceeded, the ingress will reply immediately with an appropriate status code.",
+          "default": 1000,
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0.0
+        },
+        "json": {
+          "title": "Json",
+          "description": "JSON/Protobuf conversion options.",
+          "default": {
+            "deserialize_deny_unknown_fields": true,
+            "serialize_skip_default_fields": false,
+            "serialize_stringify_64_bit_integers": true,
+            "serialize_use_enum_numbers": false,
+            "serialize_use_proto_field_name": false
+          },
+          "$ref": "#/definitions/JsonOptions"
+        }
+      }
+    },
+    "JsonOptions": {
+      "title": "Json options",
+      "type": "object",
+      "properties": {
+        "deserialize_deny_unknown_fields": {
+          "title": "Deserialize: deny unknown fields",
+          "description": "When deserializing, return an error when encountering unknown message fields.",
+          "default": true,
+          "type": "boolean"
+        },
+        "serialize_stringify_64_bit_integers": {
+          "title": "Serialize: stringify 64 bit integers",
+          "description": "When serializing, encode 64-bit integral types as strings.\n\nFor more details, check the [prost-reflect](https://docs.rs/prost-reflect/0.11.4/prost_reflect/struct.SerializeOptions.html#method.stringify_64_bit_integers) and [Protobuf encoding](https://protobuf.dev/programming-guides/proto3/#json-options) documentation",
+          "default": true,
+          "type": "boolean"
+        },
+        "serialize_use_enum_numbers": {
+          "title": "Serialize: use enum numbers",
+          "description": "When serializing, encode enum values as their numeric value.\n\nFor more details, check the [prost-reflect](https://docs.rs/prost-reflect/0.11.4/prost_reflect/struct.SerializeOptions.html#method.use_enum_numbers) and [Protobuf encoding](https://protobuf.dev/programming-guides/proto3/#json-options) documentation",
+          "default": false,
+          "type": "boolean"
+        },
+        "serialize_use_proto_field_name": {
+          "title": "Serialize: use proto field name",
+          "description": "When serializing, use the proto field name instead of the lowerCamelCase name in JSON field names.\n\nFor more details, check the [prost-reflect](https://docs.rs/prost-reflect/0.11.4/prost_reflect/struct.SerializeOptions.html#method.use_proto_field_name) and [Protobuf encoding](https://protobuf.dev/programming-guides/proto3/#json-options) documentation",
+          "default": false,
+          "type": "boolean"
+        },
+        "serialize_skip_default_fields": {
+          "title": "Serialize: skip default fields",
+          "description": "When serializing, skip fields which have their default value.\n\nFor more details, check the [prost-reflect](https://docs.rs/prost-reflect/0.11.4/prost_reflect/struct.SerializeOptions.html#method.skip_default_fields) and [Protobuf encoding](https://protobuf.dev/programming-guides/proto3/#json-options) documentation",
+          "default": false,
+          "type": "boolean"
+        }
+      }
+    },
+    "InvokerOptions": {
+      "title": "Invoker options",
+      "type": "object",
+      "properties": {
+        "retry_policy": {
+          "title": "Retry policy",
+          "description": "Retry policy to use for all the invocations handled by this invoker.",
+          "default": {
+            "factor": 2.0,
+            "initial_interval": "50ms",
+            "max_attempts": 77,
+            "max_interval": "10s",
+            "type": "Exponential"
+          },
+          "$ref": "#/definitions/RetryPolicy"
+        },
+        "suspension_timeout": {
+          "title": "Suspension timeout",
+          "description": "This timer is used to gracefully shutdown a bidirectional stream after inactivity on both request and response streams.\n\nWhen this timer is fired, the invocation will be closed gracefully by closing the request stream, triggering a suspension on the sdk, in case the sdk is waiting on a completion. This won't affect the response stream.\n\nCan be configured using the [`humantime`](https://docs.rs/humantime/latest/humantime/fn.parse_duration.html) format.",
+          "default": "1m",
+          "type": "string"
+        },
+        "response_abort_timeout": {
+          "title": "Response abort timeout",
+          "description": "This timer is used to forcefully shutdown an invocation when only the response stream is open.\n\nWhen protocol mode is `restate_service_metadata::ProtocolType::RequestResponse`, this timer will start as soon as the replay of the journal is completed. When protocol mode is `restate_service_metadata::ProtocolType::BidiStream`, this timer will start after the request stream has been closed. Check `suspension_timeout` to configure a timer on the request stream.\n\nWhen this timer is fired, the response stream will be aborted, potentially **interrupting** user code! If the user code needs longer to complete, then this value needs to be set accordingly.\n\nCan be configured using the [`humantime`](https://docs.rs/humantime/latest/humantime/fn.parse_duration.html) format.",
+          "default": "1h",
+          "type": "string"
+        },
+        "message_size_warning": {
+          "title": "Message size warning",
+          "description": "Threshold to log a warning in case protocol messages coming from service endpoint are larger than the specified amount.",
+          "default": 10485760,
+          "type": "string"
+        },
+        "message_size_limit": {
+          "title": "Message size limit",
+          "description": "Threshold to fail the invocation in case protocol messages coming from service endpoint are larger than the specified amount.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint",
+          "minimum": 0.0
+        }
+      }
+    },
+    "RetryPolicy": {
+      "title": "Retry policy",
+      "description": "Definition of a retry policy",
+      "oneOf": [
+        {
+          "title": "None",
+          "description": "No retries strategy.",
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "None"
+              ]
+            }
+          }
+        },
+        {
+          "title": "Fixed delay",
+          "description": "Retry with a fixed delay strategy.",
+          "type": "object",
+          "required": [
+            "interval",
+            "max_attempts",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "FixedDelay"
+              ]
+            },
+            "interval": {
+              "title": "Interval",
+              "description": "Interval between retries.\n\nCan be configured using the [`humantime`](https://docs.rs/humantime/latest/humantime/fn.parse_duration.html) format.",
+              "type": "string"
+            },
+            "max_attempts": {
+              "title": "Max attempts",
+              "description": "Number of maximum attempts before giving up.",
+              "type": "integer",
+              "format": "uint",
+              "minimum": 0.0
+            }
+          }
+        },
+        {
+          "title": "Exponential",
+          "description": "Retry with an exponential strategy. The next retry is computed as `min(last_retry_interval * factor, max_interval)`.",
+          "type": "object",
+          "required": [
+            "factor",
+            "initial_interval",
+            "max_attempts",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "Exponential"
+              ]
+            },
+            "initial_interval": {
+              "title": "Initial Interval",
+              "description": "Initial interval for the first retry attempt.\n\nCan be configured using the [`humantime`](https://docs.rs/humantime/latest/humantime/fn.parse_duration.html) format.",
+              "type": "string"
+            },
+            "factor": {
+              "title": "Factor",
+              "description": "The factor to use to compute the next retry attempt.",
+              "type": "number",
+              "format": "float"
+            },
+            "max_attempts": {
+              "title": "Max attempts",
+              "description": "Number of maximum attempts before giving up.",
+              "type": "integer",
+              "format": "uint",
+              "minimum": 0.0
+            },
+            "max_interval": {
+              "title": "Max interval",
+              "description": "Maximum interval between retries.",
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "Options": {
+      "title": "Runtime options",
+      "description": "Configuration for the Tokio runtime used by Restate.",
+      "type": "object",
+      "properties": {
+        "worker_threads": {
+          "title": "Worker threads",
+          "description": "Configure the number of [worker threads](https://docs.rs/tokio/latest/tokio/runtime/struct.Builder.html#method.worker_threads) of the Tokio runtime. If not set, it uses the Tokio default, where worker_threads is equal to number of cores.",
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint",
+          "minimum": 0.0
+        },
+        "max_blocking_threads": {
+          "title": "Max blocking threads",
+          "description": "Configure the number of [max blocking threads](https://docs.rs/tokio/latest/tokio/runtime/struct.Builder.html#method.max_blocking_threads) of the Tokio runtime. If not set, it uses the Tokio default 512.",
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint",
+          "minimum": 0.0
+        }
+      }
+    }
+  }
+}

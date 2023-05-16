@@ -176,6 +176,7 @@ const config = {
         respectPrefersColorScheme: false,
       },
     }),
+    themes: ["docusaurus-json-schema-plugin"]
 };
 
 module.exports = config;
