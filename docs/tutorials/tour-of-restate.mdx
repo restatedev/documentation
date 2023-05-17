@@ -155,6 +155,7 @@ The URL `http://localhost:9090` points to the ingress endpoint of the Restate ru
 
 That's all you need to know right now about the Protobuf service definition. We will come back to this later.
 
+### Exercise
 Try calling some other methods and let's then move on to implementing our first Restate service. 
 
 ## Suspendable synchronous communication
@@ -244,12 +245,16 @@ async reserve(request: Ticket): Promise<BoolValue> {
     return BoolValue.create({value: true});
 }
 ```
-Then run the example and call the `addTicket` method, which calls the `reserve` method.
-Show in the logs that the `addTicket` method gets suspended for 5 seconds.
 
 :::caution
-This is not the proper way to sleep in a Restate application! The Restate SDK offers you a way to do sleeps that are suspendable! Read on to find out how to do this.
+This is not the proper way to sleep in a Restate application!
+The Restate SDK offers you a way to do sleeps that are suspendable!
+We will cover this later, in the section on [suspendable sleep](#suspendable-sleep).
 :::
+
+Run the example and call the `addTicket` method, which calls the `reserve` method.
+Show in the logs that the `addTicket` method gets suspended for 5 seconds.
+
 
 Explain how replay works.
 
@@ -344,17 +349,13 @@ Now we see that both services get suspended. The user session service gets suspe
 synchronous call to the `reserve` method of the ticket service and waits for a response and the
 ticket service gets suspended because it waits for the sleep to be completed.
 
-:::caution
-As you will learn in the section on [concurrency](#concurrency), Restate has the concept of keyed services.
-In these services, all the invocations for a specific key are guaranteed to be executed sequentially.
-This means that the max number of concurrent invocations for a single key is one.
-When you sleep in a keyed service, that invocation will be blocking any other invocations for the same key.
-So be careful with sleeping in keyed services and singleton services!
-You can use it in unkeyed services without any worries.
-:::
-
 Restate keeps track of how long the service should sleep and then resumes the invocation.
 Once the invocation has been resumed, we see the responses of both methods coming in.
+
+:::caution
+Sleeping can block processing for certain types of Restate services (keyed and singleton
+services). We get back to this in the [concurrency](#concurrency) section.
+:::
 
 TODO: show this on minikube with knative in a little video
 
@@ -427,42 +428,261 @@ come in. You would get the same behavior with a keyed service with random keys.
 see this as a keyed service where all invocations have an identical key. This service type does not scale up, so
 don't use it for heavy load.
 
-The service type and key are defined in the Protobuf definition of the service. 
+### Specifying the service type
+Restate uses [gRPC](https://grpc.io/) and [Protobuf](https://protobuf.dev/) to define service contracts.
+That's also where you define the service type and key.
+Have a look at the Protobuf definitions of the ticket service of our example in `proto/example.proto`:
+```protobuf
+service TicketService {
+  //highlight-next-line
+	option (dev.restate.ext.service_type) = KEYED;
 
+	rpc Reserve (Ticket) returns (google.protobuf.BoolValue);
+    //... other methods...
+}
 
+message Ticket {
+  //highlight-next-line
+	string ticket_id = 1 [(dev.restate.ext.field) = KEY];
+}
+```
 
-- writing the proto files
-=> how to write them, keyed/unkeyed/singleton, key specification
-Add checkout service
+The first highlighted line of the service definition defines the type of Restate service.
+The ticket service is a keyed service. For unkeyed or singleton services, use `UNKEYED` and `SINGLETON` respectively.
 
-Sleeping blocks the key of a keyed service
+Keyed services require the definition of a key, in the second highlighted line.
+The key should correspond to one of the fields in the input request.
+You specify the key by adding the `[(dev.restate.ext.field) = KEY]` annotation.
+Make sure that you define the key field for all the methods of a keyed service!
+
+Besides these tags, there is nothing Restate-specific about the Protobuf definitions.
+To learn more about gRPC, have a look at their [documentation](https://grpc.io/docs/).
+
+:::caution
+Keyed services and singleton services have limits on the number of concurrent invocations.
+For keyed services, there is a maximum of one concurrent invocation per key.
+For singleton services, there is a maximum of one concurrent invocation for the entire
+service.
+This can lead to issues:
+- If you do an operation that takes a lot of time in a keyed/singleton service (e.g.
+sleep), then that key/service remains blocked during the entire operation. Other
+invocations for that key/service are enqueued, until the invocation has completed.
+- Deadlocks: Watch out for cyclical synchronous calls in your application.
+For example, if A calls B, and B calls C, and C calls A again, then you can
+get into a deadlock situation, where each service is waiting for the response of the
+other and none of them can progress. The keys remain locked and the system can't
+process any more requests.
+:::
+
+:::tip
+You can also use the concurrency guarantees of keyed and singleton services to your
+advantage! The guarantee that there is only a single ongoing invocation makes
+it a lot easier to reason about interaction with external systems.
+
+Imagine an application where you have a keyed service and a database.
+And every key only interacts with an isolated set of rows of the database.
+Then you can easily scale up your application, while being sure that there will only be a
+single writer to that database row. This solves a lot of data consistency issues for
+you, such as lost updates or non-repeatable reads.
+
+For example, a shopping cart application has a product service that is keyed on product ID
+and a database that uses product ID as the primary key. The product service updates
+quantities and prices in the database. With Restate, you can be sure that there is at
+most one ongoing invocation updating a single product in the database.
+:::
+
+### Exercise
+If you are not well acquainted with gRPC, then you can do this little exercise to get
+some training. Otherwise, just copy over the answers to continue with the tutorial.
+
+Let's add a new service to our example: the `CheckoutService`.
+This service will handle checkout requests and makes sure that the payment is done exactly one time,
+that the product is marked as sold and that a confirmation email is sent.
+The service can be an unkeyed service and has a `Checkout` method that takes a `CheckoutFlowRequest` and returns a
+`BoolValue`, denoting whether the checkout was successful.
+
+The `CheckoutFlowRequest` has two fields: a String describing the `user_id` and an array of Strings describing the
+`tickets` that are bought.
+
+Run the `npm` command to generate the related Typescript code and write the skeleton
+of the checkout service.
+
+<>
+<details><summary>The answer</summary>
+The service definition in `proto/example.proto` should look as follows:
+
+```protobuf
+
+service CheckoutService {
+    option (dev.restate.ext.service_type) = UNKEYED;
+
+    rpc Checkout (CheckoutFlowRequest) returns (google.protobuf.BoolValue);
+}
+
+message CheckoutFlowRequest {
+    string user_id = 1;
+    repeated string tickets = 2;
+}
+
+```
+
+Note that unkeyed services don't have a key specified in the message.
+
+Write the skeleton of the service in `src/checkout_service`, similar to the other
+services.
+
+</details>
+</>
 
 ## Persistent application state
-In our user session we actually also want to keep track of which tickets were reserved by the user. 
 
-For this we can use application state. 
+Applications often need to keep some form of state. For example, our user session
+needs to keep track of the items in the shopping cart.
 
-When the user calls the addTicket method, we also want it to save the ticket in the userSession shopping cart.
-We don't need a session database such as Redis for this. We can use the Restate application state to persistently
-store the application state.
-Currently we support key value state.
-To read the state, do the following
+Restate offers a key-value store to persistently store application state.
+The state is guaranteed to be consistent across retries and invocations.
+This eliminates the need for a session database such as Redis.
+
+The isolation level of the application state depends on the service type:
+1. Keyed service: Application state is isolated per key. All the invocations for the
+same key have access to the same application state. Restate's state feature is most
+useful for
+this service type.
+2. Singleton service: Since there are no keys, all invocations to the service can access
+the same state.
+3. Unkeyed service: State is isolated per invocation. Using state is least useful
+for this service type.
+
+Let's adapt the `addTicket` method to keep track of the items in the shopping cart.
+
+When reserving the product in the ticket service was a success, then we want to add
+the ticket to the shopping cart. Have a look at the highlighted code:
+
+```ts
+async addTicket(request: ReserveTicket): Promise<BoolValue> {
+    const ctx = restate.useContext(this);
+
+    const ticketServiceClient = new TicketServiceClientImpl(ctx);
+    const reserveResult: BoolValue = await ticketServiceClient.reserve(
+      Ticket.create({ ticketId: request.ticketId })
+    );
+
+    if (reserveResult.value) {
+        //highlight-start
+        const cart = (await ctx.get<string[]>("cart")) || [];
+        cart.push(request.ticketId);
+        ctx.set("cart", cart);
+        //highlight-end
+
+        // Delayed expiration call
+        await ctx.inBackground(
+          //...
+        );
+    }
+
+return BoolValue.create({ value: true });
+}
+```
+
+To read the state, we simply did:
 
 ```typescript
 const cart = await ctx.get<string[]>("cart") || [];
 ```
 
-Then we add the ticket and set the state to the new value:
+You can store multiple key-value pairs for a single invocation key.
+Here, we get the value under the key `"cart"`.
+Restate will return the `"cart"` value for the current invocation key.
+
+After we added the ticket to the cart array, we set the state to the new value with:
 
 ```typescript
-cart.push(request.ticketId);
 ctx.set("cart", cart);
 ```
 
-Add a clear cart method with clear state:
+Later on in the tutorial, when we implement the checkout flow,
+we will empty the cart with:
 ```typescript
 ctx.clear("cart")
 ```
+
+:::caution
+You can store any object in the state as long as the value can be serialized with
+`Buffer.from(yourObject)`.
+:::
+
+[//]: # (TODO add some text on how to run this)
+
+
+### Exercise
+Store the status of the tickets in the ticket service in state. Do the exercises
+listed below and check your implementation by running the service and calling the method.
+
+1. Implement the `reserve` method of the ticket service.
+The method should first retrieve the value for the `ticket_status` state key.
+If the value is set to `"AVAILABLE"` then it should change it to `RESERVED` and
+return `true` (reservation successful). If the status is not set to `"AVAILABLE"` then it
+should return `false`.
+
+<>
+<details><summary>The answer</summary>
+
+```ts
+async reserve(request: Ticket): Promise<BoolValue> {
+    const ctx = restate.useContext(this);
+
+    const ticketStatus = await ctx.get<string>("ticket_status");
+
+    if(ticketStatus && ticketStatus === "AVAILABLE"){
+        ctx.set("ticket_status", "RESERVED")
+        return BoolValue.create({ value: true });
+    } else {
+        return BoolValue.create({ value: true });
+    }
+}
+```
+
+</details>
+</>
+
+2. Implement the `unreserve` method of the ticket service. The method should set the
+value of the `"ticket_status"` key to `"AVAILABLE"`.
+
+<>
+<details><summary>The answer</summary>
+
+```ts
+async unreserve(request: Ticket): Promise<Empty> {
+    const ctx = restate.useContext(this);
+
+    ctx.set("ticket_status", "AVAILABLE");
+
+    return {};
+}
+```
+
+</details>
+</>
+
+3. Implement the `markAsSold` method of the ticket service. The method should set the
+value of the `"ticket_status"` key to `"SOLD"`.
+
+
+<>
+<details><summary>The answer</summary>
+
+```ts
+async unreserve(request: Ticket): Promise<Empty> {
+    const ctx = restate.useContext(this);
+
+    ctx.set("ticket_status", "AVAILABLE");
+
+    return {};
+}
+```
+
+</details>
+</>
 
 ## State introspection
 Read the state via the CLI to check what is currently in the state. 
