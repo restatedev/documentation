@@ -236,6 +236,7 @@ This is what you should see in the SDK logs:
 
 For this tutorial, we put the log level to debug by setting the environment variable `RESTATE_DEBUG_LOG=LOG`.
 You can remove this environment variable in `package.json` to silence the logging.
+To also see which messages were sent between the service and the runtime use `RESTATE_DEBUG_LOG=MESSAGES`.
 
 ### What actually happened?
 The call we just did, seems like a regular RPC call.
@@ -297,10 +298,52 @@ Remove the sleep again, before you continue.
 
 [//]: # (TODO include a video demo of knative on minikube to show how containers are spun up and torn down.)
 
+### Exercise
+Make `checkout` method in the user session service call the `checkout` method in the checkout service.
+
+For `tickets` field the `CheckoutFlowRequest`, you can use a hardcoded array of strings for now: `["456"]`.
+We will fix this later on.
+
+<>
+<details><summary>The answer</summary>
+
+The code should look like this:
+
+```typescript
+async checkout(request: CheckoutRequest): Promise<BoolValue> {
+    const ctx = restate.useContext(this);
+
+    //highlight-start
+    const checkoutClient = new CheckoutServiceClientImpl(ctx);
+    const request = CheckoutFlowRequest.create({
+        userId: request.userId,
+        tickets: ["465"],
+    });
+
+    const success = await checkoutClient.checkout(request);
+    //highlight-end
+
+    return BoolValue.create({ value: true });
+}
+```
+
+Have a look at the logs again to see what happened:
+```
+[restate] [2023-05-17T19:46:48.805Z] [UserSessionService] [Checkout] [01882b40-3760-70c8-a2bc-7e0d889c11fb] : Received input message.
+[restate] [2023-05-17T19:46:48.806Z] [UserSessionService] [Checkout] [01882b40-3760-70c8-a2bc-7e0d889c11fb] : Adding message to output buffer: type: Invoke
+[restate] [2023-05-17T19:46:48.808Z] [CheckoutService] [Checkout] [01882b40-3767-7453-9720-cdfa48b5ae21] : Received input message.
+[restate] [2023-05-17T19:46:48.808Z] [CheckoutService] [Checkout] [01882b40-3767-7453-9720-cdfa48b5ae21] : Call ended successful with output message.
+[restate] [2023-05-17T19:46:48.850Z] [UserSessionService] [Checkout] [01882b40-3760-70c8-a2bc-7e0d889c11fb] : Received new completion from the runtime.
+[restate] [2023-05-17T19:46:48.850Z] [UserSessionService] [Checkout] [01882b40-3760-70c8-a2bc-7e0d889c11fb] : Call ended successful with output message.
+```
+
+</details>
+</>
+
 ## Reliable async communication without queues
 
-The call in the `addTicket` method waited for a response (albeit in suspended mode).
-You can also do async calls via Restate, where you do not wait for the response. The syntax is very similar.
+Until now, we only did synchronous calls.
+You can also do asynchronous calls via Restate, where you do not wait for the response. The syntax is very similar.
 All we need to do is wrap the call with `inBackground`, as follows:
 
 ```typescript
@@ -317,22 +360,79 @@ async addTicket(request: ReserveTicket): Promise<BoolValue> {
 }
 ```
 
-Make sure both services are running, as [explained earlier](#running-the-services-and-runtime).
-Then call the `addTicket` method of the user session service.
+Once you adapted the code, try it out by calling the `addTicket` method of the user session service, as [explained earlier](#running-the-services-and-runtime).
 
-If you look at the logs of the runtime, you see that the `addTicket` method doesn't wait for a response and finishes before the `reserve` method.
+You now see the following in the SDK logs:
+```
+[restate] [2023-05-17T19:35:14.917Z] [UserSessionService] [AddTicket] [01882b35-a0e0-72b3-a87e-9335b5e0129c] : Received input message.
+[restate] [2023-05-17T19:35:14.918Z] [UserSessionService] [AddTicket] [01882b35-a0e0-72b3-a87e-9335b5e0129c] : Adding message to output buffer: type: BackgroundInvoke
+[restate] [2023-05-17T19:35:14.918Z] [UserSessionService] [AddTicket] [01882b35-a0e0-72b3-a87e-9335b5e0129c] : Call ended successful with output message.
+[restate] [2023-05-17T19:35:14.962Z] [TicketService] [Reserve] [01882b35-a0e7-727a-928a-1d69f34396fd] : Received input message.
+[restate] [2023-05-17T19:35:14.962Z] [TicketService] [Reserve] [01882b35-a0e7-727a-928a-1d69f34396fd] : Call ended successful with output message.
+```
+You see that the `addTicket` method doesn't wait for a response and finishes earlier than the `reserve` method.
+
+:::tip
+Restate retries failed asynchronous invocations for you. No need to set up any message queues.
+:::
+
+### Exercise
+The `expireTicket` method in the user session service is called when a user did not proceed to payment before the end of the timeout.
+Let the `expireTicket` method asynchronously call the `unreserve` method of the ticket service.
+Call the `expireTicket` method to check if your code works.
+
+<>
+<details><summary>The answer</summary>
+
+The code should look like this:
+
+```typescript
+async expireTicket(request: ExpireTicketRequest): Promise<Empty> {
+    const ctx = restate.useContext(this);
+
+    const ticketServiceClient = new TicketServiceClientImpl(ctx);
+
+    await ctx.inBackground(() =>
+        ticketServiceClient.unreserve(
+            Ticket.create({ ticketId: request.ticketId })
+        )
+    );
+
+    return {};
+}
+```
+
+Call the `expireTicket` method with:
+```shell
+curl -X POST http://localhost:9090/example.UserSessionService/ExpireTicket -H 'content-type: application/json' -d '{"user_id": "123"}'
+```
+
+Have a look at the logs again to see what happened:
+```
+[restate] [2023-05-17T20:04:12.562Z] [UserSessionService] [ExpireTicket] [01882b50-248c-77e8-b1e4-0b12e17f103b] : Received input message.
+[restate] [2023-05-17T20:04:12.563Z] [UserSessionService] [ExpireTicket] [01882b50-248c-77e8-b1e4-0b12e17f103b] : Adding message to output buffer: type: BackgroundInvoke
+[restate] [2023-05-17T20:04:12.563Z] [UserSessionService] [ExpireTicket] [01882b50-248c-77e8-b1e4-0b12e17f103b] : Call ended successful with output message.
+[restate] [2023-05-17T20:04:12.611Z] [TicketService] [Unreserve] [01882b50-2494-7fb1-9ab2-54a00956929d] : Received input message.
+[restate] [2023-05-17T20:04:12.611Z] [TicketService] [Unreserve] [01882b50-2494-7fb1-9ab2-54a00956929d] : Call ended successful with output message.
+```
+
+</details>
+</>
+
 
 ## Awakeables
-TODO: not yet included in the ticket reservation example
+Until now, all the calls were done between Restate services.
+But what if you want to do include an external service in your workflow?
 
-Synchronous and asynchronous calls tie services together and allow executing workflows by having several services execute parts of it.
-The calls we did until now were always in between Restate services.
-But what if you want to do a part of the tasks in an external service.
-For example, you want a Restate service to put a message on Kafka, have it ingested by a non-Restate service.
-Do some processing. And then invoke the Restate service again to continue its work. For this, you could use awakeables.
-This works similar as what is known as the callback task token pattern. You generate an ID.
-You supply that ID to the external service. Once the external service is done with the work, it sends the ID back to Restate.
-And when Restate receives the ID, it continues processing.
+For example, you want a Restate service to put a message on Kafka.
+This message gets ingested by a non-Restate service that processes it
+    and then triggers the Restate service to resume processing.
+This is what you can use awakeables for.
+Awakeables are similar to the callback task token pattern:
+1. Service A generates an ID.
+2. Service A supplies that ID to an external service.
+3. Once the external service has finished its task, it sends the ID back to Restate.
+4. When Restate receives the ID, it invokes service A to resume processing.
 
 So how can you do this with the Typescript SDK?
 
@@ -347,10 +447,17 @@ const id = awakeable.id
 const result = await awakeable.promise;
 ```
 
-Calling `ctx.awakeable` gives you an object with two entries. A String ID and a promise. The promise gets resolved with a payload that the external service can attach to it.
+Calling `ctx.awakeable` gives you an object with two entries. A String ID and a promise. The promise gets resolved with the payload that the external service attached to it.
 You need to supply the data return type when you create the awakeable. In this case, the return payload will be a String.
 
-Similar to synchronous and asynchronous communication, the function is suspended while it is waiting on the return of the ID.
+Similar to synchronous and asynchronous communication, the method invocation is suspended while waiting on the return of the ID.
+
+
+[//]: # (TODO include an example in the tutorial.)
+
+Let's test this by sending over the id via a inbackground call to another method
+and the other method then awakes the first method.
+
 
 ## Durable timers
 As we explained earlier, Restate suspends a service invocation when it's waiting on external input.
