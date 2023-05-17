@@ -7,23 +7,29 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 # A Tour of Restate
-**This is work in progress...**
 
-To get you started with Restate, this tutorial will help you develop an end-to-end example, covering all important Restate features.
-After this tutorial,
-you should have a firm understanding of how Restate can help you
+This tutorial guides you through the development of an end-to-end Restate application,
+and covers all the essential features.
+After this tutorial, you should have a firm understanding of how Restate can help you
 and feel comfortable to tackle your next application on your own.
 
 This tutorial implements a ticket reservation application for a theatre.
-You can see it as a subset of the services of a larger e-commerce application.
-Users can add tickets for specific seats to their shopping cart.
+It allows users to add tickets for specific seats to their shopping cart.
 After a ticket has been added, the seat is reserved for 15 minutes.
-If it hasn't been bought and paid within that time interval, then it becomes available again to other users.
+If it hasn't been bought and paid within that time interval, the reservation is released
+and the ticket becomes available to other users.
 
-The final application will have three services:
-1. User session service: keeps track of which tickets are currently in the cart of the user. 
-2. Ticket service: manages all tickets that are being sold or have been sold. 
-3. Checkout service: handles the checkout process of the ticket sale. This service will be added later on in the tutorial.
+The final application will have three services, each with a set of methods that will be implemented during the tutorial:
+1. **User session service**: keeps track of which tickets are currently in the cart of the user. Implements:
+    - AddTicket: adds a ticket to the shopping cart
+    - Checkout: calls the checkout service to process the payment
+    - ExpireTicket: sets tickets back to available, if they were not sold
+2. **Ticket service**: manages all tickets that are being sold or have been sold. Implements:
+    - Reserve: sets the status of a ticket to reserved
+    - Unreserve: sets the status of a ticket to available
+    - MarkAsSold: sets the status of a ticket to sold
+3. **Checkout service**: handles the checkout process of the ticket sale. Implements:
+    - Checkout: handles the checkout process
 
 As we go, you will discover how Restate can help you with some intricacies in this application.
 
@@ -39,7 +45,6 @@ As we go, you will discover how Restate can help you with some intricacies in th
 Clone the GitHub repository of the [tutorial](https://github.com/restatedev/tour-of-restate-typescript) and checkout branch `part1`:
 ```shell
 git clone git@github.com:restatedev/tour-of-restate-typescript.git
-git checkout part1
 ```
 
 This GitHub repository contains the basic skeleton of the NodeJS/Typescript services that we develop in this tutorial. 
@@ -60,15 +65,12 @@ npm run build
 ```
 
 ### Running the services and runtime
-Run the user session service:
+Run the services:
 ```shell
-npm run user_session_service
+npm run app
 ```
 
-In a separate terminal, run the ticket service:
-```shell
-npm run ticket_service
-```
+This runs the services with `ts-node-dev` so the services will restart automatically when we save code changes.
 
 Launch the runtime:
 <Tabs groupId="operating-systems">
@@ -88,14 +90,12 @@ docker run -e RUST_LOG=info,restate=info ghcr.io/restatedev/restate-dist:latest
 </TabItem>
 </Tabs>
 
-
 Discover the services:
 <Tabs groupId="operating-systems">
 <TabItem value="lin" label="Linux">
 
 ```shell
 curl -X POST http://localhost:8081/services/discover -H 'content-type: application/json' -d '{"uri": "http://localhost:8080"}'
-curl -X POST http://localhost:8081/services/discover -H 'content-type: application/json' -d '{"uri": "http://localhost:8082"}'
 ```
 
 </TabItem>
@@ -103,7 +103,6 @@ curl -X POST http://localhost:8081/services/discover -H 'content-type: applicati
 
 ```shell
 curl -X POST http://localhost:8081/services/discover -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:8080"}'
-curl -X POST http://localhost:8081/services/discover -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:8082"}'
 ```
 
 </TabItem>
@@ -111,61 +110,77 @@ curl -X POST http://localhost:8081/services/discover -H 'content-type: applicati
 
 You should now see the registered services printed out to your terminal:
 ```shell
-{"services":["example.UserSessionService"]}
-{"services":["example.TicketService"]}
+{"services":["example.TicketService","example.UserSessionService","example.CheckoutService"]}
 ```
 
 When we look at the logs of the runtime we see:
 ```
-2023-05-15T14:36:03.767790Z INFO restate_meta::service
+INFO restate_meta::service
+  Discovered service
+    rpc.service: "example.TicketService"
+    restate.service_endpoint.url: http://localhost:8080/
+
+INFO restate_meta::service
   Discovered service
     rpc.service: "example.UserSessionService"
     restate.service_endpoint.url: http://localhost:8080/
 
-2023-05-15T14:36:06.224985Z INFO restate_meta::service
+INFO restate_meta::service
   Discovered service
-    rpc.service: "example.TicketService"
-    restate.service_endpoint.url: http://localhost:8082/
+    rpc.service: "example.CheckoutService"
+    restate.service_endpoint.url: http://localhost:8080/
 ```
-
 
 Mimic adding a ticket to a cart, by calling the `AddTicket` method of the user session service as follows:
 ```shell
-curl -X POST http://localhost:9090/example.UserSessionService/AddTicket -H 'content-type: application/json' -d '{"user_id": "dkd111", "ticket_id": "Rolling-stones-A22"}'
+curl -X POST http://localhost:9090/example.UserSessionService/AddTicket -H 'content-type: application/json' -d '{"user_id": "123", "ticket_id": "456"}'
 ```
 This gives us back a boolean return value:
 ```
 true
 ```
 
-If the value was printed successfully, then you have a working setup. 
+If the value got printed, then you have a working setup.
 
-The repository that you cloned, contains the basis of the ticket reservation app. When you look at the `src` folder you see two Typescript files: `ticket_service.ts` and `user_session_service.ts`.
+### An overview of the project
+In `src/app`, you find the skeleton of the ticket reservation app.
+There is one file for each of the services and `app.ts` which contains the definition of the Restate server that will serve the RPC handlers.
 
-Both files contain the skeleton of a Restate service with some empty methods defined in it. 
-These methods will be implemented throughout the tutorial.
-
-The services and methods, that are exposed as RPC handlers to the runtime, are defined in the `example.proto` file. 
+The `proto/example.proto` file contains the service definitions.
 
 Remember the curl command we did earlier?
 ```shell
 curl -X POST http://localhost:9090/example.UserSessionService/AddTicket -H 'content-type: application/json' -d '{"user_id": "123", "ticket_id": "456"}'
 ```
-The URL `http://localhost:9090` points to the ingress endpoint of the Restate runtime. This is then followed by `/package-name.service-name/method-name`. In `proto/example.proto`, we defined `example` as the package name, `UserSessionService` as the service name, and `AddTicket` as one of the methods. The data that is added to the request (i.e. `'{"user_id": "123", "ticket_id": "456"}'`) is the JSON representation of the messages that have been defined in `proto/example.proto`.
+The URL `http://localhost:9090` points to the ingress endpoint of the Restate runtime. This is then followed by `/package-name.service-name/method-name`.
+In `proto/example.proto`, we defined `example` as the package name, `UserSessionService` as the service name, and `AddTicket` as one of the methods.
+The data that is added to the request (i.e. `'{"user_id": "123", "ticket_id": "456"}'`) is the JSON representation of the messages that have been defined in `proto/example.proto`.
 
 That's all you need to know right now about the Protobuf service definition. We will come back to this later.
 
 ### Exercise
-Try calling some other methods and let's then move on to implementing our first Restate service. 
+After we have called the `addTicket` method to add items to the shopping cart,
+we can call the `checkout` method of the user session service to go through with the purchase.
+Try calling `checkout` method the for user id `123`. You will need this command later on.
+
+<>
+<details><summary>The answer</summary>
+
+```shell
+curl -X POST http://localhost:9090/example.UserSessionService/Checkout -H 'content-type: application/json' -d '{"user_id": "123"}'
+```
+
+</details>
+</>
 
 ## Suspendable synchronous communication
-One of the key parts of distributed applications is service-to-service communication. 
+One of the key parts of distributed applications is service-to-service communication.
+Restate makes sure that service-to-service communication is durable.
+RPCs or messages never get lost.
 
-Let's start with synchronous calls, where a service calls another service and waits for the response. 
+Let's begin with synchronous calls, in which one service calls another service and waits for the response.
 
-### Synchronous calls
-When the user adds a ticket to his cart, this invokes the `addTicket` method in the user session service.
-The `addTicket` method first needs to reserve the ticket if it is available. It does that by calling the `reserve` method of the ticket service.
+When the `addTicket` method is called, it first needs to reserve the ticket for the user. It does that by calling the `reserve` method of the ticket service.
 
 Let's have a look at how to do this in Restate. Add the highlighted code snippet to the `addTicket` method in the user session service.
 ```typescript
@@ -193,50 +208,63 @@ import * as restate from "@restatedev/restate-sdk";
 ```
 
 Once we have access to the `RestateContext`, we can call the ticket service.
-For this, we need to create a client for the ticket service. 
+For this, we use the client that was generated by `proto-ts`:
 
 ```typescript
 const ticketServiceClient = new TicketServiceClientImpl(ctx);
-```
-
-We supply the RestateContext of the current invocation (`ctx`) to the client to make sure that it sends the requests to Restate, in a way that Restate understands them.
-
-The client is an instance of the `proto-ts` client that was generated when we ran `npm run proto` earlier.
-We can now use this client to call the `reserve`  method of the ticket service as follows:
-
-```typescript
 const success = await ticketServiceClient.reserve(
   Ticket.create({ ticketId: request.ticketId })
 );
 ```
-The reserve method returns a BoolValue that is equal to `true` if the ticket reservation was successful.
 
-Let's see if this works.
+We supply the RestateContext of the current invocation (`ctx`) to the client to make sure that it uses the SDK to send the requests.
+Then we call the reserve method, which returns a BoolValue.
 
-Make sure that both services are running and send a request to the `addTicket` method of the user session service, as we did [previously](#running-the-services-and-runtime).
+Let's see try it out. Run the services via `npm run app` and send a request to the `addTicket` method of the user session service, as we did [previously](#running-the-services-and-runtime).
 
-Have a look at the Restate runtime logs, to see how our ingress request is processed and triggers the execution of the `addTicket` and `reserve` methods.
+Have a look at the SDK and runtime logs, to see how the ingress request triggers the execution of the `addTicket` and `reserve` methods.
+This is what you should see in the SDK logs:
+
+```
+[restate] [2023-05-17T18:53:40.856Z] [UserSessionService] [AddTicket] [01882b0f-9270-7ed5-ae40-7053890a3cd2] : Received input message.
+[restate] [2023-05-17T18:53:40.857Z] [UserSessionService] [AddTicket] [01882b0f-9270-7ed5-ae40-7053890a3cd2] : Adding message to output buffer: type: Invoke
+[restate] [2023-05-17T18:53:40.859Z] [TicketService] [Reserve] [01882b0f-927a-7795-9416-09d03065ba8d] : Received input message.
+[restate] [2023-05-17T18:53:40.860Z] [TicketService] [Reserve] [01882b0f-927a-7795-9416-09d03065ba8d] : Call ended successful with output message.
+[restate] [2023-05-17T18:53:40.902Z] [UserSessionService] [AddTicket] [01882b0f-9270-7ed5-ae40-7053890a3cd2] : Received new completion from the runtime.
+[restate] [2023-05-17T18:53:40.902Z] [UserSessionService] [AddTicket] [01882b0f-9270-7ed5-ae40-7053890a3cd2] : Call ended successful with output message.
+```
+
+For this tutorial, we put the log level to debug by setting the environment variable `RESTATE_DEBUG_LOG=LOG`.
+You can remove this environment variable in `package.json` to silence the logging.
 
 ### What actually happened?
-The call we just did, seems like a regular RPC call. But under-the-hood, Restate does a number of things to make sure that this call is executed durably and ...
+The call we just did, seems like a regular RPC call.
+But under-the-hood, Restate does a number of things to make sure that this call is durable.
 
-When we do a call like this, a series of steps get executed.
-- The runtime receives our request and persists it.
-- The runtime establishes a connection to the user session service.
-- The runtime invokes the service method, by sending the request over the connection.
-- The user session service starts executing the `addTicket` method.
-- The user session service then sends a request to the ticket service. It sends this request over the open connection to the runtime. 
-- The response of the other service can take long so the user session service suspends.
-- The runtime durably logs the call.
-- The runtime forwards the connection to the ticket service. (Note: the runtime makes sure these requests are done and takes care of retries. The details on retries will be covered later. )
-- Once the runtime has received the response, it wakes up the user session service. 
-- The code gets replayed up to the point of the request. And then the rest of the method gets executed.
+The runtime persists the incoming request, establishes a connection to the user session service,
+and sends the request over that connection.
+All the communication between the runtime and the service, will go over this connection.
+The service itself never needs to set up the connection.
 
-The suspension mechanism of Restate is especially beneficial if you run with AWS Lambda.
-You can do synchronous calls without paying for the idle time when waiting for a response.
-But also for long-running services this system can be helpful because Restate makes sure that an invocation is durably recorded and can survive any failures.
+The service then executes the method. When it calls the ticket service,
+this request goes over the open connection to the runtime, that again durably logs it and invokes the ticket service.
+The runtime takes care of request retries, in case of failures (covered later on in [Resiliency](#resiliency)).
+Finally, the runtime delivers the response to the user session service.
 
-To show how this works in practice and mimic that the ticket service is doing some processing for a certain amount of time, we can add a sleep call to the `reserve` method of the ticket service.
+When services need to wait a long time (e.g. sleep an hour, or wait for a day on a response),
+Restate allows them to suspend and to free up the resources for other invocations.
+When the service is able to resume, Restate invokes the service again and sends over a replay log.
+The replay log contains the steps that the service already executed before it suspended.
+The service replays the log and continues processing at the point where it left off.
+
+:::tip
+The suspension mechanism of Restate is especially beneficial if you run on serverless infrastructure (e.g. AWS Lambda).
+For example, you can do synchronous calls without paying for the idle time when waiting for a response.
+:::
+
+To show this working in practice, let's mimic that the ticket service is doing some
+processing for a certain amount of time by adding sleep call to the `reserve` method of
+the ticket service:
 ```typescript
 async reserve(request: Ticket): Promise<BoolValue> {
     //bad-code-start
@@ -245,24 +273,33 @@ async reserve(request: Ticket): Promise<BoolValue> {
     return BoolValue.create({value: true});
 }
 ```
+Also add the import: `import { setTimeout} from "timers/promises";`.
 
 :::caution
 This is not the proper way to sleep in a Restate application!
-The Restate SDK offers you a way to do sleeps that are suspendable!
-We will cover this later, in the section on [suspendable sleep](#suspendable-sleep).
+The Restate SDK offers you a way to do sleeps that are suspendable, as covered [later on](#suspendable-sleep).
 :::
 
-Run the example and call the `addTicket` method, which calls the `reserve` method.
-Show in the logs that the `addTicket` method gets suspended for 5 seconds.
+Call the `addTicket` method of the user session service again and have a look at the SDK logs:
+```
+[restate] [2023-05-17T19:20:50.382Z] [UserSessionService] [AddTicket] [01882b28-6fc3-7f6e-8cd1-c4dfe5983e21] : Received input message.
+[restate] [2023-05-17T19:20:50.385Z] [UserSessionService] [AddTicket] [01882b28-6fc3-7f6e-8cd1-c4dfe5983e21] : Adding message to output buffer: type: Invoke
+[restate] [2023-05-17T19:20:50.389Z] [TicketService] [Reserve] [01882b28-6fd3-7091-b92b-b392071925c3] : Received input message.
+[restate] [2023-05-17T19:20:51.389Z] [UserSessionService] [AddTicket] [01882b28-6fc3-7f6e-8cd1-c4dfe5983e21] : Call suspending.
+[restate] [2023-05-17T19:20:55.394Z] [TicketService] [Reserve] [01882b28-6fd3-7091-b92b-b392071925c3] : Call ended successful with output message.
+[restate] [2023-05-17T19:20:55.397Z] [UserSessionService] [AddTicket] [01882b28-6fc3-7f6e-8cd1-c4dfe5983e21] : Received input message.
+[restate] [2023-05-17T19:20:55.398Z] [UserSessionService] [AddTicket] [01882b28-6fc3-7f6e-8cd1-c4dfe5983e21] : Call ended successful with output message.
+```
+Now that the the ticket service responds later, we see that the `addTicket` method suspends.
+Once the runtime has received the response, it invokes the `addTicket` method again and the call finishes.
 
+Remove the sleep again, before you continue.
 
-Explain how replay works.
-
-Maybe include a little video demo of knative on minikube to show how containers are spun up and torn down.
+[//]: # (TODO include a video demo of knative on minikube to show how containers are spun up and torn down.)
 
 ## Reliable async communication without queues
 
-The calls we did in the previous section, always waited for a response to the request (albeit in suspended mode).
+The call in the `addTicket` method waited for a response (albeit in suspended mode).
 You can also do async calls via Restate, where you do not wait for the response. The syntax is very similar.
 All we need to do is wrap the call with `inBackground`, as follows:
 
@@ -611,7 +648,7 @@ You can store any object in the state as long as the value can be serialized wit
 `Buffer.from(yourObject)`.
 :::
 
-[//]: # (TODO add some text on how to run this)
+[//]: # (TODO add some text on how to run this and print the state )
 
 
 ### Exercise
@@ -633,11 +670,11 @@ async reserve(request: Ticket): Promise<BoolValue> {
 
     const ticketStatus = await ctx.get<string>("ticket_status");
 
-    if(ticketStatus && ticketStatus === "AVAILABLE"){
+    if(!ticketStatus || ticketStatus === "AVAILABLE"){
         ctx.set("ticket_status", "RESERVED")
         return BoolValue.create({ value: true });
     } else {
-        return BoolValue.create({ value: true });
+        return BoolValue.create({ value: false });
     }
 }
 ```
@@ -684,42 +721,120 @@ async unreserve(request: Ticket): Promise<Empty> {
 </details>
 </>
 
-## State introspection
-Read the state via the CLI to check what is currently in the state. 
-
 
 ## Side effects
-Because of the retries due to resiliency we sometimes need to save something.
+In the beginning of this tutorial, we explained the replay mechanism of Restate.
+This mechanism makes Restate applications resilient to failures.
+But it also requires your code to be deterministic.
 
+If you need to execute a non-deterministic code snippet (e.g. generating a UUID or
+communicating to an external system) then you need to wrap it in a side effect.
+
+The side effect executes the supplied function and eagerly stores the return value in
+Restate. Upon replay, the stored value gets inserted and the function does not get
+re-executed.
+
+Let's show how you can use this in the `checkout` method of the checkout service to
+create and store a UUID or idempotency key:
 ```typescript
-const stripe = StripeClient.get();
+async checkout(request: CheckoutFlowRequest): Promise<BoolValue> {
+    const ctx = restate.useContext(this);
 
-const idempotencyKey = await ctx.sideEffect<string>(async () => uuid());
+    //highlight-start
+    const idempotencyKey = await ctx.sideEffect<string>(async () => uuid());
+    //highlight-end
 
-await ctx.sideEffect<boolean>(async () => await stripe.call(idempotencyKey, amount));
+    return BoolValue.create({ value: true });
+}
 ```
 
+The highlighted line of code wraps the creation of the UUID in a side effect
+    with a string return type. When the `checkout()` method gets re-executed upon
+    replay, Restate will inject the stored value.
+
+
+### Exercise
+The `checkout` method triggers the payment via some external payment provider, e.g.
+Stripe. You can find a Stripe client stub in `src/aux/stripe_client.ts`. The Stripe
+client has two methods:
+
+- `get()` to create a new client,
+- `call(idempotencyKey: string, amount: number)` to execute the payment for a certain
+    idempotencyKey and total amount. Stripe makes sure that only one payment gets processed for a single
+idempotency key.
+
+Create a new Stripe client in the `checkout` method of the checkout service. Then do the
+    payment
+    with the created idempotency key and store the boolean result of the
+    call as a side effect.
+
+<>
+<details><summary>The answer</summary>
+
+```typescript
+async checkout(request: CheckoutFlowRequest): Promise<BoolValue> {
+    const ctx = restate.useContext(this);
+
+    const idempotencyKey = await ctx.sideEffect<string>(async () => uuid());
+
+//highlight-start
+    const stripe = StripeClient.get();
+
+    const success = await ctx.sideEffect<boolean>(async () =>
+        await stripe.call(idempotencyKey, amount)
+    );
+        //highlight-end
+
+    return BoolValue.create({ value: true });
+}
+```
+
+</details>
+</>
+
+Once the Stripe call has been stored successfully in Restate, it will not get executed
+    again.
+
+
 ## Resiliency
+Restate makes your applications resilient out-of-the-box.
+
+- It makes sure message can't get lost by durably storing all calls in the log. No
+    more queues needed for async calls.
+- It retries failed invocations based on a specified retry policy. No more retry logic
+    required for inter-service communication.
+- It restores partial progress of invocations, via its durable execution mechanism. For
+    example, if a service goes down due to an infrastructure failure, the ongoing
+    invocations will resume at the point in the user code where they left off.
+- It ensures consistent application state with its key-value store.
+- End-to-end exactly once guarantees for incoming invocations.
 
 ### Runtime configuration
-  => configuring retries, retryWithBackoff,
+You can tune the default retry policies of the runtime via the configuration.
+
 
   => show in the logs
 
 ### SDK utilities for retries
+
+The Typescript SDK includes some utilities to retry side effects
+
 
 ```typescript
 const doPayment = async () => stripe.call(idempotencyKey, amount);
 const success: boolean = await RestateUtils.retryExceptionalSideEffectWithBackoff(ctx, doPayment, 100, 500)
 ```
 
-## Observability with Jaeger
+## Observability
+Tracing with Jaeger
 Enabling tracing
 
 Having a look at the traces.
 
 ## 🏁 The end
-What did we cover:
+You reached the end of this tutorial!
+
+Let's recap what we covered:
 - reliable synchronous calls that can be suspended
 - asynchronous calls without the need for queues
 - suspensions for external communication
@@ -731,6 +846,8 @@ What did we cover:
 - storing the results of non-deterministic operations or external calls as side effects
 - resiliency: retries
 - observability with Jaeger
+
+Have a look at the fully implemented service here: XXXXXXXXXXXXXXXXXX
 
 ## Next steps
 This tutorial did not cover anything related to deployment. 
