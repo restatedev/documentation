@@ -1,8 +1,9 @@
 ---
 sidebar_position: 10
+slug: errors
 ---
 
-# Errors
+# Error codes
 
 This page contains the list of error codes emitted by Restate components.
 
@@ -76,7 +77,7 @@ Suggestions:
 
 Cannot start Restate because the configuration cannot be parsed. Check the configuration file and the environment variables provided.
 
-For a complete list of configuration options, and a sample configuration, check http://restate.dev/docs/configuration
+For a complete list of configuration options, and a sample configuration, check http://restate.dev/docs/deployment-operations/configuration
 
 ## RT0003 {#RT0003}
 
