@@ -51,7 +51,7 @@
           "retry_policy": {
             "factor": 2.0,
             "initial_interval": "50ms",
-            "max_attempts": 77,
+            "max_attempts": 18446744073709551615,
             "max_interval": "10s",
             "type": "Exponential"
           },
@@ -84,9 +84,6 @@
     "ObservabilityOptions": {
       "title": "Observability options",
       "type": "object",
-      "required": [
-        "log"
-      ],
       "properties": {
         "jaeger": {
           "title": "Jaeger options",
@@ -112,6 +109,11 @@
         },
         "log": {
           "title": "Logging options",
+          "default": {
+            "disable_ansi_codes": false,
+            "filter": "warn,restate=info",
+            "format": "Pretty"
+          },
           "$ref": "#/definitions/LogOptions"
         }
       }
@@ -290,7 +292,7 @@
             "retry_policy": {
               "factor": 2.0,
               "initial_interval": "50ms",
-              "max_attempts": 77,
+              "max_attempts": 18446744073709551615,
               "max_interval": "10s",
               "type": "Exponential"
             },
@@ -465,7 +467,7 @@
           "default": {
             "factor": 2.0,
             "initial_interval": "50ms",
-            "max_attempts": 77,
+            "max_attempts": 18446744073709551615,
             "max_interval": "10s",
             "type": "Exponential"
           },
