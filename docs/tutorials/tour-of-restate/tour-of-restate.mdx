@@ -719,48 +719,6 @@ For example, if A calls B, and B calls C, and C calls A again.
     The keys remain locked and the system can't process any more requests.
 :::
 
-###  📝 Exercise
-If you are not well acquainted with gRPC, then you can do this little exercise to get
-some training. Otherwise, just copy over the answers to continue with the tutorial.
-
-Let's add a new service to our example: the `CheckoutService`.
-The service is an unkeyed service that has a `Checkout` method that takes a `CheckoutFlowRequest` and returns a
-`BoolValue`, denoting whether the checkout was successful.
-The `CheckoutFlowRequest` has two fields: a String describing the `user_id` and an array of Strings describing the
-`tickets` that are bought.
-
-Run the `npm` command to generate the related Typescript code and write the skeleton
-of the checkout service.
-
-<>
-<details><summary>The answer</summary>
-The service definition in `proto/example.proto` should look as follows:
-
-```protobuf
-
-service CheckoutService {
-    option (dev.restate.ext.service_type) = UNKEYED;
-
-    rpc Checkout (CheckoutFlowRequest) returns (google.protobuf.BoolValue);
-}
-
-message CheckoutFlowRequest {
-    string user_id = 1;
-    repeated string tickets = 2;
-}
-
-```
-
-Note that unkeyed services don't have a key specified in the message.
-
-Run `npm run proto` to generate the Typescript code.
-
-Write the skeleton of the service in `src/checkout_service`, similar to the other
-services.
-
-</details>
-</>
-
 ## Persistent application state
 
 Applications often need to keep state. For example, our user session service
@@ -846,7 +804,7 @@ You can also kill and relaunch the service or restart the runtime (`docker resta
 
 :::info
 You can store any object in the state as long as the value can be serialized with
-`Buffer.from(yourObject)`.
+`Buffer.from(JSON.stringify(yourObject))`.
 :::
 
 Let's also adapt the `checkout` method in the user session service, to use the cart contents:
