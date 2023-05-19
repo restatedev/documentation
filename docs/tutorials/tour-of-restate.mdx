@@ -19,7 +19,9 @@ After a ticket is added, the seat gets reserved for 15 minutes.
 If it hasn't been bought and paid within that time interval, the reservation is released
 and the ticket becomes available to other users.
 
-The application has three services, each with a set of methods that are implemented in this tutorial:
+Restate is a system for building distributed applications.
+Applications consist of a set of services with RPC methods defined in them.
+The ticket example has three services, with the following methods:
 1. **User session service**: keeps track of the tickets in the shopping cart. Implements:
     - AddTicket: adds a ticket to the shopping cart
     - Checkout: calls the checkout service to process the payment
@@ -76,18 +78,24 @@ Launch the runtime:
 <TabItem value="lin" label="Linux">
 
 ```shell
-docker run -e RUST_LOG=info,restate=info --network=host ghcr.io/restatedev/restate-dist:latest
+docker run --name restate_dev -e RUST_LOG=info,restate=info --network=host ghcr.io/restatedev/restate-dist:latest
 ```
 
 </TabItem>
 <TabItem value="mac" label="macOS">
 
 ```shell
-docker run -e RUST_LOG=info,restate=info ghcr.io/restatedev/restate-dist:latest
+docker run --name restate_dev -e RUST_LOG=info,restate=info -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist
 ```
 
 </TabItem>
 </Tabs>
+
+Stop the runtime with:
+```shell
+docker stop restate_dev
+docker rm restate_dev
+```
 
 Discover the services:
 <Tabs groupId="operating-systems">
@@ -726,7 +734,7 @@ Add a log statement to print the cart contents, and then call `addTicket` multip
 ```ts
 console.info(`Current cart content: ${JSON.stringify(cart)}`);
 ```
-You can also kill and relaunch the service or restart the runtime (`docker restart <container-name>`), to see that this has no influence on the cart contents.
+You can also kill and relaunch the service or restart the runtime (`docker restart restate-dev`), to see that this has no influence on the cart contents.
 
 :::info
 You can store any object in the state as long as the value can be serialized with
@@ -925,7 +933,7 @@ So also, for a piece of time-consuming, deterministic user code.
 :::
 
 Let's use a side effect in `CheckoutService/Checkout` to
-create and store a UUID or idempotency key:
+create and store a UUID (with the [uuid library](https://www.npmjs.com/package/uuid)) or idempotency key:
 ```typescript
 import { v4 as uuid } from "uuid";
 
@@ -980,16 +988,15 @@ You can't execute any RestateContext calls from within a side effect.
 
 ### 📝 Try it out
 #### Executing the payment
-The `checkout` method triggers the payment via some external payment provider, e.g.
-Stripe. You can find a Stripe client stub in `src/aux/stripe_client.ts`. The Stripe
+The `checkout` method triggers the payment via some external payment provider (`PaymentClinet`). You can find a payment client stub in `src/aux/payment_client.ts`. The payment
 client has two methods:
 
 - `get()` to create a new client,
 - `call(idempotencyKey: string, amount: number)` to execute the payment for a certain
-    idempotencyKey and total amount. Stripe makes sure that only one payment gets processed for a single
+    idempotencyKey and total amount. The payment provider makes sure that only one payment gets processed for a single
 idempotency key.
 
-Create a new Stripe client in `CheckoutService/checkout`. Assume every ticket costs 40 dollars.
+Create a new payment client in `CheckoutService/checkout`. Assume every ticket costs 40 dollars.
     Then execute the payment with the created idempotency key and store the boolean result of the
     call as a side effect. Also use the boolean result for the return value of the method.
 
@@ -1004,10 +1011,10 @@ async checkout(request: CheckoutFlowRequest): Promise<BoolValue> {
     const amount = request.tickets.length * 40;
 
     //highlight-start
-    const stripe = StripeClient.get();
+    const paymentClient = PaymentClient.get();
 
     const success = await ctx.sideEffect<boolean>(async () =>
-        await stripe.call(idempotencyKey, amount)
+        await paymentClient.call(idempotencyKey, amount)
     );
     //highlight-end
 
@@ -1025,7 +1032,7 @@ You should see logs similar to:
 [restate] [2023-05-18T11:56:47.384Z] [CheckoutService] [Checkout] [01882eb8-4196-7f45-95b4-2383518330af] : Adding message to output buffer: type: SideEffect
 [restate] [2023-05-18T11:56:47.385Z] [CheckoutService] [Checkout] [01882eb8-4196-7f45-95b4-2383518330af] : Received new completion from the runtime.
 //highlight-next-line
-Executing stripe call for idempotency key 83205623-9259-4aca-8021-0dbdf3ce2854 and amount 40
+Executing payment call for idempotency key 83205623-9259-4aca-8021-0dbdf3ce2854 and amount 40
 //highlight-next-line
 [restate] [2023-05-18T11:56:47.385Z] [CheckoutService] [Checkout] [01882eb8-4196-7f45-95b4-2383518330af] : Adding message to output buffer: type: SideEffect
 [restate] [2023-05-18T11:56:47.385Z] [CheckoutService] [Checkout] [01882eb8-4196-7f45-95b4-2383518330af] : Received new completion from the runtime.
@@ -1041,11 +1048,11 @@ Finally, the checkout success is propagated back to the UserSessionService.
 
 #### Finishing the checkout workflow
 Once this works, let's implement the rest of the checkout workflow:
-- If the Stripe call was successful, then:
+- If the payment call was successful, then:
     - do an async call to `TicketService/MarkAsSold` for each of the tickets
     - use the EmailClient in `src/aux/email_client.ts` to notify the users of the payment success.
     Prevent duplicate emails during retries by using a side effect.
-- If the Stripe call was unsuccessful, then:
+- If the payment call was unsuccessful, then:
     - do an async call to `TicketService/Unreserve` for each of the ticket
     - use the EmailClient in `src/aux/email_client.ts` to notify the users of the payment failure.
     Prevent duplicate emails during retries by using a side effect.
@@ -1060,9 +1067,9 @@ async checkout(request: CheckoutFlowRequest): Promise<BoolValue> {
 
     const amount = request.tickets.length*40;
 
-    const stripe = StripeClient.get();
+    const paymentClient = PaymentClient.get();
     const success = await ctx.sideEffect<boolean>(async () =>
-        await stripe.call(idempotencyKey, amount)
+        await paymentClient.call(idempotencyKey, amount)
     );
 
     //highlight-start
@@ -1128,10 +1135,10 @@ If you do a side effect operation and the side effect fails,
 There are scenarios where you want to retry a failed side effect.
 For example, when the side effect tries to execute a payment and the payment provider was temporarily offline.
 The Typescript SDK offers some utilities for this. Let's activate retries for the
-Stripe payment in `CheckoutService/Checkout`. Replace the previous call with:
+payment call in `CheckoutService/Checkout`. Replace the previous call with:
 ```typescript
-const stripe = StripeClient.get();
-const doPayment = async () => stripe.failingCall(idempotencyKey, amount);
+const paymentClient = PaymentClient.get();
+const doPayment = async () => paymentClient.failingCall(idempotencyKey, amount);
 //highlight-start
 const success: boolean = await RestateUtils.retryExceptionalSideEffectWithBackoff(
     ctx,
@@ -1144,7 +1151,7 @@ const success: boolean = await RestateUtils.retryExceptionalSideEffectWithBackof
 ```
 Also add the following import at the top `import { RestateUtils } from "@restatedev/restate-sdk";`.
 
-We now call `stripe.failingCall` which will fail 2 times and then succeed.
+We now call `paymentClient.failingCall` which will fail 2 times and then succeed.
 The `retryExceptionalSideEffectWithBackoff` utility will make sure that if the retry fails, the service does a Restate sleep, and then tries again.
 All attempts, including the sleeps are durably logged.
 Have a look at the logs to see the retries.
@@ -1155,26 +1162,26 @@ Have a look at the logs to see the retries.
 [restate] [2023-05-19T10:44:07.967Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Received input message.
 [restate] [2023-05-19T10:44:07.968Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Adding message to output buffer: type: SideEffect
 [restate] [2023-05-19T10:44:07.969Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Received new completion from the runtime.
-Stripe call failed for idempotency key 851f1a19-456b-471b-841e-7da1dabac909 and amount 40. Retrying...
+Payment call failed for idempotency key 851f1a19-456b-471b-841e-7da1dabac909 and amount 40. Retrying...
 [restate] [2023-05-19T10:44:07.970Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Adding message to output buffer: type: SideEffect
 [restate] [2023-05-19T10:44:07.970Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Received new completion from the runtime.
 //highlight-start
-[restate] [2023-05-19T10:44:07.970Z] DEBUG: Error while executing side effect 'unnamed-retryable-side-effect': Error - {"code":13,"message":"Stripe call failed"}
+[restate] [2023-05-19T10:44:07.970Z] DEBUG: Error while executing side effect 'unnamed-retryable-side-effect': Error - {"code":13,"message":"Payment call failed"}
 [restate] [2023-05-19T10:44:07.970Z] DEBUG: Retrying in 100 ms
 //highlight-end
 [restate] [2023-05-19T10:44:07.971Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Adding message to output buffer: type: Sleep
 [restate] [2023-05-19T10:44:08.073Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Received new completion from the runtime.
-Stripe call failed for idempotency key 851f1a19-456b-471b-841e-7da1dabac909 and amount 40. Retrying...
+Payment call failed for idempotency key 851f1a19-456b-471b-841e-7da1dabac909 and amount 40. Retrying...
 [restate] [2023-05-19T10:44:08.074Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Adding message to output buffer: type: SideEffect
 [restate] [2023-05-19T10:44:08.075Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Received new completion from the runtime.
 //highlight-start
-[restate] [2023-05-19T10:44:08.075Z] DEBUG: Error while executing side effect 'unnamed-retryable-side-effect': Error - {"code":13,"message":"Stripe call failed"}
+[restate] [2023-05-19T10:44:08.075Z] DEBUG: Error while executing side effect 'unnamed-retryable-side-effect': Error - {"code":13,"message":"Payment call failed"}
 [restate] [2023-05-19T10:44:08.076Z] DEBUG: Retrying in 200 ms
 //highlight-end
 [restate] [2023-05-19T10:44:08.076Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Adding message to output buffer: type: Sleep
 [restate] [2023-05-19T10:44:08.279Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Received new completion from the runtime.
 //highlight-start
-Stripe call succeeded for idempotency key 851f1a19-456b-471b-841e-7da1dabac909 and amount 40
+Payment call succeeded for idempotency key 851f1a19-456b-471b-841e-7da1dabac909 and amount 40
 //highlight-end
 [restate] [2023-05-19T10:44:08.279Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Adding message to output buffer: type: SideEffect
 [restate] [2023-05-19T10:44:08.281Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Received new completion from the runtime.
@@ -1200,9 +1207,23 @@ jaegertracing/all-in-one:1.45
 ```
 
 Then restart the runtime with the Jaeger endpoint defined as an environment variable:
+<Tabs groupId="operating-systems">
+<TabItem value="lin" label="Linux">
+
 ```shell
-docker run -e RESTATE_OBSERVABILITY__JAEGER__ENDPOINT=localhost:6831 -e RUST_LOG=info,restate=info --network=host ghcr.io/restatedev/restate-dist:latest
+docker run --name restate_dev -e RESTATE_OBSERVABILITY__JAEGER__ENDPOINT=localhost:6831 -e RUST_LOG=info,restate=info --network=host ghcr.io/restatedev/restate-dist:latest
 ```
+
+</TabItem>
+<TabItem value="mac" label="macOS">
+
+```shell
+docker run --name restate_dev -e RESTATE_OBSERVABILITY__JAEGER__ENDPOINT=localhost:6831 -e RUST_LOG=info,restate=info -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist
+```
+
+</TabItem>
+</Tabs>
+
 
 Go to the Jaeger UI at [http://localhost:16686](http://localhost:16686).
 
