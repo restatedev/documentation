@@ -1127,12 +1127,12 @@ These features are switched on by default. No need to do anything.
 
 To tune the default retry policies of the runtime, have a look at the [Configuration docs](/deployment-operations/configuration).
 
-### SDK utilities for retries
+### Side effect retries
 
 If you do a side effect operation in your handler and the side effect fails,
     then this failure is durably stored in the log and it is not retried.
 There are scenarios where you want to retry a failed side effect.
-For example, when the side effect tries to execute a payment.
+For example, when the side effect tries to execute a payment and the payment provider was temporarily offline.
 The Typescript SDK offers some utilities for this. Let's activate retries for the
 Stripe payment in `CheckoutService/Checkout`. Replace the previous call with:
 ```typescript
@@ -1150,19 +1150,80 @@ const success: boolean = await RestateUtils.retryExceptionalSideEffectWithBackof
 ```
 Also add the following import at the top `import { RestateUtils } from "@restatedev/restate-sdk";`.
 
+We now call `stripe.failingCall` which will fail 2 times and then succeed.
+The `retryExceptionalSideEffectWithBackoff` utility will make sure that if the retry fails, the service does a Restate sleep, and then tries again.
+All attempts, including the sleeps are durably logged.
+Have a look at the logs to see the retries.
 
+<details><summary>Show the logs</summary>
+
+```log
+[restate] [2023-05-19T10:44:07.967Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Received input message.
+[restate] [2023-05-19T10:44:07.968Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Adding message to output buffer: type: SideEffect
+[restate] [2023-05-19T10:44:07.969Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Received new completion from the runtime.
+Stripe call failed for idempotency key 851f1a19-456b-471b-841e-7da1dabac909 and amount 40. Retrying...
+[restate] [2023-05-19T10:44:07.970Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Adding message to output buffer: type: SideEffect
+[restate] [2023-05-19T10:44:07.970Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Received new completion from the runtime.
+//highlight-start
+[restate] [2023-05-19T10:44:07.970Z] DEBUG: Error while executing side effect 'unnamed-retryable-side-effect': Error - {"code":13,"message":"Stripe call failed"}
+[restate] [2023-05-19T10:44:07.970Z] DEBUG: Retrying in 100 ms
+//highlight-end
+[restate] [2023-05-19T10:44:07.971Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Adding message to output buffer: type: Sleep
+[restate] [2023-05-19T10:44:08.073Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Received new completion from the runtime.
+Stripe call failed for idempotency key 851f1a19-456b-471b-841e-7da1dabac909 and amount 40. Retrying...
+[restate] [2023-05-19T10:44:08.074Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Adding message to output buffer: type: SideEffect
+[restate] [2023-05-19T10:44:08.075Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Received new completion from the runtime.
+//highlight-start
+[restate] [2023-05-19T10:44:08.075Z] DEBUG: Error while executing side effect 'unnamed-retryable-side-effect': Error - {"code":13,"message":"Stripe call failed"}
+[restate] [2023-05-19T10:44:08.076Z] DEBUG: Retrying in 200 ms
+//highlight-end
+[restate] [2023-05-19T10:44:08.076Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Adding message to output buffer: type: Sleep
+[restate] [2023-05-19T10:44:08.279Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Received new completion from the runtime.
+//highlight-start
+Stripe call succeeded for idempotency key 851f1a19-456b-471b-841e-7da1dabac909 and amount 40
+//highlight-end
+[restate] [2023-05-19T10:44:08.279Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Adding message to output buffer: type: SideEffect
+[restate] [2023-05-19T10:44:08.281Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Received new completion from the runtime.
+[restate] [2023-05-19T10:44:08.281Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Adding message to output buffer: type: BackgroundInvoke
+Notifying user 123 of payment success
+[restate] [2023-05-19T10:44:08.282Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Adding message to output buffer: type: SideEffect
+[restate] [2023-05-19T10:44:08.284Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Received new completion from the runtime.
+[restate] [2023-05-19T10:44:08.284Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Call ended successful with output message.
+```
+
+</details>
 
 ## Observability
-Tracing with Jaeger
-Enabling tracing
+Restate exposes OpenTelemetry traces of your invocations
 
-Having a look at the traces.
+Run the Jaeger container with:
+```shell
+docker run -d --name jaeger \
+-e COLLECTOR_ZIPKIN_HTTP_PORT=9411 \
+-p 6831:6831/udp \
+-p 16686:16686 \
+jaegertracing/all-in-one:1.45
+```
+
+Then restart the runtime with the Jaeger endpoint defined as an environment variable:
+```shell
+docker run -e RESTATE_OBSERVABILITY__JAEGER__ENDPOINT=localhost:6831 -e RUST_LOG=info,restate=info --network=host ghcr.io/restatedev/restate-dist:latest
+```
+
+Go to the Jaeger UI at [http://localhost:16686](http://localhost:16686).
+
+Send requests to the runtime by adding tickets and checking out.
+You should see traces similar to:
+
+![Jaeger trace](/img/trace.png)
+
+Note that async calls are shown as separate traces. So here, we only see the `UserSessionService/Checkout` and `CheckoutService/Checkout` calls,
+    and not the async call to `TicketService/MarkAsSold`.
 
 ## 🏁 The end
 You reached the end of this tutorial!
 
-:::info Bugs?
-🚩 Have a look at the fully implemented app in `src/part4`, and run it with `npm run part4`.
+:::info 🚩 Have a look at the fully implemented app in `src/part4`, and run it with `npm run part4`.
 :::
 
 Let's recap what we covered:
@@ -1181,9 +1242,9 @@ This tutorial did not cover anything related to deployment.
 In this tutorial, we ran the services as long-running services in Docker containers.
 But Restate services can run with minimal changes on AWS Lambda. 
 
-Have a look at these follow-up tutorials:
-- Deployment on AWS Lambda
-- Deployment on Kubernetes (minikube)
+Possible next steps:
+- [Deployment on AWS Lambda](/tutorials/running-on-lambda)
+- [Deployment on Kubernetes](/tutorials/running-on-kubernetes)
 
 
 
