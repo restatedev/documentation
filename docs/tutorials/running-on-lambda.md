@@ -7,7 +7,6 @@ description: "Learn how to run Restate applications on AWS Lambda."
 
 This tutorial shows how to deploy a greeter service written with the Restate Typescript SDK on AWS Lambda.
 
-
 ## Prerequisites
 - Restate runtime running in the same region as where you deploy the Lambda function. For example, Restate can be running on ECS, EKS or EC2. But it can also be running locally.
 - NodeJS installed
