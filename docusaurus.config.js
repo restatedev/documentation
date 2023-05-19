@@ -151,6 +151,7 @@ const config = {
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
+        additionalLanguages: ['protobuf', 'log'],
         magicComments: [
           // Remember to extend the default highlight class name as well!
           {
