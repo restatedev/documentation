@@ -10,7 +10,7 @@ Restate offers several tools to manage the ongoing invocations.
 
 Every invocation to a service gets a unique opaque identifier assigned by Restate, called _Service invocation identifier_. You can use this identifier to filter your structured logs, find traces, and execute some management operations such as cancelling an invocation.
 
-You can find this identifier in the logs and traces by looking for the `restate.invocation.sid`, for example:
+You can find this identifier in the runtime logs and OpenTelementry traces by looking for the `restate.invocation.sid`, for example:
 
 ```log {7}
 2023-05-19T15:02:28.656467Z INFO restate_invoker::invocation_task
@@ -40,11 +40,11 @@ At the moment gracefully cancelling an invocation is not supported, It will be s
 
 When something goes wrong during the execution of an invocation, Restate will by default retry until it can make any progress. For example, if there's a network configuration, Restate will continue retrying until it can reach the endpoint and make progress.
 
-There are some cases though where it's not easy, if possible at all, to fix the execution of an ongoing invocation, for example if your code runs some non deterministic action, and when resuming from a suspension the execution leads to a different code path. In such cases, you can request Restate to kill the invocation, aborting its execution as soon as possible. If the invocation is ongoing, killing the invocation **won't** rollback its progress.
+There are some cases though where it's not easy, if possible at all, to let an ongoing invocation make any progress. A good example is when your code runs a non deterministic action: if the invocation is suspended and re-scheduled afterwards, the replay of the invocation might lead to a different code path, generating an invalid journal and failing the invocation indefinitely. In such cases, you can request Restate to kill the invocation, aborting its execution as soon as possible. If the invocation is ongoing, killing the invocation **won't** rollback its progress.
 
 :::danger
 
-Killing an invocation might leave the service instance in an incosistent state, in a similar fashion to how killing a process in your operating system might leave the open files in a corrupted state. Use it with caution and try to fix the invocation in other ways before resorting to killing it.
+Killing an invocation might leave the service instance in an inconsistent state, just like how killing a process in your operating system may cause the open files to become corrupted. Use it with caution and try to fix the invocation in other ways before resorting to killing it.
 
 :::
 
