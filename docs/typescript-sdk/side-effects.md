@@ -25,7 +25,6 @@ const uuid = await restateContext.sideEffect(async () => {
 
 Once stored, every retry of this invocation will get the same UUID.
 
-This is an interesting pattern for many applications.
 For example, imagine a payment service where you want to avoid having duplicate payments during retries. 
 You could use a side effect to generate and store a UUID and then use that UUID as identifier of the payment.
 You only allow the payment to go through if no payment with that UUID was done yet.
@@ -50,12 +49,12 @@ The side effect function is retried when it throws an Error, until returns a suc
 resolved Promise.
 
 Between retries, this function will do a suspendable Restate sleep.
-The sleep time starts with the 'initialDelayMs' value and doubles on each retry, up to
-a maximum of maxDelayMs.
+The sleep time starts with the `initialDelayMs` value and doubles on each retry, up to
+a maximum of `maxDelayMs`.
 
 The returned Promise will be resolved successfully once the side effect action completes
 successfully and will be rejected with an error if the maximum number of retries
-(as specified by 'maxRetries') is exhausted.
+(as specified by `maxRetries`) is exhausted.
 
 ```typescript
 const ctx = restate.useContext(this);
@@ -77,12 +76,12 @@ The other utility calls a side effect function and retries when the result is fa
 The side effect function is retried until it returns true or until it throws an error.
 
 Between retries, the call this function will do a suspendable Restate sleep.
-The sleep time starts with the 'initialDelayMs' value and doubles on each retry, up to
-a maximum of maxDelayMs.
+The sleep time starts with the `initialDelayMs` value and doubles on each retry, up to
+a maximum of `maxDelayMs`.
 
 The returned Promise will be resolved successfully once the side effect actions completes
 successfully and will be rejected with an error if the side effect function throws an error
-or the maximum number of retries (as specified by 'maxRetries') is exhausted.
+or the maximum number of retries (as specified by `maxRetries`) is exhausted.
 
 ```typescript
 const ctx = restate.useContext(this);

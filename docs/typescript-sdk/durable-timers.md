@@ -55,7 +55,7 @@ ctx.completeAwakeable(id, "hello");
 ```
 
 :::info
-Currently, in the latest release, only Restate services have the capability to complete awakeables.
+In the current release, only Restate services have the capability to complete awakeables.
 If you want to enable an external system to awaken a service,
 you must introduce a Restate service in the middle
 to translate the incoming external request and trigger the completion of the awakeable.
