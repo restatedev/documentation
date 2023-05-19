@@ -131,6 +131,8 @@ INFO restate_meta::service
     restate.service_endpoint.url: http://localhost:8080/
 ```
 
+### Calling the services
+
 Mimic adding a ticket to a cart, by calling `UserSessionService/AddTicket` as follows:
 ```shell
 curl -X POST http://localhost:9090/example.UserSessionService/AddTicket -H 'content-type: application/json' -d '{"user_id": "123", "ticket_id": "456"}'
@@ -140,38 +142,16 @@ This gives us back a boolean return value:
 true
 ```
 
-If the value got printed, then you have a working setup.
+If the value got printed, then you have a working setup!
 
-### An overview of the project
-In `src/app`, you find the skeleton of the ticket reservation app.
-There is one file for each of the services and `app.ts` which contains the definition of the Restate server that will serve the RPC handlers.
-
-The `proto/example.proto` file contains the service definitions.
-
-Remember the curl command we did earlier?
-```shell
-curl -X POST http://localhost:9090/example.UserSessionService/AddTicket -H 'content-type: application/json' -d '{"user_id": "123", "ticket_id": "456"}'
-```
-The URL `http://localhost:9090` points to the ingress endpoint of the Restate runtime. This is then followed by `/package-name.service-name/method-name`.
-In `proto/example.proto`, we defined `example` as the package name, `UserSessionService` as the service name, and `AddTicket` as one of the methods.
-The data that is added to the request (i.e. `'{"user_id": "123", "ticket_id": "456"}'`) is the JSON representation of the messages that have been defined in `proto/example.proto`.
-
-That's all you need to know right now about the Protobuf service definition. We will come back to this later.
-
-### 📝 Exercise
-After we have called the `addTicket` method to add items to the shopping cart,
-we can call the `UserSessionService/Checkout` handler to proceed with the purchase.
-Try calling `checkout` method the for user id `123`. You will need this command later on.
-
-<>
-<details><summary>The answer</summary>
+You can call the `UserSessionService/Checkout` handler to proceed with the purchase, as follows:
 
 ```shell
 curl -X POST http://localhost:9090/example.UserSessionService/Checkout -H 'content-type: application/json' -d '{"user_id": "123"}'
 ```
 
-</details>
-</>
+In `src/app`, you find the skeletons of the services where you can start implementing your app.
+You can also find `app.ts` there which contains the definition of the Restate server that will serve the RPC handlers.
 
 ## Suspendable synchronous communication
 One of the key parts of distributed applications is service-to-service communication.
@@ -293,7 +273,7 @@ Once the runtime has received the response, it invokes the `addTicket` method ag
 
 [//]: # (TODO include a video demo of knative on minikube to show how containers are spun up and torn down.)
 
-### 📝 Exercise
+### 📝 Try it out
 Make `checkout` method in the user session service call the `checkout` method in the checkout service.
 
 For `tickets` field the `CheckoutFlowRequest`, you can use a hardcoded array of strings for now: `["456"]`.
@@ -378,7 +358,7 @@ Restate retries failed asynchronous invocations for you. No need to set up any m
 :::
 
 
-### 📝 Exercise
+### 📝 Try it out
 The `expireTicket` method in the user session service is called when a user did not proceed to payment before the end of the timeout.
 Let the `expireTicket` method asynchronously call the `TicketService/Unreserve` handler.
 Call the `expireTicket` method to check if your code works.
@@ -424,44 +404,6 @@ Have a look at the logs again to see what happened:
 
 </details>
 </>
-
-## Awakeables
-Until now, all the calls were done between Restate services.
-But what if you want to do include an external service in your workflow?
-
-For example, you want a Restate service to put a message on Kafka.
-This message gets ingested by a non-Restate service that processes it
-    and then triggers the Restate service to resume processing.
-This is what you can use awakeables for.
-Awakeables are similar to the callback task token pattern:
-1. Service A generates an ID.
-2. Service A supplies that ID to an external service.
-3. Once the external service has finished its task, it sends the ID back to Restate.
-4. When Restate receives the ID, it invokes service A to resume processing.
-
-So how can you do this with the Typescript SDK?
-
-```typescript
-const awakeable = ctx.awakeable<string>();
-
-const id = awakeable.id
-
-// send the ID to some external system
-
-// Await on the ID to be send back to the runtime
-const result = await awakeable.promise;
-```
-
-Calling `ctx.awakeable` gives you an object with two entries. A String ID and a promise. The promise gets resolved with the payload that the external service attached to it.
-You need to supply the data return type when you create the awakeable. In this case, the return payload will be a String.
-
-Similar to synchronous and asynchronous communication, the method invocation is suspended while waiting on the return of the ID.
-
-
-[//]: # (TODO include an example in the tutorial.)
-
-Let's test this by sending over the id via a inbackground call to another method
-and the other method then awakes the first method.
 
 ## Durable timers
 :::info Bugs?
@@ -846,7 +788,7 @@ Have a look at the logs to see how the code executes the workflow.
 [//]: # (TODO add some text on how to run this and print the state )
 
 
-### 📝 Exercise
+### 📝 Try it out
 #### Finishing `UserSessionService/ExpireTicket`
 
 We almost fully implemented the user session service.
@@ -898,8 +840,8 @@ async expireTicket(request: ExpireTicketRequest): Promise<Empty> {
 
 
 #### Implementing the ticket service
-Let's track the status of the tickets in the ticket service by storing it in the state. Do the exercises
-listed below and check your implementation by running the service and calling the methods.
+Let's track the status of the tickets in the ticket service by storing it in the state. Do the tasks
+below and check your implementation by running the service and calling the methods.
 
 1. Implement the `TicketService/Reserve` handler.
 The method first retrieves the value for the `ticket_status` state key.
@@ -1236,7 +1178,6 @@ Let's recap what we covered:
 - reliable synchronous calls that can be suspended
 - asynchronous calls without the need for queues
 - suspensions for external communication
-- awakeables: how to do tasks in external systems and resume processing
 - durable timers for sleep or for calling other services
 - concurrency guarantees of restate for keyed/unkeyed/singleton services
 - persistent application state
