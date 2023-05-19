@@ -113,23 +113,28 @@ You should now see the registered services printed out to your terminal:
 {"services":["example.TicketService","example.UserSessionService","example.CheckoutService"]}
 ```
 
+<details><summary>Show the runtime logs</summary>
 When we look at the logs of the runtime we see:
+
 ```
 INFO restate_meta::service
-  Discovered service
-    rpc.service: "example.TicketService"
-    restate.service_endpoint.url: http://localhost:8080/
+Discovered service
+rpc.service: "example.TicketService"
+restate.service_endpoint.url: http://localhost:8080/
 
 INFO restate_meta::service
-  Discovered service
-    rpc.service: "example.UserSessionService"
-    restate.service_endpoint.url: http://localhost:8080/
+Discovered service
+rpc.service: "example.UserSessionService"
+restate.service_endpoint.url: http://localhost:8080/
 
 INFO restate_meta::service
-  Discovered service
-    rpc.service: "example.CheckoutService"
-    restate.service_endpoint.url: http://localhost:8080/
+Discovered service
+rpc.service: "example.CheckoutService"
+restate.service_endpoint.url: http://localhost:8080/
 ```
+
+</details>
+
 
 ### Calling the services
 
@@ -161,8 +166,8 @@ RPCs or messages never get lost.
 Let's begin with synchronous calls, in which one service calls another service and waits for the response.
 
 When the `addTicket` method is called, it first needs to reserve the ticket for the user. It does that by calling the `TicketService/Reserve` handler.
+Add the highlighted code snippet to the `addTicket` method in the user session service.
 
-Let's have a look at how to do this in Restate. Add the highlighted code snippet to the `addTicket` method in the user session service.
 ```typescript
 async addTicket(request: ReserveTicket): Promise<BoolValue> {
     //highlight-start
