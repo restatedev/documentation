@@ -229,7 +229,7 @@ The runtime takes care of request retries, in case of failures (covered later on
 Finally, the runtime delivers the response to the user session service.
 
 When services need to wait a long time (e.g. sleep an hour, or wait for a day on a response),
-Restate allows them to suspend and to free up the resources for other invocations.
+Restate makes their handlers suspend to free up the resources for other invocations.
 When the service is able to resume, Restate invokes the service again and sends over a replay log.
 The replay log contains the steps that the service already executed before it suspended.
 The service replays the log and continues processing at the point where it left off.
@@ -281,13 +281,11 @@ Once the runtime has received the response, it invokes the `addTicket` method ag
 ### 📝 Try it out
 Make `checkout` method in the user session service call the `checkout` method in the checkout service.
 
-For `tickets` field the `CheckoutFlowRequest`, you can use a hardcoded array of strings for now: `["456"]`.
+For the `tickets` field in the `CheckoutFlowRequest`, you can use a hardcoded array of strings for now: `["456"]`.
 We will fix this later on.
 
 <>
-<details><summary>The answer</summary>
-
-The code should look like this:
+<details><summary>Solution</summary>
 
 ```typescript
 async checkout(request: CheckoutRequest): Promise<BoolValue> {
@@ -364,14 +362,12 @@ Restate retries failed asynchronous invocations for you. No need to set up any m
 
 
 ### 📝 Try it out
-The `expireTicket` method in the user session service is called when a user did not proceed to payment before the end of the timeout.
+The `UserSessionService/ExpireTicket` handler is called when a user did not proceed with the payment before the timeout.
 Let the `expireTicket` method asynchronously call the `TicketService/Unreserve` handler.
-Call the `expireTicket` method to check if your code works.
+Send a request to `UserSessionSerivce/ExpireTicket` to check if it works.
 
 <>
-<details><summary>The answer</summary>
-
-The code should look like this:
+<details><summary>Solution</summary>
 
 ```typescript
 async expireTicket(request: ExpireTicketRequest): Promise<Empty> {
@@ -417,7 +413,7 @@ Have a look at the logs again to see what happened:
 Once you have your code up and running again, you can continue with the tutorial!
 :::
 
-As we explained earlier, Restate suspends a service invocation when it's waiting on external input.
+Restate suspends a handler when it's waiting on external input.
 The partial progress of the service invocation is durably stored in the log and can be resumed once
 the external input has arrived.
 Restate offers the same mechanism for timers.
@@ -469,7 +465,7 @@ The `addTicket` method did an asynchronous call to the `reserve` method so did n
 
 
 Let's make the call to the `reserve` method synchronous again, to see how the suspensions work across different services.
-Simply remove the `inBackground()` wrapper around the call, and end up with:
+Simply remove the `inBackground()` wrapper around the call, to end up with:
 
 ```ts
 async addTicket(request: ReserveTicket): Promise<BoolValue> {
@@ -635,7 +631,7 @@ The ticket service is a keyed service. For unkeyed or singleton services, use `U
 
 For keyed services, you need to tag one of the fields of the input request as the key, as done the second highlighted line.
 You specify the key by adding the `[(dev.restate.ext.field) = KEY]` annotation.
-Make sure that you define the key field for all the methods of a keyed service!
+Make sure that you define the key field for all the methods of a keyed service.
 
 Besides these tags, there is nothing Restate-specific about the Protobuf definitions.
 To learn more about gRPC, have a look at their [documentation](https://grpc.io/docs/).
@@ -818,7 +814,7 @@ async expireTicket(request: ExpireTicketRequest): Promise<Empty> {
 Before we call `unreserve`, we first need to check if the ticket is still in the cart.
 If this is the case, then we call `TicketService/Unreserve` and remove it from the cart state.
 
-<details><summary>The answer</summary>
+<details><summary>Solution</summary>
 
 ```ts
 async expireTicket(request: ExpireTicketRequest): Promise<Empty> {
@@ -845,8 +841,7 @@ async expireTicket(request: ExpireTicketRequest): Promise<Empty> {
 
 
 #### Implementing the ticket service
-Let's track the status of the tickets in the ticket service by storing it in the state. Do the tasks
-below and check your implementation by running the service and calling the methods.
+Let's track the status of the tickets in the ticket service by storing it in the state.
 
 1. Implement the `TicketService/Reserve` handler.
 The method first retrieves the value for the `ticket_status` state key.
@@ -855,7 +850,7 @@ return `true` (reservation successful). If the status is not set to `"AVAILABLE"
 Remove the sleep that we used previously.
 
 <>
-<details><summary>The answer</summary>
+<details><summary>Solution</summary>
 
 ```ts
 async reserve(request: Ticket): Promise<BoolValue> {
@@ -882,7 +877,7 @@ afterwards `false`.
 value of the `"ticket_status"` key to `"AVAILABLE"`.
 
 <>
-<details><summary>The answer</summary>
+<details><summary>Solution</summary>
 
 ```ts
 async unreserve(request: Ticket): Promise<Empty> {
@@ -906,7 +901,7 @@ value of the `"ticket_status"` key to `"SOLD"`.
 
 
 <>
-<details><summary>The answer</summary>
+<details><summary>Solution</summary>
 
 ```ts
 async markAsSold(request: Ticket): Promise<Empty> {
@@ -919,7 +914,7 @@ async markAsSold(request: Ticket): Promise<Empty> {
 ```
 
 In the next section, we will implement the `CheckoutService/Checkout` handler
-that calls `markAsSold`. This will tie the final parts together!
+that calls `markAsSold`. This will tie the final parts together.
 </details>
 </>
 
@@ -930,12 +925,11 @@ that calls `markAsSold`. This will tie the final parts together!
 Once you have your code up and running again, you can continue with the tutorial!
 :::
 
-Earlier, we explained the replay mechanism of Restate.
-This mechanism makes Restate applications resilient to failures.
+Restate's replay mechanism makes applications resilient to failures.
 But it also requires your code to be deterministic.
 
 If you need to execute a non-deterministic code snippet (e.g. generating a UUID or
-communicating to an external system) then you need to wrap it in a side effect.
+communicating to an external system) then you should wrap it in a side effect.
 The side effect executes the supplied function and eagerly stores the return value in
 Restate. Upon replay, the stored value gets inserted and the function does not get
 re-executed.
@@ -1012,7 +1006,7 @@ Create a new Stripe client in `CheckoutService/checkout`. Assume every ticket co
     Then execute the payment with the created idempotency key and store the boolean result of the
     call as a side effect. Also use the boolean result for the return value of the method.
 
-<details><summary>The answer</summary>
+<details><summary>Solution</summary>
 
 ```typescript
 async checkout(request: CheckoutFlowRequest): Promise<BoolValue> {
@@ -1069,7 +1063,7 @@ Once this works, let's implement the rest of the checkout workflow:
     - use the EmailClient in `src/aux/email_client.ts` to notify the users of the payment failure.
     Prevent duplicate emails during retries by using a side effect.
 
-<details><summary>The answer</summary>
+<details><summary>Solution</summary>
 
 ```ts
 async checkout(request: CheckoutFlowRequest): Promise<BoolValue> {
@@ -1180,19 +1174,15 @@ You reached the end of this tutorial!
 :::
 
 Let's recap what we covered:
-- reliable synchronous calls that can be suspended
+- reliable, suspendable synchronous calls
 - asynchronous calls without the need for queues
 - suspensions for external communication
 - durable timers for sleep or for calling other services
-- concurrency guarantees of restate for keyed/unkeyed/singleton services
+- concurrency guarantees for keyed/unkeyed/singleton services
 - persistent application state
-- state introspection
 - storing the results of non-deterministic operations or external calls as side effects
-- resiliency: retries
+- resiliency and retries
 - observability with Jaeger
-
-
-
 
 ## Next steps
 This tutorial did not cover anything related to deployment. 
