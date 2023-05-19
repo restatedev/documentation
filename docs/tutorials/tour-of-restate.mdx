@@ -37,7 +37,8 @@ As we go, you will discover how Restate can help you with some intricacies in th
 > &#x1F4DD; As long as Restate hasn't been launched publicly, you need to have access to the private Restate npm packages and Docker container. Please follow the instructions in the `restate-dist` Readme to set up access: https://github.com/restatedev/restate-dist
 
 - [NodeJS (and npm)](https://nodejs.org) installed.
-- [Docker Engine](https://docs.docker.com/engine/install/) to launch the Restate runtime (not needed for the app implementation itself).
+- [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation) to launch the Restate runtime (not needed for the app implementation itself).
+- [curl](https://everything.curl.dev/get)
 
 ## 🚀 Let's get started!
 
@@ -115,20 +116,18 @@ You should now see the registered services printed out to your terminal:
 When we look at the logs of the runtime we see:
 
 ```
-INFO restate_meta::service
-Discovered service
-rpc.service: "example.TicketService"
-restate.service_endpoint.url: http://localhost:8080/
-
-INFO restate_meta::service
-Discovered service
-rpc.service: "example.UserSessionService"
-restate.service_endpoint.url: http://localhost:8080/
-
-INFO restate_meta::service
-Discovered service
-rpc.service: "example.CheckoutService"
-restate.service_endpoint.url: http://localhost:8080/
+2023-05-19T12:55:42.564152Z INFO restate_meta::service
+   Discovered service
+      rpc.service: "example.TicketService"
+      restate.service_endpoint.url: http://localhost:8080/
+2023-05-19T12:55:42.564172Z INFO restate_meta::service
+   Discovered service
+      rpc.service: "example.UserSessionService"
+      restate.service_endpoint.url: http://localhost:8080/
+2023-05-19T12:55:42.564178Z INFO restate_meta::service
+   Discovered service
+      rpc.service: "example.CheckoutService"
+      restate.service_endpoint.url: http://localhost:8080/
 ```
 
 </details>
@@ -142,28 +141,99 @@ curl -X POST http://localhost:9090/example.UserSessionService/AddTicket -H 'cont
 ```
 If this prints out `true`, then you have a working setup!
 
-You can call the `UserSessionService/Checkout` handler to proceed with the purchase, as follows:
+You can call the `UserSessionService/Checkout` method to proceed with the purchase, as follows:
 
 ```shell
 curl -X POST http://localhost:9090/example.UserSessionService/Checkout -H 'content-type: application/json' -d '{"user_id": "123"}'
 ```
 
 In `src/app`, you find the skeletons of the services where you can start implementing your app.
-You can also find `app.ts` there which contains the definition of the Restate server that will serve the RPC handlers.
+You can also find `app.ts` there which contains the definition of the Restate server that will serve the methods.
+
+
+## Concurrency
+Earlier, we covered Restate's sleep functionality and we mentioned keyed, unkeyed, and singleton services. Let's
+have a look at what they are.
+
+There are three types of Restate services:
+1. **Keyed service**: All service invocations are sharded on a user-defined key. There is at most one concurrent
+invocation per key.
+2. **Unkeyed service**: No key defined. No concurrency guarantees or limitations. Invocations are processed as they
+come in. You would get the same behavior with a keyed service with random keys.
+3. **Singleton service**: No key defined. There is at most one concurrent invocation for this entire service. You can
+see this as a keyed service where all invocations have an identical key. This service type does not scale up, so
+don't use it for heavy load.
+
+### Specifying the service type
+Restate uses [gRPC](https://grpc.io/) and [Protobuf](https://protobuf.dev/) to define service contracts.
+That's also where you define the service type and key.
+Have a look at the Protobuf definitions of the ticket service of our example in `proto/example.proto`:
+```protobuf
+service TicketService {
+  //highlight-next-line
+	option (dev.restate.ext.service_type) = KEYED;
+
+	rpc Reserve (Ticket) returns (google.protobuf.BoolValue);
+    //... other methods...
+}
+
+message Ticket {
+  //highlight-next-line
+	string ticket_id = 1 [(dev.restate.ext.field) = KEY];
+}
+```
+
+The first highlighted line of the service definition defines the type of Restate service.
+The ticket service is a keyed service. For unkeyed or singleton services, use `UNKEYED` and `SINGLETON` respectively.
+
+For keyed services, you need to tag one of the fields of the input request as the key, as done the second highlighted line.
+You specify the key by adding the `[(dev.restate.ext.field) = KEY]` annotation.
+Make sure that you define the key field for all the methods of a keyed service.
+
+Besides these tags, there is nothing Restate-specific about the Protobuf definitions.
+To learn more about gRPC, have a look at their [documentation](https://grpc.io/docs/).
+
+:::tip
+Use the concurrency guarantees of keyed (and singleton services) to your
+advantage! The guarantee that there is only a single ongoing invocation makes
+it a lot easier to reason about interaction with external systems.
+
+If you have a keyed service that is the single writer to a database
+and every key only interacts with an isolated set of database rows.
+Then you can scale your application and never have concurrent invocations
+writing to the same database row. This resolves common data consistency issues such as lost updates or non-repeatable reads.
+
+Have a look at the product service of the [shopping cart example](https://github.com/restatedev/example-shopping-cart-typescript). It's keyed on product ID,
+just like the database table behind it. Restate ensures that there are never concurrent writes
+to the same row.
+:::
+
+:::caution
+Take into account the concurrency limitations when designing your applications!
+- Time-consuming operations in a keyed/singleton service (e.g.
+sleep) lock that key/service for the entire operation. Other
+invocations for that key/service are enqueued, until the invocation has completed.
+- Deadlocks: Watch out for cyclical synchronous calls in your application.
+For example, if A calls B, and B calls C, and C calls A again.
+Each service waits on the response of the other and none of them can progress.
+The keys remain locked and the system can't process any more requests.
+:::
 
 ## Suspendable synchronous communication
 :::note Implement it yourself or follow along by looking at the code under `src/part1`.
 :::
 One of the key parts of distributed applications is service-to-service communication.
 Restate makes sure that service-to-service communication is durable.
-RPCs or messages never get lost.
+Messages never get lost.
 
 Let's begin with synchronous calls, in which one service calls another service and waits for the response.
 
-When the `addTicket` method is called, it first needs to reserve the ticket for the user. It does that by calling the `TicketService/Reserve` handler.
+When the `addTicket` method is called, it first needs to reserve the ticket for the user. It does that by calling the `TicketService/Reserve` method.
 Add the highlighted code snippet to the `addTicket` method in the user session service.
 
 ```typescript
+import * as restate from "@restatedev/restate-sdk";
+
 async addTicket(request: ReserveTicket): Promise<BoolValue> {
     //highlight-start
     const ctx = restate.useContext(this);
@@ -177,14 +247,8 @@ async addTicket(request: ReserveTicket): Promise<BoolValue> {
 }
 ```
 
-To interact with Restate, we need to retrieve the `RestateContext`. This is the entrypoint of all communication with the runtime. That is done in the first line of the highlighted code snippet.
-To resolve this, make sure you have the following import:
-```typescript
-import * as restate from "@restatedev/restate-sdk";
-```
-
-Once we have access to the `RestateContext`, we call the ticket service.
-We use the client that was generated by `proto-ts` and supply the RestateContext of the current invocation (`ctx`) to the client to make sure that it uses the SDK to send the requests.
+To interact with Restate, we need to retrieve the `RestateContext`. This is the entrypoint of all communication with the runtime.
+Afterwards, we use the client that was generated by `proto-ts` and supply the RestateContext of the current invocation (`ctx`) to the client to make sure that it uses the SDK to send the requests.
 Then we call the reserve method, which returns a Promise that gets resolved with the BoolValue response.
 
 Try it out by running the services via `npm run app` and send a request to `UserSessionService/AddTicket`, as we did [previously](#running-the-services-and-runtime).
@@ -223,7 +287,7 @@ The runtime takes care of request retries, in case of failures (covered later on
 Finally, the runtime delivers the response to the user session service.
 
 When services need to wait a long time (e.g. sleep an hour, or wait for a day on a response),
-Restate makes their handlers suspend to free up the resources for other invocations.
+Restate makes method invocations suspend to free up the resources for other invocations.
 When the service is able to resume, Restate invokes the service again and sends over a replay log.
 The replay log contains the steps that the service already executed before it suspended.
 The service replays the log and continues processing at the point where it left off.
@@ -354,8 +418,8 @@ Restate retries failed asynchronous invocations for you. No need to set up any m
 
 
 ### 📝 Try it out
-The `UserSessionService/ExpireTicket` handler is called when a user did not proceed with the payment before the timeout.
-Let the `expireTicket` method asynchronously call the `TicketService/Unreserve` handler.
+The `UserSessionService/ExpireTicket` method is called when a user did not proceed with the payment before the timeout.
+Let the `expireTicket` method asynchronously call the `TicketService/Unreserve` method.
 Send a request to `UserSessionSerivce/ExpireTicket` to check if it works.
 
 <>
@@ -398,14 +462,15 @@ Have a look at the logs again to see what happened:
 </details>
 </>
 
-:::info 🚩 Explore the intermediate solution in `src/part1`, and run it with `npm run part1`.
+:::info
+🚩 Explore the intermediate solution in `src/part1`, and run it with `npm run part1`.
 :::
 
 ## Durable timers
 :::note Implement it yourself or follow along by looking at the code under `src/part2`.
 :::
 
-Restate suspends a handler when it's waiting on external input.
+Restate suspends a method invocation when it's waiting on external input.
 The partial progress of the service invocation is durably stored in the log and can be resumed once
 the external input has arrived.
 Restate offers the same mechanism for timers.
@@ -435,7 +500,7 @@ async reserve(request: Ticket): Promise<BoolValue> {
 ```
 
 Run both services and send the `addTicket` request, as [we did earlier](#running-the-services-and-runtime).
-In the service logs, you can see the `reserve` handler processing the sleep, then suspending, and then resuming again after the sleep completed.
+In the service logs, you can see the `reserve` method processing the sleep, then suspending, and then resuming again after the sleep completed.
 The `addTicket` method did an asynchronous call to the `reserve` method so did not suspend but just finished its invocation.
 
 <details><summary>Show the logs</summary>
@@ -474,7 +539,7 @@ async addTicket(request: ReserveTicket): Promise<BoolValue> {
 }
 ```
 
-Now you see in the logs that both services get suspended. The user session service gets suspended because it waits for a response from the `reserve` handler
+Now you see in the logs that both services get suspended. The user session service gets suspended because it waits for a response from the `reserve` method
     and the ticket service gets suspended because it waits for the sleep to be completed.
     Restate keeps track of how long the service should sleep and then triggers it to resume the invocation.
     Finally, we see the responses of both methods coming in.
@@ -586,73 +651,6 @@ If you do a sleep operation, the invocation is ongoing.
 
 :::
 
-## Concurrency
-Earlier, we covered Restate's sleep functionality and we mentioned keyed, unkeyed, and singleton services. Let's
-have a look at what they are.
-
-There are three types of Restate services:
-1. **Keyed service**: All service invocations are sharded on a user-defined key. There is at most one concurrent
-invocation per key.
-2. **Unkeyed service**: No key defined. No concurrency guarantees or limitations. Invocations are processed as they
-come in. You would get the same behavior with a keyed service with random keys.
-3. **Singleton service**: No key defined. There is at most one concurrent invocation for this entire service. You can
-see this as a keyed service where all invocations have an identical key. This service type does not scale up, so
-don't use it for heavy load.
-
-### Specifying the service type
-Restate uses [gRPC](https://grpc.io/) and [Protobuf](https://protobuf.dev/) to define service contracts.
-That's also where you define the service type and key.
-Have a look at the Protobuf definitions of the ticket service of our example in `proto/example.proto`:
-```protobuf
-service TicketService {
-  //highlight-next-line
-	option (dev.restate.ext.service_type) = KEYED;
-
-	rpc Reserve (Ticket) returns (google.protobuf.BoolValue);
-    //... other methods...
-}
-
-message Ticket {
-  //highlight-next-line
-	string ticket_id = 1 [(dev.restate.ext.field) = KEY];
-}
-```
-
-The first highlighted line of the service definition defines the type of Restate service.
-The ticket service is a keyed service. For unkeyed or singleton services, use `UNKEYED` and `SINGLETON` respectively.
-
-For keyed services, you need to tag one of the fields of the input request as the key, as done the second highlighted line.
-You specify the key by adding the `[(dev.restate.ext.field) = KEY]` annotation.
-Make sure that you define the key field for all the methods of a keyed service.
-
-Besides these tags, there is nothing Restate-specific about the Protobuf definitions.
-To learn more about gRPC, have a look at their [documentation](https://grpc.io/docs/).
-
-:::tip
-Use the concurrency guarantees of keyed (and singleton services) to your
-advantage! The guarantee that there is only a single ongoing invocation makes
-it a lot easier to reason about interaction with external systems.
-
-If you have a keyed service that is the single writer to a database
-    and every key only interacts with an isolated set of database rows.
-Then you can scale your application and never have concurrent invocations
-    writing to the same database row. This resolves common data consistency issues such as lost updates or non-repeatable reads.
-
-Have a look at the product service of the [shopping cart example](https://github.com/restatedev/example-shopping-cart-typescript). It's keyed on product ID,
-just like the database table behind it. Restate ensures that there are never concurrent writes
-to the same row.
-:::
-
-:::caution
-Take into account the concurrency limitations when designing your applications!
-- Time-consuming operations in a keyed/singleton service (e.g.
-sleep) lock that key/service for the entire operation. Other
-invocations for that key/service are enqueued, until the invocation has completed.
-- Deadlocks: Watch out for cyclical synchronous calls in your application.
-For example, if A calls B, and B calls C, and C calls A again.
-    Each service waits on the response of the other and none of them can progress.
-    The keys remain locked and the system can't process any more requests.
-:::
 
 ## Persistent application state
 
@@ -663,7 +661,7 @@ Restate offers a key-value store to persistently store application state.
 
 :::tip Good news!
 Restate's state is guaranteed to be consistent across retries and invocations.
-This eliminates the need for a session database such as Redis.
+This eliminates the need for a session database.
 :::
 
 The isolation level of the application state depends on the service type:
@@ -785,7 +783,7 @@ Have a look at the logs to see how the code executes the workflow.
 #### Finishing `UserSessionService/ExpireTicket`
 
 We almost fully implemented the user session service.
-Now that we implemented the checkout handler, we can also finalize the `UserSessionService/ExpireTicket`.
+Now that we implemented the checkout method, we can also finalize the `UserSessionService/ExpireTicket`.
 
 At the moment we have the following code:
 ```ts
@@ -835,7 +833,7 @@ async expireTicket(request: ExpireTicketRequest): Promise<Empty> {
 #### Implementing the ticket service
 Let's track the status of the tickets in the ticket service by storing it in the state.
 
-1. Implement the `TicketService/Reserve` handler.
+1. Implement the `TicketService/Reserve` method.
 The method first retrieves the value for the `ticket_status` state key.
 If the value is set to `"AVAILABLE"`, then change it to `"RESERVED"` and
 return `true` (reservation successful). If the status is not set to `"AVAILABLE"`, then return `false`.
@@ -865,7 +863,7 @@ afterwards `false`.
 </details>
 </>
 
-2. Implement the `TicketService/Unreserve` handler. The method should set the
+2. Implement the `TicketService/Unreserve` method. The method should set the
 value of the `"ticket_status"` key to `"AVAILABLE"`.
 
 <>
@@ -888,7 +886,7 @@ Try to reserve the same ticket ID multiple times, and see how you are able to re
 </details>
 </>
 
-3. Implement the `TicketService/MarkAsSold` handler. The method should set the
+3. Implement the `TicketService/MarkAsSold` method. The method should set the
 value of the `"ticket_status"` key to `"SOLD"`.
 
 
@@ -905,12 +903,13 @@ async markAsSold(request: Ticket): Promise<Empty> {
 }
 ```
 
-In the next section, we will implement the `CheckoutService/Checkout` handler
+In the next section, we will implement the `CheckoutService/Checkout` method
 that calls `markAsSold`. This will tie the final parts together.
 </details>
 </>
 
-:::info 🚩 Explore the intermediate solution in `src/part2`, and run it with `npm run part2`.
+:::info
+🚩 Explore the intermediate solution in `src/part2`, and run it with `npm run part2`.
 :::
 
 ## Side effects
@@ -933,8 +932,10 @@ So also, for a piece of time-consuming, deterministic user code.
 :::
 
 Let's use a side effect in `CheckoutService/Checkout` to
-create and store a UUID or idempotency key. Add the import `import { v4 as uuid } from "uuid";` and do:
+create and store a UUID or idempotency key:
 ```typescript
+import { v4 as uuid } from "uuid";
+
 async checkout(request: CheckoutFlowRequest): Promise<BoolValue> {
     const ctx = restate.useContext(this);
 
@@ -1101,7 +1102,8 @@ async checkout(request: CheckoutFlowRequest): Promise<BoolValue> {
 
 🥳 Except for a few resiliency tweaks, you fully implemented the ticket reservation system!
 
-:::info 🚩 Explore the intermediate solution in `src/part3`, and run it with `npm run part3`.
+:::info
+🚩 Explore the intermediate solution in `src/part3`, and run it with `npm run part3`.
 :::
 ## Resiliency
 
@@ -1128,7 +1130,7 @@ To tune the default retry policies of the runtime, have a look at the [Configura
 
 ### Side effect retries
 
-If you do a side effect operation in your handler and the side effect fails,
+If you do a side effect operation and the side effect fails,
     then this failure is durably stored in the log and it is not retried.
 There are scenarios where you want to retry a failed side effect.
 For example, when the side effect tries to execute a payment and the payment provider was temporarily offline.
