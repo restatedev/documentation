@@ -151,10 +151,7 @@ In `src/app`, you find the skeletons of the services where you can start impleme
 You can also find `app.ts` there which contains the definition of the Restate server that will serve the methods.
 
 
-## Concurrency
-Earlier, we covered Restate's sleep functionality and we mentioned keyed, unkeyed, and singleton services. Let's
-have a look at what they are.
-
+## Services and concurrency
 There are three types of Restate services:
 1. **Keyed service**: All service invocations are sharded on a user-defined key. There is at most one concurrent
 invocation per key.
@@ -194,8 +191,7 @@ Besides these tags, there is nothing Restate-specific about the Protobuf definit
 To learn more about gRPC, have a look at their [documentation](https://grpc.io/docs/).
 
 :::tip
-Use the concurrency guarantees of keyed (and singleton services) to your
-advantage! The guarantee that there is only a single ongoing invocation makes
+The concurrency guarantees of keyed (and singleton services) makes
 it a lot easier to reason about interaction with external systems.
 
 If you have a keyed service that is the single writer to a database
@@ -204,8 +200,7 @@ Then you can scale your application and never have concurrent invocations
 writing to the same database row. This resolves common data consistency issues such as lost updates or non-repeatable reads.
 
 Have a look at the product service of the [shopping cart example](https://github.com/restatedev/example-shopping-cart-typescript). It's keyed on product ID,
-just like the database table behind it. Restate ensures that there are never concurrent writes
-to the same row.
+just like the database table behind it. Restate ensures that there are never concurrent writes to the same row.
 :::
 
 :::caution
@@ -564,8 +559,7 @@ Now you see in the logs that both services get suspended. The user session servi
 </details>
 
 :::caution
-Sleeping can block processing for certain types of Restate services (keyed and singleton
-services). We get back to this in the [concurrency](#concurrency) section.
+Sleeping can block processing for keyed and singleton services.
 :::
 
 [//]: # (TODO show this on minikube with knative in a little video)
@@ -647,7 +641,7 @@ Be aware that sleeping in a keyed service blocks any invocations for that key. S
 the tickets.
 
 If you do a sleep operation, the invocation is ongoing.
-    If you do a delayed call, the invocation is not ongoing until the delay has passed, so no key is blocked.
+    If you do a delayed call, the invocation is not ongoing until the delay has passed, so no key is locked.
 
 :::
 
