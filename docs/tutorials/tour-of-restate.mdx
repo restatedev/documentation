@@ -15,16 +15,16 @@ and feel comfortable to tackle your next application on your own.
 
 This tutorial implements a ticket reservation application for a theatre.
 It allows users to add tickets for specific seats to their shopping cart.
-After a ticket has been added, the seat is reserved for 15 minutes.
+After a ticket is added, the seat gets reserved for 15 minutes.
 If it hasn't been bought and paid within that time interval, the reservation is released
 and the ticket becomes available to other users.
 
-The final application will have three services, each with a set of methods that will be implemented during the tutorial:
-1. **User session service**: keeps track of which tickets are currently in the cart of the user. Implements:
+The application has three services, each with a set of methods that are implemented in this tutorial:
+1. **User session service**: keeps track of the tickets in the shopping cart. Implements:
     - AddTicket: adds a ticket to the shopping cart
     - Checkout: calls the checkout service to process the payment
-    - ExpireTicket: sets tickets back to available, if they were not sold
-2. **Ticket service**: manages all tickets that are being sold or have been sold. Implements:
+    - ExpireTicket: sets tickets back to available, if the user did not buy them
+2. **Ticket service**: manages the tickets. Implements:
     - Reserve: sets the status of a ticket to reserved
     - Unreserve: sets the status of a ticket to available
     - MarkAsSold: sets the status of a ticket to sold
@@ -42,7 +42,7 @@ As we go, you will discover how Restate can help you with some intricacies in th
 ## 🚀 Let's get started!
 
 ### Setting up the tutorial
-Clone the GitHub repository of the [tutorial](https://github.com/restatedev/tour-of-restate-typescript) and checkout branch `part1`:
+Clone the GitHub repository of the [tutorial](https://github.com/restatedev/tour-of-restate-typescript):
 ```shell
 git clone git@github.com:restatedev/tour-of-restate-typescript.git
 ```
@@ -69,8 +69,6 @@ Run the services:
 ```shell
 npm run app
 ```
-
-This runs the services with `ts-node-dev` so the services will restart automatically when we save code changes.
 
 Launch the runtime:
 <Tabs groupId="operating-systems">
@@ -142,12 +140,7 @@ Mimic adding a ticket to a cart, by calling `UserSessionService/AddTicket` as fo
 ```shell
 curl -X POST http://localhost:9090/example.UserSessionService/AddTicket -H 'content-type: application/json' -d '{"user_id": "123", "ticket_id": "456"}'
 ```
-This gives us back a boolean return value:
-```
-true
-```
-
-If the value got printed, then you have a working setup!
+If this prints out `true`, then you have a working setup!
 
 You can call the `UserSessionService/Checkout` handler to proceed with the purchase, as follows:
 
@@ -214,7 +207,7 @@ Have a look at the SDK and runtime logs, to see how the ingress request triggers
 
 For this tutorial, we put the log level to debug by setting the environment variable `RESTATE_DEBUG_LOG=LOG`.
 You can remove this environment variable in `package.json` to silence the logging.
-To also see which messages were sent between the service and the runtime use `RESTATE_DEBUG_LOG=MESSAGES`.
+To also log the messages, use `RESTATE_DEBUG_LOG=MESSAGES`.
 
 ### What actually happened?
 The call we just did, seems like a regular RPC call.
@@ -1129,24 +1122,22 @@ As you have discovered throughout this tutorial, Restate makes your applications
 - Providing end-to-end exactly-once guarantees for incoming invocations.
 
 :::tip Good news!
-You don't need to do anything to benefit from these features.
+These features are switched on by default. No need to do anything.
 :::
 
-If you want to tune the default retry policies of the runtime, then have a look at the [Configuration docs](/deployment-operations/configuration).
+To tune the default retry policies of the runtime, have a look at the [Configuration docs](/deployment-operations/configuration).
 
 ### SDK utilities for retries
 
-As we said, the runtime automatically does retries of handler invocations.
-However, if you do a side effect operation in your handler and the side effect itself failed,
-    then this failure will be durably stored in the logs and it will not be retried.
-But there are quite some scenarios where you would want a failed side effect to be retried.
+If you do a side effect operation in your handler and the side effect fails,
+    then this failure is durably stored in the log and it is not retried.
+There are scenarios where you want to retry a failed side effect.
 For example, when the side effect tries to execute a payment.
-
 The Typescript SDK offers some utilities for this. Let's activate retries for the
 Stripe payment in `CheckoutService/Checkout`. Replace the previous call with:
 ```typescript
 const stripe = StripeClient.get();
-const doPayment = async () => stripe.call(idempotencyKey, amount);
+const doPayment = async () => stripe.failingCall(idempotencyKey, amount);
 //highlight-start
 const success: boolean = await RestateUtils.retryExceptionalSideEffectWithBackoff(
     ctx,
@@ -1157,7 +1148,9 @@ const success: boolean = await RestateUtils.retryExceptionalSideEffectWithBackof
 );
 //highlight-end
 ```
-Also add the following `import { RestateUtils } from "@restatedev/restate-sdk";`.
+Also add the following import at the top `import { RestateUtils } from "@restatedev/restate-sdk";`.
+
+
 
 ## Observability
 Tracing with Jaeger
@@ -1169,7 +1162,7 @@ Having a look at the traces.
 You reached the end of this tutorial!
 
 :::info Bugs?
-🚩 Have a look at the fully implemented application in `src/part4`, and run it with `npm run part4`.
+🚩 Have a look at the fully implemented app in `src/part4`, and run it with `npm run part4`.
 :::
 
 Let's recap what we covered:
