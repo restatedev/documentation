@@ -3,7 +3,7 @@ sidebar_position: 11
 description: "Discover how you can deploy Restate across diverse infrastructures."
 ---
 
-# Deployment
+# Deployment and Operations
 
 ## Deploying long-running services
 You can deploy long-running Restate Typescript services in any preferred way,
@@ -60,6 +60,12 @@ curl -X POST http://<your-restate-runtime-endpoint>:8081/endpoint/discover -H 'c
 Here, we added the API key as an additional header to the JSON data of the request.
 Replace `someapikey` by your API key.
 The Restate runtime will use this API key for all subsequent requests to the Lambda function.
+
+## Logging
+The Restate SDK allows different log levels by setting the environment variable `RESTATE_DEBUG_LOG`.
+- default: only logs for major events (initial discovery and persistent issues). 
+- `RESTATE_DEBUG_LOG=LOG`: Use this to get debug logs per invocation.
+- `RESTATE_DEBUG_LOG=MESSAGES`: Use this to get debug logs per invocation, including the messages that are sent.
 
 
 # 🏁 Finished reading?

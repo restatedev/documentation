@@ -13,7 +13,10 @@ To retrieve state in Restate, you can call the following method on the Restate c
 const myValue: string | null = await restateContext.get<string>("my-key");
 ```
 
-Replace "my-key" with the key you want to retrieve. This will either return the value that was stored or it will return null if no value was stored. In the example above, the value stored is a string, but you can store any type that can be serialized as a buffer. For example, to retrieve a number type, you could use the following code:
+Replace "my-key" with the key you want to retrieve. This will either return the value 
+that was stored or it will return null if no value was stored. In the example above, 
+the value stored is a string, but you can store any type that can be serialized as a 
+buffer with `Buffer.from(JSON.stringify(yourObject))`. For example, to retrieve a number type, you could use the following code:
 
 ```typescript
 const myValue = (await restateContext.get<number>("my-key")) || 0;

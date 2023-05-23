@@ -65,7 +65,7 @@ Then bind the services, in the same way as for the long-running services.
 Finally, call `create()`. 
 
 :::info 
-That's all you need to do to enable running on AWS Lambda!
+That's all you need to do to enable running on AWS Lambda.
 The implementation of your service methods remains the same for both deployment options.
 :::
 
