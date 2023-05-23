@@ -79,11 +79,6 @@ const config = {
         items: [
           {
             position: 'left',
-            label: 'Get started',
-            to: '/get-started'
-          },
-          {
-            position: 'left',
             label: 'Tutorials',
             to: '/category/tutorials'
           },
@@ -106,10 +101,6 @@ const config = {
             title: 'Docs',
             items: [
               {
-                label: 'Getting started',
-                to: '/get-started',
-              },
-              {
                 label: 'Tutorial',
                 to: '/category/tutorials',
               },
@@ -126,10 +117,6 @@ const config = {
           {
             title: 'Community',
             items: [
-              {
-                label: 'Discord',
-                href: 'https://discordapp.com/invite/restatedev',
-              },
               {
                 label: 'Twitter',
                 href: 'https://twitter.com/restatedev',
