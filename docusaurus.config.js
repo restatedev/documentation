@@ -55,7 +55,7 @@ const config = {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-         },
+        },
         blog: false,
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
@@ -144,17 +144,17 @@ const config = {
           {
             className: 'theme-code-block-highlighted-line',
             line: 'highlight-next-line',
-            block: {start: 'highlight-start', end: 'highlight-end'},
+            block: { start: 'highlight-start', end: 'highlight-end' },
           },
           {
             className: 'bad-code-block',
             line: 'bad-code',
-            block: {start: 'bad-code-start', end: 'bad-code-end'},
+            block: { start: 'bad-code-start', end: 'bad-code-end' },
           },
           {
             className: 'good-code-block',
             line: 'good-code',
-            block: {start: 'good-code-start', end: 'good-code-end'},
+            block: { start: 'good-code-start', end: 'good-code-end' },
           },
         ],
       },
@@ -164,7 +164,7 @@ const config = {
         respectPrefersColorScheme: false,
       },
     }),
-    themes: ["docusaurus-json-schema-plugin"]
+  themes: ["docusaurus-json-schema-plugin"]
 };
 
 module.exports = config;

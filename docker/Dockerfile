@@ -8,12 +8,14 @@ WORKDIR /restate-documentation
 # Copy the source code over
 COPY . .
 # Install (not ci) with dependencies, and for Linux vs. Linux Musl (which we use for -alpine)
-RUN npm install
+RUN yarn
 # Build the Restate documentation
-RUN npm run build
+RUN yarn build
 
 # Use a stable nginx image for serving the documentation
 FROM nginx:stable-alpine as deploy
 WORKDIR /restate-documentation
 # Copy what we've built from production
-COPY --from=builder /restate-documentation/build /usr/share/nginx/html/
+COPY --from=builder /restate-documentation/build /usr/share/nginx/html/docs
+# Update nginx configuration
+COPY --from=builder /restate-documentation/docker/nginx.conf /etc/nginx/
