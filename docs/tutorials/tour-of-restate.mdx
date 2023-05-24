@@ -209,20 +209,20 @@ Take into account the concurrency limitations when designing your applications!
 - Time-consuming operations in a keyed/singleton service (e.g.
 sleep) lock that key/service for the entire operation. Other
 invocations for that key/service are enqueued, until the invocation has completed.
-- Deadlocks: Watch out for cyclical synchronous calls in your application.
+- Deadlocks: Watch out for cyclical request-response calls in your application.
 For example, if A calls B, and B calls C, and C calls A again.
 Each service waits on the response of the other and none of them can progress.
 The keys remain locked and the system can't process any more requests.
 :::
 
-## Suspendable synchronous communication
+## Suspendable request-response calls
 :::note Implement it yourself or follow along by looking at the code under `src/part1`.
 :::
 One of the key parts of distributed applications is service-to-service communication.
 Restate makes sure that service-to-service communication is durable.
 Messages never get lost.
 
-Let's begin with synchronous calls, in which one service calls another service and waits for the response.
+Let's begin with request-response calls, in which one service calls another service and waits for the response.
 
 When the `addTicket` method is called, it first needs to reserve the ticket for the user. It does that by calling the `TicketService/Reserve` method.
 Add the highlighted code snippet to the `addTicket` method in the user session service.
@@ -290,7 +290,7 @@ The service replays the log and continues processing at the point where it left 
 
 :::tip
 The suspension mechanism of Restate is especially beneficial if you run on serverless infrastructure (e.g. AWS Lambda).
-For example, you can do synchronous calls without paying for the idle time when waiting for a response.
+For example, you can do request-response calls without paying for the idle time when waiting for a response.
 :::
 
 To show this working in practice, let's mimic that the ticket service is processing
@@ -372,18 +372,18 @@ Have a look at the logs again to see what happened:
 </details>
 </>
 
-## Reliable async communication without queues
+## Reliable one-way calls without queues
 
-Until now, we only did synchronous calls.
-You can also do asynchronous calls via Restate, where you do not wait for the response. The syntax is very similar.
-All we need to do is wrap the call with `inBackground`, as follows:
+Until now, we only did request-response calls.
+You can also do one-way calls via Restate, where you do not wait for the response. The syntax is very similar.
+All we need to do is wrap the call with `oneWayCall`, as follows:
 
 ```typescript
 async addTicket(request: ReserveTicket): Promise<BoolValue> {
     const ctx = restate.useContext(this);
     //highlight-start
     const ticketServiceClient = new TicketServiceClientImpl(ctx);
-    await ctx.inBackground(() =>  ticketServiceClient.reserve(
+    await ctx.oneWayCall(() =>  ticketServiceClient.reserve(
         Ticket.create({ ticketId: request.ticketId })
     ));
     //highlight-end
@@ -409,13 +409,13 @@ If you look at the service logs, you see that the `addTicket` method doesn't wai
 </details>
 
 :::tip Good news!
-Restate retries failed asynchronous invocations for you. No need to set up any message queues.
+Restate retries failed one-way invocations for you. No need to set up any message queues.
 :::
 
 
 ### 📝 Try it out
 The `UserSessionService/ExpireTicket` method is called when a user did not proceed with the payment before the timeout.
-Let the `expireTicket` method asynchronously call the `TicketService/Unreserve` method.
+Let the `expireTicket` method unidirectionally call the `TicketService/Unreserve` method.
 Send a request to `UserSessionSerivce/ExpireTicket` to check if it works.
 
 <>
@@ -427,7 +427,7 @@ async expireTicket(request: ExpireTicketRequest): Promise<Empty> {
 
         //highlight-start
     const ticketServiceClient = new TicketServiceClientImpl(ctx);
-    await ctx.inBackground(() =>
+    await ctx.oneWayCall(() =>
         ticketServiceClient.unreserve(
             Ticket.create({ ticketId: request.ticketId })
         )
@@ -497,7 +497,7 @@ async reserve(request: Ticket): Promise<BoolValue> {
 
 Run both services and send the `addTicket` request, as [we did earlier](#running-the-services-and-runtime).
 In the service logs, you can see the `reserve` method processing the sleep, then suspending, and then resuming again after the sleep completed.
-The `addTicket` method did an asynchronous call to the `reserve` method so did not suspend but just finished its invocation.
+The `addTicket` method did a one-way call to the `reserve` method so did not suspend but just finished its invocation.
 
 <details><summary>Show the logs</summary>
 
@@ -517,8 +517,8 @@ The `addTicket` method did an asynchronous call to the `reserve` method so did n
 </details>
 
 
-Let's make the call to the `reserve` method synchronous again, to see how the suspensions work across different services.
-Simply remove the `inBackground()` wrapper around the call, to end up with:
+Let's make the call to the `reserve` method wait for the response again, to see how the suspensions work across different services.
+Simply remove the `oneWayCall()` wrapper around the call, to end up with:
 
 ```ts
 async addTicket(request: ReserveTicket): Promise<BoolValue> {
@@ -572,7 +572,7 @@ In the application, a ticket gets reserved for 15 minutes.
 If it hasn't been bought and paid within that time interval, then it becomes available again to other users.
 
 You can do delayed async calls with Restate by adding a delay in milliseconds to the
-`inBackground` call.
+`oneWayCall` call.
 ```typescript
 async addTicket(request: ReserveTicket): Promise<BoolValue> {
     const ctx = restate.useContext(this);
@@ -590,7 +590,7 @@ async addTicket(request: ReserveTicket): Promise<BoolValue> {
         });
 
         //highlight-start
-        await ctx.inBackground(
+        await ctx.oneWayCall(
             () => userSessionClient.expireTicket(expireTicketRequest),
             15 * 60 * 1000 // delay call for 15 minutes
         );
@@ -629,7 +629,7 @@ and then call the `TicketService/Unreserve` method:
 
 ```typescript
 await ctx.sleep(15 * 60 * 1000);
-await ctx.inBackground(() =>
+await ctx.oneWayCall(() =>
 ticketServiceClient.unreserve(
   ExpireTicketRequest.create({
     userId: request.userId,
@@ -785,7 +785,7 @@ async expireTicket(request: ExpireTicketRequest): Promise<Empty> {
     const ctx = restate.useContext(this);
 
     const ticketServiceClient = new TicketServiceClientImpl(ctx);
-    await ctx.inBackground(() =>
+    await ctx.oneWayCall(() =>
         ticketServiceClient.unreserve(
             Ticket.create({ ticketId: request.ticketId })
         )
@@ -808,7 +808,7 @@ async expireTicket(request: ExpireTicketRequest): Promise<Empty> {
 
     if (cart?.find((el) => el === request.ticketId)) {
         const ticketServiceClient = new TicketServiceClientImpl(ctx);
-        await ctx.inBackground(() =>
+        await ctx.oneWayCall(() =>
             ticketServiceClient.unreserve(
                 Ticket.create({ ticketId: request.ticketId })
             )
@@ -1071,14 +1071,14 @@ async checkout(request: CheckoutFlowRequest): Promise<BoolValue> {
 
     if (success) {
         for await (const ticketId of request.tickets) {
-            await ctx.inBackground(() =>
+            await ctx.oneWayCall(() =>
             ticketServiceClient.markAsSold(Ticket.create({ ticketId: ticketId }))
             );
         }
         emailClient.notifyUserOfPaymentSuccess(request.userId);
     } else {
         for await (const ticketId of request.tickets) {
-            await ctx.inBackground(() =>
+            await ctx.oneWayCall(() =>
             ticketServiceClient.unreserve(Ticket.create({ ticketId: ticketId }))
             );
         }
@@ -1237,8 +1237,8 @@ You reached the end of this tutorial!
 :::
 
 Let's recap what we covered:
-- reliable, suspendable synchronous calls
-- asynchronous calls without the need for queues
+- reliable, suspendable reqeust-response calls
+- one-way calls without the need for queues
 - suspensions for external communication
 - durable timers for sleep or for calling other services
 - concurrency guarantees for keyed/unkeyed/singleton services
