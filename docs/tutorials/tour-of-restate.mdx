@@ -43,7 +43,7 @@ Clone the GitHub repository of the [tutorial](https://github.com/restatedev/tour
 git clone git@github.com:restatedev/tour-of-restate-typescript.git
 ```
 
-This GitHub repository contains the basic skeleton of the NodeJS/Typescript services that we develop in this tutorial. 
+This GitHub repository contains the basic skeleton of the NodeJS/Typescript services that we develop in this tutorial.
 
 First, get all dependencies and build tools:
 ```shell
@@ -71,14 +71,14 @@ Launch the runtime:
 <TabItem value="lin" label="Linux">
 
 ```shell
-docker run --name restate_dev -e RUST_LOG=info,restate=info --network=host ghcr.io/restatedev/restate-dist:latest
+docker run --name restate_dev --network=host ghcr.io/restatedev/restate-dist:latest
 ```
 
 </TabItem>
 <TabItem value="mac" label="macOS">
 
 ```shell
-docker run --name restate_dev -e RUST_LOG=info,restate=info -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist
+docker run --name restate_dev -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist:latest
 ```
 
 </TabItem>
@@ -1204,14 +1204,14 @@ Then restart the runtime with the Jaeger endpoint defined as an environment vari
 <TabItem value="lin" label="Linux">
 
 ```shell
-docker run --name restate_dev -e RESTATE_OBSERVABILITY__JAEGER__ENDPOINT=localhost:6831 -e RUST_LOG=info,restate=info --network=host ghcr.io/restatedev/restate-dist:latest
+docker run --name restate_dev -e RESTATE_OBSERVABILITY__JAEGER__ENDPOINT=localhost:6831 --network=host ghcr.io/restatedev/restate-dist:latest
 ```
 
 </TabItem>
 <TabItem value="mac" label="macOS">
 
 ```shell
-docker run --name restate_dev -e RESTATE_OBSERVABILITY__JAEGER__ENDPOINT=localhost:6831 -e RUST_LOG=info,restate=info -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist
+docker run --name restate_dev -e RESTATE_OBSERVABILITY__JAEGER__ENDPOINT=localhost:6831 -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist:latest
 ```
 
 </TabItem>
@@ -1248,14 +1248,10 @@ Let's recap what we covered:
 - observability with Jaeger
 
 ## Next steps
-This tutorial did not cover anything related to deployment. 
+This tutorial did not cover anything related to deployment.
 In this tutorial, we ran the services as long-running services in Docker containers.
-But Restate services can run with minimal changes on AWS Lambda. 
+But Restate services can run with minimal changes on AWS Lambda.
 
 Possible next steps:
 - [Deployment on AWS Lambda](/tutorials/running-on-lambda)
 - [Deployment on Kubernetes](/tutorials/running-on-k8s)
-
-
-
-
