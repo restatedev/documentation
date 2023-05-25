@@ -8,7 +8,7 @@ Restate offers several tools to manage the ongoing invocations.
 
 ## Service invocation identifier
 
-Every invocation to a service gets a unique opaque identifier assigned by Restate, called _Service invocation identifier_. You can use this identifier to filter your structured logs, find traces, and execute some management operations such as cancelling an invocation.
+Every invocation to a service gets a unique identifier assigned by Restate, called _Service invocation identifier_. You can use this identifier to filter your structured logs, find traces, and execute some management operations such as cancelling an invocation.
 
 You can find this identifier in the runtime logs and OpenTelementry traces by looking for the `restate.invocation.sid`, for example:
 
@@ -38,9 +38,13 @@ At the moment gracefully cancelling an invocation is not supported, It will be s
 
 ## Kill an invocation
 
-When something goes wrong during the execution of an invocation, Restate will by default retry until it can make any progress. For example, if there's a network configuration, Restate will continue retrying until it can reach the endpoint and make progress.
+When something goes wrong during the execution of an invocation, Restate will by default retry until it can make progress again.
+For example, if there's a network partitioning, Restate will continue retrying until it can reach the endpoint and make progress.
 
-There are some cases though where it's not easy, if possible at all, to let an ongoing invocation make any progress. A good example is when your code runs a non deterministic action: if the invocation is suspended and re-scheduled afterwards, the replay of the invocation might lead to a different code path, generating an invalid journal and failing the invocation indefinitely. In such cases, you can request Restate to kill the invocation, aborting its execution as soon as possible. If the invocation is ongoing, killing the invocation **won't** rollback its progress.
+There are some cases where it is impossible for an invocation to make progress.
+A good example is when your code runs a non deterministic action: If the invocation is suspended and re-scheduled afterwards, the replay of the invocation might lead to a different code path, generating an invalid journal and failing the invocation indefinitely.
+In such cases, you can request Restate to kill the invocation, aborting its execution as soon as possible.
+If the invocation is ongoing, killing the invocation **will not** rollback its progress.
 
 :::danger
 
