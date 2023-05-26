@@ -51,18 +51,18 @@ only minimal changes are required, as compared to the long-running service:
 import * as restate from "@restatedev/restate-sdk";
 
 export const handler = restate
-  .lambdaHandler()
+  .createLambdaApiGatewayHandler()
   .bindService({
     descriptor: protoMetadata,
     service: "Greeter",
     instance: new GreeterService(),
   })
-  .create();
+  .handle();
 ```
 
-Call the `lambdaHandler()` method to create a Lambda Restate server. 
+Call the `createLambdaApiGatewayHandler()` method to create a Lambda Restate server. 
 Then bind the services, in the same way as for the long-running services. 
-Finally, call `create()`. 
+Finally, call `handle()`. 
 
 :::info 
 That's all you need to do to enable running on AWS Lambda.

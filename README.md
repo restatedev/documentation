@@ -44,3 +44,12 @@ This command generates static content into the `build` directory and can be serv
 In order to release the documentation you have to push a tag of the form `vX.Y.Z`.
 This will trigger the [release workflow](.github/workflows/release.yml), which builds and publishes and new `restatedev/documentation:vX.Y.Z` container image.
 Moreover, it will create a draft [release on Github](https://github.com/restatedev/documentation/releases) that needs manual approval.
+
+### Upgrading Typescript SDK version
+- Update the version tag in the `Tour of Restate` tutorial in the `Prerequisites` section.
+- Update the version tag in the `Running on AWS Lambda` tutorial.
+
+### Upgrading Restate runtime version
+- Update the version tag of the Restate Docker image in the `Tour of Restate` tutorial. 
+- Update the version tag of the Restate Docker image in the `Running on AWS Lambda` tutorial.
+- Search through the docs for the `restate-dist` Docker image and upgrade all versions.

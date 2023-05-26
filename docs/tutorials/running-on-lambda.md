@@ -7,43 +7,42 @@ description: "Learn how to run Restate applications on AWS Lambda."
 
 This tutorial shows how to deploy a greeter service written with the Restate Typescript SDK on AWS Lambda.
 
+[Go to the GitHub repository of this tutorial](https://github.com/restatedev/example-lambda-ts-greeter/tree/v0.0.1)
+
 ## Prerequisites
-- Restate runtime running in the same region as where you deploy the Lambda function. For example, Restate can be running on ECS, EKS or EC2. But it can also be running locally.
-- NodeJS installed
+> &#x1F4DD; As long as Restate hasn't been launched publicly, you need to have access to the private Restate npm packages and Docker container. Please follow the instructions in the [restate-dist](https://github.com/restatedev/restate-dist) Readme to set up access: 
+
+- [NodeJS (and npm)](https://nodejs.org) installed.
+- [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation) to launch the Restate runtime (not needed for the app implementation itself).
+- [curl](https://everything.curl.dev/get)
 - An AWS account with permissions for Lambda and API Gateway.
 
-## Creating a zip file from our code base
+## Clone the repository
 
-Clone the GitHub repository:
+Clone the GitHub repository for release `v0.0.1`:
 ```shell
-git clone git@github.com:restatedev/example-lambda-ts-greeter.git
+git clone --depth 1 --branch v0.0.1 git@github.com:restatedev/example-lambda-ts-greeter.git
 ```
 
 We are going to deploy the service defined in `src/app.ts` on AWS Lambda.
 To do this, we need to create a zip file that includes the service code and the required dependencies to run it.
+
+## Creating a zip file from our code base
 
 First, get all dependencies and build tools:
 ```
 npm install
 ```
 
-Next, generate the Protobuf code for the gRPC definitions:
+Next, generate the 'proto' files for the gRPC definitions:
 ```
 npm run proto
 ```
 
 To build the code and make the zip file, do
 ```
-npm run build
+npm run bundle
 ```
-
-Note that the build command in `package.json` is the following:
-```shell
-esbuild src/app.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js
-```
-
-This differs from the build command in the node template.
-If you are developing a project starting from the template, you may need to adapt this.
 
 ## Deploying the Lambda function via the AWS console
 
@@ -78,6 +77,8 @@ Click on `Upload from` and select your zip file.
 You should now see the uploaded code in the browser editor.
 
 By default, Lambda assumes that your handler can be found under `index.handler`.
+So this means that you should have the Restate Lambda handler assigned to `export const handler` in the file `src/app.ts`, as shown in the code.
+This handler will then be included in `index.js` after creating the zip, and be used by AWS Lambda as the entry point of the Lambda function.
 To change that you can scroll down to `Runtime settings` and change the handler reference.
 
 One last step before we are in business!
@@ -118,7 +119,7 @@ To do this:
 - If the usage plan has no stage linked to it yet, click on `Add API stage`. Type in the name of the API: `my-greeter-API`. And select a stage. In our case: `default`. Save by clicking on the checkmark.
 
 
-Now let's deploy the API. Click again on `Actions` and select `Deploy API`.
+Now let's deploy the API. Go back to the API Gateway overview of our greeter. Click again on `Actions` and select `Deploy API`.
 Select `default` as the deployment stage and click on `Deploy`.
 
 Our API Gateway and Lambda function should now be working!
@@ -198,18 +199,25 @@ The body is the base64 encoded string of the response, and stands for `{"value":
 You don't necessarily need to run the Restate runtime on AWS.
 You can also run the Restate runtime locally in a Docker container to test your Lambda function:
 
+- On Linux
 ```shell
-docker run -e RUST_LOG=info,restate=debug --network=host ghcr.io/restatedev/restate-dist:latest
+docker run --name restate_dev --rm -d --network=host ghcr.io/restatedev/restate-dist:0.1.1
+```
+- On MacOS:
+```shell
+docker run --name restate_dev --rm -d -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist:0.1.1
 ```
 
-### Discovering the services behind the Lambda endpoint
+Consult the runtime logs via `docker logs restate_dev`.
 
-// **WARNING**: In the future, the way services are discovered will probably change and will not require the discovery curl anymore.
+Stop the runtime (and remove any intermediate state) with `docker stop restate_dev`.
+
+### Discovering the services behind the Lambda endpoint
 
 Connect to the Restate (e.g. via an SSH session if it is running on EC2) runtime and execute the discovery curl command:
 
 ```shell
-curl -X POST http://<your-restate-runtime-endpoint>:8081/endpoint/discover -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/my-greeter"}'
+curl -X POST http://<your-restate-runtime-endpoint>:8081/endpoint/discover -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/my-greeter", "additional_headers": {"x-api-key": "your-api-key"} }'
 ```
 
 If you are running the runtime locally, replace `<your-restate-runtime-endpoint>` by `localhost`.
@@ -218,15 +226,12 @@ If the runtime is running somewhere else, then replace it accordingly.
 If you have set up API key authentication for the API Gateway and Lambda,
 then you can add the API key as an additional header in the discovery request.
 You can find the API key in the API Gateway console by going to `API Keys` and then selecting the key of your function.
-After copying the key, execute the following command.
+After the discovery, the runtime uses this API key for all subsequent requests to the Lambda function.
 
+If your Lambda function does not require an API key then you can do the discovery without the additional headers:
 ```shell
-curl -X POST http://<your-restate-runtime-endpoint>:8081/endpoint/discover -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/my-greeter", "additional_headers": {"x-api-key": "your-api-key"} }'
+curl -X POST http://<your-restate-runtime-endpoint>:8081/endpoint/discover -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/my-greeter"}'
 ```
-
-Replace `<your-restate-runtime-endpoint>`, `<lambda-function-endpoint>` and `"your-api-key"` accordingly.
-
-The runtime will then use this API key for all subsequent requests to the Lambda function.
 
 When executing this command, you should see the discovered services printed out!
 

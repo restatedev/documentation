@@ -29,11 +29,14 @@ Please take a look at [the Greeter example](https://github.com/restatedev/exampl
 ### Deploying Lambda services
 To deploy a Restate service as a Lambda function,
 you can follow the [guidelines of AWS](https://docs.aws.amazon.com/lambda/latest/dg/typescript-package.html)
-for deploying plain Typescript NodeJS functions. Restate does not add any complexity to this. You build a zip file containing the application code and dependencies and upload this to AWS Lambda.
+for deploying plain Typescript NodeJS functions. Restate does not add any complexity to this. You build a zip file containing the application code and dependencies and upload this to AWS Lambda. If you are using the Restate node template, then you can create a zip file with:
+
+```
+npm run bundle
+```
 
 AWS Lambda assumes that the handler can be found under `index.handler` in the uploaded code.
 By default, this is also the case for the Lambda functions developed with the Restate SDK.
-
 
 :::caution
 Restate assumes that requests come through API Gateway.
