@@ -10,7 +10,7 @@ This tutorial shows how to deploy a greeter service written with the Restate Typ
 [Go to the GitHub repository of this tutorial](https://github.com/restatedev/example-lambda-ts-greeter)
 
 ## Prerequisites
-> &#x1F4DD; As long as Restate hasn't been launched publicly, you need to have access to the private Restate npm packages and Docker container. Please follow the instructions in the `restate-dist` Readme to set up access: https://github.com/restatedev/restate-dist
+> &#x1F4DD; As long as Restate hasn't been launched publicly, you need to have access to the private Restate npm packages and Docker container. Please follow the instructions in the [restate-dist](https://github.com/restatedev/restate-dist) Readme to set up access: 
 
 - [NodeJS (and npm)](https://nodejs.org) installed.
 - [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation) to launch the Restate runtime (not needed for the app implementation itself).

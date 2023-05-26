@@ -31,7 +31,7 @@ The ticket example has three services, with the following methods:
 As we go, you will discover how Restate can help you with some intricacies in this application.
 
 ## Prerequisites
-> &#x1F4DD; As long as Restate hasn't been launched publicly, you need to have access to the private Restate npm packages and Docker container. Please follow the instructions in the `restate-dist` Readme to set up access: https://github.com/restatedev/restate-dist
+> &#x1F4DD; As long as Restate hasn't been launched publicly, you need to have access to the private Restate npm packages and Docker container. Please follow the instructions in the [restate-dist](https://github.com/restatedev/restate-dist) Readme to set up access:
 
 - [NodeJS (and npm)](https://nodejs.org) installed.
 - [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation) to launch the Restate runtime (not needed for the app implementation itself).
@@ -56,7 +56,7 @@ First, get all dependencies and build tools:
 npm install
 ```
 
-Next, generates the Typescript Protobuf code to help you write services according to your service contract.
+Next, generate the Typescript types and interfaces that correspond to the gRPC service descriptions:
 ```shell
 npm run proto
 ```
@@ -169,7 +169,7 @@ see this as a keyed service where all invocations have an identical key. This se
 don't use it for heavy load.
 
 ### Specifying the service type
-Restate uses [gRPC](https://grpc.io/) and [Protobuf](https://protobuf.dev/) to define service contracts.
+Restate uses [gRPC](https://grpc.io/) and [Protobuf](https://protobuf.dev/) to specify the service methods.
 That's also where you define the service type and key.
 Have a look at the Protobuf definitions of the ticket service of our example in `proto/example.proto`:
 ```protobuf
