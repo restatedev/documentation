@@ -77,24 +77,24 @@ Launch the runtime:
 <TabItem value="lin" label="Linux">
 
 ```shell
-docker run --name restate_dev --rm --network=host ghcr.io/restatedev/restate-dist:0.1.1
+docker run --name restate_dev --rm -d --network=host ghcr.io/restatedev/restate-dist:0.1.1
 ```
 
 </TabItem>
 <TabItem value="mac" label="macOS">
 
 ```shell
-docker run --name restate_dev --rm -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist:0.1.1
+docker run --name restate_dev --rm -d -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist:0.1.1
 ```
 
 </TabItem>
 </Tabs>
 
-Stop the runtime with:
-```shell
-docker stop restate_dev
-docker rm restate_dev
-```
+Consult the runtime logs via `docker logs restate_dev`.
+
+Stop the runtime (and remove any intermediate state) with `docker stop restate_dev`.
+
+To do resilience experiments later on, you can restart the runtime (without losing state) with `docker restart restate_dev`.
 
 Discover the services:
 <Tabs groupId="operating-systems">
@@ -1210,14 +1210,14 @@ Then restart the runtime with the Jaeger endpoint defined as an environment vari
 <TabItem value="lin" label="Linux">
 
 ```shell
-docker run --name restate_dev --rm -e RESTATE_OBSERVABILITY__JAEGER__ENDPOINT=localhost:6831 --network=host ghcr.io/restatedev/restate-dist:0.1.1
+docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__JAEGER__ENDPOINT=localhost:6831 --network=host ghcr.io/restatedev/restate-dist:0.1.1
 ```
 
 </TabItem>
 <TabItem value="mac" label="macOS">
 
 ```shell
-docker run --name restate_dev --rm -e RESTATE_OBSERVABILITY__JAEGER__ENDPOINT=localhost:6831 -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist:0.1.1
+docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__JAEGER__ENDPOINT=localhost:6831 -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist:0.1.1
 ```
 
 </TabItem>

@@ -203,9 +203,18 @@ The body is the base64 encoded string of the response, and stands for `{"value":
 You don't necessarily need to run the Restate runtime on AWS.
 You can also run the Restate runtime locally in a Docker container to test your Lambda function:
 
+- On Linux
 ```shell
-docker run -e RUST_LOG=info,restate=debug --network=host ghcr.io/restatedev/restate-dist:0.1.1
+docker run --name restate_dev --rm -d --network=host ghcr.io/restatedev/restate-dist:0.1.1
 ```
+- On MacOS:
+```shell
+docker run --name restate_dev --rm -d -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist:0.1.1
+```
+
+Consult the runtime logs via `docker logs restate_dev`.
+
+Stop the runtime (and remove any intermediate state) with `docker stop restate_dev`.
 
 ### Discovering the services behind the Lambda endpoint
 
