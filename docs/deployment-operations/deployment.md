@@ -2,7 +2,9 @@
 sidebar_position: 2
 ---
 
-# Deploying Restate
+# Deployment
+
+## Deploying Restate
 Restate is currently a single binary that contains everything you need.
 It exposes three services by default, each on different ports:
 
@@ -16,7 +18,7 @@ It will store metadata and RocksDB data on the filesystem at the relative direct
 
 It requires outbound connectivity to services in order to discover them and to send requests.
 
-## In Kubernetes
+### In Kubernetes
 The recommended Kubernetes deployment strategy is a one-replica StatefulSet. We recommend installing Restate in its own namespace.
 ```yaml
 apiVersion: v1
@@ -100,22 +102,24 @@ You will also need to create an image pull secret using a classic github persona
 $ kubectl create secret docker-registry github --docker-server=ghcr.io --docker-username=<your-github-username> --docker-password=<your-personal-access-token>
 ```
 
-# Deploying Services
+## Deploying Services
 Services in Restate are fairly similar to gRPC services. They speak HTTP2, and are always called *by* Restate; 
 they don't make any outbound requests as part of the Restate protocol.
 
 They can be deployed like any gRPC service; a Deployment of more than one replica is generally appropriate. However,
-like gRPC services, they must be appropriately load balanced at L7. Native Kubernetes ClusterIP load balancing will lead
-to the Restate binary sending all requests to a single pod, as HTTP2 connections are aggressively reused. If your
-infrastructure already has an approach for L7 load balancing gRPC services, you can use the same approach here. Otherwise,
-some recommended approaches are detailed below:
+like gRPC services, they must be appropriately load balanced at L7 if you want multiple service pods. Native Kubernetes 
+ClusterIP load balancing will lead to the Restate binary sending all requests to a single pod, as HTTP2 connections 
+are aggressively reused. This is fine for local testing, but in production an approach must be found. If your
+infrastructure already has an approach for L7 load balancing gRPC services, you can use the same approach here. 
+Otherwise, some recommended approaches are detailed below:
 
 | Infrastructure  | Approach                                                                                                                          |
 |-----------------|-----------------------------------------------------------------------------------------------------------------------------------|
 | Istio / LinkerD | Ensure sidecar is injected into Restate pod and all service pods                                                                  |
 | Cilium          | Ensure Cilium is installed with `loadBalancer.l7.backend=envoy`, and annotate service pods with `service.cilium.io/lb-l7=enabled` |
+| Any             | Use an envoy sidecar on the restate pod; see below                                                                                |
 
-## L7 load balancing with no dependencies in Kubernetes
+### Simple L7 load balancing with an envoy sidecar
 A simple approach to L7 load balancing is to set up an Envoy sidecar in the Restate pod which acts as a transparent HTTP proxy
 which will resolve and L7 load balance to Kubernetes Services based on their DNS name. For this to work, Services must be
 deployed as Headless, ie without a ClusterIP. This is achieved by specifying `clusterIP: None` in a `type: ClusterIP` Service.
@@ -202,3 +206,17 @@ data:
                 name: dynamic_forward_proxy_cache_config
                 dns_refresh_rate: 5s
 ```
+
+## Discovering Services
+Services are always called *by* Restate, and communicate with Restate only through their responses. As such, Restate acts as
+an API gateway, and must know how to convert a service name like `greeter.Greeter` into the right endpoint to reach out to.
+We inform Restate of this via 'discovery'; we give it the endpoint, and it will use reflection to determine the relevant
+services, methods and request/response objects hosted there. This needs to be done whenever you add a new service, and
+when you add new methods to existing services. Discovering a service again is always safe.
+
+Discovery can be done with a simple HTTP request
+```bash
+$ curl restate:8081/endpoint/discover --json '{"uri": "http://service:8000"}'
+```
+
+For more details on the API, refer to the [Meta operational API docs](./meta-rest-api.mdx#tag/service_endpoint/operation/discover_service_endpoint).
