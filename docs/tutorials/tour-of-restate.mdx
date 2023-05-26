@@ -35,6 +35,10 @@ As we go, you will discover how Restate can help you with some intricacies in th
 - [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation) to launch the Restate runtime (not needed for the app implementation itself).
 - [curl](https://everything.curl.dev/get)
 
+This guide was written for:
+- Typescript SDK version: `@restatedev/restate-sdk:1.0.26`
+- Restate runtime Docker image: `restate-dist:0.1.1`
+
 ## 🚀 Let's get started!
 
 ### Setting up the tutorial
@@ -71,14 +75,14 @@ Launch the runtime:
 <TabItem value="lin" label="Linux">
 
 ```shell
-docker run --name restate_dev --network=host ghcr.io/restatedev/restate-dist:latest
+docker run --name restate_dev --network=host ghcr.io/restatedev/restate-dist:0.1.1
 ```
 
 </TabItem>
 <TabItem value="mac" label="macOS">
 
 ```shell
-docker run --name restate_dev -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist:latest
+docker run --name restate_dev -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist:0.1.1
 ```
 
 </TabItem>
@@ -372,7 +376,7 @@ Have a look at the logs again to see what happened:
 </details>
 </>
 
-## Reliable one-way calls without queues
+## Reliable message sending without queues
 
 Until now, we only did request-response calls.
 You can also do one-way calls via Restate, where you do not wait for the response. The syntax is very similar.
@@ -727,7 +731,7 @@ Add a log statement to print the cart contents, and then call `addTicket` multip
 ```ts
 console.info(`Current cart content: ${JSON.stringify(cart)}`);
 ```
-You can also kill and relaunch the service or restart the runtime (`docker restart restate-dev`), to see that this has no influence on the cart contents.
+You can also kill and relaunch the service or restart the runtime (`docker restart restate_dev`), to see that this has no influence on the cart contents.
 
 :::info
 You can store any object in the state as long as the value can be serialized with
@@ -1204,14 +1208,14 @@ Then restart the runtime with the Jaeger endpoint defined as an environment vari
 <TabItem value="lin" label="Linux">
 
 ```shell
-docker run --name restate_dev -e RESTATE_OBSERVABILITY__JAEGER__ENDPOINT=localhost:6831 --network=host ghcr.io/restatedev/restate-dist:latest
+docker run --name restate_dev -e RESTATE_OBSERVABILITY__JAEGER__ENDPOINT=localhost:6831 --network=host ghcr.io/restatedev/restate-dist:0.1.1
 ```
 
 </TabItem>
 <TabItem value="mac" label="macOS">
 
 ```shell
-docker run --name restate_dev -e RESTATE_OBSERVABILITY__JAEGER__ENDPOINT=localhost:6831 -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist:latest
+docker run --name restate_dev -e RESTATE_OBSERVABILITY__JAEGER__ENDPOINT=localhost:6831 -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist:0.1.1
 ```
 
 </TabItem>
