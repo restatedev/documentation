@@ -14,7 +14,7 @@ It exposes three services by default, each on different ports:
 | Storage | 9091 | Exposes raw RocksDB read-only storage operations, used by the CLI           | gRPC                                              |
 | Meta    | 8081 | Allows for CRUD operations on service metadata, eg for service registration | REST                                              |
 
-It will store metadata and RocksDB data on the filesystem at the relative directory of /target to whatever is the cwd of the process.
+It will store metadata and RocksDB data in the relative directory of /target under the current working directory of the process.
 
 It requires outbound connectivity to services in order to discover them and to send requests.
 
