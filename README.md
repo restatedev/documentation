@@ -46,10 +46,10 @@ This will trigger the [release workflow](.github/workflows/release.yml), which b
 Moreover, it will create a draft [release on Github](https://github.com/restatedev/documentation/releases) that needs manual approval.
 
 ### Upgrading Typescript SDK version
-- Update the version tag in the `Tour of Restate` tutorial in the `Prerequisites` section.
-- Update the version tag in the `Running on AWS Lambda` tutorial.
+Update the `TYPESCRIPT_SDK_VERSION` value in `docusaurus.config.js`
 
 ### Upgrading Restate runtime version
-- Update the version tag of the Restate Docker image in the `Tour of Restate` tutorial. 
-- Update the version tag of the Restate Docker image in the `Running on AWS Lambda` tutorial.
-- Search through the docs for the `restate-dist` Docker image and upgrade all versions.
+Update the `RESTATE_DIST_VERSION` value in `docusaurus.config.js`
+
+### Upgrading Tour version
+Update the `TOUR_VERSION` value in `docusaurus.config.js`
