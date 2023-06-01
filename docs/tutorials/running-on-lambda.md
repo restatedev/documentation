@@ -201,11 +201,11 @@ You can also run the Restate runtime locally in a Docker container to test your 
 
 - On Linux
 ```shell
-docker run --name restate_dev --rm -d --network=host ghcr.io/restatedev/restate-dist:0.1.1
+docker run --name restate_dev --rm -d --network=host ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
 ```
 - On MacOS:
 ```shell
-docker run --name restate_dev --rm -d -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist:0.1.1
+docker run --name restate_dev --rm -d -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
 ```
 
 Consult the runtime logs via `docker logs restate_dev`.

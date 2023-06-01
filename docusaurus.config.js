@@ -57,7 +57,7 @@ const config = {
               variableInjector, // replaces eg VAR::RESTATE_DIST_VERSION with config strings
               {
                 replacements: {
-                  RESTATE_DIST_VERSION: '0.1.2'
+                  RESTATE_DIST_VERSION: '0.1.1'
                 },
               }
             ]
