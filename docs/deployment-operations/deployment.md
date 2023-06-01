@@ -48,7 +48,7 @@ spec:
         - name: github
       containers:
         - name: restate
-          image: ghcr.io/restatedev/restate-dist:0.1.0
+          image: ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
           env:
             - name: RESTATE_TRACING__LOG_FORMAT
               value: Json
@@ -117,7 +117,48 @@ Otherwise, some recommended approaches are detailed below:
 |-----------------|-----------------------------------------------------------------------------------------------------------------------------------|
 | Istio / LinkerD | Ensure sidecar is injected into Restate pod and all service pods                                                                  |
 | Cilium          | Ensure Cilium is installed with `loadBalancer.l7.backend=envoy`, and annotate service pods with `service.cilium.io/lb-l7=enabled` |
+| Minikube        | For local development it's likely not worth worrying about; see below                                                             |
 | Any             | Use an envoy sidecar on the restate pod; see below                                                                                |
+
+### Local Kubernetes development
+A simple deployment setup (eg, for local use with Minikube) with a single pod in Kubernetes is as follows:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service
+  template:
+    metadata:
+      labels:
+        app: service
+    spec:
+      containers:
+        - name: service
+          image: path.to/yourrepo:yourtag
+          ports:
+            - containerPort: 8080
+              name: http2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service
+spec:
+  selector:
+    app: service
+  ports:
+    - port: 8080
+      name: http2
+  type: ClusterIP
+```
+
+L7 load balancing is not needed when there is only one pod, so it's acceptable to use a normal ClusterIP Service.
 
 ### Simple L7 load balancing with an envoy sidecar
 A simple approach to L7 load balancing is to set up an Envoy sidecar in the Restate pod which acts as a transparent HTTP proxy
@@ -216,7 +257,7 @@ when you add new methods to existing services. Discovering a service again is al
 
 Discovery can be done with a simple HTTP request
 ```bash
-$ curl restate:8081/endpoint/discover --json '{"uri": "http://service:8000"}'
+$ curl restate:8081/endpoint/discover --json '{"uri": "http://service:8080"}'
 ```
 
 For more details on the API, refer to the [Meta operational API docs](./meta-rest-api.mdx#tag/service_endpoint/operation/discover_service_endpoint).

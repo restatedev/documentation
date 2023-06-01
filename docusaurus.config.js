@@ -3,6 +3,7 @@
 
 const lightCodeTheme = require('prism-react-renderer/themes/github');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
+const variableInjector = require('./src/plugins/variable-injector')
 
 const redocusaurus = [
   'redocusaurus',
@@ -51,6 +52,16 @@ const config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {
+          remarkPlugins: [
+            [
+              variableInjector, // replaces eg VAR::RESTATE_DIST_VERSION with config strings
+              {
+                replacements: {
+                  RESTATE_DIST_VERSION: '0.1.2'
+                },
+              }
+            ]
+          ],
           routeBasePath: '/', // Set this value to '/'.
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
