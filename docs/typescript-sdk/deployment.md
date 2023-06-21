@@ -65,11 +65,15 @@ Replace `someapikey` by your API key.
 The Restate runtime will use this API key for all subsequent requests to the Lambda function.
 
 ## Logging
-The Restate SDK allows different log levels by setting the environment variable `RESTATE_DEBUG_LOG`.
-- default: only logs for major events (initial discovery and persistent issues). 
-- `RESTATE_DEBUG_LOG=LOG`: Use this to get debug logs per invocation.
-- `RESTATE_DEBUG_LOG=MESSAGES`: Use this to get debug logs per invocation, including the messages that are sent.
+The Restate SDK allows different log levels by setting the environment variable `RESTATE_DEBUG_LOGGING`.
+- `OFF` no per-invocation logging. Only startup, discovery, shutdown, abnormal situations.
+- `INVOKE`: Log for function invocation, suspension, and completion (success or error)
+- `JOURNAL`: Log each journaled action
+- `JOURNAL_VERBOSE`: Like JOURNAL, but add Json-ified message to the log.
 
+Default behavior is (when `RESTATE_DEBUG_LOGGING` is not set)
+- When `NODE_ENV=production`, the log setting is `OFF`
+- Otherwise, the `INVOKE` setting is used.
 
 # 🏁 Finished reading?
 You should now have a good understanding of how Restate Typescript services are implemented. 

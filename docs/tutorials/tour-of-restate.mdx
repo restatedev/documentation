@@ -270,9 +270,9 @@ Have a look at the SDK and runtime logs, to see how the ingress request triggers
 
 </details>
 
-For this tutorial, we put the log level to debug by setting the environment variable `RESTATE_DEBUG_LOG=LOG`.
+For this tutorial, we increase the log level to better understand what is going on. Set the environment variable `RESTATE_DEBUG_LOGGING=JOURNAL`.
 You can remove this environment variable in `package.json` to silence the logging.
-To also log the messages, use `RESTATE_DEBUG_LOG=MESSAGES`.
+To also log the messages, use `RESTATE_DEBUG_LOGGING=JOURNAL_VERBOSE`.
 
 ### What actually happened?
 The call we just did, seems like a regular RPC call.
@@ -1139,19 +1139,18 @@ payment call in `CheckoutService/Checkout`. Replace the previous call with:
 const paymentClient = PaymentClient.get();
 const doPayment = async () => paymentClient.failingCall(idempotencyKey, amount);
 //highlight-start
-const success: boolean = await RestateUtils.retryExceptionalSideEffectWithBackoff(
+const retrySettings = { initialDelayMs: 100, maxDelayMs: 500, maxRetries: 5 }
+const success: boolean = await RestateUtils.retryExceptionalSideEffect(
     ctx,
-    doPayment,
-    100, // initialDelayMs
-    500, // maxDelayMs
-    5 // maxRetries
+    retrySettings,
+    doPayment
 );
 //highlight-end
 ```
 Also add the following import at the top `import { RestateUtils } from "@restatedev/restate-sdk";`.
 
 We now call `paymentClient.failingCall` which will fail 2 times and then succeed.
-The `retryExceptionalSideEffectWithBackoff` utility will make sure that if the retry fails, the service does a Restate sleep, and then tries again.
+The `retryExceptionalSideEffect` utility will make sure that if the retry fails, the service does a Restate sleep, and then tries again.
 All attempts, including the sleeps are durably logged.
 Have a look at the logs to see the retries.
 
