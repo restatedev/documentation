@@ -35,7 +35,7 @@ The rules to invoke a service are the following:
     * Json, with the header `Content-Type: application/json`, or with
     * Protobuf, with the header `Content-Type: application/proto`
 
-The response body will be sent with the same content type used in the request.
+The response body will have the same content type as the request.
 
 For more details on the Connect protocol, check out the [Connect documentation](https://connect.build/).
 
@@ -59,11 +59,11 @@ For example, to query the available services in the runtime:
 grpcurl -plaintext <your-restate-runtime-host-port> describe
 ```
 
-Restate also supports natively gRPC-web. You can use a [gRPC-web code generator](https://www.npmjs.com/package/grpc-web) and point it directly to Restate, without using a 3rd party proxy to translate gRPC-web to gRPC.
+Restate also natively supports gRPC-web. You can use a [gRPC-web code generator](https://www.npmjs.com/package/grpc-web) and point it directly to Restate, without using a 3rd party proxy to translate gRPC-web to gRPC.
 
 ## Invoke a service without waiting for the response
 
-You can invoke a service without waiting for the response, in a similar fashion to using [one way calls in the SDK](./typescript-sdk/service-communication.md), by using the built-in `dev.restate.Ingress/Invoke` service method. This service can be invoked, like any other service, using gRPC, gRPC-web or Connect.
+You can invoke a service without waiting for the response, similar to [one-way calls in the SDK](./typescript-sdk/service-communication.md), by using the built-in `dev.restate.Ingress/Invoke` service method. This service can be invoked, like any other service, using gRPC, gRPC-web or Connect.
 
 For example, using [Connect](#connect-grpc-on-http) and `curl`:
 
@@ -71,7 +71,7 @@ For example, using [Connect](#connect-grpc-on-http) and `curl`:
 curl -X POST http://<your-restate-runtime-host-port>/dev.restate.Ingress/Invoke -H 'content-type: application/json' -d '{"service": "org.example.Greeter", "method": "Greet", "payload": {"name": "Pete"}}'
 ```
 
-The response contains the [service invocation identifier](./deployment-operations/manage-invocations.md#service-invocation-identifier), useful to manage the invocation as described in ["Manage invocations" documention](deployment-operations/manage-invocations.md).
+The response contains the [service invocation identifier](./deployment-operations/manage-invocations.md#service-invocation-identifier). You can use this identifier to manage the invocation as described in ["Manage invocations" documention](deployment-operations/manage-invocations.md).
 
 For a complete documentation of the `dev.restate.Ingress` service, check out the [Restate protobuf definitions](https://github.com/restatedev/proto/blob/main/dev/restate/services.proto).
 
