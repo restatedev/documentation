@@ -15,7 +15,7 @@ Restate supports the [Connect Protocol](https://connect.build/docs/protocol/), a
 
 It supports encoding request/response bodies as either JSON or Protobuf, it works on HTTP 1.1 or more, allows you to send requests directly from the browser, and it doesn't require to generate a client.
 
-For example using `curl`:
+For example, to invoke the service `org.example.Greeter` method `Greet` using `curl`:
 
 ```shell
 curl -X POST http://<your-restate-runtime-host-port>/org.example.Greeter/Greet -H 'content-type: application/json' -d '{"name": "Pete"}'
@@ -45,7 +45,7 @@ Restate is fully compatible with the [gRPC](https://grpc.io/), meaning you can s
 
 You can use any gRPC code generator to generate a gRPC client to invoke a Restate service. Check out the [awesome-grpc page](https://github.com/grpc-ecosystem/awesome-grpc) for a comprehensive list of clients, code generators and tools.
 
-For example, to send a request using [`grpcurl`](https://github.com/fullstorydev/grpcurl):
+For example, to invoke the service `org.example.Greeter` method `Greet` using [`grpcurl`](https://github.com/fullstorydev/grpcurl):
 
 ```shell
 grpcurl -plaintext -d '{"name": "Pete"} <your-restate-runtime-host-port> org.example.Greeter/Greet
@@ -63,7 +63,7 @@ Restate also natively supports gRPC-web. You can use a [gRPC-web code generator]
 
 ## Invoke a service without waiting for the response
 
-You can invoke a service without waiting for the response, similar to [one-way calls in the SDK](./typescript-sdk/service-communication.md), by using the built-in `dev.restate.Ingress/Invoke` service method. This service can be invoked, like any other service, using gRPC, gRPC-web or Connect.
+You can invoke a service without waiting for the response, similar to [one-way calls in the SDK](./typescript-sdk/service-communication.md), by using the Restate built-in `dev.restate.Ingress/Invoke` service method, which can be invoked like any other user service, using gRPC, gRPC-web or Connect.
 
 For example, using [Connect](#connect-grpc-on-http) and `curl`:
 
@@ -73,7 +73,7 @@ curl -X POST http://<your-restate-runtime-host-port>/dev.restate.Ingress/Invoke 
 
 The response contains the [service invocation identifier](./deployment-operations/manage-invocations.md#service-invocation-identifier). You can use this identifier to manage the invocation as described in ["Manage invocations" documention](deployment-operations/manage-invocations.md).
 
-For a complete documentation of the `dev.restate.Ingress` service, check out the [Restate protobuf definitions](https://github.com/restatedev/proto/blob/main/dev/restate/services.proto).
+For a complete documentation of the `dev.restate.Ingress` built-in service, check out the [Restate protobuf definitions](https://github.com/restatedev/proto/blob/main/dev/restate/services.proto).
 
 :::tip
 This feature can be especially useful when you need to invoke a service method implementing a long-running workflow.
