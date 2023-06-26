@@ -40,3 +40,18 @@ Note that the Promise gets resolved as soon as the message gets send to the runt
 You can only use `oneWayCall()` to do one-way calls to other services via the proto-ts clients that are generated. 
 You cannot wrap any other types of operations with `oneWayCall()`! This is invalid code.
 :::
+
+## Delayed calls
+A delayed call is a one-way call that gets executed after a specified delay.
+
+For example, the following code calls the greet method of the Greeter service with a delay of 5 seconds:
+
+```typescript
+const client = new GreeterClientImpl(restateContext);
+await restateContext.delayedCall(() =>
+  client.greet(TestRequest.create({ name: "Pete" })),
+  5000  
+);
+```
+
+Restate takes care of the scheduling and the durability of the delayed call.

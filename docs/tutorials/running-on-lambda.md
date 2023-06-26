@@ -12,16 +12,16 @@ This tutorial shows how to deploy a greeter service written with the Restate Typ
 ## Prerequisites
 > &#x1F4DD; As long as Restate hasn't been launched publicly, you need to have access to the private Restate npm packages and Docker container. Please follow the instructions in the [restate-dist](https://github.com/restatedev/restate-dist) Readme to set up access: 
 
-- [NodeJS (and npm)](https://nodejs.org) installed.
+- [NodeJS (and npm)](https://nodejs.org)
 - [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation) to launch the Restate runtime (not needed for the app implementation itself).
 - [curl](https://everything.curl.dev/get)
 - An AWS account with permissions for Lambda and API Gateway.
 
 ## Clone the repository
 
-Clone the GitHub repository for release `v0.0.1`:
+Clone the GitHub repository for the latest release:
 ```shell
-git clone --depth 1 --branch v0.0.1 git@github.com:restatedev/example-lambda-ts-greeter.git
+git clone --depth 1 --branch VAR::LAMBDA_GREETER_VERSION git@github.com:restatedev/example-lambda-ts-greeter.git
 ```
 
 We are going to deploy the service defined in `src/app.ts` on AWS Lambda.
@@ -162,7 +162,7 @@ To test the greet method, you can send the following event JSON:
 {
   "resource": "",
   "stageVariables": null,
-  "body": "AAAAAAAAAA0KBGFiY2QSAzEyMxgCBAAAAAAAAAhyBgoEUGV0ZQgAAAAAAAAOCgVTVEFURXIFIkZvbyI=",
+  "body": "AAAAAAAAABsKEAGI6GNZE3i3iJ6H90kF2CsSBQRQZXRlGAEEAAABAAAACHIGCgRQZXRl",
   "httpMethod": "POST",
   "headers": {
     "content-type": "application/restate"
@@ -172,7 +172,7 @@ To test the greet method, you can send the following event JSON:
   "requestContext": {},
   "multiValueHeaders": {},
   "multiValueQueryStringParameters": {},
-  "path": "/invoke/org.example.Greeter/Greet",
+  "path": "/invoke/org.example.Greeter/MultiWord",
   "isBase64Encoded": true
 }
 ```
@@ -203,7 +203,7 @@ You can also run the Restate runtime locally in a Docker container to test your 
 ```shell
 docker run --name restate_dev --rm -d --network=host ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
 ```
-- On MacOS:
+- On macOS:
 ```shell
 docker run --name restate_dev --rm -d -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
 ```
@@ -241,20 +241,28 @@ When executing this command, you should see the discovered services printed out!
 
 ### Send requests
 
-Now let's invoke our service! Don't forget to replace `<your-restate-runtime-endpoint>` accordingly.
+Now let's invoke the `MultiWord` method of our service! Don't forget to replace `<your-restate-runtime-endpoint>` accordingly.
 
 ```shell
-curl -X POST http://<your-restate-runtime-endpoint>:9090/org.example.Greeter/Greet -H 'content-type: application/json' -d '{"name": "Pete"}'
+curl -X POST http://<your-restate-runtime-endpoint>:9090/org.example.Greeter/MultiWord -H 'content-type: application/json' -d '{"name": "Pete"}'
 ```
 
 You should see the response:
 ```json
-{"greeting":"Hello Pete"}
+{"greeting":"Hello Pete no.1!"}
 ```
+
+This method increases a counter that is keyed by the name in the request. Send some subsequent requests for different names and watch the counters incrementing.
+
+:::tip
+The counters are stored in Restate. Restate supplies the state together with the request when it invokes the Lambda function.
+So your Lambda function does not need to worry about setting up connections to session databases etc.
+This makes the code easier and the execution faster.
+:::
 
 ## 🏁 You did it!
 You successfully added a Lambda function as a Restate service and sent requests to it.
 
 Here are some next steps for you to try:
-- Try to add a new method to the greeter function and redeploy the Lambda function with the new methods enabled.
+- Add a new method to the greeter function and redeploy the Lambda function with the new methods enabled.
 - Create and deploy a new Lambda function that calls the greeter function.
