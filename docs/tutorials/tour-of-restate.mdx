@@ -92,7 +92,7 @@ docker run --name restate_dev --rm -d -p 8081:8081 -p 9091:9091 -p 9090:9090 ghc
 
 You can consult the runtime logs via `docker logs restate_dev`.
 
-When you are done with the tutorial, stop the runtime (and remove any intermediate state) with `docker stop restate_dev`.
+When you are done with the tutorial, stop the runtime with `docker stop restate_dev`. This command also wipes the state (because we used the `--rm` flag).
 
 To do resilience experiments later on, you can restart the runtime (without losing state) with `docker restart restate_dev`.
 
@@ -230,7 +230,7 @@ Messages never get lost.
 
 Let's begin with request-response calls, in which one service calls another service and waits for the response.
 
-When the `UserSessionService/addTicket` method is called, it first needs to reserve the ticket for the user. It does that by calling the `TicketService/Reserve` method.
+When the `UserSessionService/AddTicket` method is called, it first needs to reserve the ticket for the user. It does that by calling the `TicketService/Reserve` method.
 Add the highlighted code snippet to the `addTicket` method in the user session service.
 
 ```typescript
@@ -360,7 +360,7 @@ We will fix this later on.
 <>
 <details><summary>Solution</summary>
 
-Add the following code to the `UserSessionService/checkout` method:
+Add the following code to the `UserSessionService/Checkout` method:
 
 ```typescript
 async checkout(request: CheckoutRequest): Promise<BoolValue> {

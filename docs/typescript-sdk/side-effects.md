@@ -100,7 +100,7 @@ You can supply the following values to the retry settings objects:
   that Restate sleeps between retries. If not set, there is effectively no limit (internally the limit is Number.MAX_SAFE_INTEGER).
 - `maxRetries` (number): The maximum number of retries before this function fails with an exception. If not set, there is effectively no limit (internally the limit is Number.MAX_SAFE_INTEGER).
 - `policy`:  Optionally, the retry policy to use (`FIXED_DELAY` or `EXPONENTIAL_BACKOFF`). Defaults to `EXPONENTIAL_BACKOFF`.
-- `name` (string): Optionally, the name of side effect action that is used in error- and log messages around retries.
+- `name` (string): Optionally, the name of side effect action that is used in error and log messages around retries.
 
 For example:
 ```typescript
