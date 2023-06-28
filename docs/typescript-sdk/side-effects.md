@@ -37,7 +37,7 @@ This includes actions such as getting state, calling another service, and nestin
 
 ## Retrying side effects
 
-Side effects do not get re-executed during retries/replays, so if a side effect fails, it does not get retried. 
+Side effects do not get re-executed during retries/replays. So if a side effect fails, it does not get retried. 
 The failure is stored durably in the log. 
 
 For some use cases, you may want to retry the failed side effect. 
@@ -45,15 +45,15 @@ The SDK offers some utilities to do this.
 
 ### Retrying on failure
 This utility calls a side effect function and retries the call on failure, with a timed backoff.
-The side effect function is retried when it throws an Error, until returns a successfully
+The side effect function is retried when it throws an Error, until it returns a successfully
 resolved Promise.
 
-Between retries, this function will do a suspendable Restate sleep.
+Between retries, this function does a suspendable Restate sleep.
 The sleep time starts with the `initialDelayMs` value and doubles on each retry, up to
-a maximum of `maxDelayMs`.
+a maximum of `maxDelayMs`. You supply these parameters via the retry settings object as explained below.
 
-The returned Promise will be resolved successfully once the side effect action completes
-successfully and will be rejected with an error if the maximum number of retries
+The returned Promise is resolved successfully once the side effect action completes
+successfully and is rejected with an error if the maximum number of retries
 (as specified by `maxRetries`) is exhausted.
 
 ```typescript
@@ -66,8 +66,8 @@ const paymentAction = async () => {
         return result.isSuccess;
     }
 }
-
-const paymentAccepted = await retryExceptionalSideEffectWithBackoff(ctx, paymentAction, 1000, 60000, 10);
+const retrySettings = { initialDelayMs: 1000, maxDelayMs: 60000, maxRetries: 10 }
+const paymentAccepted = await retryExceptionalSideEffect(ctx, retrySettings, paymentAction);
 ```
 
 ### Retrying until the result is `true`
@@ -75,23 +75,43 @@ const paymentAccepted = await retryExceptionalSideEffectWithBackoff(ctx, payment
 The other utility calls a side effect function and retries when the result is false, with a timed backoff.
 The side effect function is retried until it returns true or until it throws an error.
 
-Between retries, the call this function will do a suspendable Restate sleep.
+Between retries, the utility does a suspendable Restate sleep.
 The sleep time starts with the `initialDelayMs` value and doubles on each retry, up to
-a maximum of `maxDelayMs`.
+a maximum of `maxDelayMs`. You supply these parameters via the retry settings object as explained below.
 
-The returned Promise will be resolved successfully once the side effect actions completes
-successfully and will be rejected with an error if the side effect function throws an error
-or the maximum number of retries (as specified by `maxRetries`) is exhausted.
+The returned Promise is resolved successfully once the side effect actions completes
+successfully and is rejected with an error if the side effect function throws an error
+or if the maximum number of retries (as specified by `maxRetries`) is exhausted.
 
 ```typescript
 const ctx = restate.useContext(this);
 const paymentAction = async () => 
     (await paymentClient.call(txId, methodIdentifier, amount)).success;
-await retrySideEffectWithBackoff(ctx, paymentAction, 1000, 60000, 10);
+const retrySettings = { initialDelayMs: 1000, maxDelayMs: 60000, maxRetries: 10 }
+await retrySideEffect(ctx, retrySettings, paymentAction);
 ```
 
+### Retry settings
+For `retryExceptionalSideEffect` and `retrySideEffect`, you can set the retry settings. 
 
+You can supply the following values to the retry settings objects:
+- `initialDelayMs` (number): The initial delay between retries. As more retries happen, the delay may change per the policy.
+- `maxDelayMs` (number): Optionally, the maximum delay between retries. No matter what the policy says, this is the maximum time
+  that Restate sleeps between retries. If not set, there is effectively no limit (internally the limit is Number.MAX_SAFE_INTEGER).
+- `maxRetries` (number): The maximum number of retries before this function fails with an exception. If not set, there is effectively no limit (internally the limit is Number.MAX_SAFE_INTEGER).
+- `policy`:  Optionally, the retry policy to use (`FIXED_DELAY` or `EXPONENTIAL_BACKOFF`). Defaults to `EXPONENTIAL_BACKOFF`.
+- `name` (string): Optionally, the name of side effect action that is used in error and log messages around retries.
 
+For example:
+```typescript
+const retrySettings = { 
+    initialDelayMs: 1000, 
+    maxDelayMs: 60000, 
+    maxRetries: 10,
+    policy: EXPONENTIAL_BACKOFF,
+    name: "my-side-effect"
+}
+```
 
 
 

@@ -90,9 +90,9 @@ docker run --name restate_dev --rm -d -p 8081:8081 -p 9091:9091 -p 9090:9090 ghc
 </TabItem>
 </Tabs>
 
-Consult the runtime logs via `docker logs restate_dev`.
+You can consult the runtime logs via `docker logs restate_dev`.
 
-Stop the runtime (and remove any intermediate state) with `docker stop restate_dev`.
+When you are done with the tutorial, stop the runtime with `docker stop restate_dev`. This command also wipes the state (because we used the `--rm` flag).
 
 To do resilience experiments later on, you can restart the runtime (without losing state) with `docker restart restate_dev`.
 
@@ -123,18 +123,18 @@ You should now see the registered services printed out to your terminal:
 When we look at the logs of the runtime we see:
 
 ```
-2023-05-19T12:55:42.564152Z INFO restate_meta::service
-   Discovered service
-      rpc.service: "example.TicketService"
-      restate.service_endpoint.url: http://localhost:8080/
-2023-05-19T12:55:42.564172Z INFO restate_meta::service
-   Discovered service
-      rpc.service: "example.UserSessionService"
-      restate.service_endpoint.url: http://localhost:8080/
-2023-05-19T12:55:42.564178Z INFO restate_meta::service
-   Discovered service
-      rpc.service: "example.CheckoutService"
-      restate.service_endpoint.url: http://localhost:8080/
+2023-06-23T14:57:05.647655Z INFO restate_meta::service
+  Discovered service
+    rpc.service: "example.TicketService"
+    restate.service_endpoint.url: http://localhost:8080/
+2023-06-23T14:57:05.647697Z INFO restate_meta::service
+  Discovered service
+    rpc.service: "example.UserSessionService"
+    restate.service_endpoint.url: http://localhost:8080/
+2023-06-23T14:57:05.647708Z INFO restate_meta::service
+  Discovered service
+    rpc.service: "example.CheckoutService"
+    restate.service_endpoint.url: http://localhost:8080/
 ```
 
 </details>
@@ -155,8 +155,7 @@ curl -X POST http://localhost:9090/example.UserSessionService/Checkout -H 'conte
 ```
 
 In `src/app`, you find the skeletons of the services where you can start implementing your app.
-You can also find `app.ts` there which contains the definition of the Restate server that will serve the methods.
-
+The `app.ts` file contains the definition of the Restate server that will serve the methods.
 
 ## Services and concurrency
 There are three types of Restate services:
@@ -190,24 +189,25 @@ message Ticket {
 The first highlighted line of the service definition defines the type of Restate service.
 The ticket service is a keyed service. For unkeyed or singleton services, use `UNKEYED` and `SINGLETON` respectively.
 
-For keyed services, you need to tag one of the fields of the input request as the key, as done the second highlighted line.
-You specify the key by adding the `[(dev.restate.ext.field) = KEY]` annotation.
+For keyed services, you need to tag one of the fields of the input request as the key
+by adding the `[(dev.restate.ext.field) = KEY]` annotation,
+as done the second highlighted line.
 Make sure that you define the key field for all the methods of a keyed service.
 
 Besides these tags, there is nothing Restate-specific about the Protobuf definitions.
-To learn more about gRPC, have a look at their [documentation](https://grpc.io/docs/).
+To learn more about gRPC, have a look at the [gRPC documentation](https://grpc.io/docs/).
 
 :::tip
 The concurrency guarantees of keyed (and singleton services) makes
 it a lot easier to reason about interaction with external systems.
 
-If you have a keyed service that is the single writer to a database
+Imagine you have a keyed service that is the single writer to a database
 and every key only interacts with an isolated set of database rows.
 Then you can scale your application and never have concurrent invocations
 writing to the same database row. This resolves common data consistency issues such as lost updates or non-repeatable reads.
 
 Have a look at the product service of the [shopping cart example](https://github.com/restatedev/example-shopping-cart-typescript). It's keyed on product ID,
-just like the database table behind it. Restate ensures that there are never concurrent writes to the same row.
+just like the database table it writes to. Restate ensures that there are never concurrent writes to the same product.
 :::
 
 :::caution
@@ -230,7 +230,7 @@ Messages never get lost.
 
 Let's begin with request-response calls, in which one service calls another service and waits for the response.
 
-When the `addTicket` method is called, it first needs to reserve the ticket for the user. It does that by calling the `TicketService/Reserve` method.
+When the `UserSessionService/AddTicket` method is called, it first needs to reserve the ticket for the user. It does that by calling the `TicketService/Reserve` method.
 Add the highlighted code snippet to the `addTicket` method in the user session service.
 
 ```typescript
@@ -250,7 +250,9 @@ async addTicket(request: ReserveTicket): Promise<BoolValue> {
 ```
 
 To interact with Restate, we need to retrieve the `RestateContext`. This is the entrypoint of all communication with the runtime.
-Afterwards, we use the client that was generated by `proto-ts` and supply the RestateContext of the current invocation (`ctx`) to the client to make sure that it uses the SDK to send the requests.
+
+To do the call, we use the client that was generated by `proto-ts`, here called `TicketServiceClientImpl`.
+We supply the RestateContext of the current invocation (`ctx`) to the client to make sure that it uses the SDK to send the requests.
 Then we call the reserve method, which returns a Promise that gets resolved with the BoolValue response.
 
 Try it out by running the services via `npm run app` and send a request to `UserSessionService/AddTicket`, as we did [previously](#running-the-services-and-runtime).
@@ -260,19 +262,22 @@ Have a look at the SDK and runtime logs, to see how the ingress request triggers
 <details><summary>Show the logs</summary>
 
 ```log
-[restate] [2023-05-17T18:53:40.856Z] [UserSessionService] [AddTicket] [01882b0f-9270-7ed5-ae40-7053890a3cd2] : Received input message.
-[restate] [2023-05-17T18:53:40.857Z] [UserSessionService] [AddTicket] [01882b0f-9270-7ed5-ae40-7053890a3cd2] : Adding message to output buffer: type: Invoke
-[restate] [2023-05-17T18:53:40.859Z] [TicketService] [Reserve] [01882b0f-927a-7795-9416-09d03065ba8d] : Received input message.
-[restate] [2023-05-17T18:53:40.860Z] [TicketService] [Reserve] [01882b0f-927a-7795-9416-09d03065ba8d] : Call ended successful with output message.
-[restate] [2023-05-17T18:53:40.902Z] [UserSessionService] [AddTicket] [01882b0f-9270-7ed5-ae40-7053890a3cd2] : Received new completion from the runtime.
-[restate] [2023-05-17T18:53:40.902Z] [UserSessionService] [AddTicket] [01882b0f-9270-7ed5-ae40-7053890a3cd2] : Call ended successful with output message.
+[restate] [2023-06-26T06:36:22.129Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f66aeae676f4926c3fe786d89c4c] [AddTicket] : Invoking function.
+[restate] [2023-06-26T06:36:22.131Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f66aeae676f4926c3fe786d89c4c] [AddTicket] : Adding message to journal and sending to Restate ; InvokeEntryMessage
+[restate] [2023-06-26T06:36:22.134Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f66aeae676f4926c3fe786d89c4c] [AddTicket] : Scheduling suspension in 30000 ms
+[restate] [2023-06-26T06:36:22.140Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f66aeafa71bdbad5c7d92bcc5835] [Reserve] : Invoking function.
+[restate] [2023-06-26T06:36:22.140Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f66aeafa71bdbad5c7d92bcc5835] [Reserve] : Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [2023-06-26T06:36:22.140Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f66aeafa71bdbad5c7d92bcc5835] [Reserve] : Function completed successfully.
+[restate] [2023-06-26T06:36:22.143Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f66aeae676f4926c3fe786d89c4c] [AddTicket] : Received completion message from Restate, adding to journal. ; CompletionMessage
+[restate] [2023-06-26T06:36:22.143Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f66aeae676f4926c3fe786d89c4c] [AddTicket] : Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [2023-06-26T06:36:22.144Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f66aeae676f4926c3fe786d89c4c] [AddTicket] : Function completed successfully.
 ```
 
 </details>
 
-For this tutorial, we put the log level to debug by setting the environment variable `RESTATE_DEBUG_LOG=LOG`.
-You can remove this environment variable in `package.json` to silence the logging.
-To also log the messages, use `RESTATE_DEBUG_LOG=MESSAGES`.
+To better understand what is going on, we increased the log level by setting the environment variable `RESTATE_DEBUG_LOGGING=JOURNAL`.
+You can silence the logging by removing this environment variable in `package.json`, where the scripts are defined.
+To also log the messages, use `RESTATE_DEBUG_LOGGING=JOURNAL_VERBOSE`.
 
 ### What actually happened?
 The call we just did, seems like a regular RPC call.
@@ -283,14 +288,14 @@ and sends the request over that connection.
 All the communication between the runtime and the service, will go over this connection.
 The service itself never needs to set up the connection.
 
-The service then executes the method. When it calls the ticket service,
-this request goes over the open connection to the runtime, that again durably logs it and invokes the ticket service.
+The user session service then calls the ticket service.
+This request goes over the open connection to the runtime, that again durably logs it and invokes the ticket service.
 The runtime takes care of request retries, in case of failures (covered later on in [Resiliency](#resiliency)).
-Finally, the runtime delivers the response to the user session service.
+Finally, the runtime routes the response back to the user session service.
 
 When services need to wait a long time (e.g. sleep an hour, or wait for a day on a response),
-Restate makes method invocations suspend to free up the resources for other invocations.
-When the service is able to resume, Restate invokes the service again and sends over a replay log.
+Restate suspends the method invocations to free up the resources for other invocations.
+When the service can resume, Restate invokes the service again and sends over a replay log.
 The replay log contains the steps that the service already executed before it suspended.
 The service replays the log and continues processing at the point where it left off.
 
@@ -299,38 +304,46 @@ The suspension mechanism of Restate is especially beneficial if you run on serve
 For example, you can do request-response calls without paying for the idle time when waiting for a response.
 :::
 
-To show this working in practice, let's mimic that the ticket service is processing
-for an amount of time by adding a sleep call to the `TicketService/Reserve` method:
+To see this work in practice, let's mimic the ticket service doing heavy processing
+by adding a sleep call to the `TicketService/Reserve` method:
 ```typescript
+import { setTimeout } from "timers/promises";
+
 async reserve(request: Ticket): Promise<BoolValue> {
     //bad-code-start
-    await setTimeout(5000);
+    await setTimeout(35000);
     //bad-code-end
     return BoolValue.create({value: true});
 }
 ```
-Also add the import: `import { setTimeout} from "timers/promises";`.
 
 :::caution
 This is not the proper way to sleep in a Restate application!
 The Restate SDK offers you a way to do sleeps that are suspendable, as covered [later on](#suspendable-sleep).
 :::
 
-Call `UserSession/AddTicket` again and have a look at the SDK logs. Now that the the ticket service responds later, we see that the `addTicket` method suspends.
+Call `UserSessionService/AddTicket` again and have a look at the SDK logs.
+Now that the ticket service responds after 35 seconds, we see that the `addTicket` method suspends after 30 seconds.
 Once the runtime has received the response, it invokes the `addTicket` method again and the call finishes.
 
 <details><summary>Show the logs</summary>
 
 ```log
-[restate] [2023-05-17T19:20:50.382Z] [UserSessionService] [AddTicket] [01882b28-6fc3-7f6e-8cd1-c4dfe5983e21] : Received input message.
-[restate] [2023-05-17T19:20:50.385Z] [UserSessionService] [AddTicket] [01882b28-6fc3-7f6e-8cd1-c4dfe5983e21] : Adding message to output buffer: type: Invoke
-[restate] [2023-05-17T19:20:50.389Z] [TicketService] [Reserve] [01882b28-6fd3-7091-b92b-b392071925c3] : Received input message.
+[restate] [2023-06-26T06:55:28.343Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f67c68547778b96e6827f6786b6e] [AddTicket] : Invoking function.
+[restate] [2023-06-26T06:55:28.343Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f67c68547778b96e6827f6786b6e] [AddTicket] : Adding message to journal and sending to Restate ; InvokeEntryMessage
 //highlight-next-line
-[restate] [2023-05-17T19:20:51.389Z] [UserSessionService] [AddTicket] [01882b28-6fc3-7f6e-8cd1-c4dfe5983e21] : Call suspending.
-[restate] [2023-05-17T19:20:55.394Z] [TicketService] [Reserve] [01882b28-6fd3-7091-b92b-b392071925c3] : Call ended successful with output message.
+[restate] [2023-06-26T06:55:28.343Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f67c68547778b96e6827f6786b6e] [AddTicket] : Scheduling suspension in 30000 ms
+[restate] [2023-06-26T06:55:28.345Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f67c68587fbf980525ddb6a4eb2e] [Reserve] : Invoking function.
+[restate] [2023-06-26T06:55:58.365Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f67c68547778b96e6827f6786b6e] [AddTicket] : Writing suspension message to journal. ; SuspensionMessage
 //highlight-next-line
-[restate] [2023-05-17T19:20:55.397Z] [UserSessionService] [AddTicket] [01882b28-6fc3-7f6e-8cd1-c4dfe5983e21] : Received input message.
-[restate] [2023-05-17T19:20:55.398Z] [UserSessionService] [AddTicket] [01882b28-6fc3-7f6e-8cd1-c4dfe5983e21] : Call ended successful with output message.
+[restate] [2023-06-26T06:55:58.366Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f67c68547778b96e6827f6786b6e] [AddTicket] : Suspending function.
+[restate] [2023-06-26T06:56:03.350Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f67c68587fbf980525ddb6a4eb2e] [Reserve] : Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [2023-06-26T06:56:03.350Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f67c68587fbf980525ddb6a4eb2e] [Reserve] : Function completed successfully.
+//highlight-next-line
+[restate] [2023-06-26T06:56:03.354Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f67c68547778b96e6827f6786b6e] [AddTicket] : Resuming (replaying) function.
+[restate] [2023-06-26T06:56:03.355Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f67c68547778b96e6827f6786b6e] [AddTicket] : Matched and replayed message from journal ; InvokeEntryMessage
+[restate] [2023-06-26T06:56:03.355Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f67c68547778b96e6827f6786b6e] [AddTicket] : Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [2023-06-26T06:56:03.355Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f67c68547778b96e6827f6786b6e] [AddTicket] : Function completed successfully.
 ```
 
 </details>
@@ -339,13 +352,15 @@ Once the runtime has received the response, it invokes the `addTicket` method ag
 [//]: # (TODO include a video demo of knative on minikube to show how containers are spun up and torn down.)
 
 ### 📝 Try it out
-Make `checkout` method in the user session service call the `checkout` method in the checkout service.
+Make the `UserSessionService/Checkout` method call the `CheckoutService/Checkout` method.
 
-For the `tickets` field in the `CheckoutFlowRequest`, you can use a hardcoded array of strings for now: `["456"]`.
+For the `tickets` field in the `CheckoutFlowRequest`, you can use a hardcoded string array for now: `["456"]`.
 We will fix this later on.
 
 <>
 <details><summary>Solution</summary>
+
+Add the following code to the `UserSessionService/Checkout` method:
 
 ```typescript
 async checkout(request: CheckoutRequest): Promise<BoolValue> {
@@ -353,36 +368,41 @@ async checkout(request: CheckoutRequest): Promise<BoolValue> {
 
     //highlight-start
     const checkoutClient = new CheckoutServiceClientImpl(ctx);
-    const request = CheckoutFlowRequest.create({
+    const req = CheckoutFlowRequest.create({
         userId: request.userId,
         tickets: ["465"],
     });
 
-    const success = await checkoutClient.checkout(request);
+    const success = await checkoutClient.checkout(req);
     //highlight-end
 
     return BoolValue.create({ value: true });
 }
 ```
 
-Have a look at the logs again to see what happened:
+Call the `UserSessionService/Checkout` method as we did earlier and have a look at the logs again to see what happened:
 ```log
-[restate] [2023-05-17T19:46:48.805Z] [UserSessionService] [Checkout] [01882b40-3760-70c8-a2bc-7e0d889c11fb] : Received input message.
-[restate] [2023-05-17T19:46:48.806Z] [UserSessionService] [Checkout] [01882b40-3760-70c8-a2bc-7e0d889c11fb] : Adding message to output buffer: type: Invoke
-[restate] [2023-05-17T19:46:48.808Z] [CheckoutService] [Checkout] [01882b40-3767-7453-9720-cdfa48b5ae21] : Received input message.
-[restate] [2023-05-17T19:46:48.808Z] [CheckoutService] [Checkout] [01882b40-3767-7453-9720-cdfa48b5ae21] : Call ended successful with output message.
-[restate] [2023-05-17T19:46:48.850Z] [UserSessionService] [Checkout] [01882b40-3760-70c8-a2bc-7e0d889c11fb] : Received new completion from the runtime.
-[restate] [2023-05-17T19:46:48.850Z] [UserSessionService] [Checkout] [01882b40-3760-70c8-a2bc-7e0d889c11fb] : Call ended successful with output message.
+[restate] [2023-06-26T07:06:37.879Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6869fb176de91947c28b482e5fc] [Checkout] : Invoking function.
+[restate] [2023-06-26T07:06:37.879Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6869fb176de91947c28b482e5fc] [Checkout] : Adding message to journal and sending to Restate ; InvokeEntryMessage
+[restate] [2023-06-26T07:06:37.881Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6869fb176de91947c28b482e5fc] [Checkout] : Scheduling suspension in 30000 ms
+[restate] [2023-06-26T07:06:37.884Z] DEBUG: [example.CheckoutService-AYj2hp+6eyiC08MwcNJ8yg==-0188f6869fba70f085a0e8d85bff19e2] [Checkout] : Invoking function.
+[restate] [2023-06-26T07:06:37.884Z] DEBUG: [example.CheckoutService-AYj2hp+6eyiC08MwcNJ8yg==-0188f6869fba70f085a0e8d85bff19e2] [Checkout] : Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [2023-06-26T07:06:37.885Z] DEBUG: [example.CheckoutService-AYj2hp+6eyiC08MwcNJ8yg==-0188f6869fba70f085a0e8d85bff19e2] [Checkout] : Function completed successfully.
+[restate] [2023-06-26T07:06:37.886Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6869fb176de91947c28b482e5fc] [Checkout] : Received completion message from Restate, adding to journal. ; CompletionMessage
+[restate] [2023-06-26T07:06:37.886Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6869fb176de91947c28b482e5fc] [Checkout] : Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [2023-06-26T07:06:37.886Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6869fb176de91947c28b482e5fc] [Checkout] : Function completed successfully.
 ```
+
+Notice that the `UserSessionService` did not get suspended because the response came before the suspension timeout hit.
 
 </details>
 </>
 
 ## Reliable message sending without queues
 
-Until now, we only did request-response calls.
+Until now, we did request-response calls and waited for the response.
 You can also do one-way calls via Restate, where you do not wait for the response. The syntax is very similar.
-All we need to do is wrap the call with `oneWayCall`, as follows:
+All we need to do is wrap the call with `oneWayCall`, as we do here in the `UserSessionService/AddTicket` method:
 
 ```typescript
 async addTicket(request: ReserveTicket): Promise<BoolValue> {
@@ -398,18 +418,23 @@ async addTicket(request: ReserveTicket): Promise<BoolValue> {
 }
 ```
 
-Once you adapted the code, try it out by calling `UserSessionService/AddTicket`, as [explained earlier](#running-the-services-and-runtime).
-If you look at the service logs, you see that the `addTicket` method doesn't wait for a response and finishes earlier than the `reserve` method.
+Once you adapted the code, try it out by calling the `UserSessionService/AddTicket` method, as [explained earlier](#running-the-services-and-runtime).
+In the service logs, you see that the `addTicket` method doesn't wait for a response and finishes earlier than the `reserve` method.
+
+
 <details><summary>Show the logs</summary>
 
 ```log
-[restate] [2023-05-17T19:35:14.917Z] [UserSessionService] [AddTicket] [01882b35-a0e0-72b3-a87e-9335b5e0129c] : Received input message.
-[restate] [2023-05-17T19:35:14.918Z] [UserSessionService] [AddTicket] [01882b35-a0e0-72b3-a87e-9335b5e0129c] : Adding message to output buffer: type: BackgroundInvoke
+[restate] [2023-06-26T07:16:29.481Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f68fa6a37e45b8a121a8766cfbdf] [AddTicket] : Invoking function.
 //highlight-next-line
-[restate] [2023-05-17T19:35:14.918Z] [UserSessionService] [AddTicket] [01882b35-a0e0-72b3-a87e-9335b5e0129c] : Call ended successful with output message.
-[restate] [2023-05-17T19:35:14.962Z] [TicketService] [Reserve] [01882b35-a0e7-727a-928a-1d69f34396fd] : Received input message.
+[restate] [2023-06-26T07:16:29.482Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f68fa6a37e45b8a121a8766cfbdf] [AddTicket] : Adding message to journal and sending to Restate ; BackgroundInvokeEntryMessage
+[restate] [2023-06-26T07:16:29.482Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f68fa6a37e45b8a121a8766cfbdf] [AddTicket] : Journaled and sent output message ; OutputStreamEntryMessage
 //highlight-next-line
-[restate] [2023-05-17T19:35:14.962Z] [TicketService] [Reserve] [01882b35-a0e7-727a-928a-1d69f34396fd] : Call ended successful with output message.
+[restate] [2023-06-26T07:16:29.482Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f68fa6a37e45b8a121a8766cfbdf] [AddTicket] : Function completed successfully.
+[restate] [2023-06-26T07:16:29.528Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f68fa6ae7f5ebbad465759b6e5d4] [Reserve] : Invoking function.
+[restate] [2023-06-26T07:17:04.563Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f68fa6ae7f5ebbad465759b6e5d4] [Reserve] : Journaled and sent output message ; OutputStreamEntryMessage
+//highlight-next-line
+[restate] [2023-06-26T07:17:04.563Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f68fa6ae7f5ebbad465759b6e5d4] [Reserve] : Function completed successfully.
 ```
 
 </details>
@@ -420,9 +445,11 @@ Restate retries failed one-way invocations for you. No need to set up any messag
 
 
 ### 📝 Try it out
-The `UserSessionService/ExpireTicket` method is called when a user did not proceed with the payment before the timeout.
-Let the `expireTicket` method unidirectionally call the `TicketService/Unreserve` method.
-Send a request to `UserSessionSerivce/ExpireTicket` to check if it works.
+In our example, when you add a seat to your shopping cart, it gets reserved for 15 minutes.
+When a user did not proceed with the payment before the timeout, we need to call the `UserSessionService/ExpireTicket` method.
+Let the `expireTicket` method call the `TicketService/Unreserve` method.
+
+When you are done with the implementation, send a request to `UserSessionService/ExpireTicket` to check if it works.
 
 <>
 <details><summary>Solution</summary>
@@ -452,13 +479,15 @@ curl -X POST http://localhost:9090/example.UserSessionService/ExpireTicket -H 'c
 Have a look at the logs again to see what happened:
 
 ```log
-[restate] [2023-05-17T20:04:12.562Z] [UserSessionService] [ExpireTicket] [01882b50-248c-77e8-b1e4-0b12e17f103b] : Received input message.
-[restate] [2023-05-17T20:04:12.563Z] [UserSessionService] [ExpireTicket] [01882b50-248c-77e8-b1e4-0b12e17f103b] : Adding message to output buffer: type: BackgroundInvoke
+[restate] [2023-06-26T07:34:03.373Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f69fbb6878cab220b2af90b02e02] [ExpireTicket] : Invoking function.
+[restate] [2023-06-26T07:34:03.374Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f69fbb6878cab220b2af90b02e02] [ExpireTicket] : Adding message to journal and sending to Restate ; BackgroundInvokeEntryMessage
+[restate] [2023-06-26T07:34:03.375Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f69fbb6878cab220b2af90b02e02] [ExpireTicket] : Journaled and sent output message ; OutputStreamEntryMessage
 //highlight-next-line
-[restate] [2023-05-17T20:04:12.563Z] [UserSessionService] [ExpireTicket] [01882b50-248c-77e8-b1e4-0b12e17f103b] : Call ended successful with output message.
-[restate] [2023-05-17T20:04:12.611Z] [TicketService] [Unreserve] [01882b50-2494-7fb1-9ab2-54a00956929d] : Received input message.
+[restate] [2023-06-26T07:34:03.375Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f69fbb6878cab220b2af90b02e02] [ExpireTicket] : Function completed successfully.
+[restate] [2023-06-26T07:34:03.420Z] DEBUG: [example.TicketService--0188f69fbb7277568a4b33e9cf04d187] [Unreserve] : Invoking function.
+[restate] [2023-06-26T07:34:03.420Z] DEBUG: [example.TicketService--0188f69fbb7277568a4b33e9cf04d187] [Unreserve] : Journaled and sent output message ; OutputStreamEntryMessage
 //highlight-next-line
-[restate] [2023-05-17T20:04:12.611Z] [TicketService] [Unreserve] [01882b50-2494-7fb1-9ab2-54a00956929d] : Call ended successful with output message.
+[restate] [2023-06-26T07:34:03.420Z] DEBUG: [example.TicketService--0188f69fbb7277568a4b33e9cf04d187] [Unreserve] : Function completed successfully.
 ```
 
 </details>
@@ -483,7 +512,7 @@ Earlier in this tutorial, we showed how Restate suspensions work by letting the 
 ```typescript
 async reserve(request: Ticket): Promise<BoolValue> {
     //bad-code-start
-    await setTimeout(5000);
+    await setTimeout(35000);
     //bad-code-end
     return BoolValue.create({value: true});
 }
@@ -495,35 +524,41 @@ To use a durable, suspendable sleep, use the sleep functionality of the Restate 
 async reserve(request: Ticket): Promise<BoolValue> {
     const ctx = restate.useContext(this);
     //good-code-start
-    await ctx.sleep(5000);
+    await ctx.sleep(35000);
     //good-code-end
     return BoolValue.create({value: true});
 }
 ```
 
-Run both services and send the `addTicket` request, as [we did earlier](#running-the-services-and-runtime).
+Send an `addTicket` request, as [we did earlier](#running-the-services-and-runtime).
 In the service logs, you can see the `reserve` method processing the sleep, then suspending, and then resuming again after the sleep completed.
 The `addTicket` method did a one-way call to the `reserve` method so did not suspend but just finished its invocation.
 
 <details><summary>Show the logs</summary>
 
 ```log
-[restate] [2023-05-18T06:30:10.476Z] [UserSessionService] [AddTicket] [01882d8d-3b2a-7f1c-a04a-d034ded45f5f] : Received input message.
-[restate] [2023-05-18T06:30:10.476Z] [UserSessionService] [AddTicket] [01882d8d-3b2a-7f1c-a04a-d034ded45f5f] : Adding message to output buffer: type: BackgroundInvoke
-[restate] [2023-05-18T06:30:10.476Z] [UserSessionService] [AddTicket] [01882d8d-3b2a-7f1c-a04a-d034ded45f5f] : Call ended successful with output message.
-[restate] [2023-05-18T06:30:10.521Z] [TicketService] [Reserve] [01882d8d-3b2c-7db6-89fc-99d80e227f4b] : Received input message.
-[restate] [2023-05-18T06:30:10.521Z] [TicketService] [Reserve] [01882d8d-3b2c-7db6-89fc-99d80e227f4b] : Adding message to output buffer: type: Sleep
+[restate] [2023-06-26T07:51:52.169Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6b00a637a55b8dcc256a8fe3d58] [AddTicket] : Invoking function.
+[restate] [2023-06-26T07:51:52.170Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6b00a637a55b8dcc256a8fe3d58] [AddTicket] : Adding message to journal and sending to Restate ; BackgroundInvokeEntryMessage
+[restate] [2023-06-26T07:51:52.171Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6b00a637a55b8dcc256a8fe3d58] [AddTicket] : Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [2023-06-26T07:51:52.171Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6b00a637a55b8dcc256a8fe3d58] [AddTicket] : Function completed successfully.
+[restate] [2023-06-26T07:51:52.220Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f6b00a6e74eab0e298ca5a21dac4] [Reserve] : Invoking function.
+[restate] [2023-06-26T07:51:52.220Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f6b00a6e74eab0e298ca5a21dac4] [Reserve] : Adding message to journal and sending to Restate ; SleepEntryMessage
 //highlight-start
-[restate] [2023-05-18T06:30:11.522Z] [TicketService] [Reserve] [01882d8d-3b2c-7db6-89fc-99d80e227f4b] : Call suspending.
+[restate] [2023-06-26T07:51:52.221Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f6b00a6e74eab0e298ca5a21dac4] [Reserve] : Scheduling suspension in 30000 ms
+[restate] [2023-06-26T07:52:22.239Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f6b00a6e74eab0e298ca5a21dac4] [Reserve] : Writing suspension message to journal. ; SuspensionMessage
+[restate] [2023-06-26T07:52:22.240Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f6b00a6e74eab0e298ca5a21dac4] [Reserve] : Suspending function.
+[restate] [2023-06-26T07:52:27.222Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f6b00a6e74eab0e298ca5a21dac4] [Reserve] : Resuming (replaying) function.
 //highlight-end
-[restate] [2023-05-18T06:30:15.526Z] [TicketService] [Reserve] [01882d8d-3b2c-7db6-89fc-99d80e227f4b] : Received input message.
-[restate] [2023-05-18T06:30:15.527Z] [TicketService] [Reserve] [01882d8d-3b2c-7db6-89fc-99d80e227f4b] : Call ended successful with output message.
+[restate] [2023-06-26T07:52:27.222Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f6b00a6e74eab0e298ca5a21dac4] [Reserve] : Matched and replayed message from journal ; SleepEntryMessage
+[restate] [2023-06-26T07:52:27.223Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f6b00a6e74eab0e298ca5a21dac4] [Reserve] : Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [2023-06-26T07:52:27.223Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f6b00a6e74eab0e298ca5a21dac4] [Reserve] : Function completed successfully.
+
 ```
 
 </details>
 
 
-Let's make the call to the `reserve` method wait for the response again, to see how the suspensions work across different services.
+Revert the `reserve` method call to a request-response call, to see how the suspensions work across different services.
 Simply remove the `oneWayCall()` wrapper around the call, to end up with:
 
 ```ts
@@ -549,21 +584,33 @@ Now you see in the logs that both services get suspended. The user session servi
 <details><summary>Show the logs</summary>
 
 ```log
-[restate] [2023-05-18T06:39:30.507Z] [UserSessionService] [AddTicket] [01882d95-c6c4-7a26-99f7-8dba0b476933] : Received input message.
-[restate] [2023-05-18T06:39:30.508Z] [UserSessionService] [AddTicket] [01882d95-c6c4-7a26-99f7-8dba0b476933] : Adding message to output buffer: type: Invoke
-[restate] [2023-05-18T06:39:30.510Z] [TicketService] [Reserve] [01882d95-c6cd-7271-aa3b-578216e44221] : Received input message.
-[restate] [2023-05-18T06:39:30.510Z] [TicketService] [Reserve] [01882d95-c6cd-7271-aa3b-578216e44221] : Adding message to output buffer: type: Sleep
+[restate] [2023-06-26T08:00:19.711Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6b7c8f9782ca774a192c7e9da88] [AddTicket] : Invoking function.
+[restate] [2023-06-26T08:00:19.712Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6b7c8f9782ca774a192c7e9da88] [AddTicket] : Adding message to journal and sending to Restate ; InvokeEntryMessage
+[restate] [2023-06-26T08:00:19.713Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6b7c8f9782ca774a192c7e9da88] [AddTicket] : Scheduling suspension in 30000 ms
+[restate] [2023-06-26T08:00:19.717Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f6b7c9037b4a872cc8de4af92ba7] [Reserve] : Invoking function.
+[restate] [2023-06-26T08:00:19.717Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f6b7c9037b4a872cc8de4af92ba7] [Reserve] : Adding message to journal and sending to Restate ; SleepEntryMessage
+[restate] [2023-06-26T08:00:19.717Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f6b7c9037b4a872cc8de4af92ba7] [Reserve] : Scheduling suspension in 30000 ms
 //highlight-start
-[restate] [2023-05-18T06:39:31.509Z] [UserSessionService] [AddTicket] [01882d95-c6c4-7a26-99f7-8dba0b476933] : Call suspending.
-[restate] [2023-05-18T06:39:31.512Z] [TicketService] [Reserve] [01882d95-c6cd-7271-aa3b-578216e44221] : Call suspending.
+[restate] [2023-06-26T08:00:49.724Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6b7c8f9782ca774a192c7e9da88] [AddTicket] : Writing suspension message to journal. ; SuspensionMessage
+[restate] [2023-06-26T08:00:49.724Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6b7c8f9782ca774a192c7e9da88] [AddTicket] : Suspending function.
+[restate] [2023-06-26T08:00:49.728Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f6b7c9037b4a872cc8de4af92ba7] [Reserve] : Writing suspension message to journal. ; SuspensionMessage
+[restate] [2023-06-26T08:00:49.729Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f6b7c9037b4a872cc8de4af92ba7] [Reserve] : Suspending function.
+[restate] [2023-06-26T08:00:54.720Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f6b7c9037b4a872cc8de4af92ba7] [Reserve] : Resuming (replaying) function.
 //highlight-end
-[restate] [2023-05-18T06:39:35.513Z] [TicketService] [Reserve] [01882d95-c6cd-7271-aa3b-578216e44221] : Received input message.
-[restate] [2023-05-18T06:39:35.514Z] [TicketService] [Reserve] [01882d95-c6cd-7271-aa3b-578216e44221] : Call ended successful with output message.
-[restate] [2023-05-18T06:39:35.558Z] [UserSessionService] [AddTicket] [01882d95-c6c4-7a26-99f7-8dba0b476933] : Received input message.
-[restate] [2023-05-18T06:39:35.559Z] [UserSessionService] [AddTicket] [01882d95-c6c4-7a26-99f7-8dba0b476933] : Call ended successful with output message.
+[restate] [2023-06-26T08:00:54.720Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f6b7c9037b4a872cc8de4af92ba7] [Reserve] : Matched and replayed message from journal ; SleepEntryMessage
+[restate] [2023-06-26T08:00:54.720Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f6b7c9037b4a872cc8de4af92ba7] [Reserve] : Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [2023-06-26T08:00:54.720Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f6b7c9037b4a872cc8de4af92ba7] [Reserve] : Function completed successfully.
+//highlight-next-line
+[restate] [2023-06-26T08:00:54.764Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6b7c8f9782ca774a192c7e9da88] [AddTicket] : Resuming (replaying) function.
+[restate] [2023-06-26T08:00:54.764Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6b7c8f9782ca774a192c7e9da88] [AddTicket] : Matched and replayed message from journal ; InvokeEntryMessage
+[restate] [2023-06-26T08:00:54.765Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6b7c8f9782ca774a192c7e9da88] [AddTicket] : Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [2023-06-26T08:00:54.765Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6b7c8f9782ca774a192c7e9da88] [AddTicket] : Function completed successfully.
 ```
 
 </details>
+
+When you reduce the time the `TicketService/Reserve` method sleeps to a second, you will not see the suspensions anymore.
+
 
 :::caution
 Sleeping can block processing for keyed and singleton services.
@@ -577,8 +624,8 @@ Let's have a look at a slightly different usage of timers.
 In the application, a ticket gets reserved for 15 minutes.
 If it hasn't been bought and paid within that time interval, then it becomes available again to other users.
 
-You can do delayed async calls with Restate by adding a delay in milliseconds to the
-`oneWayCall` call.
+To do this, you can use a delayed call. This is a one-way call that gets delayed by a specified duration.
+This would make the `UserSessionService/AddTicket` method look as follows:
 ```typescript
 async addTicket(request: ReserveTicket): Promise<BoolValue> {
     const ctx = restate.useContext(this);
@@ -596,7 +643,7 @@ async addTicket(request: ReserveTicket): Promise<BoolValue> {
         });
 
         //highlight-start
-        await ctx.oneWayCall(
+        await ctx.delayedCall(
             () => userSessionClient.expireTicket(expireTicketRequest),
             15 * 60 * 1000 // delay call for 15 minutes
         );
@@ -607,22 +654,25 @@ async addTicket(request: ReserveTicket): Promise<BoolValue> {
 }
 ```
 
-To test it out, put the delay to a lower value (e.g. 5 seconds), call the `addTicket` method, and see in the logs how the async call is executed 5 seconds later.
+To test it out, put the delay to a lower value (e.g. 5 seconds), call the `addTicket` method, and see in the logs how the call is executed 5 seconds later.
 
 <details><summary>Show the logs</summary>
 
 ```logs
 ... logs from reserve call ...
-[restate] [2023-05-18T07:14:32.546Z] [UserSessionService] [AddTicket] [01882db5-c61e-71d6-bd5c-4c4d8019c5fc] : Received input message.
-[restate] [2023-05-18T07:14:32.549Z] [UserSessionService] [AddTicket] [01882db5-c61e-71d6-bd5c-4c4d8019c5fc] : Adding message to output buffer: type: BackgroundInvoke
-[restate] [2023-05-18T07:14:32.550Z] [UserSessionService] [AddTicket] [01882db5-c61e-71d6-bd5c-4c4d8019c5fc] : Call ended successful with output message.
-[restate] [2023-05-18T07:14:37.552Z] [UserSessionService] [ExpireTicket] [01882db5-d9e6-7165-9988-1b3381d4f209] : Received input message.
+[restate] [2023-06-26T08:40:39.975Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6dcb30779eba3274cceb1af304b] [AddTicket] : Received completion message from Restate, adding to journal. ; CompletionMessage
 //highlight-next-line
-[restate] [2023-05-18T07:14:37.552Z] [UserSessionService] [ExpireTicket] [01882db5-d9e6-7165-9988-1b3381d4f209] : Adding message to output buffer: type: BackgroundInvoke
-[restate] [2023-05-18T07:14:37.553Z] [UserSessionService] [ExpireTicket] [01882db5-d9e6-7165-9988-1b3381d4f209] : Call ended successful with output message.
+[restate] [2023-06-26T08:40:39.976Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6dcb30779eba3274cceb1af304b] [AddTicket] : Adding message to journal and sending to Restate ; BackgroundInvokeEntryMessage
+[restate] [2023-06-26T08:40:39.977Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6dcb30779eba3274cceb1af304b] [AddTicket] : Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [2023-06-26T08:40:39.977Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6dcb30779eba3274cceb1af304b] [AddTicket] : Function completed successfully.
 //highlight-next-line
-[restate] [2023-05-18T07:14:37.598Z] [TicketService] [Unreserve] [01882db5-ed71-7087-b945-7c76bd5c6aca] : Received input message.
-[restate] [2023-05-18T07:14:37.598Z] [TicketService] [Unreserve] [01882db5-ed71-7087-b945-7c76bd5c6aca] : Call ended successful with output message.
+[restate] [2023-06-26T08:40:44.978Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6dcb72a72dc9375677b71a400de] [ExpireTicket] : Invoking function.
+[restate] [2023-06-26T08:40:44.978Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6dcb72a72dc9375677b71a400de] [ExpireTicket] : Adding message to journal and sending to Restate ; BackgroundInvokeEntryMessage
+[restate] [2023-06-26T08:40:44.978Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6dcb72a72dc9375677b71a400de] [ExpireTicket] : Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [2023-06-26T08:40:44.979Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6dcb72a72dc9375677b71a400de] [ExpireTicket] : Function completed successfully.
+[restate] [2023-06-26T08:40:45.024Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f6dccab37a81b1185c44b0ba6396] [Unreserve] : Invoking function.
+[restate] [2023-06-26T08:40:45.024Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f6dccab37a81b1185c44b0ba6396] [Unreserve] : Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [2023-06-26T08:40:45.024Z] DEBUG: [example.TicketService-AzQ1Ng==-0188f6dccab37a81b1185c44b0ba6396] [Unreserve] : Function completed successfully.
 ```
 
 </details>
@@ -630,7 +680,8 @@ To test it out, put the delay to a lower value (e.g. 5 seconds), call the `addTi
 Don't forget to set the delay back to 15 minutes.
 
 :::caution
-You could also sleep for 15 minutes at the end of the `addTicket` method
+There are different ways to implement this pattern.
+    You could also sleep for 15 minutes at the end of the `addTicket` method
 and then call the `TicketService/Unreserve` method:
 
 ```typescript
@@ -671,7 +722,7 @@ useful for
 this service type.
 2. Singleton service: All invocations to the service can access
 the same state.
-3. Unkeyed service: State is isolated per invocation. Using state is the least useful
+3. Unkeyed service: State is isolated per invocation. Using state is not useful
 for this service type.
 
 Let's adapt the `UserSessionService/AddTicket` method to keep track of the cart items.
@@ -714,12 +765,13 @@ Run the services and call the `addTicket` method, to see the interaction with st
 
 ```log
 ... logs from reserve call ...
-[restate] [2023-05-18T08:01:55.377Z] [UserSessionService] [AddTicket] [01882de1-26e2-766a-914f-81768d58f8fd] : Received input message.
-//highlight-start
-[restate] [2023-05-18T08:01:55.379Z] [UserSessionService] [AddTicket] [01882de1-26e2-766a-914f-81768d58f8fd] : Adding message to output buffer: type: GetState
-[restate] [2023-05-18T08:01:55.380Z] [UserSessionService] [AddTicket] [01882de1-26e2-766a-914f-81768d58f8fd] : Received new completion from the runtime.
-[restate] [2023-05-18T08:01:55.380Z] [UserSessionService] [AddTicket] [01882de1-26e2-766a-914f-81768d58f8fd] : Adding message to output buffer: type: SetState
-//highlight-end
+[restate] [2023-06-26T08:49:43.631Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6e4fead7d35a9c880c4509699bf] [AddTicket] : Received completion message from Restate, adding to journal. ; CompletionMessage
+//highlight-next-line
+[restate] [2023-06-26T08:49:43.632Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6e4fead7d35a9c880c4509699bf] [AddTicket] : Adding message to journal and sending to Restate ; GetStateEntryMessage
+[restate] [2023-06-26T08:49:43.632Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6e4fead7d35a9c880c4509699bf] [AddTicket] : Scheduling suspension in 30000 ms
+[restate] [2023-06-26T08:49:43.633Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6e4fead7d35a9c880c4509699bf] [AddTicket] : Received completion message from Restate, adding to journal. ; CompletionMessage
+//highlight-next-line
+[restate] [2023-06-26T08:49:43.633Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6e4fead7d35a9c880c4509699bf] [AddTicket] : Adding message to journal and sending to Restate ; SetStateEntryMessage
 ... logs from expireTicket call ...
 ```
 
@@ -802,6 +854,7 @@ async expireTicket(request: ExpireTicketRequest): Promise<Empty> {
 ```
 
 Before we call `unreserve`, we first need to check if the ticket is still in the cart.
+Retrieve the state and check if the ticket ID is in there.
 If this is the case, then we call `TicketService/Unreserve` and remove it from the cart state.
 
 <details><summary>Solution</summary>
@@ -954,26 +1007,36 @@ The highlighted line of code wraps the creation of the UUID in a side effect
 To experiment, you can add a log line and a sleep to see how the UUID gets replayed after the suspension:
 ```ts
 console.log("My idempotency key: " + idempotencyKey);
-await ctx.sleep(2000);
+await ctx.sleep(31000);
 ```
 Have a look at the logs to see what happens.
 
 <details><summary>Show the logs</summary>
 
 ```log
-[restate] [2023-05-18T10:42:55.029Z] [CheckoutService] [Checkout] [01882e74-9fb4-781b-9607-1e4b2ba75385] : Received input message.
+... logs of `UserSessionService/Checkout` ...
+[restate] [2023-06-26T09:10:34.753Z] DEBUG: [example.CheckoutService-AYj2+BnVdyWse+EyL56vDw==-0188f6f819d578bf937c22f127fac01a] [Checkout] : Invoking function.
+[restate] [2023-06-26T09:10:34.754Z] DEBUG: [example.CheckoutService-AYj2+BnVdyWse+EyL56vDw==-0188f6f819d578bf937c22f127fac01a] [Checkout] : Adding message to journal and sending to Restate ; undefined
+[restate] [2023-06-26T09:10:34.754Z] DEBUG: [example.CheckoutService-AYj2+BnVdyWse+EyL56vDw==-0188f6f819d578bf937c22f127fac01a] [Checkout] : Scheduling suspension in 30000 ms
+[restate] [2023-06-26T09:10:34.754Z] DEBUG: [example.CheckoutService-AYj2+BnVdyWse+EyL56vDw==-0188f6f819d578bf937c22f127fac01a] [Checkout] : Received completion message from Restate, adding to journal. ; CompletionMessage
 //highlight-next-line
-[restate] [2023-05-18T10:42:55.030Z] [CheckoutService] [Checkout] [01882e74-9fb4-781b-9607-1e4b2ba75385] : Adding message to output buffer: type: SideEffect
-[restate] [2023-05-18T10:42:55.031Z] [CheckoutService] [Checkout] [01882e74-9fb4-781b-9607-1e4b2ba75385] : Received new completion from the runtime.
+My idempotency key: ad296559-b42e-4680-90ad-6743b7b439b3
+[restate] [2023-06-26T09:10:34.755Z] DEBUG: [example.CheckoutService-AYj2+BnVdyWse+EyL56vDw==-0188f6f819d578bf937c22f127fac01a] [Checkout] : Adding message to journal and sending to Restate ; SleepEntryMessage
+[restate] [2023-06-26T09:10:34.755Z] DEBUG: [example.CheckoutService-AYj2+BnVdyWse+EyL56vDw==-0188f6f819d578bf937c22f127fac01a] [Checkout] : Scheduling suspension in 30000 ms
+[restate] [2023-06-26T09:11:04.739Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6f819d27029aba763511f70d403] [Checkout] : Writing suspension message to journal. ; SuspensionMessage
+[restate] [2023-06-26T09:11:04.739Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6f819d27029aba763511f70d403] [Checkout] : Suspending function.
+[restate] [2023-06-26T09:11:04.756Z] DEBUG: [example.CheckoutService-AYj2+BnVdyWse+EyL56vDw==-0188f6f819d578bf937c22f127fac01a] [Checkout] : Writing suspension message to journal. ; SuspensionMessage
+[restate] [2023-06-26T09:11:04.756Z] DEBUG: [example.CheckoutService-AYj2+BnVdyWse+EyL56vDw==-0188f6f819d578bf937c22f127fac01a] [Checkout] : Suspending function.
 //highlight-next-line
-My idempotency key: 5a0fa46f-88ec-4f29-b2e8-0b269bb44be2
-[restate] [2023-05-18T10:42:55.031Z] [CheckoutService] [Checkout] [01882e74-9fb4-781b-9607-1e4b2ba75385] : Adding message to output buffer: type: Sleep
+[restate] [2023-06-26T09:11:05.758Z] DEBUG: [example.CheckoutService-AYj2+BnVdyWse+EyL56vDw==-0188f6f819d578bf937c22f127fac01a] [Checkout] : Resuming (replaying) function.
+[restate] [2023-06-26T09:11:05.758Z] DEBUG: [example.CheckoutService-AYj2+BnVdyWse+EyL56vDw==-0188f6f819d578bf937c22f127fac01a] [Checkout] : Matched and replayed message from journal ; undefined
 //highlight-next-line
-[restate] [2023-05-18T10:42:56.031Z] [CheckoutService] [Checkout] [01882e74-9fb4-781b-9607-1e4b2ba75385] : Call suspending.
-[restate] [2023-05-18T10:42:57.033Z] [CheckoutService] [Checkout] [01882e74-9fb4-781b-9607-1e4b2ba75385] : Received input message.
-//highlight-next-line
-My idempotency key: 5a0fa46f-88ec-4f29-b2e8-0b269bb44be2
-[restate] [2023-05-18T10:42:57.034Z] [CheckoutService] [Checkout] [01882e74-9fb4-781b-9607-1e4b2ba75385] : Call ended successful with output message.
+My idempotency key: ad296559-b42e-4680-90ad-6743b7b439b3
+[restate] [2023-06-26T09:11:05.759Z] DEBUG: [example.CheckoutService-AYj2+BnVdyWse+EyL56vDw==-0188f6f819d578bf937c22f127fac01a] [Checkout] : Matched and replayed message from journal ; SleepEntryMessage
+[restate] [2023-06-26T09:11:05.759Z] DEBUG: [example.CheckoutService-AYj2+BnVdyWse+EyL56vDw==-0188f6f819d578bf937c22f127fac01a] [Checkout] : Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [2023-06-26T09:11:05.759Z] DEBUG: [example.CheckoutService-AYj2+BnVdyWse+EyL56vDw==-0188f6f819d578bf937c22f127fac01a] [Checkout] : Function completed successfully.
+
+... logs of `UserSessionService/Checkout` ...
 ```
 
 </details>
@@ -982,12 +1045,12 @@ Remove the sleep again, before you continue.
 
 :::caution
 You can't execute any RestateContext calls from within a side effect.
-    This will fail.
+    This is invalid code.
 :::
 
 ### 📝 Try it out
 #### Executing the payment
-The `checkout` method triggers the payment via some external payment provider (`PaymentClinet`). You can find a payment client stub in `src/aux/payment_client.ts`. The payment
+The `checkout` method triggers the payment via some external payment provider (`PaymentClient`). You can find a payment client stub in `src/aux/payment_client.ts`. The payment
 client has two methods:
 
 - `get()` to create a new client,
@@ -995,7 +1058,7 @@ client has two methods:
     idempotencyKey and total amount. The payment provider makes sure that only one payment gets processed for a single
 idempotency key.
 
-Create a new payment client in `CheckoutService/checkout`. Assume every ticket costs 40 dollars.
+Create a new payment client in `CheckoutService/Checkout`. Assume every ticket costs 40 dollars.
     Then execute the payment with the created idempotency key and store the boolean result of the
     call as a side effect. Also use the boolean result for the return value of the method.
 
@@ -1026,16 +1089,17 @@ You should see logs similar to:
 
 ```logs
 // ... UserSessionService/Checkout logs ...
-[restate] [2023-05-18T11:56:47.384Z] [CheckoutService] [Checkout] [01882eb8-4196-7f45-95b4-2383518330af] : Received input message.
+[restate] [2023-06-26T09:18:18.488Z] DEBUG: [example.CheckoutService-AYj2/y1KcMC2r/XHRrCo/w==-0188f6ff2d4a71f884da05e0ea228842] [Checkout] : Invoking function.
+[restate] [2023-06-26T09:18:18.490Z] DEBUG: [example.CheckoutService-AYj2/y1KcMC2r/XHRrCo/w==-0188f6ff2d4a71f884da05e0ea228842] [Checkout] : Adding message to journal and sending to Restate ; undefined
+[restate] [2023-06-26T09:18:18.490Z] DEBUG: [example.CheckoutService-AYj2/y1KcMC2r/XHRrCo/w==-0188f6ff2d4a71f884da05e0ea228842] [Checkout] : Scheduling suspension in 30000 ms
+[restate] [2023-06-26T09:18:18.491Z] DEBUG: [example.CheckoutService-AYj2/y1KcMC2r/XHRrCo/w==-0188f6ff2d4a71f884da05e0ea228842] [Checkout] : Received completion message from Restate, adding to journal. ; CompletionMessage
 //highlight-next-line
-[restate] [2023-05-18T11:56:47.384Z] [CheckoutService] [Checkout] [01882eb8-4196-7f45-95b4-2383518330af] : Adding message to output buffer: type: SideEffect
-[restate] [2023-05-18T11:56:47.385Z] [CheckoutService] [Checkout] [01882eb8-4196-7f45-95b4-2383518330af] : Received new completion from the runtime.
-//highlight-next-line
-Executing payment call for idempotency key 83205623-9259-4aca-8021-0dbdf3ce2854 and amount 40
-//highlight-next-line
-[restate] [2023-05-18T11:56:47.385Z] [CheckoutService] [Checkout] [01882eb8-4196-7f45-95b4-2383518330af] : Adding message to output buffer: type: SideEffect
-[restate] [2023-05-18T11:56:47.385Z] [CheckoutService] [Checkout] [01882eb8-4196-7f45-95b4-2383518330af] : Received new completion from the runtime.
-[restate] [2023-05-18T11:56:47.385Z] [CheckoutService] [Checkout] [01882eb8-4196-7f45-95b4-2383518330af] : Call ended successful with output message.
+Payment call succeeded for idempotency key 89ba7fba-0b47-4b3a-a67d-fbd6c5d6fffb and amount 40
+[restate] [2023-06-26T09:18:18.491Z] DEBUG: [example.CheckoutService-AYj2/y1KcMC2r/XHRrCo/w==-0188f6ff2d4a71f884da05e0ea228842] [Checkout] : Adding message to journal and sending to Restate ; undefined
+[restate] [2023-06-26T09:18:18.492Z] DEBUG: [example.CheckoutService-AYj2/y1KcMC2r/XHRrCo/w==-0188f6ff2d4a71f884da05e0ea228842] [Checkout] : Scheduling suspension in 30000 ms
+[restate] [2023-06-26T09:18:18.492Z] DEBUG: [example.CheckoutService-AYj2/y1KcMC2r/XHRrCo/w==-0188f6ff2d4a71f884da05e0ea228842] [Checkout] : Received completion message from Restate, adding to journal. ; CompletionMessage
+[restate] [2023-06-26T09:18:18.493Z] DEBUG: [example.CheckoutService-AYj2/y1KcMC2r/XHRrCo/w==-0188f6ff2d4a71f884da05e0ea228842] [Checkout] : Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [2023-06-26T09:18:18.493Z] DEBUG: [example.CheckoutService-AYj2/y1KcMC2r/XHRrCo/w==-0188f6ff2d4a71f884da05e0ea228842] [Checkout] : Function completed successfully.
 // ... UserSessionService/Checkout logs ...
 ```
 
@@ -1139,56 +1203,53 @@ payment call in `CheckoutService/Checkout`. Replace the previous call with:
 const paymentClient = PaymentClient.get();
 const doPayment = async () => paymentClient.failingCall(idempotencyKey, amount);
 //highlight-start
-const success: boolean = await RestateUtils.retryExceptionalSideEffectWithBackoff(
+const retrySettings = { initialDelayMs: 100, maxDelayMs: 500, maxRetries: 5 }
+const success: boolean = await RestateUtils.retryExceptionalSideEffect(
     ctx,
-    doPayment,
-    100, // initialDelayMs
-    500, // maxDelayMs
-    5 // maxRetries
+    retrySettings,
+    doPayment
 );
 //highlight-end
 ```
 Also add the following import at the top `import { RestateUtils } from "@restatedev/restate-sdk";`.
 
-We now call `paymentClient.failingCall` which will fail 2 times and then succeed.
-The `retryExceptionalSideEffectWithBackoff` utility will make sure that if the retry fails, the service does a Restate sleep, and then tries again.
+We now call `paymentClient.failingCall` which fails 2 times and then succeeds.
+The `retryExceptionalSideEffect` utility makes sure that if the retry fails, the service does a Restate sleep, and then tries again.
 All attempts, including the sleeps are durably logged.
 Have a look at the logs to see the retries.
 
 <details><summary>Show the logs</summary>
 
 ```log
-[restate] [2023-05-19T10:44:07.967Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Received input message.
-[restate] [2023-05-19T10:44:07.968Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Adding message to output buffer: type: SideEffect
-[restate] [2023-05-19T10:44:07.969Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Received new completion from the runtime.
-Payment call failed for idempotency key 851f1a19-456b-471b-841e-7da1dabac909 and amount 40. Retrying...
-[restate] [2023-05-19T10:44:07.970Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Adding message to output buffer: type: SideEffect
-[restate] [2023-05-19T10:44:07.970Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Received new completion from the runtime.
-//highlight-start
-[restate] [2023-05-19T10:44:07.970Z] DEBUG: Error while executing side effect 'unnamed-retryable-side-effect': Error - {"code":13,"message":"Payment call failed"}
-[restate] [2023-05-19T10:44:07.970Z] DEBUG: Retrying in 100 ms
-//highlight-end
-[restate] [2023-05-19T10:44:07.971Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Adding message to output buffer: type: Sleep
-[restate] [2023-05-19T10:44:08.073Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Received new completion from the runtime.
-Payment call failed for idempotency key 851f1a19-456b-471b-841e-7da1dabac909 and amount 40. Retrying...
-[restate] [2023-05-19T10:44:08.074Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Adding message to output buffer: type: SideEffect
-[restate] [2023-05-19T10:44:08.075Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Received new completion from the runtime.
-//highlight-start
-[restate] [2023-05-19T10:44:08.075Z] DEBUG: Error while executing side effect 'unnamed-retryable-side-effect': Error - {"code":13,"message":"Payment call failed"}
-[restate] [2023-05-19T10:44:08.076Z] DEBUG: Retrying in 200 ms
-//highlight-end
-[restate] [2023-05-19T10:44:08.076Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Adding message to output buffer: type: Sleep
-[restate] [2023-05-19T10:44:08.279Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Received new completion from the runtime.
-//highlight-start
-Payment call succeeded for idempotency key 851f1a19-456b-471b-841e-7da1dabac909 and amount 40
-//highlight-end
-[restate] [2023-05-19T10:44:08.279Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Adding message to output buffer: type: SideEffect
-[restate] [2023-05-19T10:44:08.281Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Received new completion from the runtime.
-[restate] [2023-05-19T10:44:08.281Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Adding message to output buffer: type: BackgroundInvoke
-Notifying user 123 of payment success
-[restate] [2023-05-19T10:44:08.282Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Adding message to output buffer: type: SideEffect
-[restate] [2023-05-19T10:44:08.284Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Received new completion from the runtime.
-[restate] [2023-05-19T10:44:08.284Z] [CheckoutService] [Checkout] [0188339c-189e-725d-84ef-b23307451761] : Call ended successful with output message.
+[restate] [2023-06-26T09:33:30.112Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Invoking function.
+[restate] [2023-06-26T09:33:30.114Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Adding message to journal and sending to Restate ; undefined
+[restate] [2023-06-26T09:33:30.115Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Scheduling suspension in 30000 ms
+[restate] [2023-06-26T09:33:30.116Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Received completion message from Restate, adding to journal. ; CompletionMessage
+//highlight-next-line
+Payment call failed for idempotency key dc2048f8-62c1-4b3e-bb92-25dc9da14bac and amount 40. Retrying...
+[restate] [2023-06-26T09:33:30.116Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Adding message to journal and sending to Restate ; undefined
+[restate] [2023-06-26T09:33:30.117Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Scheduling suspension in 30000 ms
+[restate] [2023-06-26T09:33:30.120Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Received completion message from Restate, adding to journal. ; CompletionMessage
+//highlight-next-line
+[restate] [2023-06-26T09:33:30.120Z] DEBUG: Error while executing side effect 'retryable-side-effect': Error - sideEffect execution failed: Payment call failed
+[restate] [2023-06-26T09:33:30.120Z] DEBUG: Retrying in 100 ms
+[restate] [2023-06-26T09:33:30.121Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Adding message to journal and sending to Restate ; SleepEntryMessage
+[restate] [2023-06-26T09:33:30.121Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Scheduling suspension in 30000 ms
+[restate] [2023-06-26T09:33:30.223Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Received completion message from Restate, adding to journal. ; CompletionMessage
+//highlight-next-line
+Payment call failed for idempotency key dc2048f8-62c1-4b3e-bb92-25dc9da14bac and amount 40. Retrying...
+[restate] [2023-06-26T09:33:30.224Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Adding message to journal and sending to Restate ; undefined
+[restate] [2023-06-26T09:33:30.224Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Scheduling suspension in 30000 ms
+[restate] [2023-06-26T09:33:30.227Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Received completion message from Restate, adding to journal. ; CompletionMessage
+//highlight-next-line
+[restate] [2023-06-26T09:33:30.227Z] DEBUG: Error while executing side effect 'retryable-side-effect': Error - sideEffect execution failed: Payment call failed
+[restate] [2023-06-26T09:33:30.227Z] DEBUG: Retrying in 200 ms
+[restate] [2023-06-26T09:33:30.227Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Adding message to journal and sending to Restate ; SleepEntryMessage
+[restate] [2023-06-26T09:33:30.228Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Scheduling suspension in 30000 ms
+[restate] [2023-06-26T09:33:30.429Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Received completion message from Restate, adding to journal. ; CompletionMessage
+//highlight-next-line
+Payment call succeeded for idempotency key dc2048f8-62c1-4b3e-bb92-25dc9da14bac and amount 40
+[restate] [2023-06-26T09:33:30.429Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Adding message to journal and sending to Restate ; undefined
 ```
 
 </details>
@@ -1231,7 +1292,7 @@ You should see traces similar to:
 
 ![Jaeger trace](/img/trace.png)
 
-Note that async calls are shown as separate traces. So here, we only see the `UserSessionService/Checkout` and `CheckoutService/Checkout` calls,
+Note that one-way calls are shown as separate traces. So here, we only see the `UserSessionService/Checkout` and `CheckoutService/Checkout` calls,
     and not the async call to `TicketService/MarkAsSold`.
 
 For more information, have a look at the [observability docs](/deployment-operations/observability).

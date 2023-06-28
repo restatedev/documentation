@@ -21,7 +21,7 @@ So add these as well to your project.
 ## Example of a service
 Below is an example of a Restate Typescript service to get a better understanding of the potential end result. 
 
-This example shows a greeter service comprising of two methods:
+This example shows a greeter service comprising two methods:
 - `greet`: returns a greeting as a response without performing any additional operations. 
 - `countGreetings`: maintains a record of the number of times it has received a request for a given name.
 
