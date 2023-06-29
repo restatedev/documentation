@@ -109,3 +109,16 @@ Suggestions:
 * Check no other Restate process is running and using the same db file.
 * Configure a different RocksDB storage directory via `worker.storage_rocksdb.path`.
 
+## RT0006 {#RT0006}
+
+An error occurred while invoking the service endpoint. 
+This is a generic error which can be caused by many reasons, including:
+
+* Transient network or storage errors
+* Misconfiguration of the service endpoint and/or of the Restate runtime
+* Non-deterministic user code execution
+* Restate runtime and/or SDK bug
+
+In some cases, the error will be retried depending on the configured retry policy. 
+We suggest checking the service endpoint logs as well to get any hint on the error cause.
+

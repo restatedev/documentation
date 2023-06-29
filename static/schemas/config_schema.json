@@ -12,18 +12,19 @@
     },
     "observability": {
       "default": {
-        "jaeger": null,
         "jaeger_file": null,
         "log": {
           "disable_ansi_codes": false,
           "filter": "warn,restate=info",
           "format": "Pretty"
-        }
+        },
+        "tracing": null
       },
       "$ref": "#/definitions/ObservabilityOptions"
     },
     "meta": {
       "default": {
+        "proxy_uri": null,
         "rest_address": "0.0.0.0:8081",
         "rest_concurrency_limit": 1000,
         "storage_path": "target/meta/"
@@ -45,8 +46,10 @@
           }
         },
         "invoker": {
+          "disable_eager_state": false,
           "message_size_limit": null,
           "message_size_warning": 10485760,
+          "proxy_uri": null,
           "response_abort_timeout": "1h",
           "retry_policy": {
             "factor": 2.0,
@@ -55,19 +58,22 @@
             "max_interval": "10s",
             "type": "Exponential"
           },
-          "suspension_timeout": "1m"
+          "suspension_timeout": "1m",
+          "tmp_dir": "/var/folders/tw/68_ctnh50rn41q721zt5pwfc0000gn/T/invoker-018907468d5a7d6ba01955f6dcc6d859"
         },
         "partitions": 1024,
         "storage_grpc": {
           "bind_address": "0.0.0.0:9091"
         },
         "storage_rocksdb": {
-          "compression": "Zstd",
+          "cache_size": 1073741824,
+          "max_total_wal_size": 2147483648,
           "path": "target/db/",
-          "threads": 4
+          "threads": 10,
+          "write_buffer_size": 0
         },
         "timers": {
-          "num_timers_in_memory_limit": null
+          "num_timers_in_memory_limit": 1024
         }
       },
       "$ref": "#/definitions/WorkerOptions"
@@ -85,11 +91,11 @@
       "title": "Observability options",
       "type": "object",
       "properties": {
-        "jaeger": {
-          "title": "Jaeger options",
+        "tracing": {
+          "title": "Tracing options",
           "anyOf": [
             {
-              "$ref": "#/definitions/JaegerOptions"
+              "$ref": "#/definitions/TracingOptions"
             },
             {
               "type": "null"
@@ -118,9 +124,9 @@
         }
       }
     },
-    "JaegerOptions": {
-      "title": "Jaeger Options",
-      "description": "Configuration for the [Jaeger Agent exporter](https://www.jaegertracing.io/docs/1.6/deployment/#agent).\n\nTo configure the sampling, please refer to the [opentelemetry autoconfigure docs](https://github.com/open-telemetry/opentelemetry-java/blob/main/sdk-extensions/autoconfigure/README.md#sampler).",
+    "TracingOptions": {
+      "title": "Tracing Options",
+      "description": "Configuration for the [OTLP exporter](https://opentelemetry.io/docs/specs/otel/protocol/exporter/) which can export to all OTLP compatible systems (e.g. Jaeger).\n\nTo configure the sampling, please refer to the [opentelemetry autoconfigure docs](https://github.com/open-telemetry/opentelemetry-java/blob/main/sdk-extensions/autoconfigure/README.md#sampler).",
       "type": "object",
       "required": [
         "endpoint"
@@ -128,7 +134,7 @@
       "properties": {
         "endpoint": {
           "title": "Endpoint",
-          "description": "Specify the Jaeger endpoint to use to send traces. Traces will be exported using the [Jaeger Agent UDP protocol](https://www.jaegertracing.io/docs/1.6/deployment/#agent) through [opentelemetry_jaeger](https://docs.rs/opentelemetry-jaeger/latest/opentelemetry_jaeger/config/agent/struct.AgentPipeline.html).",
+          "description": "Specify the tracing endpoint to send traces to. Traces will be exported using [OTLP gRPC](https://opentelemetry.io/docs/specs/otlp/#otlpgrpc) through [opentelemetry_otlp](https://docs.rs/opentelemetry-otlp/0.12.0/opentelemetry_otlp/).",
           "type": "string"
         },
         "filter": {
@@ -236,6 +242,15 @@
           "description": "Root path for Meta storage.",
           "default": "target/meta/",
           "type": "string"
+        },
+        "proxy_uri": {
+          "title": "Proxy URI",
+          "description": "A URI, such as `http://127.0.0.1:10001`, of a server to which all invocations should be sent, with the `Host` header set to the service endpoint URI. HTTPS proxy URIs are supported, but only HTTP endpoint traffic will be proxied currently. Can be overridden by the `HTTP_PROXY` environment variable.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
         }
       }
     },
@@ -252,7 +267,7 @@
         },
         "timers": {
           "default": {
-            "num_timers_in_memory_limit": null
+            "num_timers_in_memory_limit": 1024
           },
           "$ref": "#/definitions/TimerOptions"
         },
@@ -264,9 +279,11 @@
         },
         "storage_rocksdb": {
           "default": {
-            "compression": "Zstd",
+            "cache_size": 1073741824,
+            "max_total_wal_size": 2147483648,
             "path": "target/db/",
-            "threads": 4
+            "threads": 10,
+            "write_buffer_size": 0
           },
           "$ref": "#/definitions/StorageOptions"
         },
@@ -286,8 +303,10 @@
         },
         "invoker": {
           "default": {
+            "disable_eager_state": false,
             "message_size_limit": null,
             "message_size_warning": 10485760,
+            "proxy_uri": null,
             "response_abort_timeout": "1h",
             "retry_policy": {
               "factor": 2.0,
@@ -296,7 +315,8 @@
               "max_interval": "10s",
               "type": "Exponential"
             },
-            "suspension_timeout": "1m"
+            "suspension_timeout": "1m",
+            "tmp_dir": "/var/folders/tw/68_ctnh50rn41q721zt5pwfc0000gn/T/invoker-018907468d5a7ce4b0005fa3fc5994a0"
           },
           "$ref": "#/definitions/InvokerOptions"
         },
@@ -305,7 +325,7 @@
           "description": "Number of partitions to be used to process messages.\n\nNote: This config entry **will be removed** in future Restate releases, as the partitions number will be dynamically configured depending on the load.",
           "default": 1024,
           "type": "integer",
-          "format": "uint",
+          "format": "uint32",
           "minimum": 0.0
         }
       }
@@ -317,6 +337,7 @@
         "num_timers_in_memory_limit": {
           "title": "Num timers in memory limit",
           "description": "The number of timers in memory limit is used to bound the amount of timers loaded in memory. If this limit is set, when exceeding it, the timers farther in the future will be spilled to disk.",
+          "default": 1024,
           "type": [
             "integer",
             "null"
@@ -344,50 +365,43 @@
       "properties": {
         "path": {
           "title": "Storage path",
-          "description": "The root path to use for the Rocksdb storage",
+          "description": "The root path to use for the Rocksdb storage.",
           "default": "target/db/",
           "type": "string"
         },
         "threads": {
           "title": "Threads",
-          "description": "The number of threads to reserve to Rocksdb background tasks",
-          "default": 4,
+          "description": "The number of threads to reserve to Rocksdb background tasks.",
+          "default": 10,
           "type": "integer",
           "format": "uint",
           "minimum": 0.0
         },
-        "compression": {
-          "title": "Compression type",
-          "description": "The type of compression to use",
-          "default": "Zstd",
-          "$ref": "#/definitions/CompressionType"
+        "write_buffer_size": {
+          "title": "Write Buffer size",
+          "description": "The size of a single memtable. Once memtable exceeds this size, it is marked immutable and a new one is created.",
+          "default": 0,
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0.0
+        },
+        "max_total_wal_size": {
+          "title": "Maximum total WAL size",
+          "description": "Max WAL size, that after this Rocksdb start flushing mem tables to disk.",
+          "default": 2147483648,
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "cache_size": {
+          "title": "Maximum cache size",
+          "description": "The memory size used for rocksdb caches.",
+          "default": 1073741824,
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0.0
         }
       }
-    },
-    "CompressionType": {
-      "oneOf": [
-        {
-          "description": "No compression",
-          "type": "string",
-          "enum": [
-            "None"
-          ]
-        },
-        {
-          "description": "Compression using lz4",
-          "type": "string",
-          "enum": [
-            "Lz4"
-          ]
-        },
-        {
-          "description": "Compression using zlib",
-          "type": "string",
-          "enum": [
-            "Zstd"
-          ]
-        }
-      ]
     },
     "IngressOptions": {
       "title": "Ingress options",
@@ -500,6 +514,21 @@
           ],
           "format": "uint",
           "minimum": 0.0
+        },
+        "proxy_uri": {
+          "title": "Proxy URI",
+          "description": "A URI, such as `http://127.0.0.1:10001`, of a server to which all invocations should be sent, with the `Host` header set to the service endpoint URI. HTTPS proxy URIs are supported, but only HTTP endpoint traffic will be proxied currently. Can be overridden by the `HTTP_PROXY` environment variable.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "tmp_dir": {
+          "title": "Temporary directory",
+          "description": "Temporary directory to use for the invoker temporary files. If empty, the system temporary directory will be used instead.",
+          "default": "/var/folders/tw/68_ctnh50rn41q721zt5pwfc0000gn/T/invoker-018907468d5a7d63b596b99a61eb48c6",
+          "type": "string"
         }
       }
     },

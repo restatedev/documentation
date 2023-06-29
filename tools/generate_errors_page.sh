@@ -8,14 +8,15 @@ fi
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 IN_PATH=$1
-OUT_FILE=$SCRIPT_DIR/../docs/errors.md
+OUT_FILE=$SCRIPT_DIR/../docs/deployment-operations/errors.md
 
 cat > $OUT_FILE << EOF
 ---
 sidebar_position: 10
+slug: errors
 ---
 
-# Errors
+# Error codes
 
 This page contains the list of error codes emitted by Restate components.
 
