@@ -1260,25 +1260,25 @@ Restate exposes OpenTelemetry traces of your invocations
 Run the Jaeger container with:
 ```shell
 docker run -d --name jaeger \
--e COLLECTOR_ZIPKIN_HTTP_PORT=9411 \
--p 6831:6831/udp \
+-e COLLECTOR_OTLP_ENABLED=true \
+-p 4317:4317 \
 -p 16686:16686 \
-jaegertracing/all-in-one:1.45
+jaegertracing/all-in-one:1.46
 ```
 
-Then restart the runtime with the Jaeger endpoint defined as an environment variable:
+Then restart the runtime with the tracing endpoint defined as an environment variable:
 <Tabs groupId="operating-systems">
 <TabItem value="lin" label="Linux">
 
 ```shell
-docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__JAEGER__ENDPOINT=localhost:6831 --network=host ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
+docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://localhost:4317 --network=host ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
 ```
 
 </TabItem>
 <TabItem value="mac" label="macOS">
 
 ```shell
-docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__JAEGER__ENDPOINT=localhost:6831 -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
+docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://host.docker.internal:4317 -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
 ```
 
 </TabItem>

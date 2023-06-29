@@ -52,14 +52,30 @@ When deploying in production, we recommend setting the log level to `info` and e
 Restate supports the following tracing features:
 
 * Runtime execution tracing per invocation
-* Exporting traces to Jaeger
+* Exporting traces to OTLP-compatible systems (e.g. Jaeger)
 * Correlating parent traces of incoming gRPC/Connect HTTP requests, using the [W3C TraceContext](https://github.com/w3c/trace-context) specification.
 
-### Setup Jaeger Agent exporter
+### Setup OTLP exporter
 
-To set up the Jaeger agent exporter, you need to set the configuration entry `observability.jaeger.endpoint` to the Jaeger UDP exporter `host:port`, where the port is usually [`6831`](https://www.jaegertracing.io/docs/1.6/deployment/#agent). Refer to [Jaeger documentation](https://www.jaegertracing.io/docs/1.20/deployment/) for more details on how to deploy the Jaeger agent.
+To set up the OTLP exporter, you need to set the configuration entry `observability.tracing.endpoint` to point to your trace collector.
+The exporter sends OTLP trace data via gRPC ([OTLP exporter](https://github.com/open-telemetry/opentelemetry-collector/blob/main/exporter/otlpexporter/README.md)).
 
-You can configure a span/event filter in a similar fashion to the [Log filter](#log-filter) setting the `observability.jaeger.filter` configuration entry.
+
+#### Exporting OTLP traces to Jaeger
+
+Jaeger accepts OTLP trace data via gRPC on port `4317`.
+
+:::note
+Start Jaeger with the environment variable `COLLECTOR_OTLP_ENABLED=true` to enable OTLP.
+:::
+
+Refer to the [Jaeger documentation](https://www.jaegertracing.io/docs/1.46/deployment/) for more details on how to deploy Jaeger.
+
+:::note
+Configure the tracing endpoint in Restate as a fully specified URL: `http://<jaeger-collector>:4317`.
+:::
+
+You can configure a span/event filter in a similar fashion to the [Log filter](#log-filter) setting the `observability.tracing.filter` configuration entry.
 
 ### Setup Jaeger file exporter
 
