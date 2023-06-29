@@ -769,8 +769,6 @@ Run the services and call the `addTicket` method, to see the interaction with st
 [restate] [2023-06-26T08:49:43.631Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6e4fead7d35a9c880c4509699bf] [AddTicket] : Received completion message from Restate, adding to journal. ; CompletionMessage
 //highlight-next-line
 [restate] [2023-06-26T08:49:43.632Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6e4fead7d35a9c880c4509699bf] [AddTicket] : Adding message to journal and sending to Restate ; GetStateEntryMessage
-[restate] [2023-06-26T08:49:43.632Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6e4fead7d35a9c880c4509699bf] [AddTicket] : Scheduling suspension in 30000 ms
-[restate] [2023-06-26T08:49:43.633Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6e4fead7d35a9c880c4509699bf] [AddTicket] : Received completion message from Restate, adding to journal. ; CompletionMessage
 //highlight-next-line
 [restate] [2023-06-26T08:49:43.633Z] DEBUG: [example.UserSessionService-AzEyMw==-0188f6e4fead7d35a9c880c4509699bf] [AddTicket] : Adding message to journal and sending to Restate ; SetStateEntryMessage
 ... logs from expireTicket call ...
@@ -778,8 +776,8 @@ Run the services and call the `addTicket` method, to see the interaction with st
 
 </details>
 
-We see that when we request the state, the runtime sends us a completion back.
-The completion contains the current state value.
+We see that when we request the state, it gets logged in the journal.
+The state value gets immediately retrieved, because the invocation state is eagerly sent.
 Finally, we set the new value.
 
 Add a log statement to print the cart contents, and then call `addTicket` multiple times to see how the state gets updated:
