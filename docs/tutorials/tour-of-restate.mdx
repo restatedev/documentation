@@ -235,6 +235,7 @@ Add the highlighted code snippet to the `addTicket` method in the user session s
 
 ```typescript
 import * as restate from "@restatedev/restate-sdk";
+import { Ticket } from "../generated/proto/example";
 
 async addTicket(request: ReserveTicket): Promise<BoolValue> {
     //highlight-start
@@ -376,7 +377,7 @@ async checkout(request: CheckoutRequest): Promise<BoolValue> {
     const success = await checkoutClient.checkout(req);
     //highlight-end
 
-    return BoolValue.create({ value: true });
+    return success;
 }
 ```
 
