@@ -45,11 +45,23 @@ In order to release the documentation you have to push a tag of the form `vX.Y.Z
 This will trigger the [release workflow](.github/workflows/release.yml), which builds and publishes and new `restatedev/documentation:vX.Y.Z` container image.
 Moreover, it will create a draft [release on Github](https://github.com/restatedev/documentation/releases) that needs manual approval.
 
+### Updating the schemas
+
+To update the configuration schemas, the default configuration and the Meta OpenAPI document, 
+clone [Restate](https://github.com/restatedev/restate/) and execute the following:
+
+```shell
+$ ./tools/generate.sh <PATH to Restate repo clone>
+```
+
 ### Upgrading Typescript SDK version
+
 Update the `TYPESCRIPT_SDK_VERSION` value in `docusaurus.config.js`
 
 ### Upgrading Restate runtime version
+
 Update the `RESTATE_DIST_VERSION` value in `docusaurus.config.js`
 
 ### Upgrading Tour version
+
 Update the `TOUR_VERSION` value in `docusaurus.config.js`
