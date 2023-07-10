@@ -50,14 +50,14 @@ pointed at the Restate runtime and with the Lambda function endpoint as the URI 
 
 
 ```shell
-curl -X POST http://<your-restate-runtime-endpoint>:8081/endpoint/discover -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/<my-service>"}'
+curl -X POST http://<your-restate-runtime-endpoint>:8081/endpoints -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/<my-service>"}'
 ```
 
 If your Lambda function requires authentication via an API key,
 then you can add this API key to the discovery request to the Restate runtime, as follows:
 
 ```shell
-curl -X POST http://<your-restate-runtime-endpoint>:8081/endpoint/discover -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/<my-service>","additional_headers": {"x-api-key": "someapikey"} }'
+curl -X POST http://<your-restate-runtime-endpoint>:8081/endpoints -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/<my-service>","additional_headers": {"x-api-key": "someapikey"} }'
 ```
 
 Here, we added the API key as an additional header to the JSON data of the request.

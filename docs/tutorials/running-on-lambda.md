@@ -217,7 +217,7 @@ Stop the runtime (and remove any intermediate state) with `docker stop restate_d
 Connect to the Restate (e.g. via an SSH session if it is running on EC2) runtime and execute the discovery curl command:
 
 ```shell
-curl -X POST http://<your-restate-runtime-endpoint>:8081/endpoint/discover -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/my-greeter", "additional_headers": {"x-api-key": "your-api-key"} }'
+curl -X POST http://<your-restate-runtime-endpoint>:8081/endpoints -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/my-greeter", "additional_headers": {"x-api-key": "your-api-key"} }'
 ```
 
 If you are running the runtime locally, replace `<your-restate-runtime-endpoint>` by `localhost`.
@@ -230,7 +230,7 @@ After the discovery, the runtime uses this API key for all subsequent requests t
 
 If your Lambda function does not require an API key then you can do the discovery without the additional headers:
 ```shell
-curl -X POST http://<your-restate-runtime-endpoint>:8081/endpoint/discover -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/my-greeter"}'
+curl -X POST http://<your-restate-runtime-endpoint>:8081/endpoints -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/my-greeter"}'
 ```
 
 When executing this command, you should see the discovered services printed out!

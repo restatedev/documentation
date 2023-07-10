@@ -101,22 +101,39 @@ Discover the services:
 <TabItem value="lin" label="Linux">
 
 ```shell
-curl -X POST http://localhost:8081/services/discover -H 'content-type: application/json' -d '{"uri": "http://localhost:8080"}'
+curl -X POST http://localhost:8081/endpoints -H 'content-type: application/json' -d '{"uri": "http://localhost:8080"}'
 ```
 
 </TabItem>
 <TabItem value="mac" label="macOS">
 
 ```shell
-curl -X POST http://localhost:8081/services/discover -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:8080"}'
+curl -X POST http://localhost:8081/endpoints -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:8080"}'
 ```
 
 </TabItem>
 </Tabs>
 
 You should now see the registered services printed out to your terminal:
-```shell
-{"services":["example.TicketService","example.UserSessionService","example.CheckoutService"]}
+
+```json
+{
+  "id": "bG9jYWxob3N0OjgwODAv",
+  "services": [
+    {
+      "name": "example.TicketService",
+      "revision": 1
+    },
+    {
+      "name": "example.UserSessionService",
+      "revision": 1
+    },
+    {
+      "name": "example.CheckoutService",
+      "revision": 1
+    }
+  ]
+}
 ```
 
 <details><summary>Show the runtime logs</summary>
