@@ -63,6 +63,23 @@ Cannot reach the endpoint to execute service discovery. Make sure:
 * The Restate runtime can reach the service endpoint through the configured `uri`
 * If additional authentication is required, make sure it's configured through `additional_headers`
 
+## META0004 {#META0004}
+
+Cannot register the provided service endpoint, because it conflicts with the uri of an already registered service endpoint.
+
+In Restate service endpoints have a unique uri and are immutable, thus it's not possible to discover the same endpoint uri twice. 
+Make sure, when updating a service endpoint, to assign it a new uri. 
+
+You can force the override using the `"force": true` field in the discover request, but beware that this can lead in-flight invocations to an unrecoverable error state.  
+
+See the [versioning documentation](http://restate.dev/docs/deployment-operations/versioning) for more information.
+
+## META0005 {#META0005}
+
+Cannot propagate endpoint/service metadata to Restate components. If you see this error when starting Restate, this might indicate a corrupted Meta storage.
+
+We recommend wiping the Meta storage and recreate it by registering endpoints in the same order they were registered before.
+
 ## RT0001 {#RT0001}
 
 The invocation response stream was aborted due to the timeout configured in `worker.invoker.response_abort_timeout`.
