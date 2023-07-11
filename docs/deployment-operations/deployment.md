@@ -129,6 +129,7 @@ Otherwise, some recommended approaches are detailed below:
 
 | Infrastructure  | Approach                                                                                                                          |
 |-----------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| Knative         | Use Knative to deploy a Serverless container, leveraging scale to zero and L7 load balancing with ease                            |
 | Istio / LinkerD | Ensure sidecar is injected into Restate pod and all service pods                                                                  |
 | Cilium          | Ensure Cilium is installed with `loadBalancer.l7.backend=envoy`, and annotate service pods with `service.cilium.io/lb-l7=enabled` |
 | Minikube        | For local development it's likely not worth worrying about; see below                                                             |
@@ -174,6 +175,35 @@ spec:
 ```
 
 L7 load balancing is not needed when there is only one pod, so it's acceptable to use a normal ClusterIP Service.
+
+### Knative
+
+Knative is a good match to deploy service endpoints, as it automatically configures an L7 load balancer and autoscales to zero endpoints for which there are no in-flight invocations. There is no special requirements to deploy a service endpoint container with Knative:
+
+```shell
+$ kn service create service-name --port h2c:8080 --image path.to/yourrepo:yourtag
+```
+
+Or using the YAML manifest:
+
+```yaml
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: service-name
+spec:
+  template:
+    spec:
+      containers:
+        - image: path.to/yourrepo:yourtag
+          ports:
+            - name: h2c
+              containerPort: 8080
+```
+
+The service will be accessible at `http://<service-name>.<namespace>.svc`.
+
+By default Knative exposes the service through the Ingress. This is not required by Restate, and you can disable this behavior adding the argument `--cluster-local` to the aforementioned creation command.
 
 ### Simple L7 load balancing with an envoy sidecar
 
