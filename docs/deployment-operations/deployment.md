@@ -4,7 +4,10 @@ sidebar_position: 2
 
 # Deployment
 
+This page contains some walkthroughs to deploy Restate and services.
+
 ## Deploying Restate
+
 Restate is currently a single binary that contains everything you need.
 It exposes three services by default, each on different ports:
 
@@ -19,7 +22,9 @@ It will store metadata and RocksDB data in the relative directory of /target und
 It requires outbound connectivity to services in order to discover them and to send requests.
 
 ### In Kubernetes
+
 The recommended Kubernetes deployment strategy is a one-replica StatefulSet. We recommend installing Restate in its own namespace.
+
 ```yaml
 apiVersion: v1
 kind: Namespace
@@ -98,16 +103,25 @@ spec:
 ```
 
 You will also need to create an image pull secret using a classic github personal access token with the `read:packages` permission.
+
 ```bash
 $ kubectl create secret docker-registry github --docker-server=ghcr.io --docker-username=<your-github-username> --docker-password=<your-personal-access-token>
 ```
 
-## Deploying Services
-Services in Restate are fairly similar to gRPC services. They speak HTTP2, and are always called *by* Restate; 
-they don't make any outbound requests as part of the Restate protocol.
+## Deploying services
 
-They can be deployed like any gRPC service; a Deployment of more than one replica is generally appropriate. However,
-like gRPC services, they must be appropriately load balanced at L7 if you want multiple service pods. Native Kubernetes 
+Restate services are deployed within *Service endpoints*. The Restate runtime interacts with service endpoints by sending requests to them using a custom protocol on top of HTTP.
+
+Depending on the SDK support, a service endpoint can be deployed as a Lambda function, a Kubernetes pod, a Knative Service, or any other deployment environment where the service endpoint can be reached at a specific URL.
+
+The URL (including path prefix) MUST be **unique**, meaning that no two service endpoints with the same URL can exist at the same time in a Restate instance.
+
+Moreover, service endpoints are **immutable**, and are assumed to be reacheable throughout the entire lifecycle of an invocation. To deploy any change to a service, either in the Protobuf definition or in the business logic, you should deploy a new service endpoint with a new URL. See the [versioning documentation](./versioning.md) for more details on how to update services.
+
+### Deploying service endpoints
+
+Service endpoints can be deployed like any gRPC service; a Deployment of more than one replica is generally appropriate. However,
+like gRPC services, they must be appropriately load balanced at L7 if you want multiple service endpoint pods. Native Kubernetes 
 ClusterIP load balancing will lead to the Restate binary sending all requests to a single pod, as HTTP2 connections 
 are aggressively reused. This is fine for local testing, but in production an approach must be found. If your
 infrastructure already has an approach for L7 load balancing gRPC services, you can use the same approach here. 
@@ -121,6 +135,7 @@ Otherwise, some recommended approaches are detailed below:
 | Any             | Use an envoy sidecar on the restate pod; see below                                                                                |
 
 ### Local Kubernetes development
+
 A simple deployment setup (eg, for local use with Minikube) with a single pod in Kubernetes is as follows:
 
 ```yaml
@@ -161,6 +176,7 @@ spec:
 L7 load balancing is not needed when there is only one pod, so it's acceptable to use a normal ClusterIP Service.
 
 ### Simple L7 load balancing with an envoy sidecar
+
 A simple approach to L7 load balancing is to set up an Envoy sidecar in the Restate pod which acts as a transparent HTTP proxy
 which will resolve and L7 load balance to Kubernetes Services based on their DNS name. For this to work, Services must be
 deployed as Headless, ie without a ClusterIP. This is achieved by specifying `clusterIP: None` in a `type: ClusterIP` Service.
@@ -248,16 +264,26 @@ data:
                 dns_refresh_rate: 5s
 ```
 
-## Discovering Services
-Services are always called *by* Restate, and communicate with Restate only through their responses. As such, Restate acts as
-an API gateway, and must know how to convert a service name like `greeter.Greeter` into the right endpoint to reach out to.
-We inform Restate of this via 'discovery'; we give it the endpoint, and it will use reflection to determine the relevant
-services, methods and request/response objects hosted there. This needs to be done whenever you add a new service, and
-when you add new methods to existing services. Discovering a service again is always safe.
+### Registering service endpoints
 
-Discovery can be done with a simple HTTP request
+After deploying a service endpoint, in order to use it, it must be registered to Restate as follows:
+
 ```bash
-$ curl restate:8081/endpoints --json '{"uri": "http://service:8080"}'
+$ curl <RESTATE_META_ENDPOINT>/endpoints --json '{"uri": "<SERVICE_ENDPOINT_URI>"}'
 ```
+
+When registering a service endpoint, Restate uses a mechanism similar to "reflections" to discover the available services and their schemas and properties. A service can be registered only once, and subsequent registration requests to the same service endpoint will fail. For more details on how to update services, check the [versioning documentation](./versioning.md).
+
+The service endpoint creation can be forced to overwrite an existing endpoint using:
+
+```bash
+$ curl <RESTATE_META_ENDPOINT>/endpoints --json '{"uri": "<SERVICE_ENDPOINT_URI>", "force": true}'
+```
+
+This will forcefully overwrite the existing endpoint with the same uri, forcing the discovery process again. It will also remove services that were served by that endpoint and are not available anymore.
+
+:::warning
+Forcing an endpoint registration is a feature designed to simplify local Restate service development, and should never be used in a production Restate deployment, as it potentially breaks all the in-flight invocations to that endpoint. 
+:::
 
 For more details on the API, refer to the [Meta operational API docs](./meta-rest-api.mdx#tag/service_endpoint/operation/create_service_endpoint).
