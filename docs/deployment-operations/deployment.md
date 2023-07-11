@@ -257,7 +257,7 @@ when you add new methods to existing services. Discovering a service again is al
 
 Discovery can be done with a simple HTTP request
 ```bash
-$ curl restate:8081/endpoint/discover --json '{"uri": "http://service:8080"}'
+$ curl restate:8081/endpoints --json '{"uri": "http://service:8080"}'
 ```
 
-For more details on the API, refer to the [Meta operational API docs](./meta-rest-api.mdx#tag/service_endpoint/operation/discover_service_endpoint).
+For more details on the API, refer to the [Meta operational API docs](./meta-rest-api.mdx#tag/service_endpoint/operation/create_service_endpoint).

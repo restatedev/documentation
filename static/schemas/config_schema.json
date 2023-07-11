@@ -46,6 +46,7 @@
           }
         },
         "invoker": {
+          "concurrency_limit": null,
           "disable_eager_state": false,
           "message_size_limit": null,
           "message_size_warning": 10485760,
@@ -59,7 +60,7 @@
             "type": "Exponential"
           },
           "suspension_timeout": "1m",
-          "tmp_dir": "/var/folders/tw/68_ctnh50rn41q721zt5pwfc0000gn/T/invoker-018907468d5a7d6ba01955f6dcc6d859"
+          "tmp_dir": "/tmp/invoker-01893fd5353b7bec8ee359e5661f0ec9"
         },
         "partitions": 1024,
         "storage_grpc": {
@@ -303,6 +304,7 @@
         },
         "invoker": {
           "default": {
+            "concurrency_limit": null,
             "disable_eager_state": false,
             "message_size_limit": null,
             "message_size_warning": 10485760,
@@ -316,7 +318,7 @@
               "type": "Exponential"
             },
             "suspension_timeout": "1m",
-            "tmp_dir": "/var/folders/tw/68_ctnh50rn41q721zt5pwfc0000gn/T/invoker-018907468d5a7ce4b0005fa3fc5994a0"
+            "tmp_dir": "/tmp/invoker-01893fd5353b779bab84357e232b3902"
           },
           "$ref": "#/definitions/InvokerOptions"
         },
@@ -527,8 +529,18 @@
         "tmp_dir": {
           "title": "Temporary directory",
           "description": "Temporary directory to use for the invoker temporary files. If empty, the system temporary directory will be used instead.",
-          "default": "/var/folders/tw/68_ctnh50rn41q721zt5pwfc0000gn/T/invoker-018907468d5a7d63b596b99a61eb48c6",
+          "default": "/tmp/invoker-01893fd5353b75108708e8fae7d40579",
           "type": "string"
+        },
+        "concurrency_limit": {
+          "title": "Concurrency limit",
+          "description": "Number of concurrent invocations that can be processed by the invoker.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint",
+          "minimum": 0.0
         }
       }
     },
