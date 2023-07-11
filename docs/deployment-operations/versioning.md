@@ -86,3 +86,7 @@ In all the aforementioned cases, you should define a new service instead.
 :::info
 Currently Restate doesn't implement all the "schema incompatibility" checks, so you must make sure the applied changes are backward compatible. 
 :::
+
+## State compatibility
+
+When updating Keyed and Singleton services, the new revisions will continue to use the same state created by previous revisions. You must ensure state entries are evolved in a backward compatible way.
