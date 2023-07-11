@@ -46,7 +46,7 @@ This returns:
 {
     "name": "greeter.Greeter",
     "revision": 2,
-    "endpoint": "Z3JlZXRlci12Mi8",
+    "endpoint_id": "Z3JlZXRlci12Mi8",
     [...]
 }
 ```
@@ -59,8 +59,8 @@ $ curl <RESTATE_META_ENDPOINT>/endpoints/Z3JlZXRlci12Mi8
 
 ```json
 {
-    "address": "http://greeter-v2/",
-    "endpoint_id": "Z3JlZXRlci12Mi8",
+    "id": "Z3JlZXRlci12Mi8",
+    "uri": "http://greeter-v2/",
     "additional_headers": {},
     "protocol_type": "BidiStream",
     "services": [
