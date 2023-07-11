@@ -266,7 +266,7 @@ data:
 
 ### Registering service endpoints
 
-After deploying a service endpoint, in order to use it, it must be registered to Restate as follows:
+After deploying a service endpoint, in order to use it, it must be registered with Restate as follows:
 
 ```bash
 $ curl <RESTATE_META_ENDPOINT>/endpoints --json '{"uri": "<SERVICE_ENDPOINT_URI>"}'
