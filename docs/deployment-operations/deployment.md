@@ -266,7 +266,7 @@ data:
 
 ### Registering service endpoints
 
-After deploying a service endpoint, in order to use it, it must be registered with Restate as follows:
+After deploying a service endpoint, in order to use it, it must be registered with Restate as follows with curl  (>v7.82.0):
 
 ```bash
 $ curl <RESTATE_META_ENDPOINT>/endpoints --json '{"uri": "<SERVICE_ENDPOINT_URI>"}'
@@ -274,7 +274,7 @@ $ curl <RESTATE_META_ENDPOINT>/endpoints --json '{"uri": "<SERVICE_ENDPOINT_URI>
 
 When registering a service endpoint, Restate uses a mechanism similar to "reflections" to discover the available services and their schemas and properties. A service can be registered only once, and subsequent registration requests to the same service endpoint will fail. For more details on how to update services, check the [versioning documentation](./versioning.md).
 
-The service endpoint creation can be forced to overwrite an existing endpoint using:
+The service endpoint creation can be forced to overwrite an existing endpoint using curl (>v7.82.0):
 
 ```bash
 $ curl <RESTATE_META_ENDPOINT>/endpoints --json '{"uri": "<SERVICE_ENDPOINT_URI>", "force": true}'
