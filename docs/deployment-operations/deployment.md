@@ -112,7 +112,7 @@ $ kubectl create secret docker-registry github --docker-server=ghcr.io --docker-
 
 Restate services are deployed within *Service endpoints*. The Restate runtime interacts with service endpoints by sending requests to them using a custom protocol on top of HTTP.
 
-Depending on the SDK support, a service endpoint can be deployed as a Lambda function, a Kubernetes pod, a Knative Service, or any other deployment environment where the service endpoint can be reached at a specific URL.
+A service endpoint can be deployed as a Lambda function, a Kubernetes pod, a Knative Service, or any other deployment environment where the service endpoint can be reached at a specific URL.
 
 The URL (including path prefix) MUST be **unique**, meaning that no two service endpoints with the same URL can exist at the same time in a Restate instance.
 
