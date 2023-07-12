@@ -178,7 +178,7 @@ L7 load balancing is not needed when there is only one pod, so it's acceptable t
 
 ### Knative
 
-Knative is a good match to deploy service endpoints, as it automatically configures an L7 load balancer and autoscales to zero endpoints for which there are no in-flight invocations. There is no special requirements to deploy a service endpoint container with Knative:
+Restate supports Knative services. Knative allows scaling to zero when there are no in-flight invocations and automatically configures an L7 load balancer. There are no special requirements to deploy a service endpoint container with Knative:
 
 ```shell
 $ kn service create service-name --port h2c:8080 --image path.to/yourrepo:yourtag
