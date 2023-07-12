@@ -129,7 +129,7 @@ Otherwise, some recommended approaches are detailed below:
 
 | Infrastructure  | Approach                                                                                                                          |
 |-----------------|-----------------------------------------------------------------------------------------------------------------------------------|
-| Knative         | Use Knative to deploy a Serverless container, leveraging scale to zero and L7 load balancing with ease                            |
+| Knative         | Use knative for autoscaling, scale to zero and the integrated L7 load balancing                                                   |
 | Istio / LinkerD | Ensure sidecar is injected into Restate pod and all service pods                                                                  |
 | Cilium          | Ensure Cilium is installed with `loadBalancer.l7.backend=envoy`, and annotate service pods with `service.cilium.io/lb-l7=enabled` |
 | Minikube        | For local development it's likely not worth worrying about; see below                                                             |
