@@ -79,13 +79,11 @@ You can configure a span/event filter in a similar fashion to the [Log filter](#
 
 ### Setup Jaeger file exporter
 
-If you can't configure a Jaeger agent, you can still export traces writing them to files, using the Jaeger JSON format. In order to do so, setup the configuration entry `observability.jaeger_file.path` pointing towards the path where trace files should be written.
+If you can't configure a Jaeger agent, you can still export traces writing them to files, using the Jaeger JSON format. In order to do so, setup the configuration entry `observability.tracing.json_file_export_path` pointing towards the path where trace files should be written.
 
 You can import the trace files using the Jaeger UI:
 
 ![Jaeger UI File import](/img/jaeger-import-file.png)
-
-You can configure a span/event filter in a similar fashion to the [Log filter](#log-filter) setting the `observability.jaeger_file.filter` configuration entry.
 
 ### Understanding traces
 
