@@ -80,6 +80,17 @@ Cannot propagate endpoint/service metadata to Restate components. If you see thi
 
 We recommend wiping the Meta storage and recreate it by registering endpoints in the same order they were registered before.
 
+## META0006 {#META0006}
+
+Cannot register the newly discovered service revision in the provided service endpoint, because it conflicts with an already existing service revision.
+
+When implementing a new service revision, make sure that:
+
+* The service instance type and the key definition, if any, is exactly the same as of the previous revisions.
+* The Protobuf contract and message definitions are backward compatible.
+
+See the [versioning documentation](http://restate.dev/docs/deployment-operations/versioning) for more information.
+
 ## RT0001 {#RT0001}
 
 The invocation response stream was aborted due to the timeout configured in `worker.invoker.response_abort_timeout`.
