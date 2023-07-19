@@ -12,7 +12,6 @@
     },
     "observability": {
       "default": {
-        "jaeger_file": null,
         "log": {
           "disable_ansi_codes": false,
           "filter": "warn,restate=info",
@@ -60,7 +59,7 @@
             "type": "Exponential"
           },
           "suspension_timeout": "1m",
-          "tmp_dir": "/tmp/invoker-01893fd5353b7bec8ee359e5661f0ec9"
+          "tmp_dir": "/tmp/invoker-01896e5bc84973bfa8611d235bd766e7"
         },
         "partitions": 1024,
         "storage_grpc": {
@@ -103,17 +102,6 @@
             }
           ]
         },
-        "jaeger_file": {
-          "title": "Jaeger file exporter options",
-          "anyOf": [
-            {
-              "$ref": "#/definitions/JaegerFileOptions"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
         "log": {
           "title": "Logging options",
           "default": {
@@ -127,37 +115,24 @@
     },
     "TracingOptions": {
       "title": "Tracing Options",
-      "description": "Configuration for the [OTLP exporter](https://opentelemetry.io/docs/specs/otel/protocol/exporter/) which can export to all OTLP compatible systems (e.g. Jaeger).\n\nTo configure the sampling, please refer to the [opentelemetry autoconfigure docs](https://github.com/open-telemetry/opentelemetry-java/blob/main/sdk-extensions/autoconfigure/README.md#sampler).",
+      "description": "Configuration for the [OTLP exporter](https://opentelemetry.io/docs/specs/otel/protocol/exporter/) which can export to all OTLP compatible systems (e.g. Jaeger).\n\nAt least `endpoint` or `json_file_export_path` must be configured.\n\nTo configure the sampling, please refer to the [opentelemetry autoconfigure docs](https://github.com/open-telemetry/opentelemetry-java/blob/main/sdk-extensions/autoconfigure/README.md#sampler).",
       "type": "object",
-      "required": [
-        "endpoint"
-      ],
       "properties": {
         "endpoint": {
           "title": "Endpoint",
           "description": "Specify the tracing endpoint to send traces to. Traces will be exported using [OTLP gRPC](https://opentelemetry.io/docs/specs/otlp/#otlpgrpc) through [opentelemetry_otlp](https://docs.rs/opentelemetry-otlp/0.12.0/opentelemetry_otlp/).",
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
-        "filter": {
-          "title": "Filter",
-          "description": "Exporter filter configuration. Check the [`RUST_LOG` documentation](https://docs.rs/tracing-subscriber/latest/tracing_subscriber/filter/struct.EnvFilter.html) for more details how to configure it.",
-          "default": "info",
-          "type": "string"
-        }
-      }
-    },
-    "JaegerFileOptions": {
-      "title": "Jaeger File Options",
-      "description": "Configuration for the Jaeger file exporter. This exporter writes traces as JSON in the Jaeger format.\n\nIt can be used to export traces in a structured format without configuring a Jaeger agent. To inspect the traces, open the Jaeger UI and use the Upload JSON feature to load and inspect them.\n\nAll spans will be sampled.",
-      "type": "object",
-      "required": [
-        "path"
-      ],
-      "properties": {
-        "path": {
-          "title": "Path",
-          "description": "Specify the path where all the traces will be exported. Each trace file will start with the `trace` prefix.",
-          "type": "string"
+        "json_file_export_path": {
+          "title": "JSON File export path",
+          "description": "If set, an exporter will be configured to write traces to files using the Jaeger JSON format. Each trace file will start with the `trace` prefix.\n\nIf unset, no traces will be written to file.\n\nIt can be used to export traces in a structured format without configuring a Jaeger agent.\n\nTo inspect the traces, open the Jaeger UI and use the Upload JSON feature to load and inspect them.",
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "filter": {
           "title": "Filter",
@@ -318,7 +293,7 @@
               "type": "Exponential"
             },
             "suspension_timeout": "1m",
-            "tmp_dir": "/tmp/invoker-01893fd5353b779bab84357e232b3902"
+            "tmp_dir": "/tmp/invoker-01896e5bc8497142be25b3bd060cdfae"
           },
           "$ref": "#/definitions/InvokerOptions"
         },
@@ -529,7 +504,7 @@
         "tmp_dir": {
           "title": "Temporary directory",
           "description": "Temporary directory to use for the invoker temporary files. If empty, the system temporary directory will be used instead.",
-          "default": "/tmp/invoker-01893fd5353b75108708e8fae7d40579",
+          "default": "/tmp/invoker-01896e5bc8497fd4acc531b925d96c7f",
           "type": "string"
         },
         "concurrency_limit": {
