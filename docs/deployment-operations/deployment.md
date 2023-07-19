@@ -285,8 +285,6 @@ data:
           lb_policy: CLUSTER_PROVIDED
           # assume http2 in upstream
           http2_protocol_options: {}
-          upstream_connection_options:
-            tcp_keepalive: {}
           cluster_type:
             name: envoy.clusters.dynamic_forward_proxy
             typed_config:
