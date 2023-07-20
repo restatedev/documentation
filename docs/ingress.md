@@ -78,3 +78,20 @@ For a complete documentation of the `dev.restate.Ingress` built-in service, chec
 :::tip
 This feature can be especially useful when you need to invoke a service method implementing a long-running workflow.
 :::
+
+## Hiding services from the ingress
+
+When registering a service endpoint, every service will be by default accessible in the ingress. You can hide a service from the ingress configuring it as `private` through the META REST Operational APIs:
+
+```shell
+$ curl -X PATCH <META_ENDPOINT>/services/<SERVICE_NAME> -H 'content-type: application/json' -d '{"public": false}'
+```
+
+For example:
+
+```shell
+$ curl -X PATCH localhost:8081/services/org.example.ExampleService -H 'content-type: application/json' -d '{"public": false}'
+```
+
+You can revert it back to public with `{"public": true}`. When hidden from the ingress, a service can still be accessible from other Restate services.
+For more details on the API, refer to the [Meta operational API docs](./deployment-operations/meta-rest-api.mdx#tag/service/operation/modify_service). 
