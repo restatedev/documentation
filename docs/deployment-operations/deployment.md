@@ -284,7 +284,10 @@ data:
           connect_timeout: 1s
           lb_policy: CLUSTER_PROVIDED
           # assume http2 in upstream
-          http2_protocol_options: {}
+          http2_protocol_options:
+            connection_keepalive:
+              interval: 40s
+              timeout: 20s
           cluster_type:
             name: envoy.clusters.dynamic_forward_proxy
             typed_config:
