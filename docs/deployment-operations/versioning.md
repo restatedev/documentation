@@ -90,3 +90,27 @@ Currently Restate doesn't implement all the "schema incompatibility" checks, so 
 ## State compatibility
 
 When updating Keyed and Singleton services, the new revisions will continue to use the same state created by previous revisions. You must ensure state entries are evolved in a backward compatible way.
+
+## Removing a service
+
+It is not possible to remove a single service directly, but it is possible to remove the service endpoint containing it. To remove a service, the suggested procedure is the following:
+
+1. Find out which service endpoint is serving the latest revision of the service. You can do it with:
+
+```bash
+$ curl <RESTATE_META_ENDPOINT>/services/{SERVICE_NAME}
+```
+
+2. Make sure that removing this service endpoint won't affect other services you don't want to remove.
+3. Make sure no other Restate service is using this service anymore.
+4. [Hide the service from the ingress](../ingress.md#hiding-services-from-the-ingress) to avoid accepting new requests from the ingress.
+5. Check through the Status introspection that you have no pending requests to this service anymore.
+6. Remove the service endpoint containing the service with:
+
+```bash
+$ curl -X DELETE <RESTATE_META_ENDPOINT>/endpoints/{ENDPOINT_ID}?force=true
+```
+
+:::info
+Currently Restate doesn't implement all the checks to safely remove a service endpoint, so you have to force the removal through the `force` query parameter. 
+:::
