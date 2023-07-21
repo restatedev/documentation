@@ -75,6 +75,7 @@ option (dev.restate.ext.service_type) = SINGLETON;
 
 For keyed services, you're required to specify in every input message the field to use as key. To mark a field as key, annotate it with `dev.restate.ext.field`. Make sure that:
 
+* There is only one key field.
 * The field type is either a primitive or a message. Repeated field and maps are not supported.
 * The field type is the same for every method input message of the same service.
 

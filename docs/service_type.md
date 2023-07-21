@@ -16,7 +16,7 @@ To define the service type and key, check the [service contract](./service_contr
 
 ## Keyed service
 
-Keyed services allow to shard state and workload by a user-defined key. Each key will have its own invocations queue and its own subset of the service state. There is at most one invocation per key, but there can be multiple invocations to the same service with different keys executing concurrently.
+Keyed services allow to shard state and workload by a user-defined key. Each key will have its own invocations queue and its own state. There is at most one invocation per key, but there can be multiple invocations to the same service with different keys executing concurrently.
 
 You can think of a keyed service as a class, and of a service instance as an object instance of that class. The key is the field that **uniquely** identifies that instance, and state entries are the other fields of that class.
 
