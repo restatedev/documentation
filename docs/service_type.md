@@ -10,21 +10,21 @@ Services can be categorized in three different types:
 
 1. **Keyed service**: All service invocations are sharded on a user-defined key.
 2. **Singleton service**: All service invocations are executed serially, and the state is shared among every invocation.
-3. **Unkeyed service**: All service invocations run in parallel, and there is not state shared among invocations.
+3. **Unkeyed service**: All service invocations run in parallel, and there is no shared state among invocations.
 
 To define the service type and key, check the [service contract](./service_contract.md) documentation.
 
 ## Keyed service
 
-Keyed services allows to shard state and workload by a user-defined key. Each key will have its own invocations queue and its own subset of the state. There is at most one concurrent invocation per key, but there can be multiple invocations to the same service with different keys executing at the same time.
+Keyed services allow to shard state and workload by a user-defined key. Each key will have its own invocations queue and its own subset of the service state. There is at most one invocation per key, but there can be multiple invocations to the same service with different keys executing concurrently.
 
-You can think to a keyed service as a class, and a service instance as object instance of that class. The key is the field that **uniquely** identifies that instance, and state entries are the other fields of that class.
+You can think of a keyed service as a class, and of a service instance as an object instance of that class. The key is the field that **uniquely** identifies that instance, and state entries are the other fields of that class.
 
 A common use case for keyed services is to model an entity of your application. For example, a `CustomerService` could model a customer, where the key is the customer id card number, the state defines the properties of the customer and the methods define the operations on it. 
 
 ### Ordering guarantees
 
-Because keyed services are executed serially on a key basis, it means that invocations will execute in the same order they're enqueued. For example, assume the following code exists in `ServiceA`:
+Because keyed services are executed serially on a per-key basis, it means that invocations will execute in the same order in which they are enqueued. For example, assume the following code in `ServiceA`:
 
 ```typescript
 const client = new ServiceB(restateContext);
@@ -49,14 +49,16 @@ You should take into account some of the limitations of keyed services when desi
 
 ## Singleton service
 
-Singleton services are essentially like keyed service where the key is always the same, meaning that every invocation will access the same state and will be enqueued in the same queue.
+Singleton services are essentially like keyed services where the key is always the same, meaning that every invocation accesses the same state and gets enqueued in the same queue.
 
-Carefully ponder whether a service should be a singleton, given it executes all the invocations serially. If not properly used, it can end up being a quite significant source of resource contention for your application.
+:::warning
+Carefully ponder whether a service should be a singleton, given it executes all the invocations serially. If not properly used, it can become the throughput bottleneck of your application.
+:::
 
 ## Unkeyed service
 
 Unkeyed services have no invocation queue, meaning invocations are executed as soon as they're received without any concurrency and ordering guarantee.
 
-You should not use state in unkeyed services, as all the stored state will inaccessible forever after the end of the invocation.
+You should not use state in unkeyed services, as all the stored state will be inaccessible after the end of the invocation.
 
 Because unkeyed services don't lock any resource, they are a good fit for long running workflows with many time-consuming operations such as sleeps, or as a coordinator to invoke other keyed services.

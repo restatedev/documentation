@@ -101,7 +101,7 @@ message Person {
 
 ## How to use the contract
 
-Once you have the contract, the SDK uses it to generate the code to encode/decode messages and the interface to implement the service. You can import contract of other services, and the SDK will generate clients to invoke them.
+Once you have the contract, the SDK uses it to generate the code to encode/decode messages and the interface to implement the service. You can import contracts of other services, and the SDK will generate clients to invoke them.
 
 The contract can also be used to generate gRPC/Connect clients to invoke Restate services from your webapp, mobile app, legacy system or in general from any system outside Restate services through the [ingress](./ingress.md). You can check out the [gRPC](https://grpc.io/docs/languages/) and [Connect](https://connect.build/docs/introduction) documentation for more info on the available clients.
 
