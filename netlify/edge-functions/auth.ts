@@ -47,7 +47,7 @@ const login = async (context: Context, code: string, previous: string, key: Cryp
   }
 
   const collaborator_response = await fetch(
-    "https://api.github.com/repos/OWNER/REPO/collaborators/USERNAME",
+    `https://api.github.com/repos/restatedev/documentation/collaborators/${user_result.login}`,
     {
       method: "GET",
       headers: {
