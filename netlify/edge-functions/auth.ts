@@ -12,26 +12,12 @@ import {
 const client_id = Deno.env.get("GITHUB_CLIENT_ID");
 const client_secret = Deno.env.get("GITHUB_CLIENT_SECRET");
 const pat = Deno.env.get("GITHUB_PAT");
-const key = await crypto.subtle.importKey(
-  "jwk",
-  {
-    alg: "HS512",
-    ext: true,
-    k: Deno.env.get("JWT_SECRET"),
-    key_ops: [
-      "sign",
-      "verify",
-    ],
-    kty: "oct",
-  },
-  { name: "HMAC", hash: "SHA-512" },
-  true,
-  ["sign", "verify"],
-);
+const jwt_secret = Deno.env.get("JWT_SECRET");
 
 const login = async (
   code: string,
   previous: string,
+  key: CryptoKey,
 ) => {
   const token_response = await fetch(
     "https://github.com/login/oauth/access_token",
@@ -131,6 +117,22 @@ const redirect = (url: URL) => {
 export default async (request: Request, context: Context) => {
   const url = new URL(request.url);
   console.log(`Handling request for ${url.origin}${url.pathname}`);
+  const key = await crypto.subtle.importKey(
+    "jwk",
+    {
+      alg: "HS512",
+      ext: true,
+      k: jwt_secret,
+      key_ops: [
+        "sign",
+        "verify",
+      ],
+      kty: "oct",
+    },
+    { name: "HMAC", hash: "SHA-512" },
+    true,
+    ["sign", "verify"],
+  );
 
   if (url.pathname === "/oauth") {
     const code = url.searchParams.get("code");
@@ -138,7 +140,7 @@ export default async (request: Request, context: Context) => {
     if (code) {
       console.log(`Starting login flow`);
       // we are a callback
-      return login(code, previous);
+      return login(code, previous, key);
     }
   }
 
