@@ -72,16 +72,23 @@ const login = async (
     },
   );
 
+  if (collaborator_response.status === 404) {
+    return new Response(
+      `To access the docs, your GitHub account must have access to https://github.com/restatedev/documentation`,
+      { status: 401 },
+    );
+  }
+
   if (
-    collaborator_response.status < 200 || collaborator_response.status > 299
+    collaborator_response.status != 204
   ) {
-    const text = await collaborator_response.text();
+    const body = await collaborator_response.text();
     console.log(
-      `Bad response from collaborators api: status ${collaborator_response.status}, body: ${text}`,
+      `Bad response from collaborators api: status ${collaborator_response.status}, body: ${body}`,
     );
     return new Response(
-      `You do not have access to restatedev/documentation: ${text}`,
-      { status: 401 },
+      body,
+      { status: 500 },
     );
   }
 
