@@ -16,6 +16,6 @@ RUN yarn build
 FROM nginx:stable-alpine as deploy
 WORKDIR /restate-documentation
 # Copy what we've built from production
-COPY --from=builder /restate-documentation/build /usr/share/nginx/html/docs
+COPY --from=builder /restate-documentation/build /usr/share/nginx/html/
 # Update nginx configuration
 COPY --from=builder /restate-documentation/docker/nginx.conf /etc/nginx/
