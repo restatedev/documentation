@@ -2,7 +2,6 @@ import type {Context} from "https://edge.netlify.com";
 import {create, getNumericDate, verify} from "https://deno.land/x/djwt@v2.9.1/mod.ts";
 import {getCookies, setCookie} from "https://deno.land/std@0.170.0/http/cookie.ts";
 
-const deploy_context = Deno.env.get("DEPLOY_CONTEXT");
 const client_id = Deno.env.get("GITHUB_CLIENT_ID");
 const client_secret = Deno.env.get("GITHUB_CLIENT_SECRET");
 const pat = Deno.env.get("GITHUB_PAT");
@@ -23,7 +22,9 @@ const login = async (context: Context, code: string, previous: string, key: Cryp
   const token_result = await token_response.json();
 
   if (token_result.error) {
-    return new Response(JSON.stringify(token_result), {status: 401});
+    const body = JSON.stringify(token_result)
+    console.log(`Bad response from oauth api: status ${token_response.status}, body: ${body}`)
+    return new Response(body, {status: 401});
   }
 
   const user_response = await fetch(
@@ -40,7 +41,9 @@ const login = async (context: Context, code: string, previous: string, key: Cryp
   const user_result = await user_response.json();
 
   if (!user_result.login) {
-    return new Response(JSON.stringify(user_result), {status: 500});
+    const body = JSON.stringify(user_result)
+    console.log(`Bad response from user api: status ${user_response.status}, body: ${body}`)
+    return new Response(body, {status: 500});
   }
 
   const collaborator_response = await fetch(
@@ -55,7 +58,9 @@ const login = async (context: Context, code: string, previous: string, key: Cryp
   );
 
   if (collaborator_response.status < 200 || collaborator_response.status > 299) {
-    return new Response(`You do not have access to restatedev/documentation: ${await collaborator_response.text()}`,
+    const text = await collaborator_response.text()
+    console.log(`Bad response from collaborators api: status ${collaborator_response.status}, body: ${text}`)
+    return new Response(`You do not have access to restatedev/documentation: ${text}`,
       {status: 401}
     )
   }
@@ -67,7 +72,8 @@ const login = async (context: Context, code: string, previous: string, key: Cryp
   // issue a jwt to avoid having to do a github api call on every request
   const jwt = await create({alg: "HS512", typ: "JWT"}, {aud: user_result.login, exp: getNumericDate(expiry)}, key)
 
-  // redirect to homepage and set cookie
+  // redirect and set cookie
+  console.log(`Redirecting to docs page ${previous}`)
   const headers = new Headers({location: previous});
   setCookie(headers, {name: "RESTATE_DOCS", value: jwt, expires: expiry})
   return new Response(null, {status: 302, headers});
@@ -81,12 +87,13 @@ const redirect = (url: URL) => {
   authorize_uri.searchParams.set("client_id", client_id || "")
   authorize_uri.searchParams.set("redirect_uri", redirect_uri.toString())
 
-  // no code or cookie, login flow
+  console.log(`Redirecting to ${authorize_uri.toString()}`)
   return Response.redirect(authorize_uri, 302)
 }
 
 export default async (request: Request, context: Context) => {
   const url = new URL(request.url)
+  console.log(`Handling request for ${url.origin}${url.pathname}`)
   const key = await crypto.subtle.importKey("jwk", {
       alg: "HS512", ext: true,
       k: jwt_secret,
@@ -105,6 +112,7 @@ export default async (request: Request, context: Context) => {
     const code = url.searchParams.get("code")
     const previous = url.searchParams.get("previous") || url.origin
     if (code) {
+      console.log(`Starting login flow`)
       // we are a callback
       return login(context, code, previous, key);
     }
@@ -113,6 +121,7 @@ export default async (request: Request, context: Context) => {
   const cookies = getCookies(request.headers);
 
   if (!cookies.RESTATE_DOCS) {
+    console.log(`No cookie; redirecting to github`)
     return redirect(url)
   }
 
@@ -120,9 +129,11 @@ export default async (request: Request, context: Context) => {
     await verify(cookies.RESTATE_DOCS, key)
   } catch (_) {
     // expired or invalid
+    console.log(`Invalid cookie; redirecting to github`)
     return redirect(url)
   }
 
   // load page
+  console.log(`Valid cookie; passing to docs`)
   return context.next()
 }
