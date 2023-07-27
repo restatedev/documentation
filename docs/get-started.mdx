@@ -1,0 +1,97 @@
+---
+sidebar_position: 2
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Get started
+This guide takes you through your first steps with Restate.
+
+## Prerequisites
+- [NodeJS](https://nodejs.org/en/)
+- [Docker](https://docs.docker.com/engine/install/)
+
+## Step 1: Create the Node app
+Use the [Node template](https://github.com/restatedev/node-template-generator) to get started. 
+This template includes a skeleton of a Typescript Restate service:
+
+```shell
+npx -y @restatedev/create-app && cd restate-node-template
+```
+
+## Step 2: Install dependencies
+First, get all dependencies and build tools. Generate the gRPC Protobuf files and build the app:
+
+```shell
+npm install && npm run proto && npm run build
+```
+
+:::tip
+You will need to execute `npm run proto` every time you make changes to the Protobuf definitions.
+:::
+
+Now, you are all set to start developing your service in `src/app.ts`.
+
+## Step 3: Build and Run the Greeter service
+Once you are done with implementing your service, build the app and run it:
+```shell
+npm run build
+npm run app
+```
+
+This starts the greeter service on port 8080.
+
+## Step 4: Launch the Restate runtime
+
+<Tabs groupId="operating-systems">
+<TabItem value="lin" label="Linux">
+
+Run the Restate Docker container:
+
+```shell
+docker run --name restate_dev --rm -d --network=host ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
+```
+
+Discover the services:
+```shell
+curl -X POST http://localhost:8081/endpoints -H 'content-type: application/json' -d '{"uri": "http://localhost:8080"}'
+```
+
+
+</TabItem>
+<TabItem value="mac" label="macOS">
+
+Run the Restate Docker container:
+
+```shell
+docker run --name restate_dev --rm -d -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
+```
+
+Discover the services:
+
+```shell
+curl -X POST http://localhost:8081/endpoints -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:8080"}'
+```
+
+</TabItem>
+</Tabs>
+
+
+## Step 5: Send requests to the Greeter service
+
+Invoke the function via:
+
+```shell
+curl -X POST http://localhost:9090/org.example.ExampleService/SampleCall -H 'content-type: application/json' -d '{"request": "Pete"}'
+```
+
+The data field is the JSON representation of what has been specified in `proto/example.proto`
+
+That's it! You managed to run your first Restate service.
+
+## Next steps
+
+Possible next steps:
+- Discover the key features of Restate in the [Tour of Restate](/tutorials/tour-of-restate)
+- [Run the examples](/examples)
