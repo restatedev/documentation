@@ -13,3 +13,4 @@ The Restate SDK allows different log levels by setting the environment variable 
 Default behavior is (when `RESTATE_DEBUG_LOGGING` is not set)
 - When `NODE_ENV=production`, the log setting is `OFF`
 - Otherwise, the `INVOKE` setting is used.
+

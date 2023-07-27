@@ -1,15 +1,63 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
 description: "Learn how to run Restate applications on AWS Lambda."
 ---
 
-# Running on AWS Lambda
+# AWS Lambda
+
+## Deploying services as AWS Lambda functions
+You can run your Restate services as serverless functions on [AWS Lambda](https://aws.amazon.com/lambda/).
+
+:::tip
+Please take a look at [the Greeter example](https://github.com/restatedev/example-lambda-ts-greeter) to learn how to deploy your Restate service as a Lambda function.
+:::
+
+To deploy a Restate service as a Lambda function,
+you can follow the [guidelines of AWS](https://docs.aws.amazon.com/lambda/latest/dg/typescript-package.html)
+for deploying plain Typescript NodeJS functions. Restate does not add any complexity to this. You build a zip file containing the application code and dependencies and upload this to AWS Lambda. If you are using the Restate node template, then you can create a zip file with:
+
+```
+npm run bundle
+```
+
+AWS Lambda assumes that the handler can be found under `index.handler` in the uploaded code.
+By default, this is also the case for the Lambda functions developed with the Restate SDK.
+
+:::caution
+Restate assumes that requests come through API Gateway.
+So you have to configure API Gateway to sit in front of your Lambda function.
+:::
+
+### Discovery of services
+
+To let Restate discover the services, execute the following curl command,
+pointed at the Restate runtime and with the Lambda function endpoint as the URI in the data field.
+
+
+```shell
+curl -X POST http://<your-restate-runtime-endpoint>:8081/endpoints -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/<my-service>"}'
+```
+
+If your Lambda function requires authentication via an API key,
+then you can add this API key to the discovery request to the Restate runtime, as follows:
+
+```shell
+curl -X POST http://<your-restate-runtime-endpoint>:8081/endpoints -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/<my-service>","additional_headers": {"x-api-key": "someapikey"} }'
+```
+
+Here, we added the API key as an additional header to the JSON data of the request.
+Replace `someapikey` by your API key.
+The Restate runtime will use this API key for all subsequent requests to the Lambda function.
+
+
+
+## Tutorial
 
 This tutorial shows how to deploy a greeter service written with the Restate Typescript SDK on AWS Lambda.
 
 [Go to the GitHub repository of this tutorial](https://github.com/restatedev/example-lambda-ts-greeter/tree/v0.0.1)
 
-## Prerequisites
+### Prerequisites
 > &#x1F4DD; As long as Restate hasn't been launched publicly, you need to have access to the private Restate npm packages and Docker container. Please follow the instructions in the [restate-dist](https://github.com/restatedev/restate-dist) Readme to set up access: 
 
 - [NodeJS (and npm)](https://nodejs.org)
@@ -17,7 +65,7 @@ This tutorial shows how to deploy a greeter service written with the Restate Typ
 - [curl](https://everything.curl.dev/get)
 - An AWS account with permissions for Lambda and API Gateway.
 
-## Clone the repository
+### Clone the repository
 
 Clone the GitHub repository for the latest release:
 ```shell
@@ -27,7 +75,7 @@ git clone --depth 1 --branch VAR::LAMBDA_GREETER_VERSION git@github.com:restated
 We are going to deploy the service defined in `src/app.ts` on AWS Lambda.
 To do this, we need to create a zip file that includes the service code and the required dependencies to run it.
 
-## Creating a zip file from our code base
+### Creating a zip file from our code base
 
 First, get all dependencies and build tools:
 ```
@@ -44,7 +92,7 @@ To build the code and make the zip file, do
 npm run bundle
 ```
 
-## Deploying the Lambda function via the AWS console
+### Deploying the Lambda function via the AWS console
 
 Go to the Lambda UI in the AWS console. Click on `Create function`.
 Fill in the name of your function. You can leave the settings to the default:
@@ -127,7 +175,7 @@ Our API Gateway and Lambda function should now be working!
 You can see the invoke URL by going to `Stages` and then following the path to the endpoint you want to invoke.
 For example `default/my-greeter`. The invoke URL will be printed on top of the page.
 
-### Testing your Lambda function
+#### Testing your Lambda function
 
 The AWS console lets you test your Lambda functions.
 Go to your Lambda function and click on the `Test` tab.
@@ -192,9 +240,9 @@ The response should be the following:
 
 The body is the base64 encoded string of the response, and stands for `{"value":"Hello Pete"}`.
 
-## Sending requests your Lambda function
+### Sending requests your Lambda function
 
-### Running the Restate runtime
+#### Running the Restate runtime
 
 You don't necessarily need to run the Restate runtime on AWS.
 You can also run the Restate runtime locally in a Docker container to test your Lambda function:
@@ -239,7 +287,7 @@ When executing this command, you should see the discovered services printed out!
 {"services":["org.example.Greeter"]}
 ```
 
-### Send requests
+#### Send requests
 
 Now let's invoke the `MultiWord` method of our service! Don't forget to replace `<your-restate-runtime-endpoint>` accordingly.
 
@@ -260,7 +308,7 @@ So your Lambda function does not need to worry about setting up connections to s
 This makes the code easier and the execution faster.
 :::
 
-## 🏁 You did it!
+### 🏁 You did it!
 You successfully added a Lambda function as a Restate service and sent requests to it.
 
 Here are some next steps for you to try:
