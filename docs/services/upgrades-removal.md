@@ -1,6 +1,6 @@
 ---
 sidebar_position: 6
-description: ""
+description: "Restate's service versioning strategy."
 ---
 
 # Upgrades & removal

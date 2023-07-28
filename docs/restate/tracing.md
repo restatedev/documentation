@@ -1,6 +1,6 @@
 ---
 sidebar_position: 4
-description: ""
+description: "Find out how to export traces of your invocations."
 ---
 
 # Tracing

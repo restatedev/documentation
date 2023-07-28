@@ -1,6 +1,6 @@
 ---
 sidebar_position: 5
-description: ""
+description: "Explore the different ways to invoke Restate services."
 ---
 
 # Invocation

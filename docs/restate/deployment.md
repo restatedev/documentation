@@ -1,13 +1,9 @@
 ---
 sidebar_position: 3
-description: ""
+description: "Deploy Restate on Kubernetes with this guide."
 ---
 
 # Deployment
-
-This page contains some walkthroughs to deploy Restate and services.
-
-## Deploying Restate
 
 Restate is currently a single binary that contains everything you need.
 It exposes three services by default, each on different ports:
@@ -108,17 +104,4 @@ You will also need to create an image pull secret using a classic github persona
 ```bash
 $ kubectl create secret docker-registry github --docker-server=ghcr.io --docker-username=<your-github-username> --docker-password=<your-personal-access-token>
 ```
-
-## Deploying services
-
-Restate services are deployed within *Service endpoints*. The Restate runtime interacts with service endpoints by sending requests to them using a custom protocol on top of HTTP.
-
-A service endpoint can be deployed as a Lambda function, a Kubernetes pod, a Knative Service, or any other deployment environment where the service endpoint can be reached at a specific URL.
-
-The URL (including path prefix) MUST be **unique**, meaning that no two service endpoints with the same URL can exist at the same time in a Restate instance.
-
-Moreover, service endpoints are **immutable**, and are assumed to be reacheable throughout the entire lifecycle of an invocation. To deploy any change to a service, either in the Protobuf definition or in the business logic, you should deploy a new service endpoint with a new URL. See the [versioning documentation](./versioning.md) for more details on how to update services.
-
-
-
 

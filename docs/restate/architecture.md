@@ -1,6 +1,7 @@
 ---
 sidebar_position: 1
-description: ""
+description: "A deep-dive in the internals of Restate."
+draft: true
 ---
 
 # Architecture

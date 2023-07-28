@@ -1,6 +1,6 @@
 ---
 sidebar_position: 1
-description: ""
+description: "Restate supports keyed, unkeyed, and singleton services."
 ---
 
 # Service types

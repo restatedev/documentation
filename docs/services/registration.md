@@ -1,6 +1,6 @@
 ---
 sidebar_position: 4
-description: ""
+description: "Find out how to register new services with Restate."
 ---
 
 # Registration

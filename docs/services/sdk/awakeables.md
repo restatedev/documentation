@@ -1,6 +1,6 @@
 ---
 sidebar_position: 6
-description: "Let your service sleep for a specified time, guaranteed by Restate."
+description: "Pause invocations while waiting for an external task completion."
 ---
 
 # Awakeables

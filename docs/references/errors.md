@@ -1,5 +1,6 @@
 ---
 sidebar_position: 1
+description: "Interpretation of error codes emitted by Restate components."
 slug: errors
 ---
 
