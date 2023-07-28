@@ -4,6 +4,7 @@ title: Overview
 hide_title: true
 sidebar_position: 1
 slug: /
+description: "Documentation overview"
 ---
 <div id="container">
 <h1> Welcome to the Restate Documentation!</h1>
@@ -26,13 +27,19 @@ First time here? Get started:
 
 
 
-<div id="container">
-Or dive into the details:
-</div>
-<div id="container">
-<div id="overviewButtonDiv"><a id="servicesButton" class="overviewButton btn btn-primary btn-lg px-4 mb-2" href="/category/services" role="button">>> Services</a></div>
-<div id="overviewButtonDiv"><a id="restateButton" class="overviewButton btn btn-primary btn-lg px-4 mb-2" href="/category/restate" role="button">>> Restate</a></div>
-</div>
+[//]: # (<div id="container">)
+
+[//]: # (Or dive into the details:)
+
+[//]: # (</div>)
+
+[//]: # (<div id="container">)
+
+[//]: # (<div id="overviewButtonDiv"><a id="servicesButton" class="overviewButton btn btn-primary btn-lg px-4 mb-2" href="/category/services" role="button">>> Services</a></div>)
+
+[//]: # (<div id="overviewButtonDiv"><a id="restateButton" class="overviewButton btn btn-primary btn-lg px-4 mb-2" href="/category/restate" role="button">>> Restate</a></div>)
+
+[//]: # (</div>)
 
 
 <div id="container">
