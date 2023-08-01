@@ -73,10 +73,7 @@ const login = async (
   );
 
   if (collaborator_response.status === 404) {
-    return new Response(
-      `To access the docs, your GitHub account must have access to https://github.com/restatedev/documentation`,
-      { status: 401 },
-    );
+    return Response.redirect('https://forms.gle/G8kDuucqhBoTfMwLA', 302);
   }
 
   if (
