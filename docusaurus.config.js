@@ -92,18 +92,6 @@ const config = {
         },
         items: [
           {
-            label: 'Home',
-            to: 'http://restate.dev'
-          },
-          {
-            label: 'Docs',
-            to: '/'
-          },
-          {
-            label: 'TS SDK',
-            to: '/category/implementation'
-          },
-          {
             href: 'https://github.com/restatedev/restate-dist',
             label: 'GitHub',
             position: 'right',

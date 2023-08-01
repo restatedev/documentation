@@ -13,7 +13,21 @@ description: "Documentation overview"
 <p>Restate is a system for easily building resilient applications using <mark>distributed durable RPC & async/await</mark>.</p>
 </div>
 
-
+<div id="container">
+Watch the intro video:
+</div>
+<div id="container">
+<section id="videosection" class="section section-sm bg-light">
+<div class="container col-lg-9 col-xl-9">
+<div class="videocontainer">
+<video id="intro_video" controls preload="none" poster="img/intro_diagram.jpg" >
+<source src="img/video.mp4" type="video/mp4"/>
+Your browser does not support the video tag.
+</video>
+</div>
+</div>
+</section>
+</div>
 
 <div id="container">
 First time here? Get started:
@@ -42,21 +56,7 @@ First time here? Get started:
 [//]: # (</div>)
 
 
-<div id="container">
-Watch the intro video:
-</div>
-<div id="container">
-<section id="videosection" class="section section-sm bg-light">
-<div class="container col-lg-9 col-xl-9">
-<div class="videocontainer">
-<video id="intro_video" controls poster="img/restate.png" >
-<source src="img/video.mp4" type="video/mp4"/>
-Your browser does not support the video tag.
-</video>
-</div>
-</div>
-</section>
-</div>
+
 
 [//]: # (TODO Explains how Restate sits in your stack &#40;use cases &#40;microservices, stateful serverless, workflows&#41; and what kind of thing Restate is &#40;vs service mesh/workflow orchestrator/…&#41;&#41;)
 
