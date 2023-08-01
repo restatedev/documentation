@@ -22,7 +22,7 @@ const redocusaurus = [
 const config = {
   title: 'Restate documentation',
   tagline: 'Distributed application development made simple',
-  favicon: 'img/logo_only.png',
+  favicon: '/img/logo_only.png',
 
   // Set the production url of your site here
   url: 'https://docs.restate.dev',
@@ -92,16 +92,6 @@ const config = {
         },
         items: [
           {
-            position: 'left',
-            label: 'Tutorials',
-            to: '/category/tutorials'
-          },
-          {
-            position: 'left',
-            label: 'Docs',
-            to: '/'
-          },
-          {
             href: 'https://github.com/restatedev/restate-dist',
             label: 'GitHub',
             position: 'right',
@@ -114,18 +104,11 @@ const config = {
           {
             title: 'Docs',
             items: [
-              {
-                label: 'Tutorial',
-                to: '/category/tutorials',
-              },
-              {
-                label: 'Documentation',
-                to: '/',
-              },
-              {
-                label: 'Examples',
-                to: '/examples',
-              },
+          {
+            href: 'https://github.com/restatedev/restate-dist',
+            label: 'GitHub',
+            position: 'right',
+          },
             ],
           },
           {

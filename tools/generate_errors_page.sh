@@ -8,7 +8,7 @@ fi
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 IN_PATH=$1
-OUT_FILE=$SCRIPT_DIR/../docs/deployment-operations/errors.md
+OUT_FILE=$SCRIPT_DIR/../docs/references/errors.md
 
 cat > $OUT_FILE << EOF
 ---
