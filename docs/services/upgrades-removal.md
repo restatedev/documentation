@@ -9,7 +9,7 @@ Restate comes with different solutions to update the services, to simplify devel
 
 ## Deploy a new service revision
 
-As described in the [deployment documentation](deployment/deployment.md#deploying-services), *service endpoints* are immutable, and are assumed to be reacheable throughout the entire lifecycle of an invocation. In order to deploy any change to a service, either in the protobuf definition and/or in the business logic, a new service endpoint should be deployed and registered.
+As described in the [deployment documentation](/services/deployment/general), *service endpoints* are immutable, and are assumed to be reacheable throughout the entire lifecycle of an invocation. In order to deploy any change to a service, either in the protobuf definition and/or in the business logic, a new service endpoint should be deployed and registered.
 
 When registering a new service endpoint, Restate will detect if it contains already registered services, and will treat them as new revisions. Any new invocations to that service will be executed by the newly registered service endpoint, thus guaranteeing that new invocations are always routed to the latest service revision, while *old* invocations will continue to use the previous service endpoint. It must be guaranteed that the old service endpoint lives until all the existing invocations complete.
 
@@ -73,7 +73,7 @@ $ curl <RESTATE_META_ENDPOINT>/endpoints/Z3JlZXRlci12Mi8
 }
 ```
 
-For more details on the API, refer to the [Meta operational API docs](./meta-rest-api.mdx#tag/service_endpoint/operation/create_service_endpoint).
+For more details on the API, refer to the [admin API docs](/references/admin-api#tag/service_endpoint/operation/create_service_endpoint).
 
 ## Updating the Protobuf service schema
 
@@ -104,7 +104,7 @@ $ curl <RESTATE_META_ENDPOINT>/services/{SERVICE_NAME}
 
 2. Make sure that removing this service endpoint won't affect other services you don't want to remove.
 3. Make sure no other Restate service is using this service anymore.
-4. [Hide the service from the ingress](../ingress.md#hiding-services-from-the-ingress) to avoid accepting new requests from the ingress.
+4. [Hide the service from the ingress](/services/invocation#hiding-services-from-the-ingress) to avoid accepting new requests from the ingress.
 5. Check through the Status introspection that you have no pending requests to this service anymore.
 6. Remove the service endpoint containing the service with:
 

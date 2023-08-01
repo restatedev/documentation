@@ -9,7 +9,7 @@ description: "Learn how to run Restate applications on AWS Lambda."
 You can run your Restate services as serverless functions on [AWS Lambda](https://aws.amazon.com/lambda/).
 
 :::tip
-Please take a look at [the Greeter example](https://github.com/restatedev/example-lambda-ts-greeter) to learn how to deploy your Restate service as a Lambda function.
+Please take a look at [the Lambda deployment documentation](/services/deployment/lambda) to learn how to deploy your Restate service as a Lambda function.
 :::
 
 To deploy a Restate service as a Lambda function,

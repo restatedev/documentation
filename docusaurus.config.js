@@ -104,18 +104,11 @@ const config = {
           {
             title: 'Docs',
             items: [
-              {
-                label: 'Tutorial',
-                to: '/category/tutorials',
-              },
-              {
-                label: 'Documentation',
-                to: '/',
-              },
-              {
-                label: 'Examples',
-                to: '/examples',
-              },
+          {
+            href: 'https://github.com/restatedev/restate-dist',
+            label: 'GitHub',
+            position: 'right',
+          },
             ],
           },
           {

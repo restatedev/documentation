@@ -11,7 +11,7 @@ After deploying a service endpoint, in order to use it, it must be registered wi
 $ curl <RESTATE_META_ENDPOINT>/endpoints --json '{"uri": "<SERVICE_ENDPOINT_URI>"}'
 ```
 
-When registering a service endpoint, Restate uses a mechanism similar to "reflections" to discover the available services and their schemas and properties. A service can be registered only once, and subsequent registration requests to the same service endpoint will fail. For more details on how to update services, check the [versioning documentation](./versioning.md).
+When registering a service endpoint, Restate uses a mechanism similar to "reflections" to discover the available services and their schemas and properties. A service can be registered only once, and subsequent registration requests to the same service endpoint will fail. For more details on how to update services, check the [versioning documentation](/services/upgrades-removal).
 
 The service endpoint creation can be forced to overwrite an existing endpoint using curl (>v7.82.0):
 
@@ -25,4 +25,4 @@ This will forcefully overwrite the existing endpoint with the same uri, forcing 
 Forcing an endpoint registration is a feature designed to simplify local Restate service development, and should never be used in a production Restate deployment, as it potentially breaks all the in-flight invocations to that endpoint.
 :::
 
-For more details on the API, refer to the [Meta operational API docs](./meta-rest-api.mdx#tag/service_endpoint/operation/create_service_endpoint).
+For more details on the API, refer to the [admin API docs](/references/admin-api#tag/service_endpoint/operation/create_service_endpoint).

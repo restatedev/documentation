@@ -8,7 +8,7 @@ description: "Explore the different ways to invoke Restate services."
 
 There are different ways to invoke a Restate service:
 
-* From within another service, as described in the [SDK service communication documentation](./typescript-sdk/service-communication.md)
+* From within another service, as described in the [SDK service communication documentation](/services/sdk/service-communication)
 * By sending a request to any Restate runtime using either [Connect (gRPC on HTTP)](https://connect.build/docs/protocol/), gRPC or gRPC-web
 
 ## Connect (gRPC on HTTP)
@@ -65,7 +65,7 @@ Restate also natively supports gRPC-web. You can use a [gRPC-web code generator]
 
 ## Invoke a service without waiting for the response
 
-You can invoke a service without waiting for the response, similar to [one-way calls in the SDK](./typescript-sdk/service-communication.md), by using the Restate built-in `dev.restate.Ingress/Invoke` service method, which can be invoked like any other user service, using gRPC, gRPC-web or Connect.
+You can invoke a service without waiting for the response, similar to [one-way calls in the SDK](/services/sdk/service-communication#one-way-calls), by using the Restate built-in `dev.restate.Ingress/Invoke` service method, which can be invoked like any other user service, using gRPC, gRPC-web or Connect.
 
 For example, using [Connect](#connect-grpc-on-http) and `curl`:
 
@@ -73,7 +73,7 @@ For example, using [Connect](#connect-grpc-on-http) and `curl`:
 curl -X POST http://<your-restate-runtime-host-port>/dev.restate.Ingress/Invoke -H 'content-type: application/json' -d '{"service": "org.example.Greeter", "method": "Greet", "payload": {"name": "Pete"}}'
 ```
 
-The response contains the [service invocation identifier](./deployment-operations/manage-invocations.md#service-invocation-identifier). You can use this identifier to manage the invocation as described in ["Manage invocations" documention](deployment-operations/manage-invocations.md).
+The response contains the [service invocation identifier](/services/invocation#service-invocation-identifier). You can use this identifier to manage the invocation as described in [the respective documention](/services/invocation).
 
 For a complete documentation of the `dev.restate.Ingress` built-in service, check out the [Restate protobuf definitions](https://github.com/restatedev/proto/blob/main/dev/restate/services.proto).
 
@@ -96,7 +96,7 @@ $ curl -X PATCH localhost:8081/services/org.example.ExampleService -H 'content-t
 ```
 
 You can revert it back to public with `{"public": true}`. When hidden from the ingress, a service can still be accessible from other Restate services.
-For more details on the API, refer to the [Meta operational API docs](./deployment-operations/meta-rest-api.mdx#tag/service/operation/modify_service). 
+For more details on the API, refer to the [admin API docs](/references/admin-api#tag/service/operation/modify_service). 
 
 
 # Manage invocations
@@ -161,4 +161,4 @@ For example:
 $ curl -X DELETE http://localhost:8081/invocations -H 'content-type: application/json' -d '{"sid": "coordinator.Coordinator-AYguNHjOdG+gM+TY9k1qeA==-01882e3478ce79579999ecabfd7f4129"}'
 ```
 
-For more details on the API, refer to the [Meta operational API docs](./meta-rest-api.mdx#tag/invocation/operation/cancel_invocation).
+For more details on the API, refer to the [admin API docs](/references/admin-api).

@@ -13,7 +13,7 @@ Services can be categorized in three different types:
 2. **Singleton service**: All service invocations are executed serially, and the state is shared among every invocation.
 3. **Unkeyed service**: All service invocations run in parallel, and there is no shared state among invocations.
 
-To define the service type and key, check the [service contract](../service_contract.md) documentation.
+To define the service type and key, check the [service contract](/services/service_type#restate-service-contract) documentation.
 
 ## Keyed service
 
@@ -44,7 +44,7 @@ It is guaranteed that the invocation with `number: 1` will be executed before th
 You should take into account some of the limitations of keyed services when designing your applications:
 
 * Time-consuming operations, such as sleep, lock the service instance for the entire operation, hence they won't allow other enqueued invocations to be executed.
-* Keyed service invocations can produce deadlocks when using request/response calls. When this happens, the keys remain locked and the system can't process any more requests. In this situation you'll have to unblock the keys manually by [cancelling invocations](./deployment-operations/manage-invocations.md#cancel-an-invocation). Some example cases:
+* Keyed service invocations can produce deadlocks when using request/response calls. When this happens, the keys remain locked and the system can't process any more requests. In this situation you'll have to unblock the keys manually by [cancelling invocations](/services/invocation#cancel-an-invocation). Some example cases:
   * Cross deadlock between service A and B: A calls B, and B calls A, both using same keys.
   * Cyclical deadlock: A calls B, and B calls C, and C calls A again.
 
@@ -70,10 +70,10 @@ Every Restate service defines a typed interface using a contract. The interface 
 
 Restate uses this contract to enable several features, such as:
 
-* Automatically extract the [service key](services/service_type.md), if any
-* Accept requests in the [ingress](./ingress.md) in different formats and route them
+* Automatically extract the [service key](/services/service_type), if any
+* Accept requests [in different formats](/services/invocation) and route them
 * Allow code generation of service code and clients
-* Support safer [upgrades](./deployment-operations/versioning.md) through incompatibility checks
+* Support safer [upgrades](/services/upgrades-removal) through incompatibility checks
 
 The service contract is defined using [Protobuf](https://protobuf.dev/programming-guides/proto3/#services). Refer to their documentation to learn how to use the [Protobuf IDL](https://protobuf.dev/programming-guides/proto3).
 
@@ -115,7 +115,7 @@ message Response {
 
 ### Defining service instance and key
 
-In addition to the standard Protobuf service definition, in Restate service you must specify the service type. Check the [service type](services/service_type.md) documentation for more details.
+In addition to the standard Protobuf service definition, in Restate service you must specify the service type. Check the [service type](/services/service_type) documentation for more details.
 
 To define the service type, you must use the `dev.restate.ext.service_type` extension. To define a service as keyed:
 
@@ -166,6 +166,6 @@ message Person {
 
 Once you have the contract, the SDK uses it to generate the code to encode/decode messages and the interface to implement the service. You can import contracts of other services, and the SDK will generate clients to invoke them.
 
-The contract can also be used to generate gRPC/Connect clients to invoke Restate services from your webapp, mobile app, legacy system or in general from any system outside Restate services through the [ingress](./ingress.md). You can check out the [gRPC](https://grpc.io/docs/languages/) and [Connect](https://connect.build/docs/introduction) documentation for more info on the available clients.
+The contract can also be used to generate gRPC/Connect clients to invoke Restate services from your webapp, mobile app, legacy system or in general from any system outside Restate services. Have a look at the [invocation docs](/services/invocation). You can check out the [gRPC](https://grpc.io/docs/languages/) and [Connect](https://connect.build/docs/introduction) documentation for more info on the available clients.
 
-When [registering a service endpoint](./deployment-operations/deployment.md#registering-service-endpoints), Restate automatically _discovers_ all the available service contracts and stores them in an internal registry, no manual input is needed. 
+When [registering a service endpoint](/services/registration), Restate automatically _discovers_ all the available service contracts and stores them in an internal registry, no manual input is needed. 

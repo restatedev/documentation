@@ -31,7 +31,7 @@ Refer to the [Jaeger documentation](https://www.jaegertracing.io/docs/1.46/deplo
 Configure the tracing endpoint in Restate as a fully specified URL: `http://<jaeger-collector>:4317`.
 :::
 
-You can configure a span/event filter in a similar fashion to the [Log filter](#log-filter) setting the `observability.tracing.filter` configuration entry.
+You can configure a span/event filter in a similar fashion to the [log filter](/restate/logging#log-filter) setting the `observability.tracing.filter` configuration entry.
 
 ## Setup Jaeger file exporter
 
@@ -43,7 +43,7 @@ You can import the trace files using the Jaeger UI:
 
 ## Understanding traces
 
-Similarly to logs, traces export [attributes/tags](#components-and-log-event-context-fields) that correlates the trace with the service and/or invocation. For example, you can filter directly in the Jaeger UI all the traces belonging to the service `org.example.ExampleService` by setting the tag filter `rpc.service=org.example.ExampleService`.
+Similarly to logs, traces export [attributes/tags](#components-and-log-event-context-fields) that correlate the trace with the service and/or invocation. For example, you can filter directly in the Jaeger UI all the traces belonging to the service `org.example.ExampleService` by setting the tag filter `rpc.service=org.example.ExampleService`.
 
 Restate traces don't look like traditional HTTP server traces, because of the inner workings of Restate and OpenTelemetry/Jaeger. For each invocation, a span named `service_invocation` is created to mark the beginning of the invocation, and a child span `end_invocation` is created to mark the end of an invocation. You can easily check for every invocation if it ended or not by checking whether the span `service_invocation` has the `end_invocation` child or not.
 
