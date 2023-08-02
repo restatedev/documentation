@@ -95,6 +95,6 @@ restate.invocation.sid="example.MyExampleService-AzEyMw==-0189b536906b746c8da6f8
 
 ## Searching traces
 
-Traces export attributes and tags that correlate the trace with the service and/or invocation. For example, in the Jaeger UI, you can filter the traces belonging to the service `org.example.ExampleService` by setting the tag filter `rpc.service=org.example.ExampleService`. Or you can filter on the method (`rpc.method`) or invocation id (`restate.invocation.sid`) or any other tag:
+Traces export attributes and tags that correlate the trace with the service and/or invocation. For example, in the Jaeger UI, you can filter on the invocation id (`restate.invocation.sid`) or any other tag:
 
-![Jaeger method search](/img/jaeger_search.png)
+![Jaeger invocation id search](/img/jaeger_docs_invocationid_search.png)
