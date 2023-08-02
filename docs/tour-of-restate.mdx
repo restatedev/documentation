@@ -1261,7 +1261,7 @@ Payment call succeeded for idempotency key dc2048f8-62c1-4b3e-bb92-25dc9da14bac 
 
 </details>
 
-## Observability
+## Tracing
 Restate exposes OpenTelemetry traces of your invocations
 
 Run the Jaeger container with:
@@ -1295,12 +1295,34 @@ docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOIN
 Go to the Jaeger UI at http://localhost:16686.
 
 Send requests to the runtime by adding tickets and checking out.
-You should see traces similar to:
 
-![Jaeger trace](/img/trace.png)
+In the Jaeger UI, select the `UserSessionService` from the service dropdown.
+You should see the `AddTicket` and `Checkout` requests listed:
 
-Note that one-way calls are shown as separate traces. So here, we only see the `UserSessionService/Checkout` and `CheckoutService/Checkout` calls,
-    and not the async call to `TicketService/MarkAsSold`.
+![Jaeger traces tour](/img/jaeger_traces_tour.png)
+
+Have a look at the traces of the `Checkout` call:
+
+![Checkout call traces](/img/jaeger_checkout_traces_tour.png)
+
+You can see the calls that were done to Restate (e.g. invoke, sleep, one way call, get state, ...) and their timings.
+If you expand one of the traces, you can see additional tags describing some metadata of the context call (e.g. invocation id, call arguments).
+
+
+You can use Jaeger's search functionality to find specific traces.
+For example, to find the traces of a specific invocation, you can enter the Restate invocation ID, which you can find in the logs, into the search field `Tags`:
+```
+restate.invocation.sid="example.UserSessionService-AzEyMw==-0189b536906b746c8da6f83f0257acda"
+```
+![Checkout call search](/img/jaeger_invocationid_search.png)
+
+Or for example, to search all traces of `Checkout` calls, you can select `invoke Checkout` in the `Operation` dropdown.
+
+Note that one-way calls are shown as separate traces.
+    The traces of the original call contain the one-way call, but the timing represents only the scheduling of the one-way call in the runtime.
+        To search for the traces of the execution of the one-way call, you can use the last numeric section of the invocation ID and enter it in the upper-right search box in the Jaeger UI.
+
+![Jaeger background call](/img/jaeger_tour_background_call.png)
 
 For more information, have a look at the [tracing docs](/restate/tracing).
 
@@ -1311,7 +1333,7 @@ You reached the end of this tutorial!
 :::
 
 Let's recap what we covered:
-- reliable, suspendable reqeust-response calls
+- reliable, suspendable request-response calls
 - one-way calls without the need for queues
 - suspensions for external communication
 - durable timers for sleep or for calling other services
@@ -1319,7 +1341,7 @@ Let's recap what we covered:
 - persistent application state
 - storing the results of non-deterministic operations or external calls as side effects
 - resiliency and retries
-- observability with Jaeger
+- tracing with Jaeger
 
 ## Next steps
 This tutorial did not cover anything related to deployment.
