@@ -11,13 +11,13 @@ Restate supports the following tracing features:
 * Exporting traces to OTLP-compatible systems (e.g. Jaeger)
 * Correlating parent traces of incoming gRPC/Connect HTTP requests, using the [W3C TraceContext](https://github.com/w3c/trace-context) specification.
 
-## Setup OTLP exporter
+## Setting up OTLP exporter
 
-To set up the OTLP exporter, you need to set the configuration entry `observability.tracing.endpoint` to point to your trace collector.
-The exporter sends OTLP trace data via gRPC ([OTLP exporter](https://github.com/open-telemetry/opentelemetry-collector/blob/main/exporter/otlpexporter/README.md)).
+Set up the [OTLP exporter](https://github.com/open-telemetry/opentelemetry-collector/blob/main/exporter/otlpexporter/README.md) by pointing the configuration entry `observability.tracing.endpoint` to your trace collector.
+The exporter sends OTLP trace data via gRPC.
 
 
-### Exporting OTLP traces to Jaeger
+## Exporting OTLP traces to Jaeger
 
 Jaeger accepts OTLP trace data via gRPC on port `4317`.
 
@@ -33,24 +33,68 @@ Configure the tracing endpoint in Restate as a fully specified URL: `http://<jae
 
 You can configure a span/event filter in a similar fashion to the [log filter](/restate/logging#log-filter) setting the `observability.tracing.filter` configuration entry.
 
-## Setup Jaeger file exporter
+#### Try it out locally
+To experiment with this feature locally, run the Jaeger container via:
+```shell
+docker run -d --name jaeger \
+-e COLLECTOR_OTLP_ENABLED=true \
+-p 4317:4317 \
+-p 16686:16686 \
+jaegertracing/all-in-one:1.46
+```
 
-If you can't configure a Jaeger agent, you can still export traces writing them to files, using the Jaeger JSON format. In order to do so, setup the configuration entry `observability.tracing.json_file_export_path` pointing towards the path where trace files should be written.
+Then launch Restate with the tracing endpoint defined as an environment variable:
+<Tabs groupId="operating-systems">
+<TabItem value="lin" label="Linux">
+
+```shell
+docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://localhost:4317 --network=host ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
+```
+
+</TabItem>
+<TabItem value="mac" label="macOS">
+
+```shell
+docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://host.docker.internal:4317 -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
+```
+
+</TabItem>
+</Tabs>
+
+Go to the Jaeger UI at http://localhost:16686.
+
+If you now spin up your Restate services and send requests to them, you will see the traces appear in the Jaeger UI.
+
+An example from the [shopping cart example](https://github.com/restatedev/example-shopping-cart-typescript):
+![Observability](/img/observability.jpeg)
+
+## Setting up Jaeger file exporter
+
+If you can't configure a Jaeger agent, you can export traces by writing them to files, using the Jaeger JSON format. To do so, set up the configuration entry `observability.tracing.json_file_export_path` pointing towards the path where trace files should be written.
 
 You can import the trace files using the Jaeger UI:
 
 ![Jaeger UI File import](/img/jaeger-import-file.png)
 
+
 ## Understanding traces
+The traces contain detailed information about the context calls that were done during the invocation (e.g. sleep, one-way calls, interaction with state):
 
-Similarly to logs, traces export [attributes/tags](#components-and-log-event-context-fields) that correlate the trace with the service and/or invocation. For example, you can filter directly in the Jaeger UI all the traces belonging to the service `org.example.ExampleService` by setting the tag filter `rpc.service=org.example.ExampleService`.
+![Understanding traces](/img/understanding_traces.png)
 
-Restate traces don't look like traditional HTTP server traces, because of the inner workings of Restate and OpenTelemetry/Jaeger. For each invocation, a span named `service_invocation` is created to mark the beginning of the invocation, and a child span `end_invocation` is created to mark the end of an invocation. You can easily check for every invocation if it ended or not by checking whether the span `service_invocation` has the `end_invocation` child or not.
+The initial `ingress_service_invocation` spans show when the gRPC/Connect HTTP request was received by Restate. The `invoke` span beneath it shows when Restate invoked the service endpoint to process the request.
 
-The spans `ingress_service_invocation` informs when the gRPC/Connect HTTP request is received, and `invoker_invocation_task` informs when the runtime invokes the service endpoint to process the request.
+The tags of the spans contain the metadata of the context calls (e.g. call arguments, invocation id). 
 
-![Jaeger trace](/img/jaeger-trace.png)
+When a service invokes another service, the child invocation is linked automatically to the parent invocation, as you can see in the image.
+Note that the spans of one-way calls are shown as separate traces. The parent invocation only shows that the one-way call was scheduled, not its entire tracing span. 
+To see this information, search for the trace of the one-way call by filtering on the invocation id tag:
+```
+restate.invocation.sid="example.MyExampleService-AzEyMw==-0189b536906b746c8da6f83f0257acda"
+```
 
-When a service invokes another service, the child invocation will be automatically linked to the span `service_invocation` of the parent invocation.
+## Searching traces
 
-We recommend to set up either Jaeger or Jaeger File trace exporter with filter `info,restate_worker::partition::effects=debug`. With this filter, the traces will also contain all the steps executed by the Restate internal state machine to drive the invocation to completion.
+Traces export attributes and tags that correlate the trace with the service and/or invocation. For example, in the Jaeger UI, you can filter on the invocation id (`restate.invocation.sid`) or any other tag:
+
+![Jaeger invocation id search](/img/jaeger_docs_invocationid_search.png)
