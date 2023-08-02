@@ -1261,7 +1261,7 @@ Payment call succeeded for idempotency key dc2048f8-62c1-4b3e-bb92-25dc9da14bac 
 
 </details>
 
-## Observability
+## Tracing
 Restate exposes OpenTelemetry traces of your invocations
 
 Run the Jaeger container with:
@@ -1314,12 +1314,9 @@ For example, to find the traces of a specific invocation, you can enter the Rest
 ```
 restate.invocation.sid="example.UserSessionService-AzEyMw==-0189b536906b746c8da6f83f0257acda"
 ```
+![Checkout call search](/img/jaeger_invocationid_search.png)
 
-Or to find all traces of `Checkout` calls, you can enter into the search field `Tags`:
-```
-rpc.method="Checkout"
-```
-![Checkout call search](/img/jaeger_checkout_search.png)
+Or for example, to search all traces of `Checkout` calls, you can select `invoke Checkout` in the `Operation` dropdown.
 
 Note that one-way calls are shown as separate traces.
     The traces of the original call contain the one-way call, but the timing represents only the scheduling of the one-way call in the runtime.
@@ -1344,7 +1341,7 @@ Let's recap what we covered:
 - persistent application state
 - storing the results of non-deterministic operations or external calls as side effects
 - resiliency and retries
-- observability with Jaeger
+- tracing with Jaeger
 
 ## Next steps
 This tutorial did not cover anything related to deployment.
