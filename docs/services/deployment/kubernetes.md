@@ -114,8 +114,7 @@ spec:
               value: 127.0.0.1:10001
           # ...
         - name: envoy
-          # use a bleeding edge image until v1.17 is released
-          image: envoyproxy/envoy:distroless-dev-dd557fd6a7db5d5f7c23b8bdea725bae0458bc73
+          image: envoyproxy/envoy:distroless-v1.27-latest
           volumeMounts:
             - name: envoy-config
               mountPath: /etc/envoy
