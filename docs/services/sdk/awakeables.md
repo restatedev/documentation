@@ -44,11 +44,13 @@ const result = await awakeable.promise;
 The external process that received the ID, needs to deliver it back to Restate when the task is done.
 
 If the external process is another Restate service, then you can use the SDK to complete the awakeable (= to send the ID back).
-Use the awakeable id that you received from the other service, and do the following:
+Use the awakeable ID that you received from the other service, and do the following:
 
 ```typescript
 ctx.completeAwakeable(id, "hello");
 ```
+
+The SDK serializes the payload with `Buffer.from(JSON.stringify(payload))` and deserializes it in the receiving service with `JSON.parse(result.toString()) as T`.
 
 In the current release, only Restate services can complete awakeables.
 If you want to enable an external system to awaken an invocation,
