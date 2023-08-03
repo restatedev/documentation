@@ -9,8 +9,10 @@ Awakeables pause an invocation while waiting for an external process to complete
 This works as follows:
 - You generate an ID with the Restate SDK. This is a simple string object.
 - You send the ID to the external process, in any preferred way (e.g. over Kafka, via HTTP,...).
-- The external process executes the task and then returns the ID to Restate, optionally together with a payload.
+- The external process executes the task and then returns the ID to Restate, optionally together with a payload. 
 - Once the ID has been returned to the service, the invocation resumes.
+
+The SDK deserializes the payload `JSON.parse(result.toString()) as T`.
 
 You can use this pattern to execute tasks in non-Restate services, and retrieve the result. This design pattern is also referred to as the callback (task token) pattern.
 
