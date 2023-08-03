@@ -114,7 +114,7 @@ spec:
               value: 127.0.0.1:10001
           # ...
         - name: envoy
-          image: envoyproxy/envoy:distroless-v1.26.1
+          image: envoyproxy/envoy:distroless-v1.27-latest
           volumeMounts:
             - name: envoy-config
               mountPath: /etc/envoy
@@ -158,9 +158,7 @@ data:
                       - name: envoy.filters.http.dynamic_forward_proxy
                         typed_config:
                           '@type': type.googleapis.com/envoy.extensions.filters.http.dynamic_forward_proxy.v3.FilterConfig
-                          dns_cache_config:
-                            name: dynamic_forward_proxy_cache_config
-                            dns_refresh_rate: 5s
+                          sub_cluster_config: {}
                       - name: envoy.filters.http.router
                         typed_config:
                           "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
@@ -177,7 +175,6 @@ data:
             name: envoy.clusters.dynamic_forward_proxy
             typed_config:
               '@type': type.googleapis.com/envoy.extensions.clusters.dynamic_forward_proxy.v3.ClusterConfig
-              dns_cache_config:
-                name: dynamic_forward_proxy_cache_config
-                dns_refresh_rate: 5s
+              sub_clusters_config:
+                lb_policy: ROUND_ROBIN
 ```
