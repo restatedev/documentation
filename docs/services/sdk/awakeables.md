@@ -12,7 +12,7 @@ This works as follows:
 - The external process executes the task and then returns the ID to Restate, optionally together with a payload. 
 - Once the ID has been returned to the service, the invocation resumes.
 
-The SDK deserializes the payload `JSON.parse(result.toString()) as T`.
+The SDK deserializes the payload with `JSON.parse(result.toString()) as T`.
 
 You can use this pattern to execute tasks in non-Restate services, and retrieve the result. This design pattern is also referred to as the callback (task token) pattern.
 
