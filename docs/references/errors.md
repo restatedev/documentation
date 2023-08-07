@@ -1,6 +1,5 @@
 ---
-sidebar_position: 1
-description: "Interpretation of error codes emitted by Restate components."
+sidebar_position: 10
 slug: errors
 ---
 
@@ -73,7 +72,7 @@ Make sure, when updating a service endpoint, to assign it a new uri.
 
 You can force the override using the `"force": true` field in the discover request, but beware that this can lead in-flight invocations to an unrecoverable error state.  
 
-See the [versioning documentation](/services/upgrades-removal) for more information.
+See the [versioning documentation](http://docs.restate.dev/deployment-operations/versioning) for more information.
 
 ## META0005 {#META0005}
 
@@ -90,7 +89,7 @@ When implementing a new service revision, make sure that:
 * The service instance type and the key definition, if any, is exactly the same as of the previous revisions.
 * The Protobuf contract and message definitions are backward compatible.
 
-See the [versioning documentation](/services/upgrades-removal) for more information.
+See the [versioning documentation](http://docs.restate.dev/deployment-operations/versioning) for more information.
 
 ## RT0001 {#RT0001}
 

@@ -45,12 +45,17 @@
           }
         },
         "invoker": {
+          "abort_timeout": "1m",
           "concurrency_limit": null,
           "disable_eager_state": false,
+          "http2_keep_alive": {
+            "interval": "40s",
+            "timeout": "20s"
+          },
+          "inactivity_timeout": "1m",
           "message_size_limit": null,
           "message_size_warning": 10485760,
           "proxy_uri": null,
-          "response_abort_timeout": "1h",
           "retry_policy": {
             "factor": 2.0,
             "initial_interval": "50ms",
@@ -58,12 +63,14 @@
             "max_interval": "10s",
             "type": "Exponential"
           },
-          "suspension_timeout": "1m",
-          "tmp_dir": "/tmp/invoker-01896e5bc84973bfa8611d235bd766e7"
+          "tmp_dir": "/var/folders/tw/68_ctnh50rn41q721zt5pwfc0000gn/T/invoker-0189d175ff3e7087ada868460b8e75db"
         },
         "partitions": 1024,
-        "storage_grpc": {
-          "bind_address": "0.0.0.0:9091"
+        "storage_query": {
+          "bind_address": "0.0.0.0:5432",
+          "memory_limit": null,
+          "query_parallelism": null,
+          "temp_folder": null
         },
         "storage_rocksdb": {
           "cache_size": 1073741824,
@@ -247,11 +254,14 @@
           },
           "$ref": "#/definitions/TimerOptions"
         },
-        "storage_grpc": {
+        "storage_query": {
           "default": {
-            "bind_address": "0.0.0.0:9091"
+            "bind_address": "0.0.0.0:5432",
+            "memory_limit": null,
+            "query_parallelism": null,
+            "temp_folder": null
           },
-          "$ref": "#/definitions/StorageGrpcOptions"
+          "$ref": "#/definitions/StorageQueryOptions"
         },
         "storage_rocksdb": {
           "default": {
@@ -279,12 +289,17 @@
         },
         "invoker": {
           "default": {
+            "abort_timeout": "1m",
             "concurrency_limit": null,
             "disable_eager_state": false,
+            "http2_keep_alive": {
+              "interval": "40s",
+              "timeout": "20s"
+            },
+            "inactivity_timeout": "1m",
             "message_size_limit": null,
             "message_size_warning": 10485760,
             "proxy_uri": null,
-            "response_abort_timeout": "1h",
             "retry_policy": {
               "factor": 2.0,
               "initial_interval": "50ms",
@@ -292,8 +307,7 @@
               "max_interval": "10s",
               "type": "Exponential"
             },
-            "suspension_timeout": "1m",
-            "tmp_dir": "/tmp/invoker-01896e5bc8497142be25b3bd060cdfae"
+            "tmp_dir": "/var/folders/tw/68_ctnh50rn41q721zt5pwfc0000gn/T/invoker-0189d175ff3e704fb5ecfdca68505c8e"
           },
           "$ref": "#/definitions/InvokerOptions"
         },
@@ -324,15 +338,46 @@
         }
       }
     },
-    "StorageGrpcOptions": {
-      "title": "Storage GRPC options",
+    "StorageQueryOptions": {
+      "title": "Storage query options",
       "type": "object",
       "properties": {
         "bind_address": {
           "title": "Bind address",
-          "description": "The address to bind for the storage grpc service.",
-          "default": "0.0.0.0:9091",
+          "description": "The address to bind for the psql service.",
+          "default": "0.0.0.0:5432",
           "type": "string"
+        },
+        "memory_limit": {
+          "title": "Memory limit",
+          "description": "The total memory in bytes that can be used to preform sql queries",
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint",
+          "minimum": 0.0
+        },
+        "temp_folder": {
+          "title": "Temp folder to use for spill",
+          "description": "The path to spill to",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "query_parallelism": {
+          "title": "Default query parallelism",
+          "description": "The number of parallel partitions to use for a query execution",
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint",
+          "minimum": 0.0
         }
       }
     },
@@ -464,16 +509,16 @@
           },
           "$ref": "#/definitions/RetryPolicy"
         },
-        "suspension_timeout": {
-          "title": "Suspension timeout",
+        "inactivity_timeout": {
+          "title": "Inactivity timeout",
           "description": "This timer is used to gracefully shutdown a bidirectional stream after inactivity on both request and response streams.\n\nWhen this timer is fired, the invocation will be closed gracefully by closing the request stream, triggering a suspension on the sdk, in case the sdk is waiting on a completion. This won't affect the response stream.\n\nCan be configured using the [`humantime`](https://docs.rs/humantime/latest/humantime/fn.parse_duration.html) format.",
           "default": "1m",
           "type": "string"
         },
-        "response_abort_timeout": {
-          "title": "Response abort timeout",
-          "description": "This timer is used to forcefully shutdown an invocation when only the response stream is open.\n\nWhen protocol mode is `restate_service_metadata::ProtocolType::RequestResponse`, this timer will start as soon as the replay of the journal is completed. When protocol mode is `restate_service_metadata::ProtocolType::BidiStream`, this timer will start after the request stream has been closed. Check `suspension_timeout` to configure a timer on the request stream.\n\nWhen this timer is fired, the response stream will be aborted, potentially **interrupting** user code! If the user code needs longer to complete, then this value needs to be set accordingly.\n\nCan be configured using the [`humantime`](https://docs.rs/humantime/latest/humantime/fn.parse_duration.html) format.",
-          "default": "1h",
+        "abort_timeout": {
+          "title": "Abort timeout",
+          "description": "This timer is used to forcefully shutdown an invocation when only the response stream is open.\n\nWhen protocol mode is `restate_service_metadata::ProtocolType::RequestResponse`, this timer will start as soon as the replay of the journal is completed. When protocol mode is `restate_service_metadata::ProtocolType::BidiStream`, this timer will start after the request stream has been closed. Check `inactivity_timeout` to configure a timer on the request stream.\n\nWhen this timer is fired, the response stream will be aborted, potentially **interrupting** user code! If the user code needs longer to complete, then this value needs to be set accordingly.\n\nCan be configured using the [`humantime`](https://docs.rs/humantime/latest/humantime/fn.parse_duration.html) format.",
+          "default": "1m",
           "type": "string"
         },
         "message_size_warning": {
@@ -504,7 +549,7 @@
         "tmp_dir": {
           "title": "Temporary directory",
           "description": "Temporary directory to use for the invoker temporary files. If empty, the system temporary directory will be used instead.",
-          "default": "/tmp/invoker-01896e5bc8497fd4acc531b925d96c7f",
+          "default": "/var/folders/tw/68_ctnh50rn41q721zt5pwfc0000gn/T/invoker-0189d175ff3e7e1cb10a99b29c51216c",
           "type": "string"
         },
         "concurrency_limit": {
@@ -516,6 +561,22 @@
           ],
           "format": "uint",
           "minimum": 0.0
+        },
+        "http2_keep_alive": {
+          "title": "HTTP/2 Keep-alive",
+          "description": "Configuration for the HTTP/2 keep-alive mechanism, using PING frames. If unset, HTTP/2 keep-alive are disabled.",
+          "default": {
+            "interval": "40s",
+            "timeout": "20s"
+          },
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Http2KeepAliveOptions"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     },
@@ -615,6 +676,25 @@
           }
         }
       ]
+    },
+    "Http2KeepAliveOptions": {
+      "title": "HTTP/2 Keep alive options",
+      "description": "Configuration for the HTTP/2 keep-alive mechanism, using PING frames.\n\nPlease note: most gateways don't propagate the HTTP/2 keep-alive between downstream and upstream hosts. In those environments, you need to make sure the gateway can detect a broken connection to the upstream service endpoint(s).",
+      "type": "object",
+      "properties": {
+        "interval": {
+          "title": "HTTP/2 Keep-alive interval",
+          "description": "Sets an interval for HTTP/2 PING frames should be sent to keep a connection alive.\n\nYou should set this timeout with a value lower than the `response_abort_timeout`.",
+          "default": "40s",
+          "type": "string"
+        },
+        "timeout": {
+          "title": "Timeout",
+          "description": "Sets a timeout for receiving an acknowledgement of the keep-alive ping.\n\nIf the ping is not acknowledged within the timeout, the connection will be closed.",
+          "default": "20s",
+          "type": "string"
+        }
+      }
     },
     "Options": {
       "title": "Runtime options",

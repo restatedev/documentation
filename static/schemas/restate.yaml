@@ -14,8 +14,11 @@ worker:
   channel_size: 64
   timers:
     num_timers_in_memory_limit: 1024
-  storage_grpc:
-    bind_address: 0.0.0.0:9091
+  storage_query:
+    bind_address: 0.0.0.0:5432
+    memory_limit: null
+    temp_folder: null
+    query_parallelism: null
   storage_rocksdb:
     path: target/db/
     threads: 10
@@ -38,13 +41,16 @@ worker:
       factor: 2.0
       max_attempts: 18446744073709551615
       max_interval: 10s
-    suspension_timeout: 1m
-    response_abort_timeout: 1h
+    inactivity_timeout: 1m
+    abort_timeout: 1m
     message_size_warning: 10485760
     message_size_limit: null
     proxy_uri: null
-    tmp_dir: /tmp/invoker-01893fd5361b730d8151f90478a7a4dd
+    tmp_dir: /var/folders/tw/68_ctnh50rn41q721zt5pwfc0000gn/T/invoker-0189d17602a471f9ac6795206f49a97b
     concurrency_limit: null
+    http2_keep_alive:
+      interval: 40s
+      timeout: 20s
     disable_eager_state: false
   partitions: 1024
 tokio_runtime:
