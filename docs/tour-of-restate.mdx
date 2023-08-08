@@ -1182,13 +1182,9 @@ async checkout(request: CheckoutFlowRequest): Promise<BoolValue> {
 
 As you have discovered throughout this tutorial, Restate makes your applications resilient out-of-the-box by:
 
-- Making sure message can't get lost by durably storing all calls in the log. No
-    more queues needed for async calls.
-- Retrying failed invocations based on a specified retry policy. No more retry logic
-    required for inter-service communication.
-- Restoring partial progress of invocations, via its durable execution mechanism. For
-    example, if a service goes down due to an infrastructure failure, the ongoing
-    invocations will resume at the point in the user code where they left off.
+- Making sure message can't get lost by durably storing all calls in the log. No more queues needed for async calls.
+- Retrying failed invocations. No more retry logic required for inter-service communication.
+- Restoring partial progress of invocations, via its durable execution mechanism. For example, if a service goes down due to an infrastructure failure, the ongoing invocations will resume at the point in the user code where they left off.
 - Ensuring consistent application state with its key-value store.
 - Providing end-to-end exactly-once guarantees for incoming invocations.
 
@@ -1196,67 +1192,75 @@ As you have discovered throughout this tutorial, Restate makes your applications
 These features are switched on by default. No need to do anything.
 :::
 
-To tune the default retry policies of the runtime, have a look at the [Configuration docs](/restate/configuration).
-
 ### Side effect retries
 
-If you do a side effect operation and the side effect fails,
-    then this failure is durably stored in the log and it is not retried.
-There are scenarios where you want to retry a failed side effect.
-For example, when the side effect tries to execute a payment and the payment provider was temporarily offline.
-The Typescript SDK offers some utilities for this. Let's activate retries for the
-payment call in `CheckoutService/Checkout`. Replace the previous call with:
+If you do a side effect operation and the side effect fails, then it will be retried until it succeeds by default.
+Let's observe this behavior by using the `paymendClient.failingCall` in `CheckoutService/Checkout`:
 ```typescript
 const paymentClient = PaymentClient.get();
-const doPayment = async () => paymentClient.failingCall(idempotencyKey, amount);
 //highlight-start
-const retrySettings = { initialDelayMs: 100, maxDelayMs: 500, maxRetries: 5 }
-const success: boolean = await RestateUtils.retryExceptionalSideEffect(
-    ctx,
-    retrySettings,
-    doPayment
-);
+const doPayment = async () => paymentClient.failingCall(idempotencyKey, amount)
+const success: boolean = await ctx.sideEffect(doPayment);
 //highlight-end
 ```
-Also add the following import at the top `import { RestateUtils } from "@restatedev/restate-sdk";`.
 
-We now call `paymentClient.failingCall` which fails 2 times and then succeeds.
-The `retryExceptionalSideEffect` utility makes sure that if the retry fails, the service does a Restate sleep, and then tries again.
-All attempts, including the sleeps are durably logged.
+We now call `paymentClient.failingCall` which fails 2 times before succeeding.
+A failing side effect will be retried with an exponential backoff until it succeeds.
+Restate uses suspending sleeps for the wait time between retries.
 Have a look at the logs to see the retries.
 
 <details><summary>Show the logs</summary>
 
 ```log
-[restate] [2023-06-26T09:33:30.112Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Invoking function.
-[restate] [2023-06-26T09:33:30.114Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Adding message to journal and sending to Restate ; undefined
-[restate] [2023-06-26T09:33:30.115Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Scheduling suspension in 30000 ms
-[restate] [2023-06-26T09:33:30.116Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Received completion message from Restate, adding to journal. ; CompletionMessage
+[restate] [2023-08-08T15:11:14.109Z] DEBUG: [example.CheckoutService-AYnVs763et+1qj7AX+KniQ==-0189d5b3beb77673b28b529932471eb2] [Checkout] : Received completion message from Restate, adding to journal. ; CompletionMessage
 //highlight-next-line
-Payment call failed for idempotency key dc2048f8-62c1-4b3e-bb92-25dc9da14bac and amount 40. Retrying...
-[restate] [2023-06-26T09:33:30.116Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Adding message to journal and sending to Restate ; undefined
-[restate] [2023-06-26T09:33:30.117Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Scheduling suspension in 30000 ms
-[restate] [2023-06-26T09:33:30.120Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Received completion message from Restate, adding to journal. ; CompletionMessage
+Payment call failed for idempotency key d9e8fcc7-5e00-46f8-919d-357d897ff378 and amount 40. Retrying...
+[restate] [2023-08-08T15:11:14.109Z] DEBUG: [example.CheckoutService-AYnVs763et+1qj7AX+KniQ==-0189d5b3beb77673b28b529932471eb2] [Checkout] : Adding message to journal and sending to Restate ; undefined
+[restate] [2023-08-08T15:11:14.109Z] DEBUG: [example.CheckoutService-AYnVs763et+1qj7AX+KniQ==-0189d5b3beb77673b28b529932471eb2] [Checkout] : Scheduling suspension in 30000 ms
+[restate] [2023-08-08T15:11:14.110Z] DEBUG: [example.CheckoutService-AYnVs763et+1qj7AX+KniQ==-0189d5b3beb77673b28b529932471eb2] [Checkout] : Received completion message from Restate, adding to journal. ; CompletionMessage
+//highlight-start
+[restate] [2023-08-08T15:11:14.110Z] DEBUG: Error while executing side effect 'side-effect': Error - Payment call failed
+[restate] [2023-08-08T15:11:14.121Z] DEBUG: Error: Payment call failed
+    at PaymentClient.failingCall (/Users/till/restate/git/tour-of-restate-typescript/src/aux/payment_client.ts:26:13)
+    at /Users/till/restate/git/tour-of-restate-typescript/src/part4/checkout_service.ts:23:21
+    at AsyncLocalStorage.run (node:async_hooks:346:14)
+    at executeAndLogSideEffect (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:220:65)
+    at executeWithRetries (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:414:20)
+    at RestateContextImpl.sideEffect (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:286:12)
+    at CheckoutService.checkout (/Users/till/restate/git/tour-of-restate-typescript/src/part4/checkout_service.ts:22:40)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at GrpcServiceMethod.localMethod [as localFn] (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/server/base_restate_server.ts:208:16)
+    at HostedGrpcServiceMethod.invoke (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/types/grpc.ts:40:23)
+[restate] [2023-08-08T15:11:14.122Z] DEBUG: Retrying in 10 ms
+[restate] [2023-08-08T15:11:14.122Z] DEBUG: [example.CheckoutService-AYnVs763et+1qj7AX+KniQ==-0189d5b3beb77673b28b529932471eb2] [Checkout] : Adding message to journal and sending to Restate ; SleepEntryMessage
+//highlight-end
+[restate] [2023-08-08T15:11:14.122Z] DEBUG: [example.CheckoutService-AYnVs763et+1qj7AX+KniQ==-0189d5b3beb77673b28b529932471eb2] [Checkout] : Scheduling suspension in 30000 ms
+[restate] [2023-08-08T15:11:14.134Z] DEBUG: [example.CheckoutService-AYnVs763et+1qj7AX+KniQ==-0189d5b3beb77673b28b529932471eb2] [Checkout] : Received completion message from Restate, adding to journal. ; CompletionMessage
 //highlight-next-line
-[restate] [2023-06-26T09:33:30.120Z] DEBUG: Error while executing side effect 'retryable-side-effect': Error - sideEffect execution failed: Payment call failed
-[restate] [2023-06-26T09:33:30.120Z] DEBUG: Retrying in 100 ms
-[restate] [2023-06-26T09:33:30.121Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Adding message to journal and sending to Restate ; SleepEntryMessage
-[restate] [2023-06-26T09:33:30.121Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Scheduling suspension in 30000 ms
-[restate] [2023-06-26T09:33:30.223Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Received completion message from Restate, adding to journal. ; CompletionMessage
+Payment call failed for idempotency key d9e8fcc7-5e00-46f8-919d-357d897ff378 and amount 40. Retrying...
+[restate] [2023-08-08T15:11:14.134Z] DEBUG: [example.CheckoutService-AYnVs763et+1qj7AX+KniQ==-0189d5b3beb77673b28b529932471eb2] [Checkout] : Adding message to journal and sending to Restate ; undefined
+[restate] [2023-08-08T15:11:14.134Z] DEBUG: [example.CheckoutService-AYnVs763et+1qj7AX+KniQ==-0189d5b3beb77673b28b529932471eb2] [Checkout] : Scheduling suspension in 30000 ms
+[restate] [2023-08-08T15:11:14.135Z] DEBUG: [example.CheckoutService-AYnVs763et+1qj7AX+KniQ==-0189d5b3beb77673b28b529932471eb2] [Checkout] : Received completion message from Restate, adding to journal. ; CompletionMessage
+//highlight-start
+[restate] [2023-08-08T15:11:14.135Z] DEBUG: Error while executing side effect 'side-effect': Error - Payment call failed
+[restate] [2023-08-08T15:11:14.136Z] DEBUG: Error: Payment call failed
+    at PaymentClient.failingCall (/Users/till/restate/git/tour-of-restate-typescript/src/aux/payment_client.ts:26:13)
+    at /Users/till/restate/git/tour-of-restate-typescript/src/part4/checkout_service.ts:23:21
+    at AsyncLocalStorage.run (node:async_hooks:346:14)
+    at executeAndLogSideEffect (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:220:65)
+    at executeWithRetries (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:414:20)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at CheckoutService.checkout (/Users/till/restate/git/tour-of-restate-typescript/src/part4/checkout_service.ts:22:30)
+    at GrpcServiceMethod.localMethod [as localFn] (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/server/base_restate_server.ts:208:16)
+    at HostedGrpcServiceMethod.invoke (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/types/grpc.ts:40:23)
+[restate] [2023-08-08T15:11:14.136Z] DEBUG: Retrying in 20 ms
+[restate] [2023-08-08T15:11:14.136Z] DEBUG: [example.CheckoutService-AYnVs763et+1qj7AX+KniQ==-0189d5b3beb77673b28b529932471eb2] [Checkout] : Adding message to journal and sending to Restate ; SleepEntryMessage
+//highlight-end
+[restate] [2023-08-08T15:11:14.136Z] DEBUG: [example.CheckoutService-AYnVs763et+1qj7AX+KniQ==-0189d5b3beb77673b28b529932471eb2] [Checkout] : Scheduling suspension in 30000 ms
+[restate] [2023-08-08T15:11:14.158Z] DEBUG: [example.CheckoutService-AYnVs763et+1qj7AX+KniQ==-0189d5b3beb77673b28b529932471eb2] [Checkout] : Received completion message from Restate, adding to journal. ; CompletionMessage
 //highlight-next-line
-Payment call failed for idempotency key dc2048f8-62c1-4b3e-bb92-25dc9da14bac and amount 40. Retrying...
-[restate] [2023-06-26T09:33:30.224Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Adding message to journal and sending to Restate ; undefined
-[restate] [2023-06-26T09:33:30.224Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Scheduling suspension in 30000 ms
-[restate] [2023-06-26T09:33:30.227Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Received completion message from Restate, adding to journal. ; CompletionMessage
-//highlight-next-line
-[restate] [2023-06-26T09:33:30.227Z] DEBUG: Error while executing side effect 'retryable-side-effect': Error - sideEffect execution failed: Payment call failed
-[restate] [2023-06-26T09:33:30.227Z] DEBUG: Retrying in 200 ms
-[restate] [2023-06-26T09:33:30.227Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Adding message to journal and sending to Restate ; SleepEntryMessage
-[restate] [2023-06-26T09:33:30.228Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Scheduling suspension in 30000 ms
-[restate] [2023-06-26T09:33:30.429Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Received completion message from Restate, adding to journal. ; CompletionMessage
-//highlight-next-line
-Payment call succeeded for idempotency key dc2048f8-62c1-4b3e-bb92-25dc9da14bac and amount 40
-[restate] [2023-06-26T09:33:30.429Z] DEBUG: [example.CheckoutService-AYj3DRZSeRaAbIQxW9Ng7A==-0188f70d16527ea7bab9a720a590cd8f] [Checkout] : Adding message to journal and sending to Restate ; undefined
+Payment call succeeded for idempotency key d9e8fcc7-5e00-46f8-919d-357d897ff378 and amount 40
+[restate] [2023-08-08T15:11:14.159Z] DEBUG: [example.CheckoutService-AYnVs763et+1qj7AX+KniQ==-0189d5b3beb77673b28b529932471eb2] [Checkout] : Adding message to journal and sending to Restate ; undefined
 ```
 
 </details>

@@ -10,7 +10,7 @@ Restate uses an execution log for replay after failures and suspensions.
 For this to work, the user code needs to be deterministic.
 :::
 
-Side effects help relaxing the constraints on determinism. 
+Side effects help relaxing the constraints on determinism.
 If your code does something that is not deterministic then you have to wrap it in a side effect.
 By doing this, Restate makes sure that the result is persistently stored in the execution log
 and that the value is retained during replays.
@@ -25,7 +25,7 @@ const uuid = await restateContext.sideEffect(async () => {
 
 Once stored, every retry of this invocation will get the same UUID.
 
-For example, imagine a payment service where you want to avoid having duplicate payments during retries. 
+For example, imagine a payment service where you want to avoid having duplicate payments during retries.
 You could use a side effect to generate and store a UUID and then use that UUID as identifier of the payment.
 You only allow the payment to go through if no payment with that UUID was done yet.
 Restate guarantees that once the UUID is stored, it is retained during retries.
@@ -35,26 +35,10 @@ You cannot invoke any methods on the Restate context within a side effect!
 This includes actions such as getting state, calling another service, and nesting side effects.
 :::
 
-## Retrying side effects
+## Retrying on failure
 
-Side effects do not get re-executed during retries/replays. So if a side effect fails, it does not get retried. 
-The failure is stored durably in the log. 
-
-For some use cases, you may want to retry the failed side effect. 
-The SDK offers some utilities to do this.
-
-### Retrying on failure
-This utility calls a side effect function and retries the call on failure, with a timed backoff.
-The side effect function is retried when it throws an Error, until it returns a successfully
-resolved Promise.
-
-Between retries, this function does a suspendable Restate sleep.
-The sleep time starts with the `initialDelayMs` value and doubles on each retry, up to
-a maximum of `maxDelayMs`. You supply these parameters via the retry settings object as explained below.
-
-The returned Promise is resolved successfully once the side effect action completes
-successfully and is rejected with an error if the maximum number of retries
-(as specified by `maxRetries`) is exhausted.
+If the side effect function throws an Error, then it is retried infinitely using an exponential backoff strategy until it succeeds.
+Between retries, the SDK uses a suspendable Restate sleep operation so that the invocation can suspend.
 
 ```typescript
 const ctx = restate.useContext(this);
@@ -66,35 +50,63 @@ const paymentAction = async () => {
         return result.isSuccess;
     }
 }
-const retrySettings = { initialDelayMs: 1000, maxDelayMs: 60000, maxRetries: 10 }
-const paymentAccepted = await retryExceptionalSideEffect(ctx, retrySettings, paymentAction);
+const success: boolean = await ctx.sideEffect(paymentAction);
 ```
 
-### Retrying until the result is `true`
+### Failing a side effect terminally
 
-The other utility calls a side effect function and retries when the result is false, with a timed backoff.
-The side effect function is retried until it returns true or until it throws an error.
-
-Between retries, the utility does a suspendable Restate sleep.
-The sleep time starts with the `initialDelayMs` value and doubles on each retry, up to
-a maximum of `maxDelayMs`. You supply these parameters via the retry settings object as explained below.
-
-The returned Promise is resolved successfully once the side effect actions completes
-successfully and is rejected with an error if the side effect function throws an error
-or if the maximum number of retries (as specified by `maxRetries`) is exhausted.
+By default, a side effect function is retried infinitely on failure.
+If you want to let the side effect fail terminally, then you have to throw a `restate.TerminalError`.
+A `TerminalError` will stop the infinite retry strategy and lets the SDK propagate the error to the user code where it can be handled.
+The `TerminalError` will also be recorded in the journal so that it will be deterministically thrown on replay.
 
 ```typescript
 const ctx = restate.useContext(this);
-const paymentAction = async () => 
-    (await paymentClient.call(txId, methodIdentifier, amount)).success;
-const retrySettings = { initialDelayMs: 1000, maxDelayMs: 60000, maxRetries: 10 }
-await retrySideEffect(ctx, retrySettings, paymentAction);
+const paymentAction = async () => {
+    const result = await paymentClient.call(txId, methodIdentifier, amount);
+    if (result.error) {
+        throw new restate.TerminalError(result.error);
+    } else {
+        return result.isSuccess;
+    }
+}
+
+try {
+  await ctx.sideEffect(paymentAction);
+} catch (terminal_error) {
+  // handle terminal error
+}
 ```
 
-### Retry settings
-For `retryExceptionalSideEffect` and `retrySideEffect`, you can set the retry settings. 
+### Manually controlling the retry policy
 
-You can supply the following values to the retry settings objects:
+Instead of using an infinite exponential backoff strategy, you can also specify a finite retry policy when executing a side effect.
+A finite retry policy retries a failing side effect function until all retry attempts are depleted.
+If this happens, then the side effect fails terminally with a `restate.TerminalError` which is propagated to the user code.
+In order to configure the retry policy you need to provide a `RetrySettings` object:
+
+```typescript
+const ctx = restate.useContext(this);
+const retrySettings = { initialDelayMs: 1000, maxDelayMs: 60000, maxRetries: 10 }
+const paymentAction = async () => {
+    const result = await paymentClient.call(txId, methodIdentifier, amount);
+    if (result.error) {
+        throw result.error;
+    } else {
+        return result.isSuccess;
+    }
+}
+
+try {
+  await ctx.sideEffect(paymentAction, retrySettings);
+} catch (terminal_error) {
+  // handle terminal error
+}
+```
+
+#### Retry settings
+
+The `RetrySettings` object has the following fields:
 - `initialDelayMs` (number): The initial delay between retries. As more retries happen, the delay may change per the policy.
 - `maxDelayMs` (number): Optionally, the maximum delay between retries. No matter what the policy says, this is the maximum time
   that Restate sleeps between retries. If not set, there is effectively no limit (internally the limit is Number.MAX_SAFE_INTEGER).
@@ -104,15 +116,11 @@ You can supply the following values to the retry settings objects:
 
 For example:
 ```typescript
-const retrySettings = { 
-    initialDelayMs: 1000, 
-    maxDelayMs: 60000, 
+const retrySettings = {
+    initialDelayMs: 1000,
+    maxDelayMs: 60000,
     maxRetries: 10,
     policy: EXPONENTIAL_BACKOFF,
     name: "my-side-effect"
 }
 ```
-
-
-
-
