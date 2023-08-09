@@ -73,7 +73,7 @@ const paymentAction = async () => {
 
 try {
   await ctx.sideEffect(paymentAction);
-} catch (terminal_error) {
+} catch (error) {
   // handle terminal error
 }
 ```
@@ -99,7 +99,7 @@ const paymentAction = async () => {
 
 try {
   await ctx.sideEffect(paymentAction, retrySettings);
-} catch (terminal_error) {
+} catch (error) {
   // handle terminal error
 }
 ```
