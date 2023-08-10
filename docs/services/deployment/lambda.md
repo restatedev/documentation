@@ -9,7 +9,7 @@ description: "Learn how to run Restate applications on AWS Lambda."
 You can run your Restate services as serverless functions on [AWS Lambda](https://aws.amazon.com/lambda/).
 
 :::tip
-Please take a look at [the Lambda deployment documentation](/services/deployment/lambda) to learn how to deploy your Restate service as a Lambda function.
+Please take a look at [the Lambda deployment tutorial](/services/deployment/lambda#tutorial) to learn how to deploy your Restate service as a Lambda function.
 :::
 
 To deploy a Restate service as a Lambda function,
@@ -55,10 +55,10 @@ The Restate runtime will use this API key for all subsequent requests to the Lam
 
 This tutorial shows how to deploy a greeter service written with the Restate Typescript SDK on AWS Lambda.
 
-[Go to the GitHub repository of this tutorial](https://github.com/restatedev/example-lambda-ts-greeter/tree/v0.0.1)
+[Go to the GitHub repository of this tutorial](https://github.com/restatedev/example-lambda-ts-greeter/tree/VAR::LAMBDA_GREETER_VERSION)
 
 ### Prerequisites
-> &#x1F4DD; As long as Restate hasn't been launched publicly, you need to have access to the private Restate npm packages and Docker container. Please follow the instructions in the [restate-dist](https://github.com/restatedev/restate-dist) Readme to set up access: 
+> &#x1F4DD; As long as Restate hasn't been launched publicly, you need to have access to the private Restate npm packages and Docker container. Please follow the instructions in the [restate-dist](https://github.com/restatedev/restate-dist) Readme to set up access:
 
 - [NodeJS (and npm)](https://nodejs.org)
 - [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation) to launch the Restate runtime (not needed for the app implementation itself).

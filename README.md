@@ -47,7 +47,7 @@ Moreover, it will create a draft [release on Github](https://github.com/restated
 
 ### Updating the schemas
 
-To update the configuration schemas, the default configuration and the Meta OpenAPI document, 
+To update the configuration schemas, the default configuration and the Meta OpenAPI document,
 clone [Restate](https://github.com/restatedev/restate/) and execute the following:
 
 ```shell
