@@ -183,7 +183,15 @@ const config = {
         respectPrefersColorScheme: false,
       },
     }),
-  themes: ["docusaurus-json-schema-plugin"]
+  themes: ["docusaurus-json-schema-plugin"],
+  plugins: [
+    [
+      require.resolve("@cmfcmf/docusaurus-search-local"),
+      {
+        indexBlog: false,
+      },
+    ]
+  ]
 };
 
 module.exports = config;
