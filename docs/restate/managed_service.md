@@ -35,6 +35,7 @@ with an bearer token set.
 ```bash
 curl -H "Authorization: Bearer $(cat /token)" https://yourcluster.dev.restate.cloud:9090/org.example.Greeter/MultiWord -H 'content-type: application/json' -d '{"name": "Pete"}'
 ```
+This endpoint is rate limited to 36000 requests per hour.
 
 ### Introspection (5432)
 A Restate introspection endpoint, which can be used as described in the
@@ -47,10 +48,10 @@ PGPASSWORD=$(cat /token) psql -U yourcluster -h yourcluster.dev.restate.cloud
 A [Loki](https://grafana.com/oss/loki/) and [Tempo](https://grafana.com/oss/tempo/) endpoint,
 to allow reading logs and traces respectively from the managed cluster.
 
-#### Adding to Grafana
+#### Adding to your Grafana
 `https://yourcluster.dev.restate.cloud:3100` is a valid endpoint for both Loki
-and Tempo data sources in Grafana. For both you will need to set a 'Custom HTTP Header' with
-key `Authorization` and value `Bearer <your-token>`.
+and Tempo data sources in Grafana - we do not run a Grafana instance on your behalf, however.
+For both data sources you will need to set a 'Custom HTTP Header' with key `Authorization` and value `Bearer <your-token>`.
 
 Grafana supports correlating logs and traces. In your Loki data source configuration, set up a 
 [Derived field](https://grafana.com/docs/grafana/latest/datasources/loki/configure-loki-data-source/#derived-fields)
@@ -74,7 +75,7 @@ and query set to `{kubernetes_container_name="restate"} |= "${__span.tags["resta
 Loki provides the excellent [LogCLI](https://grafana.com/docs/loki/latest/tools/logcli/) tool to query without Grafana.
 You can query logs from your cluster like this:
 ```bash
-logcli query --bearer-token=/token  --addr=https://yourcluster.dev.restate.cloud:3100 '{kubernetes_container_name="restate"}'
+logcli query --bearer-token=/token --addr=https://yourcluster.dev.restate.cloud:3100 '{kubernetes_container_name="restate"}'
 ```
 Use `-f` to tail logs - check the [LogCLI docs](https://grafana.com/docs/loki/latest/tools/logcli/#logcli-query-command-reference)
 for more tips.
