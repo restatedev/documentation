@@ -79,3 +79,26 @@ logcli query --bearer-token=/token --addr=https://yourcluster.dev.restate.cloud:
 ```
 Use `-f` to tail logs - check the [LogCLI docs](https://grafana.com/docs/loki/latest/tools/logcli/#logcli-query-command-reference)
 for more tips.
+
+## Using the lambda proxy
+Managed service users can also request access to the lambda proxy. This is an endpoint that exposes a versioned, authenticated
+HTTP url for your Lambda, meaning you don't need to create an API gateway, and you can easily call different versions
+of your Lambda with different URLs. Under the hood, the lambda proxy is just a Lambda itself, behind an API gateway, 
+which accepts the name and version of your Lambda and invokes it.
+
+By letting us know the AWS account you want to invoke at [info@restate.dev](mailto:info@restate.dev), we will provision
+you an API key which is allowed to invoke Lambdas on that AWS account. You'll also need to give the proxy's AWS principal
+`arn:aws:iam::663487780041:role/lambda_proxy` access to invoke each of your Lambdas:
+
+```bash
+aws lambda add-permission --function-name <your-lambda-name> --action lambda:InvokeFunction --principal arn:aws:iam::663487780041:role/lambda_proxy --statement-id lambda_proxy
+```
+
+You can then discover your Lambda through the proxy like this:
+```bash
+curl -H "Authorization: Bearer $(cat /token)" https://yourcluster.dev.restate.cloud:8081/endpoints -H 'content-type: application/json' -d \
+ '{"uri": "https://<your-region>.lambda-proxy.restate.cloud/<your-account-id>/<your-lambda-name>/<your-lambda-version>", "additional_headers": {"x-api-key": "<your-api-key>"}}'
+```
+If you don't care about discovering a particular function version 
+(see [versioning documentation](/services/upgrades-removal) if you're not sure)
+then you can just use `$LATEST` as the version, or any other alias.
