@@ -34,9 +34,8 @@ First time here? Get started:
 </div>
 <div id="container">
 <div id="overviewButtonDiv"><a id="quickstartButton" class="overviewButton btn btn-primary btn-lg px-4 mb-2" href="/quickstart" role="button">>> Quickstart</a></div>
-<div id="overviewButtonDiv"><a id="tourButton" class="overviewButton btn btn-primary btn-lg px-4 mb-2" href="/tour" role="button">>> Tour of Restate</a></div>
+<div id="overviewButtonDiv"><a id="tourButton" class="overviewButton btn btn-primary btn-lg px-4 mb-2" href="/tour/typescript-handler" role="button">>> Tour of Restate</a></div>
 <div id="overviewButtonDiv"><a id="examplesButton" class="overviewButton btn btn-primary btn-lg px-4 mb-2" href="/examples" role="button">>> Examples</a></div>
 </div>
 
 [//]: # (TODO Explains how Restate sits in your stack &#40;use cases &#40;microservices, stateful serverless, workflows&#41; and what kind of thing Restate is &#40;vs service mesh/workflow orchestrator/…&#41;&#41;)
-
