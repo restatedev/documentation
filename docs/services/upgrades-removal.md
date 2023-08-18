@@ -9,7 +9,7 @@ Restate comes with different solutions to update the services, to simplify devel
 
 ## Deploy a new service revision
 
-As described in the [deployment documentation](/services/deployment/general), *service endpoints* are immutable, and are assumed to be reacheable throughout the entire lifecycle of an invocation. In order to deploy any change to a service, either in the protobuf definition and/or in the business logic, a new service endpoint should be deployed and registered.
+As described in the [deployment documentation](/services/deployment/general), *service endpoints* are immutable, and are assumed to be reachable throughout the entire lifecycle of an invocation. In order to deploy any change to a service, either in the protobuf definition and/or in the business logic, a new service endpoint should be deployed and registered.
 
 When registering a new service endpoint, Restate will detect if it contains already registered services, and will treat them as new revisions. Any new invocations to that service will be executed by the newly registered service endpoint, thus guaranteeing that new invocations are always routed to the latest service revision, while *old* invocations will continue to use the previous service endpoint. It must be guaranteed that the old service endpoint lives until all the existing invocations complete.
 
