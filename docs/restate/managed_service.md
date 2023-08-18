@@ -53,29 +53,39 @@ to allow reading logs and traces respectively from the managed cluster.
 and Tempo data sources in Grafana - we do not run a Grafana instance on your behalf, however.
 For both data sources you will need to set a 'Custom HTTP Header' with key `Authorization` and value `Bearer <your-token>`.
 
-Grafana supports correlating logs and traces. In your Loki data source configuration, set up a 
-[Derived field](https://grafana.com/docs/grafana/latest/datasources/loki/configure-loki-data-source/#derived-fields)
+Grafana supports correlating logs and traces. In your Loki data source configuration, after you have a Tempo data source configured,
+set up a [Derived field](https://grafana.com/docs/grafana/latest/datasources/loki/configure-loki-data-source/#derived-fields)
 with the following parameters:
 ```yaml
 name: restate.invocation.sid
 # pull invocation ids out of logs
-regex: '"restate.invocation.sid":"(.+?)"'
+regex: '"restate.invocation.sid":"(.+?)"' # single quotes not needed
 # find traces with that invocation id
-query: '{ .restate.invocation.sid="${__value.raw}" }'
+query: '{ .restate.invocation.sid="${__value.raw}" }' # single quotes not needed
 internal_link:
   enabled: true
   data_source: <your Tempo data source>
 ```
 
-In your Tempo configuration, set up [Trace to logs](https://grafana.com/docs/grafana/latest/datasources/tempo/#trace-to-logs)
-with data source set to your Loki data source,
+In your Tempo configuration, after you have a Loki data source configured, set up 
+[Trace to logs](https://grafana.com/docs/grafana/latest/datasources/tempo/#trace-to-logs) with data source set to your Loki data source,
 and query set to `{kubernetes_container_name="restate"} |= "${__span.tags["restate.invocation.sid"]}"`.
+
+You can view logs in Grafana on the explore page by selecting the Loki data source. To get started you can query:
+```logql
+{kubernetes_container_name="restate"} != `DEBUG` | json fields | line_format `{{ .fields }}`
+```
+
+You can view traces in Grafana on the explore page by selecting the Tempo data source. To get started use the 'Search'
+tab to find traces, and click on them to open a Jaeger-style UI.
 
 #### Querying logs by CLI
 Loki provides the excellent [LogCLI](https://grafana.com/docs/loki/latest/tools/logcli/) tool to query without Grafana.
 You can query logs from your cluster like this:
 ```bash
-logcli query --bearer-token=/token --addr=https://yourcluster.dev.restate.cloud:3100 '{kubernetes_container_name="restate"}'
+export LOKI_ADDR=https://yourcluster.dev.restate.cloud:3100
+export LOKI_BEARER_TOKEN_FILE=/token
+logcli query --no-labels '{kubernetes_container_name="restate"} != `DEBUG` | json fields | line_format `{{.fields}}`'
 ```
 Use `-f` to tail logs - check the [LogCLI docs](https://grafana.com/docs/loki/latest/tools/logcli/#logcli-query-command-reference)
 for more tips.
@@ -99,6 +109,5 @@ You can then discover your Lambda through the proxy like this:
 curl -H "Authorization: Bearer $(cat /token)" https://yourcluster.dev.restate.cloud:8081/endpoints -H 'content-type: application/json' -d \
  '{"uri": "https://<your-region>.lambda-proxy.restate.cloud/<your-account-id>/<your-lambda-name>/<your-lambda-version>", "additional_headers": {"x-api-key": "<your-api-key>"}}'
 ```
-If you don't care about discovering a particular function version 
-(see [versioning documentation](/services/upgrades-removal) if you're not sure)
-then you can just use `$LATEST` as the version, or any other alias.
+New Lambdas don't have a version yet, so use `$LATEST` until you've published an immutable version - make sure to escape the `$` in your shell.
+See the [versioning documentation](/services/upgrades-removal) for more context.
