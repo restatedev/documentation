@@ -28,6 +28,11 @@ Restate assumes that requests come through API Gateway.
 So you have to configure API Gateway to sit in front of your Lambda function.
 :::
 
+### Managed service
+If you'd prefer not to manage a runtime instance, we are trialing a managed service that lets you work
+with Lambda services without running any infrastructure or even an API gateway.
+See [the documentation](/restate/managed_service) for more details.
+
 ### Discovery of services
 
 To let Restate discover the services, execute the following curl command,
