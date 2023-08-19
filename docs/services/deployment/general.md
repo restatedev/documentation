@@ -11,7 +11,7 @@ A service endpoint can be deployed as a Lambda function, a Kubernetes pod, a Kna
 
 The URL (including path prefix) MUST be **unique**, meaning that no two service endpoints with the same URL can exist at the same time in a Restate instance.
 
-Moreover, service endpoints are **immutable**, and are assumed to be reacheable throughout the entire lifecycle of an invocation. To deploy any change to a service, either in the Protobuf definition or in the business logic, you should deploy a new service endpoint with a new URL. See the [versioning documentation](/services/upgrades-removal) for more details on how to update services.
+Moreover, service endpoints are **immutable**, and are assumed to be reachable throughout the entire lifecycle of an invocation. To deploy any change to a service, either in the Protobuf definition or in the business logic, you should deploy a new service endpoint with a new URL. See the [versioning documentation](/services/upgrades-removal) for more details on how to update services.
 
 
 :::info Running services locally
