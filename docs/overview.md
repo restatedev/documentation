@@ -28,7 +28,6 @@ First time here? Get started:
 ## What is Restate?
 
 ![introduction](/img/intro_diagram.jpg)
-
 Restate sits in between your services and serves as a durable execution layer for distributed applications. Restate facilitates the common critical aspects that every application has to deal with: calling- or messaging other services, keeping application state consistent, reliably scheduling delayed actions, executing workflows, and integrating with external systems and APIs.
 
 Restate durably logs the progress of the executed application logic to be able to recover partial progress upon failures. That way, applications can implement complex logic and control flow that reliably executes.
@@ -39,7 +38,6 @@ Services embed the Restate SDK which handles all interaction with Restate.
 External systems or clients can send requests to Restate via gRPC or via plain HTTP/curl.
 
 Detailed tracing information is exposed via OpenTelemetry and can be used to get insight in the execution of your handlers.
-
 
 ## Key use cases Restate solves
 
