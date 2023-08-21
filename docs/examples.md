@@ -6,7 +6,7 @@ description: ""
 
 # Examples
 
-Do you want to see Restate in action? Here are some read-to-run examples for you.
+Do you want to see Restate in action? Here are some ready-to-run examples for you.
 Pick an example of the list below and follow the instructions in the README to run it.
 
 - [Ticket reservation system](https://github.com/restatedev/example-ticket-reservation-system):  a subset of a ticket booking system to illustrate how Restate's keyed-sharding and concurrency guarantees simplify microservice architectures.
