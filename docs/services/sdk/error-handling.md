@@ -19,7 +19,7 @@ import { TerminalError } from "@restatedev/restate-sdk";
 throw new TerminalError("Something went wrong.", { errorCode: 13, cause: "Something caused this." })
 ```
 
-The `options` are an optional argument. You can throw a terminal error anywhere in your handler.
+The `errorCode` and `cause` are optional. You can throw a terminal error anywhere in your handler.
 Restate will propagate the error code and message back to the caller and will consider this invocation to be finished. 
 
 ## Errors during side effect execution
