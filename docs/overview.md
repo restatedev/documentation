@@ -29,13 +29,13 @@ First time here? Get started:
 
 ![introduction](/img/intro_diagram.jpg)
 
-Restate sits in between your services and serves as a durable execution layer for distributed applications. Restate facilitates the common critical aspects that every application has to deal with: calling- or messaging other services, keeping application state consistent, reliably scheduling delayed actions, executing workflows, and integrating with external systems and APIs. 
+Restate sits in between your services and serves as a durable execution layer for distributed applications. Restate facilitates the common critical aspects that every application has to deal with: calling- or messaging other services, keeping application state consistent, reliably scheduling delayed actions, executing workflows, and integrating with external systems and APIs.
 
-Restate durably logs the progress of the executed application logic to be able to recover partial progress upon failures. That way, applications can implement complex logic and control flow that reliably executes. 
+Restate durably logs the progress of the executed application logic to be able to recover partial progress upon failures. That way, applications can implement complex logic and control flow that reliably executes.
 
 Restate is contained within a single binary. No need to set up external systems such as databases.
 And your application services can run on the same infrastructure as before (e.g. Kubernetes, AWS Lambda, ...).
-Services embed the Restate SDK which handles all interaction with Restate. 
+Services embed the Restate SDK which handles all interaction with Restate.
 External systems or clients can send requests to Restate via gRPC or via plain HTTP/curl.
 
 Detailed tracing information is exposed via OpenTelemetry and can be used to get insight in the execution of your handlers.
@@ -49,8 +49,8 @@ Use Restate to add resilience and consistency to the orchestration logic. Restat
 
 What users gain through Restate:
 
-- Make it easy to handle that implicit state machine of orchestration logic, because it is just code (durably executed).
-- Reliable/durable RPC simplifies interaction with other services (less failure handling)
+- Durable execution of code. Making it easy to handle implicit state machines of orchestration logic, because it is expressed as just code and durably executed.
+- Reliable/durable RPC simplifies interaction with other services (no manual retry logic)
 - Storage of state in Restate is cheap and always consistent with sending RPC requests/events. This is especially useful for any coordination-related state.
 - If the services called by the orchestrating service are also on Restate, users get end-to-end exactly-once RPC and state update semantics.
 - Runs on serverless platforms (like Lambda) without paying for the wait: The orchestration functions scales to zero when waiting for replies from other services.
@@ -68,7 +68,7 @@ Add on top of that the common distributed application issues, like maintaining a
 Restate allows users to build applications with simple standard RPC interfaces, and deploy the services to Lambda. Restate handles state, communication, even interaction with external systems like Kafka for you, and in a resilient and consistent manner that you don’t need to worry about failure details. You can move services (all or some) unchanged between Lambda, Kubernetes, Fargate, etc.
 
 
-### Durable execution and workflows 
+### Durable execution and workflows
 
 Restate supports Durable Execution for code. This allows you to define complex logic as code, and have persistence and consistency for the implicit state machine defined by the code.
 
@@ -82,13 +82,32 @@ Restate can also handle asynchronous workflows, including scaling down for long-
 
 ## Restate in your stack
 
-service mesh
+### Restate vs. service mesh
+Building applications with Restate eliminates the necessity for certain features of service meshes, for example retries and service discovery.
 
-workflow orchestrator
+Where Service Meshes perform retries in a very simple way, Restate retries in a “state aware” manner, supplying committed execution state from its logs and ensures that no effects get duplicated through the retries.
+Restate also allows combining multiple effects (like sending messages or updating state) into an atomic action, which is beyond the capabilities of service meshes, because it requires transactional persistence of those actions.
+
+One can think of Restate as similar to a Service Mesh, but pulled up to the application layer. That way, Restate can provide stronger end-to-end guarantees, because that layer provides more application context compared to the network layer.
+
+Restate can still be used together with Service Meshes, both for the communication between
+the Restate Runtime and the Service endpoints, but also between the Restate Runtime workers.
+Common security features from service meshes (mTLS, etc.) make them still a valuable addition.
 
 
-message broker
+### Restate vs. message broker
+The position of Restate in your stack is similar to that of a message or event broker,
+although Restate's responsibilities cover a different scope.
 
+Message brokers have as primary concern that messages get reliably transferred from
+message producers to message consumers. Restate fulfills a similar task for service requests,
+but this is part of its larger responsibility of providing durable execution.
+Besides durably logging requests, Restate gives applications end-to-end consistency via:
+retrying requests, keeping application state consistent with code progress,
+and facilitating recovery of partial progress of a handler execution.
+
+In future versions, Restate will be able to retrieve input events or deliver output events to message brokers such as Apache Kafka.
+This will enable building event-driven applications with Restate.
 
 ## Watch the intro video
 <div id="container">
