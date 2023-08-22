@@ -59,7 +59,7 @@ const config = {
                 replacements: {
                   RESTATE_DIST_VERSION: '0.1.7',
                   TYPESCRIPT_SDK_VERSION: '1.0.33',
-                  TOUR_VERSION: 'v0.0.4',
+                  TOUR_VERSION: 'v0.0.1',
                   LAMBDA_GREETER_VERSION: 'v0.0.4'
                 },
               }
