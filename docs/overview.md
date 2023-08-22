@@ -27,7 +27,19 @@ First time here? Get started:
 
 ## What is Restate?
 
-![introduction](/img/intro_diagram.jpg)
+<div id="container">
+<section id="videosection" class="section section-sm bg-light">
+<div class="container col-lg-9 col-xl-9">
+<div class="videocontainer">
+<video id="intro_video" controls preload="none" poster="img/intro_diagram.jpg">
+<source src="img/video.mp4" type="video/mp4"/>
+Your browser does not support the video tag.
+</video>
+</div>
+</div>
+</section>
+</div>
+
 Restate sits in between your services and serves as a durable execution layer for distributed applications. Restate facilitates the common critical aspects that every application has to deal with: calling- or messaging other services, keeping application state consistent, reliably scheduling delayed actions, executing workflows, and integrating with external systems and APIs.
 
 Restate durably logs the progress of the executed application logic to be able to recover partial progress upon failures. That way, applications can implement complex logic and control flow that reliably executes.
@@ -79,18 +91,17 @@ Restate can also handle asynchronous workflows, including scaling down for long-
 
 
 ## Restate in your stack
-
+Let's contrast Restate to a few other technologies to clarify where Restate sits in the stack.
 ### Restate vs. service mesh
 Building applications with Restate eliminates the necessity for certain features of service meshes, for example retries and service discovery.
 
-Where Service Meshes perform retries in a very simple way, Restate retries in a “state aware” manner, supplying committed execution state from its logs and ensures that no effects get duplicated through the retries.
+Where service meshes perform retries in a very simple way, Restate retries in a “state aware” manner, supplying committed execution state from its logs and ensures that no effects get duplicated through the retries.
 Restate also allows combining multiple effects (like sending messages or updating state) into an atomic action, which is beyond the capabilities of service meshes, because it requires transactional persistence of those actions.
 
-One can think of Restate as similar to a Service Mesh, but pulled up to the application layer. That way, Restate can provide stronger end-to-end guarantees, because that layer provides more application context compared to the network layer.
+One can think of Restate as similar to a service mesh, but pulled up to the application layer. That way, Restate can provide stronger end-to-end guarantees, because that layer provides more application context compared to the network layer.
 
-Restate can still be used together with Service Meshes, both for the communication between
-the Restate Runtime and the Service endpoints, but also between the Restate Runtime workers.
-Common security features from service meshes (mTLS, etc.) make them still a valuable addition.
+Restate can still be used together with service meshes for the communication between
+Restate and the service endpoints. Common security features from service meshes (mTLS, etc.) make them still a valuable addition.
 
 
 ### Restate vs. message broker
@@ -107,16 +118,3 @@ and facilitating recovery of partial progress of a handler execution.
 In future versions, Restate will be able to retrieve input events or deliver output events to message brokers such as Apache Kafka.
 This will enable building event-driven applications with Restate.
 
-## Watch the intro video
-<div id="container">
-<section id="videosection" class="section section-sm bg-light">
-<div class="container col-lg-9 col-xl-9">
-<div class="videocontainer">
-<video id="intro_video" controls preload="none" >
-<source src="img/video.mp4" type="video/mp4"/>
-Your browser does not support the video tag.
-</video>
-</div>
-</div>
-</section>
-</div>
