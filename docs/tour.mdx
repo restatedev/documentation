@@ -43,9 +43,9 @@ This guide was written for:
 ## 🚀 Let's get started!
 
 ### Setting up the tutorial
-Clone the GitHub repository of the [tutorial](https://github.com/restatedev/tour-of-restate-typescript-handler/tree/VAR::TOUR_HANDLER_VERSION):
+Clone the GitHub repository of the [tutorial](https://github.com/restatedev/tour-of-restate-typescript):
 ```shell
-git clone --depth 1 --branch VAR::TOUR_VERSION git@github.com:restatedev/tour-of-restate-typescript-handler.git
+git clone --depth 1 --branch VAR::TOUR_VERSION git@github.com:restatedev/tour-of-restate-typescript.git
 ```
 
 This GitHub repository contains the basic skeleton of the NodeJS/Typescript services that we develop in this tutorial.
@@ -1235,16 +1235,16 @@ Payment call failed for idempotency key adab6b35-0536-4348-8912-35f8cd474cf8 and
 // highlight-start
 [restate] [2023-08-16T08:24:28.509Z] DEBUG: Error while executing side effect 'side-effect': Error - Payment call failed
 [restate] [2023-08-16T08:24:28.519Z] DEBUG: Error: Payment call failed
-    at PaymentClient.failingCall (/Users/till/restate/git/tour-of-restate-typescript-handler/src/aux/payment_client.ts:37:13)
-    at doPayment (/Users/till/restate/git/tour-of-restate-typescript-handler/src/part4/checkout.ts:29:47)
+    at PaymentClient.failingCall (/Users/till/restate/git/tour-of-restate-typescript/src/aux/payment_client.ts:37:13)
+    at doPayment (/Users/till/restate/git/tour-of-restate-typescript/src/part4/checkout.ts:29:47)
     at AsyncLocalStorage.run (node:async_hooks:346:14)
-    at executeAndLogSideEffect (/Users/till/restate/git/tour-of-restate-typescript-handler/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:234:69)
-    at executeWithRetries (/Users/till/restate/git/tour-of-restate-typescript-handler/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:428:20)
-    at RestateGrpcContextImpl.sideEffect (/Users/till/restate/git/tour-of-restate-typescript-handler/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:300:12)
-    at RpcContextImpl.sideEffect (/Users/till/restate/git/tour-of-restate-typescript-handler/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:552:21)
-    at checkout (/Users/till/restate/git/tour-of-restate-typescript-handler/src/part4/checkout.ts:30:29)
+    at executeAndLogSideEffect (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:234:69)
+    at executeWithRetries (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:428:20)
+    at RestateGrpcContextImpl.sideEffect (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:300:12)
+    at RpcContextImpl.sideEffect (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:552:21)
+    at checkout (/Users/till/restate/git/tour-of-restate-typescript/src/part4/checkout.ts:30:29)
     at processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at dispatchUnkeyedRpcHandler (/Users/till/restate/git/tour-of-restate-typescript-handler/node_modules/@restatedev/restate-sdk/src/server/base_restate_server.ts:366:18)
+    at dispatchUnkeyedRpcHandler (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/server/base_restate_server.ts:366:18)
 [restate] [2023-08-16T08:24:28.520Z] DEBUG: Retrying in 10 ms
 [restate] [2023-08-16T08:24:28.520Z] DEBUG: [.Checkout-AYn9cjhZeoalzvUlSI/rUA==-0189fd7238597682975666f3eb0833cb] [checkout] : Adding message to journal and sending to Restate ; SleepEntryMessage
 // highlight-end
@@ -1258,15 +1258,15 @@ Payment call failed for idempotency key adab6b35-0536-4348-8912-35f8cd474cf8 and
 // highlight-start
 [restate] [2023-08-16T08:24:28.532Z] DEBUG: Error while executing side effect 'side-effect': Error - Payment call failed
 [restate] [2023-08-16T08:24:28.534Z] DEBUG: Error: Payment call failed
-    at PaymentClient.failingCall (/Users/till/restate/git/tour-of-restate-typescript-handler/src/aux/payment_client.ts:37:13)
-    at doPayment (/Users/till/restate/git/tour-of-restate-typescript-handler/src/part4/checkout.ts:29:47)
+    at PaymentClient.failingCall (/Users/till/restate/git/tour-of-restate-typescript/src/aux/payment_client.ts:37:13)
+    at doPayment (/Users/till/restate/git/tour-of-restate-typescript/src/part4/checkout.ts:29:47)
     at AsyncLocalStorage.run (node:async_hooks:346:14)
-    at executeAndLogSideEffect (/Users/till/restate/git/tour-of-restate-typescript-handler/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:234:69)
-    at executeWithRetries (/Users/till/restate/git/tour-of-restate-typescript-handler/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:428:20)
+    at executeAndLogSideEffect (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:234:69)
+    at executeWithRetries (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:428:20)
     at processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at checkout (/Users/till/restate/git/tour-of-restate-typescript-handler/src/part4/checkout.ts:30:19)
-    at dispatchUnkeyedRpcHandler (/Users/till/restate/git/tour-of-restate-typescript-handler/node_modules/@restatedev/restate-sdk/src/server/base_restate_server.ts:366:18)
-    at HostedGrpcServiceMethod.invoke (/Users/till/restate/git/tour-of-restate-typescript-handler/node_modules/@restatedev/restate-sdk/src/types/grpc.ts:49:23)
+    at checkout (/Users/till/restate/git/tour-of-restate-typescript/src/part4/checkout.ts:30:19)
+    at dispatchUnkeyedRpcHandler (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/server/base_restate_server.ts:366:18)
+    at HostedGrpcServiceMethod.invoke (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/types/grpc.ts:49:23)
 [restate] [2023-08-16T08:24:28.534Z] DEBUG: Retrying in 20 ms
 [restate] [2023-08-16T08:24:28.534Z] DEBUG: [.Checkout-AYn9cjhZeoalzvUlSI/rUA==-0189fd7238597682975666f3eb0833cb] [checkout] : Adding message to journal and sending to Restate ; SleepEntryMessage
 // highlight-end
