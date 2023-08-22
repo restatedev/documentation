@@ -53,6 +53,8 @@ Detailed tracing information is exposed via OpenTelemetry and can be used to get
 
 ## Key use cases Restate solves
 
+Restate is a flexible tool that can supercharge applications for many use cases. 
+To give you an idea, we made a list of a few key use cases Restate can help you solve.
 
 ### Microservice orchestration
 Use Restate to add resilience and consistency to the orchestration logic. Restate adds durable execution to the orchestration code, stores (temp) state, connects the services (like a MQ / PubSub), and optionally bridges to serverless platforms (orchestration logic can run as a normal service (Kubernetes, etc.) or a serverless function)
@@ -63,8 +65,7 @@ What users gain through Restate:
 - Reliable/durable RPC simplifies interaction with other services (no manual retry logic)
 - Storage of state in Restate is cheap and always consistent with sending RPC requests/events. This is especially useful for any coordination-related state.
 - If the services called by the orchestrating service are also on Restate, users get end-to-end exactly-once RPC and state update semantics.
-- Runs on serverless platforms (like Lambda) without paying for the wait: The orchestration functions scales to zero when waiting for replies from other services.
-
+- Runs on serverless platforms (like Lambda) without paying for the wait: The orchestration functions scale to zero when waiting for replies from other services.
 
 ### Stateful serverless
 
@@ -73,10 +74,9 @@ Compositions are tricky. Lambda-to-Lambda communication is complex (invocations,
 State management is expensive (wait time) and often brittle (exceeded DB quotas when scaling up quickly).
 Lambda functions have a specific interface, which means code cannot be migrated as-is between lambda and other service platforms (Kubernetes, Fargate, etc.)
 
-Add on top of that the common distributed application issues, like maintaining atomicity between state, communication, execution, etc.
+Add on top of that, there are the common distributed application issues, like maintaining atomicity between state, communication, execution, etc.
 
 Restate allows users to build applications with simple standard RPC interfaces, and deploy the services to Lambda. Restate handles state, communication, even interaction with external systems like Kafka for you, and in a resilient and consistent manner that you don’t need to worry about failure details. You can move services (all or some) unchanged between Lambda, Kubernetes, Fargate, etc.
-
 
 ### Durable execution and workflows
 
@@ -89,9 +89,9 @@ Restate supports low-latency execution, and can be used for service orchestratio
 
 Restate can also handle asynchronous workflows, including scaling down for long-running operations, and operations scheduled into the future.
 
-
 ## Restate in your stack
 Let's contrast Restate to a few other technologies to clarify where Restate sits in the stack.
+
 ### Restate vs. service mesh
 Building applications with Restate eliminates the necessity for certain features of service meshes, for example retries and service discovery.
 
@@ -102,7 +102,6 @@ One can think of Restate as similar to a service mesh, but pulled up to the appl
 
 Restate can still be used together with service meshes for the communication between
 Restate and the service endpoints. Common security features from service meshes (mTLS, etc.) make them still a valuable addition.
-
 
 ### Restate vs. message broker
 The position of Restate in your stack is similar to that of a message or event broker,
@@ -117,4 +116,24 @@ and facilitating recovery of partial progress of a handler execution.
 
 In future versions, Restate will be able to retrieve input events or deliver output events to message brokers such as Apache Kafka.
 This will enable building event-driven applications with Restate.
+
+### Restate vs. workflow orchestrator
+In many cases, Restate can be a replacement for a workflow orchestrator. 
+Although Restate takes a more general approach to workflows.
+Restate allows you to durably execute code. If the code expresses a workflow or a sequence of steps, 
+then these steps will get reliably and durable executed. 
+
+Restate also allows you to schedule actions into the future via delayed requests. 
+Restate then takes care of its execution, regardless of infrastructure failures etc.
+
+Within a handler, you can interact with external systems via [side effects](/services/sdk/side-effects) and [awakeables](/services/sdk/awakeables). 
+The execution results get durably logged together with the rest of the code. 
+
+Because code runs in the same way as without Restate, this can provide a low-overhead, low-latency, scalable way of running workflows.
+Workflows can be short in the range of milliseconds, or long-running in the range of days, months, or as long as they need to be. 
+Restate suspends computing resources during idle time, for example when a workflow step is waiting on human interaction or on the response of an external system.
+This enables you to execute the steps of your workflow on a FaaS platform such as AWS Lambda, and only pay for the actual compute time. 
+
+Restate is in early stages. 
+Stay tuned to find out how future releases will make implementing workflows with Restate even easier.
 
