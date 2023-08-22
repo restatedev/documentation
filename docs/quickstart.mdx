@@ -11,7 +11,7 @@ import TabItem from '@theme/TabItem';
 This guide takes you through your first steps with Restate.
 
 ## Prerequisites
-- [NodeJS](https://nodejs.org/en/)
+- Latest stable version of [NodeJS](https://nodejs.org/en/) (>= v18.17.1) and [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) (>= 9.8.0)
 - [Docker](https://docs.docker.com/engine/install/)
 
 ## Step 1: Create the Node app
@@ -23,15 +23,11 @@ npx -y @restatedev/create-app && cd restate-node-template
 ```
 
 ## Step 2: Install dependencies
-First, get all dependencies and build tools. Generate the gRPC Protobuf files and build the app:
+First, get all dependencies and build tools. Then build the app:
 
 ```shell
-npm install && npm run proto && npm run build
+npm install && npm run build
 ```
-
-:::tip
-You will need to execute `npm run proto` every time you make changes to the Protobuf definitions.
-:::
 
 Now, you are all set to start developing your service in `src/app.ts`.
 
@@ -85,10 +81,8 @@ curl -X POST http://localhost:8081/endpoints -H 'content-type: application/json'
 Invoke the function via:
 
 ```shell
-curl -X POST http://localhost:9090/org.example.ExampleService/SampleCall -H 'content-type: application/json' -d '{"request": "Pete"}'
+curl -X POST http://localhost:9090/myservice/hello -H 'content-type: application/json' -d '{"request": "Pete"}'
 ```
-
-The data field is the JSON representation of what has been specified in `proto/example.proto`
 
 That's it! You managed to run your first Restate service.
 
