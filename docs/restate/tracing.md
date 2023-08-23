@@ -80,9 +80,9 @@ You can import the trace files using the Jaeger UI:
 ## Understanding traces
 The traces contain detailed information about the context calls that were done during the invocation (e.g. sleep, one-way calls, interaction with state):
 
-![Understanding traces](/img/understanding_traces.png)
+![Understanding traces](/img/jaeger_tour_background_call_handler.png)
 
-The initial `ingress_service_invocation` spans show when the gRPC/Connect HTTP request was received by Restate. The `invoke` span beneath it shows when Restate invoked the service endpoint to process the request.
+The initial `ingress_invoke` spans show when the gRPC/Connect HTTP request was received by Restate. The `invoke` span beneath it shows when Restate invoked the service endpoint to process the request.
 
 The tags of the spans contain the metadata of the context calls (e.g. call arguments, invocation id). 
 
@@ -97,4 +97,4 @@ restate.invocation.id="T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE"
 
 Traces export attributes and tags that correlate the trace with the service and/or invocation. For example, in the Jaeger UI, you can filter on the invocation id (`restate.invocation.id`) or any other tag:
 
-![Jaeger invocation id search](/img/jaeger_docs_invocationid_search.png)
+![Jaeger invocation id search](/img/jaeger_invocationid_search_handler.png)
