@@ -41,21 +41,51 @@ const id = awakeable.id
 const result = await awakeable.promise;
 ```
 
-# Completing awakeables
+## Completing awakeables from another Restate service
 
 The external process that received the ID, needs to deliver it back to Restate when the task is done.
 
-If the external process is another Restate service, then you can use the SDK to complete the awakeable (= to send the ID back).
+If the external process is another Restate service, then you can use the SDK to resolve the awakeable (= to send the ID back).
 Use the awakeable ID that you received from the other service, and do the following:
 
 ```typescript
-ctx.completeAwakeable(id, "hello");
+ctx.resolveAwakeable(id, "hello");
 ```
 
 The SDK serializes the payload with `Buffer.from(JSON.stringify(payload))` and deserializes it in the receiving service with `JSON.parse(result.toString()) as T`.
 
-In the current release, only Restate services can complete awakeables.
-If you want to enable an external system to awaken an invocation,
-you must introduce a Restate service in the middle to translate the incoming external request and trigger the completion of the awakeable.
-In next versions, we will improve this feature to work better with external non-Restate systems.
-Have a look at [the `NotifierService` of the food ordering example](https://github.com/restatedev/examples/tree/main/typescript/food-ordering) to see an example of this pattern.
+You can also reject an awakeable, that is completing it with a failure. This will cause the waiting service to throw [a terminal error](./error-handling.md):
+
+```typescript
+ctx.rejectAwakeable(id, "my error reason");
+```
+
+## Completing awakeables from outside Restate
+
+You can resolve awakeables from outside Restate by sending requests to the `dev.restate.Awakeables` built-in service.
+
+To resolve an awakeable with a JSON payload:
+
+```shell
+curl -X POST http://<restate-runtime-host-port>/dev.restate.Awakeables/Resolve -H 'content-type: application/json' -d '{"id": "<AWAKEABLE_ID>", "json_result": <JSON_VALUE_RESULT>}'
+```
+
+For example:
+
+```shell
+curl -X POST http://localhost:9090/dev.restate.Awakeables/Resolve -H 'content-type: application/json' -d '{"id": "T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE", "json_result": {"hello": "world"}}'
+```
+
+To reject an awakeable:
+
+```shell
+curl -X POST http://<restate-runtime-host-port>/dev.restate.Awakeables/Reject -H 'content-type: application/json' -d '{"id": "<AWAKEABLE_ID>", "reason": "<FAILURE_REASON>"}'
+```
+
+For example:
+
+```shell
+curl -X POST http://<restate-runtime-host-port>/dev.restate.Awakeables/Reject -H 'content-type: application/json' -d '{"id": "T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE", "reason": "Very bad error!"}'
+```
+
+For more details, look at the [Awakeables service documentation](https://github.com/restatedev/proto/blob/main/dev/restate/services.proto) and [how to invoke a service documentation](../invocation.md#invoking-restate-services).
