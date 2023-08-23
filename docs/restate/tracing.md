@@ -65,7 +65,7 @@ Go to the Jaeger UI at http://localhost:16686.
 
 If you now spin up your Restate services and send requests to them, you will see the traces appear in the Jaeger UI.
 
-An example from the [shopping cart example](https://github.com/restatedev/example-shopping-cart-typescript):
+An example from the [shopping cart example](https://github.com/restatedev/examples/tree/main/typescript/ecommerce-store):
 ![Observability](/img/observability.jpeg)
 
 ## Setting up Jaeger file exporter
@@ -80,9 +80,9 @@ You can import the trace files using the Jaeger UI:
 ## Understanding traces
 The traces contain detailed information about the context calls that were done during the invocation (e.g. sleep, one-way calls, interaction with state):
 
-![Understanding traces](/img/understanding_traces.png)
+![Understanding traces](/img/jaeger_tour_background_call_handler.png)
 
-The initial `ingress_service_invocation` spans show when the gRPC/Connect HTTP request was received by Restate. The `invoke` span beneath it shows when Restate invoked the service endpoint to process the request.
+The initial `ingress_invoke` spans show when the gRPC/Connect HTTP request was received by Restate. The `invoke` span beneath it shows when Restate invoked the service endpoint to process the request.
 
 The tags of the spans contain the metadata of the context calls (e.g. call arguments, invocation id). 
 
@@ -90,11 +90,11 @@ When a service invokes another service, the child invocation is linked automatic
 Note that the spans of one-way calls are shown as separate traces. The parent invocation only shows that the one-way call was scheduled, not its entire tracing span. 
 To see this information, search for the trace of the one-way call by filtering on the invocation id tag:
 ```
-restate.invocation.sid="example.MyExampleService-AzEyMw==-0189b536906b746c8da6f83f0257acda"
+restate.invocation.id="T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE"
 ```
 
 ## Searching traces
 
-Traces export attributes and tags that correlate the trace with the service and/or invocation. For example, in the Jaeger UI, you can filter on the invocation id (`restate.invocation.sid`) or any other tag:
+Traces export attributes and tags that correlate the trace with the service and/or invocation. For example, in the Jaeger UI, you can filter on the invocation id (`restate.invocation.id`) or any other tag:
 
-![Jaeger invocation id search](/img/jaeger_docs_invocationid_search.png)
+![Jaeger invocation id search](/img/jaeger_invocationid_search_handler.png)

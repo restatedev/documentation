@@ -13,16 +13,16 @@ To get started quickly, have a look at our [Typescript service template](https:/
 
 ## Installation
 
-Add the `@restatedev/restate-sdk` dependency to your NodeJS project to start developing Restate services. 
+Add the `@restatedev/restate-sdk` dependency to your NodeJS project to start developing Restate services.
 
-The Typescript SDK uses the `protobufjs` and `ts-proto` dependencies to work with the Protobuf-generated Typescript code. 
-So add these as well to your project. 
+The Typescript SDK uses the `protobufjs` and `ts-proto` dependencies to work with the Protobuf-generated Typescript code.
+So add these as well to your project.
 
 ## Example of a service
-Below is an example of a Restate Typescript service to get a better understanding of the potential end result. 
+Below is an example of a Restate Typescript service to get a better understanding of the potential end result.
 
 This example shows a greeter service comprising two methods:
-- `greet`: returns a greeting as a response without performing any additional operations. 
+- `greet`: returns a greeting as a response without performing any additional operations.
 - `countGreetings`: maintains a record of the number of times it has received a request for a given name.
 
 ```typescript
@@ -43,12 +43,12 @@ export class GreeterService implements Greeter {
     async countGreetings(request: GreetRequest): Promise<GreetResponse> {
         // Retrieving the Restate context
         const restateContext = restate.useContext(this);
-    
+
         // State management
         let seen = (await restateContext.get<number>("seen")) || 0;
         seen += 1;
         await restateContext.set("seen", seen);
-    
+
         // Return the final response
         return GreetResponse.create({
           greeting: `Hello ${request.name} for the ${seen}th time!`,
@@ -100,4 +100,4 @@ message GreetResponse {
 
 To understand the Restate-specific parts of this Protobuf definition, have a look at the documentation here.
 
-Now that you have a high-level idea of what a Restate Typescript service might look like, let's dive into the details! 
+Now that you have a high-level idea of what a Restate Typescript service might look like, let's dive into the details!
