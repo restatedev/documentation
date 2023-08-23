@@ -5,22 +5,25 @@ description: "Explore the different ways to invoke Restate services."
 
 # Invocation
 
+An invocation is a single call to a service method.
+
+## Invoking Restate services
 
 There are different ways to invoke a Restate service:
 
 * From within another service, as described in the [SDK service communication documentation](/services/sdk/service-communication)
-* By sending a request to any Restate runtime using either [Connect (gRPC on HTTP)](https://connect.build/docs/protocol/), gRPC or gRPC-web
+* By sending a request to Restate [over HTTP](/services/invocation#over-http), or [via gRPC or gRPC-web](/services/invocation#grpc-and-grpc-web)
 
-## Connect (gRPC on HTTP)
+### Over HTTP
 
-Restate supports the [Connect Protocol](https://connect.build/docs/protocol/), allowing you to send gRPC-like requests as regular HTTP requests.
-
-It supports encoding request/response bodies as either JSON or Protobuf, it works on HTTP 1.1 or more, allows you to send requests directly from the browser, and it doesn't require to generate a client.
+You can invoke services over HTTP 1.1 or higher. 
+Request/response bodies should be encoded as either JSON or Protobuf.
+You can send requests directly from the browser or via `curl` without generating a client.
 
 For example, to invoke the service `org.example.Greeter` method `Greet` using `curl`:
 
 ```shell
-curl -X POST http://<your-restate-runtime-host-port>/org.example.Greeter/Greet -H 'content-type: application/json' -d '{"name": "Pete"}'
+curl -X POST http://<restate-runtime-host-port>/org.example.Greeter/Greet -H 'content-type: application/json' -d '{"name": "Pete"}'
 ```
 
 You should see the response:
@@ -39,11 +42,12 @@ The rules to invoke a service are the following:
 
 The response body will have the same content type as the request.
 
-For more details on the Connect protocol, check out the [Connect documentation](https://connect.build/).
+This is supported via the [Connect Protocol](https://connect.build/docs/protocol/), allowing you to send gRPC-like requests as regular HTTP requests.
+For more detail, check out the [Connect documentation](https://connect.build/).
 
-## gRPC and gRPC-web
+### Over gRPC and gRPC-web
 
-Restate is fully compatible with the [gRPC](https://grpc.io/), meaning you can send requests to your services as regular gRPC requests.
+You can send requests to your services as regular [gRPC](https://grpc.io/) requests.
 
 You can use any gRPC code generator to generate a gRPC client to invoke a Restate service. Check out the [awesome-grpc page](https://github.com/grpc-ecosystem/awesome-grpc) for a comprehensive list of clients, code generators and tools.
 
@@ -63,7 +67,7 @@ grpcurl -plaintext <your-restate-runtime-host-port> describe
 
 Restate also natively supports gRPC-web. You can use a [gRPC-web code generator](https://www.npmjs.com/package/grpc-web) and point it directly to Restate, without using a 3rd party proxy to translate gRPC-web to gRPC.
 
-## Invoke a service without waiting for the response
+### Invoke a service without waiting for the response
 
 You can invoke a service without waiting for the response, similar to [one-way calls in the SDK](/services/sdk/service-communication#one-way-calls), by using the Restate built-in `dev.restate.Ingress/Invoke` service method, which can be invoked like any other user service, using gRPC, gRPC-web or Connect.
 
@@ -75,18 +79,18 @@ curl -X POST http://<your-restate-runtime-host-port>/dev.restate.Ingress/Invoke 
 
 The response contains the [Invocation identifier](#invocation-identifier). You can use this identifier to cancel or kill the invocation as described in [the below paragraph](#cancel-an-invocation).
 
-For a complete documentation of the `dev.restate.Ingress` built-in service, check out the [Restate protobuf definitions](https://github.com/restatedev/proto/blob/main/dev/restate/services.proto).
+For the complete documentation of the `dev.restate.Ingress` built-in service, check out the [Restate protobuf definitions](https://github.com/restatedev/proto/blob/main/dev/restate/services.proto).
 
 :::tip
 This feature can be especially useful when you need to invoke a service method implementing a long-running workflow.
 :::
 
-## Hiding services from the ingress
+## Private services
 
-When registering a service endpoint, every service will be by default accessible in the ingress. You can hide a service from the ingress configuring it as `private` through the META REST Operational APIs:
+When registering a service endpoint, every service is by default accessible both by other services, and by sending requests to Restate using HTTP and/or gRPC. You can configure a service as `private`, such that you can't invoke it by sending requests to Restate, through the [Admin APIs](/references/admin-api):
 
 ```shell
-$ curl -X PATCH <META_ENDPOINT>/services/<SERVICE_NAME> -H 'content-type: application/json' -d '{"public": false}'
+$ curl -X PATCH <RESTATE_META_ENDPOINT>/services/<SERVICE_NAME> -H 'content-type: application/json' -d '{"public": false}'
 ```
 
 For example:
@@ -95,19 +99,14 @@ For example:
 $ curl -X PATCH localhost:8081/services/org.example.ExampleService -H 'content-type: application/json' -d '{"public": false}'
 ```
 
-You can revert it back to public with `{"public": true}`. When hidden from the ingress, a service can still be accessible from other Restate services.
+You can revert it back to public with `{"public": true}`. Private services can still be reached by other Restate services.
 For more details on the API, refer to the [admin API docs](/references/admin-api#tag/service/operation/modify_service). 
-
-
-# Manage invocations
-
-Restate offers several tools to manage the ongoing invocations.
 
 ## Invocation identifier
 
 Every invocation to a service gets a unique identifier assigned by Restate, called _Invocation identifier_. You can use this identifier to filter your structured logs, find traces, and execute some management operations such as cancelling an invocation.
 
-You can find this identifier in the runtime logs and OpenTelementry traces by looking for the `restate.invocation.id`, for example:
+You can find this identifier in the runtime logs and OpenTelemetry traces by looking for the `restate.invocation.id`, for example:
 
 ```log {7}
 2023-05-19T15:02:28.656467Z INFO restate_invoker::invocation_task
@@ -129,19 +128,19 @@ The Invocation identifier is opaque and its current format should not be relied 
 
 :::caution
 
-At the moment gracefully cancelling an invocation is not supported, It will be supported in future Restate releases.
+At the moment, gracefully cancelling an invocation is not supported. It will be supported in future Restate releases.
 
 :::
 
 ## Kill an invocation
 
-When something goes wrong during the execution of an invocation, Restate will by default retry until it can make progress again.
-For example, if there's a network partitioning, Restate will continue retrying until it can reach the endpoint and make progress.
+When an invocation fails, Restate retries by default until it can make progress.
+For example, if there's a network partitioning, Restate keeps retrying until it can reach the endpoint and make progress.
 
 There are some cases where it is impossible for an invocation to make progress.
-A good example is when your code runs a non deterministic action: If the invocation is suspended and re-scheduled afterwards, the replay of the invocation might lead to a different code path, generating an invalid journal and failing the invocation indefinitely.
-In such cases, you can request Restate to kill the invocation, aborting its execution as soon as possible.
-If the invocation is ongoing, killing the invocation **will not** rollback its progress.
+A good example is when your code runs a non-deterministic action: If the invocation is suspended and re-scheduled afterwards, the replay of the invocation might lead to a different code path, generating an invalid journal and failing the invocation indefinitely.
+In such cases, you can request Restate to kill the invocation, thereby aborting its execution as soon as possible.
+If the invocation is ongoing, killing the invocation **will not** roll back its progress.
 
 :::danger
 
@@ -152,7 +151,7 @@ Killing an invocation might leave the service instance in an inconsistent state,
 To kill an invocation, send the following request to the Restate meta endpoint:
 
 ```shell
-$ curl -X DELETE <META_ENDPOINT>/invocations/<INVOCATION_IDENTIFIER>
+$ curl -X DELETE <RESTATE_META_ENDPOINT>/invocations/<INVOCATION_IDENTIFIER>
 ```
 
 For example:
