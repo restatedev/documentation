@@ -5,6 +5,8 @@ description: "Explore the different ways to invoke Restate services."
 
 # Invocation
 
+An invocation is a single call to a service method.
+
 ## Invoking Restate services
 
 There are different ways to invoke a Restate service:
@@ -83,7 +85,7 @@ For the complete documentation of the `dev.restate.Ingress` built-in service, ch
 This feature can be especially useful when you need to invoke a service method implementing a long-running workflow.
 :::
 
-## Hiding services from the ingress
+## Private services
 
 When registering a service endpoint, every service is by default accessible both by other services, and by sending requests to Restate using HTTP and/or gRPC. You can configure a service as `private`, such that you can't invoke it by sending requests to Restate, through the [Admin APIs](/references/admin-api):
 
@@ -97,7 +99,7 @@ For example:
 $ curl -X PATCH localhost:8081/services/org.example.ExampleService -H 'content-type: application/json' -d '{"public": false}'
 ```
 
-You can revert it back to public with `{"public": true}`. When hidden from the ingress, a service can still be accessible from other Restate services.
+You can revert it back to public with `{"public": true}`. Private services can still be reached by other Restate services.
 For more details on the API, refer to the [admin API docs](/references/admin-api#tag/service/operation/modify_service). 
 
 
