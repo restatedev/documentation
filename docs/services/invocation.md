@@ -85,7 +85,7 @@ This feature can be especially useful when you need to invoke a service method i
 
 ## Hiding services from the ingress
 
-When registering a service endpoint, every service is by default accessible in the ingress. You can hide a service from the ingress configuring it as `private` through the [Admin APIs](/references/admin-api):
+When registering a service endpoint, every service is by default accessible both by other services, and by sending requests to Restate using HTTP and/or gRPC. You can configure a service as `private`, such that you can't invoke it by sending requests to Restate, through the [Admin APIs](/references/admin-api):
 
 ```shell
 $ curl -X PATCH <RESTATE_META_ENDPOINT>/services/<SERVICE_NAME> -H 'content-type: application/json' -d '{"public": false}'
