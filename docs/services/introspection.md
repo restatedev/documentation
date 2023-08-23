@@ -9,7 +9,7 @@ draft: false
 
 Restate exposes information on invocations and application state via its Introspection SQL API. You can use this to gain insight into the status of invocations and the service state that is stored.
 
-This can be useful for troubleshooting. For example, a handler might be blocked for a specific key, and you want to kill the invocation that is blocking it but you don't know the service invocation ID. Or you want to check what is currently stored in the state of a service.
+This can be useful for troubleshooting. For example, a handler might be blocked for a specific key, and you want to kill the invocation that is blocking it but you don't know the invocation ID. Or you want to check what is currently stored in the state of a service.
 
 To let you do this, Restate exposes two SQL tables that you can query via the [*psql* client](https://www.postgresql.org/docs/current/app-psql.html):
 - `sys_status` table to inspect invocation status.
@@ -51,33 +51,33 @@ This following list contains some key queries on the `sys_status` table to give 
     select * from sys_status;
     ```
 
-- Retrieve the service invocation ID (`sid`) that is currently blocking a service-key combination via:
+- Retrieve the invocation ID (`id`) that is currently blocking a service-key combination via:
     ```sql
-    select method, status, sid from sys_status where service = 'test.MyServiceName' and service_key_utf8 = 'myKey';
+    select method, status, id from sys_status where service = 'test.MyServiceName' and service_key_utf8 = 'myKey';
     ```
-  You can then use the service invocation ID to kill the invocation via the [admin API](/references/admin-api#tag/invocation/operation/cancel_invocation).
+  You can then use the invocation ID to [kill the invocation](./invocation.md#cancel-an-invocation).
 
 - Check the status of an invocation via:
     ```sql
-    select service, method, status from sys_status where sid = 'my_sid';
+    select service, method, status from sys_status where id = 'T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE';
     ```
   The status field shows that the invocation is either in status `invoked`, meaning actively processing, or in status is `suspended`, meaning waiting on some external input (e.g. request-response call, awakeable, sleep, ...).
 
 - Check when an invocation was modified the last time via:
     ```sql
-    select modified_at from sys_status where sid = 'my_sid';
+    select modified_at from sys_status where id = 'T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE';
     ```
   This includes any modification to the row in the table (e.g. when the service last switched its status from `invoked` to `suspended`, or when the last journal entry was added).
 
 - To find out if an invocation was triggered via the ingress or by another service:
     ```sql
-    select invoked_by, invoked_by_service, invoked_by_sid from sys_status where sid = 'my_sid';
+    select invoked_by, invoked_by_service, invoked_by_id from sys_status where id = 'T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE';
     ```
-  The `invoked_by` field contains either `ingress` or `service`. If the invocation was triggered by another service, then the fields `invoked_by_service` and `invoked_by_sid` will supply more information about the invoking service.
+  The `invoked_by` field contains either `ingress` or `service`. If the invocation was triggered by another service, then the fields `invoked_by_service` and `invoked_by_id` will supply more information about the invoking service.
 
-- Retrieve the trace ID based on a service invocation ID:
+- Retrieve the trace ID based on a invocation ID:
     ```sql
-    select trace_id from sys_status where sid = 'my_sid';
+    select trace_id from sys_status where id = 'T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE';
     ```
   Afterwards, you can use this trace ID to [search for spans in Jaeger](/restate/tracing#searching-traces).
 
