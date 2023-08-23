@@ -57,9 +57,9 @@ const config = {
               variableInjector, // replaces eg VAR::RESTATE_DIST_VERSION with config strings
               {
                 replacements: {
-                  RESTATE_DIST_VERSION: '0.1.7',
-                  TYPESCRIPT_SDK_VERSION: '1.0.33',
-                  TOUR_VERSION: 'v0.0.4',
+                  RESTATE_DIST_VERSION: '0.2.0',
+                  TYPESCRIPT_SDK_VERSION: '0.2.0',
+                  TOUR_VERSION: 'v0.2.0',
                 },
               }
             ]
