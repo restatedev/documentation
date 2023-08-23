@@ -57,11 +57,11 @@ Grafana supports correlating logs and traces. In your Loki data source configura
 set up a [Derived field](https://grafana.com/docs/grafana/latest/datasources/loki/configure-loki-data-source/#derived-fields)
 with the following parameters:
 ```yaml
-name: restate.invocation.sid
+name: restate.invocation.id
 # pull invocation ids out of logs
-regex: '"restate.invocation.sid":"(.+?)"' # single quotes not needed
+regex: '"restate.invocation.id":"(.+?)"' # single quotes not needed
 # find traces with that invocation id
-query: '{ .restate.invocation.sid="${__value.raw}" }' # single quotes not needed
+query: '{ .restate.invocation.id="${__value.raw}" }' # single quotes not needed
 internal_link:
   enabled: true
   data_source: <your Tempo data source>
@@ -69,7 +69,7 @@ internal_link:
 
 In your Tempo configuration, after you have a Loki data source configured, set up 
 [Trace to logs](https://grafana.com/docs/grafana/latest/datasources/tempo/#trace-to-logs) with data source set to your Loki data source,
-and query set to `{kubernetes_container_name="restate"} |= "${__span.tags["restate.invocation.sid"]}"`.
+and query set to `{kubernetes_container_name="restate"} |= "${__span.tags["restate.invocation.id"]}"`.
 
 You can view logs in Grafana on the explore page by selecting the Loki data source. To get started you can query:
 ```logql

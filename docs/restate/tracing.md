@@ -90,11 +90,11 @@ When a service invokes another service, the child invocation is linked automatic
 Note that the spans of one-way calls are shown as separate traces. The parent invocation only shows that the one-way call was scheduled, not its entire tracing span. 
 To see this information, search for the trace of the one-way call by filtering on the invocation id tag:
 ```
-restate.invocation.sid="example.MyExampleService-AzEyMw==-0189b536906b746c8da6f83f0257acda"
+restate.invocation.id="T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE"
 ```
 
 ## Searching traces
 
-Traces export attributes and tags that correlate the trace with the service and/or invocation. For example, in the Jaeger UI, you can filter on the invocation id (`restate.invocation.sid`) or any other tag:
+Traces export attributes and tags that correlate the trace with the service and/or invocation. For example, in the Jaeger UI, you can filter on the invocation id (`restate.invocation.id`) or any other tag:
 
 ![Jaeger invocation id search](/img/jaeger_docs_invocationid_search.png)

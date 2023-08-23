@@ -73,7 +73,7 @@ For example, using [Connect](#connect-grpc-on-http) and `curl`:
 curl -X POST http://<your-restate-runtime-host-port>/dev.restate.Ingress/Invoke -H 'content-type: application/json' -d '{"service": "org.example.Greeter", "method": "Greet", "payload": {"name": "Pete"}}'
 ```
 
-The response contains the [service invocation identifier](/services/invocation#service-invocation-identifier). You can use this identifier to manage the invocation as described in [the respective documention](/services/invocation).
+The response contains the [Invocation identifier](#invocation-identifier). You can use this identifier to cancel or kill the invocation as described in [the below paragraph](#cancel-an-invocation).
 
 For a complete documentation of the `dev.restate.Ingress` built-in service, check out the [Restate protobuf definitions](https://github.com/restatedev/proto/blob/main/dev/restate/services.proto).
 
@@ -103,11 +103,11 @@ For more details on the API, refer to the [admin API docs](/references/admin-api
 
 Restate offers several tools to manage the ongoing invocations.
 
-## Service invocation identifier
+## Invocation identifier
 
-Every invocation to a service gets a unique identifier assigned by Restate, called _Service invocation identifier_. You can use this identifier to filter your structured logs, find traces, and execute some management operations such as cancelling an invocation.
+Every invocation to a service gets a unique identifier assigned by Restate, called _Invocation identifier_. You can use this identifier to filter your structured logs, find traces, and execute some management operations such as cancelling an invocation.
 
-You can find this identifier in the runtime logs and OpenTelementry traces by looking for the `restate.invocation.sid`, for example:
+You can find this identifier in the runtime logs and OpenTelementry traces by looking for the `restate.invocation.id`, for example:
 
 ```log {7}
 2023-05-19T15:02:28.656467Z INFO restate_invoker::invocation_task
@@ -116,12 +116,12 @@ You can find this identifier in the runtime logs and OpenTelementry traces by lo
   in restate_invoker::invocation_task::invoker_invocation_task
     rpc.system: "restate"
     rpc.service: coordinator.Coordinator
-    restate.invocation.sid: coordinator.Coordinator-AYguNHjOdG+gM+TY9k1qeA==-01882e3478ce79579999ecabfd7f4129
+    restate.invocation.id: T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE
 ```
 
 :::note
 
-The service invocation identifier is opaque and its current format should not be relied on, as it might change in future Restate versions.
+The Invocation identifier is opaque and its current format should not be relied on, as it might change in future Restate versions.
 
 :::
 
@@ -152,13 +152,13 @@ Killing an invocation might leave the service instance in an inconsistent state,
 To kill an invocation, send the following request to the Restate meta endpoint:
 
 ```shell
-$ curl -X DELETE <META_ENDPOINT>/invocations -H 'content-type: application/json' -d '{"sid": "<SERVICE_INVOCATION_IDENTIFIER>"}'
+$ curl -X DELETE <META_ENDPOINT>/invocations/<INVOCATION_IDENTIFIER>
 ```
 
 For example:
 
 ```shell
-$ curl -X DELETE http://localhost:8081/invocations -H 'content-type: application/json' -d '{"sid": "coordinator.Coordinator-AYguNHjOdG+gM+TY9k1qeA==-01882e3478ce79579999ecabfd7f4129"}'
+$ curl -X DELETE http://localhost:8081/invocations/T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE
 ```
 
 For more details on the API, refer to the [admin API docs](/references/admin-api).
