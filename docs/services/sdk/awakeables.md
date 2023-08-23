@@ -58,4 +58,4 @@ In the current release, only Restate services can complete awakeables.
 If you want to enable an external system to awaken an invocation,
 you must introduce a Restate service in the middle to translate the incoming external request and trigger the completion of the awakeable.
 In next versions, we will improve this feature to work better with external non-Restate systems.
-Have a look at [the `NotifierService` of the food ordering example](https://github.com/restatedev/example-food-ordering/blob/main/services/src/notifier.ts) to see an example of this pattern.
+Have a look at [the `NotifierService` of the food ordering example](https://github.com/restatedev/examples/tree/main/typescript/food-ordering) to see an example of this pattern.

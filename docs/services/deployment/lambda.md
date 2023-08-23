@@ -60,7 +60,7 @@ The Restate runtime will use this API key for all subsequent requests to the Lam
 
 This tutorial shows how to deploy a greeter service written with the Restate Typescript SDK on AWS Lambda.
 
-[Go to the GitHub repository of this tutorial](https://github.com/restatedev/example-lambda-ts-greeter/tree/VAR::LAMBDA_GREETER_VERSION)
+[Go to the GitHub repository of this tutorial](https://github.com/restatedev/examples/tree/VAR::EXAMPLES_VERSION/typescript/lambda-greeter)
 
 ### Prerequisites
 > &#x1F4DD; As long as Restate hasn't been launched publicly, you need to have access to the private Restate npm packages and Docker container. Please follow the instructions in the [restate-dist](https://github.com/restatedev/restate-dist) Readme to set up access:
@@ -74,7 +74,7 @@ This tutorial shows how to deploy a greeter service written with the Restate Typ
 
 Clone the GitHub repository for the latest release:
 ```shell
-git clone --depth 1 --branch VAR::LAMBDA_GREETER_VERSION git@github.com:restatedev/example-lambda-ts-greeter.git
+git clone --depth 1 --branch VAR::EXAMPLES_VERSION git@github.com:restatedev/examples.git
 ```
 
 We are going to deploy the service defined in `src/app.ts` on AWS Lambda.
