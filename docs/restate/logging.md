@@ -45,6 +45,7 @@ When testing Restate locally, we recommend keeping the default configuration.
 When deploying in production, we recommend setting the log level to `info` and enabling the `Json` format in conjunction with a log collector, so you can later inspect and filter logs based on its event fields.
 
 We recommend to set up logging to a more verbose filter, and use the `Pretty` format. Some example filters:
-    * `info,restate_ingress_grpc=trace,restate_invoker=trace,restate=debug,hyper=debug` for network related issues
-    * `info,restate_worker::partition::effects=debug` to get insights on the state machine effects
-    * `info,restate_meta=trace` to check service discovery and registration
+
+* `info,restate_ingress_grpc=trace,restate_invoker=trace,restate=debug,hyper=debug` for network related issues
+* `info,restate_worker::partition::effects=debug` to get insights on the state machine effects
+* `info,restate_meta=trace` to check service discovery and registration
