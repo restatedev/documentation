@@ -7,7 +7,7 @@ description: ""
 # Examples
 
 Do you want to see Restate in action?
-[Here](https://github.com/restatedev/examples) are some ready-to-run examples for you.
+[Here](https://github.com/restatedev/examples) you find some ready-to-run examples.
 Pick an example from the list below and follow the instructions in the README to run it.
 
 ## Starter examples
@@ -18,7 +18,7 @@ Pick an example from the list below and follow the instructions in the README to
 ## Intermediate examples
 
 - [Ticket reservation system](https://github.com/restatedev/examples/tree/main/typescript/ticket-reservation):  a subset of a ticket booking system to illustrate how Restate's keyed-sharding and concurrency guarantees simplify microservice architectures.
-- [Food ordering](https://github.com/restatedev/examples/tree/main/typescript/food-ordering): The order processing middleware of a fast food chain implemented with awakeables and delayed calls.
+- [Food ordering](https://github.com/restatedev/examples/tree/main/typescript/food-ordering): The order processing app of a fast food chain implemented with Awakeables and delayed calls.
 
 ## Advanced examples
 
