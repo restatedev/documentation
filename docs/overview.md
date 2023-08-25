@@ -7,7 +7,7 @@ slug: /
 description: "Documentation overview"
 ---
 <div id="container">
-<h1> Welcome to the Restate Documentation!</h1>
+<h1> Welcome to the Restate Documentation</h1>
 </div>
 <div id="container">
 <p>Restate is a system for easily building resilient applications using <mark>distributed durable RPC & async/await</mark>.</p>
@@ -22,7 +22,7 @@ Watch the intro video:
 <div class="videocontainer">
 <video id="intro_video" controls preload="none" poster="img/intro_diagram.jpg" >
 <source src="img/video.mp4" type="video/mp4"/>
-Your browser does not support the video tag.
+Your browser doesn't support the video tag.
 </video>
 </div>
 </div>
