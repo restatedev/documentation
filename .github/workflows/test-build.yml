@@ -11,6 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Run vale spell and style check
+        uses: errata-ai/vale-action@reviewdog
+        with:
+          files: docs
+
       - uses: actions/setup-node@v3
         with:
           node-version: 18
