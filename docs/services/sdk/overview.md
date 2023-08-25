@@ -8,7 +8,7 @@ description: "Get an idea of what a Restate Typescript service looks like."
 Restate offers a Typescript SDK to author Restate services using Typescript.
 
 :::tip
-To get started quickly, have a look at our [Typescript service template](https://github.com/restatedev/node-template)!
+To get started quickly, use the [Typescript service template generator](https://github.com/restatedev/node-template-generator)!
 :::
 
 ## Installation
