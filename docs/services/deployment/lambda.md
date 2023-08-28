@@ -65,7 +65,7 @@ This tutorial shows how to deploy a greeter service written with the Restate Typ
 ### Prerequisites
 > &#x1F4DD; As long as Restate hasn't been launched publicly, you need to have access to the private Restate npm packages and Docker container. Please follow the instructions in the [restate-dist](https://github.com/restatedev/restate-dist) Readme to set up access:
 
-- Latest stable version of [NodeJS](https://nodejs.org/en/) (>= v18.17.1) and [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) (>= 9.8.0)
+- Latest stable version of [NodeJS](https://nodejs.org/en/) >= v18.17.1 and [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 9.6.7
 - [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation) to launch the Restate runtime (not needed for the app implementation itself).
 - [curl](https://everything.curl.dev/get)
 - An AWS account with permissions for Lambda and API Gateway.
