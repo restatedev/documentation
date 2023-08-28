@@ -7,7 +7,7 @@ description: "Documentation overview"
 ---
 
 Build applications with **distributed durable async/await**.
-Write RPC and Event handlers, and Restate makes them reliable by adding durability to invocations, promises, communication and state.
+Write RPC and event handlers, and Restate makes them reliable by adding durability to invocations, promises, communication and state.
 Restate handles durability and recovery (including recovering partial handler executions).
 
 ![Restate overview](/img/overview/restate_overview.svg)
