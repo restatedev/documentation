@@ -88,6 +88,8 @@ const config = {
         logo: {
           alt: 'Restate Logo',
           src: 'img/restate.png',
+          href: 'https://restate.dev',
+          target: '_self'
         },
         items: [
           {
