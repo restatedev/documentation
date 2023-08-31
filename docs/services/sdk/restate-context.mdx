@@ -3,30 +3,51 @@ sidebar_position: 2
 description: "Learn how to interact with the runtime via the Restate context."
 ---
 
-# Restate context
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
+# Restate context
 
 In Restate services, all interaction with the runtime occur through the Restate context.
 This context provides a set of methods that allow you to perform actions such as getting or setting state, or
 calling other services.
 
-You can retrieve the context object from within the method you are defining using the `useContext` method, as shown in the following example:
+You can retrieve the context object as follows:
+
+<Tabs groupId="ts-api">
+<TabItem value="handler" label="Handler API">
+
+```typescript
+import * as restate from "@restatedev/restate-sdk";
+
+const greet = async (ctx: restate.RpcContext, name: string) => {
+    // The Restate context is supplied as an argument `ctx`
+
+    //...the rest of your code...
+};
+```
+
+</TabItem>
+<TabItem value="grpc" label="gRPC API">
+
 
 ```typescript
 import * as restate from "@restatedev/restate-sdk";
 
 async greet(request: Request): Promise<Response> {
-    const restateContext = restate.useContext(this);
+  const restateContext = restate.useContext(this);
 
-    //...the rest of your code...
+  //...the rest of your code...
 }
 ```
 
+</TabItem>
+</Tabs>
+
+
+
 :::info
-The code blocks in the Typescript documentation assume that the context has been assigned to `restateContext` as
-```typescript
-const restateContext = restate.useContext(this);
-```
+The code blocks in the Typescript documentation refer to the Restate Context via the variable named `restateContext`.
 :::
 
 :::caution 
