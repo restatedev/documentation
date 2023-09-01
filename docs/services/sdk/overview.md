@@ -57,6 +57,8 @@ restate
 The app logic is implemented inside `doGreet` and `doCountGreetings`.
 These functions have the `restate.RpcContext` as their first parameter. This context is used to interact with Restate (call other methods, retrieve state, etc.).
 Then, the service is registered as a keyed service under the path `greeter`, and the `greet` and `countGreetings` routes are added.
+The `greet` function can now be called by sending a request to `<restate-host>:9090/greeter/greet` or `<restate-host>:9090/greeter/countGreetings`.
+For more information on how to set up the routers and the Restate server, have a look at the [serving docs](/services/sdk/serving). 
 
 ###  Example of a gRPC service
 Below is an example of a Typescript gRPC service.
