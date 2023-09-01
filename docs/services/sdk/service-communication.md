@@ -3,55 +3,146 @@ sidebar_position: 3
 description: "Find out how Restate services can send requests to each other."
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Service communication
-A Restate service can call another service either one-way or with waiting for the response (request-response).
+A Restate service can call another service without waiting for the response (one-way call) or with waiting for the response (request-response).
 
 ## Request-response calls
 Request-response calls are requests where the client waits for the response.
-Restate services can perform request-response calls in the same way as they would without Restate,
-by using the service client provided in the generated Proto files.
-The Restate SDK hooks into these calls and ensures that their execution is logged in the execution log.
 
-Let's assume we have a Greeter service running next to the service we are currently developing.
-This Greeter service has a method called `Greet` that takes a `Request` as input, containing a field name as a string.
-To make request-response calls to the Greeter service, do the following:
+Let's assume we have a `Greeter` service running next to the service we are currently developing.
+This `Greeter` service has a method called `Greet` that takes an input request containing a `name` as a `string`.
+To make request-response calls to the `Greeter` service, do the following:
+
+<Tabs groupId="ts-api">
+<TabItem value="handler" label="Handler API" default>
+
+On the side of the service that you are going to call, you export the API definition, as follows: 
+
+```ts
+const greeterRouter = restate.router({
+  greet:    async(ctx: restate.RpcContext, name: string) => { ... }
+});
+
+// Option 1: export only the type signature of the router
+export type myGreeterApiType = typeof greeterRouter;
+
+// Option 2: export the API definition with type and name (path)
+export const myGreeterApi: restate.ServiceApi<typeof greeterRouter> = { path : "greeter" };
+
+restate.createServer().bindRouter("greeter", greeterRouter).listen(8080);
+```
+
+On the client side (service which is doing the call), you use the exported API definition to do the RPC.
+For example, call the `greet` function of the `greeter` service for the name `Pete` via:
+
+```ts
+// Option 1: use only types and supply service name separately. 
+const result1 = await ctx.rpc<myGreeterApiType>({path: "greeter"}).greet("Pete");
+
+// Option 2: use full API spec
+const result2 = await ctx.rpc(myGreeterApi).greet("Pete");
+```
+
+</TabItem>
+<TabItem value="grpc" label="gRPC API">
+
+To do request-response calls, use the gRPC client implementation supplied via the generated Protobuf code.
+In this example, the `Greet` function requires a `Request` Protobuf message as input with a single `name` parameter.
 
 ```typescript
 const client = new GreeterClientImpl(restateContext);
 const greeting = await client.greet(
-  Request.create({ name: "Pete" })
+    Request.create({ name: "Pete" })
 );
 ```
 
+</TabItem>
+</Tabs>
+
+The Restate SDK sends these requests to Restate, that logs them in the Restate journal.
+And in case of failures, Restate takes care of retries.
+
+
 ## One-way calls
-To make a one-way call, where the client does not wait for a response, use a similar syntax to request-response calls. Create a client using the one provided by Protobuf and call the method on that client, but wrap the call with `ctx.oneWayCall` as shown below:
+A one-way call is a call from one service to another service where the client does not wait for a response, sometimes also called fire-and-forget.
+Without Restate, this is usually implemented by adding a message queue in between the two services. 
+Restate eliminates the need for a message queue because Restate durably logs the request and makes sure it gets executed.
+
+<Tabs groupId="ts-api">
+<TabItem value="handler" label="Handler API" default>
+
+On the side of the service that you are going to call, you export the API definition as shown in the [request-response calls section](/services/sdk/service-communication#request-response-calls).
+
+On the client side (service which is doing the call), you use the exported API definition to do the one-way call. For example, call the `greet` function of the `greeter` service for the name `Pete` via:
+
+```ts
+// option 1: use only types and supply service name separately
+ctx.send<myGreeterApiType>({path: "greeter"}).greet("Pete");
+
+// option 2: use full API spec
+ctx.send(myGreeterApi).greet("Pete");
+```
+
+</TabItem>
+<TabItem value="grpc" label="gRPC API">
+
+Use the gRPC client implementation supplied via the generated Protobuf code to do the call, but wrap the call with `ctx.oneWayCall` as shown below:
 
 ```typescript
 const client = new GreeterClientImpl(restateContext);
 await restateContext.oneWayCall(() =>
-  client.greet(TestRequest.create({ name: "Pete" }))
+    client.greet(Request.create({ name: "Pete" }))
 );
 ```
 
-You need to await the Promise that is returned from `oneWayCall()`, otherwise a failure in sending the message does not get propagated back to your user code. 
+You need to await the Promise that is returned from `oneWayCall()`, otherwise a failure in sending the message does not get propagated back to your user code.
 Note that the Promise gets resolved as soon as the message gets send to the runtime, so awaiting the promise does not mean it is a request-response call.
 
 :::caution
-You can only use `oneWayCall()` to do one-way calls to other services via the proto-ts clients that are generated. 
-You cannot wrap any other types of operations with `oneWayCall()`! This is invalid code.
+You can only use `oneWayCall()` to do one-way calls to other services via the proto-ts clients that are generated.
+You cannot wrap any other types of operations with `oneWayCall()`! This is invalid code and will fail.
 :::
+
+
+</TabItem>
+</Tabs>
+
 
 ## Delayed calls
 A delayed call is a one-way call that gets executed after a specified delay.
 
-For example, the following code calls the greet method of the Greeter service with a delay of 5 seconds:
+
+<Tabs groupId="ts-api">
+<TabItem value="handler" label="Handler API" default>
+
+On the side of the service that you are going to call, you export the API definition as shown in the [request-response calls section](/services/sdk/service-communication#request-response-calls).
+
+On the client side (service which is doing the call), you use the exported API definition to do the delayed one-way call. For example, call the `greet` function of the `greeter` service for the name `Pete` with a delay of 5 seconds  via:
+
+```ts
+// option 1: use only types and supply service name separately
+ctx.sendDelayed<myGreeterApiType>({path: "greeter"}, 5000).greet("Pete");
+
+// option 2: use full API spec
+ctx.sendDelayed(myGreeterApi, 5000).greet("Pete");
+```
+
+</TabItem>
+<TabItem value="grpc" label="gRPC API">
 
 ```typescript
 const client = new GreeterClientImpl(restateContext);
 await restateContext.delayedCall(() =>
-  client.greet(TestRequest.create({ name: "Pete" })),
-  5000  
+  client.greet(Request.create({ name: "Pete" })),
+  5000
 );
 ```
+
+</TabItem>
+</Tabs>
+
 
 Restate takes care of the scheduling and the durability of the delayed call.
