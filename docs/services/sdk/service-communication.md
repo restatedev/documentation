@@ -19,7 +19,7 @@ To make request-response calls to the `Greeter` service, do the following:
 <Tabs groupId="ts-api">
 <TabItem value="handler" label="Handler API" default>
 
-On the side of the service that you are going to call, you export the API definition, as follows: 
+On the side of the service that you are going to call, you export the API definition, as follows (for more details look at the [serving docs](/services/sdk/serving)): 
 
 ```ts
 const greeterRouter = restate.router({

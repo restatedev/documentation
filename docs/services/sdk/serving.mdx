@@ -21,7 +21,7 @@ To register your service as a long-running service, do the following:
 
 This router is used to link the function you implemented with an API path. 
 
-For unkeyed services, the router looks as follows:
+For **unkeyed services**, the router looks as follows:
 
 ```typescript
 const serviceRouter = restate.router({
@@ -31,10 +31,17 @@ const serviceRouter = restate.router({
 });
 ```
 
-This examples shows a router for an unkeyed service with three functions and their respective API paths (`hello`, `callMe`, and `maybe`).
+This example shows a router for an unkeyed service with three functions and their respective API paths (`hello`, `callMe`, and `maybe`).
 This means that the `hello` function can be called via `<restate-host>:9090/myServiceName/hello`.
 
-For keyed services, the router looks as follows:
+The functions of an unkeyed router have two optional parameters:
+
+- A `ctx` of type `restate.RpcContext` which allows to interact with Restate.
+- A `request` of type JSON object that represents additional invocation data.
+
+The parameter names may be chosen differently.
+
+For **keyed services**, the router looks as follows:
 ```typescript
 // 2. Create a router for keyed services (if any):
 const keyedServiceRouter = restate.keyedRouter({
@@ -45,24 +52,32 @@ const keyedServiceRouter = restate.keyedRouter({
 });
 ```
 
-This examples shows a router for a keyed service with four functions and their respective API paths (`hello`, `callMe`, `maybe`, and `withSomething`).
-This means that the `hello` function can be called via `<restate-host>:9090/myServiceName/hello`.
+This example shows a router for a keyed service with four functions and their respective API paths (`hello`, `callMe`, `maybe`, and `withSomething`).
+This means that the `hello` function can be called via `<restate-host>:9090/myServicePath/hello`.
+
+The functions of a keyed router have three optional parameters:
+
+- A `ctx` of type `restate.RpcContext` which allows to interact with Restate.
+- A `key` parameter of type string which represents the key of the invoked service.
+- A `request` parameter of type JSON object which represents additional invocation data.
+
+The parameter names may be chosen differently.
 
 **2. Export the service API**
 
-You use the exported serviceApi to call this service from within other services (see service communication docs)
+You use the exported serviceApi to call this service from within other services (see [service communication docs](/services/sdk/service-communication))
 
 ```typescript
 export const myServiceApi: restate.ServiceApi<typeof serviceRouter> = {
-    path: "myServiceName",
+    path: "myServicePath",
 };
 
 // use the same syntax for keyed services:
 export const myKeyedServiceApi: restate.ServiceApi<typeof keyedServiceRouter> = {
-    path: "myServiceName",
+    path: "myServicePath",
 };
 ```
-This means that the `hello` function of this service can be called via `<restate-host>:9090/myServiceName/hello`.
+This means that the `hello` function of this service can be called via `<restate-host>:9090/myServicePath/hello`.
 
 **3. Create the server**
 
