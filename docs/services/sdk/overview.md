@@ -79,12 +79,6 @@ protoMetadata,
 // Implementation of the gRPC service
 export class GreeterService implements Greeter {
     async greet(request: GreetRequest): Promise<GreetResponse> {
-        // Retrieving the Restate context
-        const ctx = restate.useContext(this);
-        
-        const client = new GreeterClientImpl(ctx);
-        client.countGreetings(request);
-        
         return GreetResponse.create({ greeting: `Hello ${request.name}` });
     }
 
