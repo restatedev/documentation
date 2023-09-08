@@ -18,7 +18,7 @@ and that the value is retained during replays.
 Here is an example in which a unique ID is generated and stored in Restate:
 
 ```typescript
-const uuid = await restateContext.sideEffect(async () => {
+const uuid = await ctx.sideEffect(async () => {
     return uuid()
 });
 ```

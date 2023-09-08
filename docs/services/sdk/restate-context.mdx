@@ -1,0 +1,60 @@
+---
+sidebar_position: 2
+description: "Learn how to interact with the runtime via the Restate context."
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Restate context
+
+In Restate services, all interaction with the runtime occur through the Restate context.
+This context provides a set of methods that allow you to perform actions such as getting or setting state, or
+calling other services.
+
+You can retrieve the context object as follows:
+
+<Tabs groupId="ts-api">
+<TabItem value="handler" label="Handler API" default>
+
+```typescript
+import * as restate from "@restatedev/restate-sdk";
+
+const greet = async (ctx: restate.RpcContext, name: string) => {
+
+    //...the rest of your code...
+};
+```
+
+The Restate context is supplied as the first argument `ctx` to the handler.
+The arguments behind that are optional. For more information on the handler signature, have a look at the [serving docs](/services/sdk/serving).
+
+</TabItem>
+<TabItem value="grpc" label="gRPC API">
+
+
+```typescript
+import * as restate from "@restatedev/restate-sdk";
+
+async greet(request: Request): Promise<Response> {
+  const ctx = restate.useContext(this);
+
+  //...the rest of your code...
+}
+```
+
+</TabItem>
+</Tabs>
+
+
+
+:::info
+The code blocks in the Typescript documentation refer to the Restate Context via the variable named `ctx`.
+:::
+
+:::caution 
+All method calls made through the Restate context are durably stored in the execution log
+and can be replayed in case of failure, ensuring that your service is always reliable and fault-tolerant.
+This means that if you do actions (e.g. calling other services, sleep) without making use of the Restate SDK,
+you do not have these benefits.
+:::

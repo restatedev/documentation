@@ -17,7 +17,7 @@ To sleep in a Restate application, do the following:
 
 ```typescript
 const duration = 1000;
-await restateContext.sleep(duration);
+await ctx.sleep(duration);
 ```
 
 
