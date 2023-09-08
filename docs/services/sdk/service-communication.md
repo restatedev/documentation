@@ -53,7 +53,7 @@ To do request-response calls, use the gRPC client implementation supplied via th
 In this example, the `Greet` function requires a `Request` Protobuf message as input with a single `name` parameter.
 
 ```typescript
-const client = new GreeterClientImpl(restateContext);
+const client = new GreeterClientImpl(ctx);
 const greeting = await client.greet(
     Request.create({ name: "Pete" })
 );
@@ -92,8 +92,8 @@ ctx.send(myGreeterApi).greet("Pete");
 Use the gRPC client implementation supplied via the generated Protobuf code to do the call, but wrap the call with `ctx.oneWayCall` as shown below:
 
 ```typescript
-const client = new GreeterClientImpl(restateContext);
-await restateContext.oneWayCall(() =>
+const client = new GreeterClientImpl(ctx);
+await ctx.oneWayCall(() =>
     client.greet(Request.create({ name: "Pete" }))
 );
 ```
@@ -134,8 +134,8 @@ ctx.sendDelayed(myGreeterApi, 5000).greet("Pete");
 <TabItem value="grpc" label="gRPC API">
 
 ```typescript
-const client = new GreeterClientImpl(restateContext);
-await restateContext.delayedCall(() =>
+const client = new GreeterClientImpl(ctx);
+await ctx.delayedCall(() =>
   client.greet(Request.create({ name: "Pete" })),
   5000
 );

@@ -28,11 +28,11 @@ A common use case for keyed services is to model an entity of your application. 
 Because keyed services are executed serially on a per-key basis, it means that invocations will execute in the same order in which they are enqueued. For example, assume the following code in `ServiceA`:
 
 ```typescript
-const client = new ServiceB(restateContext);
-await restateContext.oneWayCall(() =>
+const client = new ServiceB(ctx);
+await ctx.oneWayCall(() =>
   client.do(TestRequest.create({ key: "Pete", number: 1 }))
 );
-await restateContext.oneWayCall(() =>
+await ctx.oneWayCall(() =>
   client.do(TestRequest.create({ key: "Pete", number: 2 }))
 );
 ```

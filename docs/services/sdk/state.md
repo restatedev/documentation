@@ -10,7 +10,7 @@ Restate offers durable storage of application state, with support for key-value 
 To retrieve state in Restate, you can call the following method on the Restate context object from within your service method:
 
 ```typescript
-const myValue: string | null = await restateContext.get<string>("my-key");
+const myValue: string | null = await ctx.get<string>("my-key");
 ```
 
 Replace "my-key" with the key you want to retrieve. This will either return the value 
@@ -19,7 +19,7 @@ the value stored is a string, but you can store any type that can be serialized 
 buffer with `Buffer.from(JSON.stringify(yourObject))`. For example, to retrieve a number type, you could use the following code:
 
 ```typescript
-const myValue = (await restateContext.get<number>("my-key")) || 0;
+const myValue = (await ctx.get<number>("my-key")) || 0;
 ```
 
 This would retrieve the value of the `my-key` key. If the value is null, then it will return 0.
@@ -29,7 +29,7 @@ To set state in Restate,
 you can call the following method on the Restate context object from within your service method:
 
 ```typescript
-restateContext.set("my-key", "my-value");
+ctx.set("my-key", "my-value");
 ```
 
 Replace `my-key` with the key that you are setting.
@@ -41,7 +41,7 @@ To delete the value of a key in Restate,
 you can call the following method on the Restate context object from within your service method:
 
 ```typescript
-restateContext.clear("my-key");
+ctx.clear("my-key");
 ```
 
 Replace `my-key` with the key that you are setting.
