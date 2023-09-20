@@ -14,11 +14,15 @@ worker:
   channel_size: 64
   timers:
     num_timers_in_memory_limit: 1024
-  storage_query:
-    bind_address: 0.0.0.0:5432
+  storage_query_datafusion:
     memory_limit: null
     temp_folder: null
     query_parallelism: null
+  storage_query_http:
+    http_address: 0.0.0.0:9072
+    http_concurrency_limit: 1000
+  storage_query_postgres:
+    bind_address: 0.0.0.0:5432
   storage_rocksdb:
     path: target/db/
     threads: 10
@@ -34,6 +38,8 @@ worker:
       serialize_use_enum_numbers: false
       serialize_use_proto_field_name: false
       serialize_skip_default_fields: false
+  kafka:
+    clusters: {}
   invoker:
     retry_policy:
       type: Exponential
