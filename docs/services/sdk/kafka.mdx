@@ -52,17 +52,17 @@ restate.createServer().bindKeyedRouter("myRouter", router).listen(8080);
 
 The Kafka record key must be serialized as valid UTF-8 string, otherwise the event won't be delivered.
 
-You can mix event handlers with other event handlers or rpc handlers. For example, let's assume you're implementing a `profile` router to handle and store user profiles in Restate, where the key is the profile unique identifier.
-You can implement an rpc method `get` to retrieve the profile and attach an event handler `updateProfile` to consume events from Kafka to update the profile.
+You can mix event handlers with other event handlers or RPC handlers. For example, let's assume you're implementing a `profile` router to handle and store user profiles in Restate, where the key is the profile's unique identifier.
+In the same service, you can implement an RPC method called `get` to retrieve the profile, and you can attach an event handler called `updateProfile` to consume events from Kafka to update the profile.
 
-Events will be delivered in order with regard to the event key.
+For each event key (= Kafka record key), the events will be delivered in the order in which they arrived on the topic.  
 
 </TabItem>
 <TabItem value="grpc" label="gRPC API">
 
 ### Handling events within keyed services
 
-You can handle events within keyed services, where the key of the Kafka record matches the key used by the other service input messages:
+Keyed services can process messages from Kafka. The key of the Kafka record needs to match the key of the service and its other service methods. 
 
 ```protobuf
 syntax = "proto3";
@@ -77,12 +77,12 @@ service MyService {
 }
 ```
 
-The Kafka record key must be serialized as valid UTF-8 string, otherwise the event won't be delivered.
+The Kafka record key must be serialized as a valid UTF-8 string, otherwise the event won't be delivered.
 
-You can mix methods receiving events with regular rpc methods. For example, let's assume you're implementing a `Profile` service to handle and store user profiles in Restate, where the key is the profile unique identifier.
-You can implement a method `Get` to retrieve the profile and attach an event handler `UpdateProfile` to consume events from Kafka to update the profile.
+You can mix methods receiving events with regular RPC methods. For example, let's assume you're implementing a `Profile` service to handle and store user profiles in Restate, where the key is the profile's unique identifier.
+In the same service, you can implement a  `Get` method to retrieve the profile, and you can attach an `UpdateProfile` event handler to consume events from Kafka to update the profile.
 
-Events will be delivered in order with regard to the event key.
+For each event key (= Kafka record key), the events will be delivered in the order in which they arrived on the topic.
 
 ### Handling events with a custom key
 
@@ -124,7 +124,7 @@ service MyService {
 }
 ```
 
-Events will be delivered in order with regard to the event key. If you don't need ordering guarantees and you want to process events as fast as possible, then use the service type `UNKEYED`.
+For each event key (= Kafka record key), the events will be delivered in the order in which they arrived on the topic. If you don't need ordering guarantees and you want to process events as fast as possible, use the service type `UNKEYED`.
 
 </TabItem>
 </Tabs>
@@ -148,12 +148,12 @@ worker:
 Check the [configuration documentation](/restate/configuration) for more details.
 
 :::caution 
-Currently configuring the Kafka clusters through [environment variables](/restate/configuration#overriding-configuration-entries-with-environment-variables) doesn't work correctly.
+Currently, configuring the Kafka clusters through [environment variables](/restate/configuration#overriding-configuration-entries-with-environment-variables) doesn't work correctly.
 :::
 
 ## Connect an event handler with a topic
 
-To connect event handlers with a Kafka topic, you need to create a subscription using the [admin API](/references/admin-api):
+To connect event handlers to a Kafka topic, you need to create a subscription using the [admin API](/references/admin-api):
 
 ```bash
 $ curl <RESTATE_META_ENDPOINT>/subscriptions --json '{"source": "kafka://<CLUSTER_NAME>/<TOPIC_NAME>", "sink": "service://<SERVICE_NAME>/<METHOD_NAME>"}'
@@ -188,11 +188,11 @@ You can add additional configuration parameters to the subscription through the 
 $ curl <RESTATE_ADMIN_ENDPOINT>/subscriptions --json '{"source": "kafka://<CLUSTER_NAME>/<TOPIC_NAME>", "sink": "service://<SERVICE_NAME>/<METHOD_NAME>", "options": {"auto.offset.reset": "earliest"}}'
 ```
 
-The `options` field accept any configuration parameter from [librdkafka configuration](https://github.com/confluentinc/librdkafka/blob/master/CONFIGURATION.md).
+The `options` field accepts any configuration parameter from [librdkafka configuration](https://github.com/confluentinc/librdkafka/blob/master/CONFIGURATION.md).
 
 ### Listing subscriptions
 
-You can get all the currently configured subscriptions using:
+List the current subscriptions via:
 
 ```shell
 $ curl <RESTATE_ADMIN_ENDPOINT>/subscriptions
@@ -200,7 +200,7 @@ $ curl <RESTATE_ADMIN_ENDPOINT>/subscriptions
 
 ### Deleting a subscription
 
-Every subscription, when created, returns an identifier. You can use it to delete a subscription:
+The creation of a subscription returns an identifier. You can use this identifier to delete a subscription:
 
 ```shell
 $ curl -X DELETE <RESTATE_ADMIN_ENDPOINT>/subscriptions/<SUBSCRIPTION_IDENTIFIER>
