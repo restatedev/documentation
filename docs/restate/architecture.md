@@ -96,7 +96,7 @@ Internally, the SQL queries are executed using [DataFusion](https://github.com/a
 
 ### Service registry
 
-All servie meta information is maintained by the *Metas* via the service registry.
+All service meta information is maintained by the *Metas* via the service registry.
 The service registry contains information about the registered services which includes the address of the service endpoints, the exposed service methods, their signatures and type definitions.
 The service contracts and their type definitions are also exposed via [gRPC reflection](https://github.com/grpc/grpc/blob/master/doc/server-reflection.md) by the *Workers*.
 
