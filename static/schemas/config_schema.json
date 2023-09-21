@@ -63,14 +63,23 @@
             "max_interval": "10s",
             "type": "Exponential"
           },
-          "tmp_dir": "/var/folders/tw/68_ctnh50rn41q721zt5pwfc0000gn/T/invoker-018a336fb224778db3835887d790ee97"
+          "tmp_dir": "/tmp/invoker-018ab2b9eddf722a9b99a0c6d38ca10c"
+        },
+        "kafka": {
+          "clusters": {}
         },
         "partitions": 1024,
-        "storage_query": {
-          "bind_address": "0.0.0.0:5432",
+        "storage_query_datafusion": {
           "memory_limit": null,
           "query_parallelism": null,
           "temp_folder": null
+        },
+        "storage_query_http": {
+          "http_address": "0.0.0.0:9072",
+          "http_concurrency_limit": 1000
+        },
+        "storage_query_postgres": {
+          "bind_address": "0.0.0.0:5432"
         },
         "storage_rocksdb": {
           "cache_size": 1073741824,
@@ -254,14 +263,26 @@
           },
           "$ref": "#/definitions/TimerOptions"
         },
-        "storage_query": {
+        "storage_query_datafusion": {
           "default": {
-            "bind_address": "0.0.0.0:5432",
             "memory_limit": null,
             "query_parallelism": null,
             "temp_folder": null
           },
-          "$ref": "#/definitions/StorageQueryOptions"
+          "$ref": "#/definitions/StorageQueryDatafusionOptions"
+        },
+        "storage_query_http": {
+          "default": {
+            "http_address": "0.0.0.0:9072",
+            "http_concurrency_limit": 1000
+          },
+          "$ref": "#/definitions/StorageQueryHttpOptions"
+        },
+        "storage_query_postgres": {
+          "default": {
+            "bind_address": "0.0.0.0:5432"
+          },
+          "$ref": "#/definitions/StorageQueryPostgresOptions"
         },
         "storage_rocksdb": {
           "default": {
@@ -287,6 +308,12 @@
           },
           "$ref": "#/definitions/IngressOptions"
         },
+        "kafka": {
+          "default": {
+            "clusters": {}
+          },
+          "$ref": "#/definitions/SubscriptionOptions"
+        },
         "invoker": {
           "default": {
             "abort_timeout": "1m",
@@ -307,7 +334,7 @@
               "max_interval": "10s",
               "type": "Exponential"
             },
-            "tmp_dir": "/var/folders/tw/68_ctnh50rn41q721zt5pwfc0000gn/T/invoker-018a336fb2247f5bb48b76582629d298"
+            "tmp_dir": "/tmp/invoker-018ab2b9eddf74faae38e5eeca87116a"
           },
           "$ref": "#/definitions/InvokerOptions"
         },
@@ -338,16 +365,10 @@
         }
       }
     },
-    "StorageQueryOptions": {
-      "title": "Storage query options",
+    "StorageQueryDatafusionOptions": {
+      "title": "Storage query datafusion options",
       "type": "object",
       "properties": {
-        "bind_address": {
-          "title": "Bind address",
-          "description": "The address to bind for the psql service.",
-          "default": "0.0.0.0:5432",
-          "type": "string"
-        },
         "memory_limit": {
           "title": "Memory limit",
           "description": "The total memory in bytes that can be used to preform sql queries",
@@ -378,6 +399,38 @@
           ],
           "format": "uint",
           "minimum": 0.0
+        }
+      }
+    },
+    "StorageQueryHttpOptions": {
+      "title": "Storage query http options",
+      "type": "object",
+      "properties": {
+        "http_address": {
+          "title": "Rest endpoint address",
+          "description": "Address to bind for the Storage HTTP APIs.",
+          "default": "0.0.0.0:9072",
+          "type": "string"
+        },
+        "http_concurrency_limit": {
+          "title": "Rest concurrency limit",
+          "description": "Concurrency limit for the Storage HTTP APIs.",
+          "default": 1000,
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0.0
+        }
+      }
+    },
+    "StorageQueryPostgresOptions": {
+      "title": "Storage query postgres options",
+      "type": "object",
+      "properties": {
+        "bind_address": {
+          "title": "Bind address",
+          "description": "The address to bind for the psql service.",
+          "default": "0.0.0.0:5432",
+          "type": "string"
         }
       }
     },
@@ -493,6 +546,38 @@
         }
       }
     },
+    "SubscriptionOptions": {
+      "title": "Subscription options",
+      "type": "object",
+      "required": [
+        "clusters"
+      ],
+      "properties": {
+        "clusters": {
+          "title": "Kafka clusters",
+          "description": "Configuration parameters for the known kafka clusters",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/KafkaClusterOptions"
+          }
+        }
+      }
+    },
+    "KafkaClusterOptions": {
+      "title": "Kafka cluster options",
+      "description": "Configuration options to connect to a Kafka cluster.",
+      "type": "object",
+      "required": [
+        "metadata.broker.list"
+      ],
+      "properties": {
+        "metadata.broker.list": {
+          "title": "Servers",
+          "description": "Initial list of brokers as a CSV list of broker host or host:port.",
+          "type": "string"
+        }
+      }
+    },
     "InvokerOptions": {
       "title": "Invoker options",
       "type": "object",
@@ -549,7 +634,7 @@
         "tmp_dir": {
           "title": "Temporary directory",
           "description": "Temporary directory to use for the invoker temporary files. If empty, the system temporary directory will be used instead.",
-          "default": "/var/folders/tw/68_ctnh50rn41q721zt5pwfc0000gn/T/invoker-018a336fb22471ec81604ab464a89800",
+          "default": "/tmp/invoker-018ab2b9eddf7584b54c47058aef09e8",
           "type": "string"
         },
         "concurrency_limit": {
