@@ -128,7 +128,7 @@ service MyService {
 }
 ```
 
-For each event key (= Kafka record key), thanks to Restate [`KEYED` service type](/services/service_type), the events are delivered in the order in which they arrived on the topic partition.
+For keyed services, events with the same key are delivered in the order in which they arrived on the topic partition.
 
 These events handler can be useful when you need to pre-process an event before sending it to one or more Restate services, such as when the key is serialized using a custom format, or when the destination of the event is encoded in the payload.
 
