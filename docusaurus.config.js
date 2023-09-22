@@ -58,8 +58,8 @@ const config = {
               {
                 replacements: {
                   RESTATE_DIST_VERSION: '0.3.0',
-                  TYPESCRIPT_SDK_VERSION: '0.3.0',
-                  TOUR_VERSION: 'v0.3.0',
+                  TYPESCRIPT_SDK_VERSION: '0.3.1',
+                  TOUR_VERSION: 'v0.3.1',
                 },
               }
             ]
