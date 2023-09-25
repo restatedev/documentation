@@ -40,14 +40,14 @@ pointed at the Restate runtime and with the Lambda function endpoint as the URI 
 
 
 ```shell
-curl -X POST http://<your-restate-runtime-endpoint>:8081/endpoints -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/<my-service>"}'
+curl -X POST http://<your-restate-runtime-endpoint>:9070/endpoints -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/<my-service>"}'
 ```
 
 If your Lambda function requires authentication via an API key,
 then you can add this API key to the discovery request to the Restate runtime, as follows:
 
 ```shell
-curl -X POST http://<your-restate-runtime-endpoint>:8081/endpoints -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/<my-service>","additional_headers": {"x-api-key": "someapikey"} }'
+curl -X POST http://<your-restate-runtime-endpoint>:9070/endpoints -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/<my-service>","additional_headers": {"x-api-key": "someapikey"} }'
 ```
 
 Here, we added the API key as an additional header to the JSON data of the request.
@@ -258,7 +258,7 @@ docker run --name restate_dev --rm -d --network=host ghcr.io/restatedev/restate-
 ```
 - On macOS:
 ```shell
-docker run --name restate_dev --rm -d -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
+docker run --name restate_dev --rm -d -p 8080:8080 -p 9070:9070 -p 9071:9071 ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
 ```
 
 Consult the runtime logs via `docker logs restate_dev`.
@@ -270,7 +270,7 @@ Stop the runtime (and remove any intermediate state) with `docker stop restate_d
 Connect to the Restate (e.g. via an SSH session if it is running on EC2) runtime and execute the discovery curl command:
 
 ```shell
-curl -X POST http://<your-restate-runtime-endpoint>:8081/endpoints -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/my-greeter", "additional_headers": {"x-api-key": "your-api-key"} }'
+curl -X POST http://<your-restate-runtime-endpoint>:9070/endpoints -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/my-greeter", "additional_headers": {"x-api-key": "your-api-key"} }'
 ```
 
 If you are running the runtime locally, replace `<your-restate-runtime-endpoint>` by `localhost`.
@@ -283,7 +283,7 @@ After the discovery, the runtime uses this API key for all subsequent requests t
 
 If your Lambda function does not require an API key then you can do the discovery without the additional headers:
 ```shell
-curl -X POST http://<your-restate-runtime-endpoint>:8081/endpoints -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/my-greeter"}'
+curl -X POST http://<your-restate-runtime-endpoint>:9070/endpoints -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/my-greeter"}'
 ```
 
 When executing this command, you should see the discovered services printed out!
@@ -297,7 +297,7 @@ When executing this command, you should see the discovered services printed out!
 Now let's invoke the `MultiWord` method of our service! Don't forget to replace `<your-restate-runtime-endpoint>` accordingly.
 
 ```shell
-curl -X POST http://<your-restate-runtime-endpoint>:9090/org.example.Greeter/MultiWord -H 'content-type: application/json' -d '{"name": "Pete"}'
+curl -X POST http://<your-restate-runtime-endpoint>:8080/org.example.Greeter/MultiWord -H 'content-type: application/json' -d '{"name": "Pete"}'
 ```
 
 You should see the response:

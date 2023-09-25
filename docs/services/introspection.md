@@ -22,10 +22,10 @@ To let you do this, Restate exposes two SQL tables that you can query via the [*
 Connect with *psql* to Restate:
 
 ```shell
-psql -h localhost
+psql -h localhost -p 9071
 ```
 
-You can change the default postgres port `5432` by supplying the `-p` argument.
+You can change the default port `9071` by supplying the `-p` argument.
 
 The Restate Introspection SQL API has been implemented based on [DataFusion](https://arrow.apache.org/datafusion/) and supports standard SQL syntax.
 

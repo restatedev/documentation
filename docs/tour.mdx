@@ -73,7 +73,7 @@ docker run --name restate_dev --rm -d --network=host ghcr.io/restatedev/restate-
 <TabItem value="mac" label="macOS">
 
 ```shell
-docker run --name restate_dev --rm -d -p 8081:8081 -p 9091:9091 -p 9090:9090 -p 5432:5432 ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
+docker run --name restate_dev --rm -d -p 8080:8080 -p 9070:9070 -p 9071:9071 ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
 ```
 
 </TabItem>
@@ -96,7 +96,7 @@ You do this by sending a request to the endpoint of the runtime at `http://local
 and providing it with the endpoint of the service `http://localhost:8080`.
 
 ```shell
-curl -X POST http://localhost:8081/endpoints -H 'content-type: application/json' -d '{"uri": "http://localhost:8080"}'
+curl -X POST http://localhost:9070/endpoints -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'
 ```
 
 Restate then sends a request to the service endpoint to ask which services and methods run behind this endpoint.
@@ -109,7 +109,7 @@ You do this by sending a request to the endpoint of the runtime at `http://local
 and providing it with the endpoint of the service `http://host.docker.internal:8080`.
 
 ```shell
-curl -X POST http://localhost:8081/endpoints -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:8080"}'
+curl -X POST http://localhost:9070/endpoints -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
 ```
 
 Restate then sends a request to the service endpoint to ask which services and methods run behind this endpoint.
@@ -147,19 +147,19 @@ When you look at the logs of the runtime you see:
 2023-08-15T13:24:52.879977Z INFO restate_schema_impl::schemas_impl
   Registering endpoint
     restate.service_endpoint.id: bG9jYWxob3N0OjgwODAv
-    restate.service_endpoint.url: http://localhost:8080/
+    restate.service_endpoint.url: http://localhost:9080/
 2023-08-15T13:24:52.880010Z INFO restate_schema_impl::schemas_impl
   Registering service
     rpc.service: "UserSession"
-    restate.service_endpoint.url: http://localhost:8080/
+    restate.service_endpoint.url: http://localhost:9080/
 2023-08-15T13:24:52.881233Z INFO restate_schema_impl::schemas_impl
   Registering service
     rpc.service: "TicketService"
-    restate.service_endpoint.url: http://localhost:8080/
+    restate.service_endpoint.url: http://localhost:9080/
 2023-08-15T13:24:52.881422Z INFO restate_schema_impl::schemas_impl
   Registering service
     rpc.service: "Checkout"
-    restate.service_endpoint.url: http://localhost:8080/
+    restate.service_endpoint.url: http://localhost:9080/
 ```
 
 </details>
@@ -170,7 +170,7 @@ When you look at the logs of the runtime you see:
 Mimic adding a ticket to a cart, by calling `UserSession/addTicket` as follows:
 
 ```shell
-curl -X POST http://localhost:9090/UserSession/addTicket \
+curl -X POST http://localhost:8080/UserSession/addTicket \
   -H 'content-type: application/json' \
   -d '{"key": "123", "request": "456"}'
 ```
@@ -180,7 +180,7 @@ If this prints out `true`, then you have a working setup.
 You can call the `UserSession/checkout` function to proceed with the purchase, as follows:
 
 ```shell
-curl -X POST http://localhost:9090/UserSession/checkout \
+curl -X POST http://localhost:8080/UserSession/checkout \
   -H 'content-type: application/json' \
   -d '{"key": "123"}'
 ```
@@ -516,7 +516,7 @@ const expireTicket = async (
 
 Call the `expireTicket` function with:
 ```shell
-curl -X POST http://localhost:9090/UserSession/expireTicket \
+curl -X POST http://localhost:8080/UserSession/expireTicket \
     -H 'content-type: application/json' \
     -d '{"key": "123", "request": "456"}'
 ```
@@ -1340,7 +1340,7 @@ docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOIN
 <TabItem value="mac" label="macOS">
 
 ```shell
-docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://host.docker.internal:4317 -p 8081:8081 -p 9091:9091 -p 9090:9090 -p 5432:5432 ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
+docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://host.docker.internal:4317 -p 8080:8080 -p 9070:9070 -p 9071:9071 ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
 ```
 
 </TabItem>

@@ -32,7 +32,7 @@ const serviceRouter = restate.router({
 ```
 
 This example shows a router for an unkeyed service with three functions and their respective API paths (`hello`, `callMe`, and `maybe`).
-This means that the `hello` function can be called via `<restate-host>:9090/myServicePath/hello`.
+This means that the `hello` function can be called via `<restate-host>:8080/myServicePath/hello`.
 
 The functions of an unkeyed router have two optional parameters:
 
@@ -53,7 +53,7 @@ const keyedServiceRouter = restate.keyedRouter({
 ```
 
 This example shows a router for a keyed service with four functions and their respective API paths (`hello`, `callMe`, `maybe`, and `withSomething`).
-This means that the `hello` function can be called via `<restate-host>:9090/myServicePath/hello`.
+This means that the `hello` function can be called via `<restate-host>:8080/myServicePath/hello`.
 
 The functions of a keyed router have three optional parameters:
 
@@ -77,13 +77,13 @@ export const myKeyedServiceApi: restate.ServiceApi<typeof keyedServiceRouter> = 
     path: "myServicePath",
 };
 ```
-This means that the `hello` function of this service can be called via `<restate-host>:9090/myServicePath/hello`.
+This means that the `hello` function of this service can be called via `<restate-host>:8080/myServicePath/hello`.
 
 **3. Create the server**
 
 Create the server. Then, bind the services with `bindRouter` for unkeyed services and `bindKeyedRouter` for keyed services.
 You need to supply the service path and router. 
-Finally, let the server listen on a specified port (default is `8080`):
+Finally, let the server listen on a specified port (default is `9080`):
 
 ```typescript
 restate
@@ -92,7 +92,7 @@ restate
   .bindRouter(myServiceApi.path, serviceRouter)
   // bind the unkeyed services to the Restate server
   .bindKeyedRouter(myKeyedServiceApi.path, keyedServiceRouter)
-  .listen(8080);
+  .listen();
 ```
 
 
@@ -107,7 +107,7 @@ restate
     service: "Greeter",
     instance: new GreeterService(),
   })
-  .listen(8080);
+  .listen();
 ```
 
 First, call the `createServer()` method to create a new `RestateServer`.
@@ -123,7 +123,7 @@ service Greeter {
 ```
 - For the `instance` field, provide an instance of the service implementation. 
 
-Finally, call `listen(port)` to have the RestateServer listen on the specified port for connections and requests.
+Finally, call `listen(port?)` to have the RestateServer listen on the specified port for connections and requests.
 
 </TabItem>
 </Tabs>

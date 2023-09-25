@@ -73,7 +73,7 @@ curl -X POST http://<restate-runtime-host-port>/dev.restate.Awakeables/Resolve -
 For example:
 
 ```shell
-curl -X POST http://localhost:9090/dev.restate.Awakeables/Resolve -H 'content-type: application/json' -d '{"id": "T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE", "json_result": {"hello": "world"}}'
+curl -X POST http://localhost:8080/dev.restate.Awakeables/Resolve -H 'content-type: application/json' -d '{"id": "T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE", "json_result": {"hello": "world"}}'
 ```
 
 To reject an awakeable:
