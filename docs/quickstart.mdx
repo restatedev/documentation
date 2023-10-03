@@ -55,10 +55,17 @@ Run the Restate Docker container:
 docker run --name restate_dev --rm -d --network=host ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
 ```
 
-Discover the services:
+Register the services:
+
+Now, we need to tell Restate where the service is running.
+We do this by sending a request to the endpoint of the runtime at `http://localhost:8081/endpoints`
+and providing it with the endpoint of the service `http://localhost:8080`.
 ```shell
 curl -X POST http://localhost:8081/endpoints -H 'content-type: application/json' -d '{"uri": "http://localhost:8080"}'
 ```
+Restate then sends a request to the service endpoint to ask which services and methods
+are running behind this endpoint and will keep track of these (including of the method signatures).
+After executing this curl request, you should see the discovered services and methods printed to your terminal.
 
 
 </TabItem>
@@ -70,11 +77,17 @@ Run the Restate Docker container:
 docker run --name restate_dev --rm -d -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
 ```
 
-Discover the services:
+Register the services:
 
+Now, we need to tell Restate where the service is running.
+We do this by sending a request to the endpoint of the runtime at `http://localhost:8081/endpoints`
+and providing it with the endpoint of the service `http://host.docker.internal:8080`.
 ```shell
 curl -X POST http://localhost:8081/endpoints -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:8080"}'
 ```
+Restate then sends a request to the service endpoint to ask which services and methods
+are running behind this endpoint and will keep track of these (including of the method signatures).
+After executing this curl request, you should see the discovered services and methods printed to your terminal.
 
 </TabItem>
 </Tabs>
