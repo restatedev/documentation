@@ -193,8 +193,8 @@ The `app.ts` file contains the definition of the Restate server that serves the 
 Two types of Restate services exist:
 1. **Keyed service**:
 All service invocations are sharded on a user-defined key.
-The scope of a key is on a per-service basis.
-Per key there is at most one concurrent invocation at the service level, so across all functions in that service.
+Function invocations of keyed services are serialized on the user-defined key.
+Therefore, at most one function can run at a time for a given key within such service.
 2. **Unkeyed service**:
 No key defined.
 No concurrency guarantees or limitations.
