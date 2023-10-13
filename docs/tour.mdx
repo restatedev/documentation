@@ -85,21 +85,36 @@ When you are done with the tutorial, stop the runtime with `docker stop restate_
 
 To do resilience experiments later on, you can restart the runtime (without losing state) with `docker restart restate_dev`.
 
-Discover the services:
+Register the services:
+
+Now, we need to tell Restate where the service runs.
+
 <Tabs groupId="operating-systems">
 <TabItem value="lin" label="Linux">
+
+You do this by sending a request to the endpoint of the runtime at `http://localhost:8081/endpoints`
+and providing it with the endpoint of the service `http://localhost:8080`.
 
 ```shell
 curl -X POST http://localhost:8081/endpoints -H 'content-type: application/json' -d '{"uri": "http://localhost:8080"}'
 ```
 
+Restate then sends a request to the service endpoint to ask which services and methods run behind this endpoint.
+This way Restate keeps track of which services run where (including of the method signatures),
+and knows how to invoke a specific service.
 </TabItem>
 <TabItem value="mac" label="macOS">
+
+You do this by sending a request to the endpoint of the runtime at `http://localhost:8081/endpoints`
+and providing it with the endpoint of the service `http://host.docker.internal:8080`.
 
 ```shell
 curl -X POST http://localhost:8081/endpoints -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:8080"}'
 ```
 
+Restate then sends a request to the service endpoint to ask which services and methods run behind this endpoint.
+This way Restate keeps track of which services run where (including of the method signatures),
+and knows how to invoke a specific service.
 </TabItem>
 </Tabs>
 
@@ -155,7 +170,9 @@ When you look at the logs of the runtime you see:
 Mimic adding a ticket to a cart, by calling `UserSession/addTicket` as follows:
 
 ```shell
-curl -X POST http://localhost:9090/UserSession/addTicket -H 'content-type: application/json' -d '{"key": "123", "request": "456"}'
+curl -X POST http://localhost:9090/UserSession/addTicket \
+  -H 'content-type: application/json' \
+  -d '{"key": "123", "request": "456"}'
 ```
 
 If this prints out `true`, then you have a working setup.
@@ -163,7 +180,9 @@ If this prints out `true`, then you have a working setup.
 You can call the `UserSession/checkout` function to proceed with the purchase, as follows:
 
 ```shell
-curl -X POST http://localhost:9090/UserSession/checkout -H 'content-type: application/json' -d '{"key": "123"}'
+curl -X POST http://localhost:9090/UserSession/checkout \
+  -H 'content-type: application/json' \
+  -d '{"key": "123"}'
 ```
 
 In `src/app`, you find the skeletons of the services where you can start implementing your app.
@@ -174,7 +193,8 @@ The `app.ts` file contains the definition of the Restate server that serves the 
 Two types of Restate services exist:
 1. **Keyed service**:
 All service invocations are sharded on a user-defined key.
-Per key there is at most one concurrent invocation.
+Function invocations of keyed services are serialized on the user-defined key.
+Therefore, at most one function can run at a time for a given key within such service.
 2. **Unkeyed service**:
 No key defined.
 No concurrency guarantees or limitations.
@@ -187,9 +207,9 @@ You specify an unkeyed service by creating a router with its set of functions:
 
 ```typescript
 const serviceRouter = restate.router({
-  hello: async () => { ... },
+  hello: async (ctx: restate.RpcContext, request: Request) => { ... },
   callMe: async (ctx: restate.RpcContext) => { ... },
-  maybe: async (ctx: restate.RpcContext, request: Request) => { ... }
+  maybe: async () => { ... }
 });
 ```
 
@@ -204,10 +224,10 @@ You specify a keyed service by creating a keyed router with its set of functions
 
 ```typescript
 const keyedServiceRouter = restate.keyedRouter({
-  hello: async () => { ... },
-  callMe: async (ctx: restate.RpcContext) => { ... },
-  maybe: async (ctx: restate.RpcContext, key: string) => { ... },
-  withSomething: async (ctx: restate.RpcContext, key: string, request: Request) => { ... }
+  hello: async (ctx: restate.RpcContext, key: string, request: Request) => { ... },
+  callMe: async (ctx: restate.RpcContext, key: string) => { ... },
+  maybe: async (ctx: restate.RpcContext) => { ... },
+  withSomething: async () => { ... }
 });
 ```
 
@@ -218,6 +238,12 @@ The functions of a keyed router have three optional parameters
 * A `request` parameter of type JSON object which represents additional invocation data.
 
 You can choose the parameter names differently.
+
+As mentioned, for keyed services there can be at most one concurrent invocation at the service level.
+So this means that if there is a call to `hello()`, then a call to `callMe()`, then `callMe()` will wait in line until `hello()` has finished, if and only if both were invoked with the same value of `key`.
+until the call to `hello()` has finished successfully.
+This also counts for the `maybe()` and `withSomething()` functions,
+even though the key parameter was omitted from their signatures.
 
 You export the `service` API by creating a service API instance which specifies under which path the service is reachable:
 
@@ -490,7 +516,9 @@ const expireTicket = async (
 
 Call the `expireTicket` function with:
 ```shell
-curl -X POST http://localhost:9090/UserSession/expireTicket -H 'content-type: application/json' -d '{"key": "123", "request": "456"}'
+curl -X POST http://localhost:9090/UserSession/expireTicket \
+    -H 'content-type: application/json' \
+    -d '{"key": "123", "request": "456"}'
 ```
 
 Have a look at the logs again to see what happened:
@@ -1312,7 +1340,7 @@ docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOIN
 <TabItem value="mac" label="macOS">
 
 ```shell
-docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://host.docker.internal:4317 -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
+docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://host.docker.internal:4317 -p 8081:8081 -p 9091:9091 -p 9090:9090 -p 5432:5432 ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
 ```
 
 </TabItem>
