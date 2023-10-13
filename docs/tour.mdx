@@ -240,7 +240,7 @@ The functions of a keyed router have three optional parameters
 You can choose the parameter names differently.
 
 As mentioned, for keyed services there can be at most one concurrent invocation at the service level.
-So this means that if there is a call to `hello()`, then a call to `callMe()` will be queued
+So this means that if there is a call to `hello()`, then a call to `callMe()`, then `callMe()` will wait in line until `hello()` has finished, if and only if both were invoked with the same value of `key`.
 until the call to `hello()` has finished successfully.
 This also counts for the `maybe()` and `withSomething()` functions,
 even though the key parameter was omitted from their signatures.
