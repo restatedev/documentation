@@ -111,7 +111,7 @@ $ curl -X PATCH <RESTATE_META_ENDPOINT>/services/<SERVICE_NAME> -H 'content-type
 For example:
 
 ```shell
-$ curl -X PATCH localhost:8081/services/org.example.ExampleService -H 'content-type: application/json' -d '{"public": false}'
+$ curl -X PATCH localhost:9070/services/org.example.ExampleService -H 'content-type: application/json' -d '{"public": false}'
 ```
 
 You can revert it back to public with `{"public": true}`. Private services can still be reached by other Restate services.
@@ -126,7 +126,7 @@ You can find this identifier in the runtime logs and OpenTelemetry traces by loo
 ```log {7}
 2023-05-19T15:02:28.656467Z INFO restate_invoker::invocation_task
   Executing invocation at service endpoint
-    http.url: http://localhost:8080/invoke/coordinator.Coordinator/Sleep
+    http.url: http://localhost:9080/invoke/coordinator.Coordinator/Sleep
   in restate_invoker::invocation_task::invoker_invocation_task
     rpc.system: "restate"
     rpc.service: coordinator.Coordinator
@@ -172,7 +172,7 @@ $ curl -X DELETE <RESTATE_META_ENDPOINT>/invocations/<INVOCATION_IDENTIFIER>
 For example:
 
 ```shell
-$ curl -X DELETE http://localhost:8081/invocations/T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE
+$ curl -X DELETE http://localhost:9070/invocations/T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE
 ```
 
 For more details on the API, refer to the [admin API docs](/references/admin-api).

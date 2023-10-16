@@ -42,6 +42,9 @@ spec:
       containers:
         - name: service
           image: path.to/yourrepo:yourtag
+          env:
+            - name: PORT
+              value: 8080
           ports:
             - containerPort: 8080
               name: http2
@@ -81,6 +84,9 @@ spec:
     spec:
       containers:
         - image: path.to/yourrepo:yourtag
+          env:
+            - name: PORT
+              value: 8080
           ports:
             - name: h2c
               containerPort: 8080
