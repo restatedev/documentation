@@ -1,19 +1,23 @@
 # Restate documentation
 
-This repository contains Restate's documentation.
+This repository contains Restate's documentation: https://docs.restate.dev/
 
-In order to serve the documentation under `localhost:3000` you can run the documentation container image:
+## Offline use
+
+You can read the Restate documentation offline by downloading the docker image:
 
 ```shell
 docker run --rm -p 3000:80 ghcr.io/restatedev/documentation:latest
 ```
+
+This will serve the documentation under `localhost:3000`.
 
 > **Note**
 > Make sure that you have access to Github's container registry by [following these instructions](https://github.com/restatedev/restate-dist#container-registry).
 
 You can also check this repository out and build the documentation yourself by following the instructions below.
 
-## Building the documentation
+## Developing the documentation
 
 The documentation is built using [Docusaurus 2](https://docusaurus.io/).
 
@@ -39,13 +43,21 @@ $ yarn build
 
 This command generates static content into the `build` directory and can be served using any static contents hosting service.
 
+### Staging area
+
+The `main` branch of the documentation is continuously deployed at `https://main--docsrestatedev.netlify.app`.
+
 ## Releasing the documentation
 
-In order to release the documentation you have to push a tag of the form `vX.Y.Z`.
-This will trigger the [release workflow](.github/workflows/release.yml), which builds and publishes and new `restatedev/documentation:vX.Y.Z` container image.
-Moreover, it will create a draft [release on Github](https://github.com/restatedev/documentation/releases) that needs manual approval.
+Before releasing the documentation, update schemas and version of Restate artifacts, either:
 
-### Updating the schemas
+* Automatically by executing the _Pre-release updates_ workflow. 
+* Manually, as described below.
+
+Once the branch `main` is ready to be released, execute the _Trigger release_ workflow. This will merge `main` into `production` and add a tag. 
+The `tag` triggers the build of the new `restatedev/documentation:vX.Y.Z` container image and creates a draft [release on Github](https://github.com/restatedev/documentation/releases) that needs manual approval.
+
+### Manually update the schemas
 
 To update the configuration schemas, the default configuration and the Meta OpenAPI document,
 clone [Restate](https://github.com/restatedev/restate/) and execute the following:
@@ -54,14 +66,10 @@ clone [Restate](https://github.com/restatedev/restate/) and execute the followin
 $ ./tools/generate.sh <PATH to Restate repo clone>
 ```
 
-### Upgrading Typescript SDK version
+### Manually update artifact versions
 
-Update the `TYPESCRIPT_SDK_VERSION` value in `docusaurus.config.js`
+The config file `restate.config.json` contains versions of various Restate artifacts:
 
-### Upgrading Restate runtime version
-
-Update the `RESTATE_DIST_VERSION` value in `docusaurus.config.js`
-
-### Upgrading Tour version
-
-Update the `TOUR_VERSION` value in `docusaurus.config.js`
+* Typescript SDK: `TYPESCRIPT_SDK_VERSION`
+* Runtime: `RESTATE_DIST_VERSION`
+* Tour: `TOUR_VERSION`
