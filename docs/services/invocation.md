@@ -67,6 +67,21 @@ grpcurl -plaintext <your-restate-runtime-host-port> describe
 
 Restate also natively supports gRPC-web. You can use a [gRPC-web code generator](https://www.npmjs.com/package/grpc-web) and point it directly to Restate, without using a 3rd party proxy to translate gRPC-web to gRPC.
 
+### Invoke a service idempotently
+
+You can send requests to Restate providing an idempotency key, through the [`Idempotency-Key` header](https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/):
+
+```shell
+curl -X POST http://<restate-runtime-host-port>/org.example.Greeter/Greet -H 'idempotency-key: <idempotency-key>' -H 'content-type: application/json' -d '{"name": "Pete"}'
+```
+
+After the invocation completes, Restate persists the response for a retention period of 30 minutes.
+If you re-invoke the service with the same idempotency key within 30 minutes, Restate sends back the same response and doesn't re-execute the request to the service.
+
+You can tune the retention period by setting the header `idempotency-retention-period: <seconds>`
+
+The `Idempotency-Key` header works with both HTTP and gRPC/gRPC-web.
+
 ### Invoke a service without waiting for the response
 
 You can invoke a service without waiting for the response, similar to [one-way calls in the SDK](/services/sdk/service-communication#one-way-calls), by using the Restate built-in `dev.restate.Ingress/Invoke` service method, which can be invoked like any other user service, using gRPC, gRPC-web or Connect.
