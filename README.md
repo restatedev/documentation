@@ -54,8 +54,18 @@ Before releasing the documentation, update schemas and version of Restate artifa
 * Automatically by executing the _Pre-release updates_ workflow. 
 * Manually, as described below.
 
-Once the branch `main` is ready to be released, execute the _Trigger release_ workflow. This will merge `main` into `production` and add a tag. 
-The `tag` triggers the build of the new `restatedev/documentation:vX.Y.Z` container image and creates a draft [release on Github](https://github.com/restatedev/documentation/releases) that needs manual approval.
+Once the branch `main` is ready to be released, merge `main` in `production` and push it, together with the release tag. E.g:
+
+```shell
+git checkout production
+git merge origin/main
+git tag v0.3.0
+git push
+git push --tags
+```
+
+Once pushed the update to the `production` branch, the website deployment will be updated.
+The tag triggers the build of the new `restatedev/documentation:vX.Y.Z` container image and creates a draft [release on Github](https://github.com/restatedev/documentation/releases) that needs manual approval.
 
 ### Manually update the schemas
 
