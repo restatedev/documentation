@@ -1,0 +1,79 @@
+name: Pre-release updates
+
+on:
+  workflow_dispatch:
+    restateVersion:
+      description: 'Restate version (without prepending v). The Restate repository must have the tag already!'
+      required: true
+      type: string
+    sdkTypescriptVersion:
+      description: 'sdk-typescript version (without prepending v).'
+      required: true
+      type: string
+    tourVersion:
+      description: 'tour version (without prepending v).'
+      required: true
+      type: string
+
+jobs:
+  updates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout documentation
+        uses: actions/checkout@v3
+
+      - name: Checkout Restate
+        uses: actions/checkout@v3
+        with:
+          repository: restatedev/restate
+          ref: v${{ inputs.restateVersion }}
+          token: ${{ secrets.RESTATE_READ_ACCESS }}
+          path: temp-restate
+
+      # We need rust, protoc and just to compile the runtime to generate the docs
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Install protoc
+        uses: ./.github/actions/install-protoc
+      - name: Setup just
+        uses: extractions/setup-just@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Update the doc config file
+      - name: Update restate.config.json with new runtime version
+        uses: jossef/action-set-json-field@v2.1
+        with:
+          file: restate.config.json
+          field: RESTATE_DIST_VERSION
+          value: ${{ inputs.restateVersion }}
+      - name: Update restate.config.json with new sdk version
+        uses: jossef/action-set-json-field@v2.1
+        with:
+          file: restate.config.json
+          field: TYPESCRIPT_SDK_VERSION
+          value: ${{ inputs.sdkTypescriptVersion }}
+      - name: Update restate.config.json with new tour version
+        uses: jossef/action-set-json-field@v2.1
+        with:
+          file: restate.config.json
+          field: TOUR_VERSION
+          value: ${{ inputs.tourVersion }}
+
+      - name: Run the runtime generate script
+        run: |
+          ./tools/generate.sh temp-restate
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          title: "[GithubActions] Update Restate '${{ inputs.restateVersion }}' SDK-Typescript '${{ inputs.sdkTypescriptVersion }}' Tour '${{ inputs.tourVersion }}'"
+          commit-message: "[GithubActions] Update Restate '${{ inputs.restateVersion }}' SDK-Typescript '${{ inputs.sdkTypescriptVersion }}' Tour '${{ inputs.tourVersion }}'"
+          add-paths: |
+            restate.config.json
+            static/schemas/*
+            docs/references/*
