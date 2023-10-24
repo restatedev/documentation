@@ -24,7 +24,7 @@
     "meta": {
       "default": {
         "proxy_uri": null,
-        "rest_address": "0.0.0.0:8081",
+        "rest_address": "0.0.0.0:9070",
         "rest_concurrency_limit": 1000,
         "storage_path": "target/meta/"
       },
@@ -34,8 +34,8 @@
       "default": {
         "channel_size": 64,
         "ingress_grpc": {
-          "bind_address": "0.0.0.0:9090",
-          "concurrency_limit": 1000,
+          "bind_address": "0.0.0.0:8080",
+          "concurrency_limit": 10000000,
           "json": {
             "deserialize_deny_unknown_fields": true,
             "serialize_skip_default_fields": false,
@@ -63,7 +63,7 @@
             "max_interval": "10s",
             "type": "Exponential"
           },
-          "tmp_dir": "/tmp/invoker-018b38b4ad6973fe8799353d0be30d9d"
+          "tmp_dir": "/tmp/invoker-018b61e3cdd37d32afb3778d3a16f978"
         },
         "kafka": {
           "clusters": {}
@@ -79,7 +79,7 @@
           "http_concurrency_limit": 1000
         },
         "storage_query_postgres": {
-          "bind_address": "0.0.0.0:5432"
+          "bind_address": "0.0.0.0:9071"
         },
         "storage_rocksdb": {
           "cache_size": 1073741824,
@@ -109,6 +109,7 @@
       "properties": {
         "tracing": {
           "title": "Tracing options",
+          "default": null,
           "anyOf": [
             {
               "$ref": "#/definitions/TracingOptions"
@@ -218,7 +219,7 @@
         "rest_address": {
           "title": "Rest endpoint address",
           "description": "Address to bind for the Meta Operational REST APIs.",
-          "default": "0.0.0.0:8081",
+          "default": "0.0.0.0:9070",
           "type": "string"
         },
         "rest_concurrency_limit": {
@@ -280,7 +281,7 @@
         },
         "storage_query_postgres": {
           "default": {
-            "bind_address": "0.0.0.0:5432"
+            "bind_address": "0.0.0.0:9071"
           },
           "$ref": "#/definitions/StorageQueryPostgresOptions"
         },
@@ -296,8 +297,8 @@
         },
         "ingress_grpc": {
           "default": {
-            "bind_address": "0.0.0.0:9090",
-            "concurrency_limit": 1000,
+            "bind_address": "0.0.0.0:8080",
+            "concurrency_limit": 10000000,
             "json": {
               "deserialize_deny_unknown_fields": true,
               "serialize_skip_default_fields": false,
@@ -334,7 +335,7 @@
               "max_interval": "10s",
               "type": "Exponential"
             },
-            "tmp_dir": "/tmp/invoker-018b38b4ad697f8dadd63aada7781d14"
+            "tmp_dir": "/tmp/invoker-018b61e3cdd478fb97b33ca818803b12"
           },
           "$ref": "#/definitions/InvokerOptions"
         },
@@ -429,7 +430,7 @@
         "bind_address": {
           "title": "Bind address",
           "description": "The address to bind for the psql service.",
-          "default": "0.0.0.0:5432",
+          "default": "0.0.0.0:9071",
           "type": "string"
         }
       }
@@ -485,13 +486,13 @@
         "bind_address": {
           "title": "Bind address",
           "description": "The address to bind for the ingress.",
-          "default": "0.0.0.0:9090",
+          "default": "0.0.0.0:8080",
           "type": "string"
         },
         "concurrency_limit": {
           "title": "Concurrency limit",
           "description": "Local concurrency limit to use to limit the amount of concurrent requests. If exceeded, the ingress will reply immediately with an appropriate status code.",
-          "default": 1000,
+          "default": 10000000,
           "type": "integer",
           "format": "uint",
           "minimum": 0.0
@@ -610,11 +611,14 @@
           "title": "Message size warning",
           "description": "Threshold to log a warning in case protocol messages coming from service endpoint are larger than the specified amount.",
           "default": 10485760,
-          "type": "string"
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0.0
         },
         "message_size_limit": {
           "title": "Message size limit",
           "description": "Threshold to fail the invocation in case protocol messages coming from service endpoint are larger than the specified amount.",
+          "default": null,
           "type": [
             "integer",
             "null"
@@ -634,12 +638,13 @@
         "tmp_dir": {
           "title": "Temporary directory",
           "description": "Temporary directory to use for the invoker temporary files. If empty, the system temporary directory will be used instead.",
-          "default": "/tmp/invoker-018b38b4ad69785e9456148b6dc4250c",
+          "default": "/tmp/invoker-018b61e3cdd4707aa23d3cb228a60c52",
           "type": "string"
         },
         "concurrency_limit": {
           "title": "Concurrency limit",
           "description": "Number of concurrent invocations that can be processed by the invoker.",
+          "default": null,
           "type": [
             "integer",
             "null"

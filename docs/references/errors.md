@@ -91,6 +91,29 @@ When implementing a new service revision, make sure that:
 
 See the [versioning documentation](https://docs.restate.dev/services/upgrades-removal) for more information.
 
+## META0007
+
+Bad input message field annotation encountered while registering/updating a service. 
+
+You can have at most one field in a message definition annotated with the same `dev.restate.ext.field` annotation.
+
+## META0008
+
+Bad type for input message field annotated with either `EVENT_PAYLOAD` or `EVENT_METADATA`. 
+
+Fields annotated with `(dev.restate.ext.field) = EVENT_PAYLOAD` can have only `bytes` or `string` types.
+Fields annotated with `(dev.restate.ext.field) = EVENT_METADATA` can have only `map<string, string>` type.
+
+## META0009
+
+The provided subscription is invalid. Subscriptions should have:
+
+* A `source` field in the format of `kafka://<CLUSTER_NAME>/<TOPIC_NAME>`. When registering, the Kafka cluster should be configured in the Restate configuration.
+* A `sink` field in the format of `service://<SERVICE_NAME>/<METHOD_NAME>`. When registering, service and method should have been previously registered as well.
+* Additional constraints may apply depending on the sink service contract
+
+Please look at the [Kafka documentation page](https://docs.restate.dev/services/sdk/kafka) for more details on subscriptions and event handlers.
+
 ## RT0001
 
 The invocation response stream was aborted due to the timeout configured in `worker.invoker.response_abort_timeout`.
