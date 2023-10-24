@@ -8,11 +8,11 @@ description: "Deploy Restate on Kubernetes with this guide."
 Restate is currently a single binary that contains everything you need.
 It exposes three services by default, each on different ports:
 
-| Name    | Port | Description                                                                 | Protocol                                          |
-|---------|------|-----------------------------------------------------------------------------|---------------------------------------------------|
-| Ingress | 8080 | Acts as an API gateway for all services registered with Restate             | gRPC + [Connect Protocol](https://connect.build/) |
-| Storage | 9071 | Exposes raw RocksDB read-only storage operations, used by the CLI           | gRPC                                              |
-| Meta    | 9070 | Allows for CRUD operations on service metadata, eg for service registration | REST                                              |
+| Name     | Port | Description                                                                                                                    | Protocol                                          |
+|----------|------|--------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
+| Ingress  | 8080 | Acts as an API gateway for all services registered with Restate                                                                | gRPC + [Connect Protocol](https://connect.build/) |
+| Admin    | 9070 | Allows for CRUD operations on service/endpoint metadata, eg for service registration                                           | REST                                              |
+| Postgres | 9071 | Exposes Restate RocksDB read-only storage operations using the Postgres protocol. See [Introspection](/services/introspection) | Postgres                                          |
 
 It will store metadata and RocksDB data in the relative directory of /target under the current working directory of the process.
 
@@ -56,7 +56,7 @@ spec:
               value: Json
           ports:
             - containerPort: 9070
-              name: meta
+              name: admin
             - containerPort: 8080
               name: ingress
             - containerPort: 9071
@@ -91,7 +91,7 @@ spec:
     app: restate
   ports:
     - port: 9070
-      name: meta
+      name: admin
     - port: 8080
       name: ingress
     - port: 9071
