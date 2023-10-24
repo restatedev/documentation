@@ -4,6 +4,7 @@
 const lightCodeTheme = require('prism-react-renderer/themes/github');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const variableInjector = require('./src/plugins/variable-injector')
+const variablesReplacements = require('./restate.config.json');
 
 const redocusaurus = [
   'redocusaurus',
@@ -56,11 +57,7 @@ const config = {
             [
               variableInjector, // replaces eg VAR::RESTATE_DIST_VERSION with config strings
               {
-                replacements: {
-                  RESTATE_DIST_VERSION: '0.3.0',
-                  TYPESCRIPT_SDK_VERSION: '0.3.1',
-                  TOUR_VERSION: 'v0.3.1',
-                },
+                replacements: variablesReplacements,
               }
             ]
           ],

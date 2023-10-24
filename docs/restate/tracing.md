@@ -55,7 +55,7 @@ docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOIN
 <TabItem value="mac" label="macOS">
 
 ```shell
-docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://host.docker.internal:4317 -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
+docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://host.docker.internal:4317 -p 8080:8080 -p 9070:9070 -p 9071:9071 ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
 ```
 
 </TabItem>

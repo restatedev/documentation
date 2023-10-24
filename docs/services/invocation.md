@@ -67,6 +67,21 @@ grpcurl -plaintext <your-restate-runtime-host-port> describe
 
 Restate also natively supports gRPC-web. You can use a [gRPC-web code generator](https://www.npmjs.com/package/grpc-web) and point it directly to Restate, without using a 3rd party proxy to translate gRPC-web to gRPC.
 
+### Invoke a service idempotently
+
+You can send requests to Restate providing an idempotency key, through the [`Idempotency-Key` header](https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/):
+
+```shell
+curl -X POST http://<restate-runtime-host-port>/org.example.Greeter/Greet -H 'idempotency-key: <idempotency-key>' -H 'content-type: application/json' -d '{"name": "Pete"}'
+```
+
+After the invocation completes, Restate persists the response for a retention period of 30 minutes.
+If you re-invoke the service with the same idempotency key within 30 minutes, Restate sends back the same response and doesn't re-execute the request to the service.
+
+You can tune the retention period by setting the header `idempotency-retention-period: <seconds>`
+
+The `Idempotency-Key` header works with both HTTP and gRPC/gRPC-web.
+
 ### Invoke a service without waiting for the response
 
 You can invoke a service without waiting for the response, similar to [one-way calls in the SDK](/services/sdk/service-communication#one-way-calls), by using the Restate built-in `dev.restate.Ingress/Invoke` service method, which can be invoked like any other user service, using gRPC, gRPC-web or Connect.
@@ -96,7 +111,7 @@ $ curl -X PATCH <RESTATE_META_ENDPOINT>/services/<SERVICE_NAME> -H 'content-type
 For example:
 
 ```shell
-$ curl -X PATCH localhost:8081/services/org.example.ExampleService -H 'content-type: application/json' -d '{"public": false}'
+$ curl -X PATCH localhost:9070/services/org.example.ExampleService -H 'content-type: application/json' -d '{"public": false}'
 ```
 
 You can revert it back to public with `{"public": true}`. Private services can still be reached by other Restate services.
@@ -111,7 +126,7 @@ You can find this identifier in the runtime logs and OpenTelemetry traces by loo
 ```log {7}
 2023-05-19T15:02:28.656467Z INFO restate_invoker::invocation_task
   Executing invocation at service endpoint
-    http.url: http://localhost:8080/invoke/coordinator.Coordinator/Sleep
+    http.url: http://localhost:9080/invoke/coordinator.Coordinator/Sleep
   in restate_invoker::invocation_task::invoker_invocation_task
     rpc.system: "restate"
     rpc.service: coordinator.Coordinator
@@ -157,7 +172,7 @@ $ curl -X DELETE <RESTATE_META_ENDPOINT>/invocations/<INVOCATION_IDENTIFIER>
 For example:
 
 ```shell
-$ curl -X DELETE http://localhost:8081/invocations/T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE
+$ curl -X DELETE http://localhost:9070/invocations/T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE
 ```
 
 For more details on the API, refer to the [admin API docs](/references/admin-api).

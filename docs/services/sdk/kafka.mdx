@@ -52,7 +52,7 @@ const router = restate.keyedRouter({
     // Other rpc or event handlers
 });
 
-restate.createServer().bindKeyedRouter("myRouter", router).listen(8080);
+restate.createServer().bindKeyedRouter("myRouter", router).listen();
 ```
 
 The Kafka record key must be a valid UTF-8 string, otherwise Restate won't be able to deliver the event to the service.
@@ -65,32 +65,49 @@ For each event key (= Kafka record key), the events are delivered in the order i
 </TabItem>
 <TabItem value="grpc" label="gRPC API">
 
-### Handling events with string key
+### Handling keyed events within keyed services
 
-You can handle events within keyed services, where the key of the Kafka record matches the key used by the service:
+You can handle events within keyed services, where the key of the Kafka record matches the key used by the service.
+
+To do so, define the event handler as any other method and use the `EVENT_PAYLOAD` annotation to receive the event payload:
 
 ```protobuf
 syntax = "proto3";
 import "dev/restate/ext.proto";
-import "dev/restate/events.proto";
 
 service MyService {
     option (dev.restate.ext.service_type) = KEYED;
 
-    rpc Handle(dev.restate.StringKeyedEvent) returns (google.protobuf.Empty);
-    // Other methods
+    // A method of this service
+    rpc MyMethod(MyMethodRequest) returns (google.protobuf.Empty);
+
+    // Event handler method
+    rpc HandleEvent(MyEvent) returns (google.protobuf.Empty);
+}
+
+message MyMethodRequest {
+    string id = 1 [(dev.restate.ext.field) = KEY];
+    // ... Other fields
+}
+
+message MyEvent {
+    string id = 1 [(dev.restate.ext.field) = KEY];
+
+    bytes payload = 2 [(dev.restate.ext.field) = EVENT_PAYLOAD];
+
+    // This is optional
+    map<string, string> metadata = 3 [(dev.restate.ext.field) = EVENT_METADATA];
 }
 ```
 
 ```typescript
 import * as restate from "@restatedev/restate-sdk";
 
-import MyService from "./generated/my_service";
-import StringKeyedEvent from "./generated/dev/restate/events";
+import { MyService, MyEvent } from "./generated/my_service";
 import Empty from "./generated/google/protobuf/empty";
 
 export class MyServiceImpl implements MyService {
-    async handleEvent(request: StringKeyedEvent): Promise<Empty> {
+    async handleEvent(request: MyEvent): Promise<Empty> {
       const ctx = restate.useContext(this);
       const payload = request.payload;
 
@@ -99,40 +116,25 @@ export class MyServiceImpl implements MyService {
       return Empty.create({});
     }
 
-    // Other service methods
+    // ... Other service methods
 }
 ```
-
-The Kafka record key must be a valid UTF-8 string, otherwise Restate won't be able to deliver the event to the service.
 
 You can mix methods receiving events with regular RPC methods. For example, assume you're implementing a `Profile` service to handle and store user profiles in Restate, where the key is the profile's unique identifier.
 In the same service, you can implement a  `Get` method to retrieve the profile, and you can attach an `UpdateProfile` event handler to consume events from Kafka to update the profile.
 
 For each event key (= Kafka record key), the events are delivered in the order in which they arrived on the topic partition.
 
-### Handling generic events from Kafka in order
+There are some constraints for the annotated fields:
 
-You can handle events where the Kafka record key is available but is not necessarily a string. To do so, you need to handle events in an ad-hoc service that process these events:
+* The event handler's key input type must either be `string` or `bytes`.
+* In case of `string` key type, the Kafka record key must contain a valid UTF-8 string, otherwise Restate won't be able to deliver the event to the service.
+* You can use only `string` or `bytes` types with fields annotated as `EVENT_PAYLOAD`.
+* You can also get the event metadata defining a field as `map<string, string>` and annotating it with `EVENT_METADATA`.
 
-For example:
+### Handling generic events from Kafka
 
-```protobuf
-syntax = "proto3";
-import "dev/restate/ext.proto";
-import "dev/restate/events.proto";
-
-service MyService {
-    option (dev.restate.ext.service_type) = KEYED;
-
-    rpc Handle(dev.restate.KeyedEvent) returns (google.protobuf.Empty);
-}
-```
-
-For keyed services, events with the same key are delivered in the order in which they arrived on the topic partition.
-
-Event handlers can be useful when you need to pre-process an event before sending it to one or more Restate services, such as when the key is serialized using a custom format, or when the destination of the event is encoded in the payload.
-
-Similarly, you can handle events where the Kafka record key is not available at all, or not relevant to your business logic:
+You can handle generic events from Kafka by defining ad-hoc services that process `dev.restate.Event`:
 
 ```protobuf
 syntax = "proto3";
@@ -146,10 +148,22 @@ service MyService {
 }
 ```
 
-In this case as well, events are delivered in the order in which they arrived on the topic. If you don't need ordering guarantees and you want to process events as fast as possible, use the service type `UNKEYED`.
+If the service is keyed, events with the same key are delivered in the order in which they arrived on the topic partition.
+If the service is unkeyed, events will be delivered in parallel without ordering guarantees.
+
+Event handlers can be useful when you need to pre-process an event before sending it to one or more Restate services, such as when the key is serialized using a custom format, or when the destination of the event is encoded in the payload.
 
 </TabItem>
 </Tabs>
+
+### Event metadata
+
+Each event carries a `metadata` map that contains the following entries:
+
+* `restate.subscription.id`: The subscription identifier, as shown by the [Admin API](../../references/admin-api).
+* `kafka.offset`: The record offset.
+* `kafka.partition`: The record partition.
+* `kafka.timestamp`: The record timestamp.
 
 ## Configure Kafka clusters when deploying Restate
 

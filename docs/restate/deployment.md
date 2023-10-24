@@ -10,9 +10,9 @@ It exposes three services by default, each on different ports:
 
 | Name    | Port | Description                                                                 | Protocol                                          |
 |---------|------|-----------------------------------------------------------------------------|---------------------------------------------------|
-| Ingress | 9090 | Acts as an API gateway for all services registered with Restate             | gRPC + [Connect Protocol](https://connect.build/) |
-| Storage | 9091 | Exposes raw RocksDB read-only storage operations, used by the CLI           | gRPC                                              |
-| Meta    | 8081 | Allows for CRUD operations on service metadata, eg for service registration | REST                                              |
+| Ingress | 8080 | Acts as an API gateway for all services registered with Restate             | gRPC + [Connect Protocol](https://connect.build/) |
+| Storage | 9071 | Exposes raw RocksDB read-only storage operations, used by the CLI           | gRPC                                              |
+| Meta    | 9070 | Allows for CRUD operations on service metadata, eg for service registration | REST                                              |
 
 It will store metadata and RocksDB data in the relative directory of /target under the current working directory of the process.
 
@@ -55,11 +55,11 @@ spec:
             - name: RESTATE_TRACING__LOG_FORMAT
               value: Json
           ports:
-            - containerPort: 8081
+            - containerPort: 9070
               name: meta
-            - containerPort: 9090
+            - containerPort: 8080
               name: ingress
-            - containerPort: 9091
+            - containerPort: 9071
               name: storage
           imagePullPolicy: IfNotPresent
           resources:
@@ -90,11 +90,11 @@ spec:
   selector:
     app: restate
   ports:
-    - port: 8081
+    - port: 9070
       name: meta
-    - port: 9090
+    - port: 8080
       name: ingress
-    - port: 9091
+    - port: 9071
       name: storage
   type: ClusterIP
 ```
