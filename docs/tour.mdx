@@ -30,6 +30,20 @@ The ticket example has three services, with the following functions:
 As we go, you will discover how Restate can help you with some intricacies in this application.
 
 ## Prerequisites
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
+
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+
+</TabItem>
+</Tabs>
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
+
 > &#x1F4DD; As long as Restate hasn't been launched publicly, you need to have access to the private Restate npm packages and Docker container. Please follow the instructions in the [restate-dist/README](https://github.com/restatedev/restate-dist) to set up access:
 
 - Latest stable version of [NodeJS](https://nodejs.org/en/) >= v18.17.1 and [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 9.6.7 installed.
@@ -40,12 +54,33 @@ This guide is written for:
 - Typescript SDK version: `@restatedev/restate-sdk:VAR::TYPESCRIPT_SDK_VERSION`
 - Restate runtime Docker image: `restate-dist:VAR::RESTATE_DIST_VERSION`
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+> &#x1F4DD; As long as Restate hasn't been launched publicly, you need to have access to the private Restate artifacts and Docker container. Please follow the instructions in the [restate-dist/README](https://github.com/restatedev/restate-dist) to set up access:
+
+- Java 1.8+
+- [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation) to launch the Restate runtime (not needed for the app implementation itself).
+- [curl](https://everything.curl.dev/get)
+
+This guide is written for:
+- Java SDK version: `@restatedev/restate-sdk:VAR::JAVA_SDK_VERSION`
+- Restate runtime Docker image: `restate-dist:VAR::RESTATE_DIST_VERSION`
+
+</TabItem>
+</Tabs>
+
+
 ## 🚀 Let's get started!
 
 ### Setting up the tutorial
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
+
 Clone the GitHub repository of the [tutorial](https://github.com/restatedev/tour-of-restate-typescript):
+
 ```shell
-git clone --depth 1 --branch vVAR::TOUR_VERSION git@github.com:restatedev/tour-of-restate-typescript.git
+git clone --depth 1 --branch vVAR::TYPESCRIPT_TOUR_VERSION git@github.com:restatedev/tour-of-restate-typescript.git
 ```
 
 This GitHub repository contains the basic skeleton of the NodeJS/Typescript services that you develop in this tutorial.
@@ -55,13 +90,41 @@ First, get all dependencies and build tools. Then build the app:
 npm install && npm run build
 ```
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+Clone the GitHub repository of the [tutorial](https://github.com/restatedev/tour-of-restate-java):
+```shell
+git clone --depth 1 --branch vVAR::JAVA_TOUR_VERSION git@github.com:restatedev/tour-of-restate-java.git
+```
+
+This GitHub repository contains the basic skeleton of the Java services that you develop in this tutorial.
+
+</TabItem>
+</Tabs>
+
 ### Running the services and runtime
 Run the services:
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
+
 ```shell
 npm run app
 ```
 
-Launch the runtime:
+</TabItem>
+<TabItem value="java" label="Java">
+
+```shell
+./gradlew run
+```
+
+</TabItem>
+</Tabs>
+
+Launch Restate:
+
 <Tabs groupId="operating-systems">
 <TabItem value="lin" label="Linux">
 
@@ -79,11 +142,11 @@ docker run --name restate_dev --rm -d -p 8080:8080 -p 9070:9070 -p 9071:9071 ghc
 </TabItem>
 </Tabs>
 
-You can consult the runtime logs via `docker logs restate_dev`.
+You can consult the Restate logs via `docker logs restate_dev`.
 
-When you are done with the tutorial, stop the runtime with `docker stop restate_dev`. This command also wipes the state (because you used the `--rm` flag).
+When you are done with the tutorial, stop Restate with `docker stop restate_dev`. This command also wipes the state (because you used the `--rm` flag).
 
-To do resilience experiments later on, you can restart the runtime (without losing state) with `docker restart restate_dev`.
+To do resilience experiments later on, you can restart Restate (without losing state) with `docker restart restate_dev`.
 
 Register the services:
 
@@ -92,8 +155,8 @@ Now, we need to tell Restate where the service runs.
 <Tabs groupId="operating-systems">
 <TabItem value="lin" label="Linux">
 
-You do this by sending a request to the endpoint of the runtime at `http://localhost:8081/endpoints`
-and providing it with the endpoint of the service `http://localhost:8080`.
+You do this by sending a request to the Restate endpoint at `http://localhost:9070/endpoints`
+and providing it with the endpoint of the service `http://localhost:9080`.
 
 ```shell
 curl -X POST http://localhost:9070/endpoints -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'
@@ -105,8 +168,8 @@ and knows how to invoke a specific service.
 </TabItem>
 <TabItem value="mac" label="macOS">
 
-You do this by sending a request to the endpoint of the runtime at `http://localhost:8081/endpoints`
-and providing it with the endpoint of the service `http://host.docker.internal:8080`.
+You do this by sending a request to the Restate endpoint at `http://localhost:9070/endpoints`
+and providing it with the endpoint of the service `http://host.docker.internal:9080`.
 
 ```shell
 curl -X POST http://localhost:9070/endpoints -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
@@ -169,15 +232,33 @@ When you look at the logs of the runtime you see:
 
 Mimic adding a ticket to a cart, by calling `UserSession/addTicket` as follows:
 
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
+
 ```shell
 curl -X POST http://localhost:8080/UserSession/addTicket \
-  -H 'content-type: application/json' \
-  -d '{"key": "123", "request": "456"}'
+-H 'content-type: application/json' \
+-d '{"key": "123", "request": "456"}'
 ```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```shell
+curl -X POST http://localhost:9090/example.UserSessionService/AddTicket \
+    -H 'content-type: application/json' \
+    -d '{"user_id": "123", "ticket_id": "456"}'
+```
+
+</TabItem>
+</Tabs>
 
 If this prints out `true`, then you have a working setup.
 
 You can call the `UserSession/checkout` function to proceed with the purchase, as follows:
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
 
 ```shell
 curl -X POST http://localhost:8080/UserSession/checkout \
@@ -187,6 +268,21 @@ curl -X POST http://localhost:8080/UserSession/checkout \
 
 In `src/app`, you find the skeletons of the services where you can start implementing your app.
 The `app.ts` file contains the definition of the Restate server that serves the functions.
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```shell
+curl -X POST http://localhost:9090/example.UserSessionService/Checkout \
+    -H 'content-type: application/json' \
+    -d '{"user_id": "123"}'
+```
+
+In `src/main/java/dev/restate/tour/app`, you find the skeletons of the services where you can start implementing your app.
+The `AppMain.java` file contains the definition of the Restate server that serves the functions.
+
+</TabItem>
+</Tabs>
 
 ## Services and concurrency
 
@@ -200,8 +296,14 @@ No key defined.
 No concurrency guarantees or limitations.
 Invocations are processed as they come in.
 You would get the same behavior with a keyed service with random keys.
+3. **Singleton service** (not available for Typescript Handler API): No key defined. There is at most one concurrent invocation for this entire service. You can
+see this as a keyed service where all invocations have an identical key. This service type does not scale up, so
+don't use it for heavy load.
 
 ### Specifying the service type
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
 
 You specify an unkeyed service by creating a router with its set of functions:
 
@@ -253,6 +355,42 @@ export const serviceApi: restate.ServiceApi<typeof serviceRouter> = {
 };
 ```
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+Restate uses [gRPC](https://grpc.io/) and [Protobuf](https://protobuf.dev/) to specify the service methods.
+That's also where you define the service type and key.
+Have a look at the Protobuf definitions of the ticket service of our example in `src/main/proto/tour.proto`:
+```protobuf
+service TicketService {
+    //highlight-next-line
+    option (dev.restate.ext.service_type) = KEYED;
+
+    rpc Reserve (Ticket) returns (google.protobuf.BoolValue);
+    //... other methods...
+}
+
+message Ticket {
+    //highlight-next-line
+    string ticket_id = 1 [(dev.restate.ext.field) = KEY];
+}
+```
+
+The first highlighted line of the service definition defines the type of Restate service.
+The ticket service is a keyed service. For unkeyed or singleton services, use `UNKEYED` and `SINGLETON` respectively.
+
+For keyed services, you need to tag one of the fields of the input request as the key
+by adding the `[(dev.restate.ext.field) = KEY]` annotation,
+as done the second highlighted line.
+Make sure that you define the key field for all the methods of a keyed service.
+
+Besides these tags, there is nothing Restate-specific about the Protobuf definitions.
+To learn more about gRPC, have a look at the [gRPC documentation](https://grpc.io/docs/).
+
+</TabItem>
+</Tabs>
+
+
 :::tip
 The concurrency guarantees of keyed services makes it a lot easier to reason about interaction with external systems.
 
@@ -275,7 +413,7 @@ The keys remain locked and the system can't process any more requests.
 :::
 
 ## Suspendable request-response calls
-:::note Implement it yourself or follow along by looking at the code under `src/part1`.
+:::note Implement it yourself or follow along by looking at the code under `part1`.
 :::
 
 One of the key parts of distributed applications is service-to-service communication.
@@ -288,6 +426,9 @@ When the `UserSession/addTicket` function is called, it first needs to reserve t
 It does that by calling the `TicketService/reserve` function.
 Add the highlighted code snippet to the `addTicket` function in the user session service.
 
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
+
 ```typescript
 import * as restate from "@restatedev/restate-sdk";
 import { ticketServiceApi } from "./ticket_service";
@@ -297,9 +438,8 @@ const addTicket = async (
   userId: string,
   ticketId: string,
 ) => {
-  //highlight-start
+  //highlight-next-line
   const success = await ctx.rpc(ticketServiceApi).reserve(ticketId);
-  //highlight-end
   return success;
 };
 ```
@@ -331,6 +471,39 @@ To better understand what's going on, you can increase the log level by setting 
 You can silence the logging by removing this environment variable in `package.json`, where the scripts are defined.
 To also log the messages, use `RESTATE_DEBUG_LOGGING=JOURNAL_VERBOSE`.
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+@Override
+public void addTicket(ReserveTicket request, StreamObserver<BoolValue> responseObserver) {
+  RestateContext ctx = restateContext();
+
+  //highlight-start
+  var success = ctx.call(
+    TicketServiceGrpc.getReserveMethod(),
+    Ticket.newBuilder().setTicketId(request.getTicketId()).build()
+  ).await();
+  //highlight-end
+
+  responseObserver.onNext(success);
+  responseObserver.onCompleted();
+}
+```
+
+To do the call, you supply the method reference and request to `ctx.call`. Use `.await()` to wait for the response to the call.
+In this case, the call gets resolved with a `BoolValue` response.
+
+Try it out by running the services via `./gradlew run` and send a request to `UserSession/addTicket`, as we did [previously](#running-the-services-and-runtime).
+
+Have a look at the SDK and runtime logs, to see how the ingress request triggers the execution of the `addTicket` and `reserve` functions.
+
+//TODO add logs
+
+</TabItem>
+</Tabs>
+
+
 ### What actually happened?
 The call you just did, seems like a regular RPC call.
 Under-the-hood Restate does a number of things to make sure that this call is durable.
@@ -350,11 +523,14 @@ The replay log contains the steps that the service already executed before it su
 The service replays the log and continues processing at the point where it left off.
 
 :::tip
-The suspension mechanism of Restate is especially beneficial if you run on serverless infrastructure, for example AWS Lambda.
+The suspension mechanism of Restate is especially beneficial if you run on FaaS, for example AWS Lambda.
 For example, you can do request-response calls without paying for the idle time when waiting for a response.
 :::
 
 To see this work in practice, you mimic the ticket service doing heavy processing by adding a sleep call to the `TicketService/reserve` function:
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
 
 ```typescript
 import { setTimeout } from "timers/promises";
@@ -365,7 +541,30 @@ const reserve = async (ctx: restate.RpcContext) => {
   //bad-code-end
   return true;
 };
+
 ```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+@Override
+public void reserve(Ticket request, StreamObserver<BoolValue> responseObserver) {
+  //bad-code-start
+  try {
+    Thread.sleep(35000);
+  } catch (InterruptedException e) {
+    throw new RuntimeException(e);
+  }
+  //bad-code-end
+  responseObserver.onNext(BoolValue.of(true));
+  responseObserver.onCompleted();
+}
+```
+
+</TabItem>
+</Tabs>
+
 
 :::caution
 This isn't the proper way to sleep in a Restate application!
@@ -376,7 +575,12 @@ Call `UserSession/addTicket` again and have a look at the SDK logs.
 Now that the ticket service responds after 35 seconds, you see that the `addTicket` function suspends after 30 seconds.
 Once the runtime has received the response, it invokes the `addTicket` function again and the call finishes.
 
+
+
 <details><summary>Show the logs</summary>
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
 
 ```log
 [restate] [2023-08-15T20:58:25.433Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHF0pFyZoYvJ5G_WZMF] : Invoking function.
@@ -396,7 +600,18 @@ Once the runtime has received the response, it invokes the `addTicket` function 
 [restate] [2023-08-15T20:59:00.460Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHF0pFyZoYvJ5G_WZMF] : Function completed successfully.
 ```
 
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+//TODO add logs
+
+</TabItem>
+</Tabs>
+
 </details>
+
+
 
 
 [//]: # (TODO include a video demo of knative on minikube to show how containers are spun up and torn down.)
@@ -407,10 +622,15 @@ Make the `UserSession/checkout` function call the `Checkout/checkout` function.
 For the request field, you can use a hard-coded string array for now: `["456"]`.
 You will fix this later on.
 
+
+
 <>
 <details><summary>Solution</summary>
 
 Add the following code to the `UserSession/checkout` function:
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
 
 ```typescript
 import { checkoutApi } from "./checkout";
@@ -440,14 +660,45 @@ Call the `UserSession/checkout` function as you did earlier and have a look at t
 
 Notice that the `UserSession` didn't get suspended because the response came before the suspension timeout hit.
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+@Override
+public void checkout(CheckoutRequest request, StreamObserver<BoolValue> responseObserver) {
+  RestateContext ctx = restateContext();
+  var req = CheckoutFlowRequest.newBuilder()
+    .setUserId(request.getUserId())
+    .addTickets("456")
+    .build();
+  var success = ctx.call(CheckoutGrpc.getCheckoutMethod(), req).await();
+
+  responseObserver.onNext(success);
+  responseObserver.onCompleted();
+}
+
+```
+
+Call the `UserSession/checkout` function as you did earlier and have a look at the logs again to see what happened.
+
+//TODO add logs
+
+</TabItem>
+</Tabs>
+
 </details>
 </>
+
 
 ## Reliable message sending without queues
 
 Until now, you did request-response calls and waited for the response.
 You can also do one-way calls via Restate, where you don't wait for the response.
 The syntax is similar.
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
+
 All you need to do is to use `RpcContext.send`, as you do here in the `UserSession/addTicket` function:
 
 ```typescript
@@ -487,8 +738,40 @@ In the service logs, you see that the `addTicket` function doesn't wait for a re
 
 </details>
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+All you need to do is to use `ctx.oneWayCall`, as you do here in the `UserSession/addTicket` function:
+
+```java
+@Override
+public void addTicket(ReserveTicket request, StreamObserver<BoolValue> responseObserver) {
+  RestateContext ctx = restateContext();
+  ctx.oneWayCall(
+    TicketServiceGrpc.getReserveMethod(),
+    Ticket.newBuilder().setTicketId(request.getTicketId()).build()
+  );
+
+  responseObserver.onNext(BoolValue.of(true));
+  responseObserver.onCompleted();
+}
+```
+
+Note that `oneWayCall` isn't an asynchronous operation so there is no need to await it.
+
+Once you adapted the code, try it out by calling the `UserSession/addTicket` function, as [explained earlier](#running-the-services-and-runtime).
+In the service logs, you see that the `addTicket` function doesn't wait for a response and finishes earlier than the `reserve` function.
+
+//TODO add logs
+
+
+</TabItem>
+</Tabs>
+
+
+
 :::tip Good news!
-Restate retries failed one-way invocations for you. No need to set up any message queues.
+Restate retries failed one-way invocations for you. No need to set up message queues.
 :::
 
 
@@ -499,7 +782,11 @@ Let the `expireTicket` function call the `TicketService/unreserve` function.
 
 When you are done with the implementation, send a request to `UserSession/expireTicket` to check if it works.
 
-<>
+
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
+
 <details><summary>Solution</summary>
 
 ```typescript
@@ -534,16 +821,54 @@ Have a look at the logs again to see what happened:
 //highlight-next-line
 [restate] [2023-08-15T21:13:54.713Z] DEBUG: [TicketService/unreserve] [IwF2v7ci3eUBiiHLgrFz6rkvK_3tRk6Z] : Function completed successfully.
 ```
-
 </details>
-</>
 
 :::info
-🚩 Explore the intermediate solution in `src/part1`, and run it with `npm run part1`.
+🚩 Explore the intermediate solution in `part1`, and run it with `npm run part1`
 :::
 
+</TabItem>
+<TabItem value="java" label="Java">
+<details><summary>Solution</summary>
+
+```java
+@Override
+public void expireTicket(ExpireTicketRequest request, StreamObserver<Empty> responseObserver) {
+  RestateContext ctx = restateContext();
+  ctx.oneWayCall(
+    TicketServiceGrpc.getUnreserveMethod(),
+    Ticket.newBuilder().setTicketId(request.getTicketId()).build()
+  );
+
+  responseObserver.onNext(Empty.getDefaultInstance());
+  responseObserver.onCompleted();
+}
+
+```
+
+Call the `expireTicket` function with:
+```shell
+curl -X POST http://localhost:9090/example.UserSessionService/ExpireTicket -H 'content-type: application/json' -d '{"user_id": "123"}'
+```
+
+Have a look at the logs again to see what happened.
+
+//TODO add logs
+</details>
+
+:::info
+🚩 Explore the intermediate solution in `part1`, and run it with 
+```shell
+./gradlew -PmainClass=dev.restate.tour.part1.AppMain run
+```
+:::
+
+</TabItem>
+</Tabs>
+
+
 ## Durable timers
-:::note Implement it yourself or follow along by looking at the code under `src/part2`.
+:::note Implement it yourself or follow along by looking at the code under `part2`.
 :::
 
 Restate suspends a function invocation when it waits on external input.
@@ -553,17 +878,51 @@ Restate offers the same mechanism for timers.
 ### Suspendable sleep
 You can do a durable, suspendable sleep with the Typescript SDK.
 Earlier in this tutorial, you explored how Restate suspensions work by letting the ticket service sleep:
+
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
+
 ```typescript
+import { setTimeout } from "timers/promises";
+
 const reserve = async (ctx: restate.RpcContext) => {
   //bad-code-start
   await setTimeout(35000);
   //bad-code-end
   return true;
 };
+
 ```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+@Override
+public void reserve(Ticket request, StreamObserver<BoolValue> responseObserver) {
+  //bad-code-start
+  try {
+    Thread.sleep(35000);
+  } catch (InterruptedException e) {
+    throw new RuntimeException(e);
+  }
+  //bad-code-end
+  responseObserver.onNext(BoolValue.of(true));
+  responseObserver.onCompleted();
+}
+```
+
+</TabItem>
+</Tabs>
+
 ❗ This line of code would keep the service invocation running idly, and would not survive service restarts.
 
 To use a durable, suspendable sleep, use the sleep feature of the Restate SDK:
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
+
 ```typescript
 const reserve = async (ctx: restate.RpcContext) => {
   //good-code-start
@@ -573,11 +932,34 @@ const reserve = async (ctx: restate.RpcContext) => {
 };
 ```
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+@Override
+public void reserve(Ticket request, StreamObserver<BoolValue> responseObserver) {
+  RestateContext ctx = restateContext();
+
+  //good-code-start
+  ctx.sleep(Duration.ofSeconds(35));
+  //good-code-end
+
+  responseObserver.onNext(BoolValue.of(true));
+  responseObserver.onCompleted();
+}
+```
+
+</TabItem>
+</Tabs>
+
 Send an `addTicket` request, as [you did earlier](#running-the-services-and-runtime).
 In the service logs, you can see the `reserve` function processing the sleep, then suspending, and then resuming again after the sleep completed.
 The `addTicket` function did a one-way call to the `reserve` function so didn't suspend but just finished its invocation.
 
 <details><summary>Show the logs</summary>
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
 
 ```log
 [restate] [2023-08-15T21:20:50.312Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHMg255bahRoMD2cNRH] : Invoking function.
@@ -596,6 +978,13 @@ The `addTicket` function did a one-way call to the `reserve` function so didn't 
 [restate] [2023-08-15T21:21:25.342Z] DEBUG: [TicketService/reserve] [IwF2v7ci3eUBiiHMg3F8P4i8kn5RHEEj] : Journaled and sent output message ; OutputStreamEntryMessage
 [restate] [2023-08-15T21:21:25.343Z] DEBUG: [TicketService/reserve] [IwF2v7ci3eUBiiHMg3F8P4i8kn5RHEEj] : Function completed successfully.
 ```
+</TabItem>
+<TabItem value="java" label="Java">
+
+//TODO add logs
+
+</TabItem>
+</Tabs>
 
 </details>
 
@@ -988,12 +1377,14 @@ This ties the final parts together.
 </>
 
 :::info
-🚩 Explore the intermediate solution in `src/part2`, and run it with `npm run part2`.
+🚩 Explore the intermediate solution in `part2`, and run it with `npm run part2`.
 :::
+
+./gradlew -PmainClass=dev.restate.tour.part.AppMain run
 
 ## Side effects
 
-:::note Implement it yourself or follow along by looking at the code under `src/part3`.
+:::note Implement it yourself or follow along by looking at the code under `part3`.
 :::
 
 Restate's replay mechanism makes applications resilient to failures.
@@ -1099,7 +1490,7 @@ const checkout = async (
 
   // highligh-start
   const paymentClient = PaymentClient.get();
-  const success = paymentClient.call(idempotencyKey, totalPrice);
+  const success = await ctx.sideEffect(() => paymentClient.call(idempotencyKey, totalPrice));
   // highlight-end
 
   return success;
@@ -1157,20 +1548,16 @@ const checkout = async (
 
   const paymentClient = PaymentClient.get();
 
-  const success = await paymentClient.call(idempotencyKey, totalPrice);
+  const success = await ctx.sideEffect(() => paymentClient.call(idempotencyKey, totalPrice));
 
   const email = EmailClient.get();
 
   if (success) {
     console.info("Payment successful. Notifying user about shipment.");
-    await ctx.sideEffect(async () =>
-      email.notifyUserOfPaymentSuccess(request.userId),
-    );
+    await ctx.sideEffect(() => email.notifyUserOfPaymentSuccess(request.userId));
   } else {
     console.info("Payment failure. Notifying user about it.");
-    await ctx.sideEffect(async () =>
-      email.notifyUserOfPaymentFailure(request.userId),
-    );
+    await ctx.sideEffect(() => email.notifyUserOfPaymentFailure(request.userId));
   }
 
   return success;
@@ -1208,11 +1595,14 @@ const checkout = async (ctx: restate.RpcContext, userId: string) => {
 🥳 Except for a few resiliency tweaks, you fully implemented the ticket reservation system!
 
 :::info
-🚩 Explore the intermediate solution in `src/part3`, and run it with `npm run part3`.
+🚩 Explore the intermediate solution in `part3`, and run it with `npm run part3`.
 :::
+
+./gradlew -PmainClass=dev.restate.tour.part3.AppMain run
+
 ## Resiliency
 
-:::note Implement it yourself or follow along by looking at the code under `src/part4`.
+:::note Implement it yourself or follow along by looking at the code under `part4`.
 :::
 
 As you have discovered throughout this tutorial, Restate makes your applications resilient out-of-the-box by:
@@ -1238,7 +1628,7 @@ You can observe this behavior by using the `paymendClient.failingCall` in `Check
 ```typescript
 const paymentClient = PaymentClient.get();
 //highlight-start
-const doPayment = async () => paymentClient.failingCall(idempotencyKey, amount)
+const doPayment = () => paymentClient.failingCall(idempotencyKey, amount)
 const success = await ctx.sideEffect(doPayment);
 //highlight-end
 ```
@@ -1384,8 +1774,10 @@ For more information, have a look at the [tracing docs](/restate/tracing).
 ## 🏁 The end
 You reached the end of this tutorial!
 
-:::info 🚩 Have a look at the fully implemented app in `src/part4`, and run it with `npm run part4`.
+:::info 🚩 Have a look at the fully implemented app in `part4`, and run it with `npm run part4`.
 :::
+
+./gradlew -PmainClass=dev.restate.tour.part4.AppMain run
 
 Let's recap what you've covered:
 - reliable, suspendable request-response calls
