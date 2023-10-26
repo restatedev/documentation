@@ -16,8 +16,8 @@ Let's assume we have a `Greeter` service running next to the service we are curr
 This `Greeter` service has a method called `Greet` that takes an input request containing a `name` as a `string`.
 To make request-response calls to the `Greeter` service, do the following:
 
-<Tabs groupId="ts-api">
-<TabItem value="handler" label="Handler API" default>
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript" default>
 
 On the side of the service that you are going to call, you export the API definition, as follows (for more details look at the [serving docs](/services/sdk/serving)): 
 
@@ -47,7 +47,7 @@ const result2 = await ctx.rpc(myGreeterApi).greet("Pete");
 ```
 
 </TabItem>
-<TabItem value="grpc" label="gRPC API">
+<TabItem value="ts-grpc" label="Typescript-gRPC">
 
 To do request-response calls, use the gRPC client implementation supplied via the generated Protobuf code.
 In this example, the `Greet` function requires a `Request` Protobuf message as input with a single `name` parameter.
@@ -57,6 +57,20 @@ const client = new GreeterClientImpl(ctx);
 const greeting = await client.greet(
     Request.create({ name: "Pete" })
 );
+```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+To do request-response calls, use the gRPC client implementation supplied via the generated Protobuf code.
+In this example, the `Greet` function requires a `Request` Protobuf message as input with a single `name` parameter.
+
+```java
+var req = Request.newBuilder().setName("Pete").build()
+ctx.call(
+  GreeterGrpc.getGreetMethod(),
+  req
+).await();
 ```
 
 </TabItem>
@@ -71,8 +85,8 @@ A one-way call is a call from one service to another service where the client do
 Without Restate, this is usually implemented by adding a message queue in between the two services. 
 Restate eliminates the need for a message queue because Restate durably logs the request and makes sure it gets executed.
 
-<Tabs groupId="ts-api">
-<TabItem value="handler" label="Handler API" default>
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript" default>
 
 On the side of the service that you are going to call, you export the API definition as shown in the [request-response calls section](/services/sdk/service-communication#request-response-calls).
 
@@ -87,7 +101,7 @@ ctx.send(myGreeterApi).greet("Pete");
 ```
 
 </TabItem>
-<TabItem value="grpc" label="gRPC API">
+<TabItem value="ts-grpc" label="Typescript-gRPC">
 
 Use the gRPC client implementation supplied via the generated Protobuf code to do the call, but wrap the call with `ctx.oneWayCall` as shown below:
 
@@ -108,6 +122,19 @@ You cannot wrap any other types of operations with `oneWayCall()`! This is inval
 
 
 </TabItem>
+<TabItem value="java" label="Java">
+
+To do this, wrap the call with `ctx.oneWayCall` as shown below:
+
+```java
+var req = Request.newBuilder().setName("Pete").build()
+ctx.oneWayCall(
+  GreeterGrpc.getGreetMethod(),
+  req
+);
+```
+
+</TabItem>
 </Tabs>
 
 
@@ -115,8 +142,8 @@ You cannot wrap any other types of operations with `oneWayCall()`! This is inval
 A delayed call is a one-way call that gets executed after a specified delay.
 
 
-<Tabs groupId="ts-api">
-<TabItem value="handler" label="Handler API" default>
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript" default>
 
 On the side of the service that you are going to call, you export the API definition as shown in the [request-response calls section](/services/sdk/service-communication#request-response-calls).
 
@@ -131,13 +158,25 @@ ctx.sendDelayed(myGreeterApi, 5000).greet("Pete");
 ```
 
 </TabItem>
-<TabItem value="grpc" label="gRPC API">
+<TabItem value="ts-grpc" label="Typescript-gRPC">
 
 ```typescript
 const client = new GreeterClientImpl(ctx);
 await ctx.delayedCall(() =>
   client.greet(Request.create({ name: "Pete" })),
   5000
+);
+```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```typescript
+var req = Request.newBuilder().setName("Pete").build()
+ctx.delayedCall(
+  GreeterGrpc.getGreetMethod(),
+  req,
+  Duration.ofMinutes(15)
 );
 ```
 
