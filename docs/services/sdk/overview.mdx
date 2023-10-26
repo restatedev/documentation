@@ -8,23 +8,53 @@ import TabItem from '@theme/TabItem';
 
 # Overview
 
-Restate offers a Typescript SDK to author Restate services using Typescript.
-
-:::tip
-To get started quickly, use the [Typescript service template generator](https://github.com/restatedev/node-template-generator)!
-:::
+Restate offers a Java SDK and a Typescript SDK.
 
 ## Installation
 
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
+
+:::tip
+To get started quickly, use the [template generator](https://github.com/restatedev/node-template-generator)
+:::
+
+
 Add the `@restatedev/restate-sdk` dependency to your NodeJS project to start developing Restate services.
 
-## API Examples
+:::info
 Restate currently supports two Typescript APIs for implementing services: the Handler API and the gRPC API.
-The gRPC API requires you to specify the service contract (services, methods and data types) via a Protobuf definition, as explained in the [service contract docs](/services/service_type#restate-service-contract).
+The gRPC API requires you to specify the services, methods and data types via a Protobuf definition, as explained in the [service contract docs](/services/service_type#restate-service-contract).
 The Handler API does not require this.
+:::
 
-<Tabs groupId="ts-api">
-<TabItem value="handler" label="Handler API Example " default>
+</TabItem>
+<TabItem value="java" label="Java">
+
+:::tip
+To get started quickly, use the template generator 
+//TODO add link
+:::
+
+Add a set of the following dependencies.
+
+Depending on the preferred language:
+- To use Java: `dev.restate.sdk:sdk-java-blocking:VAR::RESTATE_DIST_VERSION`
+- To use Kotlin: `dev.restate.sdk:sdk-kotlin:VAR::RESTATE_DIST_VERSION`
+
+Depending on the deployment target:
+- To run as long-running app: `dev.restate.sdk:sdk-http-vertx:VAR::RESTATE_DIST_VERSION`
+- To run on AWS Lambda: `dev.restate.sdk:sdk-lambda:VAR::RESTATE_DIST_VERSION`
+
+To use Jackson to read/write state entries: `dev.restate.sdk:sdk-serde-jackson:VAR::RESTATE_DIST_VERSION`
+
+</TabItem>
+</Tabs>
+
+## API Examples
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript" default>
 
 Below is an example of a Typescript service with the Handler API.
 
@@ -60,14 +90,15 @@ The app logic is implemented inside `doGreet` and `doCountGreetings`.
 These functions have the `restate.RpcContext` as their first parameter. This context is used to interact with Restate (call other methods, retrieve state, etc.).
 Then, the service is registered as a keyed service under the path `greeter`, and the `greet` and `countGreetings` routes are added.
 The `greet` function can now be called by sending a request to `<restate-host>:8080/greeter/greet` or `<restate-host>:8080/greeter/countGreetings`.
+
 For more information on how to set up the routers and the Restate server, have a look at the [serving docs](/services/sdk/serving).
 
 </TabItem>
-<TabItem value="grpc" label="gRPC API Example">
+<TabItem value="ts-grpc" label="Typescript-gRPC">
 
 Below is an example of a Typescript gRPC service.
 
-The gRPC API uses the `protobufjs` and `ts-proto` dependencies to work with the Protobuf-generated Typescript code. So add these as well to your `package.json`.
+The [gRPC](https://grpc.io/) API uses the `protobufjs` and `ts-proto` dependencies to work with the [Protobuf](https://protobuf.dev/)-generated Typescript code. So add these as well to your `package.json`.
 
 This example shows a greeter service comprising two methods:
 - `greet`: returns a greeting as a response without performing any additional operations.
@@ -116,7 +147,7 @@ restate
     .listen();
 ```
 
-The contract of the gRPC service is defined in the Protobuf service contracts, that are shown below.
+The interface of the gRPC service is defined in the [Protobuf](https://protobuf.dev/) service contracts, that are shown below.
 Within the method, the Restate context is retrieved, enabling interaction with Restate (e.g. getting stating, calling other services).
 Finally, the Restate server is set up to serve both methods of the greeter service.
 
@@ -149,6 +180,78 @@ message GreetResponse {
 To understand the Restate-specific parts of this Protobuf definition, have a look at the documentation [here](/services/service_type#restate-service-contract).
 
 </TabItem>
+<TabItem value="java" label="Java">
+
+Below is an example of a Java service. 
+
+Restate uses [gRPC](https://grpc.io/) to define the service and its methods. The example shows a greeter service comprising two methods:
+- `greet`: maintains a record of the number of times it has received a request for a given name, and prints a greeting.
+
+```java
+package dev.restate.sdk.examples;
+
+import dev.restate.sdk.blocking.RestateBlockingService;
+import dev.restate.sdk.blocking.RestateContext;
+import dev.restate.sdk.core.StateKey;
+import dev.restate.sdk.examples.generated.*;
+import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import io.grpc.stub.StreamObserver;
+import static dev.restate.sdk.examples.generated.GreeterProto.*;
+
+public class Greeter extends GreeterGrpc.GreeterImplBase implements RestateBlockingService {
+
+  private static final StateKey<Integer> COUNT = StateKey.of("count", Integer.class);
+
+  @Override
+  public void greet(GreetRequest request, StreamObserver<GreetResponse> responseObserver) {
+    RestateContext ctx = restateContext();
+
+    int count = ctx.get(COUNT).orElse(1);
+    ctx.set(COUNT, count + 1);
+
+    responseObserver.onNext(GreetResponse.newBuilder()
+                    .setMessage("Hello " + request.getName() + " for the " + count + " time!")
+            .build());
+    responseObserver.onCompleted();
+  }
+
+  public static void main(String[] args) {
+    RestateHttpEndpointBuilder.builder().withService(new Greeter()).buildAndListen();
+  }
+}
+```
+
+The contract of the gRPC service is defined in the Protobuf service contracts, that are shown below.
+Within the method, the Restate context is retrieved, enabling interaction with Restate (e.g. getting stating, calling other services).
+Finally, the Restate server is set up to serve both methods of the greeter service.
+
+This is what corresponding Protobuf definition would look like for this service:
+
+```protobuf
+syntax = "proto3";
+
+package example;
+
+import "dev/restate/ext.proto";
+
+service Greeter {
+    option (dev.restate.ext.service_type) = UNKEYED;
+
+    rpc Greet(GreetRequest) returns (GreetResponse) {};
+}
+
+message GreetRequest {
+    string name = 1 [(dev.restate.ext.field) = KEY];
+}
+
+message GreetResponse {
+    string greeting = 1;
+}
+```
+
+To understand the Restate-specific parts of this Protobuf definition, have a look at the documentation [here](/services/service_type#restate-service-contract).
+
+</TabItem>
 </Tabs>
 
-Now that you have a high-level idea of what a Restate Typescript service might look like, let's dive into the details!
+Now that you have a high-level idea of what a Restate service might look like, let's dive into the details!
