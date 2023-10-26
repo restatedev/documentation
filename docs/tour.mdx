@@ -667,11 +667,14 @@ Notice that the `UserSession` didn't get suspended because the response came bef
 @Override
 public void checkout(CheckoutRequest request, StreamObserver<BoolValue> responseObserver) {
   RestateContext ctx = restateContext();
+
+  //highlight-start
   var req = CheckoutFlowRequest.newBuilder()
     .setUserId(request.getUserId())
     .addTickets("456")
     .build();
   var success = ctx.call(CheckoutGrpc.getCheckoutMethod(), req).await();
+  //highlight-end
 
   responseObserver.onNext(success);
   responseObserver.onCompleted();
@@ -707,9 +710,8 @@ const addTicket = async (
   userId: string,
   ticketId: string,
 ) => {
-  // highlight-start
+  // highlight-next-line
   ctx.send(ticketServiceApi).reserve(ticketId);
-  // highlight-end
   return true;
 };
 ```
@@ -747,10 +749,12 @@ All you need to do is to use `ctx.oneWayCall`, as you do here in the `UserSessio
 @Override
 public void addTicket(ReserveTicket request, StreamObserver<BoolValue> responseObserver) {
   RestateContext ctx = restateContext();
+  // highlight-start  
   ctx.oneWayCall(
     TicketServiceGrpc.getReserveMethod(),
     Ticket.newBuilder().setTicketId(request.getTicketId()).build()
   );
+  // highlight-end  
 
   responseObserver.onNext(BoolValue.of(true));
   responseObserver.onCompleted();
@@ -835,10 +839,13 @@ Have a look at the logs again to see what happened:
 @Override
 public void expireTicket(ExpireTicketRequest request, StreamObserver<Empty> responseObserver) {
   RestateContext ctx = restateContext();
+
+  //highlight-start
   ctx.oneWayCall(
     TicketServiceGrpc.getUnreserveMethod(),
     Ticket.newBuilder().setTicketId(request.getTicketId()).build()
   );
+  //highlight-end
 
   responseObserver.onNext(Empty.getDefaultInstance());
   responseObserver.onCompleted();
@@ -990,6 +997,12 @@ The `addTicket` function did a one-way call to the `reserve` function so didn't 
 
 
 Revert the `reserve` function call to a request-response call, to see how the suspensions work across different services.
+
+
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
+
 Replace the `RpcContext.send()` with `RpcContext.rpc()`, to end up with:
 
 ```ts
@@ -1004,11 +1017,6 @@ const addTicket = async (
   return true;
 };
 ```
-
-Now you see in the logs that both services get suspended.
-The user session service gets suspended because it waits for a response from the `reserve` function and the ticket service gets suspended because it waits for the sleep to be completed.
-Restate keeps track of how long the service should sleep and then triggers it to resume the invocation.
-Finally, you see the responses of both functions coming in.
 
 <details><summary>Show the logs</summary>
 
@@ -1038,6 +1046,38 @@ Finally, you see the responses of both functions coming in.
 
 </details>
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+Replace the `ctx.call()` with `ctx.oneWayCall()`, to end up with:
+
+```java
+@Override
+public void addTicket(ReserveTicket request, StreamObserver<BoolValue> responseObserver) {
+  RestateContext ctx = restateContext();
+  // highlight-start  
+  ctx.oneWayCall(
+    TicketServiceGrpc.getReserveMethod(),
+    Ticket.newBuilder().setTicketId(request.getTicketId()).build()
+  );
+  // highlight-end  
+
+  responseObserver.onNext(BoolValue.of(true));
+  responseObserver.onCompleted();
+}
+```
+
+//TODO add logs 
+
+</TabItem>
+</Tabs>
+
+
+Now you see in the logs that both services get suspended.
+The user session service gets suspended because it waits for a response from the `reserve` function and the ticket service gets suspended because it waits for the sleep to be completed.
+Restate keeps track of how long the service should sleep and then triggers it to resume the invocation.
+Finally, you see the responses of both functions coming in.
+
 When you reduce the time the `TicketService/reserve` function sleeps to a second, you won't see the suspensions anymore.
 
 
@@ -1056,6 +1096,9 @@ If the user doesn't pay within that time interval, then it becomes available aga
 To do this, you can use a delayed call.
 This is a one-way call that gets delayed by a specified duration.
 This would make the `UserSession/addTicket` function look as follows:
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
 
 ```typescript
 const addTicket = async (
@@ -1079,9 +1122,45 @@ const addTicket = async (
 };
 ```
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+@Override
+public void addTicket(ReserveTicket request, StreamObserver<BoolValue> responseObserver) {
+  RestateContext ctx = restateContext();
+
+  var reservationSuccess = ctx.call(
+    TicketServiceGrpc.getReserveMethod(),
+    Ticket.newBuilder().setTicketId(request.getTicketId()).build()
+  ).await();
+
+  if(reservationSuccess.getValue()) {
+    //highlight-start
+    var expireReq = ExpireTicketRequest.newBuilder().setTicketId(request.getTicketId()).setUserId(request.getUserId()).build();
+    ctx.delayedCall(
+      UserSessionGrpc.getExpireTicketMethod(),
+      expireReq,
+      Duration.ofMinutes(15)
+    );
+    //highlight-end
+  }
+
+  responseObserver.onNext(BoolValue.of(reservationSuccess));
+  responseObserver.onCompleted();
+}
+```
+
+</TabItem>
+</Tabs>
+
 To test it out, put the delay to a lower value, for example 5 seconds, call the `addTicket` function, and see in the logs how the call is executed 5 seconds later.
 
 <details><summary>Show the logs</summary>
+
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
 
 ```logs
 ... logs from reserve call ...
@@ -1100,6 +1179,14 @@ To test it out, put the delay to a lower value, for example 5 seconds, call the 
 [restate] [2023-08-15T21:29:49.457Z] DEBUG: [TicketService/unreserve] [IwF2v7ci3eUBiiHT-bh91JO16nzGk-X0] : Function completed successfully.
 ```
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+//TODO add logs
+
+</TabItem>
+</Tabs>
+
 </details>
 
 Don't forget to set the delay back to 15 minutes.
@@ -1108,6 +1195,9 @@ Don't forget to set the delay back to 15 minutes.
 You can implement this pattern in different ways.
 You could also sleep for 15 minutes at the end of the `addTicket` function and then call the `TicketService/unreserve` function:
 
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
+
 ```typescript
 await ctx.sleep(15 * 60 * 1000);
 ctx.send(ticketServiceApi).unreserve({
@@ -1115,6 +1205,17 @@ ctx.send(ticketServiceApi).unreserve({
   ticketId: ticketId,
 });
 ```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+ctx.sleep(Duration.ofMinutes(15));
+ctx.oneWayCall(UserSessionGrpc.getExpireTicketMethod(), expireReq);
+```
+
+</TabItem>
+</Tabs>
 
 Be aware that sleeping in a keyed service blocks any invocations for that key.
 In this case, the user would not be able to add any other tickets, nor buy the tickets.
@@ -1143,9 +1244,12 @@ Restate's state feature is most useful for this service type.
 2. Unkeyed service: State is isolated per invocation. Using state isn't useful
 for this service type.
 
-Try to adapt the `UserSession/addTicket` function to keep track of the cart items.
+Adapt the `UserSession/addTicket` function to keep track of the cart items.
 After reserving the product, you add the ticket to the shopping cart.
 Have a look at the highlighted code:
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
 
 ```ts
 const addTicket = async (
@@ -1156,29 +1260,66 @@ const addTicket = async (
     // ... reserve call returning success ...
 
     if (reservationSuccess) {
-        //highlight-next-line
-        const tickets = (await ctx.get<string[]>("tickets")) ?? [];
-        tickets.push(ticketId);
-        //highlight-next-line
-        ctx.set("tickets", tickets);
+      //highlight-next-line
+      const tickets = (await ctx.get<string[]>("tickets")) ?? [];
+      tickets.push(ticketId);
+      //highlight-next-line
+      ctx.set("tickets", tickets);
 
-        // ... expireTicket call ...
+      // ... expireTicket call ...
     }
 
     return reservationSuccess;
 }
 ```
 
-To retrieve the cart, the first highlighted line calls `await ctx.get<T>(state_key: string)`.
+</TabItem>
+<TabItem value="java" label="Java">
+
+
+```java
+//highlight-start
+public static final StateKey<Set<String>> STATE_KEY = 
+  StateKey.of("tickets", JacksonSerde.typeRef(new TypeReference<>() {}));
+//highlight-end
+
+@Override
+public void addTicket(ReserveTicket request, StreamObserver<BoolValue> responseObserver) {
+  RestateContext ctx = restateContext();
+
+  // ... reserve call returning success ...
+
+  if(reservationSuccess.getValue()) {
+    //highlight-next-line
+    var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
+    tickets.add(request.getTicketId());
+    //highlight-next-line
+    ctx.set(STATE_KEY, tickets);
+
+    // ... expireTicket call ...
+  }
+
+  responseObserver.onNext(reservationSuccess);
+  responseObserver.onCompleted();
+}
+```
+
+</TabItem>
+</Tabs>
+
+To retrieve the cart, you use `ctx.get`.
 This returns `null` if the value has never been set.
 
 You can store multiple key-value pairs, by using different state keys.
 Here, you get the value under the key `"tickets"`.
 Restate ensures that you get the cart belonging to the current user ID (key of the service).
 
-After you added the ticket to the cart array, the second highlighted line sets the state to the new value with `ctx.set(state_key: string, new_value: T)`.
+After you added the ticket to the cart array, you set the state to the new value with `ctx.set`.
 
 Run the services and call the `addTicket` function, to see the interaction with state in the logs.
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
 
 <details><summary>Show the logs</summary>
 
@@ -1193,23 +1334,58 @@ Run the services and call the `addTicket` function, to see the interaction with 
 
 </details>
 
+:::info
+You can store any object in the state as long as the value can be serialized with `Buffer.from(JSON.stringify(yourObject))`.
+:::
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+<details><summary>Show the logs</summary>
+
+//TODO add logs 
+
+</details>
+
+:::info
+To let Restate serialize custom state types, you need to add the `dev.restate.sdk:sdk-serde-jackson:1.0-SNAPSHOT` dependency.
+:::
+
+</TabItem>
+</Tabs>
+
 You see that when you request the state, it gets logged in the journal.
 The state value gets immediately retrieved, because the invocation state is eagerly sent.
 Finally, you set the new value.
 
 Add a log statement to print the cart contents, and then call `addTicket` multiple times to see how the state gets updated:
 
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
+
 ```ts
 console.info(`Current tickets: ${JSON.stringify(tickets)}`);
 ```
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+System.out.println(tickets);
+```
+
+</TabItem>
+</Tabs>
+
+
 You can also stop and relaunch the service or restart the runtime (`docker restart restate_dev`), to see that this has no influence on the tickets.
 
-:::info
-You can store any object in the state as long as the value can be serialized with `Buffer.from(JSON.stringify(yourObject))`.
-:::
 
-Try to also adapt the `checkout` function in the user session service, to use the tickets:
+Also adapt the `checkout` function in the user session service, to use the tickets:
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
+
 ```typescript
 const checkout = async (ctx: restate.RpcContext, userId: string) => {
   // 1. Retrieve the tickets from state
@@ -1239,6 +1415,53 @@ const checkout = async (ctx: restate.RpcContext, userId: string) => {
 };
 ```
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+// Add to top of class
+public static final StateKey<Set<String>> STATE_KEY = StateKey.of("tickets", JacksonSerde.typeRef(new TypeReference<>() {}));
+
+@Override
+public void checkout(CheckoutRequest request, StreamObserver<BoolValue> responseObserver) {
+  RestateContext ctx = restateContext();
+
+  // 1. Retrieve the tickets from state
+  //highlight-next-line
+  var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
+
+  // 2. If there are no tickets, return `false`
+  //highlight-start
+  if(tickets.isEmpty()){
+    responseObserver.onNext(BoolValue.of(false));
+  }
+  //highlight-end
+
+  // 3. Call the `checkout` function of the checkout service with the tickets
+  var checkoutSuccess = ctx.call(
+    CheckoutGrpc.getCheckoutMethod(),
+    CheckoutFlowRequest
+      .newBuilder()
+      .setUserId(request.getUserId())
+      .addAllTickets(tickets)
+      .build()
+  ).await();
+
+  // 4. If this was successful, empty the tickets.
+  // Otherwise, let the user try again.
+  if(checkoutSuccess.getValue()){
+    //highlight-next-line
+    ctx.clear(STATE_KEY);
+  }
+
+  responseObserver.onNext(checkoutSuccess);
+  responseObserver.onCompleted();
+}
+```
+
+</TabItem>
+</Tabs>
+
 Have a look at the logs to see how the code executes the workflow.
 
 [//]: # (TODO add some text on how to run this and print the state )
@@ -1252,6 +1475,9 @@ Now that you implemented the checkout function, you can also finish the `UserSes
 
 At the moment you have the following code:
 
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
+
 ```ts
 const expireTicket = async (
   ctx: restate.RpcContext,
@@ -1262,11 +1488,37 @@ const expireTicket = async (
 };
 ```
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+public static final StateKey<Set<String>> STATE_KEY = StateKey.of("tickets", JacksonSerde.typeRef(new TypeReference<>() {}));
+
+@Override
+public void expireTicket(ExpireTicketRequest request, StreamObserver<Empty> responseObserver) {
+  RestateContext ctx = restateContext();
+
+  ctx.oneWayCall(
+    TicketServiceGrpc.getUnreserveMethod(),
+    Ticket.newBuilder().setTicketId(request.getTicketId()).build()
+  );
+
+  responseObserver.onNext(Empty.getDefaultInstance());
+  responseObserver.onCompleted();
+}
+```
+
+</TabItem>
+</Tabs>
+
 Before you call `unreserve`, you first need to check if the ticket is still hold by the user.
 Retrieve the state and check if the ticket ID is in there.
 If this is the case, then you call `TicketService/unreserve` and remove it from the state.
 
 <details><summary>Solution</summary>
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
 
 ```ts
 const expireTicket = async (
@@ -1287,6 +1539,36 @@ const expireTicket = async (
 };
 ```
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+public static final StateKey<Set<String>> STATE_KEY = StateKey.of("tickets", JacksonSerde.typeRef(new TypeReference<>() {}));
+
+@Override
+public void expireTicket(ExpireTicketRequest request, StreamObserver<Empty> responseObserver) {
+  RestateContext ctx = restateContext();
+  var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
+
+  var removed = tickets.removeIf(s -> s.equals(request.getTicketId()));
+
+  if(removed) {
+    ctx.set(STATE_KEY, tickets);
+
+    ctx.oneWayCall(
+      TicketServiceGrpc.getUnreserveMethod(),
+      Ticket.newBuilder().setTicketId(request.getTicketId()).build()
+    );
+  }
+
+  responseObserver.onNext(Empty.getDefaultInstance());
+  responseObserver.onCompleted();
+}
+```
+
+</TabItem>
+</Tabs>
+
 </details>
 
 
@@ -1295,13 +1577,16 @@ You can track the status of the tickets in the ticket service by storing it in t
 
 1. Implement the `TicketService/reserve` function.
 The function first retrieves the value for the `"status"` state key.
-If the value is set to `TicketStatus.Available`, then change it to `TicketStatus.Reserved"` and
+If the value is set to `TicketStatus.Available`, then change it to `TicketStatus.Reserved` and
 return `true` (reservation successful).
 If the status isn't set to `TicketStatus.Available`, then return `false`.
 Remove the sleep that you added before.
 
 <>
 <details><summary>Solution</summary>
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
 
 ```ts
 const reserve = async (ctx: restate.RpcContext) => {
@@ -1317,6 +1602,31 @@ const reserve = async (ctx: restate.RpcContext) => {
 };
 ```
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+public static final StateKey<TicketStatus> STATE_KEY = StateKey.of("status", JacksonSerde.typeRef(new TypeReference<>() {}));
+
+@Override
+public void reserve(Ticket request, StreamObserver<BoolValue> responseObserver) {
+  RestateContext ctx = restateContext();
+
+  var status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
+
+  if(status.equals(TicketStatus.Available)){
+    ctx.set(STATE_KEY, TicketStatus.Reserved);
+    responseObserver.onNext(BoolValue.of(true));
+  } else {
+    responseObserver.onNext(BoolValue.of(false));
+  }
+  responseObserver.onCompleted();
+}
+```
+
+</TabItem>
+</Tabs>
+
 Now, you can't reserve the same ticket multiple times anymore.
 Call `addTicket` multiple times for the same ID. The first time it returns `true`, afterwards `false`.
 </details>
@@ -1327,6 +1637,9 @@ The function should set the value of the `"status"` key to `TicketStatus.Availab
 
 <>
 <details><summary>Solution</summary>
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
 
 ```ts
 const unreserve = async (ctx: restate.RpcContext) => {
@@ -1341,6 +1654,26 @@ const unreserve = async (ctx: restate.RpcContext) => {
   }
 };
 ```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+@Override
+public void unreserve(Ticket request, StreamObserver<Empty> responseObserver) {
+  RestateContext ctx = restateContext();
+
+  var status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
+
+  if(!status.equals(TicketStatus.Sold)){
+    ctx.clear(STATE_KEY);
+  }
+  responseObserver.onNext(Empty.getDefaultInstance());
+  responseObserver.onCompleted();
+}
+```
+</TabItem>
+</Tabs>
 
 Now, the ticket reservation status switches back to `TicketStatus.Available` when the delayed call triggers.
 Play around with reducing the delay of the `expireTicket` call in the `addTicket` function.
@@ -1357,6 +1690,10 @@ If successful, the function returns `true`.
 <>
 <details><summary>Solution</summary>
 
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
+
 ```ts
 const markAsSold = async (ctx: restate.RpcContext) => {
   const status =
@@ -1371,16 +1708,50 @@ const markAsSold = async (ctx: restate.RpcContext) => {
 };
 ```
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+@Override
+public void markAsSold(Ticket request, StreamObserver<Empty> responseObserver) {
+  RestateContext ctx = restateContext();
+
+  var status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
+
+  if(status.equals(TicketStatus.Reserved)){
+    ctx.set(STATE_KEY, TicketStatus.Sold);
+  }
+  responseObserver.onNext(Empty.getDefaultInstance());
+  responseObserver.onCompleted();
+}
+```
+</TabItem>
+</Tabs>
+
 In the next section, you implement the `Checkout/checkout` function that calls `markAsSold`.
 This ties the final parts together.
 </details>
 </>
 
 :::info
-🚩 Explore the intermediate solution in `part2`, and run it with `npm run part2`.
+🚩 Explore the intermediate solution in `part2`, and run it with 
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
+
+```shell
+npm run part2
+```
+</TabItem>
+<TabItem value="java" label="Java">
+
+```shell
+./gradlew -PmainClass=dev.restate.tour.part.AppMain run
+```
+</TabItem>
+</Tabs>
 :::
 
-./gradlew -PmainClass=dev.restate.tour.part.AppMain run
 
 ## Side effects
 
@@ -1401,6 +1772,9 @@ This includes pieces of time-consuming, deterministic user code.
 
 Use a side effect in `Checkout/checkout` to create and store a UUID (with the [uuid library](https://www.npmjs.com/package/uuid)) or idempotency key:
 
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
+
 ```typescript
 import { v4 as uuid } from "uuid";
 
@@ -1414,19 +1788,58 @@ const checkout = async (
 };
 ```
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+import java.util.UUID;
+
+public void checkout(CheckoutFlowRequest request, StreamObserver<BoolValue> responseObserver) {
+  RestateContext ctx = restateContext();
+
+  // highlight-next-line
+  var idempotencyKey = ctx.sideEffect(TypeTag.STRING_UTF8, () -> UUID.randomUUID().toString());
+
+  responseObserver.onNext(BoolValue.of(true));
+  responseObserver.onCompleted();
+}
+```
+
+</TabItem>
+</Tabs>
+
+
+
 The highlighted line of code wraps the creation of the UUID in a side effect with a string return type.
 When the `checkout()` function gets re-executed upon replay, Restate injects the stored value.
 
-To experiment, you can add a log line and a sleep to see how the UUID gets replayed after the suspension:
+To experiment, you can print the idempotency key to the console and add a sleep to see how the UUID gets replayed after the suspension:
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
 
 ```ts
 console.log("My idempotency key: " + idempotencyKey);
 await ctx.sleep(31000);
 ```
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+System.out.println("My idempotency key: " + idempotencyKey);
+ctx.sleep(Duration.ofSeconds(31));
+```
+
+</TabItem>
+</Tabs>
+
 
 Have a look at the logs to see what happens.
 
 <details><summary>Show the logs</summary>
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
 
 ```log
 ... logs of `UserSession/checkout` ...
@@ -1454,6 +1867,14 @@ My idempotency key: dd92178a-85ca-4002-bfd5-0f3ed167317d
 ... logs of `UserSessionService/Checkout` ...
 ```
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+//TODO add logs
+
+</TabItem>
+</Tabs>
+
 </details>
 
 Remove the sleep again, before you continue.
@@ -1465,11 +1886,11 @@ This is invalid code.
 
 ### 📝 Try it out
 #### Executing the payment
-The `checkout` function triggers the payment via some external payment provider (`PaymentClient`). You can find a payment client stub in `src/aux/payment_client.ts`.
+The `checkout` function triggers the payment via some external payment provider (`PaymentClient`). You can find a payment client stub in `auxiliary/PaymentClient`.
 The payment client has two methods:
 
 - `get()` to create a new client,
-- `call(idempotencyKey: string, amount: number)` to execute the payment for a certain idempotency key and total amount.
+- `call(idempotencyKey, amount)` to execute the payment for a certain idempotency key (String) and total amount (double/number).
 The payment provider makes sure that exactly one payment gets processed for a single idempotency key.
 
 Create a new payment client in `CheckoutService/Checkout`.
@@ -1478,6 +1899,9 @@ Then execute the payment with the created idempotency key and store the boolean 
 Also use the boolean result for the return value of the function.
 
 <details><summary>Solution</summary>
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
 
 ```typescript
 const checkout = async (
@@ -1488,7 +1912,7 @@ const checkout = async (
 
   const totalPrice = request.tickets.length * 40;
 
-  // highligh-start
+  // highlight-start
   const paymentClient = PaymentClient.get();
   const success = await ctx.sideEffect(() => paymentClient.call(idempotencyKey, totalPrice));
   // highlight-end
@@ -1517,6 +1941,39 @@ Payment call succeeded for idempotency key 923d1558-bf17-4c94-b027-4cfd778049fe 
 // ... UserSessionService/Checkout logs ...
 ```
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+//highlight-next-line
+PaymentClient paymentClient = PaymentClient.get();
+EmailClient emailClient = EmailClient.get();
+
+@Override
+public void checkout(CheckoutFlowRequest request, StreamObserver<BoolValue> responseObserver) {
+  RestateContext ctx = restateContext();
+
+  // Generate idempotency key for the stripe client
+  var idempotencyKey = ctx.sideEffect(TypeTag.STRING_UTF8, () -> UUID.randomUUID().toString());
+
+  // We are a uniform shop where everything costs 40 USD
+  var totalPrice = request.getTicketsList().size() * 40.0;
+
+  //highlight-next-line
+  boolean success = ctx.sideEffect(TypeTag.ofClass(boolean.class), () -> paymentClient.call(idempotencyKey, totalPrice));
+
+  responseObserver.onNext(BoolValue.of(success));
+  responseObserver.onCompleted();
+}
+```
+
+Add some tickets to your cart, then call `UserSession/checkout`, and check out the logs.
+
+//TODO add logs
+
+</TabItem>
+</Tabs>
+
 You see the `UserSession` service retrieving the cart and calling the checkout service.
 The `Checkout` service then does a side effect, the payment, and another side effect.
 The checkout success is propagated back to the `UserSession` service.
@@ -1526,16 +1983,19 @@ The checkout success is propagated back to the `UserSession` service.
 #### Finishing the checkout workflow
 Once this works, you implement the rest of the checkout workflow:
 - If the payment call was successful, then:
-    - use the EmailClient in `src/aux/email_client.ts` to notify the users of the payment success.
+    - use the EmailClient to notify the users of the payment success.
     Prevent duplicate emails during retries by using a side effect.
     - let the calling `UserSession` mark all tickets as sold via `TicketService/markAsSold`.
 - If the payment call was unsuccessful, then:
-    - use the EmailClient in `src/aux/email_client.ts` to notify the users of the payment failure.
+    - use the EmailClient to notify the users of the payment failure.
     Prevent duplicate emails during retries by using a side effect.
 
 <details><summary>Solution</summary>
 
 The `Checkout/checkout` function looks now the following:
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
 
 ```ts
 const checkout = async (
@@ -1564,30 +2024,104 @@ const checkout = async (
 };
 ```
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+PaymentClient paymentClient = PaymentClient.get();
+EmailClient emailClient = EmailClient.get();
+
+@Override
+public void checkout(CheckoutFlowRequest request, StreamObserver<BoolValue> responseObserver) {
+  RestateContext ctx = restateContext();
+
+  // Generate idempotency key for the stripe client
+  var idempotencyKey = ctx.sideEffect(TypeTag.STRING_UTF8, () -> UUID.randomUUID().toString());
+
+  // We are a uniform shop where everything costs 40 USD
+  var totalPrice = request.getTicketsList().size() * 40.0;
+
+  boolean success = ctx.sideEffect(TypeTag.ofClass(boolean.class), () -> paymentClient.call(idempotencyKey, totalPrice));
+
+  if(success) {
+    ctx.sideEffect(()-> emailClient.notifyUserOfPaymentSuccess(request.getUserId()));
+  } else {
+    ctx.sideEffect(() -> emailClient.notifyUserOfPaymentFailure(request.getUserId()));
+  }
+
+  responseObserver.onNext(BoolValue.of(success));
+  responseObserver.onCompleted();
+}
+```
+
+</TabItem>
+</Tabs>
+
+
 The `UserSession/checkout` function looks now the following:
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
+
 
 ```ts
 const checkout = async (ctx: restate.RpcContext, userId: string) => {
-  const tickets = await ctx.get<string[]>("tickets");
+  const tickets = (await ctx.get<string[]>("tickets")) ?? [];
 
-  if (tickets && tickets.length > 0) {
-    const checkout_success = await ctx
-      .rpc(checkoutApi)
-      .checkout({ userId: userId, tickets: tickets! });
-
-    if (checkout_success) {
-      for (const ticket_id of tickets) {
-        ctx.send(ticketServiceApi).markAsSold(ticket_id);
-      }
-      ctx.clear("tickets");
-    }
-
-    return checkout_success;
-  } else {
+  if (tickets.length === 0) {
     return false;
   }
+
+  const checkoutSuccess = await ctx
+    .rpc(checkoutApi)
+    .checkout({ userId: userId, tickets: tickets! });
+
+  if (checkoutSuccess) {
+    // mark tickets as sold if checkout was successful
+    for (const ticketId of tickets) {
+      ctx.send(ticketServiceApi).markAsSold(ticketId);
+    }
+    ctx.clear("tickets");
+  }
+
+  return checkoutSuccess;
 };
 ```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+@Override
+public void checkout(CheckoutRequest request, StreamObserver<BoolValue> responseObserver) {
+  RestateContext ctx = restateContext();
+  var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
+
+  if(tickets.isEmpty()){
+    responseObserver.onNext(BoolValue.of(false));
+  }
+
+  var checkoutSuccess = ctx.call(
+    CheckoutGrpc.getCheckoutMethod(),
+    CheckoutFlowRequest
+      .newBuilder()
+      .setUserId(request.getUserId())
+      .addAllTickets(tickets)
+      .build()
+  ).await();
+
+  if(checkoutSuccess.getValue()){
+    ctx.clear(STATE_KEY);
+  }
+
+  responseObserver.onNext(checkoutSuccess);
+  responseObserver.onCompleted();
+}
+```
+
+
+</TabItem>
+</Tabs>
 
 </details>
 
@@ -1595,10 +2129,25 @@ const checkout = async (ctx: restate.RpcContext, userId: string) => {
 🥳 Except for a few resiliency tweaks, you fully implemented the ticket reservation system!
 
 :::info
-🚩 Explore the intermediate solution in `part3`, and run it with `npm run part3`.
+🚩 Explore the intermediate solution in `part3`, and run it with:
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
+
+```shell
+npm run part3
+```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```shell
+./gradlew -PmainClass=dev.restate.tour.part3.AppMain run
+```
+
+</TabItem>
+</Tabs>
 :::
 
-./gradlew -PmainClass=dev.restate.tour.part3.AppMain run
 
 ## Resiliency
 
@@ -1625,6 +2174,9 @@ These features are switched on by default. No need to do anything.
 If you do a side effect operation and the side effect fails, then it is retried until it succeeds.
 You can observe this behavior by using the `paymendClient.failingCall` in `Checkout/checkout`:
 
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
+
 ```typescript
 const paymentClient = PaymentClient.get();
 //highlight-start
@@ -1633,12 +2185,26 @@ const success = await ctx.sideEffect(doPayment);
 //highlight-end
 ```
 
-You now call `paymentClient.failingCall` which fails 2 times before succeeding.
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+boolean success = ctx.sideEffect(TypeTag.ofClass(boolean.class), () -> paymentClient.failingCall(idempotencyKey, totalPrice));
+```
+</TabItem>
+</Tabs>
+
+
+
+You now call `paymentClient.failingCall` which fails two times before succeeding.
 A failing side effect is retried with an exponential backoff until it succeeds.
 Restate uses suspending sleeps for the wait time between retries.
 Have a look at the logs to see the retries.
 
 <details><summary>Show the logs</summary>
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
 
 ```log
 [restate] [2023-08-16T08:24:28.507Z] DEBUG: [Checkout/checkout] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Invoking function.
@@ -1703,6 +2269,15 @@ Notifying user 123 of payment success
 [restate] [2023-08-16T08:24:28.558Z] DEBUG: [Checkout/checkout] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Journaled and sent output message ; OutputStreamEntryMessage
 [restate] [2023-08-16T08:24:28.558Z] DEBUG: [Checkout/checkout] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Function completed successfully.
 ```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+//TODO add log
+
+</TabItem>
+</Tabs>
+
 
 </details>
 
@@ -1774,10 +2349,26 @@ For more information, have a look at the [tracing docs](/restate/tracing).
 ## 🏁 The end
 You reached the end of this tutorial!
 
-:::info 🚩 Have a look at the fully implemented app in `part4`, and run it with `npm run part4`.
+:::info 🚩 Have a look at the fully implemented app in `part4`, and run it with .
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
+
+```shell
+npm run part4
+```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```shell
+./gradlew -PmainClass=dev.restate.tour.part4.AppMain run
+```
+
+</TabItem>
+</Tabs>
 :::
 
-./gradlew -PmainClass=dev.restate.tour.part4.AppMain run
+
 
 Let's recap what you've covered:
 - reliable, suspendable request-response calls
