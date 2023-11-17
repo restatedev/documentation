@@ -182,16 +182,16 @@ First, get AWS credentials into your environment:
 export AWS_ACCESS_KEY_ID=$(aws --profile default configure get aws_access_key_id)
 export AWS_SECRET_ACCESS_KEY=$(aws --profile default configure get aws_secret_access_key)
 ```
-If you use SSO, you can use a tool like [aws-sso-creds](https://github.com/jaxxstorm/aws-sso-creds) - the AWS Rust SDK
-doesn't yet support obtaining and rotating SSO session tokens based on your ~/.aws/config, but this is coming soon.
+If you use SSO, the AWS Rust SDK currently requires a minor change to your ~/.aws/config to support this;
+see https://github.com/awslabs/aws-sdk-rust/issues/703#issuecomment-1811480196.
 
 - On Linux
 ```shell
-docker run -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY -e AWS_SESSION_TOKEN --name restate_dev --rm -d --network=host ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
+docker run -e AWS_PROFILE -v ~/.aws/:/root/.aws --name restate_dev --rm -d --network=host ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
 ```
 - On macOS:
 ```shell
-docker run -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY -e AWS_SESSION_TOKEN --name restate_dev --rm -d -p 8080:8080 -p 9070:9070 -p 9071:9071 ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
+docker run -e AWS_PROFILE -v ~/.aws/:/root/.aws --name restate_dev --rm -d -p 8080:8080 -p 9070:9070 -p 9071:9071 ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
 ```
 
 Consult the runtime logs via `docker logs restate_dev`.
