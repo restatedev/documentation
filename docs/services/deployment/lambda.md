@@ -170,18 +170,13 @@ The response should be the following:
 
 The body is the base64 encoded string of the response, and stands for `{"value":"Hello Pete"}`.
 
-### Sending requests your Lambda function
+### Sending requests to your Lambda function
 
 #### Running the Restate runtime
 
-You don't necessarily need to run the Restate runtime on AWS, but it does need to be able to obtain credentials to invoke your Lambd, but it does need to be able to obtain credentials to invoke your Lambda.
-You can run the Restate runtime locally in a Docker container to test your Lambda function:
+You don't necessarily need to run the Restate runtime on AWS, but it does need to be able to obtain credentials to invoke your Lambda.
+You can run the Restate runtime locally in a Docker container to test your Lambda function, using your local AWS creds (defined in ~/.aws).
 
-First, get AWS credentials into your environment:
-```shell
-export AWS_ACCESS_KEY_ID=$(aws --profile default configure get aws_access_key_id)
-export AWS_SECRET_ACCESS_KEY=$(aws --profile default configure get aws_secret_access_key)
-```
 If you use SSO, the AWS Rust SDK currently requires a minor change to your ~/.aws/config to support this;
 see https://github.com/awslabs/aws-sdk-rust/issues/703#issuecomment-1811480196.
 
