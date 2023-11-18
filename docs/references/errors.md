@@ -170,6 +170,14 @@ This is a generic error which can be caused by many reasons, including:
 * Non-deterministic user code execution
 * Restate runtime and/or SDK bug
 
-In some cases, the error will be retried depending on the configured retry policy. 
 We suggest checking the service endpoint logs as well to get any hint on the error cause.
+
+## RT0007
+
+A retry-able error was received from the service endpoint while processing the invocation.
+
+Suggestions:
+
+* Check the service endpoint logs to get more info about the error cause, like the stacktrace.
+* Look at the https://docs.restate.dev/services/sdk/error-handling for more info about error handling in services.
 
