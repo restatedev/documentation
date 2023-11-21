@@ -12,9 +12,6 @@ docker run --rm -p 3000:80 ghcr.io/restatedev/documentation:latest
 
 This will serve the documentation under `localhost:3000`.
 
-> **Note**
-> Make sure that you have access to Github's container registry by [following these instructions](https://github.com/restatedev/restate-dist#container-registry).
-
 You can also check this repository out and build the documentation yourself by following the instructions below.
 
 ## Developing the documentation
@@ -51,7 +48,7 @@ The `main` branch of the documentation is continuously deployed at `https://main
 
 Before releasing the documentation, update schemas and version of Restate artifacts, either:
 
-* Automatically by executing the _Pre-release updates_ workflow. 
+* Automatically by executing the _Pre-release updates_ workflow.
 * Manually, as described below.
 
 Once the branch `main` is ready to be released, merge `main` in `production` and push it, together with the release tag. E.g:
