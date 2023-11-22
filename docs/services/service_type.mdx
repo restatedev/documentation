@@ -3,6 +3,9 @@ sidebar_position: 1
 description: "Restate supports keyed, unkeyed, and singleton services."
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Service types
 
 Restate provides different state semantics and concurrency properties for services, that you can choose from when defining the service.
@@ -27,6 +30,9 @@ A common use case for keyed services is to model an entity of your application. 
 
 Because keyed services are executed serially on a per-key basis, it means that invocations will execute in the same order in which they are enqueued. For example, assume the following code in `ServiceA`:
 
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
+
 ```typescript
 const client = new ServiceB(ctx);
 await ctx.oneWayCall(() =>
@@ -36,6 +42,20 @@ await ctx.oneWayCall(() =>
   client.do(TestRequest.create({ key: "Pete", number: 2 }))
 );
 ```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+GreeterRestate.GreeterRestateClient client = GreeterRestate.newClient(ctx);
+var req1 = TestRequest.newBuilder().setName("Pete").setNumber(1).build();
+client.oneWay().greet(req1);
+var req2 = TestRequest.newBuilder().setName("Pete").setNumber(2).build();
+client.oneWay().greet(req2);
+```
+
+</TabItem>
+</Tabs>
 
 It is guaranteed that the invocation with `number: 1` will be executed before the invocation with `number: 2`. It is not guaranteed though that invocation `number: 2` will be executed immediately after invocation `number: 1`, as any other service, or a call from the ingress, could interleave these two calls enqueuing a third one.
 
