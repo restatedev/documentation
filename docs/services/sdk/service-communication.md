@@ -62,7 +62,7 @@ const greeting = await client.greet(
 </TabItem>
 <TabItem value="java" label="Java">
 
-To do request-response calls, use the gRPC client implementation supplied via the generated Protobuf code.
+You can do request-response calls via `ctx.call` by supplying it with the gRPC method descriptor and request, by using the generated Protobuf code.
 In this example, the `Greet` function requires a `Request` Protobuf message as input with a single `name` parameter.
 
 ```java
@@ -124,7 +124,8 @@ You cannot wrap any other types of operations with `oneWayCall()`! This is inval
 </TabItem>
 <TabItem value="java" label="Java">
 
-To do this, wrap the call with `ctx.oneWayCall` as shown below:
+You can do one-way calls via `ctx.oneWayCall` by supplying it with the gRPC method descriptor and request, by using the generated Protobuf code.
+In this example, the `Greet` function requires a `Request` Protobuf message as input with a single `name` parameter.
 
 ```java
 var req = Request.newBuilder().setName("Pete").build()
@@ -171,7 +172,7 @@ await ctx.delayedCall(() =>
 </TabItem>
 <TabItem value="java" label="Java">
 
-```typescript
+```java
 var req = Request.newBuilder().setName("Pete").build()
 ctx.delayedCall(
   GreeterGrpc.getGreetMethod(),
