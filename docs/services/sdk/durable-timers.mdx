@@ -30,14 +30,15 @@ await ctx.sleep(duration);
 <TabItem value="java" label="Java">
 
 ```java
-Duration duration = Duration.ofSeconds(10);
-ctx.sleep(duration);
+ctx.sleep(Duration.ofSeconds(10));
 ```
 
 </TabItem>
 </Tabs>
 
+:::note
 For sleep to work properly, make sure that the system clock of the runtime is synchronized with the clock of the service endpoint and that they use the same time zone. When you do a timer-based action with the SDK (e.g. sleep, delayed calls), the duration gets calculated based on the system clock of the service. But subsequently, Restate registers this timer on its own system clock. So the system clock of the service and of Restate need to be synchronized.
+:::
 
 :::caution
 While sleeping, singleton services and keyed services (for that single key) will not process other incoming invocations.

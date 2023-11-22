@@ -39,14 +39,14 @@ To get started quickly, use the template generator
 Add a set of the following dependencies.
 
 Depending on the preferred language:
-- To use Java: `dev.restate.sdk:sdk-java-blocking:VAR::RESTATE_DIST_VERSION`
-- To use Kotlin: `dev.restate.sdk:sdk-kotlin:VAR::RESTATE_DIST_VERSION`
+- To use Java: `dev.restate.sdk:sdk-java-blocking:VAR::JAVA_SDK_VERSION`
+- To use Kotlin: `dev.restate.sdk:sdk-kotlin:VAR::JAVA_SDK_VERSION`
 
 Depending on the deployment target:
-- To run as long-running app: `dev.restate.sdk:sdk-http-vertx:VAR::RESTATE_DIST_VERSION`
-- To run on AWS Lambda: `dev.restate.sdk:sdk-lambda:VAR::RESTATE_DIST_VERSION`
+- To run as long-running app: `dev.restate.sdk:sdk-http-vertx:VAR::JAVA_SDK_VERSION`
+- To run on AWS Lambda: `dev.restate.sdk:sdk-lambda:VAR::JAVA_SDK_VERSION`
 
-To use Jackson to read/write state entries: `dev.restate.sdk:sdk-serde-jackson:VAR::RESTATE_DIST_VERSION`
+To use Jackson to read/write state entries: `dev.restate.sdk:sdk-serde-jackson:VAR::JAVA_SDK_VERSION`
 
 </TabItem>
 </Tabs>
@@ -184,7 +184,7 @@ To understand the Restate-specific parts of this Protobuf definition, have a loo
 
 Below is an example of a Java service. 
 
-Restate uses [gRPC](https://grpc.io/) to define the service and its methods. The example shows a greeter service comprising two methods:
+Restate uses [protobuf](https://protobuf.dev/) to define the service and its methods. The example shows a greeter service with a single method:
 - `greet`: maintains a record of the number of times it has received a request for a given name, and prints a greeting.
 
 ```java
@@ -221,7 +221,6 @@ public class Greeter extends GreeterGrpc.GreeterImplBase implements RestateBlock
 }
 ```
 
-The contract of the gRPC service is defined in the Protobuf service contracts, that are shown below.
 Within the method, the Restate context is retrieved, enabling interaction with Restate (e.g. getting stating, calling other services).
 Finally, the Restate server is set up to serve both methods of the greeter service.
 
