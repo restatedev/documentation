@@ -47,6 +47,22 @@ async greet(request: Request): Promise<Response> {
 
 <TabItem value="java" label="Java">
 
+The Restate context is supplied as the first argument `ctx` to the method.
+
+For example:
+
+```java
+public class Greeter extends GreeterRestate.GreeterRestateImplBase {
+
+  @Override
+  public GreetResponse greet(RestateContext ctx, GreetRequest request) {
+    // implement your method
+  }
+}
+```
+<details><summary>Alternative: vanilla gRPC</summary>
+
+If you do not use Restate's generated protobuf code, you can access the restate context as follows
 
 ```java
 import dev.restate.sdk.blocking.RestateContext;
@@ -55,9 +71,11 @@ import dev.restate.sdk.blocking.RestateContext;
 RestateContext ctx = restateContext();
 ```
 
+</details>
+
+
 </TabItem>
 </Tabs>
-
 
 
 :::info
