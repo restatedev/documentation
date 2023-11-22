@@ -52,17 +52,19 @@ The SDK deserializes the payload with `JSON.parse(result.toString()) as T`.
 
 ```java
 // 1. Generate the ID
-Awakeable<String> awakeable = ctx.awakeable(TypeTag.STRING_UTF8);
+Awakeable<String> awakeable = ctx.awakeable(CoreSerdes.STRING_UTF8);
 
 // 2. Send the ID to some external system
 String awakeableId = awakeable.id();
 // ... send a request to another system and include the awakeableId as callback url...
 
 // 3. Wait for the ID to returned and retrieve the payload
-awakeable.await();
+String payload = awakeable.await();
 ```
 
-You need to define the return value type of the awakeable, so that the Restate SDK knows how to deserialize it. You can do this by supplying the `TypeTag` or class, for example `TypeTag.STRING_UTF8` or `boolean.class`.  
+You need to define the deserializer for the payload.
+For primitive types, you can do this by using Restate's built-in `dev.restate.sdk.core.CoreSerdes`.
+For other types, have a look at the [serialization documentation](/services/sdk/serialization).
 
 </TabItem>
 </Tabs>
@@ -83,18 +85,22 @@ Use the awakeable ID that you received from the other service, and do the follow
 ctx.resolveAwakeable(id, "hello");
 ```
 
+The SDK serializes the payload with `Buffer.from(JSON.stringify(payload))` and deserializes it in the receiving service with `JSON.parse(result.toString()) as T`.
+Make sure that the payload you send, has the type that is expected on the receiving side.
+
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java
-ctx.awakeableHandle(awakeableId).resolve(TypeTag.STRING_UTF8, "hello");
+ctx.awakeableHandle(awakeableId).resolve(CoreSerdes.STRING_UTF8, "hello");
 ```
+
+You need to define the serialization for the payload, so that the Restate SDK knows how to deserialize it.
+For primitive types, you can do this by using Restate's built-in `dev.restate.sdk.core.CoreSerdes`.
+For other types, have a look at the [serialization documentation](/services/sdk/serialization).
 
 </TabItem>
 </Tabs>
-
-
-The SDK serializes the payload with `Buffer.from(JSON.stringify(payload))` and deserializes it in the receiving service with `JSON.parse(result.toString()) as T`.
 
 You can also reject an awakeable, that is completing it with a failure. This will cause the waiting service to throw [a terminal error](./error-handling.md):
 
@@ -145,4 +151,4 @@ For example:
 curl -X POST http://<restate-runtime-host-port>/dev.restate.Awakeables/Reject -H 'content-type: application/json' -d '{"id": "T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE", "reason": "Very bad error!"}'
 ```
 
-For more details, look at the [Awakeables service documentation](https://github.com/restatedev/proto/blob/main/dev/restate/services.proto) and [how to invoke a service documentation](../invocation.md#invoking-restate-services).
+For more details, look at the [awakeables service documentation](https://github.com/restatedev/proto/blob/main/dev/restate/services.proto) and [how to invoke a service documentation](../invocation.md#invoking-restate-services).

@@ -25,20 +25,40 @@ import { TerminalError } from "@restatedev/restate-sdk";
 throw new TerminalError("Something went wrong.", { errorCode: 13, cause: "Something caused this." })
 ```
 
-The `errorCode` and `cause` are optional. 
+The `errorCode` and `cause` are optional.
+
+:::note Errors during side effect execution
+
+Throwing errors inside a side effect has the same semantics as anywhere else in your handler code.
+By default, Restate infinitely retries the invocation, and therefore the side effect.
+Errors that should not be retried, should be thrown as terminal errors, as described earlier.
+
+Invocation retries are triggered by Restate, not by the SDKs.
+For some use cases, you may want to do the side effect retries from within the invocation,
+because this is faster and more efficient in certain scenarios (e.g. you have a connection set up to an external system or database).
+Have a look at the [side effect documentation](https://docs.restate.dev/services/sdk/side-effects#retrying-on-failure)
+on how to set this up.
+:::
 
 </TabItem>
 <TabItem value="java" label="Java">
 
-You can throw a terminal error via `io.grpc.StatusRuntimeException` or `io.grpc.StatusException`:
+
+You can throw a terminal exception via `dev.restate.sdk.core.TerminalException` and supply it with a `dev.restate.sdk.core.TerminalException.Code` and a message:
 
 ```java
-import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
+import dev.restate.sdk.core.TerminalException;
 
-// Inside your handler throw terminal errors as follows (You can choose any status you want here):
-throw Status.UNKNOWN.withDescription("Something went wrong").asRuntimeException();
+// Inside your handler throw terminal errors with a code and message as follows:
+throw new TerminalException(Code.UNKNOWN, "Something went wrong");
 ```
+
+:::note Errors during side effect execution
+Throwing errors inside a side effect has the same semantics as anywhere else in your handler code.
+By default, Restate infinitely retries the invocation, and therefore the side effect.
+Errors that should not be retried, should be thrown as terminal errors, as described earlier.
+Invocation retries are triggered by Restate, not by the SDKs.
+:::
 
 </TabItem>
 </Tabs>
@@ -46,14 +66,3 @@ throw Status.UNKNOWN.withDescription("Something went wrong").asRuntimeException(
 You can throw a terminal error anywhere in your handler.
 Restate will propagate the error code and message back to the caller and will consider this invocation to be finished. 
 
-## Errors during side effect execution
-
-Throwing errors inside a side effect has the same semantics as anywhere else in your handler code. 
-By default, Restate infinitely retries the invocation, and therefore the side effect.
-Errors that should not be retried, should be thrown as terminal errors, as described earlier. 
-
-Invocation retries are triggered by Restate, not by the SDKs. 
-For some use cases, you may want to do the side effect retries from within the invocation, 
-because this is faster and more efficient in certain scenarios (e.g. you have a connection set up to an external system or database).
-Have a look at the [side effect documentation](https://docs.restate.dev/services/sdk/side-effects#retrying-on-failure) 
-on how to set this up. 
