@@ -31,16 +31,17 @@ const uuid = await ctx.sideEffect(async () => uuid());
 <TabItem value="java" label="Java">
 
 ```java
-var uuid = ctx.sideEffect(TypeTag.STRING_UTF8, () -> UUID.randomUUID().toString());
+var uuid = ctx.sideEffect(CoreSerdes.STRING_UTF8, () -> UUID.randomUUID().toString());
 ```
 
-You need to define the return value type of the side effect, so that the Restate SDK knows how to serialize and deserialize it. You can do this by supplying the `TypeTag` or class, for example `TypeTag.STRING_UTF8` or `boolean.class`.  
+You need to define the return value type of the side effect, so that the Restate SDK knows how to serialize and deserialize it.
+For the primitive types, you can use Restate's built-in `dev.restate.sdk.core.CoreSerdes`, for example `CoreSerdes.STRING_UTF8` or `CoreSerdes.BOOLEAN`.
+For more information, have a look at the documentation on [serialization](/services/sdk/serialization).
 
 </TabItem>
 </Tabs>
 
-Once stored, every retry of this invocation will get the same UUID.
-
+Once stored, every retry of the example code snippet will get the same UUID.
 For example, imagine a payment service where you want to avoid having duplicate payments during retries.
 You could use a side effect to generate and store a UUID and then use that UUID as identifier of the payment.
 You only allow the payment to go through if no payment with that UUID was done yet.
@@ -53,8 +54,7 @@ This includes actions such as getting state, calling another service, and nestin
 
 ## Retrying on failure
 
-If the side effect function throws an error, then it is retried infinitely using an exponential backoff strategy until it succeeds.
-Between retries, the SDK uses a suspendable Restate sleep operation so that the invocation can suspend.
+If the side effect closure throws an error, then it is retried infinitely using an exponential backoff strategy until it succeeds.
 
 <Tabs groupId="sdk">
 <TabItem value="ts" label="Typescript">
@@ -76,11 +76,11 @@ const success: boolean = await ctx.sideEffect(paymentAction);
 <TabItem value="java" label="Java">
 
 ```java
-ctx.sideEffect(boolean.class, () -> {
+ctx.sideEffect(CoreSerdes.BOOLEAN, () -> {
   boolean result = paymentClient.call(txId, amount);
   if(result){
     // highlight-next-line
-    throw new RuntimeException("Payment failed");
+    throw new IllegalStateException("Payment failed");
   } else {
     return result;
   }
@@ -174,14 +174,14 @@ const retrySettings = {
 </TabItem>
 <TabItem value="java" label="Java">
 
-You can throw a terminal error via `io.grpc.StatusRuntimeException` or `io.grpc.StatusException`:
+You can throw a terminal exception via `dev.restate.sdk.core.TerminalException` and supply it with a `dev.restate.sdk.core.TerminalException.Code` and a message:
 
 ```java
   private boolean payment() {
-    var result = paymentClient.call(txid, amount);
+    boolean result = paymentClient.call(txid, amount);
     if(result){
       //highlight-next-line
-      throw Status.UNKNOWN.withDescription("Payment failed").asRuntimeException();
+      throw new TerminalException(Code.UNKNOWN, "Payment failed");
     } else {
       return result;
     }
@@ -193,8 +193,8 @@ You can throw a terminal error via `io.grpc.StatusRuntimeException` or `io.grpc.
 
     //highlight-start
     try {
-      ctx.sideEffect(boolean.class, this::payment);
-    } catch (StatusRuntimeException e) {
+      ctx.sideEffect(CoreSerdes.BOOLEAN, this::payment);
+    } catch (TerminalException e) {
       // handle terminal error
     }
     //highlight-end

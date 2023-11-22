@@ -1,0 +1,75 @@
+---
+sidebar_position: 9
+description: "S"
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Serialization
+
+For some SDK operations, Restate needs to send data over the network, for example for storing state, doing side effects and awakeables.
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
+
+The SDK serializes values with `Buffer.from(JSON.stringify(payload))` and deserializes them with `JSON.parse(result.toString()) as T`.
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+    
+There are multiple ways to specify which (de)serializers should be used.
+
+## Restate's `CoreSerdes` for primitive types
+
+If the value that needs to be serialized is of a primitive type, then you can use Restate's built-in `CoreSerdes`.
+The following serializers are included:
+
+```java
+CoreSerdes.VOID
+CoreSerdes.BYTES
+CoreSerdes.STRING_UTF8
+CoreSerdes.BOOLEAN
+CoreSerdes.BYTE
+CoreSerdes.SHORT
+CoreSerdes.INT
+CoreSerdes.LONG
+CoreSerdes.FLOAT
+CoreSerdes.DOUBLE
+```
+
+For example, to specify the serializer for state of type Long:
+
+```java
+StateKey<Long> STATE_KEY = StateKey.of("my-key", CoreSerdes.LONG);
+```
+
+## Jackson serialization
+
+You can also use Jackson serialization. For example, to create a Serde for the `Person` class, you can do:
+
+```java
+JacksonSerdes.of(Person.class)
+```
+
+Alternatively, you can also supply the TypeReference of a generic type, for example:
+
+```java
+JacksonSerdes.of(new TypeReference<List<Integer>>() { })
+```
+
+## Custom serializers
+You can also implement custom serializers by implementing the `dev.restate.sdk.core.Serde` interface.
+
+Alternatively, you can create a Serde by specifying the serializer and deserializer:
+
+```java
+Serde<String> myStringSerde = Serde.using(s -> s.getBytes(StandardCharsets.UTF_8), b -> new String(b, StandardCharsets.UTF_8));
+```
+
+</TabItem>
+</Tabs>
+
+
+
