@@ -55,7 +55,7 @@ In this example, the `Greet` function requires a `Request` Protobuf message as i
 ```typescript
 const client = new GreeterClientImpl(ctx);
 const greeting = await client.greet(
-    Request.create({ name: "Pete" })
+    GreetRequest.create({ name: "Pete" })
 );
 ```
 
@@ -67,7 +67,8 @@ For example, if you have a `Greeter` service with a method `greet`:
 
 ```java
 GreeterRestate.GreeterRestateClient client = GreeterRestate.newClient(ctx);
-GreetingResponse response = client.greet(request).await();
+var greetReq = GreetRequest.newBuilder().setName("Pete").build();
+GreetResponse response = client.greet(greetReq).await();
 ```
 
 
@@ -77,8 +78,8 @@ You can do request-response calls via `ctx.call` by supplying it with the gRPC m
 In this example, the `Greet` function requires a `Request` Protobuf message as input with a single `name` parameter.
 
 ```java
-var req = Request.newBuilder().setName("Pete").build()
-GreetingResponse response = ctx.call(
+var req = GreetRequest.newBuilder().setName("Pete").build();
+GreetResponse response = ctx.call(
     GreeterGrpc.getGreetMethod(),
     req
 ).await();
@@ -142,7 +143,8 @@ For example, if you have a `Greeter` service with a method `greet`:
 
 ```java
 GreeterRestate.GreeterRestateClient client = GreeterRestate.newClient(ctx);
-client.oneWay().greet(request);
+var greetReq = GreetingRequest.newBuilder().setName("Pete").build();
+client.oneWay().greet(greetReq);
 ```
 
 
@@ -152,7 +154,7 @@ You can do one-way calls via `ctx.oneWayCall` by supplying it with the gRPC meth
 In this example, the `Greet` function requires a `Request` Protobuf message as input with a single `name` parameter.
 
 ```java
-var req = Request.newBuilder().setName("Pete").build()
+var req = GreetRequest.newBuilder().setName("Pete").build();
 ctx.oneWayCall(
   GreeterGrpc.getGreetMethod(),
   req
@@ -203,7 +205,8 @@ For example, if you have a `Greeter` service with a method `greet`:
 
 ```java
 GreeterRestate.GreeterRestateClient client = GreeterRestate.newClient(ctx);
-client.delayed(Duration.ofSeconds(1)).greet(request);
+var greetReq = GreetRequest.newBuilder().setName("Pete").build();
+client.delayed(Duration.ofSeconds(1)).greet(greetReq);
 ```
 
 <details><summary>Alternative: vanilla gRPC</summary>
@@ -212,7 +215,7 @@ You can do delayed calls via `ctx.delayedCall` by supplying it with the gRPC met
 In this example, the `Greet` function requires a `Request` Protobuf message as input with a single `name` parameter.
 
 ```java
-var req = Request.newBuilder().setName("Pete").build()
+var req = GreetRequest.newBuilder().setName("Pete").build();
 ctx.delayedCall(
   GreeterGrpc.getGreetMethod(),
   req,
