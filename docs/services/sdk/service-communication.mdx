@@ -62,16 +62,29 @@ const greeting = await client.greet(
 </TabItem>
 <TabItem value="java" label="Java">
 
+Use Restate's generated gRPC clients to do the call.
+For example, if you have a `Greeter` service with a method `greet`:
+
+```java
+GreeterRestate.GreeterRestateClient client = GreeterRestate.newClient(ctx);
+GreetingResponse response = client.greet(request).await();
+```
+
+
+<details><summary>Alternative: vanilla gRPC</summary>
+
 You can do request-response calls via `ctx.call` by supplying it with the gRPC method descriptor and request, by using the generated Protobuf code.
 In this example, the `Greet` function requires a `Request` Protobuf message as input with a single `name` parameter.
 
 ```java
 var req = Request.newBuilder().setName("Pete").build()
-ctx.call(
-  GreeterGrpc.getGreetMethod(),
-  req
+GreetingResponse response = ctx.call(
+    GreeterGrpc.getGreetMethod(),
+    req
 ).await();
 ```
+
+</details>
 
 </TabItem>
 </Tabs>
@@ -124,6 +137,17 @@ You cannot wrap any other types of operations with `oneWayCall()`! This is inval
 </TabItem>
 <TabItem value="java" label="Java">
 
+Use Restate's generated gRPC clients to do the call.
+For example, if you have a `Greeter` service with a method `greet`:
+
+```java
+GreeterRestate.GreeterRestateClient client = GreeterRestate.newClient(ctx);
+client.oneWay().greet(request);
+```
+
+
+<details><summary>Alternative: vanilla gRPC</summary>
+
 You can do one-way calls via `ctx.oneWayCall` by supplying it with the gRPC method descriptor and request, by using the generated Protobuf code.
 In this example, the `Greet` function requires a `Request` Protobuf message as input with a single `name` parameter.
 
@@ -134,6 +158,8 @@ ctx.oneWayCall(
   req
 );
 ```
+
+</details>
 
 </TabItem>
 </Tabs>
@@ -172,6 +198,19 @@ await ctx.delayedCall(() =>
 </TabItem>
 <TabItem value="java" label="Java">
 
+Use Restate's generated gRPC clients to do the call.
+For example, if you have a `Greeter` service with a method `greet`:
+
+```java
+GreeterRestate.GreeterRestateClient client = GreeterRestate.newClient(ctx);
+client.delayed(Duration.ofSeconds(1)).greet(request);
+```
+
+<details><summary>Alternative: vanilla gRPC</summary>
+
+You can do delayed calls via `ctx.delayedCall` by supplying it with the gRPC method descriptor and request, by using the generated Protobuf code.
+In this example, the `Greet` function requires a `Request` Protobuf message as input with a single `name` parameter.
+
 ```java
 var req = Request.newBuilder().setName("Pete").build()
 ctx.delayedCall(
@@ -180,6 +219,8 @@ ctx.delayedCall(
   Duration.ofMinutes(15)
 );
 ```
+
+</details>
 
 </TabItem>
 </Tabs>
