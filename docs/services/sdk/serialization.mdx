@@ -45,6 +45,15 @@ For example, to specify the serializer for state of type Long:
 StateKey<Long> STATE_KEY = StateKey.of("my-key", CoreSerdes.LONG);
 ```
 
+## Restate's `CoreSerdes` for Protobuf
+
+You can also use Restate's built-in `CoreSerdes` to create serializers for Protobuf.
+For example, for the Protobuf message type `GreetingResponse`, we can create a serializer as follows:
+
+```java
+CoreSerdes.ofProtobuf(GreetingResponse.parser());
+```
+
 ## Jackson serialization
 
 You can also use Jackson serialization. For example, to create a Serde for the `Person` class, you can do:
@@ -60,12 +69,28 @@ JacksonSerdes.of(new TypeReference<List<Integer>>() { })
 ```
 
 ## Custom serializers
-You can also implement custom serializers by implementing the `dev.restate.sdk.core.Serde` interface.
-
-Alternatively, you can create a Serde by specifying the serializer and deserializer:
+You can implement custom serializers by implementing the `dev.restate.sdk.core.Serde` interface:
 
 ```java
-Serde<String> myStringSerde = Serde.using(s -> s.getBytes(StandardCharsets.UTF_8), b -> new String(b, StandardCharsets.UTF_8));
+class MyPersonSerde implements Serde<Person> {
+    @Override
+    public byte[] serialize(@Nullable Person value) {
+        // convert value to a ByteArray
+        return valueAsByteArray;
+    }
+
+    @Override
+    public Person deserialize(byte[] value) {
+        // convert value to Person
+        return person;
+    }
+}
+```
+
+And then use it, for example, to create a state key for Person objects:
+
+```java
+StateKey.of("person", new MyPersonSerde());
 ```
 
 </TabItem>
