@@ -1,12 +1,13 @@
 ---
-sidebar_position: 4
-description: "Learn how to run Restate applications on AWS Lambda."
+sidebar_position: 1
+description: "Learn how to run Restate Typescript services on AWS Lambda."
 ---
 
-# AWS Lambda
+# AWS Lambda + Typescript
 
 ## Deploying services as AWS Lambda functions
 You can run your Restate services as serverless functions on [AWS Lambda](https://aws.amazon.com/lambda/).
+
 
 :::tip
 Please take a look at [the Lambda deployment tutorial](/services/deployment/lambda#tutorial) to learn how to deploy your Restate service as a Lambda function.
@@ -24,12 +25,12 @@ AWS Lambda assumes that the handler can be found under `index.handler` in the up
 By default, this is also the case for the Lambda functions developed with the Restate SDK.
 
 
-### Managed service
+## Managed service
 If you'd prefer not to manage a runtime instance, we are trialing a managed service that lets you work
 with Lambda services without running any infrastructure.
 See [the documentation](/restate/managed_service) for more details.
 
-### Discovery of services
+## Discovery of services
 
 To let Restate discover the services, execute the following curl command,
 pointed at the Restate runtime and with the Lambda function endpoint as the URI in the data field.
@@ -59,6 +60,7 @@ Clone the GitHub repository for the latest release:
 git clone --depth 1 git@github.com:restatedev/examples.git
 ```
 
+You can find the example code in the `typescript/lambda-greeter` directory.
 We are going to deploy the service defined in `src/app.ts` on AWS Lambda.
 To do this, we need to create a zip file that includes the service code and the required dependencies to run it.
 

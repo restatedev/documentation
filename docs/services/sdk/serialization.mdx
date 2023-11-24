@@ -56,7 +56,14 @@ CoreSerdes.ofProtobuf(GreetingResponse.parser());
 
 ## Jackson serialization
 
-You can also use Jackson serialization. For example, to create a Serde for the `Person` class, you can do:
+State ser/de is defined by the interface Serde. If you want to use [Jackson Databind](https://github.com/FasterXML/jackson) to ser/de POJOs to JSON, add the dependency sdk-serde-jackson.
+For example, in Gradle:
+
+```kotlin
+implementation("dev.restate.sdk:sdk-serde-jackson:1.0-SNAPSHOT")
+```
+
+And then use `JacksonSerdes`. For example, to create a Serde for the `Person` class, you can do:
 
 ```java
 JacksonSerdes.of(Person.class)
