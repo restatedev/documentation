@@ -158,6 +158,8 @@ export const handler = restate
   .handle();
 ```
 
+Implement a `LambdaRestateServerFactory` with a `create` method that returns a `LambdaRestateServer` with the services binded to it.
+
 </TabItem>
 <TabItem value="ts-grpc" label="Typescript-gRPC">
 
@@ -174,25 +176,37 @@ export const handler = restate
     .handle();
 ```
 
+Implement a `LambdaRestateServerFactory` with a `create` method that returns a `LambdaRestateServer` with the services binded to it.
+
+
 </TabItem>
 <TabItem value="java" label="Java">
+
+Add the following dependency to your project, for example, using Gradle:
+
+```kotlin
+implementation("dev.restate.sdk:sdk-lambda:VAR::JAVA_SDK_VERSION")
+```
+
+Register your Lambda services as follows:
 
 ```java
 import dev.restate.sdk.lambda.LambdaRestateServer;
 import dev.restate.sdk.lambda.LambdaRestateServerFactory;
 
-public class LambdaFactory implements LambdaRestateServerFactory {
+public class MyLambdaHandler extends BaseRestateLambdaHandler {
   @Override
-  public LambdaRestateServer create() {
-    return LambdaRestateServer.builder().withService(new GreeterService()).build();
+  public void register(RestateLambdaEndpointBuilder builder) {
+    builder.withService(new Greeter());
   }
 }
 ```
 
+Create a class that extends `BaseRestateLambdaHandler` with your services binded to it.
+
 </TabItem>
 </Tabs>
 
-Implement a `LambdaRestateServerFactory` with a `create` method that returns a `LambdaRestateServer` with the services binded to it.
 
 :::info 
 That's all you need to do to enable running on AWS Lambda.
