@@ -72,6 +72,55 @@ const paymentAction = async () => {
 const success: boolean = await ctx.sideEffect(paymentAction);
 ```
 
+** Manually controlling the retry policy **
+
+Instead of using an infinite exponential backoff strategy, you can also specify a finite retry policy when executing a side effect.
+A finite retry policy retries a failing side effect function until all retry attempts are depleted.
+If this happens, then the side effect fails terminally with a `restate.TerminalError` which is propagated to the user code.
+In order to configure the retry policy you need to provide a `RetrySettings` object:
+
+```typescript
+//highlight-next-line
+const retrySettings = { initialDelayMs: 1000, maxDelayMs: 60000, maxRetries: 10 }
+const paymentAction = async () => {
+    const result = await paymentClient.call(txId, amount);
+    if (result.error) {
+        throw result.error;
+    } else {
+        return result.isSuccess;
+    }
+}
+
+try {
+  await ctx.sideEffect(
+    paymentAction,
+    //highlight-next-line
+    retrySettings
+  );
+} catch (error) {
+  // handle terminal error
+}
+```
+
+The `RetrySettings` object has the following fields:
+- `initialDelayMs` (number): The initial delay between retries. As more retries happen, the delay may change per the policy.
+- `maxDelayMs` (number): Optionally, the maximum delay between retries. No matter what the policy says, this is the maximum time
+  that Restate sleeps between retries. If not set, there is effectively no limit (internally the limit is Number.MAX_SAFE_INTEGER).
+- `maxRetries` (number): The maximum number of retries before this function fails with an exception. If not set, there is effectively no limit (internally the limit is Number.MAX_SAFE_INTEGER).
+- `policy`:  Optionally, the retry policy to use (`FIXED_DELAY` or `EXPONENTIAL_BACKOFF`). Defaults to `EXPONENTIAL_BACKOFF`.
+- `name` (string): Optionally, the name of side effect action that is used in error and log messages around retries.
+
+For example:
+```typescript
+const retrySettings = {
+    initialDelayMs: 1000,
+    maxDelayMs: 60000,
+    maxRetries: 10,
+    policy: EXPONENTIAL_BACKOFF,
+    name: "my-side-effect"
+}
+```
+
 </TabItem>
 <TabItem value="java" label="Java">
 
@@ -90,7 +139,7 @@ ctx.sideEffect(CoreSerdes.BOOLEAN, () -> {
 </TabItem>
 </Tabs>
 
-### Failing a side effect terminally
+## Terminal failures of side effects
 
 By default, a side effect function is retried infinitely on failure.
 If you want to let the side effect fail terminally, then you have to throw a terminal error.
@@ -120,56 +169,7 @@ try {
 }
 ```
 
-### Manually controlling the retry policy
 
-Instead of using an infinite exponential backoff strategy, you can also specify a finite retry policy when executing a side effect.
-A finite retry policy retries a failing side effect function until all retry attempts are depleted.
-If this happens, then the side effect fails terminally with a `restate.TerminalError` which is propagated to the user code.
-In order to configure the retry policy you need to provide a `RetrySettings` object:
-
-```typescript
-//highlight-next-line
-const retrySettings = { initialDelayMs: 1000, maxDelayMs: 60000, maxRetries: 10 }
-const paymentAction = async () => {
-    const result = await paymentClient.call(txId, amount);
-    if (result.error) {
-        throw result.error;
-    } else {
-        return result.isSuccess;
-    }
-}
-
-try {
-  await ctx.sideEffect(
-    paymentAction, 
-    //highlight-next-line
-    retrySettings
-  );
-} catch (error) {
-  // handle terminal error
-}
-```
-
-#### Retry settings
-
-The `RetrySettings` object has the following fields:
-- `initialDelayMs` (number): The initial delay between retries. As more retries happen, the delay may change per the policy.
-- `maxDelayMs` (number): Optionally, the maximum delay between retries. No matter what the policy says, this is the maximum time
-  that Restate sleeps between retries. If not set, there is effectively no limit (internally the limit is Number.MAX_SAFE_INTEGER).
-- `maxRetries` (number): The maximum number of retries before this function fails with an exception. If not set, there is effectively no limit (internally the limit is Number.MAX_SAFE_INTEGER).
-- `policy`:  Optionally, the retry policy to use (`FIXED_DELAY` or `EXPONENTIAL_BACKOFF`). Defaults to `EXPONENTIAL_BACKOFF`.
-- `name` (string): Optionally, the name of side effect action that is used in error and log messages around retries.
-
-For example:
-```typescript
-const retrySettings = {
-    initialDelayMs: 1000,
-    maxDelayMs: 60000,
-    maxRetries: 10,
-    policy: EXPONENTIAL_BACKOFF,
-    name: "my-side-effect"
-}
-```
 
 </TabItem>
 <TabItem value="java" label="Java">

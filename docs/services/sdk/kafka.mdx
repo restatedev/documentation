@@ -23,14 +23,14 @@ Kafka support is in development, and it isn't ready for production usage. Next r
 Depending on your use case you can build different types of event handlers. We distinguish between the following scenarios:
 
 * Handle events with a string key from Kafka in Restate services keyed with a `string` key.
-* Process generic events from Kafka in order (currently only supported by the gRPC API)
+* Process generic events from Kafka in order (currently only supported by the Typescript gRPC API and the Java API.)
 
-An event handlers can profit from the same features of any other Restate handler, including durable execution, [service communication](/services/sdk/service-communication) and [side effects](/services/sdk/side-effects).
+An event handlers can profit from the same features as other Restate handlers, including durable execution, [service communication](/services/sdk/service-communication) and [side effects](/services/sdk/side-effects).
 
 <Tabs groupId="sdk">
 <TabItem value="ts" label="Typescript" default>
 
-### Handling events with string key
+** Handling events with string key **
 
 You can handle events within keyed routers, where the key of the Kafka record matches the key used by the router:
 
@@ -65,7 +65,7 @@ For each event key (= Kafka record key), the events are delivered in the order i
 </TabItem>
 <TabItem value="ts-grpc" label="Typescript-gRPC">
 
-### Handling keyed events within keyed services
+** Handling keyed events within keyed services**
 
 You can handle events within keyed services, where the key of the Kafka record matches the key used by the service.
 
@@ -132,7 +132,7 @@ There are some constraints for the annotated fields:
 * You can use only `string` or `bytes` types with fields annotated as `EVENT_PAYLOAD`.
 * You can also get the event metadata defining a field as `map<string, string>` and annotating it with `EVENT_METADATA`.
 
-### Handling generic events from Kafka
+** Handling generic events from Kafka **
 
 You can handle generic events from Kafka by defining ad-hoc services that process `dev.restate.Event`:
 
@@ -157,7 +157,7 @@ Event handlers can be useful when you need to pre-process an event before sendin
 
 <TabItem value="java" label="Java">
 
-### Handling keyed events within keyed services
+** Handling keyed events within keyed services **
 
 You can handle events within keyed services, where the key of the Kafka record matches the key used by the service.
 
@@ -217,7 +217,7 @@ There are some constraints for the annotated fields:
 * You can use only `string` or `bytes` types with fields annotated as `EVENT_PAYLOAD`.
 * You can also get the event metadata defining a field as `map<string, string>` and annotating it with `EVENT_METADATA`.
 
-### Handling generic events from Kafka
+** Handling generic events from Kafka **
 
 You can handle generic events from Kafka by defining ad-hoc services that process `dev.restate.Event`:
 
@@ -234,7 +234,7 @@ service MyService {
 ```
 
 If the service is keyed, events with the same key are delivered in the order in which they arrived on the topic partition.
-If the service is unkeyed, events will be delivered in parallel without ordering guarantees.
+If the service is unkeyed, events are delivered in parallel without ordering guarantees.
 
 Event handlers can be useful when you need to pre-process an event before sending it to one or more Restate services, such as when the key is serialized using a custom format, or when the destination of the event is encoded in the payload.
 
@@ -242,7 +242,7 @@ Event handlers can be useful when you need to pre-process an event before sendin
 
 </Tabs>
 
-### Event metadata
+## Event metadata
 
 Each event carries a `metadata` map that contains the following entries:
 
