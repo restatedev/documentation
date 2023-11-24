@@ -125,7 +125,7 @@ ctx.awakeableHandle(awakeableId).reject("my error reason");
 
 ## Completing awakeables from outside Restate
 
-You can resolve awakeables from outside Restate by sending requests to the `dev.restate.Awakeables` built-in service.
+You can resolve awakeables from outside Restate by sending requests to Restate's `dev.restate.Awakeables` endpoint.
 
 To resolve an awakeable with a JSON payload:
 
@@ -151,4 +151,6 @@ For example:
 curl -X POST http://<restate-runtime-host-port>/dev.restate.Awakeables/Reject -H 'content-type: application/json' -d '{"id": "T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE", "reason": "Very bad error!"}'
 ```
 
-For more details, look at the [awakeables service documentation](https://github.com/restatedev/proto/blob/main/dev/restate/services.proto) and [how to invoke a service documentation](../invocation.md#invoking-restate-services).
+Look at the [Protobuf definitions](https://github.com/restatedev/proto/blob/main/dev/restate/services.proto)
+for more information on how to structure the resolve and reject requests.
+Additionally, you can have a look at the documentation on [how to invoke a service](../invocation.md#invoking-restate-services).

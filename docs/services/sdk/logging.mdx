@@ -26,7 +26,7 @@ Default behavior is (when `RESTATE_DEBUG_LOGGING` is not set)
 
 <TabItem value="java" label="Java" default>
 
-The Java SDK uses `log4j2` as logging facade. To enable logging, add the `log4j2` implementation to the dependencies. For example, for Gradle:
+The Java SDK uses [log4j2](https://logging.apache.org/log4j/2.x/manual/configuration.html) as logging facade. To enable logging, add the `log4j2` implementation to the dependencies. For example, for Gradle:
 
 ```
 implementation("org.apache.logging.log4j:log4j-core:2.20.0")
@@ -54,6 +54,11 @@ logger.app.appenderRef.console.ref = consoleLogger
 rootLogger.level = info
 rootLogger.appenderRef.stdout.ref = consoleLogger
 ```
+
+If you want to do filtering of the logs, you can use `log4j2` filters.
+
+Logging on the `INFO` level is enough for most use cases, but you can set the log level of
+the `dev.restate` classes to `DEBUG` and `TRACE` if you want more info about the internal SDK operations.
 
 The SDK injects the following additional metadata to the logging context that can be used for filtering as well:
 

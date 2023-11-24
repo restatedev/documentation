@@ -120,8 +120,10 @@ export class MyServiceImpl implements MyService {
 }
 ```
 
+:::tip Combining RPC and Kafka within a service
 You can mix methods receiving events with regular RPC methods. For example, assume you're implementing a `Profile` service to handle and store user profiles in Restate, where the key is the profile's unique identifier.
-In the same service, you can implement a  `Get` method to retrieve the profile, and you can attach an `UpdateProfile` event handler to consume events from Kafka to update the profile.
+In the same service, you can implement an RPC  `Get` method to retrieve the profile, and you can attach an `UpdateProfile` event handler to consume events from Kafka to update the profile.
+:::
 
 For each event key (= Kafka record key), the events are delivered in the order in which they arrived on the topic partition.
 
@@ -196,8 +198,20 @@ message MyEvent {
 import dev.restate.generated.Event;
 
 @Override
-public void handle(Event event, StreamObserver<Empty> responseObserver) {   
-    
+public void handle(RestateContext ctx, Event event) {
+
+    // Do something with event
+}
+```
+
+<details><summary>Alternative: vanilla gRPC</summary>
+
+```java
+import dev.restate.generated.Event;
+
+@Override
+public void handle(Event event, StreamObserver<Empty> responseObserver) {
+
     // Do something with event
 
     responseObserver.onNext(Empty.getDefaultInstance());
@@ -205,8 +219,12 @@ public void handle(Event event, StreamObserver<Empty> responseObserver) {
 }
 ```
 
+</details>
+
+:::tip Combining RPC and Kafka within a service
 You can mix methods receiving events with regular RPC methods. For example, assume you're implementing a `Profile` service to handle and store user profiles in Restate, where the key is the profile's unique identifier.
-In the same service, you can implement a  `Get` method to retrieve the profile, and you can attach an `UpdateProfile` event handler to consume events from Kafka to update the profile.
+In the same service, you can implement an RPC  `Get` method to retrieve the profile, and you can attach an `UpdateProfile` event handler to consume events from Kafka to update the profile.
+:::
 
 For each event key (= Kafka record key), the events are delivered in the order in which they arrived on the topic partition.
 
