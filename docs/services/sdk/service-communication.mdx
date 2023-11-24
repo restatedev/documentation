@@ -62,13 +62,13 @@ const greeting = await client.greet(
 </TabItem>
 <TabItem value="java" label="Java">
 
-Use Restate's generated gRPC clients to do the call.
+Use Restate's generated clients to do the call.
 For example, if you have a `Greeter` service with a method `greet`:
 
 ```java
 GreeterRestate.GreeterRestateClient client = GreeterRestate.newClient(ctx);
-var greetReq = GreetRequest.newBuilder().setName("Pete").build();
-GreetResponse response = client.greet(greetReq).await();
+var req = GreetRequest.newBuilder().setName("Pete").build();
+GreetResponse response = client.greet(req).await();
 ```
 
 
@@ -138,13 +138,13 @@ You cannot wrap any other types of operations with `oneWayCall()`! This is inval
 </TabItem>
 <TabItem value="java" label="Java">
 
-Use Restate's generated gRPC clients to do the call.
+Use Restate's generated clients to do the call.
 For example, if you have a `Greeter` service with a method `greet`:
 
 ```java
 GreeterRestate.GreeterRestateClient client = GreeterRestate.newClient(ctx);
-var greetReq = GreetingRequest.newBuilder().setName("Pete").build();
-client.oneWay().greet(greetReq);
+var req = GreetingRequest.newBuilder().setName("Pete").build();
+client.oneWay().greet(req);
 ```
 
 
@@ -200,13 +200,13 @@ await ctx.delayedCall(() =>
 </TabItem>
 <TabItem value="java" label="Java">
 
-Use Restate's generated gRPC clients to do the call.
+Use Restate's generated clients to do the call.
 For example, if you have a `Greeter` service with a method `greet`:
 
 ```java
 GreeterRestate.GreeterRestateClient client = GreeterRestate.newClient(ctx);
-var greetReq = GreetRequest.newBuilder().setName("Pete").build();
-client.delayed(Duration.ofSeconds(1)).greet(greetReq);
+var req = GreetRequest.newBuilder().setName("Pete").build();
+client.delayed(Duration.ofSeconds(1)).greet(req);
 ```
 
 <details><summary>Alternative: vanilla gRPC</summary>

@@ -11,7 +11,7 @@ You can run your Restate services as serverless functions on [AWS Lambda](https:
 
 Make sure you have defined a Lambda handler in your service code, as explained in the [serving docs](/services/sdk/serving#restate-lambda-handler).
 
-Configure the build tool to generate Fat-JARs, which are required by AWS Lambda to correctly load the JAR. For example, using Gradle:
+Configure the build tool to generate Fat-JARs, so that AWS Lambda can correctly load the JAR. For example, using Gradle:
 
 ```kotlin
 plugins {
@@ -27,8 +27,7 @@ Now build the Fat-JAR. For example, using Gradle:
 gradle shadowJar
 ```
 
-You can now upload the generated Jar in AWS Lambda, and configure `MyLambdaHandler` as the Lambda class in the AWS UI.
-
+Then upload the generated Jar to AWS Lambda, and configure `MyLambdaHandler` as the Lambda class in the AWS UI.
 
 ## Managed service
 If you'd prefer not to manage a runtime instance, we are trialing a managed service that lets you work
