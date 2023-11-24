@@ -1,4 +1,5 @@
 ---
+label: "lambda-java"
 sidebar_position: 2
 description: "Learn how to run Restate Java services on AWS Lambda."
 ---
