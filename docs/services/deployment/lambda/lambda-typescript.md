@@ -1,4 +1,5 @@
 ---
+label: "lambda-typescript"
 sidebar_position: 1
 description: "Learn how to run Restate Typescript services on AWS Lambda."
 ---
@@ -10,7 +11,7 @@ You can run your Restate services as serverless functions on [AWS Lambda](https:
 
 
 :::tip
-Please take a look at [the Lambda deployment tutorial](/services/deployment/lambda#tutorial) to learn how to deploy your Restate service as a Lambda function.
+Please take a look at [the Lambda deployment tutorial](/services/deployment/lambda/lambda-typescript#tutorial) to learn how to deploy your Restate service as a Lambda function.
 :::
 
 To deploy a Restate service as a Lambda function,
