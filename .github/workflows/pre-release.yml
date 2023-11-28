@@ -4,15 +4,15 @@ on:
   workflow_dispatch:
     inputs:
       restateVersion:
-        description: 'Restate version (without prepending v). The Restate repository must have the tag already!'
+        description: "Restate version (without prepending v). The Restate repository must have the tag already!"
         required: true
         type: string
       sdkTypescriptVersion:
-        description: 'sdk-typescript version (without prepending v).'
+        description: "sdk-typescript version (without prepending v)."
         required: true
         type: string
       tourVersion:
-        description: 'tour version (without prepending v).'
+        description: "tour version (without prepending v)."
         required: true
         type: string
 
@@ -30,7 +30,6 @@ jobs:
         with:
           repository: restatedev/restate
           ref: v${{ inputs.restateVersion }}
-          token: ${{ secrets.RESTATE_READ_ACCESS }}
           path: temp-restate
 
       # We need rust, protoc and just to compile the runtime to generate the docs
