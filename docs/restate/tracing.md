@@ -48,14 +48,14 @@ Then launch Restate with the tracing endpoint defined as an environment variable
 <TabItem value="lin" label="Linux">
 
 ```shell
-docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://localhost:4317 --network=host ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
+docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://localhost:4317 --network=host docker.io/restatedev/restate:VAR::RESTATE_DIST_VERSION
 ```
 
 </TabItem>
 <TabItem value="mac" label="macOS">
 
 ```shell
-docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://host.docker.internal:4317 -p 8080:8080 -p 9070:9070 -p 9071:9071 ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
+docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://host.docker.internal:4317 -p 8080:8080 -p 9070:9070 -p 9071:9071 docker.io/restatedev/restate:VAR::RESTATE_DIST_VERSION
 ```
 
 </TabItem>
@@ -84,10 +84,10 @@ The traces contain detailed information about the context calls that were done d
 
 The initial `ingress_invoke` spans show when the gRPC/Connect HTTP request was received by Restate. The `invoke` span beneath it shows when Restate invoked the service endpoint to process the request.
 
-The tags of the spans contain the metadata of the context calls (e.g. call arguments, invocation id). 
+The tags of the spans contain the metadata of the context calls (e.g. call arguments, invocation id).
 
 When a service invokes another service, the child invocation is linked automatically to the parent invocation, as you can see in the image.
-Note that the spans of one-way calls are shown as separate traces. The parent invocation only shows that the one-way call was scheduled, not its entire tracing span. 
+Note that the spans of one-way calls are shown as separate traces. The parent invocation only shows that the one-way call was scheduled, not its entire tracing span.
 To see this information, search for the trace of the one-way call by filtering on the invocation id tag:
 ```
 restate.invocation.id="T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE"

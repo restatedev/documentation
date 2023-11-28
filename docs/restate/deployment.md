@@ -50,7 +50,7 @@ spec:
         - name: github
       containers:
         - name: restate
-          image: ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
+          image: docker.io/restatedev/restate:VAR::RESTATE_DIST_VERSION
           env:
             - name: RESTATE_TRACING__LOG_FORMAT
               value: Json
@@ -104,4 +104,3 @@ You will also need to create an image pull secret using a classic github persona
 ```bash
 $ kubectl create secret docker-registry github --docker-server=ghcr.io --docker-username=<your-github-username> --docker-password=<your-personal-access-token>
 ```
-
