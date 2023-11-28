@@ -42,7 +42,7 @@ This command generates static content into the `build` directory and can be serv
 
 ### Staging area
 
-The `main` branch of the documentation is continuously deployed at `https://main.documentation-beg.pages.dev`.
+The `main` branch of the documentation is continuously deployed at https://main.documentation-beg.pages.dev.
 
 ## Releasing the documentation
 
