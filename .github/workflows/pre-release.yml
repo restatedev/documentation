@@ -44,13 +44,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Parse Restate version
+        id: semver_parser
+        uses: booxmedialtd/ws-action-parse-semver@v1
+        with:
+          input_string: ${{ inputs.restateVersion }}
+
       # Update the doc config file
       - name: Update restate.config.json with new runtime version
         uses: jossef/action-set-json-field@v2.1
         with:
           file: restate.config.json
           field: RESTATE_VERSION
-          value: ${{ inputs.restateVersion }}
+          # Drop patch version to generate major.minor format
+          value: ${{ format('{0}.{1}', steps.semver_parser.outputs.major, steps.semver_parser.outputs.minor) }}
       - name: Update restate.config.json with new sdk version
         uses: jossef/action-set-json-field@v2.1
         with:
