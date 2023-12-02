@@ -6,10 +6,10 @@ on:
       - v**
 
 jobs:
-  build-docker-image:
-    name: Build docker image
-    uses: ./.github/workflows/docker.yml
-    secrets: inherit
+  # build-docker-image:
+  #   name: Build docker image
+  #   uses: ./.github/workflows/docker.yml
+  #   secrets: inherit
 
   create-release:
     name: Create release
@@ -21,6 +21,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: "main"
+          fetch-depth: 0
 
       - name: Push main to production
         run: |
