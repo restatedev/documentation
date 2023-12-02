@@ -19,10 +19,12 @@ jobs:
     steps:
       - name: Checkout documentation
         uses: actions/checkout@v3
+        with:
+          ref: "main"
 
       - name: Push main to production
         run: |
-          git push main:production
+          git push production
 
       - name: Create release
         uses: softprops/action-gh-release@v1
