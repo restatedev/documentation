@@ -78,5 +78,5 @@ $ ./tools/generate.sh <PATH to Restate repo clone>
 The config file `restate.config.json` contains versions of various Restate artifacts:
 
 * Typescript SDK: `TYPESCRIPT_SDK_VERSION`
-* Runtime: `RESTATE_DIST_VERSION`
+* Runtime: `RESTATE_VERSION`
 * Tour: `TOUR_VERSION`

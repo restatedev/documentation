@@ -50,7 +50,7 @@ spec:
         - name: github
       containers:
         - name: restate
-          image: docker.io/restatedev/restate:VAR::RESTATE_DIST_VERSION
+          image: docker.io/restatedev/restate:VAR::RESTATE_VERSION
           env:
             - name: RESTATE_TRACING__LOG_FORMAT
               value: Json

@@ -181,11 +181,11 @@ see https://github.com/awslabs/aws-sdk-rust/issues/703#issuecomment-1811480196.
 
 - On Linux
 ```shell
-docker run -e AWS_PROFILE -v ~/.aws/:/root/.aws --name restate_dev --rm -d --network=host docker.io/restatedev/restate:VAR::RESTATE_DIST_VERSION
+docker run -e AWS_PROFILE -v ~/.aws/:/root/.aws --name restate_dev --rm -d --network=host docker.io/restatedev/restate:VAR::RESTATE_VERSION
 ```
 - On macOS:
 ```shell
-docker run -e AWS_PROFILE -v ~/.aws/:/root/.aws --name restate_dev --rm -d -p 8080:8080 -p 9070:9070 -p 9071:9071 docker.io/restatedev/restate:VAR::RESTATE_DIST_VERSION
+docker run -e AWS_PROFILE -v ~/.aws/:/root/.aws --name restate_dev --rm -d -p 8080:8080 -p 9070:9070 -p 9071:9071 docker.io/restatedev/restate:VAR::RESTATE_VERSION
 ```
 
 Consult the runtime logs via `docker logs restate_dev`.

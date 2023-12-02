@@ -55,7 +55,7 @@ const config = {
         docs: {
           remarkPlugins: [
             [
-              variableInjector, // replaces eg VAR::RESTATE_DIST_VERSION with config strings
+              variableInjector, // replaces eg VAR::RESTATE_VERSION with config strings
               {
                 replacements: variablesReplacements,
               },
