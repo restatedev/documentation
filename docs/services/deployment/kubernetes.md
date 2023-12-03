@@ -84,9 +84,6 @@ spec:
     spec:
       containers:
         - image: path.to/yourrepo:yourtag
-          env:
-            - name: PORT
-              value: 9080
           ports:
             - name: h2c
               containerPort: 9080
