@@ -94,11 +94,11 @@ If your service key is an integer, then you should filter based on the `service_
 For unkeyed services, you should use the `service_key_uuid` field.
 :::
 
-## Inspecting the execution status of an invocation
+## Inspecting the attempt status of an invocation
 
-Invocations may get executed against a service endpoint many times, due to suspensions and retries. The metadata around
-these executions is not committed durably to storage, but is held in memory in the `invoker` component. The metadata
-includes reasons that an execution might be failing, for example a permission error calling a Lambda endpoint.
+Invocations can be attempted against a service endpoint many times if the endpoint is failing. The metadata around
+these attempts is not committed durably to storage, but is held in memory in the `invoker` component. The metadata
+includes reasons that an attempt might be failing, for example a permission error calling a Lambda endpoint.
 
 You can query  this in-memory metadata via the `sys_invocation_state` table.
 
