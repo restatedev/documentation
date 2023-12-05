@@ -86,8 +86,8 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
-          title: "[GithubActions] Update documentation"
-          commit-message: "Update documentation"
+          title: "[GithubActions] Update documentation ${{ inputs.restateVersion != '' && format('Restate {0}, ', inputs.restateVersion) }}${{ inputs.sdkTypescriptVersion != '' && format('SDK-Typescript {0}, ', inputs.sdkTypescriptVersion) }}${{ inputs.tourVersion != '' && format('Tour {0}', inputs.tourVersion) }}"
+          commit-message: "Update documentation: ${{ inputs.restateVersion != '' && format('\n* Bump Restate to {0}', inputs.restateVersion) }}${{ inputs.sdkTypescriptVersion != '' && format('\n* Bump SDK-Typescript to {0} ', inputs.sdkTypescriptVersion) }}${{ inputs.tourVersion != '' && format('\n* Bump Tour of Restate to {0}', inputs.tourVersion) }}"
           add-paths: |
             restate.config.json
             static/schemas/*
