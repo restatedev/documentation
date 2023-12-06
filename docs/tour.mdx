@@ -32,7 +32,7 @@ As we go, you will discover how Restate can help you with some intricacies in th
 ## Prerequisites
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 > &#x1F4DD; As long as Restate hasn't been launched publicly, you need to have access to the private Restate npm packages and Docker container. Please follow the instructions in the [restate-dist/README](https://github.com/restatedev/restate-dist) to set up access:
 
@@ -65,7 +65,7 @@ This guide is written for:
 
 ### Setting up the tutorial
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 Clone the GitHub repository of the [tutorial](https://github.com/restatedev/tour-of-restate-typescript):
 
@@ -97,7 +97,7 @@ This GitHub repository contains the basic skeleton of the Java services that you
 Run the services:
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```shell
 npm run app
@@ -171,6 +171,10 @@ and knows how to invoke a specific service.
 </TabItem>
 </Tabs>
 
+:::tip
+You can pipe the output of `curl` into the `jq` utility to reformat the JSON output and make it easier to read.
+:::
+
 You should now see the registered services printed out to your terminal:
 
 ```json
@@ -193,8 +197,12 @@ You should now see the registered services printed out to your terminal:
 }
 ```
 
+The runtime logs will show the new service registrations taking place.
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="TypeScript">
+
 <details><summary>Show the runtime logs</summary>
-When you look at the logs of the runtime you see:
 
 ```
 2023-08-15T13:24:52.879977Z INFO restate_schema_impl::schemas_impl
@@ -217,18 +225,46 @@ When you look at the logs of the runtime you see:
 
 </details>
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+<details><summary>Show the runtime logs</summary>
+
+```
+2023-12-06T21:06:02.404764Z INFO restate_schema_impl::schemas_impl
+  Registering endpoint
+    restate.service_endpoint.id: aG9zdC5kb2NrZXIuaW50ZXJuYWw6OTA4MC8=
+    restate.service_endpoint.address: http://host.docker.internal:9080/
+2023-12-06T21:06:02.404876Z INFO restate_schema_impl::schemas_impl
+  Registering service
+    rpc.service: "example.Checkout"
+    restate.service_endpoint.address: http://host.docker.internal:9080/
+2023-12-06T21:06:02.405255Z INFO restate_schema_impl::schemas_impl
+  Registering service
+    rpc.service: "example.UserSession"
+    restate.service_endpoint.address: http://host.docker.internal:9080/
+2023-12-06T21:06:02.405491Z INFO restate_schema_impl::schemas_impl
+  Registering service
+    rpc.service: "example.TicketService"
+    restate.service_endpoint.address: http://host.docker.internal:9080/
+```
+
+</details>
+
+</TabItem>
+</Tabs>
 
 ### Calling the services
 
-Mimic adding a ticket to a cart, by calling `UserSession/addTicket` as follows:
+Add a ticket to a cart by calling `UserSession/addTicket`.
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```shell
 curl -X POST http://localhost:8080/UserSession/addTicket \
--H 'content-type: application/json' \
--d '{"key": "123", "request": "456"}'
+    -H 'content-type: application/json' \
+    -d '{"key": "123", "request": "456"}'
 ```
 
 </TabItem>
@@ -248,12 +284,12 @@ If this prints out `true`, then you have a working setup.
 You can call the `UserSession/checkout` function to proceed with the purchase, as follows:
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```shell
 curl -X POST http://localhost:8080/UserSession/checkout \
-  -H 'content-type: application/json' \
-  -d '{"key": "123"}'
+    -H 'content-type: application/json' \
+    -d '{"key": "123"}'
 ```
 
 In `src/app`, you find the skeletons of the services where you can start implementing your app.
@@ -293,7 +329,7 @@ don't use it for heavy load.
 ### Specifying the service type
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 You specify an unkeyed service by creating a router with its set of functions:
 
@@ -380,9 +416,8 @@ To learn more about gRPC, have a look at the [gRPC documentation](https://grpc.i
 </TabItem>
 </Tabs>
 
-
 :::tip
-The concurrency guarantees of keyed services makes it a lot easier to reason about interaction with external systems.
+The concurrency guarantees of keyed services make it a lot easier to reason about interaction with external systems.
 
 Imagine you have a keyed service which is the single writer to a database and every key only interacts with an isolated set of database rows.
 Then you can scale your application and never have concurrent invocations writing to the same database row.
@@ -403,6 +438,7 @@ The keys remain locked and the system can't process any more requests.
 :::
 
 ## Suspendable request-response calls
+
 :::note Implement it yourself or follow along by looking at the code under `part1`.
 :::
 
@@ -417,7 +453,7 @@ It does that by calling the `TicketService/reserve` function.
 Add the highlighted code snippet to the `addTicket` function in the user session service.
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 import * as restate from "@restatedev/restate-sdk";
@@ -434,7 +470,7 @@ const addTicket = async (
 };
 ```
 
-To do the call, you supply the exported `ticketServiceApi` to the RpcContext via the `rpc` function to specify which service to invoke.
+To make the call, you supply the exported `ticketServiceApi` to the RpcContext via the `rpc` function to specify which service to invoke.
 Then you call the `reserve` function, which returns a Promise that gets resolved with the `boolean` response.
 
 Try it out by running the services via `npm run app` and send a request to `UserSession/addTicket`, as we did [previously](#running-the-services-and-runtime).
@@ -481,15 +517,29 @@ public void addTicket(ReserveTicket request, StreamObserver<BoolValue> responseO
 }
 ```
 
-To do the call, you supply the method reference and request to `ctx.call`. Use `.await()` to wait for the response to the call.
+To make the call, you supply the method reference and request to `ctx.call`. Use `.await()` to wait for the response to the call.
 In this case, the call gets resolved with a `BoolValue` response.
 
 Try it out by running the services via `./gradlew run` and send a request to `UserSession/addTicket`, as we did [previously](#running-the-services-and-runtime).
 
 Have a look at the SDK and runtime logs, to see how the ingress request triggers the execution of the `addTicket` and `reserve` functions.
 
-//TODO add logs
+<details><summary>Show the logs</summary>
 
+```log
+2023-12-06 23:13:57 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.UserSession/AddTicket
+2023-12-06 23:13:57 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.UserSession/AddTicket
+2023-12-06 23:13:57 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=WAITING_START, id=K1qex52CPYkAYxA-vUucHa6j_MZxJ2b4A) to REPLAYING
+2023-12-06 23:13:57 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=REPLAYING, id=K1qex52CPYkAYxA-vUucHa6j_MZxJ2b4A) to PROCESSING
+2023-12-06 23:13:57 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=PROCESSING, id=K1qex52CPYkAYxA-vUucHa6j_MZxJ2b4A) to CLOSED
+2023-12-06 23:13:57 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
+2023-12-06 23:13:57 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.TicketService/Reserve
+2023-12-06 23:13:57 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.TicketService/Reserve
+2023-12-06 23:13:57 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=WAITING_START, id=IwF2v7ci3eUAYxA-vVYcWmtxF7ZiHRtJA) to REPLAYING
+2023-12-06 23:13:57 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=REPLAYING, id=IwF2v7ci3eUAYxA-vVYcWmtxF7ZiHRtJA) to PROCESSING
+```
+
+</details>
 </TabItem>
 </Tabs>
 
@@ -520,7 +570,7 @@ For example, you can do request-response calls without paying for the idle time 
 To see this work in practice, you mimic the ticket service doing heavy processing by adding a sleep call to the `TicketService/reserve` function:
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 import { setTimeout } from "timers/promises";
@@ -557,20 +607,18 @@ public void reserve(Ticket request, StreamObserver<BoolValue> responseObserver) 
 
 
 :::caution
-This isn't the proper way to sleep in a Restate application!
-The Restate SDK offers you a way to do sleeps that are suspendable, as covered [later on](#suspendable-sleep).
+This isn't the best way to sleep in a Restate service!
+The Restate SDK offers a way to sleep and immediately suspend, which we will cover a bit [later on](#suspendable-sleep) in the tour.
 :::
 
 Call `UserSession/addTicket` again and have a look at the SDK logs.
 Now that the ticket service responds after 35 seconds, you see that the `addTicket` function suspends after 30 seconds.
 Once the runtime has received the response, it invokes the `addTicket` function again and the call finishes.
 
-
-
 <details><summary>Show the logs</summary>
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```log
 [restate] [2023-08-15T20:58:25.433Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHF0pFyZoYvJ5G_WZMF] : Invoking function.
@@ -594,33 +642,43 @@ Once the runtime has received the response, it invokes the `addTicket` function 
 </TabItem>
 <TabItem value="java" label="Java">
 
-//TODO add logs
+[//]: Are we supposed to be seeing a suspension in the Java service too? I don't see it.
+
+```log
+2023-12-06 23:30:20 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.UserSession/AddTicket
+2023-12-06 23:30:20 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.UserSession/AddTicket
+2023-12-06 23:30:20 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=WAITING_START, id=jRn_FAzvp8UAYxBCfRLeZi7nlbVewfICQ) to REPLAYING
+2023-12-06 23:30:20 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=REPLAYING, id=jRn_FAzvp8UAYxBCfRLeZi7nlbVewfICQ) to PROCESSING
+2023-12-06 23:30:20 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.TicketService/Reserve
+2023-12-06 23:30:20 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.TicketService/Reserve
+2023-12-06 23:30:20 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=WAITING_START, id=IwF2v7ci3eUAYxBCfTid9qSwFOBsES5tg) to REPLAYING
+2023-12-06 23:30:20 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=REPLAYING, id=IwF2v7ci3eUAYxBCfTid9qSwFOBsES5tg) to PROCESSING
+2023-12-06 23:30:55 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=PROCESSING, id=IwF2v7ci3eUAYxBCfTid9qSwFOBsES5tg) to CLOSED
+2023-12-06 23:30:55 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
+2023-12-06 23:30:55 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=PROCESSING, id=jRn_FAzvp8UAYxBCfRLeZi7nlbVewfICQ) to CLOSED
+2023-12-06 23:30:55 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
+```
 
 </TabItem>
 </Tabs>
 
 </details>
 
-
-
-
 [//]: # (TODO include a video demo of knative on minikube to show how containers are spun up and torn down.)
 
 ### 📝 Try it out
+
 Make the `UserSession/checkout` function call the `Checkout/checkout` function.
 
 For the request field, you can use a hard-coded string array for now: `["456"]`.
 You will fix this later on.
 
-
-
-<>
 <details><summary>Solution</summary>
 
 Add the following code to the `UserSession/checkout` function:
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 import { checkoutApi } from "./checkout";
@@ -686,11 +744,10 @@ Call the `UserSession/checkout` function as you did earlier and have a look at t
 ## Reliable message sending without queues
 
 Until now, you did request-response calls and waited for the response.
-You can also do one-way calls via Restate, where you don't wait for the response.
-The syntax is similar.
+You can also make one-way calls where you don't wait for the response.
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 All you need to do is to use `RpcContext.send`, as you do here in the `UserSession/addTicket` function:
 
@@ -709,7 +766,7 @@ const addTicket = async (
 Note that `RpcContext.send` isn't an asynchronous operation which returns a promise.
 Therefore, there is no need to await it.
 
-Once you adapted the code, try it out by calling the `UserSession/addTicket` function, as [explained earlier](#running-the-services-and-runtime).
+Once you have adapted the code, try it out by calling the `UserSession/addTicket` function, as [explained earlier](#running-the-services-and-runtime).
 In the service logs, you see that the `addTicket` function doesn't wait for a response and finishes earlier than the `reserve` function.
 
 
@@ -733,7 +790,7 @@ In the service logs, you see that the `addTicket` function doesn't wait for a re
 </TabItem>
 <TabItem value="java" label="Java">
 
-All you need to do is to use `ctx.oneWayCall`, as you do here in the `UserSession/addTicket` function:
+All you need to do is use `ctx.oneWayCall`, as you do here in the `UserSession.addTicket` method:
 
 ```java
 @Override
@@ -753,11 +810,30 @@ public void addTicket(ReserveTicket request, StreamObserver<BoolValue> responseO
 
 Note that `oneWayCall` isn't an asynchronous operation so there is no need to await it.
 
-Once you adapted the code, try it out by calling the `UserSession/addTicket` function, as [explained earlier](#running-the-services-and-runtime).
+Once you have adapted the code, try it out by calling the `UserSession.addTicket` method, as [explained earlier](#running-the-services-and-runtime).
 In the service logs, you see that the `addTicket` function doesn't wait for a response and finishes earlier than the `reserve` function.
 
-//TODO add logs
+<details><summary>Show the logs</summary>
 
+```log
+2023-12-06 22:37:32 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.UserSession/AddTicket
+//highlight-next-line
+2023-12-06 22:37:32 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.UserSession/AddTicket
+2023-12-06 22:37:32 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=WAITING_START, id=K1qex52CPYkAYxA2Zwbc5mRfj-gVKileg) to REPLAYING
+2023-12-06 22:37:32 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=REPLAYING, id=K1qex52CPYkAYxA2Zwbc5mRfj-gVKileg) to PROCESSING
+2023-12-06 22:37:32 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=PROCESSING, id=K1qex52CPYkAYxA2Zwbc5mRfj-gVKileg) to CLOSED
+//highlight-next-line
+2023-12-06 22:37:32 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
+2023-12-06 22:37:32 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.TicketService/Reserve
+//highlight-next-line
+2023-12-06 22:37:32 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.TicketService/Reserve
+2023-12-06 22:37:32 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=WAITING_START, id=IwF2v7ci3eUAYxA2ZzlfgqxAKDFTcalTA) to REPLAYING
+2023-12-06 22:37:32 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=REPLAYING, id=IwF2v7ci3eUAYxA2ZzlfgqxAKDFTcalTA) to PROCESSING
+2023-12-06 22:38:07 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=PROCESSING, id=IwF2v7ci3eUAYxA2ZzlfgqxAKDFTcalTA) to CLOSED
+2023-12-06 22:38:07 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
+```
+
+</details>
 
 </TabItem>
 </Tabs>
@@ -770,16 +846,15 @@ Restate retries failed one-way invocations for you. No need to set up message qu
 
 
 ### 📝 Try it out
+
 In this example, when you add a seat to your shopping cart, it gets reserved for 15 minutes.
 When a user didn't proceed with the payment before the timeout, you need to call the `UserSession/expireTicket` function.
 Let the `expireTicket` function call the `TicketService/unreserve` function.
 
 When you are done with the implementation, send a request to `UserSession/expireTicket` to check if it works.
 
-
-
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 <details><summary>Solution</summary>
 
@@ -878,7 +953,7 @@ Earlier in this tutorial, you explored how Restate suspensions work by letting t
 
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 import { setTimeout } from "timers/promises";
@@ -918,7 +993,7 @@ public void reserve(Ticket request, StreamObserver<BoolValue> responseObserver) 
 To use a durable, suspendable sleep, use the sleep feature of the Restate SDK:
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 const reserve = async (ctx: restate.RpcContext) => {
@@ -956,7 +1031,7 @@ The `addTicket` function did a one-way call to the `reserve` function so didn't 
 <details><summary>Show the logs</summary>
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```log
 [restate] [2023-08-15T21:20:50.312Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHMg255bahRoMD2cNRH] : Invoking function.
@@ -991,7 +1066,7 @@ Revert the `reserve` function call to a request-response call, to see how the su
 
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 Replace the `RpcContext.send()` with `RpcContext.rpc()`, to end up with:
 
@@ -1088,7 +1163,7 @@ This is a one-way call that gets delayed by a specified duration.
 This would make the `UserSession/addTicket` function look as follows:
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 const addTicket = async (
@@ -1150,7 +1225,7 @@ To test it out, put the delay to a lower value, for example 5 seconds, call the 
 
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```logs
 ... logs from reserve call ...
@@ -1186,7 +1261,7 @@ You can implement this pattern in different ways.
 You could also sleep for 15 minutes at the end of the `addTicket` function and then call the `TicketService/unreserve` function:
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 await ctx.sleep(15 * 60 * 1000);
@@ -1239,7 +1314,7 @@ After reserving the product, you add the ticket to the shopping cart.
 Have a look at the highlighted code:
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```ts
 const addTicket = async (
@@ -1309,7 +1384,7 @@ After you added the ticket to the cart array, you set the state to the new value
 Run the services and call the `addTicket` function, to see the interaction with state in the logs.
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 <details><summary>Show the logs</summary>
 
@@ -1338,7 +1413,7 @@ You can store any object in the state as long as the value can be serialized wit
 </details>
 
 :::info
-To let Restate serialize custom state types, you need to add the `dev.restate.sdk:sdk-serde-jackson:VAR::JAVA_SDK_VERSION` dependency.
+To enable the Restate SDK to serialize arbitrary objects, add the `dev.restate:sdk-serde-jackson:VAR::JAVA_SDK_VERSION` dependency.
 :::
 
 </TabItem>
@@ -1351,7 +1426,7 @@ Finally, you set the new value.
 Add a log statement to print the cart contents, and then call `addTicket` multiple times to see how the state gets updated:
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```ts
 console.info(`Current tickets: ${JSON.stringify(tickets)}`);
@@ -1374,7 +1449,7 @@ You can also stop and relaunch the service or restart the runtime (`docker resta
 Also adapt the `checkout` function in the user session service, to use the tickets:
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 const checkout = async (ctx: restate.RpcContext, userId: string) => {
@@ -1466,7 +1541,7 @@ Now that you implemented the checkout function, you can also finish the `UserSes
 At the moment you have the following code:
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```ts
 const expireTicket = async (
@@ -1508,7 +1583,7 @@ If this is the case, then you call `TicketService/unreserve` and remove it from 
 <details><summary>Solution</summary>
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```ts
 const expireTicket = async (
@@ -1576,7 +1651,7 @@ Remove the sleep that you added before.
 <details><summary>Solution</summary>
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```ts
 const reserve = async (ctx: restate.RpcContext) => {
@@ -1629,7 +1704,7 @@ The function should set the value of the `"status"` key to `TicketStatus.Availab
 <details><summary>Solution</summary>
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```ts
 const unreserve = async (ctx: restate.RpcContext) => {
@@ -1682,7 +1757,7 @@ If successful, the function returns `true`.
 
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```ts
 const markAsSold = async (ctx: restate.RpcContext) => {
@@ -1724,10 +1799,10 @@ This ties the final parts together.
 </>
 
 :::info
-🚩 Explore the intermediate solution in `part2`, and run it with
+🚩 Explore the intermediate solution in `part2`, and run it with:
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```shell
 npm run part2
@@ -1763,7 +1838,7 @@ This includes pieces of time-consuming, deterministic user code.
 Use a side effect in `Checkout/checkout` to create and store a UUID (with the [uuid library](https://www.npmjs.com/package/uuid)) or idempotency key:
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 import { v4 as uuid } from "uuid";
@@ -1806,7 +1881,7 @@ When the `checkout()` function gets re-executed upon replay, Restate injects the
 To experiment, you can print the idempotency key to the console and add a sleep to see how the UUID gets replayed after the suspension:
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```ts
 console.log("My idempotency key: " + idempotencyKey);
@@ -1829,7 +1904,7 @@ Have a look at the logs to see what happens.
 <details><summary>Show the logs</summary>
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```log
 ... logs of `UserSession/checkout` ...
@@ -1891,7 +1966,7 @@ Also use the boolean result for the return value of the function.
 <details><summary>Solution</summary>
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 const checkout = async (
@@ -1971,7 +2046,9 @@ The checkout success is propagated back to the `UserSession` service.
 </details>
 
 #### Finishing the checkout workflow
+
 Once this works, you implement the rest of the checkout workflow:
+
 - If the payment call was successful, then:
     - use the EmailClient to notify the users of the payment success.
     Prevent duplicate emails during retries by using a side effect.
@@ -1985,7 +2062,7 @@ Once this works, you implement the rest of the checkout workflow:
 The `Checkout/checkout` function looks now the following:
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```ts
 const checkout = async (
@@ -2047,12 +2124,10 @@ public void checkout(CheckoutFlowRequest request, StreamObserver<BoolValue> resp
 </TabItem>
 </Tabs>
 
-
-The `UserSession/checkout` function looks now the following:
+The `UserSession/checkout` function now looks like the following:
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
-
+<TabItem value="ts" label="TypeScript">
 
 ```ts
 const checkout = async (ctx: restate.RpcContext, userId: string) => {
@@ -2121,7 +2196,7 @@ public void checkout(CheckoutRequest request, StreamObserver<BoolValue> response
 :::info
 🚩 Explore the intermediate solution in `part3`, and run it with:
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```shell
 npm run part3
@@ -2165,7 +2240,7 @@ If you do a side effect operation and the side effect fails, then it is retried 
 You can observe this behavior by using the `paymendClient.failingCall` in `Checkout/checkout`:
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 const paymentClient = PaymentClient.get();
@@ -2194,7 +2269,7 @@ Have a look at the logs to see the retries.
 <details><summary>Show the logs</summary>
 
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```log
 [restate] [2023-08-16T08:24:28.507Z] DEBUG: [Checkout/checkout] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Invoking function.
@@ -2275,12 +2350,13 @@ Notifying user 123 of payment success
 Restate exposes OpenTelemetry traces of your invocations.
 
 Run the Jaeger container with:
+
 ```shell
 docker run -d --name jaeger \
--e COLLECTOR_OTLP_ENABLED=true \
--p 4317:4317 \
--p 16686:16686 \
-jaegertracing/all-in-one:1.46
+    -e COLLECTOR_OTLP_ENABLED=true \
+    -p 4317:4317 \
+    -p 16686:16686 \
+    jaegertracing/all-in-one:1.46
 ```
 
 Then restart the runtime with the tracing endpoint defined as an environment variable:
@@ -2339,9 +2415,9 @@ For more information, have a look at the [tracing docs](/restate/tracing).
 ## 🏁 The end
 You reached the end of this tutorial!
 
-:::info 🚩 Have a look at the fully implemented app in `part4`, and run it with .
+:::info 🚩 Have a look at the fully implemented app in `part4`, and run it with:
 <Tabs groupId="sdk">
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```shell
 npm run part4
