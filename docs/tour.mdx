@@ -54,8 +54,8 @@ This guide is written for:
 - [curl](https://everything.curl.dev/get)
 
 This guide is written for:
-- Java SDK version: `@restatedev/restate-sdk:VAR::JAVA_SDK_VERSION`
-- Restate runtime Docker image: `restate-dist:VAR::RESTATE_DIST_VERSION`
+- Java SDK version: `dev.restate:sdk-api:VAR::JAVA_SDK_VERSION`
+- Restate runtime Docker image: `restate-dist:VAR::RESTATE_VERSION`
 
 </TabItem>
 </Tabs>
@@ -70,7 +70,7 @@ This guide is written for:
 Clone the GitHub repository of the [tutorial](https://github.com/restatedev/tour-of-restate-typescript):
 
 ```shell
-git clone --depth 1 --branch vVAR::TYPESCRIPT_TOUR_VERSION git@github.com:restatedev/tour-of-restate-typescript.git
+git clone --depth 1 --branch vVAR::TYPESCRIPT_SDK_VERSION git@github.com:restatedev/tour-of-restate-typescript.git
 ```
 
 This GitHub repository contains the basic skeleton of the NodeJS/Typescript services that you develop in this tutorial.
@@ -85,7 +85,7 @@ npm install && npm run build
 
 Clone the GitHub repository of the [tutorial](https://github.com/restatedev/tour-of-restate-java):
 ```shell
-git clone --depth 1 --branch vVAR::JAVA_TOUR_VERSION git@github.com:restatedev/tour-of-restate-java.git
+git clone --depth 1 --branch vVAR::JAVA_TOUR_VERSION https@github.com:restatedev/tour-of-restate-java.git
 ```
 
 This GitHub repository contains the basic skeleton of the Java services that you develop in this tutorial.
@@ -235,7 +235,7 @@ curl -X POST http://localhost:8080/UserSession/addTicket \
 <TabItem value="java" label="Java">
 
 ```shell
-curl -X POST http://localhost:9090/example.UserSessionService/AddTicket \
+curl -X POST http://localhost:8080/example.UserSession/AddTicket \
     -H 'content-type: application/json' \
     -d '{"user_id": "123", "ticket_id": "456"}'
 ```
@@ -263,7 +263,7 @@ The `app.ts` file contains the definition of the Restate server that serves the 
 <TabItem value="java" label="Java">
 
 ```shell
-curl -X POST http://localhost:9090/example.UserSessionService/Checkout \
+curl -X POST http://localhost:8080/example.UserSession/Checkout \
     -H 'content-type: application/json' \
     -d '{"user_id": "123"}'
 ```
@@ -845,7 +845,7 @@ public void expireTicket(ExpireTicketRequest request, StreamObserver<Empty> resp
 
 Call the `expireTicket` function with:
 ```shell
-curl -X POST http://localhost:9090/example.UserSessionService/ExpireTicket -H 'content-type: application/json' -d '{"user_id": "123"}'
+curl -X POST http://localhost:8080/example.UserSession/ExpireTicket -H 'content-type: application/json' -d '{"user_id": "123"}'
 ```
 
 Have a look at the logs again to see what happened.
@@ -1338,7 +1338,7 @@ You can store any object in the state as long as the value can be serialized wit
 </details>
 
 :::info
-To let Restate serialize custom state types, you need to add the `dev.restate.sdk:sdk-serde-jackson:1.0-SNAPSHOT` dependency.
+To let Restate serialize custom state types, you need to add the `dev.restate.sdk:sdk-serde-jackson:VAR::JAVA_SDK_VERSION` dependency.
 :::
 
 </TabItem>
