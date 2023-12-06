@@ -19,13 +19,18 @@ to be propagated back to the caller, you can use a terminal error.
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-import { TerminalError } from "@restatedev/restate-sdk";
+import { TerminalError, ErrorCodes } from "@restatedev/restate-sdk";
 
 // Inside your handler throw terminal errors via:
-throw new TerminalError("Something went wrong.", { errorCode: 13, cause: "Something caused this." })
+throw new TerminalError("Something went wrong.", { errorCode: ErrorCodes.INTERNAL })
 ```
 
-The `errorCode` and `cause` are optional.
+The `errorCode` is optional. `errorCode` is a [gRPC status code](https://grpc.github.io/grpc/core/md_doc_statuscodes.html).
+You can throw a terminal error anywhere in your handler.
+Restate will propagate the error code and message back to the caller and will consider this invocation to be finished.
+
+If a terminal error is returned to an HTTP client of the ingress, it will be converted into an appropriate HTTP status code, which
+is documented in the TSDoc of the ErrorCodes enum.
 
 :::note Errors during side effect execution
 
