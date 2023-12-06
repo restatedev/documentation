@@ -12,9 +12,6 @@ docker run --rm -p 3000:80 ghcr.io/restatedev/documentation:latest
 
 This will serve the documentation under `localhost:3000`.
 
-> **Note**
-> Make sure that you have access to Github's container registry by [following these instructions](https://github.com/restatedev/restate-dist#container-registry).
-
 You can also check this repository out and build the documentation yourself by following the instructions below.
 
 ## Developing the documentation
@@ -45,27 +42,25 @@ This command generates static content into the `build` directory and can be serv
 
 ### Staging area
 
-The `main` branch of the documentation is continuously deployed at `https://main.documentation-beg.pages.dev`.
+The `main` branch of the documentation is continuously deployed at https://main.documentation-beg.pages.dev.
 
 ## Releasing the documentation
 
 Before releasing the documentation, update schemas and version of Restate artifacts, either:
 
-* Automatically by executing the _Pre-release updates_ workflow. 
-* Manually, as described below.
+* Automatically by executing the _Pre-release updates_ workflow.
+* Manually, as described [here](#manually-update-the-schemas).
 
-Once the branch `main` is ready to be released, merge `main` in `production` and push it, together with the release tag. E.g:
+Once the branch `main` is ready to be released, create and push the release tag:
 
 ```shell
-git checkout production
-git merge origin/main
-git tag v0.3.0
-git push
+git checkout main
+git tag -m "Documentation v0.3.0" v0.3.0
 git push --tags
 ```
 
-Once pushed the update to the `production` branch, the website deployment will be updated.
 The tag triggers the build of the new `restatedev/documentation:vX.Y.Z` container image and creates a draft [release on Github](https://github.com/restatedev/documentation/releases) that needs manual approval.
+Moreover, it will push the latest `main` to the `production` branch which triggers the deployment of the documentation.
 
 ### Manually update the schemas
 
@@ -81,5 +76,5 @@ $ ./tools/generate.sh <PATH to Restate repo clone>
 The config file `restate.config.json` contains versions of various Restate artifacts:
 
 * Typescript SDK: `TYPESCRIPT_SDK_VERSION`
-* Runtime: `RESTATE_DIST_VERSION`
+* Runtime: `RESTATE_VERSION`
 * Tour: `TYPESCRIPT_TOUR_VERSION` and `JAVA_TOUR_VERSION`

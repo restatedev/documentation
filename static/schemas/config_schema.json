@@ -23,9 +23,21 @@
     },
     "meta": {
       "default": {
-        "proxy_uri": null,
-        "rest_address": "0.0.0.0:8081",
+        "rest_address": "0.0.0.0:9070",
         "rest_concurrency_limit": 1000,
+        "service_client": {
+          "http": {
+            "keep_alive_options": {
+              "interval": "40s",
+              "timeout": "20s"
+            },
+            "proxy_uri": null
+          },
+          "lambda": {
+            "assume_role_external_id": null,
+            "aws_profile": null
+          }
+        },
         "storage_path": "target/meta/"
       },
       "$ref": "#/definitions/MetaOptions"
@@ -34,8 +46,8 @@
       "default": {
         "channel_size": 64,
         "ingress_grpc": {
-          "bind_address": "0.0.0.0:9090",
-          "concurrency_limit": 1000,
+          "bind_address": "0.0.0.0:8080",
+          "concurrency_limit": 10000000,
           "json": {
             "deserialize_deny_unknown_fields": true,
             "serialize_skip_default_fields": false,
@@ -48,14 +60,9 @@
           "abort_timeout": "1m",
           "concurrency_limit": null,
           "disable_eager_state": false,
-          "http2_keep_alive": {
-            "interval": "40s",
-            "timeout": "20s"
-          },
           "inactivity_timeout": "1m",
           "message_size_limit": null,
           "message_size_warning": 10485760,
-          "proxy_uri": null,
           "retry_policy": {
             "factor": 2.0,
             "initial_interval": "50ms",
@@ -63,7 +70,20 @@
             "max_interval": "10s",
             "type": "Exponential"
           },
-          "tmp_dir": "/tmp/invoker-018b38b4ad6973fe8799353d0be30d9d"
+          "service_client": {
+            "http": {
+              "keep_alive_options": {
+                "interval": "40s",
+                "timeout": "20s"
+              },
+              "proxy_uri": null
+            },
+            "lambda": {
+              "assume_role_external_id": null,
+              "aws_profile": null
+            }
+          },
+          "tmp_dir": "/tmp/invoker-018c2b406b5e7518832e14e1134dc69b"
         },
         "kafka": {
           "clusters": {}
@@ -79,7 +99,7 @@
           "http_concurrency_limit": 1000
         },
         "storage_query_postgres": {
-          "bind_address": "0.0.0.0:5432"
+          "bind_address": "0.0.0.0:9071"
         },
         "storage_rocksdb": {
           "cache_size": 1073741824,
@@ -109,6 +129,7 @@
       "properties": {
         "tracing": {
           "title": "Tracing options",
+          "default": null,
           "anyOf": [
             {
               "$ref": "#/definitions/TracingOptions"
@@ -218,7 +239,7 @@
         "rest_address": {
           "title": "Rest endpoint address",
           "description": "Address to bind for the Meta Operational REST APIs.",
-          "default": "0.0.0.0:8081",
+          "default": "0.0.0.0:9070",
           "type": "string"
         },
         "rest_concurrency_limit": {
@@ -235,9 +256,113 @@
           "default": "target/meta/",
           "type": "string"
         },
+        "service_client": {
+          "default": {
+            "http": {
+              "keep_alive_options": {
+                "interval": "40s",
+                "timeout": "20s"
+              },
+              "proxy_uri": null
+            },
+            "lambda": {
+              "assume_role_external_id": null,
+              "aws_profile": null
+            }
+          },
+          "$ref": "#/definitions/ServiceClientOptions"
+        }
+      }
+    },
+    "ServiceClientOptions": {
+      "title": "Client options",
+      "type": "object",
+      "properties": {
+        "http": {
+          "default": {
+            "keep_alive_options": {
+              "interval": "40s",
+              "timeout": "20s"
+            },
+            "proxy_uri": null
+          },
+          "$ref": "#/definitions/HttpClientOptions"
+        },
+        "lambda": {
+          "default": {
+            "assume_role_external_id": null,
+            "aws_profile": null
+          },
+          "$ref": "#/definitions/LambdaClientOptions"
+        }
+      }
+    },
+    "HttpClientOptions": {
+      "title": "HTTP client options",
+      "type": "object",
+      "properties": {
+        "keep_alive_options": {
+          "title": "HTTP/2 Keep-alive",
+          "description": "Configuration for the HTTP/2 keep-alive mechanism, using PING frames. If unset, HTTP/2 keep-alive are disabled.",
+          "default": {
+            "interval": "40s",
+            "timeout": "20s"
+          },
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Http2KeepAliveOptions"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "proxy_uri": {
           "title": "Proxy URI",
           "description": "A URI, such as `http://127.0.0.1:10001`, of a server to which all invocations should be sent, with the `Host` header set to the service endpoint URI. HTTPS proxy URIs are supported, but only HTTP endpoint traffic will be proxied currently. Can be overridden by the `HTTP_PROXY` environment variable.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "Http2KeepAliveOptions": {
+      "title": "HTTP/2 Keep alive options",
+      "description": "Configuration for the HTTP/2 keep-alive mechanism, using PING frames.\n\nPlease note: most gateways don't propagate the HTTP/2 keep-alive between downstream and upstream hosts. In those environments, you need to make sure the gateway can detect a broken connection to the upstream service endpoint(s).",
+      "type": "object",
+      "properties": {
+        "interval": {
+          "title": "HTTP/2 Keep-alive interval",
+          "description": "Sets an interval for HTTP/2 PING frames should be sent to keep a connection alive.\n\nYou should set this timeout with a value lower than the `response_abort_timeout`.",
+          "default": "40s",
+          "type": "string"
+        },
+        "timeout": {
+          "title": "Timeout",
+          "description": "Sets a timeout for receiving an acknowledgement of the keep-alive ping.\n\nIf the ping is not acknowledged within the timeout, the connection will be closed.",
+          "default": "20s",
+          "type": "string"
+        }
+      }
+    },
+    "LambdaClientOptions": {
+      "title": "Lambda client options",
+      "type": "object",
+      "properties": {
+        "aws_profile": {
+          "title": "AWS Profile",
+          "description": "Name of the AWS profile to select. Defaults to 'AWS_PROFILE' env var, or otherwise the `default` profile.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "assume_role_external_id": {
+          "title": "AssumeRole external ID",
+          "description": "An external ID to apply to any AssumeRole operations taken by this client. https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html Can be overridden by the `AWS_EXTERNAL_ID` environment variable.",
           "default": null,
           "type": [
             "string",
@@ -280,7 +405,7 @@
         },
         "storage_query_postgres": {
           "default": {
-            "bind_address": "0.0.0.0:5432"
+            "bind_address": "0.0.0.0:9071"
           },
           "$ref": "#/definitions/StorageQueryPostgresOptions"
         },
@@ -296,8 +421,8 @@
         },
         "ingress_grpc": {
           "default": {
-            "bind_address": "0.0.0.0:9090",
-            "concurrency_limit": 1000,
+            "bind_address": "0.0.0.0:8080",
+            "concurrency_limit": 10000000,
             "json": {
               "deserialize_deny_unknown_fields": true,
               "serialize_skip_default_fields": false,
@@ -319,14 +444,9 @@
             "abort_timeout": "1m",
             "concurrency_limit": null,
             "disable_eager_state": false,
-            "http2_keep_alive": {
-              "interval": "40s",
-              "timeout": "20s"
-            },
             "inactivity_timeout": "1m",
             "message_size_limit": null,
             "message_size_warning": 10485760,
-            "proxy_uri": null,
             "retry_policy": {
               "factor": 2.0,
               "initial_interval": "50ms",
@@ -334,7 +454,20 @@
               "max_interval": "10s",
               "type": "Exponential"
             },
-            "tmp_dir": "/tmp/invoker-018b38b4ad697f8dadd63aada7781d14"
+            "service_client": {
+              "http": {
+                "keep_alive_options": {
+                  "interval": "40s",
+                  "timeout": "20s"
+                },
+                "proxy_uri": null
+              },
+              "lambda": {
+                "assume_role_external_id": null,
+                "aws_profile": null
+              }
+            },
+            "tmp_dir": "/tmp/invoker-018c2b406b5f7433a6411ce4b801b41e"
           },
           "$ref": "#/definitions/InvokerOptions"
         },
@@ -429,7 +562,7 @@
         "bind_address": {
           "title": "Bind address",
           "description": "The address to bind for the psql service.",
-          "default": "0.0.0.0:5432",
+          "default": "0.0.0.0:9071",
           "type": "string"
         }
       }
@@ -485,13 +618,13 @@
         "bind_address": {
           "title": "Bind address",
           "description": "The address to bind for the ingress.",
-          "default": "0.0.0.0:9090",
+          "default": "0.0.0.0:8080",
           "type": "string"
         },
         "concurrency_limit": {
           "title": "Concurrency limit",
           "description": "Local concurrency limit to use to limit the amount of concurrent requests. If exceeded, the ingress will reply immediately with an appropriate status code.",
-          "default": 1000,
+          "default": 10000000,
           "type": "integer",
           "format": "uint",
           "minimum": 0.0
@@ -610,11 +743,14 @@
           "title": "Message size warning",
           "description": "Threshold to log a warning in case protocol messages coming from service endpoint are larger than the specified amount.",
           "default": 10485760,
-          "type": "string"
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0.0
         },
         "message_size_limit": {
           "title": "Message size limit",
           "description": "Threshold to fail the invocation in case protocol messages coming from service endpoint are larger than the specified amount.",
+          "default": null,
           "type": [
             "integer",
             "null"
@@ -622,24 +758,16 @@
           "format": "uint",
           "minimum": 0.0
         },
-        "proxy_uri": {
-          "title": "Proxy URI",
-          "description": "A URI, such as `http://127.0.0.1:10001`, of a server to which all invocations should be sent, with the `Host` header set to the service endpoint URI. HTTPS proxy URIs are supported, but only HTTP endpoint traffic will be proxied currently. Can be overridden by the `HTTP_PROXY` environment variable.",
-          "default": null,
-          "type": [
-            "string",
-            "null"
-          ]
-        },
         "tmp_dir": {
           "title": "Temporary directory",
           "description": "Temporary directory to use for the invoker temporary files. If empty, the system temporary directory will be used instead.",
-          "default": "/tmp/invoker-018b38b4ad69785e9456148b6dc4250c",
+          "default": "/tmp/invoker-018c2b406b5f77728e4cb834df8c45c2",
           "type": "string"
         },
         "concurrency_limit": {
           "title": "Concurrency limit",
           "description": "Number of concurrent invocations that can be processed by the invoker.",
+          "default": null,
           "type": [
             "integer",
             "null"
@@ -647,21 +775,21 @@
           "format": "uint",
           "minimum": 0.0
         },
-        "http2_keep_alive": {
-          "title": "HTTP/2 Keep-alive",
-          "description": "Configuration for the HTTP/2 keep-alive mechanism, using PING frames. If unset, HTTP/2 keep-alive are disabled.",
+        "service_client": {
           "default": {
-            "interval": "40s",
-            "timeout": "20s"
-          },
-          "anyOf": [
-            {
-              "$ref": "#/definitions/Http2KeepAliveOptions"
+            "http": {
+              "keep_alive_options": {
+                "interval": "40s",
+                "timeout": "20s"
+              },
+              "proxy_uri": null
             },
-            {
-              "type": "null"
+            "lambda": {
+              "assume_role_external_id": null,
+              "aws_profile": null
             }
-          ]
+          },
+          "$ref": "#/definitions/ServiceClientOptions"
         }
       }
     },
@@ -761,25 +889,6 @@
           }
         }
       ]
-    },
-    "Http2KeepAliveOptions": {
-      "title": "HTTP/2 Keep alive options",
-      "description": "Configuration for the HTTP/2 keep-alive mechanism, using PING frames.\n\nPlease note: most gateways don't propagate the HTTP/2 keep-alive between downstream and upstream hosts. In those environments, you need to make sure the gateway can detect a broken connection to the upstream service endpoint(s).",
-      "type": "object",
-      "properties": {
-        "interval": {
-          "title": "HTTP/2 Keep-alive interval",
-          "description": "Sets an interval for HTTP/2 PING frames should be sent to keep a connection alive.\n\nYou should set this timeout with a value lower than the `response_abort_timeout`.",
-          "default": "40s",
-          "type": "string"
-        },
-        "timeout": {
-          "title": "Timeout",
-          "description": "Sets a timeout for receiving an acknowledgement of the keep-alive ping.\n\nIf the ping is not acknowledged within the timeout, the connection will be closed.",
-          "default": "20s",
-          "type": "string"
-        }
-      }
     },
     "Options": {
       "title": "Runtime options",

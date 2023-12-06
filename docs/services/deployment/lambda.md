@@ -23,14 +23,10 @@ npm run bundle
 AWS Lambda assumes that the handler can be found under `index.handler` in the uploaded code.
 By default, this is also the case for the Lambda functions developed with the Restate SDK.
 
-:::caution
-Restate assumes that requests come through API Gateway.
-So you have to configure API Gateway to sit in front of your Lambda function.
-:::
 
 ### Managed service
 If you'd prefer not to manage a runtime instance, we are trialing a managed service that lets you work
-with Lambda services without running any infrastructure or even an API gateway.
+with Lambda services without running any infrastructure.
 See [the documentation](/restate/managed_service) for more details.
 
 ### Discovery of services
@@ -40,21 +36,8 @@ pointed at the Restate runtime and with the Lambda function endpoint as the URI 
 
 
 ```shell
-curl -X POST http://<your-restate-runtime-endpoint>:9070/endpoints -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/<my-service>"}'
+curl -X POST http://<your-restate-runtime-endpoint>:9070/endpoints -H 'content-type: application/json' -d '{"arn": "arn:aws:lambda:my-region:123456789101:function:my-function:my-version"}'
 ```
-
-If your Lambda function requires authentication via an API key,
-then you can add this API key to the discovery request to the Restate runtime, as follows:
-
-```shell
-curl -X POST http://<your-restate-runtime-endpoint>:9070/endpoints -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/<my-service>","additional_headers": {"x-api-key": "someapikey"} }'
-```
-
-Here, we added the API key as an additional header to the JSON data of the request.
-Replace `someapikey` by your API key.
-The Restate runtime will use this API key for all subsequent requests to the Lambda function.
-
-
 
 ## Tutorial
 
@@ -63,12 +46,11 @@ This tutorial shows how to deploy a greeter service written with the Restate Typ
 [Go to the GitHub repository of this tutorial](https://github.com/restatedev/examples/tree/main/typescript/lambda-greeter)
 
 ### Prerequisites
-> &#x1F4DD; As long as Restate hasn't been launched publicly, you need to have access to the private Restate npm packages and Docker container. Please follow the instructions in the [restate-dist](https://github.com/restatedev/restate-dist) Readme to set up access:
 
 - Latest stable version of [NodeJS](https://nodejs.org/en/) >= v18.17.1 and [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 9.6.7
 - [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation) to launch the Restate runtime (not needed for the app implementation itself).
 - [curl](https://everything.curl.dev/get)
-- An AWS account with permissions for Lambda and API Gateway.
+- An AWS account with permissions for Lambda.
 
 ### Clone the repository
 
@@ -110,20 +92,6 @@ You should now see a function overview with your new function in it.
 
 ![Function overview](/img/function-overview.png)
 
-Let's add an API Gateway in front of our function. Click on `Add trigger` below your function in the function overview.
-Select API Gateway as a source and fill in the following:
-
-![API GW configuration](/img/api-gw-config.png)
-
-If you select `open` for Security, your function will be publicly reachable!
-If you select `API key` for Security, then the requests to your API Gateway require an API key in the header.
-
-Click on `Add` to create the API gateway for your Lambda function.
-
-You should now see the API gateway appear in the function overview:
-
-![Overview with API GW](/img/overview-with-apigw.png)
-
 The next step is uploading the zip file with our function code.
 Open the `Code` tab in the section below the function overview.
 Click on `Upload from` and select your zip file.
@@ -134,51 +102,7 @@ So this means that you should have the Restate Lambda handler assigned to `expor
 This handler will then be included in `index.js` after creating the zip, and be used by AWS Lambda as the entry point of the Lambda function.
 To change that you can scroll down to `Runtime settings` and change the handler reference.
 
-One last step before we are in business!
-We still need to tell the API Gateway how to forward requests to our Lambda functions and deploy the API.
-
-Go to your API Gateway by clicking on it in the function overview.
-Then click on the name of the API Gateway to get directed to the API Gateway configuration.
-You should now be in the `Resources` overview of your API Gateway.
-
-![API GW Resource](/img/resource-apigw.png)
-
-In the left-upper corner, click on `Actions` and select `Create resource` from the dropdown.
-We configure the resource as a proxy resource, that just forwards all requests to our Lambda function:
-
-![Create resource](/img/create-resource.png)
-
-Click on `Create resource`. Now, we need to specify to which Lamda function our requests should be forwarded.
-
-![Setup proxy](/img/setup-proxy.png)
-
-Click `Save` and confirm that you want your API Gateway to have permission to invoke your Lambda function.
-
-You should now see the proxy added to the resources
-
-![Proxy resource](/img/proxy-resource.png)
-
-To configure that we want to use an API key for authentication,
-click on `Method Request` and set `API Key Required` to `true`.
-If you do this,
-make sure that you create an API key and link it to your Lambda function and deployment stage via a usage plan.
-To do this:
-- Go to the API Gateway console and then to `API Keys`.
-- Click on the `Actions` dropdown and select `Create API key`.
-- Give the API key a name and leave it as an auto generated key.
-- After the successful creation, click on `Add to Usage Plan`
-- When you deployed your function, a usage plan should have been created. Type in the name of your function and you should see the name of the usage plan pop up with this format: `my-greeter-UsagePlan`
-- After linking your usage plan to your API key, click on the usage plan name, to go to the settings of the usage plan.
-- If the usage plan has no stage linked to it yet, click on `Add API stage`. Type in the name of the API: `my-greeter-API`. And select a stage. In our case: `default`. Save by clicking on the checkmark.
-
-
-Now let's deploy the API. Go back to the API Gateway overview of our greeter. Click again on `Actions` and select `Deploy API`.
-Select `default` as the deployment stage and click on `Deploy`.
-
-Our API Gateway and Lambda function should now be working!
-
-You can see the invoke URL by going to `Stages` and then following the path to the endpoint you want to invoke.
-For example `default/my-greeter`. The invoke URL will be printed on top of the page.
+Our Lambda function should now be working!
 
 #### Testing your Lambda function
 
@@ -245,20 +169,23 @@ The response should be the following:
 
 The body is the base64 encoded string of the response, and stands for `{"value":"Hello Pete"}`.
 
-### Sending requests your Lambda function
+### Sending requests to your Lambda function
 
 #### Running the Restate runtime
 
-You don't necessarily need to run the Restate runtime on AWS.
-You can also run the Restate runtime locally in a Docker container to test your Lambda function:
+You don't necessarily need to run the Restate runtime on AWS, but it does need to be able to obtain credentials to invoke your Lambda.
+You can run the Restate runtime locally in a Docker container to test your Lambda function, using your local AWS creds (defined in ~/.aws).
+
+If you use SSO, the AWS Rust SDK currently requires a minor change to your ~/.aws/config to support this;
+see https://github.com/awslabs/aws-sdk-rust/issues/703#issuecomment-1811480196.
 
 - On Linux
 ```shell
-docker run --name restate_dev --rm -d --network=host ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
+docker run -e AWS_PROFILE -v ~/.aws/:/root/.aws --name restate_dev --rm -d --network=host docker.io/restatedev/restate:VAR::RESTATE_VERSION
 ```
 - On macOS:
 ```shell
-docker run --name restate_dev --rm -d -p 8080:8080 -p 9070:9070 -p 9071:9071 ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
+docker run -e AWS_PROFILE -v ~/.aws/:/root/.aws --name restate_dev --rm -d -p 8080:8080 -p 9070:9070 -p 9071:9071 docker.io/restatedev/restate:VAR::RESTATE_VERSION
 ```
 
 Consult the runtime logs via `docker logs restate_dev`.
@@ -270,21 +197,11 @@ Stop the runtime (and remove any intermediate state) with `docker stop restate_d
 Connect to the Restate (e.g. via an SSH session if it is running on EC2) runtime and execute the discovery curl command:
 
 ```shell
-curl -X POST http://<your-restate-runtime-endpoint>:9070/endpoints -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/my-greeter", "additional_headers": {"x-api-key": "your-api-key"} }'
+curl -X POST http://<your-restate-runtime-endpoint>:9070/endpoints -H 'content-type: application/json' -d '{"arn": "<lambda-function-arn>"  }'
 ```
 
 If you are running the runtime locally, replace `<your-restate-runtime-endpoint>` by `localhost`.
 If the runtime is running somewhere else, then replace it accordingly.
-
-If you have set up API key authentication for the API Gateway and Lambda,
-then you can add the API key as an additional header in the discovery request.
-You can find the API key in the API Gateway console by going to `API Keys` and then selecting the key of your function.
-After the discovery, the runtime uses this API key for all subsequent requests to the Lambda function.
-
-If your Lambda function does not require an API key then you can do the discovery without the additional headers:
-```shell
-curl -X POST http://<your-restate-runtime-endpoint>:9070/endpoints -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/my-greeter"}'
-```
 
 When executing this command, you should see the discovered services printed out!
 

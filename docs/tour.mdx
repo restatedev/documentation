@@ -42,7 +42,7 @@ As we go, you will discover how Restate can help you with some intricacies in th
 
 This guide is written for:
 - Typescript SDK version: `@restatedev/restate-sdk:VAR::TYPESCRIPT_SDK_VERSION`
-- Restate runtime Docker image: `restate-dist:VAR::RESTATE_DIST_VERSION`
+- Restate runtime Docker image: `restatedev/restate:VAR::RESTATE_VERSION`
 
 </TabItem>
 <TabItem value="java" label="Java">
@@ -119,14 +119,14 @@ Launch Restate:
 <TabItem value="lin" label="Linux">
 
 ```shell
-docker run --name restate_dev --rm -d --network=host ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
+docker run --name restate_dev --rm -d --network=host docker.io/restatedev/restate:VAR::RESTATE_VERSION
 ```
 
 </TabItem>
 <TabItem value="mac" label="macOS">
 
 ```shell
-docker run --name restate_dev --rm -d -p 8080:8080 -p 9070:9070 -p 9071:9071 ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
+docker run --name restate_dev --rm -d -p 8080:8080 -p 9070:9070 -p 9071:9071 docker.io/restatedev/restate:VAR::RESTATE_VERSION
 ```
 
 </TabItem>
@@ -739,12 +739,12 @@ All you need to do is to use `ctx.oneWayCall`, as you do here in the `UserSessio
 @Override
 public void addTicket(ReserveTicket request, StreamObserver<BoolValue> responseObserver) {
   RestateContext ctx = restateContext();
-  // highlight-start  
+  // highlight-start
   ctx.oneWayCall(
     TicketServiceGrpc.getReserveMethod(),
     Ticket.newBuilder().setTicketId(request.getTicketId()).build()
   );
-  // highlight-end  
+  // highlight-end
 
   responseObserver.onNext(BoolValue.of(true));
   responseObserver.onCompleted();
@@ -854,7 +854,7 @@ Have a look at the logs again to see what happened.
 </details>
 
 :::info
-🚩 Explore the intermediate solution in `part1`, and run it with 
+🚩 Explore the intermediate solution in `part1`, and run it with
 ```shell
 ./gradlew -PmainClass=dev.restate.tour.part1.AppMain run
 ```
@@ -1045,19 +1045,19 @@ Replace the `ctx.call()` with `ctx.oneWayCall()`, to end up with:
 @Override
 public void addTicket(ReserveTicket request, StreamObserver<BoolValue> responseObserver) {
   RestateContext ctx = restateContext();
-  // highlight-start  
+  // highlight-start
   ctx.oneWayCall(
     TicketServiceGrpc.getReserveMethod(),
     Ticket.newBuilder().setTicketId(request.getTicketId()).build()
   );
-  // highlight-end  
+  // highlight-end
 
   responseObserver.onNext(BoolValue.of(true));
   responseObserver.onCompleted();
 }
 ```
 
-//TODO add logs 
+//TODO add logs
 
 </TabItem>
 </Tabs>
@@ -1269,7 +1269,7 @@ const addTicket = async (
 
 ```java
 //highlight-start
-public static final StateKey<Set<String>> STATE_KEY = 
+public static final StateKey<Set<String>> STATE_KEY =
   StateKey.of("tickets", JacksonSerde.typeRef(new TypeReference<>() {}));
 //highlight-end
 
@@ -1333,7 +1333,7 @@ You can store any object in the state as long as the value can be serialized wit
 
 <details><summary>Show the logs</summary>
 
-//TODO add logs 
+//TODO add logs
 
 </details>
 
@@ -1724,7 +1724,7 @@ This ties the final parts together.
 </>
 
 :::info
-🚩 Explore the intermediate solution in `part2`, and run it with 
+🚩 Explore the intermediate solution in `part2`, and run it with
 
 <Tabs groupId="sdk">
 <TabItem value="ts" label="Typescript">
@@ -2288,14 +2288,14 @@ Then restart the runtime with the tracing endpoint defined as an environment var
 <TabItem value="lin" label="Linux">
 
 ```shell
-docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://localhost:4317 --network=host ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
+docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://localhost:4317 --network=host docker.io/restatedev/restate:VAR::RESTATE_VERSION
 ```
 
 </TabItem>
 <TabItem value="mac" label="macOS">
 
 ```shell
-docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://host.docker.internal:4317 -p 8080:8080 -p 9070:9070 -p 9071:9071 ghcr.io/restatedev/restate-dist:VAR::RESTATE_DIST_VERSION
+docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://host.docker.internal:4317 -p 8080:8080 -p 9070:9070 -p 9071:9071 docker.io/restatedev/restate:VAR::RESTATE_VERSION
 ```
 
 </TabItem>

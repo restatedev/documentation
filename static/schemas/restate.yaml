@@ -6,10 +6,18 @@ observability:
     format: Pretty
     disable_ansi_codes: false
 meta:
-  rest_address: 0.0.0.0:8081
+  rest_address: 0.0.0.0:9070
   rest_concurrency_limit: 1000
   storage_path: target/meta/
-  proxy_uri: null
+  service_client:
+    http:
+      keep_alive_options:
+        interval: 40s
+        timeout: 20s
+      proxy_uri: null
+    lambda:
+      aws_profile: null
+      assume_role_external_id: null
 worker:
   channel_size: 64
   timers:
@@ -22,7 +30,7 @@ worker:
     http_address: 0.0.0.0:9072
     http_concurrency_limit: 1000
   storage_query_postgres:
-    bind_address: 0.0.0.0:5432
+    bind_address: 0.0.0.0:9071
   storage_rocksdb:
     path: target/db/
     threads: 10
@@ -30,8 +38,8 @@ worker:
     max_total_wal_size: 2147483648
     cache_size: 1073741824
   ingress_grpc:
-    bind_address: 0.0.0.0:9090
-    concurrency_limit: 1000
+    bind_address: 0.0.0.0:8080
+    concurrency_limit: 10000000
     json:
       deserialize_deny_unknown_fields: true
       serialize_stringify_64_bit_integers: true
@@ -51,12 +59,17 @@ worker:
     abort_timeout: 1m
     message_size_warning: 10485760
     message_size_limit: null
-    proxy_uri: null
-    tmp_dir: /tmp/invoker-018b38b4aef67843b13ff164b1c5fb8d
+    tmp_dir: /tmp/invoker-018c2b406cc172b5a759b8cfb8d812ef
     concurrency_limit: null
-    http2_keep_alive:
-      interval: 40s
-      timeout: 20s
+    service_client:
+      http:
+        keep_alive_options:
+          interval: 40s
+          timeout: 20s
+        proxy_uri: null
+      lambda:
+        aws_profile: null
+        assume_role_external_id: null
     disable_eager_state: false
   partitions: 1024
 tokio_runtime:

@@ -44,9 +44,9 @@ spec:
           image: path.to/yourrepo:yourtag
           env:
             - name: PORT
-              value: 8080
+              value: "9080"
           ports:
-            - containerPort: 8080
+            - containerPort: 9080
               name: http2
 ---
 apiVersion: v1
@@ -57,7 +57,7 @@ spec:
   selector:
     app: service
   ports:
-    - port: 8080
+    - port: 9080
       name: http2
   type: ClusterIP
 ```
@@ -69,7 +69,7 @@ L7 load balancing is not needed when there is only one pod, so it's acceptable t
 Restate supports Knative services. Knative allows scaling to zero when there are no in-flight invocations and automatically configures an L7 load balancer. There are no special requirements to deploy a service endpoint container with Knative:
 
 ```shell
-$ kn service create service-name --port h2c:8080 --image path.to/yourrepo:yourtag
+$ kn service create service-name --port h2c:9080 --image path.to/yourrepo:yourtag
 ```
 
 Or using the YAML manifest:
@@ -84,12 +84,9 @@ spec:
     spec:
       containers:
         - image: path.to/yourrepo:yourtag
-          env:
-            - name: PORT
-              value: 8080
           ports:
             - name: h2c
-              containerPort: 8080
+              containerPort: 9080
 ```
 
 The service will be accessible at `http://<service-name>.<namespace>.svc`.

@@ -17,6 +17,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout documentation
+        uses: actions/checkout@v3
+        with:
+          ref: "main"
+          # fetch complete history to be able to push to production branch
+          fetch-depth: 0
+
+      - name: Push main to production
+        run: |
+          git push origin main:production
+
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
