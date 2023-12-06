@@ -77,7 +77,8 @@ const config = {
 
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
-    ({
+    {
+      image: "img/restate-og.png",
       navbar: {
         title: "",
         logo: {
@@ -173,7 +174,7 @@ const config = {
         disableSwitch: true,
         respectPrefersColorScheme: false,
       },
-    }),
+    },
   themes: ["docusaurus-json-schema-plugin"],
   plugins: [
     [
