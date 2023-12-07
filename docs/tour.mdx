@@ -94,7 +94,8 @@ This GitHub repository contains the basic skeleton of the Java services that you
 </Tabs>
 
 ### Running the services and runtime
-Run the services:
+
+Let's start a basic version of the Restate services that we will be using for this tour. This is where our application logic will reside.
 
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
@@ -113,7 +114,7 @@ npm run app
 </TabItem>
 </Tabs>
 
-Launch Restate:
+Next, let's launch Restate itself. Restate can be deployed as a simple standalone binary, all the way up to a fully managed service. In this tour we'll be running it standalone from a container image.
 
 <Tabs groupId="operating-systems">
 <TabItem value="lin" label="Linux">
@@ -132,29 +133,17 @@ docker run --name restate_dev --rm -d -p 8080:8080 -p 9070:9070 -p 9071:9071 doc
 </TabItem>
 </Tabs>
 
-You can consult the Restate logs via `docker logs restate_dev`.
+When you are finished with the tour, you can stop Restate with `docker stop restate_dev`. This will also delete any persisted state because we start the container with the `--rm` flag. You can restart Restate at a later time (without losing state) with `docker restart restate_dev`. You can view Restate logs using `docker logs restate_dev` or follow them live them by adding `--follow`.
 
-When you are done with the tutorial, stop Restate with `docker stop restate_dev`. This command also wipes the state (because you used the `--rm` flag).
-
-To do resilience experiments later on, you can restart Restate (without losing state) with `docker restart restate_dev`.
-
-Register the services:
-
-Now, we need to tell Restate where the service runs.
+When Restate first comes up, it doesn't know anything about our services. Let's tell it where they are running. You can trigger service discovery by calling the Restate admin API informing it about the endpoint where our service is listening.
 
 <Tabs groupId="operating-systems">
 <TabItem value="lin" label="Linux">
-
-You do this by sending a request to the Restate endpoint at `http://localhost:9070/endpoints`
-and providing it with the endpoint of the service `http://localhost:9080`.
 
 ```shell
 curl -X POST http://localhost:9070/endpoints -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'
 ```
 
-Restate then sends a request to the service endpoint to ask which services and methods run behind this endpoint.
-This way Restate keeps track of which services run where (including of the method signatures),
-and knows how to invoke a specific service.
 </TabItem>
 <TabItem value="mac" label="macOS">
 
@@ -165,11 +154,10 @@ and providing it with the endpoint of the service `http://host.docker.internal:9
 curl -X POST http://localhost:9070/endpoints -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
 ```
 
-Restate then sends a request to the service endpoint to ask which services and methods run behind this endpoint.
-This way Restate keeps track of which services run where (including of the method signatures),
-and knows how to invoke a specific service.
 </TabItem>
 </Tabs>
+
+Restate will send a discovery request to the service endpoint to find the services and methods run behind this endpoint. Restate keeps track of which services run where (including of the method signatures). Restate also keeps track of multiple revisions asyour APIs evolve, and routes requests appropriately.
 
 :::tip
 You can pipe the output of `curl` into the `jq` utility to reformat the JSON output and make it easier to read.
@@ -197,7 +185,7 @@ You should now see the registered services printed out to your terminal:
 }
 ```
 
-The runtime logs will show the new service registrations taking place.
+The Restate logs will show the new service registrations taking place.
 
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
@@ -616,7 +604,6 @@ Now that the ticket service responds after 35 seconds, you see that the `addTick
 Once the runtime has received the response, it invokes the `addTicket` function again and the call finishes.
 
 <details><summary>Show the logs</summary>
-
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
 
@@ -638,11 +625,10 @@ Once the runtime has received the response, it invokes the `addTicket` function 
 [restate] [2023-08-15T20:59:00.460Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHF0pFyZoYvJ5G_WZMF] : Function completed successfully.
 ```
 
-
 </TabItem>
 <TabItem value="java" label="Java">
 
-[//]: Are we supposed to be seeing a suspension in the Java service too? I don't see it.
+TODO: Are we supposed to be seeing a suspension in the Java service too? I don't see it.
 
 ```log
 2023-12-06 23:30:20 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.UserSession/AddTicket
@@ -661,7 +647,6 @@ Once the runtime has received the response, it invokes the `addTicket` function 
 
 </TabItem>
 </Tabs>
-
 </details>
 
 [//]: # (TODO include a video demo of knative on minikube to show how containers are spun up and torn down.)
@@ -738,7 +723,6 @@ Call the `UserSession/checkout` function as you did earlier and have a look at t
 </Tabs>
 
 </details>
-</>
 
 
 ## Reliable message sending without queues
@@ -1029,7 +1013,6 @@ In the service logs, you can see the `reserve` function processing the sleep, th
 The `addTicket` function did a one-way call to the `reserve` function so didn't suspend but just finished its invocation.
 
 <details><summary>Show the logs</summary>
-
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
 
@@ -1057,7 +1040,6 @@ The `addTicket` function did a one-way call to the `reserve` function so didn't 
 
 </TabItem>
 </Tabs>
-
 </details>
 
 
@@ -1222,8 +1204,6 @@ public void addTicket(ReserveTicket request, StreamObserver<BoolValue> responseO
 To test it out, put the delay to a lower value, for example 5 seconds, call the `addTicket` function, and see in the logs how the call is executed 5 seconds later.
 
 <details><summary>Show the logs</summary>
-
-
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
 
@@ -1251,7 +1231,6 @@ To test it out, put the delay to a lower value, for example 5 seconds, call the 
 
 </TabItem>
 </Tabs>
-
 </details>
 
 Don't forget to set the delay back to 15 minutes.
