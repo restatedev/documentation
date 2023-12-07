@@ -174,6 +174,20 @@ const config = {
         disableSwitch: true,
         respectPrefersColorScheme: false,
       },
+      algolia: {
+        // The application ID provided by Algolia
+        appId: "RP49KQ6X9M",
+
+        // Public API key: it is safe to commit it
+        apiKey: "33c78d1addd7dcc9b6544b95fe1f9da4",
+
+        indexName: "restate",
+
+        contextualSearch: true,
+
+        // Optional: Algolia search parameters
+        searchParameters: {},
+      },
     },
   themes: ["docusaurus-json-schema-plugin"],
 };
