@@ -18,11 +18,10 @@ It allows users to add tickets for specific seats to their shopping cart.
 After the user adds a ticket, the seat gets reserved for 15 minutes.
 If the user doesn't pay for the ticket within that time interval, the reservation is released and the ticket becomes available to other users.
 
-Restate is a system for building distributed applications.
-Applications consist of a set of services with RPC functions defined in them.
-The ticket example has three services, with the following functions:
+Restate applications are made up of services that expose methods to each other and the outside world. Services communicate with one another using Remote Procedure Calls (RPC). Our ticket example consists of three services having the following responsibilities:
+
 1. **User session**: keeps track of the tickets in the shopping cart.
-2. **Ticket service**: manages the tickets.
+2. **Ticket service**: manages the ticket allocation.
 3. **Checkout**: handles the checkout process of the ticket sale.
 
 ![Tour of Restate diagram](/img/tour-of-restate-diagram-handler.png)
@@ -33,8 +32,6 @@ As we go, you will discover how Restate can help you with some intricacies in th
 
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
-
-> &#x1F4DD; As long as Restate hasn't been launched publicly, you need to have access to the private Restate npm packages and Docker container. Please follow the instructions in the [restate-dist/README](https://github.com/restatedev/restate-dist) to set up access:
 
 - Latest stable version of [NodeJS](https://nodejs.org/en/) >= v18.17.1 and [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 9.6.7 installed.
 - [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation) to launch the Restate runtime (not needed for the app implementation itself).
@@ -47,7 +44,9 @@ This guide is written for:
 </TabItem>
 <TabItem value="java" label="Java">
 
-> &#x1F4DD; As long as Restate hasn't been launched publicly, you need to have access to the private Restate artifacts and Docker container. Please follow the instructions in the [restate-dist/README](https://github.com/restatedev/restate-dist) to set up access:
+:::caution
+Please note that the Java/Kotlin SDK is still in early beta. We would love to hear your feedback!
+:::
 
 - JDK >= 11
 - [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation) to launch the Restate runtime (not needed for the app implementation itself).
@@ -61,9 +60,10 @@ This guide is written for:
 </Tabs>
 
 
-## 🚀 Let's get started!
+## Getting started
 
 ### Setting up the tutorial
+
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
 
@@ -93,7 +93,7 @@ This GitHub repository contains the basic skeleton of the Java services that you
 </TabItem>
 </Tabs>
 
-### Running the services and runtime
+### Starting the components
 
 Let's start a basic version of the Restate services that we will be using for this tour. This is where our application logic will reside.
 
@@ -134,6 +134,8 @@ docker run --name restate_dev --rm -d -p 8080:8080 -p 9070:9070 -p 9071:9071 doc
 </Tabs>
 
 When you are finished with the tour, you can stop Restate with `docker stop restate_dev`. This will also delete any persisted state because we start the container with the `--rm` flag. You can restart Restate at a later time (without losing state) with `docker restart restate_dev`. You can view Restate logs using `docker logs restate_dev` or follow them live them by adding `--follow`.
+
+### Registering services with Restate
 
 When Restate first comes up, it doesn't know anything about our services. Let's tell it where they are running. You can trigger service discovery by calling the Restate admin API informing it about the endpoint where our service is listening.
 
@@ -189,7 +191,6 @@ The Restate logs will show the new service registrations taking place.
 
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
-
 <details><summary>Show the runtime logs</summary>
 
 ```
@@ -212,10 +213,9 @@ The Restate logs will show the new service registrations taking place.
 ```
 
 </details>
-
 </TabItem>
-<TabItem value="java" label="Java">
 
+<TabItem value="java" label="Java">
 <details><summary>Show the runtime logs</summary>
 
 ```
@@ -238,11 +238,10 @@ The Restate logs will show the new service registrations taking place.
 ```
 
 </details>
-
 </TabItem>
 </Tabs>
 
-### Calling the services
+### Calling services from outside Restate
 
 Add a ticket to a cart by calling `UserSession/addTicket`.
 
@@ -280,8 +279,7 @@ curl -X POST http://localhost:8080/UserSession/checkout \
     -d '{"key": "123"}'
 ```
 
-In `src/app`, you find the skeletons of the services where you can start implementing your app.
-The `app.ts` file contains the definition of the Restate server that serves the functions.
+In `src/app` you will find the skeletons of the various services to help you start implementing the app. The `app.ts` file contains the definition of the server that hosts the set of services.
 
 </TabItem>
 <TabItem value="java" label="Java">
@@ -292,15 +290,19 @@ curl -X POST http://localhost:8080/example.UserSession/Checkout \
     -d '{"user_id": "123"}'
 ```
 
-In `src/main/java/dev/restate/tour/app`, you find the skeletons of the services where you can start implementing your app.
-The `AppMain.java` file contains the definition of the Restate server that serves the functions.
+In `src/main/java/dev/restate/tour/app` you will find the skeletons of the various services to help you start implementing the app. The `AppMain.java` file contains the definition of the server that hosts the set of services.
 
 </TabItem>
 </Tabs>
 
+:::tip
+Only public Restate services are callable from outside Restate using the ingress endpoint. [You can mark services as private](https://docs.restate.dev/services/invocation#private-services) which makes them available only to other Restate services.
+:::
+
 ## Services and concurrency
 
-Two types of Restate services exist:
+Restate supports three distinct kinds of services:
+
 1. **Keyed service**:
 All service invocations are sharded on a user-defined key.
 Function invocations of keyed services are serialized on the user-defined key.
@@ -425,16 +427,17 @@ Each service waits on the response of the other and none of them can progress.
 The keys remain locked and the system can't process any more requests.
 :::
 
-## Suspendable request-response calls
+## Service calls
 
-:::note Implement it yourself or follow along by looking at the code under `part1`.
+:::note
+Implement it yourself or follow along by looking at the code under `part1`.
 :::
 
-One of the key parts of distributed applications is service-to-service communication.
-Restate makes sure that service-to-service communication is durable.
-Messages never get lost.
+One of the key parts of distributed applications is service-to-service communication. Service method calls are implemented as RPC messages. Restate makes service-to-service communication reliable by ensuring that messages do not get lost.
 
-The tour begins with request-response calls, in which one service calls another service and waits for the response.
+### Calling services within Restate
+
+The tour begins with an introduction to request-response calls, in which one service calls another service and waits for the response.
 
 When the `UserSession/addTicket` function is called, it first needs to reserve the ticket for the user.
 It does that by calling the `TicketService/reserve` function.
@@ -490,31 +493,25 @@ To also log the messages, use `RESTATE_DEBUG_LOGGING=JOURNAL_VERBOSE`.
 
 ```java
 @Override
-public void addTicket(ReserveTicket request, StreamObserver<BoolValue> responseObserver) {
-  RestateContext ctx = restateContext();
+public BoolValue addTicket(RestateContext ctx, ReserveTicket request) throws TerminalException {
+    var success = ctx.call(
+            TicketServiceGrpc.getReserveMethod(),
+            Ticket.newBuilder().setTicketId(request.getTicketId()).build()
+    ).await();
 
-  //highlight-start
-  var success = ctx.call(
-    TicketServiceGrpc.getReserveMethod(),
-    Ticket.newBuilder().setTicketId(request.getTicketId()).build()
-  ).await();
-  //highlight-end
-
-  responseObserver.onNext(success);
-  responseObserver.onCompleted();
+    return success;
 }
 ```
 
-To make the call, you supply the method reference and request to `ctx.call`. Use `.await()` to wait for the response to the call.
-In this case, the call gets resolved with a `BoolValue` response.
+The simplest way to make a call within Restate is to use `ctx.call` with a method reference and a request. Use `.await()` to wait for the response to the call.
 
-Try it out by running the services via `./gradlew run` and send a request to `UserSession/addTicket`, as we did [previously](#running-the-services-and-runtime).
+Try it out by running the services via `./gradlew run` and send a request to `example.UserSession/AddTicket`, as we did [previously](#running-the-services-and-runtime).
 
-Have a look at the SDK and runtime logs, to see how the ingress request triggers the execution of the `addTicket` and `reserve` functions.
+Have a look at the SDK and runtime logs to see how the ingress request triggers the execution of the `addTicket` and `reserve` functions.
 
 <details><summary>Show the logs</summary>
 
-```log
+```
 2023-12-06 23:13:57 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.UserSession/AddTicket
 2023-12-06 23:13:57 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.UserSession/AddTicket
 2023-12-06 23:13:57 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=WAITING_START, id=K1qex52CPYkAYxA-vUucHa6j_MZxJ2b4A) to REPLAYING
@@ -531,31 +528,27 @@ Have a look at the SDK and runtime logs, to see how the ingress request triggers
 </TabItem>
 </Tabs>
 
+### Reliable delivery and suspension
 
-### What actually happened?
-The call you just did, seems like a regular RPC call.
-Under-the-hood Restate does a number of things to make sure that this call is durable.
+The call you just added seems like a regular RPC call that you might be familiar with from other service frameworks. This similarity is superficial; under the hood the Restate runtime and SDK cooperate to deliver resiliency and efficiency.
 
-The runtime persists the incoming request, establishes a connection to the user session service, and sends the request over that connection.
-All the communication between the runtime and the service, goes over this connection.
-The service itself never needs to set up the connection.
+When an incoming request is sent to Restate, the runtime first persists it. It establishes a connection to the user session service, and sends the request over to begin a new invocation. All communications between the service and other Restate components goes over this connection. In particular, the User Session service does not communicate directly with the Ticket Service.
 
-The user session service then calls the ticket service.
-This request goes over the open connection to the runtime, that again durably logs it and invokes the ticket service.
-The runtime takes care of request retries, in case of failures (covered later on in [Resiliency](#resiliency)).
-Finally, the runtime routes the response back to the user session service.
+When the User Session service makes an RPC to the Ticket service, this request goes over the open connection to the runtime. Once again, this is durably persisted in the Restate journal, before it is passed on (by Restate) to the Ticket service. In case of a failure, Restate takes care of retrying according to the configured policy. We will cover [Resiliency](#resiliency) in more detail later on. When the Ticket service responds, its response is then sent back to the runtime, which persists it and forwards it to the User Session service to continue execution.
 
-When services need to wait a long time, for example sleep an hour, or wait for a day on a response, Restate suspends the function invocations to free up the resources for other invocations.
-When the service can resume, Restate invokes the service again and sends over a replay log.
-The replay log contains the steps that the service already executed before it suspended.
-The service replays the log and continues processing at the point where it left off.
+When services take a while to respond, Restate suspends the calling execution to free up the resources for other invocations. When the calling service is unblocked to resume, Restate invokes it service again and sends over a replay log. This replay log contains all the state that the previously completed steps generated prior to suspension. The service replays the log, and the service resumes execution from the point where it left off prior to suspending.
 
 :::tip
-The suspension mechanism of Restate is especially beneficial if you run on FaaS, for example AWS Lambda.
-For example, you can do request-response calls without paying for the idle time when waiting for a response.
+The suspension mechanism is especially beneficial if you deploy your services to a FaaS platform such as AWS Lambda. This way you don't pay for the idle time a caller spends waiting for a response when making synchronous service calls within Restate!
 :::
 
-To see this work in practice, you mimic the ticket service doing heavy processing by adding a sleep call to the `TicketService/reserve` function:
+### Waiting for slow services
+
+To see this work in practice, let's pretend that ticket reservations take a while by making the `TicketService/reserve` function sleep for a while.
+
+:::caution
+This is not the best way to sleep in a Restate service! The Restate SDK offers a native way to suspend execution for a period of time. We will cover [suspendable sleep a bit later on](#suspendable-sleep) in the tour.
+:::
 
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
@@ -575,12 +568,14 @@ const reserve = async (ctx: restate.RpcContext) => {
 </TabItem>
 <TabItem value="java" label="Java">
 
+[//]: # (TODO: mention where the 60s is coming from - this is different than the 30s auto-suspend delay in JS SDK)
+
 ```java
 @Override
 public void reserve(Ticket request, StreamObserver<BoolValue> responseObserver) {
   //bad-code-start
   try {
-    Thread.sleep(35000);
+    Thread.sleep(65000);
   } catch (InterruptedException e) {
     throw new RuntimeException(e);
   }
@@ -593,15 +588,9 @@ public void reserve(Ticket request, StreamObserver<BoolValue> responseObserver) 
 </TabItem>
 </Tabs>
 
-
-:::caution
-This isn't the best way to sleep in a Restate service!
-The Restate SDK offers a way to sleep and immediately suspend, which we will cover a bit [later on](#suspendable-sleep) in the tour.
-:::
-
 Call `UserSession/addTicket` again and have a look at the SDK logs.
 Now that the ticket service responds after 35 seconds, you see that the `addTicket` function suspends after 30 seconds.
-Once the runtime has received the response, it invokes the `addTicket` function again and the call finishes.
+Once the runtime has received the response, it invokes the `addTicket` function again and the original call finishes.
 
 <details><summary>Show the logs</summary>
 <Tabs groupId="sdk">
@@ -628,26 +617,39 @@ Once the runtime has received the response, it invokes the `addTicket` function 
 </TabItem>
 <TabItem value="java" label="Java">
 
-TODO: Are we supposed to be seeing a suspension in the Java service too? I don't see it.
-
 ```log
-2023-12-06 23:30:20 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.UserSession/AddTicket
-2023-12-06 23:30:20 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.UserSession/AddTicket
-2023-12-06 23:30:20 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=WAITING_START, id=jRn_FAzvp8UAYxBCfRLeZi7nlbVewfICQ) to REPLAYING
-2023-12-06 23:30:20 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=REPLAYING, id=jRn_FAzvp8UAYxBCfRLeZi7nlbVewfICQ) to PROCESSING
-2023-12-06 23:30:20 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.TicketService/Reserve
-2023-12-06 23:30:20 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.TicketService/Reserve
-2023-12-06 23:30:20 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=WAITING_START, id=IwF2v7ci3eUAYxBCfTid9qSwFOBsES5tg) to REPLAYING
-2023-12-06 23:30:20 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=REPLAYING, id=IwF2v7ci3eUAYxBCfTid9qSwFOBsES5tg) to PROCESSING
-2023-12-06 23:30:55 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=PROCESSING, id=IwF2v7ci3eUAYxBCfTid9qSwFOBsES5tg) to CLOSED
-2023-12-06 23:30:55 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
-2023-12-06 23:30:55 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=PROCESSING, id=jRn_FAzvp8UAYxBCfRLeZi7nlbVewfICQ) to CLOSED
-2023-12-06 23:30:55 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
+2023-12-08 11:12:45 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.UserSession/AddTicket
+2023-12-08 11:12:45 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.UserSession/AddTicket
+2023-12-08 11:12:45 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=WAITING_START, id=jRn_FAzvp8UAYxIs2MycHeHrffPLwZHOw) to REPLAYING
+2023-12-08 11:12:45 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=REPLAYING, id=jRn_FAzvp8UAYxIs2MycHeHrffPLwZHOw) to PROCESSING
+2023-12-08 11:12:45 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.TicketService/Reserve
+2023-12-08 11:12:45 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.TicketService/Reserve
+2023-12-08 11:12:45 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=WAITING_START, id=IwF2v7ci3eUAYxIs2O1cDmImFWLyZd0Ow) to REPLAYING
+2023-12-08 11:12:45 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=REPLAYING, id=IwF2v7ci3eUAYxIs2O1cDmImFWLyZd0Ow) to PROCESSING
+2023-12-08 11:13:45 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=PROCESSING, id=jRn_FAzvp8UAYxIs2MycHeHrffPLwZHOw) to CLOSED
+2023-12-08 11:13:45 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
+2023-12-08 11:13:50 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=PROCESSING, id=IwF2v7ci3eUAYxIs2O1cDmImFWLyZd0Ow) to CLOSED
+2023-12-08 11:13:50 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
+2023-12-08 11:13:50 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.UserSession/AddTicket
+2023-12-08 11:13:50 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.UserSession/AddTicket
+2023-12-08 11:13:50 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=WAITING_START, id=jRn_FAzvp8UAYxIs2MycHeHrffPLwZHOw) to REPLAYING
+2023-12-08 11:13:50 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=REPLAYING, id=jRn_FAzvp8UAYxIs2MycHeHrffPLwZHOw) to PROCESSING
+2023-12-08 11:13:50 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=PROCESSING, id=jRn_FAzvp8UAYxIs2MycHeHrffPLwZHOw) to CLOSED
+2023-12-08 11:13:50 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
 ```
 
 </TabItem>
 </Tabs>
 </details>
+
+:::tip Terminating invocations
+[By default](https://docs.restate.dev/restate/configuration/#default-configuration) Restate will keep retrying failed invocations until they succeed. If at any point during testing you create an invocation that you want to permanently terminate, you can kill it using the [Admin API](https://docs.restate.dev/references/admin-api#tag/invocation) and the invocation id from the logs:
+
+```shell
+curl -X DELETE http://localhost:9070/invocations/{invocation_id}
+```
+:::
+
 
 [//]: # (TODO include a video demo of knative on minikube to show how containers are spun up and torn down.)
 
@@ -822,12 +824,9 @@ In the service logs, you see that the `addTicket` function doesn't wait for a re
 </TabItem>
 </Tabs>
 
-
-
 :::tip Good news!
-Restate retries failed one-way invocations for you. No need to set up message queues.
+Restate retries failed one-way invocations for you. No need to set up message queues. You can provide additional configuration for the retry settings as an optional argument to all the RPC methods.
 :::
-
 
 ### 📝 Try it out
 
@@ -922,9 +921,10 @@ Have a look at the logs again to see what happened.
 </TabItem>
 </Tabs>
 
-
 ## Durable timers
-:::note Implement it yourself or follow along by looking at the code under `part2`.
+
+:::note
+Implement it yourself or follow along by looking at the code under `part2`.
 :::
 
 Restate suspends a function invocation when it waits on external input.
@@ -932,49 +932,8 @@ The partial progress of the service invocation is durably stored in the log and 
 Restate offers the same mechanism for timers.
 
 ### Suspendable sleep
-You can do a durable, suspendable sleep with the Typescript SDK.
-Earlier in this tutorial, you explored how Restate suspensions work by letting the ticket service sleep:
 
-
-<Tabs groupId="sdk">
-<TabItem value="ts" label="TypeScript">
-
-```typescript
-import { setTimeout } from "timers/promises";
-
-const reserve = async (ctx: restate.RpcContext) => {
-  //bad-code-start
-  await setTimeout(35000);
-  //bad-code-end
-  return true;
-};
-
-```
-
-</TabItem>
-<TabItem value="java" label="Java">
-
-```java
-@Override
-public void reserve(Ticket request, StreamObserver<BoolValue> responseObserver) {
-  //bad-code-start
-  try {
-    Thread.sleep(35000);
-  } catch (InterruptedException e) {
-    throw new RuntimeException(e);
-  }
-  //bad-code-end
-  responseObserver.onNext(BoolValue.of(true));
-  responseObserver.onCompleted();
-}
-```
-
-</TabItem>
-</Tabs>
-
-❗ This line of code would keep the service invocation running idly, and would not survive service restarts.
-
-To use a durable, suspendable sleep, use the sleep feature of the Restate SDK:
+[Earlier in this tutorial](#waiting-for-slow-services), you saw how Restate caller suspension works when you make an RPC request to another service. We artificially slowed down the target service by using platform-native sleep. Sometimes you intentionally want to suspend execution for a period of time, for example to back off from overloading a dependency or simply you are implementing a long-running business workflow. In those situations you can explicitly suspend execution for arbitrarily long periods of time using the Restate context's `sleep` function.
 
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
@@ -1044,8 +1003,6 @@ The `addTicket` function did a one-way call to the `reserve` function so didn't 
 
 
 Revert the `reserve` function call to a request-response call, to see how the suspensions work across different services.
-
-
 
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
@@ -1119,7 +1076,6 @@ public void addTicket(ReserveTicket request, StreamObserver<BoolValue> responseO
 </TabItem>
 </Tabs>
 
-
 Now you see in the logs that both services get suspended.
 The user session service gets suspended because it waits for a response from the `reserve` function and the ticket service gets suspended because it waits for the sleep to be completed.
 Restate keeps track of how long the service should sleep and then triggers it to resume the invocation.
@@ -1127,9 +1083,8 @@ Finally, you see the responses of both functions coming in.
 
 When you reduce the time the `TicketService/reserve` function sleeps to a second, you won't see the suspensions anymore.
 
-
 :::caution
-Sleeping blocks processing for keyed services (for that single key).
+In keyed or singleton services, sleeping blocks all further processing (for the specific single key / all invocations, respectively).
 :::
 
 [//]: # (TODO show this on minikube with knative in a little video)
@@ -1512,12 +1467,10 @@ Have a look at the logs to see how the code executes the workflow.
 
 
 ### 📝 Try it out
+
 #### Finishing `UserSession/expireTicket`
 
-You almost fully implemented the user session service.
-Now that you implemented the checkout function, you can also finish the `UserSession/expireTicket`.
-
-At the moment you have the following code:
+You have almost fully implemented the user session service. After checkout, let's finish `UserSession/expireTicket`. At the moment you have the following code:
 
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
@@ -1617,6 +1570,7 @@ public void expireTicket(ExpireTicketRequest request, StreamObserver<Empty> resp
 
 
 #### Implementing the ticket service
+
 You can track the status of the tickets in the ticket service by storing it in the state.
 
 1. Implement the `TicketService/reserve` function.
@@ -1852,8 +1806,6 @@ public void checkout(CheckoutFlowRequest request, StreamObserver<BoolValue> resp
 </TabItem>
 </Tabs>
 
-
-
 The highlighted line of code wraps the creation of the UUID in a side effect with a string return type.
 When the `checkout()` function gets re-executed upon replay, Restate injects the stored value.
 
@@ -1876,7 +1828,6 @@ ctx.sleep(Duration.ofSeconds(31));
 
 </TabItem>
 </Tabs>
-
 
 Have a look at the logs to see what happens.
 
