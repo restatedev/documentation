@@ -133,7 +133,7 @@ docker run --name restate_dev --rm -d -p 8080:8080 -p 9070:9070 -p 9071:9071 doc
 </TabItem>
 </Tabs>
 
-When you are finished with the tour, you can stop Restate with `docker stop restate_dev`. This will also delete any persisted state because we start the container with the `--rm` flag. You can restart Restate at a later time (without losing state) with `docker restart restate_dev`. You can view Restate logs using `docker logs restate_dev` or follow them live by adding `--follow`.
+When you are finished with the tour, you can stop Restate with `docker stop restate_dev`. This also deletes any persisted state because we start the container with the `--rm` flag. You can restart Restate at a later time (without losing state) with `docker restart restate_dev`. You can view Restate logs using `docker logs restate_dev` or follow them live by adding `--follow`.
 
 ### Registering services with Restate
 
@@ -167,6 +167,9 @@ You can pipe the output of `curl` into the `jq` utility to reformat the JSON out
 
 You should now see the registered services printed out to your terminal:
 
+<Tabs groupId="sdk">
+<TabItem value="ts" label="TypeScript">
+
 ```json
 {
   "id": "bG9jYWxob3N0OjgwODAv",
@@ -174,18 +177,51 @@ You should now see the registered services printed out to your terminal:
     {
       "name": "TicketService",
       "revision": 1
+      /* ... Additional information on registered methods ...*/
     },
     {
       "name": "UserSession",
       "revision": 1
+      /* ... Additional information on registered methods ...*/
     },
     {
       "name": "Checkout",
       "revision": 1
+      /* ... Additional information on registered methods ...*/
     }
   ]
 }
 ```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```json
+{
+    "id": "bG9jYWxob3N0OjgwODAv",
+    "services": [
+        {
+            "name": "example.TicketService",
+            "revision": 1
+            /* ... Additional information on registered methods ...*/
+        },
+        {
+            "name": "example.UserSession",
+            "revision": 1
+            /* ... Additional information on registered methods ...*/
+        },
+        {
+            "name": "example.Checkout",
+            "revision": 1
+            /* ... Additional information on registered methods ...*/
+        }
+    ]
+}
+```
+
+</TabItem>
+</Tabs>
+
 
 The Restate logs will show the new service registrations taking place.
 
@@ -212,6 +248,8 @@ The Restate logs will show the new service registrations taking place.
     restate.service_endpoint.url: http://localhost:9080/
 ```
 
+For MacOS users, the address will be `http://host.docker.internal:9080/`.
+
 </details>
 </TabItem>
 
@@ -222,20 +260,22 @@ The Restate logs will show the new service registrations taking place.
 2023-12-06T21:06:02.404764Z INFO restate_schema_impl::schemas_impl
   Registering endpoint
     restate.service_endpoint.id: aG9zdC5kb2NrZXIuaW50ZXJuYWw6OTA4MC8=
-    restate.service_endpoint.address: http://host.docker.internal:9080/
+    restate.service_endpoint.address: http://localhost:9080/
 2023-12-06T21:06:02.404876Z INFO restate_schema_impl::schemas_impl
   Registering service
     rpc.service: "example.Checkout"
-    restate.service_endpoint.address: http://host.docker.internal:9080/
+    restate.service_endpoint.address: http://localhost:9080/
 2023-12-06T21:06:02.405255Z INFO restate_schema_impl::schemas_impl
   Registering service
     rpc.service: "example.UserSession"
-    restate.service_endpoint.address: http://host.docker.internal:9080/
+    restate.service_endpoint.address: http://localhost:9080/
 2023-12-06T21:06:02.405491Z INFO restate_schema_impl::schemas_impl
   Registering service
     rpc.service: "example.TicketService"
-    restate.service_endpoint.address: http://host.docker.internal:9080/
+    restate.service_endpoint.address: http://localhost:9080/
 ```
+
+For MacOS users, the address will be `http://host.docker.internal:9080/`.
 
 </details>
 </TabItem>
@@ -316,18 +356,24 @@ You would get the same behavior with a keyed service with random keys.
 see this as a keyed service where all invocations have an identical key. This service type does not scale up, so
 don't use it for heavy load.
 
+In this example app, the `Checkout` service is an unkeyed service, while the `TicketService` and `UserSession` services are keyed services.
+The `TicketService` is keyed by the ticket ID, while the `UserSession` service is keyed by the user ID.
+So at most one invocation can run at a time for the same ticket ID or user ID respectively.
+
 ### Specifying the service type
 
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
 
-You specify an unkeyed service by creating a router with its set of functions:
+**Specifying unkeyed services**
+
+You specify an unkeyed service by creating a router with its set of functions.
 
 ```typescript
 const serviceRouter = restate.router({
-  hello: async (ctx: restate.RpcContext, request: Request) => { ... },
-  callMe: async (ctx: restate.RpcContext) => { ... },
-  maybe: async () => { ... }
+    hello: async (ctx: restate.RpcContext, request: Request) => { ... },
+    callMe: async (ctx: restate.RpcContext) => { ... },
+    maybe: async () => { ... }
 });
 ```
 
@@ -337,6 +383,26 @@ The functions of an unkeyed router have two optional parameters:
 * A `request` of type JSON object which represents additional invocation data.
 
 You can choose the parameter names differently.
+
+For example, for the `Checkout` service, you create a router with the `checkout` function:
+
+```typescript
+const checkout = async (
+    ctx: restate.RpcContext,
+    request: { userId: string; tickets: string[] },
+) => {
+    return true;
+};
+
+export const checkoutRouter = restate.router({
+    checkout,
+    // ... optional other functions ...
+});
+```
+
+The `Checkout` service only has a single function, but you can add more functions to the router if you want.
+
+**Specifying keyed services**
 
 You specify a keyed service by creating a keyed router with its set of functions:
 
@@ -357,19 +423,30 @@ The functions of a keyed router have three optional parameters
 
 You can choose the parameter names differently.
 
-As mentioned, for keyed services there can be at most one concurrent invocation at the service level.
-So this means that if there is a call to `hello()`, then a call to `callMe()`, then `callMe()` will wait in line until `hello()` has finished, if and only if both were invoked with the same value of `key`.
-until the call to `hello()` has finished successfully.
-This also counts for the `maybe()` and `withSomething()` functions,
-even though the key parameter was omitted from their signatures.
-
-You export the `service` API by creating a service API instance which specifies under which path the service is reachable:
+For example, the `UserSession` service has the following keyed router:
 
 ```typescript
-export const serviceApi: restate.ServiceApi<typeof serviceRouter> = {
-  path: "myServicePath",
+export const userSessionRouter = restate.keyedRouter({ addTicket, expireTicket, checkout });
+```
+
+As mentioned, for keyed services there can be at most one concurrent invocation at the service level.
+So this means that if there is a call to `addTicket()`, then a call to `expireTicket()`, then `checkout()` will wait in line until `addTicket()` has finished, if and only if both were invoked with the same value of `key`.
+This also counts if you omit the key parameter from the function signature, as we did for the `maybe()` and `withSomething()` functions above.
+
+**Exporting the service API**
+
+You export the `service` API by creating a service API instance which specifies under which path the service is reachable.
+
+For example, for the `UserSession` service, you export the following service API:
+
+```typescript
+export const userSessionApi: restate.ServiceApi<typeof userSessionRouter> = {
+    path: "UserSession",
 };
 ```
+
+You can now call the service at the endpoint `http://localhost:8080/<servicePath>/<functionName>`.
+For example, you call the `addTicket` function of the `UserSession` service at `http://localhost:8080/UserSession/addTicket`, as you did earlier.
 
 </TabItem>
 <TabItem value="java" label="Java">
@@ -441,7 +518,7 @@ The tour begins with an introduction to request-response calls, in which one ser
 
 When the `UserSession/addTicket` function is called, it first needs to reserve the ticket for the user.
 It does that by calling the `TicketService/reserve` function.
-Add the highlighted code snippet to the `addTicket` function in the user session service.
+Add the highlighted code snippet to the `addTicket` function in the `UserSession` service.
 
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
@@ -464,7 +541,7 @@ const addTicket = async (
 To make the call, you supply the exported `ticketServiceApi` to the RpcContext via the `rpc` function to specify which service to invoke.
 Then you call the `reserve` function, which returns a Promise that gets resolved with the `boolean` response.
 
-Try it out by running the services via `npm run app` and send a request to `UserSession/addTicket`, as we did [previously](#running-the-services-and-runtime).
+Try it out by running the services via `npm run app` and send a request to `UserSession/addTicket`, as we did [previously](#calling-services-from-outside-restate).
 
 Have a look at the SDK and runtime logs, to see how the ingress request triggers the execution of the `addTicket` and `reserve` functions.
 
@@ -494,18 +571,19 @@ To also log the messages, use `RESTATE_DEBUG_LOGGING=JOURNAL_VERBOSE`.
 ```java
 @Override
 public BoolValue addTicket(RestateContext ctx, ReserveTicket request) throws TerminalException {
-    var success = ctx.call(
-            TicketServiceGrpc.getReserveMethod(),
-            Ticket.newBuilder().setTicketId(request.getTicketId()).build()
-    ).await();
+
+    //highlight-start
+    var ticketClient = TicketServiceRestate.newClient(ctx);
+    var success = ticketClient.reserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build()).await();
 
     return success;
+    //highlight-end
 }
 ```
 
-The simplest way to make a call within Restate is to use `ctx.call` with a method reference and a request. Use `.await()` to wait for the response to the call.
+The simplest way to make a call within Restate is to use the generated client, to call the other method. Use `.await()` to wait for the response to the call.
 
-Try it out by running the services via `./gradlew run` and send a request to `example.UserSession/AddTicket`, as we did [previously](#running-the-services-and-runtime).
+Try it out by running the services via `./gradlew run` and send a request to `example.UserSession/AddTicket`, as we did [previously](#calling-services-from-outside-restate).
 
 Have a look at the SDK and runtime logs to see how the ingress request triggers the execution of the `addTicket` and `reserve` functions.
 
@@ -532,9 +610,9 @@ Have a look at the SDK and runtime logs to see how the ingress request triggers 
 
 The call you just added seems like a regular RPC call that you might be familiar with from other service frameworks. This similarity is superficial; under the hood the Restate runtime and SDK cooperate to deliver resiliency and efficiency.
 
-When an incoming request is sent to Restate, the runtime first persists it. It establishes a connection to the user session service, and sends the request over to begin a new invocation. All communications between the service and other Restate components goes over this connection. In particular, the User Session service does not communicate directly with the Ticket Service.
+When an incoming request is sent to Restate, the runtime first persists it. It establishes a connection to the user session service, and sends the request over to begin a new invocation. All communications between the service and other Restate components goes over this connection. In particular, the user session service does not communicate directly with the ticket service.
 
-When the User Session service makes an RPC to the Ticket service, this request goes over the open connection to the runtime. Once again, this is durably persisted in the Restate journal, before it is passed on (by Restate) to the Ticket service. In case of a failure, Restate takes care of retrying according to the configured policy. We will cover [Resiliency](#resiliency) in more detail later on. When the Ticket service responds, its response is then sent back to the runtime, which persists it and forwards it to the User Session service to continue execution.
+When the user session service makes an RPC to the ticket service, this request goes over the open connection to the runtime. Once again, this is durably persisted in the Restate journal, before it is passed on (by Restate) to the ticket service. In case of a failure, Restate takes care of retrying according to the configured policy. We will cover [Resiliency](#resiliency) in more detail later on. When the ticket service responds, its response is then sent back to the runtime, which persists it and forwards it to the user session service to continue execution.
 
 When services take a while to respond, Restate suspends the calling execution to free up the resources for other invocations. When the calling service is unblocked to resume, Restate invokes it again and sends over a replay log. This replay log contains all the state that the previously completed steps generated prior to suspension. The service replays the log, and the service resumes execution from the point where it left off prior to suspending.
 
@@ -565,36 +643,11 @@ const reserve = async (ctx: restate.RpcContext) => {
 
 ```
 
-</TabItem>
-<TabItem value="java" label="Java">
-
-[//]: # (TODO: mention where the 60s is coming from - this is different than the 30s auto-suspend delay in JS SDK)
-
-```java
-@Override
-public BoolValue reserve(RestateContext ctx, Ticket request) throws TerminalException {
-  //bad-code-start
-  try {
-    Thread.sleep(65000);
-  } catch (InterruptedException e) {
-    throw new RuntimeException(e);
-  }
-  //bad-code-end
-  responseObserver.onNext(BoolValue.of(true));
-  responseObserver.onCompleted();
-}
-```
-
-</TabItem>
-</Tabs>
-
 Call `UserSession/addTicket` again and have a look at the SDK logs.
 Now that the ticket service responds after 35 seconds, you see that the `addTicket` function suspends after 30 seconds.
 Once the runtime has received the response, it invokes the `addTicket` function again and the original call finishes.
 
 <details><summary>Show the logs</summary>
-<Tabs groupId="sdk">
-<TabItem value="ts" label="TypeScript">
 
 ```log
 [restate] [2023-08-15T20:58:25.433Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHF0pFyZoYvJ5G_WZMF] : Invoking function.
@@ -614,8 +667,32 @@ Once the runtime has received the response, it invokes the `addTicket` function 
 [restate] [2023-08-15T20:59:00.460Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHF0pFyZoYvJ5G_WZMF] : Function completed successfully.
 ```
 
+</details>
+
 </TabItem>
 <TabItem value="java" label="Java">
+
+[//]: # (TODO: mention where the 60s is coming from - this is different than the 30s auto-suspend delay in JS SDK)
+
+```java
+@Override
+public BoolValue reserve(RestateContext ctx, Ticket request) throws TerminalException {
+  //bad-code-start
+  try {
+    Thread.sleep(65000);
+  } catch (InterruptedException e) {
+    throw new RuntimeException(e);
+  }
+  //bad-code-end
+  return BoolValue.of(true);
+}
+```
+
+Call `UserSession/addTicket` again and have a look at the SDK logs.
+Now that the ticket service responds after 65 seconds, you see that the `addTicket` function suspends after 60 seconds.
+Once the runtime has received the response, it invokes the `addTicket` function again and the original call finishes.
+
+<details><summary>Show the logs</summary>
 
 ```log
 2023-12-08 11:12:45 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.UserSession/AddTicket
@@ -638,16 +715,18 @@ Once the runtime has received the response, it invokes the `addTicket` function 
 2023-12-08 11:13:50 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
 ```
 
+</details>
 </TabItem>
 </Tabs>
-</details>
 
 :::tip Terminating invocations
 [By default](https://docs.restate.dev/restate/configuration/#default-configuration) Restate will keep retrying failed invocations until they succeed. If at any point during testing you create an invocation that you want to permanently terminate, you can kill it using the [Admin API](https://docs.restate.dev/references/admin-api#tag/invocation) and the invocation id from the logs:
 
 ```shell
-curl -X DELETE http://localhost:9070/invocations/{invocation_id}
+curl -X DELETE http://localhost:9070/invocations/<invocation_id>
 ```
+
+Each invocation gets an ID assigned by Restate. You can find the ID printed in the service logs.
 :::
 
 [//]: # (TODO include a video demo of knative on minikube to show how containers are spun up and torn down.)
@@ -709,9 +788,9 @@ public BoolValue checkout(RestateContext ctx, CheckoutRequest request) throws Te
 
     var client = CheckoutRestate.newClient(ctx);
     var success = client.checkout(req).await();
-    //highlight-end
 
     return success;
+    //highlight-end
 }
 ```
 
@@ -760,9 +839,8 @@ const expireTicket = async (
 Note that `RpcContext.send` isn't an asynchronous operation which returns a promise.
 Therefore, there is no need to await it.
 
-Once you have adapted the code, try it out by calling the `UserSession/addTicket` function, as [explained earlier](#running-the-services-and-runtime).
+Once you have adapted the code, try it out by calling the `UserSession/addTicket` function, as [explained earlier](#calling-services-from-outside-restate).
 In the service logs, you see that the `addTicket` function doesn't wait for a response and finishes earlier than the `reserve` function.
-
 
 <details><summary>Show the logs</summary>
 
@@ -798,7 +876,7 @@ public void expireTicket(RestateContext ctx, ExpireTicketRequest request) throws
 
 Note that `oneWayCall` isn't an asynchronous operation in the Restate SDK, so there is no need to call `await()` on it.
 
-Once you have adapted the code, restart the service and try it out by calling the `UserSession.expireTicket` method as [explained earlier](#running-the-services-and-runtime). In the service logs, you will see that the `addTicket` method doesn't wait for a response and completes before `reserve` does. The external call will get a response much quicker in this scenario.
+Once you have adapted the code, restart the service and try it out by calling the `UserSession.expireTicket` method as [explained earlier](#calling-services-from-outside-restate). In the service logs, you will see that the `addTicket` method doesn't wait for a response and completes before `reserve` does. The external call will get a response much quicker in this scenario.
 
 <details><summary>Show the logs</summary>
 
@@ -1170,9 +1248,11 @@ public BoolValue addTicket(RestateContext ctx, ReserveTicket request) throws Ter
         var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
         tickets.add(request.getTicketId());
         ctx.set(STATE_KEY, tickets);
-        ctx.delayedCall(UserSessionGrpc.getExpireTicketMethod(),
-                ExpireTicketRequest.newBuilder().setTicketId(request.getTicketId()).setUserId(request.getUserId()).build(),
-                Duration.ofMinutes(15));
+
+        var userSessionClnt = UserSessionRestate.newClient(ctx);
+        var req = ExpireTicketRequest.newBuilder().setTicketId(request.getTicketId()).setUserId(request.getUserId()).build();
+        //highlight-next-line
+        userSessionClnt.delayed(Duration.ofMinutes(15)).expireTicket(req);
     }
 
     return reservationSuccess;
@@ -1255,7 +1335,10 @@ ctx.send(ticketServiceApi).unreserve({
 
 ```java
 ctx.sleep(Duration.ofMinutes(15));
-ctx.oneWayCall(UserSessionGrpc.getExpireTicketMethod(), expireReq);
+var client = UserSessionRestate.newClient(ctx);
+var userSessionClnt = UserSessionRestate.newClient(ctx);
+var req = ExpireTicketRequest.newBuilder().setTicketId(request.getTicketId()).setUserId(request.getUserId()).build();
+userSessionClnt.delayed(Duration.ofMinutes(15)).expireTicket(req);
 ```
 
 </TabItem>
@@ -1338,9 +1421,9 @@ public BoolValue addTicket(RestateContext ctx, ReserveTicket request) throws Ter
         tickets.add(request.getTicketId());
         //highlight-next-line
         ctx.set(STATE_KEY, tickets);
-        ctx.delayedCall(UserSessionGrpc.getExpireTicketMethod(),
-                ExpireTicketRequest.newBuilder().setTicketId(request.getTicketId()).setUserId(request.getUserId()).build(),
-                Duration.ofMinutes(15));
+        var userSessionClnt = UserSessionRestate.newClient(ctx);
+        var req = ExpireTicketRequest.newBuilder().setTicketId(request.getTicketId()).setUserId(request.getUserId()).build();
+        userSessionClnt.delayed(Duration.ofMinutes(15)).expireTicket(req);
     }
 
     return reservationSuccess;
@@ -1472,29 +1555,27 @@ public BoolValue checkout(RestateContext ctx, CheckoutRequest request) throws Te
   // 2. If there are no tickets, return `false`
   //highlight-start
   if (tickets.isEmpty()) {
-    responseObserver.onNext(BoolValue.of(false));
+    return BoolValue.of(false);
   }
   //highlight-end
 
   // 3. Call the `checkout` function of the checkout service with the tickets
-  var checkoutSuccess = ctx.call(
-    CheckoutGrpc.getCheckoutMethod(),
-    CheckoutFlowRequest
-      .newBuilder()
-      .setUserId(request.getUserId())
-      .addAllTickets(tickets)
-      .build()
-  ).await();
+  var req = CheckoutFlowRequest
+    .newBuilder()
+    .setUserId(request.getUserId())
+    .addAllTickets(tickets)
+    .build();
+  var client = CheckoutRestate.newClient(ctx);
+  var checkoutSuccess = client.checkout(req).await();
 
   // 4. If this was successful, empty the tickets.
   // Otherwise, let the user try again.
-  if (checkoutSuccess.getValue()) {
+  if (checkoutSuccess) {
     //highlight-next-line
     ctx.clear(STATE_KEY);
   }
 
-  responseObserver.onNext(checkoutSuccess);
-  responseObserver.onCompleted();
+  return checkoutSuccess;
 }
 ```
 
@@ -1529,17 +1610,10 @@ const expireTicket = async (
 <TabItem value="java" label="Java">
 
 ```java
-public static final StateKey<Set<String>> STATE_KEY = StateKey.of("tickets", JacksonSerde.typeRef(new TypeReference<>() {}));
-
 @Override
 public void expireTicket(RestateContext ctx, ExpireTicketRequest request) throws TerminalException {
-  ctx.oneWayCall(
-    TicketServiceGrpc.getUnreserveMethod(),
-    Ticket.newBuilder().setTicketId(request.getTicketId()).build()
-  );
-
-  responseObserver.onNext(Empty.getDefaultInstance());
-  responseObserver.onCompleted();
+    var client = TicketServiceRestate.newClient(ctx);
+    client.oneWay().unreserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build());
 }
 ```
 
@@ -1588,15 +1662,9 @@ public void expireTicket(RestateContext ctx, ExpireTicketRequest request) throws
 
   if (removed) {
     ctx.set(STATE_KEY, tickets);
-
-    ctx.oneWayCall(
-      TicketServiceGrpc.getUnreserveMethod(),
-      Ticket.newBuilder().setTicketId(request.getTicketId()).build()
-    );
+    var client = TicketServiceRestate.newClient(ctx);
+    client.oneWay().unreserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build());
   }
-
-  responseObserver.onNext(Empty.getDefaultInstance());
-  responseObserver.onCompleted();
 }
 ```
 
@@ -1639,7 +1707,7 @@ const reserve = async (ctx: restate.RpcContext) => {
 <TabItem value="java" label="Java">
 
 ```java
-public static final StateKey<TicketStatus> STATE_KEY = StateKey.of("status", JacksonSerde.typeRef(new TypeReference<>() {}));
+public static final StateKey<TicketStatus> STATE_KEY = StateKey.of("status", JacksonSerdes.of(TicketStatus.class));
 
 @Override
 public BoolValue reserve(RestateContext ctx, Ticket request) throws TerminalException {
@@ -1647,11 +1715,10 @@ public BoolValue reserve(RestateContext ctx, Ticket request) throws TerminalExce
 
   if (status.equals(TicketStatus.Available)) {
     ctx.set(STATE_KEY, TicketStatus.Reserved);
-    responseObserver.onNext(BoolValue.of(true));
+    return BoolValue.of(true);
   } else {
-    responseObserver.onNext(BoolValue.of(false));
+    return BoolValue.of(false);
   }
-  responseObserver.onCompleted();
 }
 ```
 
@@ -2139,24 +2206,22 @@ public BoolValue checkout(RestateContext ctx, CheckoutRequest request) throws Te
   var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
 
   if (tickets.isEmpty()) {
-    responseObserver.onNext(BoolValue.of(false));
+    return BoolValue.of(false);
   }
 
-  var checkoutSuccess = ctx.call(
-    CheckoutGrpc.getCheckoutMethod(),
-    CheckoutFlowRequest
-      .newBuilder()
-      .setUserId(request.getUserId())
-      .addAllTickets(tickets)
-      .build()
-  ).await();
+    var req = CheckoutFlowRequest
+    .newBuilder()
+    .setUserId(request.getUserId())
+    .addAllTickets(tickets)
+    .build();
+    var client = CheckoutRestate.newClient(ctx);
+    var checkoutSuccess = client.checkout(req).await();
 
   if (checkoutSuccess.getValue()) {
     ctx.clear(STATE_KEY);
   }
 
-  responseObserver.onNext(checkoutSuccess);
-  responseObserver.onCompleted();
+  return checkoutSuccess;
 }
 ```
 
@@ -2231,7 +2296,7 @@ const success = await ctx.sideEffect(doPayment);
 <TabItem value="java" label="Java">
 
 ```java
-boolean success = ctx.sideEffect(TypeTag.ofClass(boolean.class), () -> paymentClient.failingCall(idempotencyKey, totalPrice));
+boolean success = ctx.sideEffect(CoreSerdes.BOOLEAN, () -> paymentClient.failingCall(idempotencyKey, totalPrice));
 ```
 </TabItem>
 </Tabs>
