@@ -149,8 +149,7 @@ const config = {
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
-        // TODO: adding "java" breaks compilation of /references/admin-api.mdx for some reason?!?
-        additionalLanguages: ["protobuf", "log"/*, "java"*/],
+        additionalLanguages: ["protobuf", "log", "java"],
         magicComments: [
           // Remember to extend the default highlight class name as well!
           {
