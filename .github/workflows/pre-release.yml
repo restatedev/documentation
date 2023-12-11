@@ -11,8 +11,12 @@ on:
         description: "sdk-typescript version (without prepending v)."
         required: false
         type: string
-      tourVersion:
-        description: "tour version (without prepending v)."
+      typescriptTourVersion:
+        description: "Typescript tour version (without prepending v)."
+        required: false
+        type: string
+      javaTourVersion:
+        description: "Java tour version (without prepending v)."
         required: false
         type: string
 
@@ -75,13 +79,21 @@ jobs:
           field: TYPESCRIPT_SDK_VERSION
           value: ${{ inputs.sdkTypescriptVersion }}
 
-      - name: Update restate.config.json with new tour version
+      - name: Update restate.config.json with new Typescript tour version
         uses: jossef/action-set-json-field@v2.1
-        if: ${{ inputs.tourVersion != '' }}
+        if: ${{ inputs.typescriptTourVersion != '' }}
         with:
           file: restate.config.json
-          field: TOUR_VERSION
-          value: ${{ inputs.tourVersion }}
+          field: TYPESCRIPT_TOUR_VERSION
+          value: ${{ inputs.typescriptTourVersion }}
+
+      - name: Update restate.config.json with new Java tour version
+        uses: jossef/action-set-json-field@v2.1
+        if: ${{ inputs.javaTourVersion != '' }}
+        with:
+          file: restate.config.json
+          field: JAVA_TOUR_VERSION
+          value: ${{ inputs.javaTourVersion }}
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
