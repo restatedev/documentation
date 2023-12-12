@@ -55,7 +55,7 @@ This following list contains some key queries on the `sys_status` table to give 
 
 - Retrieve the invocation ID (`id`) that is currently blocking a service-key combination via:
     ```sql
-    select method, status, id from sys_status where service = 'test.MyServiceName' and service_key_utf8 = 'myKey';
+    select method, status, id from sys_status where service = 'test.MyServiceName' and service_key = 'myKey';
     ```
   You can then use the invocation ID to [kill the invocation](./invocation.md#cancel-an-invocation).
 
@@ -88,12 +88,6 @@ This following list contains some key queries on the `sys_status` table to give 
     select * from sys_status where to_timestamp(modified_at) <= now() - interval '1' hour;
     ```
 
-:::info Take into account the data types of the included columns.
-If your state key is a regular string, then you should filter based on the `service_key_utf8`.
-If your service key is an integer, then you should filter based on the `service_key_int32` column.
-For unkeyed services, you should use the `service_key_uuid` field.
-:::
-
 ## Inspecting the attempt status of an invocation
 
 Invocations can be attempted against a service endpoint many times if the endpoint is failing. The metadata around
@@ -112,7 +106,7 @@ An exhaustive description of the schema can be found in [the references](/refere
 You can retrieve the journal of the current invocation for a given key via:
 
 ```sql
-select * from sys_invocation_state where service = 'test.MyServiceName' and service_key_utf8 = 'myKey';
+select * from sys_invocation_state where service = 'test.MyServiceName' and service_key = 'myKey';
 ```
 
 Or, if you already have an invocation ID, you can query with that directly:
@@ -141,7 +135,7 @@ An exhaustive description of the schema can be found in [the references](/refere
 You can retrieve the journal of the current invocation for a given key via:
 
 ```sql
-select * from sys_journal where service = 'test.MyServiceName' and service_key_utf8 = 'myKey';
+select * from sys_journal where service = 'test.MyServiceName' and service_key = 'myKey';
 ```
 
 Or, if you only know the invocation ID, you can use the `sys_status` table to first get the key:
@@ -166,21 +160,19 @@ An exhaustive description of the schema can be found in [the references](/refere
 You can retrieve the state of a specific service and service key via:
 
 ```sql
-select * from state where service = 'test.MyServiceName' and service_key_utf8 = 'myKey';
+select * from state where service = 'test.MyServiceName' and service_key = 'myKey';
 ```
 
 You can retrieve the state of a specific service, service key and state key (`key` column) via:
 
 ```sql
-select * from state where service = 'test.MyServiceName' and service_key_utf8 = 'myKey' and key = 'myStateKey';
+select * from state where service = 'test.MyServiceName' and service_key = 'myKey' and key = 'myStateKey';
 ```
 
 The state key is the name you used to store the state with the SDK. For example, the code snippet `ctx.set("count", 1)` stores `1` under the key `count`.
 
 :::info Take into account the data types of the included columns.
-If your state key is a regular string, then you should filter based on the `service_key_utf8`.
-If your service key is an integer, then you should filter based on the `service_key_int32` column.
-For unkeyed services, you should use the `service_key_uuid` field.
+If your state value is a regular string, then you can access its content in the column `value_utf8`.
 :::
 
 :::tip Joining the tables
