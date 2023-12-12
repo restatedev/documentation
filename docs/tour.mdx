@@ -442,8 +442,7 @@ export const userSessionRouter = restate.keyedRouter({ addTicket, expireTicket, 
 ```
 
 As mentioned, for keyed services there can be at most one concurrent invocation to any method of the service.
-So this means that if there is a call to `addTicket()`, then a call to `expireTicket()`, then `checkout()` will wait in line until `addTicket()` has finished, if and only if both were invoked with the same value of `key`.
-This also counts if you omit the key parameter from the function signature, as we did for the `maybe()` and `withSomething()` functions above.
+This means that for the same value of `key`, an unfinished call to `addTicket()` will block subsequent calls to `expireTicket()` or `checkout()` until `addTicket()` has finished. This holds true even if you omit the `key` parameter from the function signature, as we have done with the `maybe()` and `withSomething()` functions above.
 
 **Exporting the service API**
 
