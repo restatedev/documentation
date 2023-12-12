@@ -41,17 +41,17 @@ Scaffold a project using the build tool of your choice. For example, with Gradle
 gradle init --type java-application
 ```
 
-Add the dependency [sdk-java-blocking](sdk-java-blocking):
+Add the dependency sdk-api:
 
 ```
-implementation("dev.restate.sdk:sdk-java-blocking:1.0-SNAPSHOT")
+implementation("dev.restate:sdk-api:VAR::JAVA_SDK_VERSION")
 ```
 
 Depending on the deployment target, add one of the following dependencies:
-- To run as long-running app: `dev.restate.sdk:sdk-http-vertx:VAR::JAVA_SDK_VERSION`
-- To run on AWS Lambda: `dev.restate.sdk:sdk-lambda:VAR::JAVA_SDK_VERSION`
+- To run as long-running app: `dev.restate:sdk-http-vertx:VAR::JAVA_SDK_VERSION`
+- To run on AWS Lambda: `dev.restate:sdk-lambda:VAR::JAVA_SDK_VERSION`
 
-To use Jackson for serialization, add the following dependency: `dev.restate.sdk:sdk-serde-jackson:VAR::JAVA_SDK_VERSION`
+To use Jackson for serialization, add the following dependency: `dev.restate:sdk-serde-jackson:VAR::JAVA_SDK_VERSION`
 
 Now you need to configure the protobuf plugin to build your Protobuf contracts. For example, with Gradle (Kotlin script):
 
@@ -80,7 +80,7 @@ protobuf {
     plugins {
         // The Restate plugin depends on the gRPC generated code
         id("grpc") { artifact = "io.grpc:protoc-gen-grpc-java:1.58.0" }
-        id("restate") { artifact = "dev.restate.sdk:protoc-gen-restate-java-blocking:1.0-SNAPSHOT:all@jar" }
+        id("restate") { artifact = "dev.restate:protoc-gen-restate:VAR::JAVA_SDK_VERSION:all@jar" }
     }
 
     generateProtoTasks {
