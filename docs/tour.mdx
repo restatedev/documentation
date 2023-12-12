@@ -39,7 +39,7 @@ As we go, you will discover how Restate can help you with some intricacies in th
 
 This guide is written for:
 - Typescript SDK version: `@restatedev/restate-sdk:VAR::TYPESCRIPT_SDK_VERSION`
-- Restate runtime Docker image: `restatedev/restate:VAR::RESTATE_VERSION`
+- Restate runtime Docker image: `docker.io/restatedev/restate:VAR::RESTATE_VERSION`
 
 </TabItem>
 <TabItem value="java" label="Java">
@@ -54,7 +54,7 @@ Please note that the Java/Kotlin SDK is still in early beta. We would love to he
 
 This guide is written for:
 - Java SDK version: `dev.restate:sdk-api:VAR::JAVA_SDK_VERSION`
-- Restate runtime Docker image: `restatedev/restate:VAR::RESTATE_VERSION`
+- Restate runtime Docker image: `docker.io/restatedev/restate:VAR::RESTATE_VERSION`
 
 </TabItem>
 </Tabs>
@@ -104,11 +104,23 @@ Let's start a basic version of the Restate services that we will be using for th
 npm run app
 ```
 
+You can run the solution of a specific part by running, for example for part 2:
+
+```shell
+npm run part2
+```
+
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```shell
 ./gradlew run
+```
+
+If you do not want to follow along by coding yourself, you can run the solution of a specific part by running, for example for part 2:
+
+```shell
+./gradlew -PmainClass=dev.restate.tour.part2.AppMain run
 ```
 
 </TabItem>
@@ -159,7 +171,7 @@ curl -X POST http://localhost:9070/endpoints -H 'content-type: application/json'
 </TabItem>
 </Tabs>
 
-Restate will send a discovery request to the service endpoint to find the services and methods run behind this endpoint. Restate keeps track of which services run where (including of the method signatures). Restate also keeps track of multiple revisions asyour APIs evolve, and routes requests appropriately.
+Restate will send a discovery request to the service endpoint to find the services and methods run behind this endpoint. Restate keeps track of which services run where (including of the method signatures). Restate also keeps track of multiple revisions as your APIs evolve, and routes requests appropriately.
 
 :::tip
 You can pipe the output of `curl` into the `jq` utility to reformat the JSON output and make it easier to read.
@@ -476,6 +488,7 @@ For keyed services, you need to tag one of the fields of the input request as th
 by adding the `[(dev.restate.ext.field) = KEY]` annotation,
 as done the second highlighted line.
 Make sure that you define the key field for all the methods of a keyed service.
+The key field must be of type `string`.
 
 Besides these tags, there is nothing Restate-specific about the Protobuf definitions.
 To learn more about gRPC, have a look at the [gRPC documentation](https://grpc.io/docs/).
@@ -571,7 +584,6 @@ To also log the messages, use `RESTATE_DEBUG_LOGGING=JOURNAL_VERBOSE`.
 ```java
 @Override
 public BoolValue addTicket(RestateContext ctx, ReserveTicket request) throws TerminalException {
-
     //highlight-start
     var ticketClnt = TicketServiceRestate.newClient(ctx);
     var success = ticketClnt.reserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build()).await();
@@ -581,7 +593,7 @@ public BoolValue addTicket(RestateContext ctx, ReserveTicket request) throws Ter
 }
 ```
 
-The simplest way to make a call within Restate is to use the generated client, to call the other method. Use `.await()` to wait for the response to the call.
+The simplest way to make a call within Restate is to use the generated client. Use `.await()` to wait for the response to the call.
 
 Try it out by running the services via `./gradlew run` and send a request to `example.UserSession/AddTicket`, as we did [previously](#calling-services-from-outside-restate).
 
@@ -589,17 +601,21 @@ Have a look at the SDK and runtime logs to see how the ingress request triggers 
 
 <details><summary>Show the logs</summary>
 
-```
-2023-12-06 23:13:57 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.UserSession/AddTicket
-2023-12-06 23:13:57 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.UserSession/AddTicket
-2023-12-06 23:13:57 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=WAITING_START, id=K1qex52CPYkAYxA-vUucHa6j_MZxJ2b4A) to REPLAYING
-2023-12-06 23:13:57 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=REPLAYING, id=K1qex52CPYkAYxA-vUucHa6j_MZxJ2b4A) to PROCESSING
-2023-12-06 23:13:57 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=PROCESSING, id=K1qex52CPYkAYxA-vUucHa6j_MZxJ2b4A) to CLOSED
-2023-12-06 23:13:57 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
-2023-12-06 23:13:57 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.TicketService/Reserve
-2023-12-06 23:13:57 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.TicketService/Reserve
-2023-12-06 23:13:57 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=WAITING_START, id=IwF2v7ci3eUAYxA-vVYcWmtxF7ZiHRtJA) to REPLAYING
-2023-12-06 23:13:57 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=REPLAYING, id=IwF2v7ci3eUAYxA-vVYcWmtxF7ZiHRtJA) to PROCESSING
+```log
+//highlight-next-line
+2023-12-12 10:07:24 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.UserSession/AddTicket
+2023-12-12 10:07:24 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.UserSession/AddTicket
+2023-12-12 10:07:24 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine{serviceName='example.UserSession', state=WAITING_START, id=K1qex52CPYkAYxdR-7kfmenA180g5qozw} to REPLAYING
+2023-12-12 10:07:24 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine{serviceName='example.UserSession', state=REPLAYING, id=K1qex52CPYkAYxdR-7kfmenA180g5qozw} to PROCESSING
+//highlight-next-line
+2023-12-12 10:07:24 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.TicketService/Reserve
+2023-12-12 10:07:24 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.TicketService/Reserves
+2023-12-12 10:07:24 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine{serviceName='example.TicketService', state=WAITING_START, id=IwF2v7ci3eUAYxdR-99fKyyk01cyLXk4w} to REPLAYING
+2023-12-12 10:07:24 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine{serviceName='example.TicketService', state=REPLAYING, id=IwF2v7ci3eUAYxdR-99fKyyk01cyLXk4w} to PROCESSING
+2023-12-12 10:07:24 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine{serviceName='example.TicketService', state=PROCESSING, id=IwF2v7ci3eUAYxdR-99fKyyk01cyLXk4w} to CLOSED
+2023-12-12 10:07:24 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
+2023-12-12 10:07:24 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine{serviceName='example.UserSession', state=PROCESSING, id=K1qex52CPYkAYxdR-7kfmenA180g5qozw} to CLOSED
+2023-12-12 10:07:24 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
 ```
 
 </details>
@@ -703,10 +719,13 @@ Once the runtime has received the response, it invokes the `addTicket` function 
 2023-12-08 11:12:45 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.TicketService/Reserve
 2023-12-08 11:12:45 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=WAITING_START, id=IwF2v7ci3eUAYxIs2O1cDmImFWLyZd0Ow) to REPLAYING
 2023-12-08 11:12:45 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=REPLAYING, id=IwF2v7ci3eUAYxIs2O1cDmImFWLyZd0Ow) to PROCESSING
+//highlight-next-line
 2023-12-08 11:13:45 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=PROCESSING, id=jRn_FAzvp8UAYxIs2MycHeHrffPLwZHOw) to CLOSED
 2023-12-08 11:13:45 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
+//highlight-next-line
 2023-12-08 11:13:50 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=PROCESSING, id=IwF2v7ci3eUAYxIs2O1cDmImFWLyZd0Ow) to CLOSED
 2023-12-08 11:13:50 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
+//highlight-next-line
 2023-12-08 11:13:50 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.UserSession/AddTicket
 2023-12-08 11:13:50 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.UserSession/AddTicket
 2023-12-08 11:13:50 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=WAITING_START, id=jRn_FAzvp8UAYxIs2MycHeHrffPLwZHOw) to REPLAYING
@@ -758,7 +777,7 @@ const checkout = async (ctx: restate.RpcContext, userId: string) => {
 };
 ```
 
-Call the `UserSession/checkout` function as you did earlier and have a look at the logs again to see what happened:
+Call the `UserSession/checkout` function as you did [earlier](#calling-services-from-outside-restate) and have a look at the logs again to see what happened:
 
 ```log
 [restate] [2023-08-15T21:06:12.672Z] DEBUG: [UserSession/checkout] [K1qex52CPYkBiiHHQJdwvLuBqEHXFQU3] : Invoking function.
@@ -786,12 +805,12 @@ public BoolValue checkout(RestateContext ctx, CheckoutRequest request) throws Te
         CheckoutFlowRequest.newBuilder().setUserId(request.getUserId()).addTickets("456").build()
     ).await();
 
-    return success;
+    return checkoutSuccess;
     //highlight-end
 }
 ```
 
-Call the `UserSession/checkout` function as you did earlier and have a look at the logs again to see what happened.
+Restart the service and call the `UserSession/checkout` function as you did earlier and have a look at the logs again to see what happened.
 
 ```log
 2023-12-08 17:23:36 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.UserSession/Checkout
@@ -973,9 +992,11 @@ public void expireTicket(RestateContext ctx, ExpireTicketRequest request) throws
 }
 ```
 
-Call the `expireTicket` function with:
+Restart the service and call the `expireTicket` function with:
 ```shell
-curl -X POST http://localhost:8080/example.UserSession/ExpireTicket -H 'content-type: application/json' -d '{"user_id": "123"}'
+curl -X POST http://localhost:8080/example.UserSession/ExpireTicket \
+    -H 'content-type: application/json' \
+    -d '{"user_id": "123", "ticket_id":"456"}'
 ```
 
 Have a look at the logs again to see what happened.
@@ -1111,7 +1132,7 @@ You see the invocation suspending after 60 seconds. And being re-invoked 5 secon
 </details>
 
 
-Revert the `reserve` function call to a request-response call, to see how the suspensions work across different services.
+In `UserSession/addTicket`, revert the call to `reserve` to a request-response call, to see how the suspensions work across different services.
 
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
@@ -1125,9 +1146,9 @@ const addTicket = async (
   ticketId: string,
 ) => {
   // highlight-start
-  await ctx.rpc(ticketServiceApi).reserve(ticketId);
+  const reservationSuccess = await ctx.rpc(ticketServiceApi).reserve(ticketId);
   // highlight-end
-  return true;
+  return reservationSuccess;
 };
 ```
 
@@ -1167,10 +1188,10 @@ const addTicket = async (
 public BoolValue addTicket(RestateContext ctx, ReserveTicket request) throws TerminalException {
     // highlight-start
     var ticketClnt = TicketServiceRestate.newClient(ctx);
-    ticketClnt.reserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build()).await();
+    var reservationSuccess = ticketClnt.reserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build()).await();
     // highlight-end
 
-    return BoolValue.of(true);
+    return reservationSuccess;
 }
 ```
 
@@ -1398,6 +1419,8 @@ Restate's state feature is most useful for this service type.
 2. Unkeyed service: State is isolated per invocation. Using state isn't useful
 for this service type.
 
+### Getting and setting K/V state
+
 Adapt the `UserSession/addTicket` function to keep track of the cart items.
 After reserving the product, you add the ticket to the shopping cart.
 Have a look at the highlighted code:
@@ -1434,6 +1457,7 @@ This returns `null` if the value has never been set.
 <TabItem value="java" label="Java">
 
 ```java
+// At the top of the class, define the state key: supply a name and (de)serializer
 //highlight-start
 public static final StateKey<Set<String>> STATE_KEY =
     StateKey.of("tickets", JacksonSerdes.of(new TypeReference<>() {}));
@@ -1447,14 +1471,16 @@ public BoolValue addTicket(RestateContext ctx, ReserveTicket request) throws Ter
         .await();
 
     if (reservationSuccess.getValue()) {
+        // Retrieve the state
         //highlight-next-line
         var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
         tickets.add(request.getTicketId());
+        // Set the state to the new value
         //highlight-next-line
         ctx.set(STATE_KEY, tickets);
 
         var userSessionClnt = UserSessionRestate.newClient(ctx);
-        userSessionClnt.delayed(Duration.ofSeconds(15)).expireTicket(
+        userSessionClnt.delayed(Duration.ofMinutes(15)).expireTicket(
             ExpireTicketRequest.newBuilder().setTicketId(request.getTicketId()).setUserId(request.getUserId()).build()
         );
     }
@@ -1477,7 +1503,7 @@ Restate ensures that you get the cart belonging to the current user ID (key of t
 
 After you added the ticket to the cart array, you set the state to the new value with `ctx.set`.
 
-Run the services and call the `addTicket` function, to see the interaction with state in the logs.
+Run the services and call the `addTicket` function, to see the interaction with state.
 
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
@@ -1518,30 +1544,26 @@ To enable the Restate SDK to serialize arbitrary objects, add the `dev.restate:s
 When starting the invocation, Restate attaches the application state to the request.
 So when you operate on the state in your function with `ctx.get` and `ctx.set`, you get access to a local copy of the state for fast access.
 
-Add a log statement to print the cart contents, and then call `addTicket` multiple times to see how the state gets updated:
+### Inspecting K/V state
 
-<Tabs groupId="sdk">
-<TabItem value="ts" label="TypeScript">
+Restate exposes information on invocations and application state via its Introspection SQL API. You can use this to gain insight into the status of invocations and the service state that is stored.
+You can inspect the application state of the `UserSession` service by using psql, as follows:
 
-```ts
-console.info(`Current tickets: ${JSON.stringify(tickets)}`);
+```shell
+psql -h localhost -p 9071 -c "SELECT * FROM state WHERE service like '%UserSession%';"
 ```
 
-</TabItem>
-<TabItem value="java" label="Java">
+Or watch how the state changes with:
 
-```java
-System.out.println(tickets);
+```shell
+watch -n 1 'psql -h localhost -p 9071 -c "SELECT * FROM state WHERE service like '\''%UserSession%'\''";'
 ```
 
-</TabItem>
-</Tabs>
-
+Add several tickets to the state to see how the query result gets updated.
 
 You can also stop and relaunch the service or restart the runtime (`docker restart restate_dev`), to see that this has no influence on the tickets.
 
-
-Also adapt the `checkout` function in the user session service, to use the tickets:
+Also adapt the `UserSession/checkout` function, to use the tickets:
 
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
@@ -1585,43 +1607,43 @@ public static final StateKey<Set<String>> STATE_KEY = StateKey.of("tickets", Jac
 
 @Override
 public BoolValue checkout(RestateContext ctx, CheckoutRequest request) throws TerminalException {
-  // 1. Retrieve the tickets from state
-  //highlight-next-line
-  var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
-
-  // 2. If there are no tickets, return `false`
-  //highlight-start
-  if (tickets.isEmpty()) {
-    return BoolValue.of(false);
-  }
-  //highlight-end
-
-  // 3. Call the `checkout` function of the checkout service with the tickets
-  var req = CheckoutFlowRequest
-    .newBuilder()
-    .setUserId(request.getUserId())
-    .addAllTickets(tickets)
-    .build();
-  var client = CheckoutRestate.newClient(ctx);
-  var checkoutSuccess = client.checkout(req).await();
-
-  // 4. If this was successful, empty the tickets.
-  // Otherwise, let the user try again.
-  if (checkoutSuccess) {
+    // 1. Retrieve the tickets from state
     //highlight-next-line
-    ctx.clear(STATE_KEY);
-  }
+    var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
 
-  return checkoutSuccess;
+    // 2. If there are no tickets, return `false`
+    //highlight-start
+    if (tickets.isEmpty()) {
+        return BoolValue.of(false);
+    }
+    //highlight-end
+
+    // 3. Call the `checkout` function of the checkout service with the tickets
+    var checkoutClnt = CheckoutRestate.newClient(ctx);
+    var checkoutSuccess = checkoutClnt.checkout(
+        Tour.CheckoutFlowRequest.newBuilder().setUserId(request.getUserId()).addAllTickets(tickets).build()
+    ).await();
+
+    // 4. If this was successful, empty the tickets.
+    // Otherwise, let the user try again.
+    if (checkoutSuccess.getValue()) {
+    //highlight-next-line
+        ctx.clear(STATE_KEY);
+    }
+
+    return checkoutSuccess;
 }
 ```
 
 </TabItem>
 </Tabs>
 
-Have a look at the logs to see how the code executes the workflow.
+After the tickets are checked out, you clear the state with `ctx.clear`.
+Send a checkout request as [earlier](#calling-services-from-outside-restate), and check via psql that the state is empty.
 
-[//]: # (TODO add some text on how to run this and print the state )
+:::tip
+Have a look at the documentation on [introspection](/services/introspection/) to learn more about inspecting the invocation status and application state.
+:::
 
 
 ### 📝 Try it out
@@ -1649,8 +1671,8 @@ const expireTicket = async (
 ```java
 @Override
 public void expireTicket(RestateContext ctx, ExpireTicketRequest request) throws TerminalException {
-    var client = TicketServiceRestate.newClient(ctx);
-    client.oneWay().unreserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build());
+    var ticketClnt = TicketServiceRestate.newClient(ctx);
+    ticketClnt.oneWay().unreserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build());
 }
 ```
 
@@ -1685,6 +1707,14 @@ const expireTicket = async (
 };
 ```
 
+
+Call the `expireTicket` function with:
+```shell
+curl -X POST http://localhost:8080/UserSession/expireTicket \
+-H 'content-type: application/json' \
+-d '{"key": "123", "request": "456"}'
+```
+
 </TabItem>
 <TabItem value="java" label="Java">
 
@@ -1699,19 +1729,39 @@ public void expireTicket(RestateContext ctx, ExpireTicketRequest request) throws
 
   if (removed) {
     ctx.set(STATE_KEY, tickets);
-    var client = TicketServiceRestate.newClient(ctx);
-    client.oneWay().unreserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build());
+    var ticketClnt = TicketServiceRestate.newClient(ctx);
+    ticketClnt.oneWay().unreserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build());
   }
 }
 ```
 
+Call the `expireTicket` function with:
+```shell
+curl -X POST http://localhost:8080/example.UserSession/ExpireTicket \
+-H 'content-type: application/json' \
+-d '{"user_id": "123", "ticket_id": "456"}'
+```
+
 </TabItem>
 </Tabs>
+
 </details>
 
 #### Implementing the ticket service
 
 You can track the status of the tickets in the ticket service by storing it in the state.
+Implement the `TicketService/reserve`, `TicketService/unreserve`, and `TicketService/markAsSold` functions to do this.
+
+While you are developing them, you can use psql to monitor the state of the `TicketService`:
+
+```shell
+psql -h localhost -p 9071 -c "SELECT * FROM state WHERE service like '\''%TicketService%'\''";'
+```
+
+Use `watch` to see the state change in real-time:
+```shell
+watch -n 1 'psql -h localhost -p 9071 -c "select service, service_key_utf8, key, value_utf8 from state where service like '\''%TicketService%'\''";'
+```
 
 1. Implement the `TicketService/reserve` function.
 The function first retrieves the value for the `"status"` state key.
@@ -1768,7 +1818,7 @@ Call `addTicket` multiple times for the same ID. The first time it returns `true
 </>
 
 2. Implement the `TicketService/unreserve` function.
-The function should set the value of the `"status"` key to `TicketStatus.Available` if it's reserved.
+The function should clear the value of the `"status"` key if it's not on status `TicketStatus.Sold`.
 
 <>
 <details><summary>Solution</summary>
@@ -1778,15 +1828,12 @@ The function should set the value of the `"status"` key to `TicketStatus.Availab
 
 ```ts
 const unreserve = async (ctx: restate.RpcContext) => {
-  const status =
-    (await ctx.get<TicketStatus>("status")) ?? TicketStatus.Available;
+    const status =
+        (await ctx.get<TicketStatus>("status")) ?? TicketStatus.Available;
 
-  if (status === TicketStatus.Sold) {
-    return false;
-  } else {
-    ctx.clear("status");
-    return true;
-  }
+    if (status !== TicketStatus.Sold) {
+        ctx.clear("status");
+    }
 };
 ```
 
@@ -1795,21 +1842,18 @@ const unreserve = async (ctx: restate.RpcContext) => {
 
 ```java
 @Override
-public BoolValue reserve(RestateContext ctx, Ticket request) throws TerminalException {
+public void unreserve(RestateContext ctx, Ticket request) throws TerminalException {
     var status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
 
-    if (status.equals(TicketStatus.Available)) {
-        ctx.set(STATE_KEY, TicketStatus.Reserved);
-        return BoolValue.of(true);
-    } else {
-        return BoolValue.of(false);
+    if (!status.equals(TicketStatus.Sold)) {
+        ctx.clear(STATE_KEY);
     }
 }
 ```
 </TabItem>
 </Tabs>
 
-Now, the ticket reservation status switches back to `TicketStatus.Available` when the delayed call triggers.
+Now, the ticket reservation status is cleared when the delayed `expireTicket` call triggers.
 Play around with reducing the delay of the `expireTicket` call in the `addTicket` function.
 Try to reserve the same ticket ID multiple times, and see how you are able to reserve it again after the `unreserve` function executed.
 
@@ -1818,7 +1862,6 @@ Try to reserve the same ticket ID multiple times, and see how you are able to re
 
 3. Implement the `TicketService/markAsSold` function.
 The function should set the value of the `"status"` key to `TicketStatus.Sold` if it's reserved.
-If successful, the function returns `true`.
 
 <>
 <details><summary>Solution</summary>
@@ -1828,14 +1871,12 @@ If successful, the function returns `true`.
 
 ```ts
 const markAsSold = async (ctx: restate.RpcContext) => {
-  const status =
+    const status =
     (await ctx.get<TicketStatus>("status")) ?? TicketStatus.Available;
 
-  if (status === TicketStatus.Reserved) {
-    ctx.set("status", TicketStatus.Sold);
-    return true;
-  } else {
-    return false;
+    if (status === TicketStatus.Reserved) {
+        ctx.set("status", TicketStatus.Sold);
+    }
   }
 };
 ```
@@ -1922,6 +1963,7 @@ const checkout = async (
 ```java
 import java.util.UUID;
 
+@Override
 public BoolValue checkout(RestateContext ctx, CheckoutFlowRequest request) throws TerminalException {
     // highlight-next-line
     var idempotencyKey = ctx.sideEffect(CoreSerdes.STRING_UTF8, () -> UUID.randomUUID().toString());
@@ -1955,7 +1997,7 @@ ctx.sleep(Duration.ofSeconds(61));
 </TabItem>
 </Tabs>
 
-Have a look at the logs to see what happens.
+Call `UserSession/checkout` and have a look at the logs to see what happens.
 
 <details><summary>Show the logs</summary>
 
@@ -1992,20 +2034,25 @@ My idempotency key: dd92178a-85ca-4002-bfd5-0f3ed167317d
 <TabItem value="java" label="Java">
 
 ```log
+... logs of `UserSession/checkout` ...
 2023-12-08 18:52:51 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.Checkout/Checkout
 2023-12-08 18:52:51 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.Checkout/Checkout
 2023-12-08 18:52:51 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.Checkout', state=WAITING_START, id=dx-wgiQBdawAYxKWJ7TdVm2cWcw8ENKuQ) to REPLAYING
 2023-12-08 18:52:51 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.Checkout', state=REPLAYING, id=dx-wgiQBdawAYxKWJ7TdVm2cWcw8ENKuQ) to PROCESSING
+//highlight-next-line
 My idempotency key: 43ba6b58-e6f8-4bc2-8112-7c93aedf59d1
 2023-12-08 18:53:51 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.Checkout', state=PROCESSING, id=dx-wgiQBdawAYxKWJ7TdVm2cWcw8ENKuQ) to CLOSED
 2023-12-08 18:53:51 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
 2023-12-08 18:53:52 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.Checkout/Checkout
 2023-12-08 18:53:52 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.Checkout/Checkout
+//highlight-next-line
 2023-12-08 18:53:52 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.Checkout', state=WAITING_START, id=dx-wgiQBdawAYxKWJ7TdVm2cWcw8ENKuQ) to REPLAYING
+//highlight-next-line
 My idempotency key: 43ba6b58-e6f8-4bc2-8112-7c93aedf59d1
 2023-12-08 18:53:52 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.Checkout', state=REPLAYING, id=dx-wgiQBdawAYxKWJ7TdVm2cWcw8ENKuQ) to PROCESSING
 2023-12-08 18:53:52 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.Checkout', state=PROCESSING, id=dx-wgiQBdawAYxKWJ7TdVm2cWcw8ENKuQ) to CLOSED
 2023-12-08 18:53:52 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
+... logs of `UserSession/checkout` ...
 ```
 
 </TabItem>
@@ -2085,7 +2132,6 @@ Payment call succeeded for idempotency key 923d1558-bf17-4c94-b027-4cfd778049fe 
 ```java
 //highlight-next-line
 PaymentClient paymentClient = PaymentClient.get();
-EmailClient emailClient = EmailClient.get();
 
 @Override
 public BoolValue checkout(RestateContext ctx, CheckoutFlowRequest request) throws TerminalException {
@@ -2098,12 +2144,6 @@ public BoolValue checkout(RestateContext ctx, CheckoutFlowRequest request) throw
     //highlight-next-line
     boolean success = ctx.sideEffect(CoreSerdes.BOOLEAN, () -> paymentClient.call(idempotencyKey, totalPrice));
 
-    if (success) {
-        ctx.sideEffect(()-> emailClient.notifyUserOfPaymentSuccess(request.getUserId()));
-    } else {
-        ctx.sideEffect(() -> emailClient.notifyUserOfPaymentFailure(request.getUserId()));
-    }
-
     return BoolValue.of(success);
 }
 ```
@@ -2111,14 +2151,17 @@ public BoolValue checkout(RestateContext ctx, CheckoutFlowRequest request) throw
 Add some tickets to your cart, then call `UserSession/checkout`, and check out the logs.
 
 ```log
+// ... UserSessionService/Checkout logs ...
 2023-12-08 19:18:10 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.Checkout/Checkout
 2023-12-08 19:18:10 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.Checkout/Checkout
 2023-12-08 19:18:10 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.Checkout', state=WAITING_START, id=oS57gfN60H0AYxKb83nekCzcSbHKhVlhg) to REPLAYING
 2023-12-08 19:18:10 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.Checkout', state=REPLAYING, id=oS57gfN60H0AYxKb83nekCzcSbHKhVlhg) to PROCESSING
+//highlight-next-line
 Payment call succeeded for idempotency key 724aa2b9-d602-4060-83fb-019e5faa3999 and amount 40.0
 Notifying user 123 of payment success
 2023-12-08 19:18:10 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.Checkout', state=PROCESSING, id=oS57gfN60H0AYxKb83nekCzcSbHKhVlhg) to CLOSED
 2023-12-08 19:18:10 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
+// ... UserSessionService/Checkout logs ...
 ```
 
 </TabItem>
@@ -2164,13 +2207,13 @@ const checkout = async (
 
   const email = EmailClient.get();
 
+//highlight-start
   if (success) {
-    console.info("Payment successful. Notifying user about shipment.");
     await ctx.sideEffect(() => email.notifyUserOfPaymentSuccess(request.userId));
   } else {
-    console.info("Payment failure. Notifying user about it.");
     await ctx.sideEffect(() => email.notifyUserOfPaymentFailure(request.userId));
   }
+//highlight-end
 
   return success;
 };
@@ -2190,13 +2233,15 @@ public BoolValue checkout(RestateContext ctx, CheckoutFlowRequest request) throw
 
     var totalPrice = request.getTicketsList().size() * 40.0;
 
-    boolean success = ctx.sideEffect(CoreSerdes.BOOLEAN, () -> paymentClient.failingCall(idempotencyKey, totalPrice));
+    boolean success = ctx.sideEffect(CoreSerdes.BOOLEAN, () -> paymentClient.call(idempotencyKey, totalPrice));
 
+    //highlight-start
     if (success) {
         ctx.sideEffect(CoreSerdes.BOOLEAN, ()-> emailClient.notifyUserOfPaymentSuccess(request.getUserId()));
     } else {
         ctx.sideEffect(CoreSerdes.BOOLEAN, () -> emailClient.notifyUserOfPaymentFailure(request.getUserId()));
     }
+    //highlight-end
 
     return BoolValue.of(success);
 }
@@ -2224,9 +2269,11 @@ const checkout = async (ctx: restate.RpcContext, userId: string) => {
 
   if (checkoutSuccess) {
     // mark tickets as sold if checkout was successful
+    //highlight-start
     for (const ticketId of tickets) {
       ctx.send(ticketServiceApi).markAsSold(ticketId);
     }
+    //highlight-end
     ctx.clear("tickets");
   }
 
@@ -2252,6 +2299,10 @@ public BoolValue checkout(RestateContext ctx, CheckoutRequest request) throws Te
     ).await();
 
     if (checkoutSuccess.getValue()) {
+        //highlight-start
+        var ticketClnt = TicketServiceRestate.newClient(ctx);
+        tickets.forEach(t -> ticketClnt.oneWay().markAsSold(Ticket.newBuilder().setTicketId(t).build()));
+        //highlight-end
         ctx.clear(STATE_KEY);
     }
 
@@ -2267,6 +2318,7 @@ public BoolValue checkout(RestateContext ctx, CheckoutRequest request) throws Te
 
 
 🥳 Except for a few resiliency tweaks, you have now fully implemented the ticket reservation system!
+Try it out by reserving some new tickets and buying them by checking out the cart.
 
 :::info
 🚩 Explore the intermediate solution in `part3`, and run it with:
@@ -2312,7 +2364,7 @@ These features are switched on by default. No need to do anything.
 
 ### Side effect retries
 
-If you do a side effect operation and the side effect fails, then it is retried until it succeeds.
+Also side effects are retried until they succeed.
 You can observe this behavior by using the `paymentClient.failingCall` in `Checkout/checkout`:
 
 <Tabs groupId="sdk">
@@ -2338,8 +2390,7 @@ boolean success = ctx.sideEffect(CoreSerdes.BOOLEAN, () -> paymentClient.failing
 
 
 You now call `paymentClient.failingCall` which fails two times before succeeding.
-A failing side effect is retried with an exponential backoff until it succeeds.
-Restate uses suspending sleeps for the wait time between retries.
+A failing side effect is retried until it succeeds.
 Have a look at the logs to see the retries.
 
 <details><summary>Show the logs</summary>
@@ -2533,14 +2584,26 @@ Then restart the runtime with the tracing endpoint defined as an environment var
 <TabItem value="lin" label="Linux">
 
 ```shell
+docker stop restate_dev && \
 docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://localhost:4317 --network=host docker.io/restatedev/restate:VAR::RESTATE_VERSION
+```
+
+Register the services again (required because the state got wiped when the runtime was restarted with the `--rm` flag):
+```shell
+curl -X POST http://localhost:9070/endpoints -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'
 ```
 
 </TabItem>
 <TabItem value="mac" label="macOS">
 
 ```shell
+docker stop restate_dev && \
 docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://host.docker.internal:4317 -p 8080:8080 -p 9070:9070 -p 9071:9071 docker.io/restatedev/restate:VAR::RESTATE_VERSION
+```
+
+Register the services again (required because the state got wiped when the runtime was restarted with the `--rm` flag):
+```shell
+curl -X POST http://localhost:9070/endpoints -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
 ```
 
 </TabItem>
