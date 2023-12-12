@@ -441,7 +441,7 @@ For example, the `UserSession` service has the following keyed router:
 export const userSessionRouter = restate.keyedRouter({ addTicket, expireTicket, checkout });
 ```
 
-As mentioned, for keyed services there can be at most one concurrent invocation at the service level.
+As mentioned, for keyed services there can be at most one concurrent invocation to any method of the service.
 So this means that if there is a call to `addTicket()`, then a call to `expireTicket()`, then `checkout()` will wait in line until `addTicket()` has finished, if and only if both were invoked with the same value of `key`.
 This also counts if you omit the key parameter from the function signature, as we did for the `maybe()` and `withSomething()` functions above.
 
