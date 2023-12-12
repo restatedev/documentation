@@ -149,7 +149,7 @@ const config = {
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
-        additionalLanguages: ["protobuf", "log", "java", "scala"],
+        additionalLanguages: ["protobuf", "log", "java", "scala"], // adding Scala fixes prisma + redocusaurus bug (https://github.com/facebook/docusaurus/issues/7209)
         magicComments: [
           // Remember to extend the default highlight class name as well!
           {
