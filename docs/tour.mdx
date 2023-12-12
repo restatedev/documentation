@@ -573,8 +573,8 @@ To also log the messages, use `RESTATE_DEBUG_LOGGING=JOURNAL_VERBOSE`.
 public BoolValue addTicket(RestateContext ctx, ReserveTicket request) throws TerminalException {
 
     //highlight-start
-    var ticketClient = TicketServiceRestate.newClient(ctx);
-    var success = ticketClient.reserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build()).await();
+    var ticketClnt = TicketServiceRestate.newClient(ctx);
+    var success = ticketClnt.reserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build()).await();
 
     return success;
     //highlight-end
@@ -781,13 +781,10 @@ Notice that the `UserSession` didn't get suspended because the response came bef
 @Override
 public BoolValue checkout(RestateContext ctx, CheckoutRequest request) throws TerminalException {
     //highlight-start
-    var req = CheckoutFlowRequest.newBuilder()
-            .setUserId(request.getUserId())
-            .addTickets("456")
-            .build();
-
-    var client = CheckoutRestate.newClient(ctx);
-    var success = client.checkout(req).await();
+    var checkoutClnt = CheckoutRestate.newClient(ctx);
+    var checkoutSuccess = checkoutClnt.checkout(
+        CheckoutFlowRequest.newBuilder().setUserId(request.getUserId()).addTickets("456").build()
+    ).await();
 
     return success;
     //highlight-end
@@ -827,12 +824,15 @@ Up to now, all our service calls waited for a response. This is referred to as r
 Update `expireTicket` to use `RpcContext.send` to send a one-way message to release the reservation:
 
 ```typescript
-const expireTicket = async (
-  ctx: restate.RpcContext,
-  userId: string,
-  ticketId: string,
+const addTicket = async (
+    ctx: restate.RpcContext,
+    userId: string,
+    ticketId: string,
 ) => {
-  ctx.send(ticketServiceApi).unreserve(ticketId);
+    // highlight-start
+    ctx.send(ticketServiceApi).reserve(ticketId);
+    // highlight-end
+    return true;
 };
 ```
 
@@ -862,41 +862,41 @@ In the service logs, you see that the `addTicket` function doesn't wait for a re
 </TabItem>
 <TabItem value="java" label="Java">
 
-Update `expireTicket` to use `ctx.oneWayCall` to send a one-way message to release the reservation:
+Update the reserve request in `addTicket` to use `oneWay()` to send a one-way message to release the reservation:
 
 ```java
 @Override
-public void expireTicket(RestateContext ctx, ExpireTicketRequest request) throws TerminalException {
-    ctx.oneWayCall(
-            TicketServiceGrpc.getUnreserveMethod(),
-            Ticket.newBuilder().setTicketId(request.getTicketId()).build()
-    );
+public void addTicket(RestateContext ctx, ReserveTicket request) throws TerminalException {
+    var ticketClnt = TicketServiceRestate.newClient(ctx);
+    //highlight-next-line
+    ticketClnt.oneWay().reserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build());
+
+    return BoolValue.of(true);
 }
 ```
 
-Note that `oneWayCall` isn't an asynchronous operation in the Restate SDK, so there is no need to call `await()` on it.
+Note that `oneWay()` isn't an asynchronous operation in the Restate SDK, so there is no need to call `await()` on it.
 
-Once you have adapted the code, restart the service and try it out by calling the `UserSession.expireTicket` method as [explained earlier](#calling-services-from-outside-restate). In the service logs, you will see that the `addTicket` method doesn't wait for a response and completes before `reserve` does. The external call will get a response much quicker in this scenario.
+Once you have adapted the code, restart the service and try it out by calling the `UserSession/addTicket` method as [explained earlier](#calling-services-from-outside-restate). In the service logs, you will see that the `addTicket` method doesn't wait for a response and completes before `reserve` does. The external call will get a response much quicker in this scenario.
 
 <details><summary>Show the logs</summary>
 
 ```log
 //highlight-next-line
-2023-12-08 16:27:20 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.UserSession/ExpireTicket
-2023-12-08 16:27:20 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.UserSession/ExpireTicket
-2023-12-08 16:27:20 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=WAITING_START, id=jRn_FAzvp8UAYxJ02UPd7qxFarQ6_-N-A) to REPLAYING
-2023-12-08 16:27:20 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=REPLAYING, id=jRn_FAzvp8UAYxJ02UPd7qxFarQ6_-N-A) to PROCESSING
-2023-12-08 16:27:20 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=PROCESSING, id=jRn_FAzvp8UAYxJ02UPd7qxFarQ6_-N-A) to CLOSED
+2023-12-11 15:59:43 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.UserSession/AddTicket
+2023-12-11 15:59:43 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.UserSession/AddTicket
+2023-12-11 15:59:43 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=WAITING_START, id=K1qex52CPYkAYxZZCJ6e-qaXkDZ6uTptw) to REPLAYING
+2023-12-11 15:59:43 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=REPLAYING, id=K1qex52CPYkAYxZZCJ6e-qaXkDZ6uTptw) to PROCESSING
+2023-12-11 15:59:44 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=PROCESSING, id=K1qex52CPYkAYxZZCJ6e-qaXkDZ6uTptw) to CLOSED
 //highlight-next-line
-2023-12-08 16:27:20 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
+2023-12-11 15:59:44 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
 //highlight-next-line
-2023-12-08 16:27:20 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.TicketService/Unreserve
-2023-12-08 16:27:20 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.TicketService/Unreserve
-2023-12-08 16:27:20 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=WAITING_START, id=IwF2v7ci3eUAYxJ02XJfCW5xj_UK5P0Mg) to REPLAYING
-2023-12-08 16:27:20 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=REPLAYING, id=IwF2v7ci3eUAYxJ02XJfCW5xj_UK5P0Mg) to PROCESSING
-2023-12-08 16:27:20 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=PROCESSING, id=IwF2v7ci3eUAYxJ02XJfCW5xj_UK5P0Mg) to CLOSED
-//highlight-next-line
-2023-12-08 16:27:20 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
+2023-12-11 15:59:44 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.TicketService/Reserve
+2023-12-11 15:59:44 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.TicketService/Reserve
+2023-12-11 15:59:44 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=WAITING_START, id=IwF2v7ci3eUAYxZZCMQfUaReG3gdMtt3g) to REPLAYING
+2023-12-11 15:59:44 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=REPLAYING, id=IwF2v7ci3eUAYxZZCMQfUaReG3gdMtt3g) to PROCESSING
+2023-12-11 16:00:49 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=PROCESSING, id=IwF2v7ci3eUAYxZZCMQfUaReG3gdMtt3g) to CLOSED
+2023-12-11 16:00:49 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
 ```
 
 </details>
@@ -967,10 +967,8 @@ Have a look at the logs again to see what happened:
 @Override
 public void expireTicket(RestateContext ctx, ExpireTicketRequest request) throws TerminalException {
     //highlight-start
-    ctx.oneWayCall(
-            TicketServiceGrpc.getUnreserveMethod(),
-            Ticket.newBuilder().setTicketId(request.getTicketId()).build()
-    );
+    var ticketClnt = TicketServiceRestate.newClient(ctx);
+    ticketClnt.oneWay().unreserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build());
     //highlight-end
 }
 ```
@@ -982,13 +980,16 @@ curl -X POST http://localhost:8080/example.UserSession/ExpireTicket -H 'content-
 
 Have a look at the logs again to see what happened.
 
-```logs
+```log
+//highlight-next-line
 2023-12-08 17:56:13 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.UserSession/ExpireTicket
 2023-12-08 17:56:13 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.UserSession/ExpireTicket
 2023-12-08 17:56:13 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=WAITING_START, id=K1qex52CPYkAYxKJMW2cAepZ9HZDYOSVA) to REPLAYING
 2023-12-08 17:56:13 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=REPLAYING, id=K1qex52CPYkAYxKJMW2cAepZ9HZDYOSVA) to PROCESSING
 2023-12-08 17:56:13 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=PROCESSING, id=K1qex52CPYkAYxKJMW2cAepZ9HZDYOSVA) to CLOSED
+//highlight-next-line
 2023-12-08 17:56:13 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
+//highlight-next-line
 2023-12-08 17:56:13 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.TicketService/Unreserve
 2023-12-08 17:56:13 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.TicketService/Unreserve
 2023-12-08 17:56:13 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=WAITING_START, id=x3s6u2-HrNkAYxKJMZbeomyz3qH5PqvCg) to REPLAYING
@@ -1020,7 +1021,7 @@ Restate offers the same mechanism for timers.
 
 ### Suspendable sleep
 
-[Earlier in this tutorial](#waiting-for-slow-services), you saw how Restate caller suspension works when you make an RPC request to another service. We artificially slowed down the target service by using platform-native sleep. Sometimes you intentionally want to suspend execution for a period of time, for example to back off from overloading a dependency or simply you are implementing a long-running business workflow. In those situations you can explicitly suspend execution for arbitrarily long periods of time using the Restate context's `sleep` function.
+[Earlier in this tutorial](#waiting-for-slow-services), you saw how Restate caller suspension works when you make an RPC request to another service. We artificially slowed down the target service by using platform-native sleep. Sometimes you intentionally want to suspend execution for a period of time, for example to back off from overloading a dependency or simply you are implementing a long-running business workflow. In those situations you can explicitly suspend execution for arbitrarily long periods of time using the Restate context's `sleep` function. Adapt the `TicketService/reserve` function to use `ctx.sleep`:
 
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
@@ -1041,7 +1042,7 @@ const reserve = async (ctx: restate.RpcContext) => {
 @Override
 public BoolValue reserve(RestateContext ctx, Ticket request) throws TerminalException {
     //good-code-start
-    ctx.sleep(Duration.ofSeconds(35));
+    ctx.sleep(Duration.ofSeconds(65));
     //good-code-end
 
     return BoolValue.of(true);
@@ -1080,21 +1081,30 @@ The `addTicket` function did a one-way call to the `reserve` function so didn't 
 <TabItem value="java" label="Java">
 
 ```log
-2023-12-08 17:35:22 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.TicketService/Reserve
-2023-12-08 17:35:22 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.TicketService/Reserve
-2023-12-08 17:35:22 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=WAITING_START, id=jRn_FAzvp8UAYxKEbE1cN-UN_QKAIeDcw) to REPLAYING
-2023-12-08 17:35:22 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=REPLAYING, id=jRn_FAzvp8UAYxKEbE1cN-UN_QKAIeDcw) to PROCESSING
-2023-12-08 17:35:47 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=PROCESSING, id=IwF2v7ci3eUAYxJ97Rwc-eEsktFA34P8g) to CLOSED
-2023-12-08 17:35:47 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
-2023-12-08 17:35:47 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.UserSession/AddTicket
-2023-12-08 17:35:47 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.UserSession/AddTicket
-2023-12-08 17:35:47 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=WAITING_START, id=jRn_FAzvp8UAYxJ97RhfXuMe3GpnRmgjQ) to REPLAYING
-2023-12-08 17:35:47 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=REPLAYING, id=jRn_FAzvp8UAYxJ97RhfXuMe3GpnRmgjQ) to PROCESSING
-2023-12-08 17:35:47 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=PROCESSING, id=jRn_FAzvp8UAYxJ97RhfXuMe3GpnRmgjQ) to CLOSED
-2023-12-08 17:35:47 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
-2023-12-08 17:35:57 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=PROCESSING, id=jRn_FAzvp8UAYxKEbE1cN-UN_QKAIeDcw) to CLOSED
-2023-12-08 17:35:57 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
+2023-12-11 16:41:27 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.UserSession/AddTicket
+2023-12-11 16:41:27 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.UserSession/AddTicket
+2023-12-11 16:41:27 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine{serviceName='example.UserSession', state=WAITING_START, id=K1qex52CPYkAYxZilZic--jDAjbEUcL8Q} to REPLAYING
+2023-12-11 16:41:27 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine{serviceName='example.UserSession', state=REPLAYING, id=K1qex52CPYkAYxZilZic--jDAjbEUcL8Q} to PROCESSING
+2023-12-11 16:41:27 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine{serviceName='example.UserSession', state=PROCESSING, id=K1qex52CPYkAYxZilZic--jDAjbEUcL8Q} to CLOSED
+2023-12-11 16:41:27 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
+//highlight-next-line
+2023-12-11 16:41:27 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.TicketService/Reserve
+2023-12-11 16:41:27 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.TicketService/Reserve
+2023-12-11 16:41:27 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine{serviceName='example.TicketService', state=WAITING_START, id=IwF2v7ci3eUAYxZilbvcCG0B5paz4xKfg} to REPLAYING
+2023-12-11 16:41:27 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine{serviceName='example.TicketService', state=REPLAYING, id=IwF2v7ci3eUAYxZilbvcCG0B5paz4xKfg} to PROCESSING
+2023-12-11 16:42:27 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine{serviceName='example.TicketService', state=PROCESSING, id=IwF2v7ci3eUAYxZilbvcCG0B5paz4xKfg} to CLOSED
+//highlight-next-line
+2023-12-11 16:42:27 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
+//highlight-next-line
+2023-12-11 16:42:32 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.TicketService/Reserve
+2023-12-11 16:42:32 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.TicketService/Reserve
+2023-12-11 16:42:32 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine{serviceName='example.TicketService', state=WAITING_START, id=IwF2v7ci3eUAYxZilbvcCG0B5paz4xKfg} to REPLAYING
+2023-12-11 16:42:32 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine{serviceName='example.TicketService', state=REPLAYING, id=IwF2v7ci3eUAYxZilbvcCG0B5paz4xKfg} to PROCESSING
+2023-12-11 16:42:32 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine{serviceName='example.TicketService', state=PROCESSING, id=IwF2v7ci3eUAYxZilbvcCG0B5paz4xKfg} to CLOSED
+2023-12-11 16:42:32 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
 ```
+
+You see the invocation suspending after 60 seconds. And being re-invoked 5 seconds later when the sleep is complete.
 
 </TabItem>
 </Tabs>
@@ -1152,36 +1162,54 @@ const addTicket = async (
 </TabItem>
 <TabItem value="java" label="Java">
 
-Replace the `ctx.call()` with `ctx.oneWayCall()`, to end up with:
-
 ```java
 @Override
 public BoolValue addTicket(RestateContext ctx, ReserveTicket request) throws TerminalException {
     // highlight-start
-    ctx.oneWayCall(
-            TicketServiceGrpc.getReserveMethod(),
-            Ticket.newBuilder().setTicketId(request.getTicketId()).build()
-    );
+    var ticketClnt = TicketServiceRestate.newClient(ctx);
+    ticketClnt.reserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build()).await();
     // highlight-end
 
     return BoolValue.of(true);
 }
 ```
 
+<details><summary>Show the logs</summary>
+
 ```log
-2023-12-08 17:52:10 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.UserSession/AddTicket
-2023-12-08 17:52:10 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.UserSession/AddTicket
-2023-12-08 17:52:10 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=WAITING_START, id=K1qex52CPYkAYxKIRMsc5q67M472_jBDA) to REPLAYING
-2023-12-08 17:52:10 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=REPLAYING, id=K1qex52CPYkAYxKIRMsc5q67M472_jBDA) to PROCESSING
-2023-12-08 17:52:10 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.TicketService/Reserve
-2023-12-08 17:52:10 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.TicketService/Reserve
-2023-12-08 17:52:10 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=WAITING_START, id=IwF2v7ci3eUAYxKIRNJd-2KnRSQvG3w_Q) to REPLAYING
-2023-12-08 17:52:10 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=REPLAYING, id=IwF2v7ci3eUAYxKIRNJd-2KnRSQvG3w_Q) to PROCESSING
-2023-12-08 17:52:10 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=PROCESSING, id=IwF2v7ci3eUAYxKIRNJd-2KnRSQvG3w_Q) to CLOSED
-2023-12-08 17:52:10 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
-2023-12-08 17:52:10 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=PROCESSING, id=K1qex52CPYkAYxKIRMsc5q67M472_jBDA) to CLOSED
-2023-12-08 17:52:10 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
+2023-12-11 16:53:20 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.UserSession/AddTicket
+//highlight-next-line
+2023-12-11 16:53:20 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.UserSession/AddTicket
+2023-12-11 16:53:20 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine{serviceName='example.UserSession', state=WAITING_START, id=K1qex52CPYkAYxZlTZrcOmYuqgpk88fog} to REPLAYING
+2023-12-11 16:53:20 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine{serviceName='example.UserSession', state=REPLAYING, id=K1qex52CPYkAYxZlTZrcOmYuqgpk88fog} to PROCESSING
+//highlight-next-line
+2023-12-11 16:53:20 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.TicketService/Reserve
+2023-12-11 16:53:20 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.TicketService/Reserve
+2023-12-11 16:53:20 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine{serviceName='example.TicketService', state=WAITING_START, id=IwF2v7ci3eUAYxZlTb6dt2AnGHEDs30OA} to REPLAYING
+2023-12-11 16:53:20 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine{serviceName='example.TicketService', state=REPLAYING, id=IwF2v7ci3eUAYxZlTb6dt2AnGHEDs30OA} to PROCESSING
+//highlight-next-line
+2023-12-11 16:54:20 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine{serviceName='example.UserSession', state=PROCESSING, id=K1qex52CPYkAYxZlTZrcOmYuqgpk88fog} to CLOSED
+2023-12-11 16:54:20 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
+//highlight-next-line
+2023-12-11 16:54:20 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine{serviceName='example.TicketService', state=PROCESSING, id=IwF2v7ci3eUAYxZlTb6dt2AnGHEDs30OA} to CLOSED
+2023-12-11 16:54:20 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
+//highlight-next-line
+2023-12-11 16:54:25 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.TicketService/Reserve
+2023-12-11 16:54:25 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.TicketService/Reserve
+2023-12-11 16:54:25 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine{serviceName='example.TicketService', state=WAITING_START, id=IwF2v7ci3eUAYxZlTb6dt2AnGHEDs30OA} to REPLAYING
+2023-12-11 16:54:25 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine{serviceName='example.TicketService', state=REPLAYING, id=IwF2v7ci3eUAYxZlTb6dt2AnGHEDs30OA} to PROCESSING
+2023-12-11 16:54:25 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine{serviceName='example.TicketService', state=PROCESSING, id=IwF2v7ci3eUAYxZlTb6dt2AnGHEDs30OA} to CLOSED
+2023-12-11 16:54:25 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
+//highlight-next-line
+2023-12-11 16:54:25 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.UserSession/AddTicket
+2023-12-11 16:54:25 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.UserSession/AddTicket
+2023-12-11 16:54:25 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine{serviceName='example.UserSession', state=WAITING_START, id=K1qex52CPYkAYxZlTZrcOmYuqgpk88fog} to REPLAYING
+2023-12-11 16:54:25 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine{serviceName='example.UserSession', state=REPLAYING, id=K1qex52CPYkAYxZlTZrcOmYuqgpk88fog} to PROCESSING
+2023-12-11 16:54:25 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine{serviceName='example.UserSession', state=PROCESSING, id=K1qex52CPYkAYxZlTZrcOmYuqgpk88fog} to CLOSED
+2023-12-11 16:54:25 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
 ```
+
+</details>
 
 </TabItem>
 </Tabs>
@@ -1191,7 +1219,7 @@ The user session service gets suspended because it waits for a response from the
 Restate keeps track of how long the service should sleep and then triggers it to resume the invocation.
 Finally, you see the responses of both functions coming in.
 
-When you reduce the time the `TicketService/reserve` function sleeps to a second, you won't see the suspensions anymore.
+Reduce the time the `TicketService/reserve` function sleeps to a second, so you won't see the suspensions anymore.
 
 :::caution
 In keyed or singleton services, sleeping blocks all further processing (for the specific single key / all invocations, respectively).
@@ -1240,19 +1268,18 @@ const addTicket = async (
 ```java
 @Override
 public BoolValue addTicket(RestateContext ctx, ReserveTicket request) throws TerminalException {
-    var ticketSvcClient = TicketServiceRestate.newClient(ctx);
-    var ticket = Ticket.newBuilder().setTicketId(request.getTicketId()).build();
-    var reservationSuccess = ticketSvcClient.reserve(ticket).await();
+    var ticketClnt = TicketServiceRestate.newClient(ctx);
+    var reservationSuccess = ticketClnt
+        .reserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build())
+        .await();
 
     if (reservationSuccess.getValue()) {
-        var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
-        tickets.add(request.getTicketId());
-        ctx.set(STATE_KEY, tickets);
-
         var userSessionClnt = UserSessionRestate.newClient(ctx);
-        var req = ExpireTicketRequest.newBuilder().setTicketId(request.getTicketId()).setUserId(request.getUserId()).build();
-        //highlight-next-line
-        userSessionClnt.delayed(Duration.ofMinutes(15)).expireTicket(req);
+    // highlight-start
+        userSessionClnt.delayed(Duration.ofMinutes(15)).expireTicket(
+            ExpireTicketRequest.newBuilder().setTicketId(request.getTicketId()).setUserId(request.getUserId()).build()
+        );
+    // highlight-end
     }
 
     return reservationSuccess;
@@ -1262,13 +1289,13 @@ public BoolValue addTicket(RestateContext ctx, ReserveTicket request) throws Ter
 </TabItem>
 </Tabs>
 
-To test it out, put the delay to a lower value, for example 5 seconds, call the `addTicket` function, and see in the logs how the call is executed 5 seconds later.
+To test it out, put the delay to a lower value, for example 5 seconds, call the `addTicket` function, and see in the logs how the call to `UserSession/expireTicket` is executed 5 seconds later.
 
 <details><summary>Show the logs</summary>
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
 
-```logs
+```log
 ... logs from reserve call ...
 [restate] [2023-08-15T21:29:44.426Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHT-at6er1g5Tkk14Ni] : Matched and replayed message from journal ; InvokeEntryMessage
 // highlight-next-line
@@ -1288,7 +1315,7 @@ To test it out, put the delay to a lower value, for example 5 seconds, call the 
 </TabItem>
 <TabItem value="java" label="Java">
 
-```logs
+```log
 2023-12-08 16:54:56 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.UserSession/AddTicket
 2023-12-08 16:54:56 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.UserSession/AddTicket
 2023-12-08 16:54:56 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=WAITING_START, id=jRn_FAzvp8UAYxJ7KnZeGKJjtGDk3i1ug) to REPLAYING
@@ -1300,7 +1327,9 @@ To test it out, put the delay to a lower value, for example 5 seconds, call the 
 2023-12-08 16:54:56 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=PROCESSING, id=IwF2v7ci3eUAYxJ7KqWfI-nl9FSlXVSLg) to CLOSED
 2023-12-08 16:54:56 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
 2023-12-08 16:54:56 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=PROCESSING, id=jRn_FAzvp8UAYxJ7KnZeGKJjtGDk3i1ug) to CLOSED
+//highlight-next-line
 2023-12-08 16:54:56 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
+//highlight-next-line
 2023-12-08 16:55:01 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.UserSession/ExpireTicket
 2023-12-08 16:55:01 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.UserSession/ExpireTicket
 2023-12-08 16:55:01 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=WAITING_START, id=jRn_FAzvp8UAYxJ7Kq-eZyVz-ybC1J5VA) to REPLAYING
@@ -1335,10 +1364,8 @@ ctx.send(ticketServiceApi).unreserve({
 
 ```java
 ctx.sleep(Duration.ofMinutes(15));
-var client = UserSessionRestate.newClient(ctx);
-var userSessionClnt = UserSessionRestate.newClient(ctx);
-var req = ExpireTicketRequest.newBuilder().setTicketId(request.getTicketId()).setUserId(request.getUserId()).build();
-userSessionClnt.delayed(Duration.ofMinutes(15)).expireTicket(req);
+var ticketClnt = TicketServiceRestate.newClient(ctx);
+ticketClnt.oneWay().unreserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build());
 ```
 
 </TabItem>
@@ -1400,6 +1427,9 @@ const addTicket = async (
 }
 ```
 
+To retrieve the cart, you use `ctx.get`.
+This returns `null` if the value has never been set.
+
 </TabItem>
 <TabItem value="java" label="Java">
 
@@ -1411,9 +1441,10 @@ public static final StateKey<Set<String>> STATE_KEY =
 
 @Override
 public BoolValue addTicket(RestateContext ctx, ReserveTicket request) throws TerminalException {
-    var ticketSvcClient = TicketServiceRestate.newClient(ctx);
-    var ticket = Ticket.newBuilder().setTicketId(request.getTicketId()).build();
-    var reservationSuccess = ticketSvcClient.reserve(ticket).await();
+    var ticketClnt = TicketServiceRestate.newClient(ctx);
+    var reservationSuccess = ticketClnt
+        .reserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build())
+        .await();
 
     if (reservationSuccess.getValue()) {
         //highlight-next-line
@@ -1421,20 +1452,24 @@ public BoolValue addTicket(RestateContext ctx, ReserveTicket request) throws Ter
         tickets.add(request.getTicketId());
         //highlight-next-line
         ctx.set(STATE_KEY, tickets);
+
         var userSessionClnt = UserSessionRestate.newClient(ctx);
-        var req = ExpireTicketRequest.newBuilder().setTicketId(request.getTicketId()).setUserId(request.getUserId()).build();
-        userSessionClnt.delayed(Duration.ofMinutes(15)).expireTicket(req);
+        userSessionClnt.delayed(Duration.ofSeconds(15)).expireTicket(
+            ExpireTicketRequest.newBuilder().setTicketId(request.getTicketId()).setUserId(request.getUserId()).build()
+        );
     }
 
     return reservationSuccess;
 }
 ```
 
+To retrieve the cart, you use `ctx.get` with a state key that describes the name and the (de)serializers to be used.
+Have a look at the documentation on serialization to learn more about the different serializers.
+
+`ctx.get` returns an Optional, only containing a value if one was set before.
+
 </TabItem>
 </Tabs>
-
-To retrieve the cart, you use `ctx.get`.
-This returns `null` if the value has never been set.
 
 You can store multiple key-value pairs, by using different state keys.
 Here, you get the value under the key `"tickets"`.
@@ -1458,6 +1493,8 @@ Run the services and call the `addTicket` function, to see the interaction with 
 ... logs from expireTicket call ...
 ```
 
+You see that when you request the state, it gets logged in the journal.
+
 </details>
 
 :::info
@@ -1478,9 +1515,8 @@ To enable the Restate SDK to serialize arbitrary objects, add the `dev.restate:s
 </TabItem>
 </Tabs>
 
-You see that when you request the state, it gets logged in the journal.
-The state value gets immediately retrieved, because the invocation state is eagerly sent.
-Finally, you set the new value.
+When starting the invocation, Restate attaches the application state to the request.
+So when you operate on the state in your function with `ctx.get` and `ctx.set`, you get access to a local copy of the state for fast access.
 
 Add a log statement to print the cart contents, and then call `addTicket` multiple times to see how the state gets updated:
 
@@ -1544,6 +1580,7 @@ const checkout = async (ctx: restate.RpcContext, userId: string) => {
 
 ```java
 // Add to top of class
+//highlight-next-line
 public static final StateKey<Set<String>> STATE_KEY = StateKey.of("tickets", JacksonSerde.typeRef(new TypeReference<>() {}));
 
 @Override
@@ -1912,7 +1949,7 @@ await ctx.sleep(31000);
 
 ```java
 System.out.println("My idempotency key: " + idempotencyKey);
-ctx.sleep(Duration.ofSeconds(31));
+ctx.sleep(Duration.ofSeconds(61));
 ```
 
 </TabItem>
@@ -1954,7 +1991,7 @@ My idempotency key: dd92178a-85ca-4002-bfd5-0f3ed167317d
 </TabItem>
 <TabItem value="java" label="Java">
 
-```logs
+```log
 2023-12-08 18:52:51 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.Checkout/Checkout
 2023-12-08 18:52:51 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.Checkout/Checkout
 2023-12-08 18:52:51 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.Checkout', state=WAITING_START, id=dx-wgiQBdawAYxKWJ7TdVm2cWcw8ENKuQ) to REPLAYING
@@ -1994,8 +2031,8 @@ The payment provider makes sure that exactly one payment gets processed for a si
 
 Create a new payment client in `CheckoutService/Checkout`.
 Assume every ticket costs 40 dollars.
-Then execute the payment with the created idempotency key and store the boolean result of the call as a side effect.
-Also use the boolean result for the return value of the function.
+Then execute the payment with the created idempotency key and store the boolean result of the call as the return value of the side effect.
+Also return the boolean result at the end of the `checkout` function.
 
 <details><summary>Solution</summary>
 
@@ -2023,7 +2060,7 @@ const checkout = async (
 Add some tickets to your cart and then call `UserSession/checkout`.
 You should see similar logs:
 
-```logs
+```log
 // ... UserSessionService/Checkout logs ...
 [restate] [2023-08-16T08:08:45.987Z] DEBUG: [Checkout/checkout] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Invoking function.
 [restate] [2023-08-16T08:08:45.987Z] DEBUG: [Checkout/checkout] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Adding message to journal and sending to Restate ; undefined
@@ -2073,7 +2110,7 @@ public BoolValue checkout(RestateContext ctx, CheckoutFlowRequest request) throw
 
 Add some tickets to your cart, then call `UserSession/checkout`, and check out the logs.
 
-```logs
+```log
 2023-12-08 19:18:10 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.Checkout/Checkout
 2023-12-08 19:18:10 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.Checkout/Checkout
 2023-12-08 19:18:10 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.Checkout', state=WAITING_START, id=oS57gfN60H0AYxKb83nekCzcSbHKhVlhg) to REPLAYING
@@ -2203,25 +2240,22 @@ const checkout = async (ctx: restate.RpcContext, userId: string) => {
 ```java
 @Override
 public BoolValue checkout(RestateContext ctx, CheckoutRequest request) throws TerminalException {
-  var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
+    var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
 
-  if (tickets.isEmpty()) {
-    return BoolValue.of(false);
-  }
+    if (tickets.isEmpty()) {
+        return BoolValue.of(false);
+    }
 
-    var req = CheckoutFlowRequest
-    .newBuilder()
-    .setUserId(request.getUserId())
-    .addAllTickets(tickets)
-    .build();
-    var client = CheckoutRestate.newClient(ctx);
-    var checkoutSuccess = client.checkout(req).await();
+    var checkoutClnt = CheckoutRestate.newClient(ctx);
+    var checkoutSuccess = checkoutClnt.checkout(
+        CheckoutFlowRequest.newBuilder().setUserId(request.getUserId()).addAllTickets(tickets).build()
+    ).await();
 
-  if (checkoutSuccess.getValue()) {
-    ctx.clear(STATE_KEY);
-  }
+    if (checkoutSuccess.getValue()) {
+        ctx.clear(STATE_KEY);
+    }
 
-  return checkoutSuccess;
+    return checkoutSuccess;
 }
 ```
 
@@ -2279,7 +2313,7 @@ These features are switched on by default. No need to do anything.
 ### Side effect retries
 
 If you do a side effect operation and the side effect fails, then it is retried until it succeeds.
-You can observe this behavior by using the `paymendClient.failingCall` in `Checkout/checkout`:
+You can observe this behavior by using the `paymentClient.failingCall` in `Checkout/checkout`:
 
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
@@ -2380,7 +2414,7 @@ Notifying user 123 of payment success
 </TabItem>
 <TabItem value="java" label="Java">
 
-```logs
+```log
 2023-12-08 19:19:19 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.Checkout/Checkout
 2023-12-08 19:19:19 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.Checkout/Checkout
 2023-12-08 19:19:19 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.Checkout', state=WAITING_START, id=A_4bZOnRySIAYxKcNoWdW2NM1C4TC7P1A) to REPLAYING
