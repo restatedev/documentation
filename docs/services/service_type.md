@@ -70,10 +70,10 @@ Every Restate service defines a typed interface using a contract. The interface 
 
 Restate uses this contract to enable several features, such as:
 
-* Automatically extract the [service key](/services/service_type), if any
-* Accept requests [in different formats](/services/invocation) and route them
+* Automatically extract the [service key](#defining-service-instance-and-key), if any
+* Accept requests [in different formats](invocation) and route them
 * Allow code generation of service code and clients
-* Support safer [upgrades](/services/upgrades-removal) through incompatibility checks
+* Support safer [upgrades](upgrades-removal) through incompatibility checks
 
 The service contract is defined using [Protobuf](https://protobuf.dev/programming-guides/proto3/#services). Refer to their documentation to learn how to use the [Protobuf IDL](https://protobuf.dev/programming-guides/proto3).
 
@@ -138,27 +138,13 @@ option (dev.restate.ext.service_type) = SINGLETON;
 For keyed services, you're required to specify in every input message the field to use as key. To mark a field as key, annotate it with `dev.restate.ext.field`. Make sure that:
 
 * There is only one key field.
-* The field type is either a primitive or a message. Repeated field and maps are not supported.
-* The field type is the same for every method input message of the same service.
+* The field type is `string`.
 
-For example, a primitive key field:
+For example:
 
 ```protobuf
 message GetRequest {
   string counter_name = 1 [(dev.restate.ext.field) = KEY];
-}
-```
-
-A composite key field:
-
-```protobuf
-message GreetingRequest {
-  Person person = 1 [(dev.restate.ext.field) = KEY];
-}
-
-message Person {
-  string first_name = 1;
-  string last_name = 2;
 }
 ```
 
