@@ -37,21 +37,9 @@ See [the documentation](/restate/managed_service) for more details.
 ## Discovery of services
 
 To let Restate discover the services, execute the following curl command,
-pointed at the Restate runtime and with the Lambda function endpoint as the URI in the data field.
-
-
-```shell
-curl -X POST http://<your-restate-runtime-endpoint>:9070/endpoints -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/<my-service>"}'
-```
-
-If your Lambda function requires authentication via an API key,
-then you can add this API key to the discovery request to the Restate runtime, as follows:
+pointed at the Restate runtime and with the Lambda function ARN in the data field.
 
 ```shell
-curl -X POST http://<your-restate-runtime-endpoint>:9070/endpoints -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/<my-service>","additional_headers": {"x-api-key": "someapikey"} }'
+curl -X POST http://<your-restate-runtime-endpoint>:9070/endpoints -H 'content-type: application/json' -d '{"arn": "arn:aws:lambda:my-region:123456789101:function:my-function:my-version"}'
 ```
-
-Here, we added the API key as an additional header to the JSON data of the request.
-Replace `someapikey` by your API key.
-The Restate runtime will use this API key for all subsequent requests to the Lambda function.
 

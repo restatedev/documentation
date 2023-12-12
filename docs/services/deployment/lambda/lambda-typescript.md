@@ -34,8 +34,7 @@ See [the documentation](/restate/managed_service) for more details.
 ## Discovery of services
 
 To let Restate discover the services, execute the following curl command,
-pointed at the Restate runtime and with the Lambda function endpoint as the URI in the data field.
-
+pointed at the Restate runtime and with the Lambda function ARN in the data field.
 
 ```shell
 curl -X POST http://<your-restate-runtime-endpoint>:9070/endpoints -H 'content-type: application/json' -d '{"arn": "arn:aws:lambda:my-region:123456789101:function:my-function:my-version"}'
