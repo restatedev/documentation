@@ -16,7 +16,7 @@ on:
         required: false
         type: string
       tourVersion:
-        description: "tour version (without prepending v)."
+        description: "Typescript+Java tour version (without prepending v)."
         required: false
         type: string
 
@@ -79,14 +79,7 @@ jobs:
           field: TYPESCRIPT_SDK_VERSION
           value: ${{ inputs.sdkTypescriptVersion }}
 
-      - name: Update restate.config.json with new Java SDK version
-        uses: jossef/action-set-json-field@v2.1
-        if: ${{ inputs.sdkJavaVersion != '' }}
-        with:
-          file: restate.config.json
-          field: JAVA_SDK_VERSION
-          value: ${{ inputs.sdkJavaVersion }}
-      - name: Update restate.config.json with new tour version
+      - name: Update restate.config.json with new tour version (Typescript + Java)
         uses: jossef/action-set-json-field@v2.1
         if: ${{ inputs.tourVersion != '' }}
         with:
