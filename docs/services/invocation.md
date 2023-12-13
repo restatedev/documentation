@@ -89,7 +89,7 @@ You can invoke a service without waiting for the response, similar to [one-way c
 For example, using [Connect](#connect-grpc-on-http) and `curl`:
 
 ```shell
-curl -X POST http://<your-restate-runtime-host-port>/dev.restate.Ingress/Invoke -H 'content-type: application/json' -d '{"service": "org.example.Greeter", "method": "Greet", "payload": {"name": "Pete"}}'
+curl -X POST http://<your-restate-runtime-host-port>/dev.restate.Ingress/Invoke -H 'content-type: application/json' -d '{"service": "org.example.Greeter", "method": "Greet", "argument": {"name": "Pete"}}'
 ```
 
 The response contains the [Invocation identifier](#invocation-identifier). You can use this identifier to cancel or kill the invocation as described in [the below paragraph](#cancel-an-invocation).

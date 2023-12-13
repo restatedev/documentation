@@ -149,7 +149,7 @@ const config = {
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
-        additionalLanguages: ["protobuf", "log", "java", "scala"], // adding Scala fixes prisma + redocusaurus bug (https://github.com/facebook/docusaurus/issues/7209)
+        additionalLanguages: ["protobuf", "log", "java", "kotlin", "scala"], // adding scala to fix redoc from breaking (https://github.com/PrismJS/prism/issues/3458)
         magicComments: [
           // Remember to extend the default highlight class name as well!
           {
@@ -174,16 +174,22 @@ const config = {
         disableSwitch: true,
         respectPrefersColorScheme: false,
       },
+      algolia: {
+        // The application ID provided by Algolia
+        appId: "RP49KQ6X9M",
+
+        // Public API key: it is safe to commit it
+        apiKey: "33c78d1addd7dcc9b6544b95fe1f9da4",
+
+        indexName: "restate",
+
+        contextualSearch: true,
+
+        // Optional: Algolia search parameters
+        searchParameters: {},
+      },
     },
   themes: ["docusaurus-json-schema-plugin"],
-  plugins: [
-    [
-      require.resolve("@cmfcmf/docusaurus-search-local"),
-      {
-        indexBlog: false,
-      },
-    ],
-  ],
 };
 
 module.exports = config;

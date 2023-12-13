@@ -21,17 +21,17 @@ token will be needed for all interactions with the cluster.
 There are several API endpoints at this hostname:
 
 ### Registering services (8081)
-A Restate meta endpoint, which can be used as described in the 
-[Lambda registration docs](/services/deployment/lambda#discovering-the-services-behind-the-lambda-endpoint),
-with an bearer token set.
+A Restate meta endpoint, which can be used to register Restate Lambda functions written in 
+[Typescript](/services/deployment/lambda/lambda-typescript#discovering-the-services-behind-the-lambda-endpoint) and [Java](/services/deployment/lambda/lambda-java#discovering-the-services-behind-the-lambda-endpoint),
+with a bearer token set.
 ```bash
 curl -H "Authorization: Bearer $(cat /token)" https://yourcluster.dev.restate.cloud:8081/endpoints -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/my-greeter", "additional_headers": {"x-api-key": "your-api-key"} }'
 ```
 
 ### Invoking services (9090)
-A Restate ingress endpoint, which can be used as described in the
-[Lambda registration docs](/services/deployment/lambda#send-requests),
-with an bearer token set.
+A Restate ingress endpoint, which can be used to invoke Restate Lambda functions written in
+[Typescript or Java](/services/deployment/lambda/lambda-typescript#send-requests),
+with a bearer token set.
 ```bash
 curl -H "Authorization: Bearer $(cat /token)" https://yourcluster.dev.restate.cloud:9090/org.example.Greeter/MultiWord -H 'content-type: application/json' -d '{"name": "Pete"}'
 ```

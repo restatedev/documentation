@@ -3,6 +3,9 @@ sidebar_position: 6
 description: "Pause invocations while waiting for an external task completion."
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Awakeables
 
 Awakeables pause an invocation while waiting for an external process to complete a task. 
@@ -11,8 +14,6 @@ This works as follows:
 - You send the ID to the external process, in any preferred way (e.g. over Kafka, via HTTP,...).
 - The external process executes the task and then returns the ID to Restate, optionally together with a payload. 
 - Once the ID has been returned to the service, the invocation resumes.
-
-The SDK deserializes the payload with `JSON.parse(result.toString()) as T`.
 
 You can use this pattern to execute tasks in non-Restate services, and retrieve the result. This design pattern is also referred to as the callback (task token) pattern.
 
@@ -29,6 +30,9 @@ They block until the invocation is finished, so until the awakeable ID is return
 
 You can use awakeables in the SDK by doing the following:
 
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
+
 ```typescript
 // 1. Generate the ID
 const awakeable = ctx.awakeable<string>();
@@ -41,6 +45,32 @@ const id = awakeable.id
 const result = await awakeable.promise;
 ```
 
+The SDK deserializes the payload with `JSON.parse(result.toString()) as T`.
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+// 1. Generate the ID
+Awakeable<String> awakeable = ctx.awakeable(CoreSerdes.STRING_UTF8);
+
+// 2. Send the ID to some external system
+String awakeableId = awakeable.id();
+// ... send a request to another system and include the awakeableId as callback url...
+
+// 3. Wait for the ID to returned and retrieve the payload
+String payload = awakeable.await();
+```
+
+You need to define the deserializer for the payload.
+For primitive types, you can do this by using Restate's built-in `dev.restate.sdk.core.CoreSerdes`.
+For other types, have a look at the [serialization documentation](/services/sdk/serialization).
+
+</TabItem>
+</Tabs>
+
+
+
 ## Completing awakeables from another Restate service
 
 The external process that received the ID, needs to deliver it back to Restate when the task is done.
@@ -48,21 +78,54 @@ The external process that received the ID, needs to deliver it back to Restate w
 If the external process is another Restate service, then you can use the SDK to resolve the awakeable (= to send the ID back).
 Use the awakeable ID that you received from the other service, and do the following:
 
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
+
 ```typescript
 ctx.resolveAwakeable(id, "hello");
 ```
 
 The SDK serializes the payload with `Buffer.from(JSON.stringify(payload))` and deserializes it in the receiving service with `JSON.parse(result.toString()) as T`.
+Make sure that the payload you send, has the type that is expected on the receiving side.
 
-You can also reject an awakeable, that is completing it with a failure. This will cause the waiting service to throw [a terminal error](./error-handling.md):
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+ctx.awakeableHandle(awakeableId).resolve(CoreSerdes.STRING_UTF8, "hello");
+```
+
+You need to define the serializer for the payload.
+For primitive types, you can do this by using Restate's built-in `dev.restate.sdk.core.CoreSerdes`.
+For other types, have a look at the [serialization documentation](/services/sdk/serialization).
+
+</TabItem>
+</Tabs>
+
+You can also reject an awakeable, that is completing it with a failure. This will cause the waiting service to throw [a terminal error](/services/sdk/error-handling):
+
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
 
 ```typescript
 ctx.rejectAwakeable(id, "my error reason");
 ```
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+ctx.awakeableHandle(awakeableId).reject("my error reason");
+```
+
+</TabItem>
+</Tabs>
+
+
+
 ## Completing awakeables from outside Restate
 
-You can resolve awakeables from outside Restate by sending requests to the `dev.restate.Awakeables` built-in service.
+You can resolve awakeables from outside Restate by sending requests to Restate's `dev.restate.Awakeables` endpoint.
 
 To resolve an awakeable with a JSON payload:
 
@@ -88,4 +151,6 @@ For example:
 curl -X POST http://<restate-runtime-host-port>/dev.restate.Awakeables/Reject -H 'content-type: application/json' -d '{"id": "T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE", "reason": "Very bad error!"}'
 ```
 
-For more details, look at the [Awakeables service documentation](https://github.com/restatedev/proto/blob/main/dev/restate/services.proto) and [how to invoke a service documentation](../invocation.md#invoking-restate-services).
+Look at the [Protobuf definitions](https://github.com/restatedev/proto/blob/main/dev/restate/services.proto)
+for more information on how to structure the resolve and reject requests.
+Additionally, you can have a look at the documentation on [how to invoke a service](../invocation.md#invoking-restate-services).

@@ -14,8 +14,8 @@ calling other services.
 
 You can retrieve the context object as follows:
 
-<Tabs groupId="ts-api">
-<TabItem value="handler" label="Handler API" default>
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript" default>
 
 ```typescript
 import * as restate from "@restatedev/restate-sdk";
@@ -30,7 +30,7 @@ The Restate context is supplied as the first argument `ctx` to the handler.
 The arguments behind that are optional. For more information on the handler signature, have a look at the [serving docs](/services/sdk/serving).
 
 </TabItem>
-<TabItem value="grpc" label="gRPC API">
+<TabItem value="ts-grpc" label="Typescript-gRPC">
 
 
 ```typescript
@@ -44,12 +44,42 @@ async greet(request: Request): Promise<Response> {
 ```
 
 </TabItem>
+
+<TabItem value="java" label="Java">
+
+The Restate context is supplied as the first argument `ctx` to the method.
+
+For example:
+
+```java
+public class Greeter extends GreeterRestate.GreeterRestateImplBase {
+
+  @Override
+  public GreetResponse greet(RestateContext ctx, GreetRequest request) {
+    // implement your method
+  }
+}
+```
+<details><summary>Alternative: vanilla gRPC</summary>
+
+If you do not use Restate's generated protobuf code, you can access the restate context as follows
+
+```java
+import dev.restate.sdk.blocking.RestateContext;
+
+// Inside your method:
+RestateContext ctx = restateContext();
+```
+
+</details>
+
+
+</TabItem>
 </Tabs>
 
 
-
 :::info
-The code blocks in the Typescript documentation refer to the Restate Context via the variable named `ctx`.
+The code blocks in the documentation refer to the Restate Context via the variable named `ctx`.
 :::
 
 :::caution 

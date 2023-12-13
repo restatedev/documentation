@@ -1,5 +1,5 @@
 ---
-sidebar_position: 9
+sidebar_position: 11
 description: "Set up long-running services or Lambda handlers."
 ---
 
@@ -14,8 +14,8 @@ Restate services can run in two ways: as long-running services or as AWS Lambda 
 
 To register your service as a long-running service, do the following:
 
-<Tabs groupId="ts-api">
-<TabItem value="handler" label="Handler API" default>
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript" default>
 
 **1. Define a router for your keyed or unkeyed service**
 
@@ -97,7 +97,7 @@ restate
 
 
 </TabItem>
-<TabItem value="grpc" label="gRPC API">
+<TabItem value="ts-grpc" label="Typescript-gRPC">
 
 ```typescript
 restate
@@ -126,6 +126,18 @@ service Greeter {
 Finally, call `listen(port?)` to have the RestateServer listen on the specified port for connections and requests.
 
 </TabItem>
+
+<TabItem value="java" label="Java">
+
+```java
+RestateHttpEndpointBuilder.builder().withService(new Greeter()).buildAndListen();
+```
+
+First, create a `RestateHttpEndpointBuilder`, then bind one or multiple services to the server.
+
+Finally, call `buildAndListen(port)` to have the RestateServer listen on the specified port for connections and requests.
+
+</TabItem>
 </Tabs>
 
 ## Restate Lambda handler
@@ -133,8 +145,8 @@ Finally, call `listen(port?)` to have the RestateServer listen on the specified 
 To register your service as a Lambda function,
 only minimal changes are required, as compared to the long-running service:
 
-<Tabs groupId="ts-api">
-<TabItem value="handler" label="Handler API" default>
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript" default>
 
 ```typescript
 export const handler = restate
@@ -146,8 +158,13 @@ export const handler = restate
   .handle();
 ```
 
+Implement a `LambdaRestateServerFactory` with a `create` method that returns a `LambdaRestateServer` with the services binded to it.
+
+Have a look at the [deployment](/services/deployment/lambda/lambda-typescript) section
+for guidance on how to deploy your services on AWS Lambda.
+
 </TabItem>
-<TabItem value="grpc" label="gRPC API">
+<TabItem value="ts-grpc" label="Typescript-gRPC">
 
 ```typescript
 export const handler = restate
@@ -162,17 +179,47 @@ export const handler = restate
     .handle();
 ```
 
+Implement a `LambdaRestateServerFactory` with a `create` method that returns a `LambdaRestateServer` with the services binded to it.
+
+Have a look at the [deployment](/services/deployment/lambda/lambda-typescript) section
+for guidance on how to deploy your services on AWS Lambda.
+
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+Add the following dependency to your project, for example, using Gradle:
+
+```kotlin
+implementation("dev.restate:sdk-lambda:VAR::JAVA_SDK_VERSION")
+```
+
+Register your Lambda services as follows:
+
+```java
+import dev.restate.sdk.lambda.LambdaRestateServer;
+import dev.restate.sdk.lambda.LambdaRestateServerFactory;
+
+public class MyLambdaHandler extends BaseRestateLambdaHandler {
+  @Override
+  public void register(RestateLambdaEndpointBuilder builder) {
+    builder.withService(new Greeter());
+  }
+}
+```
+
+Create a class that extends `BaseRestateLambdaHandler` with your services binded to it.
+
+Have a look at the [deployment](/services/deployment/lambda/lambda-java) section
+for guidance on how to deploy your services on AWS Lambda.
+
 </TabItem>
 </Tabs>
 
-Call the `createLambdaApiGatewayHandler()` method to create a Lambda Restate handler.
-Then bind the services, in the same way as for the long-running services. 
-Finally, call `handle()`. 
 
 :::info 
 That's all you need to do to enable running on AWS Lambda.
 The implementation of your service methods remains the same for both deployment options.
 :::
 
-Have a look at the next section on deployment
-for guidance on how to deploy your services on AWS Lambda.
+

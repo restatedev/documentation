@@ -11,10 +11,18 @@ import TabItem from '@theme/TabItem';
 This guide takes you through your first steps with Restate.
 
 ## Prerequisites
-- Latest stable version of [NodeJS](https://nodejs.org/en/) >= v18.17.1 and [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 9.6.7
-- [Docker](https://docs.docker.com/engine/install/)
+- Build tools for your programming language:
+    - Typescript: Latest stable version of [NodeJS](https://nodejs.org/en/) >= v18.17.1 and [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 9.6.7
+    - Java: [JDK](https://whichjdk.com/) >= 17
+- [Docker](https://docs.docker.com/engine/install/) to run Restate
 
-## Step 1: Create the Node app
+## Step 1: Scaffold the project
+
+Scaffold the project to create your first service:
+
+<Tabs groupId="sdk">
+<TabItem value="typescript" label="Typescript" default>
+
 Use the [Node template](https://github.com/restatedev/node-template-generator) to get started.
 This template includes a skeleton of a Typescript Restate service:
 
@@ -22,29 +30,70 @@ This template includes a skeleton of a Typescript Restate service:
 npx -y @restatedev/create-app && cd restate-node-template
 ```
 
-## Step 2: Install dependencies
-First, get all dependencies and build tools. Then build the app:
+Get all the dependencies and build tools:
 
 ```shell
 npm install
 ```
 
+</TabItem>
+<TabItem value="jvm" label="Java" default>
+
+Grab the Java Hello world example:
+
+```shell
+wget https://github.com/restatedev/examples/releases/latest/download/java-hello-world-http.zip && unzip java-hello-world-http.zip -d java-hello-world-http && rm java-hello-world-http.zip
+```
+
+</TabItem>
+</Tabs>
+
+## Step 2: Build and run the service
+
+<Tabs groupId="sdk">
+<TabItem value="typescript" label="Typescript" default>
+
 Now, you are all set to start developing your service in `src/app.ts`.
 You can run the app with `ts-node-dev` while developing:
+
 ```shell
 npm run app-dev
 ```
 
-## Step 3: Build and Run the service
 Once you have implemented your service, build the app and run it:
+
 ```shell
 npm run build
 npm run app
 ```
 
-This starts the greeter service on port 9080.
+This starts the greeter service on port `9080`.
 
-## Step 4: Launch the Restate runtime
+</TabItem>
+<TabItem value="jvm" label="Java" default>
+
+You are all set to start developing your service. Building the service for the first time will generate the Protobuf related code:
+
+```shell
+./gradlew build
+```
+
+You can open the project with the IDE of your choice and configure it to build with Gradle. You can test the project with:
+
+```shell
+./gradlew check
+```
+
+Once you have implemented your service, run it:
+
+```shell
+./gradlew run
+```
+
+</TabItem>
+</Tabs>
+
+## Step 3: Launch the Restate runtime
 
 <Tabs groupId="operating-systems">
 <TabItem value="lin" label="Linux">
@@ -92,14 +141,26 @@ After executing this curl request, you should see the discovered services and me
 </TabItem>
 </Tabs>
 
-
-## Step 5: Send requests to the service
+## Step 4: Send requests to the service
 
 Invoke the function via:
+
+<Tabs groupId="sdk">
+<TabItem value="typescript" label="Typescript" default>
 
 ```shell
 curl -X POST http://localhost:8080/myservice/hello -H 'content-type: application/json' -d '{"request": "Pete"}'
 ```
+
+</TabItem>
+<TabItem value="jvm" label="Java" default>
+
+```shell
+curl -X POST http://localhost:8080/greeter.Greeter/Greet -H 'content-type: application/json' -d '{"name": "Pete"}'
+```
+
+</TabItem>
+</Tabs>
 
 Congratulations, you managed to run your first Restate service.
 

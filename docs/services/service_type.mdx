@@ -3,6 +3,9 @@ sidebar_position: 1
 description: "Restate supports keyed, unkeyed, and singleton services."
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Service types
 
 Restate provides different state semantics and concurrency properties for services, that you can choose from when defining the service.
@@ -27,6 +30,9 @@ A common use case for keyed services is to model an entity of your application. 
 
 Because keyed services are executed serially on a per-key basis, it means that invocations will execute in the same order in which they are enqueued. For example, assume the following code in `ServiceA`:
 
+<Tabs groupId="sdk">
+<TabItem value="ts" label="Typescript">
+
 ```typescript
 const client = new ServiceB(ctx);
 await ctx.oneWayCall(() =>
@@ -36,6 +42,20 @@ await ctx.oneWayCall(() =>
   client.do(TestRequest.create({ key: "Pete", number: 2 }))
 );
 ```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+GreeterRestate.GreeterRestateClient client = GreeterRestate.newClient(ctx);
+var req1 = TestRequest.newBuilder().setName("Pete").setNumber(1).build();
+client.oneWay().greet(req1);
+var req2 = TestRequest.newBuilder().setName("Pete").setNumber(2).build();
+client.oneWay().greet(req2);
+```
+
+</TabItem>
+</Tabs>
 
 It is guaranteed that the invocation with `number: 1` will be executed before the invocation with `number: 2`. It is not guaranteed though that invocation `number: 2` will be executed immediately after invocation `number: 1`, as any other service, or a call from the ingress, could interleave these two calls enqueuing a third one.
 
@@ -70,10 +90,10 @@ Every Restate service defines a typed interface using a contract. The interface 
 
 Restate uses this contract to enable several features, such as:
 
-* Automatically extract the [service key](/services/service_type), if any
-* Accept requests [in different formats](/services/invocation) and route them
+* Automatically extract the [service key](#defining-service-instance-and-key), if any
+* Accept requests [in different formats](invocation) and route them
 * Allow code generation of service code and clients
-* Support safer [upgrades](/services/upgrades-removal) through incompatibility checks
+* Support safer [upgrades](upgrades-removal) through incompatibility checks
 
 The service contract is defined using [Protobuf](https://protobuf.dev/programming-guides/proto3/#services). Refer to their documentation to learn how to use the [Protobuf IDL](https://protobuf.dev/programming-guides/proto3).
 
@@ -138,27 +158,13 @@ option (dev.restate.ext.service_type) = SINGLETON;
 For keyed services, you're required to specify in every input message the field to use as key. To mark a field as key, annotate it with `dev.restate.ext.field`. Make sure that:
 
 * There is only one key field.
-* The field type is either a primitive or a message. Repeated field and maps are not supported.
-* The field type is the same for every method input message of the same service.
+* The field type is `string`.
 
-For example, a primitive key field:
+For example:
 
 ```protobuf
 message GetRequest {
   string counter_name = 1 [(dev.restate.ext.field) = KEY];
-}
-```
-
-A composite key field:
-
-```protobuf
-message GreetingRequest {
-  Person person = 1 [(dev.restate.ext.field) = KEY];
-}
-
-message Person {
-  string first_name = 1;
-  string last_name = 2;
 }
 ```
 
