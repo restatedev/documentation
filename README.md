@@ -77,4 +77,4 @@ The config file `restate.config.json` contains versions of various Restate artif
 
 * Typescript SDK: `TYPESCRIPT_SDK_VERSION`
 * Runtime: `RESTATE_VERSION`
-* Tour: `TYPESCRIPT_TOUR_VERSION` and `JAVA_TOUR_VERSION`
+* Tour: `TOUR_VERSION` (This counts for the Typescript and Java Tour).
