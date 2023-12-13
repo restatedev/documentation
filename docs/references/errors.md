@@ -35,10 +35,7 @@ service HelloWorld {
 
 Bad key definition encountered while registering/updating a service. 
 When a service is keyed, for each method the input message must have a field annotated with `dev.restate.ext.field`. 
-When defining the key field, make sure:
-
-* The field type is either a primitive or a custom message, and not a repeated field nor a map.
-* The field type is the same for every method input message of the same service.
+The key field type must be `string`.
 
 Example:
 
@@ -50,7 +47,7 @@ service HelloWorld {
 }
 
 message GreetingRequest {
-  Person person = 1 [(dev.restate.ext.field) = KEY];
+  string person_id = 1 [(dev.restate.ext.field) = KEY];
 }
 ```
 
