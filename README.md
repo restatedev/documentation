@@ -2,18 +2,6 @@
 
 This repository contains Restate's documentation: https://docs.restate.dev/
 
-## Offline use
-
-You can read the Restate documentation offline by downloading the docker image:
-
-```shell
-docker run --rm -p 3000:80 ghcr.io/restatedev/documentation:latest
-```
-
-This will serve the documentation under `localhost:3000`.
-
-You can also check this repository out and build the documentation yourself by following the instructions below.
-
 ## Developing the documentation
 
 The documentation is built using [Docusaurus 2](https://docusaurus.io/).
@@ -59,7 +47,7 @@ git tag -m "Documentation v0.3.0" v0.3.0
 git push --tags
 ```
 
-The tag triggers the build of the new `restatedev/documentation:vX.Y.Z` container image and creates a draft [release on Github](https://github.com/restatedev/documentation/releases) that needs manual approval.
+The tag triggers creating a draft [release on Github](https://github.com/restatedev/documentation/releases) that needs manual approval.
 Moreover, it will push the latest `main` to the `production` branch which triggers the deployment of the documentation.
 
 ### Manually update the schemas

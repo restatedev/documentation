@@ -6,14 +6,8 @@ on:
       - v**
 
 jobs:
-  build-docker-image:
-    name: Build docker image
-    uses: ./.github/workflows/docker.yml
-    secrets: inherit
-
   create-release:
     name: Create release
-    needs: [build-docker-image]
     runs-on: ubuntu-latest
 
     steps:
