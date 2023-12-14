@@ -1,7 +1,7 @@
 ---
 id: Overview
 title: Welcome to Restate
-sidebar_position: 1
+[//]: # (sidebar_position: 1 --> this is now set by sidebars.js)
 slug: /
 description: "Documentation overview"
 ---
