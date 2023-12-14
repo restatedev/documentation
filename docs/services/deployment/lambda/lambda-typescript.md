@@ -44,7 +44,7 @@ curl -X POST http://<your-restate-runtime-endpoint>:9070/endpoints -H 'content-t
 
 This tutorial shows how to deploy a greeter service written with the Restate Typescript SDK on AWS Lambda.
 
-[Go to the GitHub repository of this tutorial](https://github.com/restatedev/examples/tree/main/typescript/lambda-greeter)
+[Go to the GitHub repository of this tutorial](https://github.com/restatedev/examples/tree/main/typescript/hello-world-lambda)
 
 ### Prerequisites
 
@@ -60,7 +60,7 @@ Clone the GitHub repository for the latest release:
 git clone --depth 1 git@github.com:restatedev/examples.git
 ```
 
-You can find the example code in the `typescript/lambda-greeter` directory.
+You can find the example code in the `typescript/hello-world-lambda` directory.
 We are going to deploy the service defined in `src/app.ts` on AWS Lambda.
 To do this, we need to create a zip file that includes the service code and the required dependencies to run it.
 
