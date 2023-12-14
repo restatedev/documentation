@@ -11,7 +11,7 @@ An invocation is a single call to a service method.
 
 There are different ways to invoke a Restate service:
 
-* From within another service, as described in the [SDK service communication documentation](/services/sdk/service-communication)
+* From within another service, as described in the [SDK service communication documentation](/services/features/service-communication)
 * By sending a request to Restate [over HTTP](/services/invocation#over-http), or [via gRPC or gRPC-web](/services/invocation#grpc-and-grpc-web)
 
 ### Over HTTP
@@ -84,7 +84,7 @@ The `Idempotency-Key` header works with both HTTP and gRPC/gRPC-web.
 
 ### Invoke a service without waiting for the response
 
-You can invoke a service without waiting for the response, similar to [one-way calls in the SDK](/services/sdk/service-communication#one-way-calls), by using the Restate built-in `dev.restate.Ingress/Invoke` service method, which can be invoked like any other user service, using gRPC, gRPC-web or Connect.
+You can invoke a service without waiting for the response, similar to [one-way calls in the SDK](/services/features/service-communication#one-way-calls), by using the Restate built-in `dev.restate.Ingress/Invoke` service method, which can be invoked like any other user service, using gRPC, gRPC-web or Connect.
 
 For example, using [Connect](#connect-grpc-on-http) and `curl`:
 

@@ -69,7 +69,7 @@ Make sure, when updating a service endpoint, to assign it a new uri.
 
 You can force the override using the `"force": true` field in the discover request, but beware that this can lead in-flight invocations to an unrecoverable error state.  
 
-See the [versioning documentation](https://docs.restate.dev/services/upgrades-removal) for more information.
+See the [versioning documentation](/services/upgrades-removal) for more information.
 
 ## META0005
 
@@ -86,7 +86,7 @@ When implementing a new service revision, make sure that:
 * The service instance type and the key definition, if any, is exactly the same as of the previous revisions.
 * The Protobuf contract and message definitions are backward compatible.
 
-See the [versioning documentation](https://docs.restate.dev/services/upgrades-removal) for more information.
+See the [versioning documentation](/services/upgrades-removal) for more information.
 
 ## META0007
 
@@ -109,7 +109,7 @@ The provided subscription is invalid. Subscriptions should have:
 * A `sink` field in the format of `service://<SERVICE_NAME>/<METHOD_NAME>`. When registering, service and method should have been previously registered as well.
 * Additional constraints may apply depending on the sink service contract
 
-Please look at the [Kafka documentation page](https://docs.restate.dev/services/sdk/kafka) for more details on subscriptions and event handlers.
+Please look at the [Kafka documentation page](/services/features/kafka) for more details on subscriptions and event handlers.
 
 ## RT0001
 
@@ -176,5 +176,5 @@ A retry-able error was received from the service endpoint while processing the i
 Suggestions:
 
 * Check the service endpoint logs to get more info about the error cause, like the stacktrace.
-* Look at the https://docs.restate.dev/services/sdk/error-handling for more info about error handling in services.
+* Look at [Error Handling](/services/features/error-handling) for more info about error handling in services.
 

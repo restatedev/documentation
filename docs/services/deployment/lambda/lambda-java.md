@@ -9,7 +9,7 @@ description: "Learn how to run Restate Java services on AWS Lambda."
 ## Deploying services as AWS Lambda functions
 You can run your Restate services as serverless functions on [AWS Lambda](https://aws.amazon.com/lambda/).
 
-Make sure you have defined a Lambda handler in your service code, as explained in the [serving docs](/services/sdk/serving#restate-lambda-handler).
+Make sure you have defined a Lambda handler in your service code, as explained in the [serving docs](/services/features/serving#restate-lambda-handler).
 
 Configure the build tool to generate Fat-JARs, so that AWS Lambda can correctly load the JAR. For example, using Gradle:
 
