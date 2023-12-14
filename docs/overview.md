@@ -18,7 +18,7 @@ Restate handles durability and recovery (including recovering partial handler ex
 
 # Examples
 
-* [**Stateful serverless applications**](https://github.com/restatedev/examples/tree/main/typescript/lambda-greeter): Create one (or a few) functions with stateful business logic and run them on any FaaS.
+* [**Stateful serverless applications**](https://github.com/restatedev/examples/tree/main/typescript/hello-world-lambda): Create one (or a few) functions with stateful business logic and run them on any FaaS.
 * **Low-latency workflows**: Like payments processing, inventory keeping, user management, billing, … Including cases where you want high consistency, but hadn’t thought of workflows before, due to latency
     * [Keeping track of a shopping cart and ticket inventory](https://github.com/restatedev/examples/tree/main/typescript/ticket-reservation)
     * [Consistent payment processing via Stripe-style concurrent API](https://github.com/restatedev/examples/tree/main/typescript/payment-api)
