@@ -239,7 +239,8 @@ The Restate logs will show the new service registrations taking place.
 
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
-<details><summary>Show the runtime logs</summary>
+<details>
+<summary>Show the runtime logs</summary>
 
 ```
 2023-08-15T13:24:52.879977Z INFO restate_schema_impl::schemas_impl
@@ -266,7 +267,8 @@ For MacOS users, the address will be `http://host.docker.internal:9080/`.
 </TabItem>
 
 <TabItem value="java" label="Java">
-<details><summary>Show the runtime logs</summary>
+<details>
+<summary>Show the runtime logs</summary>
 
 ```
 2023-12-06T21:06:02.404764Z INFO restate_schema_impl::schemas_impl
@@ -557,7 +559,8 @@ Try it out by running the services via `npm run app` and send a request to `User
 
 Have a look at the SDK and runtime logs, to see how the ingress request triggers the execution of the `addTicket` and `reserve` functions.
 
-<details><summary>Show the logs</summary>
+<details>
+<summary>Show the logs</summary>
 
 ```log
 [restate] [2023-08-15T20:53:51.026Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHDd1Z6crtc63up0wAD] : Invoking function.
@@ -598,7 +601,8 @@ Try it out by running the services via `./gradlew run` and send a request to `ex
 
 Have a look at the SDK and runtime logs to see how the ingress request triggers the execution of the `addTicket` and `reserve` functions.
 
-<details><summary>Show the logs</summary>
+<details>
+<summary>Show the logs</summary>
 
 ```log
 //highlight-next-line
@@ -662,7 +666,8 @@ Call `UserSession/addTicket` again and have a look at the SDK logs.
 Now that the ticket service responds after 35 seconds, you see that the `addTicket` function suspends after 30 seconds.
 Once the runtime has received the response, it invokes the `addTicket` function again and the original call finishes.
 
-<details><summary>Show the logs</summary>
+<details>
+<summary>Show the logs</summary>
 
 ```log
 [restate] [2023-08-15T20:58:25.433Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHF0pFyZoYvJ5G_WZMF] : Invoking function.
@@ -707,7 +712,8 @@ Call `UserSession/addTicket` again and have a look at the SDK logs.
 Now that the ticket service responds after 65 seconds, you see that the `addTicket` function suspends after 60 seconds.
 Once the runtime has received the response, it invokes the `addTicket` function again and the original call finishes.
 
-<details><summary>Show the logs</summary>
+<details>
+<summary>Show the logs</summary>
 
 ```log
 2023-12-08 11:12:45 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.UserSession/AddTicket
@@ -756,7 +762,8 @@ Make the `UserSession/checkout` function call the `Checkout/checkout` function.
 For the request field, you can use a hard-coded string array for now: `["456"]`.
 You will fix this later on.
 
-<details><summary>Solution</summary>
+<details>
+<summary>Solution</summary>
 
 Add the following code to the `UserSession/checkout` function:
 
@@ -860,7 +867,8 @@ Therefore, there is no need to await it.
 Once you have adapted the code, try it out by calling the `UserSession/addTicket` function, as [explained earlier](#calling-services-from-outside-restate).
 In the service logs, you see that the `addTicket` function doesn't wait for a response and finishes earlier than the `reserve` function.
 
-<details><summary>Show the logs</summary>
+<details>
+<summary>Show the logs</summary>
 
 ```log
 [restate] [2023-08-15T21:09:59.681Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHJmC53vpTRfQdpRgKE] : Invoking function.
@@ -897,7 +905,8 @@ Note that `oneWay()` is not an asynchronous operation in the Restate SDK, so the
 
 Once you have adapted the code, restart the service and try it out by calling the `UserSession/addTicket` method as [explained earlier](#calling-services-from-outside-restate). In the service logs, you will see that the `addTicket` method doesn't wait for a response and completes before `reserve` does. The external call will get a response much quicker in this scenario.
 
-<details><summary>Show the logs</summary>
+<details>
+<summary>Show the logs</summary>
 
 ```log
 //highlight-next-line
@@ -937,7 +946,8 @@ When you are done with the implementation, send a request to `UserSession/expire
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
 
-<details><summary>Solution</summary>
+<details>
+<summary>Solution</summary>
 
 ```typescript
 const expireTicket = async (
@@ -979,7 +989,8 @@ Have a look at the logs again to see what happened:
 
 </TabItem>
 <TabItem value="java" label="Java">
-<details><summary>Solution</summary>
+<details>
+<summary>Solution</summary>
 
 ```java
 @Override
@@ -1076,7 +1087,8 @@ Send an `addTicket` request, as [you did earlier](#running-the-services-and-runt
 In the service logs, you can see the `reserve` function processing the sleep, then suspending, and then resuming again after the sleep completed.
 The `addTicket` function did a one-way call to the `reserve` function so didn't suspend but just finished its invocation.
 
-<details><summary>Show the logs</summary>
+<details>
+<summary>Show the logs</summary>
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
 
@@ -1151,7 +1163,8 @@ const addTicket = async (
 };
 ```
 
-<details><summary>Show the logs</summary>
+<details>
+<summary>Show the logs</summary>
 
 ```log
 [restate] [2023-08-15T21:23:49.536Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHN6ft5nYhPYl4Q3r4Y] : Invoking function.
@@ -1194,7 +1207,8 @@ public BoolValue addTicket(RestateContext ctx, ReserveTicket request) throws Ter
 }
 ```
 
-<details><summary>Show the logs</summary>
+<details>
+<summary>Show the logs</summary>
 
 ```log
 2023-12-11 16:53:20 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.UserSession/AddTicket
@@ -1311,7 +1325,8 @@ public BoolValue addTicket(RestateContext ctx, ReserveTicket request) throws Ter
 
 To test it out, put the delay to a lower value, for example 5 seconds, call the `addTicket` function, and see in the logs how the call to `UserSession/expireTicket` is executed 5 seconds later.
 
-<details><summary>Show the logs</summary>
+<details>
+<summary>Show the logs</summary>
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
 
@@ -1507,7 +1522,8 @@ Run the services and call the `addTicket` function, to see the interaction with 
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
 
-<details><summary>Show the logs</summary>
+<details>
+<summary>Show the logs</summary>
 
 ```log
 ... logs from reserve call ...
@@ -1529,7 +1545,8 @@ You can store any object in the state as long as the value can be serialized wit
 </TabItem>
 <TabItem value="java" label="Java">
 
-[//]: # (<details><summary>Show the logs</summary>)
+[//]: # (<details>
+<summary>Show the logs</summary>)
 [//]: # (The Java SDK doesn't currently log anything on get/set state!)
 [//]: # (</details>)
 
@@ -1682,7 +1699,8 @@ Before you call `unreserve`, you first need to check if the ticket is still hold
 Retrieve the state and check if the ticket ID is in there.
 If this is the case, then you call `TicketService/unreserve` and remove it from the state.
 
-<details><summary>Solution</summary>
+<details>
+<summary>Solution</summary>
 
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
@@ -1770,7 +1788,8 @@ If the status isn't set to `TicketStatus.Available`, then return `false`.
 Remove the sleep that you added before.
 
 <>
-<details><summary>Solution</summary>
+<details>
+<summary>Solution</summary>
 
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
@@ -1820,7 +1839,8 @@ Call `addTicket` multiple times for the same ID. The first time it returns `true
 The function should clear the value of the `"status"` key if it's not on status `TicketStatus.Sold`.
 
 <>
-<details><summary>Solution</summary>
+<details>
+<summary>Solution</summary>
 
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
@@ -1863,7 +1883,8 @@ Try to reserve the same ticket ID multiple times, and see how you are able to re
 The function should set the value of the `"status"` key to `TicketStatus.Sold` if it's reserved.
 
 <>
-<details><summary>Solution</summary>
+<details>
+<summary>Solution</summary>
 
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
@@ -1998,7 +2019,8 @@ ctx.sleep(Duration.ofSeconds(61));
 
 Call `UserSession/checkout` and have a look at the logs to see what happens.
 
-<details><summary>Show the logs</summary>
+<details>
+<summary>Show the logs</summary>
 
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
@@ -2080,7 +2102,8 @@ Assume every ticket costs 40 dollars.
 Then execute the payment with the created idempotency key and store the boolean result of the call as the return value of the side effect.
 Also return the boolean result at the end of the `checkout` function.
 
-<details><summary>Solution</summary>
+<details>
+<summary>Solution</summary>
 
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
@@ -2184,7 +2207,8 @@ Once this works, you implement the rest of the checkout workflow:
     - use the EmailClient to notify the users of the payment failure.
     Prevent duplicate emails during retries by using a side effect.
 
-<details><summary>Solution</summary>
+<details>
+<summary>Solution</summary>
 
 The `Checkout/checkout` function now looks like the following:
 
@@ -2392,7 +2416,8 @@ You now call `paymentClient.failingCall` which fails two times before succeeding
 A failing side effect is retried until it succeeds.
 Have a look at the logs to see the retries.
 
-<details><summary>Show the logs</summary>
+<details>
+<summary>Show the logs</summary>
 
 <Tabs groupId="sdk">
 <TabItem value="ts" label="TypeScript">
