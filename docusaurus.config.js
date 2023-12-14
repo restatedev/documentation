@@ -125,10 +125,6 @@ const config = {
                 href: "https://discord.gg/skW3AZ6uGd",
               },
               {
-                label: "Discourse",
-                href: "https://restate.discourse.group/",
-              },
-              {
                 label: "Twitter",
                 href: "https://twitter.com/restatedev",
               },
@@ -140,6 +136,10 @@ const config = {
               {
                 label: "GitHub",
                 href: "https://github.com/restatedev",
+              },
+              {
+                label: "JavaDocs",
+                href: "https://javadoc.io/doc/dev.restate",
               },
             ],
           },

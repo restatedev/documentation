@@ -1,6 +1,6 @@
 ---
 id: examples
-sidebar_position: 4
+[//]: # (sidebar_position: 4 --> this is now set by sidebars.js)
 description: ""
 ---
 
