@@ -11,7 +11,7 @@ After deploying a service deployment, in order to use it, it must be registered 
 $ curl <RESTATE_META_ENDPOINT>/deployments --json '{"uri": "<SERVICE_ENDPOINT_URI>"}'
 ```
 
-When registering a deployment, Restate uses a mechanism similar to "reflections" to discover the available services and their schemas and properties. A service can be registered only once, and subsequent registration requests to the same deployment will fail. For more details on how to update services, check the [versioning documentation](/services/upgrades-removal).
+When registering a service deployment, Restate uses a mechanism similar to "reflections" to discover the available services and their schemas and properties. A service can be registered only once, and subsequent registration requests to the same deployment will fail. For more details on how to update services, check the [versioning documentation](/services/upgrades-removal).
 
 The deployment creation can be forced to overwrite an existing deployment using curl (>v7.82.0):
 
@@ -19,7 +19,7 @@ The deployment creation can be forced to overwrite an existing deployment using 
 $ curl <RESTATE_META_ENDPOINT>/deployments --json '{"uri": "<SERVICE_ENDPOINT_URI>", "force": true}'
 ```
 
-This will forcefully overwrite the existing deployment with the same uri, forcing the discovery process again. It will also remove services that were served by that deployment and are not available anymore.
+This will forcefully overwrite the existing service deployment with the same uri, forcing the discovery process again. It will also remove services that were served by that deployment and are not available anymore.
 
 :::warning
 Forcing a deployment registration is a feature designed to simplify local Restate service development, and should never be used in a production Restate deployment, as it potentially breaks all the in-flight invocations to that deployment.

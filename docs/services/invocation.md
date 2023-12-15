@@ -102,7 +102,7 @@ This feature can be especially useful when you need to invoke a service method i
 
 ## Private services
 
-When registering a deployment, every service is by default accessible both by other services, and by sending requests to Restate using HTTP and/or gRPC. You can configure a service as `private`, such that you can't invoke it by sending requests to Restate, through the [Admin APIs](/references/admin-api):
+When registering a service deployment, every service is by default accessible both by other services, and by sending requests to Restate using HTTP and/or gRPC. You can configure a service as `private`, such that you can't invoke it by sending requests to Restate, through the [Admin APIs](/references/admin-api):
 
 ```shell
 $ curl -X PATCH <RESTATE_META_ENDPOINT>/services/<SERVICE_NAME> -H 'content-type: application/json' -d '{"public": false}'

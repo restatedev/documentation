@@ -134,6 +134,7 @@ Resource Policies, or you can create a role per account - Restate can assume a d
 
 Once you have a role that has permission to call the Lambda, and allows Restate to assume it, you just need to discover
 the Lambda:
+
 ```shell
 curl -X POST http://<your-restate-runtime-endpoint>:9070/deployments -H 'content-type: application/json' -d '{"arn": "<lambda-function-arn>", "assume_role_arn": "<role-arn>" }'
 ```
