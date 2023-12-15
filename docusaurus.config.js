@@ -200,6 +200,9 @@ const config = {
       },
     },
   themes: ["docusaurus-json-schema-plugin"],
+  scripts: [
+      '/js/store-query-parameter.js',
+  ]
 };
 
 module.exports = config;
