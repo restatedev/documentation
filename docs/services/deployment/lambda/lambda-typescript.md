@@ -36,7 +36,7 @@ To let Restate discover the services, execute the following curl command,
 pointed at the Restate runtime and with the Lambda function ARN in the data field.
 
 ```shell
-curl -X POST http://<your-restate-runtime-endpoint>:9070/endpoints -H 'content-type: application/json' -d '{"arn": "arn:aws:lambda:my-region:123456789101:function:my-function:my-version"}'
+curl -X POST http://<your-restate-runtime-endpoint>:9070/deployments -H 'content-type: application/json' -d '{"arn": "arn:aws:lambda:my-region:123456789101:function:my-function:my-version"}'
 ```
 
 ## Tutorial
@@ -198,7 +198,7 @@ Stop the runtime (and remove any intermediate state) with `docker stop restate_d
 Connect to the Restate (e.g. via an SSH session if it is running on EC2) runtime and execute the discovery curl command:
 
 ```shell
-curl -X POST http://<your-restate-runtime-endpoint>:9070/endpoints -H 'content-type: application/json' -d '{"arn": "<lambda-function-arn>"  }'
+curl -X POST http://<your-restate-runtime-endpoint>:9070/deployments -H 'content-type: application/json' -d '{"arn": "<lambda-function-arn>"  }'
 ```
 
 If you are running the runtime locally, replace `<your-restate-runtime-endpoint>` by `localhost`.
