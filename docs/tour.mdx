@@ -30,7 +30,7 @@ As we go, you will discover how Restate can help you with some intricacies in th
 
 ## Prerequisites
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 - Latest stable version of [NodeJS](https://nodejs.org/en/) >= v18.17.1 and [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 9.6.7 installed.
@@ -64,7 +64,7 @@ This guide is written for:
 
 ### Setting up the tutorial
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 Clone the GitHub repository of the [tutorial](https://github.com/restatedev/tour-of-restate):
@@ -97,7 +97,7 @@ This GitHub repository contains the basic skeleton of the Java services that you
 
 Let's start a basic version of the Restate services that we will be using for this tour. This is where our application logic will reside.
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```shell
@@ -179,7 +179,7 @@ You can pipe the output of `curl` into the `jq` utility to reformat the JSON out
 
 You should now see the registered services printed out to your terminal:
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```json
@@ -237,7 +237,7 @@ You should now see the registered services printed out to your terminal:
 
 The Restate logs will show the new service registrations taking place.
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 <details>
 <summary>Show the runtime logs</summary>
@@ -299,7 +299,7 @@ For MacOS users, the address will be `http://host.docker.internal:9080/`.
 
 Add a ticket to a cart by calling `UserSession/addTicket`.
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```shell
@@ -324,7 +324,7 @@ If this prints out `true`, then you have a working setup.
 
 You can call the `UserSession/checkout` function to proceed with the purchase, as follows:
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```shell
@@ -376,7 +376,7 @@ So at most one invocation can run at a time for the same ticket ID or user ID re
 
 ### Specifying the service type
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 **Specifying unkeyed services**
@@ -534,7 +534,7 @@ When the `UserSession/addTicket` function is called, it first needs to reserve t
 It does that by calling the `TicketService/reserve` function.
 Add the highlighted code snippet to the `addTicket` function in the `UserSession` service.
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
@@ -647,7 +647,7 @@ To see this work in practice, let's pretend that ticket reservations take a whil
 This is not the best way to sleep in a Restate service! The Restate SDK offers a native way to suspend execution for a period of time. We will cover [suspendable sleep a bit later on](#suspendable-sleep) in the tour.
 :::
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
@@ -767,7 +767,7 @@ You will fix this later on.
 
 Add the following code to the `UserSession/checkout` function:
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
@@ -843,7 +843,7 @@ Restart the service and call the `UserSession/checkout` function as you did earl
 
 Up to now, all our service calls waited for a response. This is referred to as request-response or synchronous RPC. With Restate, you can also make one-way calls where you don't wait for the response.
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 Update `expireTicket` to use `RpcContext.send` to send a one-way message to release the reservation:
@@ -943,7 +943,7 @@ Let the `expireTicket` function call the `TicketService/unreserve` function.
 
 When you are done with the implementation, send a request to `UserSession/expireTicket` to check if it works.
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 <details>
@@ -1054,7 +1054,7 @@ Restate offers the same mechanism for timers.
 
 [Earlier in this tutorial](#waiting-for-slow-services), you saw how Restate caller suspension works when you make an RPC request to another service. We artificially slowed down the target service by using platform-native sleep. Sometimes you intentionally want to suspend execution for a period of time, for example to back off from overloading a dependency or simply you are implementing a long-running business workflow. In those situations you can explicitly suspend execution for arbitrarily long periods of time using the Restate context's `sleep` function. Adapt the `TicketService/reserve` function to use `ctx.sleep`:
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
@@ -1089,7 +1089,7 @@ The `addTicket` function did a one-way call to the `reserve` function so didn't 
 
 <details>
 <summary>Show the logs</summary>
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```log
@@ -1145,7 +1145,7 @@ You see the invocation suspending after 60 seconds. And being re-invoked 5 secon
 
 In `UserSession/addTicket`, revert the call to `reserve` to a request-response call, to see how the suspensions work across different services.
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 Replace the `RpcContext.send()` with `RpcContext.rpc()`, to end up with:
@@ -1271,7 +1271,7 @@ To do this, you can use a delayed call.
 This is a one-way call that gets delayed by a specified duration.
 This would make the `UserSession/addTicket` function look as follows:
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
@@ -1327,7 +1327,7 @@ To test it out, put the delay to a lower value, for example 5 seconds, call the 
 
 <details>
 <summary>Show the logs</summary>
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```log
@@ -1383,7 +1383,7 @@ Don't forget to set the delay back to 15 minutes.
 You can implement this pattern in different ways.
 You could also sleep for 15 minutes at the end of the `addTicket` function and then call the `TicketService/unreserve` function:
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
@@ -1439,7 +1439,7 @@ Adapt the `UserSession/addTicket` function to keep track of the cart items.
 After reserving the product, you add the ticket to the shopping cart.
 Have a look at the highlighted code:
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```ts
@@ -1519,7 +1519,7 @@ After you added the ticket to the cart array, you set the state to the new value
 
 Run the services and call the `addTicket` function, to see the interaction with state.
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 <details>
@@ -1581,7 +1581,7 @@ You can also stop and relaunch the service or restart the runtime (`docker resta
 
 Also adapt the `UserSession/checkout` function, to use the tickets:
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
@@ -1668,7 +1668,7 @@ Have a look at the documentation on [introspection](/services/introspection/) to
 
 You have almost fully implemented the user session service. After checkout, let's finish `UserSession/expireTicket`. At the moment you have the following code:
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```ts
@@ -1702,7 +1702,7 @@ If this is the case, then you call `TicketService/unreserve` and remove it from 
 <details>
 <summary>Solution</summary>
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```ts
@@ -1791,7 +1791,7 @@ Remove the sleep that you added before.
 <details>
 <summary>Solution</summary>
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```ts
@@ -1842,7 +1842,7 @@ The function should clear the value of the `"status"` key if it's not on status 
 <details>
 <summary>Solution</summary>
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```ts
@@ -1886,7 +1886,7 @@ The function should set the value of the `"status"` key to `TicketStatus.Sold` i
 <details>
 <summary>Solution</summary>
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```ts
@@ -1925,7 +1925,7 @@ This ties the final parts together.
 :::info
 🚩 Explore the intermediate solution in `part2`, and run it with:
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```shell
@@ -1961,7 +1961,7 @@ This includes pieces of time-consuming, deterministic user code.
 
 Use a side effect in `Checkout/checkout` to create and store a UUID (with the [uuid library](https://www.npmjs.com/package/uuid)) or idempotency key:
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
@@ -1999,7 +1999,7 @@ When the `checkout()` function gets re-executed upon replay, Restate injects the
 
 To experiment, you can print the idempotency key to the console and add a sleep to see how the UUID gets replayed after the suspension:
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```ts
@@ -2022,7 +2022,7 @@ Call `UserSession/checkout` and have a look at the logs to see what happens.
 <details>
 <summary>Show the logs</summary>
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```log
@@ -2105,7 +2105,7 @@ Also return the boolean result at the end of the `checkout` function.
 <details>
 <summary>Solution</summary>
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
@@ -2212,7 +2212,7 @@ Once this works, you implement the rest of the checkout workflow:
 
 The `Checkout/checkout` function now looks like the following:
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```ts
@@ -2275,7 +2275,7 @@ public BoolValue checkout(RestateContext ctx, CheckoutFlowRequest request) throw
 
 The `UserSession/checkout` function now looks like the following:
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```ts
@@ -2346,7 +2346,7 @@ Try it out by reserving some new tickets and buying them by checking out the car
 :::info
 🚩 Explore the intermediate solution in `part3`, and run it with:
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```shell
@@ -2390,7 +2390,7 @@ These features are switched on by default. No need to do anything.
 Also side effects are retried until they succeed.
 You can observe this behavior by using the `paymentClient.failingCall` in `Checkout/checkout`:
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
@@ -2419,7 +2419,7 @@ Have a look at the logs to see the retries.
 <details>
 <summary>Show the logs</summary>
 
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```log
@@ -2675,7 +2675,7 @@ For more information, have a look at the [tracing docs](/restate/tracing).
 You reached the end of this tutorial!
 
 :::info 🚩 Have a look at the fully implemented app in `part4`, and run it with:
-<Tabs groupId="sdk">
+<Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```shell
