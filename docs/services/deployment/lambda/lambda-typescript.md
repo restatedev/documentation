@@ -1,10 +1,10 @@
 ---
 label: "lambda-typescript"
 sidebar_position: 1
-description: "Learn how to run Restate Typescript services on AWS Lambda."
+description: "Learn how to run Restate TypeScript services on AWS Lambda."
 ---
 
-# AWS Lambda + Typescript
+# AWS Lambda + TypeScript
 
 ## Deploying services as AWS Lambda functions
 You can run your Restate services as serverless functions on [AWS Lambda](https://aws.amazon.com/lambda/).
@@ -16,7 +16,7 @@ Please take a look at [the Lambda deployment tutorial](/services/deployment/lamb
 
 To deploy a Restate service as a Lambda function,
 you can follow the [guidelines of AWS](https://docs.aws.amazon.com/lambda/latest/dg/typescript-package.html)
-for deploying plain Typescript NodeJS functions. Restate does not add any complexity to this. You build a zip file containing the application code and dependencies and upload this to AWS Lambda. If you are using the Restate node template, then you can create a zip file with:
+for deploying plain TypeScript NodeJS functions. Restate does not add any complexity to this. You build a zip file containing the application code and dependencies and upload this to AWS Lambda. If you are using the Restate node template, then you can create a zip file with:
 
 ```
 npm run bundle
@@ -42,7 +42,7 @@ curl -X POST http://<your-restate-runtime-endpoint>:9070/endpoints -H 'content-t
 
 ## Tutorial
 
-This tutorial shows how to deploy a greeter service written with the Restate Typescript SDK on AWS Lambda.
+This tutorial shows how to deploy a greeter service written with the Restate TypeScript SDK on AWS Lambda.
 
 [Go to the GitHub repository of this tutorial](https://github.com/restatedev/examples/tree/main/typescript/hello-world-lambda)
 

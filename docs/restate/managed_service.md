@@ -30,7 +30,7 @@ curl -H "Authorization: Bearer $(cat /token)" https://yourcluster.dev.restate.cl
 
 ### Invoking services (9090)
 A Restate ingress endpoint, which can be used to invoke Restate Lambda functions written in
-[Typescript or Java](/services/deployment/lambda/lambda-typescript#send-requests),
+[TypeScript or Java](/services/deployment/lambda/lambda-typescript#send-requests),
 with a bearer token set.
 ```bash
 curl -H "Authorization: Bearer $(cat /token)" https://yourcluster.dev.restate.cloud:9090/org.example.Greeter/MultiWord -H 'content-type: application/json' -d '{"name": "Pete"}'

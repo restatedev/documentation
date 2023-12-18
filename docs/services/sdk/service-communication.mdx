@@ -17,7 +17,7 @@ This `Greeter` service has a method called `Greet` that takes an input request c
 To make request-response calls to the `Greeter` service, do the following:
 
 <Tabs groupId="sdk" queryString>
-<TabItem value="ts" label="Typescript" default>
+<TabItem value="ts" label="TypeScript" default>
 
 On the side of the service that you are going to call, you export the API definition, as follows (for more details look at the [serving docs](/services/sdk/serving)): 
 
@@ -47,7 +47,7 @@ const result2 = await ctx.rpc(myGreeterApi).greet("Pete");
 ```
 
 </TabItem>
-<TabItem value="ts-grpc" label="Typescript-gRPC">
+<TabItem value="ts-grpc" label="TypeScript-gRPC">
 
 To do request-response calls, use the gRPC client implementation supplied via the generated Protobuf code.
 In this example, the `Greet` function requires a `Request` Protobuf message as input with a single `name` parameter.
@@ -101,7 +101,7 @@ Without Restate, this is usually implemented by adding a message queue in betwee
 Restate eliminates the need for a message queue because Restate durably logs the request and makes sure it gets executed.
 
 <Tabs groupId="sdk" queryString>
-<TabItem value="ts" label="Typescript" default>
+<TabItem value="ts" label="TypeScript" default>
 
 On the side of the service that you are going to call, you export the API definition as shown in the [request-response calls section](/services/sdk/service-communication#request-response-calls).
 
@@ -116,7 +116,7 @@ ctx.send(myGreeterApi).greet("Pete");
 ```
 
 </TabItem>
-<TabItem value="ts-grpc" label="Typescript-gRPC">
+<TabItem value="ts-grpc" label="TypeScript-gRPC">
 
 Use the gRPC client implementation supplied via the generated Protobuf code to do the call, but wrap the call with `ctx.oneWayCall` as shown below:
 
@@ -174,7 +174,7 @@ A delayed call is a one-way call that gets executed after a specified delay.
 
 
 <Tabs groupId="sdk" queryString>
-<TabItem value="ts" label="Typescript" default>
+<TabItem value="ts" label="TypeScript" default>
 
 On the side of the service that you are going to call, you export the API definition as shown in the [request-response calls section](/services/sdk/service-communication#request-response-calls).
 
@@ -189,7 +189,7 @@ ctx.sendDelayed(myGreeterApi, 5000).greet("Pete");
 ```
 
 </TabItem>
-<TabItem value="ts-grpc" label="Typescript-gRPC">
+<TabItem value="ts-grpc" label="TypeScript-gRPC">
 
 ```typescript
 const client = new GreeterClientImpl(ctx);
