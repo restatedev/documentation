@@ -18,7 +18,7 @@ It will store metadata and RocksDB data in the relative directory of /target und
 
 It requires outbound connectivity to services in order to discover them and to send requests.
 
-### In Kubernetes
+### Kubernetes
 
 The recommended Kubernetes deployment strategy is a one-replica StatefulSet. We recommend installing Restate in its own namespace.
 
@@ -104,3 +104,26 @@ You will also need to create an image pull secret using a classic github persona
 ```bash
 $ kubectl create secret docker-registry github --docker-server=ghcr.io --docker-username=<your-github-username> --docker-password=<your-personal-access-token>
 ```
+
+
+### Amazon EC2 with CDK
+
+The `SingleNodeRestateInstance` construct deploys a single-node server on Amazon EC2, suitable for development purposes.
+A single EC2 instance will be deployed in a new internet-connected VPC – or you can provide one explicitly. You can
+optionally enable tracing integration, which will grant the instance role permission to send traces to AWS X-Ray.
+
+```typescript
+import * as restate from "@restatedev/restate-cdk";
+
+const restateService = new restate.SingleNodeRestateInstance(scope, "RestateServer", {
+  restateTag: "latest",
+  tracing: restate.TracingMode.AWS_XRAY,
+  logGroup: new logs.LogGroup(scope, "RestateLogs", {
+    logGroupName: "/restate/server-logs",
+    retention: logs.RetentionDays.ONE_MONTH,
+  }),
+});
+```
+
+See [deploying Restate services on AWS Lambda with CDK](/services/deployment/cdk) for more information on deploying
+services.
