@@ -67,7 +67,7 @@ These definitions are no different to how you might deploy any other Lambda hand
 ### Register Lambda-based services with Restate
 
 To enable our Lambda-deployed handlers to receive Restate requests, we need to register them with a Restate instance.
-We can model existing Restate Cloud instance using the `RestateCloudEndpoint` construct:
+We can model an existing Restate Cloud instance using the `RestateCloudEndpoint` construct:
 
 ```typescript
 import * as restate from "@restatedev/restate-cdk";
