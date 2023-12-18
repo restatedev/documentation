@@ -21,7 +21,7 @@ and that the value is retained during replays.
 Here is an example in which a unique ID is generated and stored in Restate:
 
 <Tabs groupId="sdk" queryString>
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 const uuid = await ctx.sideEffect(async () => uuid());
@@ -57,7 +57,7 @@ This includes actions such as getting state, calling another service, and nestin
 If the side effect closure throws an error, then it is retried infinitely using an exponential backoff strategy until it succeeds.
 
 <Tabs groupId="sdk" queryString>
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 ```typescript
 const paymentAction = async () => {
@@ -147,7 +147,7 @@ A terminal error will stop the infinite retry strategy and lets the SDK propagat
 The terminal error will also be recorded in the journal so that it will be deterministically thrown on replay.
 
 <Tabs groupId="sdk" queryString>
-<TabItem value="ts" label="Typescript">
+<TabItem value="ts" label="TypeScript">
 
 You can throw a terminal error by using `restate.TerminalError`:
 
