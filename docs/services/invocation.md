@@ -176,3 +176,15 @@ $ curl -X DELETE http://localhost:9070/invocations/T4pIkIJIGAsBiiGDV2dxK7PkkKnWy
 ```
 
 For more details on the API, refer to the [admin API docs](/references/admin-api).
+
+## Invocation execution timeout(s)
+
+For each retry attempt, Restate internally holds an inactivity timer to track whether the service is active and generating some work, such as setting state, invoking other services, etc. This timer can be configured with the option [`worker.invoker.inactivity_timeout`](https://docs.restate.dev/restate/configuration).
+
+Once the `inactivity_timeout` is fired, Restate tries to gracefully suspend the invocation while waiting for an event that triggers the resumption of the invocation. 
+When suspending, the Restate SDK will continue executing the service code until it reaches a _suspension point_, that is a point in your service code where it's safe to interrupt the execution, for example when `await`ing on a response from another service.
+
+When suspending, Restate internally starts another timer to protect Restate from connection issues and/or misbehaving code/SDKs that prevent the tear down of the connection. This timer can be configured with the option [`worker.invoker.abort_timeout`](https://docs.restate.dev/restate/configuration).
+Once the `abort_timeout` is fired, the connection to the deployment endpoint is closed, and all in-flight progress is discarded.
+
+If you have [side effects](sdk/side-effects) that take more than `inactivity_timeout + abort_timeout` to execute, you might need to tune these timeouts accordingly, for example by increasing the `inactivity_timeout` to a value larger than the expected side effect duration. 
