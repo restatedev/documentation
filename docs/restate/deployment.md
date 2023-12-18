@@ -98,9 +98,3 @@ spec:
       name: storage
   type: ClusterIP
 ```
-
-You will also need to create an image pull secret using a classic github personal access token with the `read:packages` permission.
-
-```bash
-$ kubectl create secret docker-registry github --docker-server=ghcr.io --docker-username=<your-github-username> --docker-password=<your-personal-access-token>
-```
