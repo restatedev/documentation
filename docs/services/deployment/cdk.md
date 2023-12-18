@@ -9,7 +9,8 @@ description: "Deploy Restate services on AWS Lambda using CDK."
 ## Deploying Restate services as AWS Lambda functions
 
 You can run your Restate services as serverless functions on [AWS Lambda](https://aws.amazon.com/lambda/).
-The [Restate CDK support library]() provides convenient constructs for deploying Restate services on AWS Lambda.
+The [Restate CDK support library](https://www.npmjs.com/package/@restatedev/restate-cdk) provides convenient constructs
+for deploying Restate services on AWS Lambda.
 
 [CDK](https://aws.amazon.com/cdk/) provides an elegant way to define your cloud application infrastructure in a familiar
 programming language. Currently, we support CDK projects built in TypeScript, but you can deploy Restate handlers in any
