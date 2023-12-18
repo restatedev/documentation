@@ -90,7 +90,7 @@ const config = {
         items: [
           {
             href: "/services/sdk/overview?sdk=ts",
-            label: "Typescript SDK",
+            label: "TypeScript SDK",
             position: "right",
           },
           {

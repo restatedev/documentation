@@ -22,7 +22,7 @@ There are several API endpoints at this hostname:
 
 ### Registering services (8081)
 A Restate meta endpoint, which can be used to register Restate Lambda functions written in 
-[Typescript](/services/deployment/lambda/lambda-typescript#discovering-the-services-behind-the-lambda-endpoint) and [Java](/services/deployment/lambda/lambda-java#discovering-the-services-behind-the-lambda-endpoint),
+[TypeScript](/services/deployment/lambda/lambda-typescript#discovering-the-services-behind-the-lambda-endpoint) and [Java](/services/deployment/lambda/lambda-java#discovering-the-services-behind-the-lambda-endpoint),
 with a bearer token set.
 ```bash
 curl -H "Authorization: Bearer $(cat /token)" https://yourcluster.dev.restate.cloud:8081/endpoints -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/my-greeter", "additional_headers": {"x-api-key": "your-api-key"} }'
