@@ -9,9 +9,13 @@ description: "Learn how to run Restate Java services on AWS Lambda."
 ## Deploying services as AWS Lambda functions
 You can run your Restate services as serverless functions on [AWS Lambda](https://aws.amazon.com/lambda/).
 
+:::tip
+The easiest way to run Restate handlers on AWS Lambda is to use the [Restate CDK construct library](/services/deployment/cdk).
+:::
+
 Make sure you have defined a Lambda handler in your service code, as explained in the [serving docs](/services/sdk/serving#restate-lambda-handler).
 
-Configure the build tool to generate Fat-JARs, so that AWS Lambda can correctly load the JAR. For example, using Gradle:
+Configure the build tool to generate Fat-JARs so that all dependencies can be deployed to AWS Lambda as a single bundle. For example, using Gradle:
 
 ```kotlin
 plugins {
@@ -20,9 +24,18 @@ plugins {
   id("com.github.johnrengelman.shadow").version("7.1.2")
   // ...
 }
+
+// It's important to correctly merge log4j plugin and extension metadata, otherwise certain logging features may break
+tasks.withType<ShadowJar> {
+    transform(Log4j2PluginsCacheFileTransformer::class.java)
+    transform(ServiceFileTransformer::class.java)
+}
 ```
 
+For a complete Gradle build script example please see the example [hello-world-lambda-cdk](https://github.com/restatedev/examples/blob/main/kotlin/hello-world-lambda-cdk/lambda/build.gradle.kts).
+
 Now build the Fat-JAR. For example, using Gradle:
+
 ```shell
 gradle shadowJar
 ```
