@@ -7,15 +7,14 @@ description: "Learn how to run Restate TypeScript services on AWS Lambda."
 # AWS Lambda + TypeScript
 
 ## Deploying services as AWS Lambda functions
+
 You can run your Restate services as serverless functions on [AWS Lambda](https://aws.amazon.com/lambda/).
 
-
 :::tip
-Please take a look at [the Lambda deployment tutorial](/services/deployment/lambda/lambda-typescript#tutorial) to learn how to deploy your Restate service as a Lambda function.
+The easiest way to run Restate handlers on AWS Lambda is to use the [Restate CDK construct library](/services/deployment/cdk).
 :::
 
-To deploy a Restate service as a Lambda function,
-you can follow the [guidelines of AWS](https://docs.aws.amazon.com/lambda/latest/dg/typescript-package.html)
+To deploy a Restate service as a Lambda function, you can follow the [guidelines of AWS](https://docs.aws.amazon.com/lambda/latest/dg/typescript-package.html)
 for deploying plain TypeScript NodeJS functions. Restate does not add any complexity to this. You build a zip file containing the application code and dependencies and upload this to AWS Lambda. If you are using the Restate node template, then you can create a zip file with:
 
 ```

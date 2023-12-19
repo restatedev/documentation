@@ -18,7 +18,7 @@ It will store metadata and RocksDB data in the relative directory of /target und
 
 It requires outbound connectivity to services in order to discover them and to send requests.
 
-### In Kubernetes
+## Kubernetes
 
 The recommended Kubernetes deployment strategy is a one-replica StatefulSet. We recommend installing Restate in its own namespace.
 
@@ -98,3 +98,42 @@ spec:
       name: storage
   type: ClusterIP
 ```
+
+## Amazon EC2 with CDK
+
+The [Restate CDK support library](https://www.npmjs.com/package/@restatedev/restate-cdk) provides convenient constructs
+for managing Restate server deployments on AWS. We currently offer support for a simple single-node deployment to Amazon
+EC2.
+
+If you don't have an existing CDK project, follow the CDK [Getting started](https://docs.aws.amazon.com/cdk/v2/guide/hello_world.html)
+page to set one up.
+
+### Adding the Restate CDK support library
+
+Add the Restate CDK support library to your project:
+
+```shell
+npm install @restatedev/restate-cdk
+```
+
+### Deploying a single-node Restate server
+
+The `SingleNodeRestateInstance` construct deploys a single-node server on Amazon EC2, suitable for development purposes.
+A single EC2 instance will be deployed in a new internet-connected VPC – or you can provide one explicitly. You can
+optionally enable tracing integration, which will grant the instance role permission to send traces to AWS X-Ray.
+
+```typescript
+import * as restate from "@restatedev/restate-cdk";
+
+const restateService = new restate.SingleNodeRestateInstance(scope, "RestateServer", {
+  restateTag: "latest",
+  tracing: restate.TracingMode.AWS_XRAY,
+  logGroup: new logs.LogGroup(scope, "RestateLogs", {
+    logGroupName: "/restate/server-logs",
+    retention: logs.RetentionDays.ONE_MONTH,
+  }),
+});
+```
+
+See [deploying Restate services on AWS Lambda with CDK](/services/deployment/cdk) for more information on deploying
+services.
