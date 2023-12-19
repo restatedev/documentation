@@ -101,6 +101,23 @@ spec:
 
 ## Amazon EC2 with CDK
 
+The [Restate CDK support library](https://www.npmjs.com/package/@restatedev/restate-cdk) provides convenient constructs
+for managing Restate server deployments on AWS. We currently offer support for a simple single-node deployment to Amazon
+EC2.
+
+If you don't have an existing CDK project, follow the CDK [Getting started](https://docs.aws.amazon.com/cdk/v2/guide/hello_world.html)
+page to set one up.
+
+### Adding the Restate CDK support library
+
+Add the Restate CDK support library to your project:
+
+```shell
+npm install @restatedev/restate-cdk
+```
+
+### Deploying a single-node Restate server
+
 The `SingleNodeRestateInstance` construct deploys a single-node server on Amazon EC2, suitable for development purposes.
 A single EC2 instance will be deployed in a new internet-connected VPC – or you can provide one explicitly. You can
 optionally enable tracing integration, which will grant the instance role permission to send traces to AWS X-Ray.
