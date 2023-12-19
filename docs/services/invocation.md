@@ -16,7 +16,7 @@ There are different ways to invoke a Restate service:
 
 ### Over HTTP
 
-You can invoke services over HTTP 1.1 or higher. 
+You can invoke services over HTTP 1.1 or higher.
 Request/response bodies should be encoded as either JSON or Protobuf.
 You can send requests directly from the browser or via `curl` without generating a client.
 
@@ -115,7 +115,7 @@ $ curl -X PATCH localhost:9070/services/org.example.ExampleService -H 'content-t
 ```
 
 You can revert it back to public with `{"public": true}`. Private services can still be reached by other Restate services.
-For more details on the API, refer to the [admin API docs](/references/admin-api#tag/service/operation/modify_service). 
+For more details on the API, refer to the [admin API docs](/references/admin-api#tag/service/operation/modify_service).
 
 ## Invocation identifier
 
@@ -141,32 +141,23 @@ The Invocation identifier is opaque and its current format should not be relied 
 
 ## Cancel an invocation
 
-:::caution
+If an invocation takes too long to complete or is no longer of interest, you can cancel it.
+Canceling an invocation allows it to free any resources it is holding and roll back any changes it has made so far.
+In order to roll back changes correctly, the service handlers need to contain the necessary compensation logic.
+If the required compensation logic is implemented, then the service state stays consistent even in the presence of cancellations.
 
-At the moment, gracefully cancelling an invocation is not supported. It will be supported in future Restate releases.
+The cancellation process works recursively in the following way:
+First, Restate tries to cancel the leaves of the current invocation, i.e. interrupt ongoing sleeps and awakeables or try to cancel calls to other services.
+Once the leaves are canceled, a terminal error is thrown in the service handler at the point in the code that the invocation had reached.
+This allows the handler to run its specific compensation logic.
+The response of the handler will then be propagated back to its caller where it will continue with the cancellation process.
 
+:::note
+Canceling an invocation is a non-blocking operation. This means that the cancellation is not guaranteed to have completed when the API call returns. In some rare cases, cancellations will not have an effect. In these cases, users need to retry the operation.
 :::
-
-## Kill an invocation
-
-When an invocation fails, Restate retries by default until it can make progress.
-For example, if there's a network partitioning, Restate keeps retrying until it can reach the deployment and make progress.
-
-There are some cases where it is impossible for an invocation to make progress.
-A good example is when your code runs a non-deterministic action: If the invocation is suspended and re-scheduled afterwards, the replay of the invocation might lead to a different code path, generating an invalid journal and failing the invocation indefinitely.
-In such cases, you can request Restate to kill the invocation, thereby aborting its execution as soon as possible.
-If the invocation is ongoing, killing the invocation **will not** roll back its progress.
-
-:::danger
-
-Killing an invocation might leave the service instance in an inconsistent state, just like how killing a process in your operating system may cause the open files to become corrupted. Use it with caution and try to fix the invocation in other ways before resorting to killing it.
-
-:::
-
-To kill an invocation, send the following request to the Restate admin API:
 
 ```shell
-$ curl -X DELETE <RESTATE_META_ENDPOINT>/invocations/<INVOCATION_IDENTIFIER>
+$ curl -X DELETE <RESTATE_META_URL>/invocations/<INVOCATION_IDENTIFIER>
 ```
 
 For example:
@@ -177,14 +168,45 @@ $ curl -X DELETE http://localhost:9070/invocations/T4pIkIJIGAsBiiGDV2dxK7PkkKnWy
 
 For more details on the API, refer to the [admin API docs](/references/admin-api).
 
+## Kill an invocation
+
+In a few cases, it is not possible for Restate to cancel an invocation.
+For example, if the service deployment is permanently unavailable, Restate cannot invoke the service handler to run its compensation logic which is needed to complete the cancellation.
+For these cases, Restate provides the ability to kill an invocation.
+
+Killing an invocation means that every call in the call tree of the invocation will be stopped immediately without giving the service handler a chance to react and execute compensation logic.
+This entails that killing the invocation **will not** roll back its progress.
+
+:::note
+One-way calls and delayed calls will not be killed because they are considered detached from the originating call tree.
+:::
+
+:::danger
+Killing an invocation might leave the service instance in an inconsistent state, just like how killing a process in your operating system may cause the open files to become corrupted. Use it with caution and try to fix the invocation in other ways before resorting to killing it.
+:::
+
+To kill an invocation, send the following request to the Restate admin API:
+
+```shell
+$ curl -X DELETE <RESTATE_META_URL>/invocations/<INVOCATION_IDENTIFIER>?mode=kill
+```
+
+For example:
+
+```shell
+$ curl -X DELETE http://localhost:9070/invocations/T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE?mode=kill
+```
+
+For more details on the API, refer to the [admin API docs](/references/admin-api).
+
 ## Invocation execution timeout(s)
 
 For each retry attempt, Restate internally holds an inactivity timer to track whether the service is active and generating some work, such as setting state, invoking other services, etc. This timer can be configured with the option [`worker.invoker.inactivity_timeout`](https://docs.restate.dev/restate/configuration).
 
-Once the `inactivity_timeout` is fired, Restate tries to gracefully suspend the invocation while waiting for an event that triggers the resumption of the invocation. 
+Once the `inactivity_timeout` is fired, Restate tries to gracefully suspend the invocation while waiting for an event that triggers the resumption of the invocation.
 When suspending, the Restate SDK will continue executing the service code until it reaches a _suspension point_, that is a point in your service code where it's safe to interrupt the execution, for example when `await`ing on a response from another service.
 
 When suspending, Restate internally starts another timer to protect Restate from connection issues and/or misbehaving code/SDKs that prevent the tear down of the connection. This timer can be configured with the option [`worker.invoker.abort_timeout`](https://docs.restate.dev/restate/configuration).
 Once the `abort_timeout` is fired, the connection to the deployment endpoint is closed, and all in-flight progress is discarded.
 
-If you have [side effects](sdk/side-effects) that take more than `inactivity_timeout + abort_timeout` to execute, you might need to tune these timeouts accordingly, for example by increasing the `inactivity_timeout` to a value larger than the expected side effect duration. 
+If you have [side effects](sdk/side-effects) that take more than `inactivity_timeout + abort_timeout` to execute, you might need to tune these timeouts accordingly, for example by increasing the `inactivity_timeout` to a value larger than the expected side effect duration.
