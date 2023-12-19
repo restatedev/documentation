@@ -18,7 +18,7 @@ It will store metadata and RocksDB data in the relative directory of /target und
 
 It requires outbound connectivity to services in order to discover them and to send requests.
 
-### Kubernetes
+## Kubernetes
 
 The recommended Kubernetes deployment strategy is a one-replica StatefulSet. We recommend installing Restate in its own namespace.
 
@@ -106,7 +106,7 @@ $ kubectl create secret docker-registry github --docker-server=ghcr.io --docker-
 ```
 
 
-### Amazon EC2 with CDK
+## Amazon EC2 with CDK
 
 The `SingleNodeRestateInstance` construct deploys a single-node server on Amazon EC2, suitable for development purposes.
 A single EC2 instance will be deployed in a new internet-connected VPC – or you can provide one explicitly. You can
