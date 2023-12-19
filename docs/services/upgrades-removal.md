@@ -113,5 +113,5 @@ $ curl -X DELETE <RESTATE_META_ENDPOINT>/deployments/{DEPLOYMENT_ID}?force=true
 ```
 
 :::info
-Currently Restate doesn't implement all the checks to safely remove a deployment, so you have to force the removal through the `force` query parameter.
+Currently Restate doesn't implement all the checks to safely remove a service deployment, so you have to force the removal through the `force` query parameter.
 :::

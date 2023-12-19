@@ -149,7 +149,7 @@ When you are finished with the tour, you can stop Restate with `docker stop rest
 
 ### Registering services with Restate
 
-When Restate first comes up, it doesn't know anything about our services. Let's tell it where they are running. You can trigger service discovery by calling the Restate admin API informing it about the deployment endpoint where our service is listening.
+When Restate first comes up, it doesn't know anything about our services. Let's tell it where they are running. You can trigger service discovery by calling the Restate admin API informing it about the service deployment where our service is listening.
 
 <Tabs groupId="operating-systems">
 <TabItem value="lin" label="Linux">
@@ -162,7 +162,7 @@ curl -X POST http://localhost:9070/deployments -H 'content-type: application/jso
 <TabItem value="mac" label="macOS">
 
 You do this by sending a request to the Restate endpoint at `http://localhost:9070/deployments`
-and providing it with the deployment endpoint of the service `http://host.docker.internal:9080`.
+and providing it with the service deployment URL `http://host.docker.internal:9080`.
 
 ```shell
 curl -X POST http://localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
