@@ -5,8 +5,8 @@ description: "Learn how to run Restate applications on Kubernetes."
 
 # Kubernetes
 
-Service endpoints can be deployed like any gRPC service; a Deployment of more than one replica is generally appropriate. However,
-like gRPC services, they must be appropriately load balanced at L7 if you want multiple service endpoint pods. Native Kubernetes
+Service deployments can be deployed like any gRPC service; a Deployment of more than one replica is generally appropriate. However,
+like gRPC services, they must be appropriately load balanced at L7 if you want multiple service deployment pods. Native Kubernetes
 ClusterIP load balancing will lead to the Restate binary sending all requests to a single pod, as HTTP2 connections
 are aggressively reused. This is fine for local testing, but in production an approach must be found. If your
 infrastructure already has an approach for L7 load balancing gRPC services, you can use the same approach here.
@@ -66,7 +66,7 @@ L7 load balancing is not needed when there is only one pod, so it's acceptable t
 
 ## Knative
 
-Restate supports Knative services. Knative allows scaling to zero when there are no in-flight invocations and automatically configures an L7 load balancer. There are no special requirements to deploy a service endpoint container with Knative:
+Restate supports Knative services. Knative allows scaling to zero when there are no in-flight invocations and automatically configures an L7 load balancer. There are no special requirements to deploy a service deployment container with Knative:
 
 ```shell
 $ kn service create service-name --port h2c:9080 --image path.to/yourrepo:yourtag

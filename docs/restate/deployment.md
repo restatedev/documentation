@@ -11,7 +11,7 @@ It exposes three services by default, each on different ports:
 | Name     | Port | Description                                                                                                                    | Protocol                                          |
 |----------|------|--------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
 | Ingress  | 8080 | Acts as an API gateway for all services registered with Restate                                                                | gRPC + [Connect Protocol](https://connect.build/) |
-| Admin    | 9070 | Allows for CRUD operations on service/endpoint metadata, eg for service registration                                           | REST                                              |
+| Admin    | 9070 | Allows for CRUD operations on service/service deployment metadata, eg for service registration                                 | REST                                              |
 | Postgres | 9071 | Exposes Restate RocksDB read-only storage operations using the Postgres protocol. See [Introspection](/services/introspection) | Postgres                                          |
 
 It will store metadata and RocksDB data in the relative directory of /target under the current working directory of the process.

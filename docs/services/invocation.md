@@ -102,7 +102,7 @@ This feature can be especially useful when you need to invoke a service method i
 
 ## Private services
 
-When registering a service endpoint, every service is by default accessible both by other services, and by sending requests to Restate using HTTP and/or gRPC. You can configure a service as `private`, such that you can't invoke it by sending requests to Restate, through the [Admin APIs](/references/admin-api):
+When registering a service deployment, every service is by default accessible both by other services, and by sending requests to Restate using HTTP and/or gRPC. You can configure a service as `private`, such that you can't invoke it by sending requests to Restate, through the [Admin APIs](/references/admin-api):
 
 ```shell
 $ curl -X PATCH <RESTATE_META_ENDPOINT>/services/<SERVICE_NAME> -H 'content-type: application/json' -d '{"public": false}'
@@ -125,7 +125,7 @@ You can find this identifier in the runtime logs and OpenTelemetry traces by loo
 
 ```log {7}
 2023-05-19T15:02:28.656467Z INFO restate_invoker::invocation_task
-  Executing invocation at service endpoint
+  Executing invocation at deployment
     http.url: http://localhost:9080/invoke/coordinator.Coordinator/Sleep
   in restate_invoker::invocation_task::invoker_invocation_task
     rpc.system: "restate"
@@ -150,7 +150,7 @@ At the moment, gracefully cancelling an invocation is not supported. It will be 
 ## Kill an invocation
 
 When an invocation fails, Restate retries by default until it can make progress.
-For example, if there's a network partitioning, Restate keeps retrying until it can reach the endpoint and make progress.
+For example, if there's a network partitioning, Restate keeps retrying until it can reach the deployment and make progress.
 
 There are some cases where it is impossible for an invocation to make progress.
 A good example is when your code runs a non-deterministic action: If the invocation is suspended and re-scheduled afterwards, the replay of the invocation might lead to a different code path, generating an invalid journal and failing the invocation indefinitely.
@@ -163,7 +163,7 @@ Killing an invocation might leave the service instance in an inconsistent state,
 
 :::
 
-To kill an invocation, send the following request to the Restate meta endpoint:
+To kill an invocation, send the following request to the Restate admin API:
 
 ```shell
 $ curl -X DELETE <RESTATE_META_ENDPOINT>/invocations/<INVOCATION_IDENTIFIER>

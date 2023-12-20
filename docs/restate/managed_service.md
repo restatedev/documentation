@@ -25,7 +25,7 @@ A Restate meta endpoint, which can be used to register Restate Lambda functions 
 [TypeScript](/services/deployment/lambda/lambda-typescript#discovering-the-services-behind-the-lambda-endpoint) and [Java](/services/deployment/lambda/lambda-java#discovering-the-services-behind-the-lambda-endpoint),
 with a bearer token set.
 ```bash
-curl -H "Authorization: Bearer $(cat /token)" https://yourcluster.dev.restate.cloud:8081/endpoints -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/my-greeter", "additional_headers": {"x-api-key": "your-api-key"} }'
+curl -H "Authorization: Bearer $(cat /token)" https://yourcluster.dev.restate.cloud:8081/deployments -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/my-greeter", "additional_headers": {"x-api-key": "your-api-key"} }'
 ```
 
 ### Invoking services (9090)
@@ -134,6 +134,7 @@ Resource Policies, or you can create a role per account - Restate can assume a d
 
 Once you have a role that has permission to call the Lambda, and allows Restate to assume it, you just need to discover
 the Lambda:
+
 ```shell
-curl -X POST http://<your-restate-runtime-endpoint>:9070/endpoints -H 'content-type: application/json' -d '{"arn": "<lambda-function-arn>", "assume_role_arn": "<role-arn>" }'
+curl -X POST http://<your-restate-runtime-endpoint>:9070/deployments -H 'content-type: application/json' -d '{"arn": "<lambda-function-arn>", "assume_role_arn": "<role-arn>" }'
 ```

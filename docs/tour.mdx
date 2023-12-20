@@ -149,29 +149,29 @@ When you are finished with the tour, you can stop Restate with `docker stop rest
 
 ### Registering services with Restate
 
-When Restate first comes up, it doesn't know anything about our services. Let's tell it where they are running. You can trigger service discovery by calling the Restate admin API informing it about the endpoint where our service is listening.
+When Restate first comes up, it doesn't know anything about our services. Let's tell it where they are running. You can trigger service discovery by calling the Restate admin API informing it about the service deployment where our service is listening.
 
 <Tabs groupId="operating-systems">
 <TabItem value="lin" label="Linux">
 
 ```shell
-curl -X POST http://localhost:9070/endpoints -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'
+curl -X POST http://localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'
 ```
 
 </TabItem>
 <TabItem value="mac" label="macOS">
 
-You do this by sending a request to the Restate endpoint at `http://localhost:9070/endpoints`
-and providing it with the endpoint of the service `http://host.docker.internal:9080`.
+You do this by sending a request to the Restate endpoint at `http://localhost:9070/deployments`
+and providing it with the service deployment URL `http://host.docker.internal:9080`.
 
 ```shell
-curl -X POST http://localhost:9070/endpoints -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
+curl -X POST http://localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
 ```
 
 </TabItem>
 </Tabs>
 
-Restate will send a discovery request to the service endpoint to find the services and methods run behind this endpoint. Restate keeps track of which services run where (including of the method signatures). Restate also keeps track of multiple revisions as your APIs evolve, and routes requests appropriately.
+Restate will send a discovery request to the service deployment to find the services and methods run behind this endpoint. Restate keeps track of which services run where (including of the method signatures). Restate also keeps track of multiple revisions as your APIs evolve, and routes requests appropriately.
 
 :::tip
 You can pipe the output of `curl` into the `jq` utility to reformat the JSON output and make it easier to read.
@@ -244,21 +244,21 @@ The Restate logs will show the new service registrations taking place.
 
 ```
 2023-08-15T13:24:52.879977Z INFO restate_schema_impl::schemas_impl
-  Registering endpoint
-    restate.service_endpoint.id: bG9jYWxob3N0OjgwODAv
-    restate.service_endpoint.url: http://localhost:9080/
+  Registering deployment
+    restate.deployment.id: bG9jYWxob3N0OjgwODAv
+    restate.deployment.url: http://localhost:9080/
 2023-08-15T13:24:52.880010Z INFO restate_schema_impl::schemas_impl
   Registering service
     rpc.service: "UserSession"
-    restate.service_endpoint.url: http://localhost:9080/
+    restate.deployment.url: http://localhost:9080/
 2023-08-15T13:24:52.881233Z INFO restate_schema_impl::schemas_impl
   Registering service
     rpc.service: "TicketService"
-    restate.service_endpoint.url: http://localhost:9080/
+    restate.deployment.url: http://localhost:9080/
 2023-08-15T13:24:52.881422Z INFO restate_schema_impl::schemas_impl
   Registering service
     rpc.service: "Checkout"
-    restate.service_endpoint.url: http://localhost:9080/
+    restate.deployment.url: http://localhost:9080/
 ```
 
 For MacOS users, the address will be `http://host.docker.internal:9080/`.
@@ -272,21 +272,21 @@ For MacOS users, the address will be `http://host.docker.internal:9080/`.
 
 ```
 2023-12-06T21:06:02.404764Z INFO restate_schema_impl::schemas_impl
-  Registering endpoint
-    restate.service_endpoint.id: aG9zdC5kb2NrZXIuaW50ZXJuYWw6OTA4MC8=
-    restate.service_endpoint.address: http://localhost:9080/
+  Registering deployment
+    restate.deployment.id: aG9zdC5kb2NrZXIuaW50ZXJuYWw6OTA4MC8=
+    restate.deployment.address: http://localhost:9080/
 2023-12-06T21:06:02.404876Z INFO restate_schema_impl::schemas_impl
   Registering service
     rpc.service: "example.Checkout"
-    restate.service_endpoint.address: http://localhost:9080/
+    restate.deployment.address: http://localhost:9080/
 2023-12-06T21:06:02.405255Z INFO restate_schema_impl::schemas_impl
   Registering service
     rpc.service: "example.UserSession"
-    restate.service_endpoint.address: http://localhost:9080/
+    restate.deployment.address: http://localhost:9080/
 2023-12-06T21:06:02.405491Z INFO restate_schema_impl::schemas_impl
   Registering service
     rpc.service: "example.TicketService"
-    restate.service_endpoint.address: http://localhost:9080/
+    restate.deployment.address: http://localhost:9080/
 ```
 
 For MacOS users, the address will be `http://host.docker.internal:9080/`.
@@ -2617,7 +2617,7 @@ docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOIN
 
 Register the services again (required because the state got wiped when the runtime was restarted with the `--rm` flag):
 ```shell
-curl -X POST http://localhost:9070/endpoints -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'
+curl -X POST http://localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'
 ```
 
 </TabItem>
@@ -2630,7 +2630,7 @@ docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOIN
 
 Register the services again (required because the state got wiped when the runtime was restarted with the `--rm` flag):
 ```shell
-curl -X POST http://localhost:9070/endpoints -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
+curl -X POST http://localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
 ```
 
 </TabItem>

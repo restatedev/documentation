@@ -90,7 +90,7 @@ This following list contains some key queries on the `sys_status` table to give 
 
 ## Inspecting the attempt status of an invocation
 
-Invocations can be attempted against a service endpoint many times if the endpoint is failing. The metadata around
+Invocations can be attempted against a service deployment many times if the endpoint is failing. The metadata around
 these attempts is not committed durably to storage, but is held in memory in the `invoker` component. The metadata
 includes reasons that an attempt might be failing, for example a permission error calling a Lambda endpoint.
 
@@ -115,7 +115,7 @@ Or, if you already have an invocation ID, you can query with that directly:
 select * from sys_invocation_state where id = 'T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE';
 ```
 
-It can be useful to filter for all invocations that are failing to be executed against the service endpoint:
+It can be useful to filter for all invocations that are failing to be executed against the deployment:
 
 ```sql
 select * from sys_invocation_state where retry_count > 1;

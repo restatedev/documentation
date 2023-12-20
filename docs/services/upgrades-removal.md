@@ -9,14 +9,14 @@ Restate comes with different solutions to update the services, to simplify devel
 
 ## Deploy a new service revision
 
-As described in the [deployment documentation](/services/deployment/general), *service endpoints* are immutable, and are assumed to be reachable throughout the entire lifecycle of an invocation. In order to deploy any change to a service, either in the protobuf definition and/or in the business logic, a new service endpoint should be deployed and registered.
+As described in the [deployment documentation](/services/deployment/general), *service deployments* are immutable, and are assumed to be reachable throughout the entire lifecycle of an invocation. In order to deploy any change to a service, either in the protobuf definition and/or in the business logic, a new deployment should be deployed and registered.
 
-When registering a new service endpoint, Restate will detect if it contains already registered services, and will treat them as new revisions. Any new invocations to that service will be executed by the newly registered service endpoint, thus guaranteeing that new invocations are always routed to the latest service revision, while *old* invocations will continue to use the previous service endpoint. It must be guaranteed that the old service endpoint lives until all the existing invocations complete.
+When registering a new deployment, Restate will detect if it contains already registered services, and will treat them as new revisions. Any new invocations to that service will be executed by the newly registered deployment, thus guaranteeing that new invocations are always routed to the latest service revision, while *old* invocations will continue to use the previous deployment. It must be guaranteed that the old deployment lives until all the existing invocations complete.
 
-For example, let's assume there is a `greeter.Greeter` service deployed on the service endpoint available at `http://greeter-v1/`. To update it, deploy a new service endpoint available at `http://greeter-v2/`, containing the new revision of `greeter.Greeter`, and then register it:
+For example, let's assume there is a `greeter.Greeter` service deployed on the deployment available at `http://greeter-v1/`. To update it, deploy a new deployment available at `http://greeter-v2/`, containing the new revision of `greeter.Greeter`, and then register it:
 
 ```bash
-$ curl <RESTATE_META_ENDPOINT>/endpoints --json '{"uri": "http://greeter-v2/"}'
+$ curl <RESTATE_META_ENDPOINT>/deployments --json '{"uri": "http://greeter-v2/"}'
 ```
 
 This returns:
@@ -52,10 +52,10 @@ This returns:
 }
 ```
 
-To get more info about the endpoint serving it:
+To get more info about the deployment serving it:
 
 ```bash
-$ curl <RESTATE_META_ENDPOINT>/endpoints/Z3JlZXRlci12Mi8
+$ curl <RESTATE_META_ENDPOINT>/deployments/Z3JlZXRlci12Mi8
 ```
 
 ```json
@@ -73,7 +73,7 @@ $ curl <RESTATE_META_ENDPOINT>/endpoints/Z3JlZXRlci12Mi8
 }
 ```
 
-For more details on the API, refer to the [admin API docs](/references/admin-api#tag/service_endpoint/operation/create_service_endpoint).
+For more details on the API, refer to the [admin API docs](/references/admin-api#tag/deployment/operation/create_deployment).
 
 ## Updating the Protobuf service schema
 
@@ -94,24 +94,24 @@ When updating Keyed and Singleton services, the new revisions will continue to u
 
 ## Removing a service
 
-It is not possible to remove a single service directly, but it is possible to remove the service endpoint containing it. To remove a service, the suggested procedure is the following:
+It is not possible to remove a single service directly, but it is possible to remove the deployment containing it. To remove a service, the suggested procedure is the following:
 
-1. Find out which service endpoint is serving the latest revision of the service. You can do it with:
+1. Find out which deployment is serving the latest revision of the service. You can do it with:
 
 ```bash
 $ curl <RESTATE_META_ENDPOINT>/services/{SERVICE_NAME}
 ```
 
-2. Make sure that removing this service endpoint won't affect other services you don't want to remove.
+2. Make sure that removing this deployment won't affect other services you don't want to remove.
 3. Make sure no other Restate service is using this service anymore.
 4. [Hide the service from the ingress](/services/invocation#hiding-services-from-the-ingress) to avoid accepting new requests from the ingress.
 5. Check through the Status introspection that you have no pending requests to this service anymore.
-6. Remove the service endpoint containing the service with:
+6. Remove the deployment containing the service with:
 
 ```bash
-$ curl -X DELETE <RESTATE_META_ENDPOINT>/endpoints/{ENDPOINT_ID}?force=true
+$ curl -X DELETE <RESTATE_META_ENDPOINT>/deployments/{DEPLOYMENT_ID}?force=true
 ```
 
 :::info
-Currently Restate doesn't implement all the checks to safely remove a service endpoint, so you have to force the removal through the `force` query parameter.
+Currently Restate doesn't implement all the checks to safely remove a service deployment, so you have to force the removal through the `force` query parameter.
 :::
