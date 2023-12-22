@@ -79,6 +79,14 @@ jobs:
           field: TYPESCRIPT_SDK_VERSION
           value: ${{ inputs.sdkTypescriptVersion }}
 
+      - name: Update restate.config.json with new Java sdk version
+        uses: jossef/action-set-json-field@v2.1
+        if: ${{ inputs.sdkJavaVersion != '' }}
+        with:
+          file: restate.config.json
+          field: JAVA_SDK_VERSION
+          value: ${{ inputs.sdkJavaVersion }}
+
       - name: Update restate.config.json with new tour version (TypeScript + Java)
         uses: jossef/action-set-json-field@v2.1
         if: ${{ inputs.tourVersion != '' }}
