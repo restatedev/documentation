@@ -1619,7 +1619,7 @@ const checkout = async (ctx: restate.RpcContext, userId: string) => {
 ```java
 // Add to top of class
 //highlight-next-line
-public static final StateKey<Set<String>> STATE_KEY = StateKey.of("tickets", JacksonSerde.typeRef(new TypeReference<>() {}));
+public static final StateKey<Set<String>> STATE_KEY = StateKey.of("tickets", JacksonSerdes.of(new TypeReference<>() {}));
 
 @Override
 public BoolValue checkout(RestateContext ctx, CheckoutRequest request) throws TerminalException {
@@ -1736,7 +1736,7 @@ curl -X POST http://localhost:8080/UserSession/expireTicket \
 <TabItem value="java" label="Java">
 
 ```java
-public static final StateKey<Set<String>> STATE_KEY = StateKey.of("tickets", JacksonSerde.typeRef(new TypeReference<>() {}));
+public static final StateKey<Set<String>> STATE_KEY = StateKey.of("tickets", JacksonSerdes.of(new TypeReference<>() {}));
 
 @Override
 public void expireTicket(RestateContext ctx, ExpireTicketRequest request) throws TerminalException {
