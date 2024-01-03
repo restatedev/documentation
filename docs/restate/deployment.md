@@ -6,7 +6,9 @@ description: "Deploy Restate on Kubernetes with this guide."
 # Deployment
 Restate is currently a single binary that contains everything you need. You can obtain the binary from the
 [releases page](https://github.com/restatedev/restate/releases), as part of a
-[Docker image](https://hub.docker.com/r/restatedev/restate), or with `npm install @restatedev/restate-server`.
+[Docker image](https://hub.docker.com/r/restatedev/restate), from our [Homebrew tap](https://github.com/restatedev/homebrew-tap)
+with `brew install restatedev/tap/restate`, or from [npm](https://www.npmjs.com/package/@restatedev/restate)
+with `npm install @restatedev/restate-server`.
 
 The binary exposes three services by default, each on different ports:
 
