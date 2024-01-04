@@ -20,28 +20,28 @@ token will be needed for all interactions with the cluster.
 
 There are several API endpoints at this hostname:
 
-### Registering services (8081)
+### Registering services (9070)
 A Restate meta endpoint, which can be used to register Restate Lambda functions written in 
 [TypeScript](/services/deployment/lambda/lambda-typescript#discovering-the-services-behind-the-lambda-endpoint) and [Java](/services/deployment/lambda/lambda-java#discovering-the-services-behind-the-lambda-endpoint),
 with a bearer token set.
 ```bash
-curl -H "Authorization: Bearer $(cat /token)" https://yourcluster.dev.restate.cloud:8081/deployments -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/my-greeter", "additional_headers": {"x-api-key": "your-api-key"} }'
+curl -H "Authorization: Bearer $(cat /token)" https://yourcluster.dev.restate.cloud:9070/deployments -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/my-greeter", "additional_headers": {"x-api-key": "your-api-key"} }'
 ```
 
-### Invoking services (9090)
+### Invoking services (8080)
 A Restate ingress endpoint, which can be used to invoke Restate Lambda functions written in
 [TypeScript or Java](/services/deployment/lambda/lambda-typescript#send-requests),
 with a bearer token set.
 ```bash
-curl -H "Authorization: Bearer $(cat /token)" https://yourcluster.dev.restate.cloud:9090/org.example.Greeter/MultiWord -H 'content-type: application/json' -d '{"name": "Pete"}'
+curl -H "Authorization: Bearer $(cat /token)" https://yourcluster.dev.restate.cloud:8080/org.example.Greeter/MultiWord -H 'content-type: application/json' -d '{"name": "Pete"}'
 ```
 This endpoint is rate limited to 36000 requests per hour.
 
-### Introspection (5432)
+### Introspection (9071)
 A Restate introspection endpoint, which can be used as described in the
 [introspection docs](/services/introspection) with a user and password set:
 ```bash
-PGPASSWORD=$(cat /token) psql -U yourcluster -h yourcluster.dev.restate.cloud
+PGPASSWORD=$(cat /token) psql -U yourcluster -h yourcluster.dev.restate.cloud -p 9071
 ```
 
 ### Observability (3100)

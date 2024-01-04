@@ -107,8 +107,8 @@ docker run --name restate_dev --rm -d --network=host docker.io/restatedev/restat
 Register the service:
 
 Now, we need to tell Restate where the service is running.
-We do this by sending a request to the endpoint of the runtime at `http://localhost:8081/deployments`
-and providing it with the deployment endpoint of the service `http://localhost:8080`.
+We do this by sending a request to the endpoint of the runtime at `http://localhost:9070/deployments`
+and providing it with the deployment endpoint of the service `http://localhost:9080`.
 ```shell
 curl -X POST http://localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'
 ```
@@ -136,8 +136,8 @@ docker run --name restate_dev --rm -d -p 8080:8080 -p 9070:9070 -p 9071:9071 doc
 Register the services:
 
 Now, we need to tell Restate where the service is running.
-We do this by sending a request to the endpoint of the runtime at `http://localhost:8081/deployments`
-and providing it with the deployment endpoint of the service `http://host.docker.internal:8080`.
+We do this by sending a request to the endpoint of the runtime at `http://localhost:9070/deployments`
+and providing it with the deployment endpoint of the service `http://host.docker.internal:9080`.
 ```shell
 curl -X POST http://localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
 ```
