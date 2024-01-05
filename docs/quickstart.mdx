@@ -130,7 +130,7 @@ restate dep register http://localhost:9080
 Or via `curl`, by sending a request to the endpoint of the runtime at `http://localhost:9070/deployments`
 and providing it with the deployment endpoint of the service `http://localhost:9080`.
 ```shell
-curl -X POST http://localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'
+curl localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'
 ```
 
 Restate then sends a request to the service deployment to ask which services and methods
@@ -166,7 +166,7 @@ restate dep register http://host.docker.internal:9080
 Or via `curl`, by sending a request to the endpoint of the runtime at `http://localhost:9070/deployments`
 and providing it with the deployment endpoint of the service `http://host.docker.internal:9080`.
 ```shell
-curl -X POST http://localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
+curl localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
 ```
 
 Restate then sends a request to the service deployment to ask which services and methods
@@ -184,14 +184,14 @@ Invoke the function via:
 <TabItem value="ts" label="TypeScript" default>
 
 ```shell
-curl -X POST http://localhost:8080/myservice/hello -H 'content-type: application/json' -d '{"request": "Restate"}'
+curl localhost:8080/myservice/hello -H 'content-type: application/json' -d '{"request": "Restate"}'
 ```
 
 </TabItem>
 <TabItem value="jvm" label="Java" default>
 
 ```shell
-curl -X POST http://localhost:8080/greeter.Greeter/Greet -H 'content-type: application/json' -d '{"name": "Restate"}'
+curl localhost:8080/greeter.Greeter/Greet -H 'content-type: application/json' -d '{"name": "Restate"}'
 ```
 
 </TabItem>

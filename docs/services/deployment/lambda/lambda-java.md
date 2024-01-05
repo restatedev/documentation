@@ -53,6 +53,6 @@ To let Restate discover the services, execute the following curl command,
 pointed at the Restate runtime and with the Lambda function ARN in the data field.
 
 ```shell
-curl -X POST <RESTATE_META_URL>/deployments -H 'content-type: application/json' -d '{"arn": "arn:aws:lambda:my-region:123456789101:function:my-function:my-version"}'
+curl <RESTATE_META_URL>/deployments -H 'content-type: application/json' -d '{"arn": "arn:aws:lambda:my-region:123456789101:function:my-function:my-version"}'
 ```
 

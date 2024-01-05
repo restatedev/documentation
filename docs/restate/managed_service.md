@@ -137,5 +137,5 @@ Once you have a role that has permission to call the Lambda, and allows Restate 
 the Lambda:
 
 ```shell
-curl -X POST <RESTATE_META_URL>/deployments -H 'content-type: application/json' -d '{"arn": "<LAMBDA_FUNCTION_ARN>", "assume_role_arn": "<ROLE_ARN>" }'
+curl <RESTATE_META_URL>/deployments -H 'content-type: application/json' -d '{"arn": "<LAMBDA_FUNCTION_ARN>", "assume_role_arn": "<ROLE_ARN>" }'
 ```
