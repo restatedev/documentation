@@ -40,10 +40,10 @@ For example, call the `greet` function of the `greeter` service for the name `Pe
 
 ```ts
 // Option 1: use only types and supply service name separately. 
-const result1 = await ctx.rpc<myGreeterApiType>({path: "greeter"}).greet("Pete");
+const result1 = await ctx.rpc<myGreeterApiType>({path: "greeter"}).greet("Restate");
 
 // Option 2: use full API spec
-const result2 = await ctx.rpc(myGreeterApi).greet("Pete");
+const result2 = await ctx.rpc(myGreeterApi).greet("Restate");
 ```
 
 </TabItem>
@@ -55,7 +55,7 @@ In this example, the `Greet` function requires a `Request` Protobuf message as i
 ```typescript
 const client = new GreeterClientImpl(ctx);
 const greeting = await client.greet(
-    GreetRequest.create({ name: "Pete" })
+    GreetRequest.create({ name: "Restate" })
 );
 ```
 
@@ -67,7 +67,7 @@ For example, if you have a `Greeter` service with a method `greet`:
 
 ```java
 GreeterRestate.GreeterRestateClient client = GreeterRestate.newClient(ctx);
-var req = GreetRequest.newBuilder().setName("Pete").build();
+var req = GreetRequest.newBuilder().setName("Restate").build();
 GreetResponse response = client.greet(req).await();
 ```
 

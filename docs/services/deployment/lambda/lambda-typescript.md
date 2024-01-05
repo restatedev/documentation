@@ -36,7 +36,7 @@ To let Restate discover the services, execute the following curl command,
 pointed at the Restate runtime and with the Lambda function ARN in the data field.
 
 ```shell
-curl -X POST http://<your-restate-runtime-endpoint>:9070/deployments -H 'content-type: application/json' -d '{"arn": "arn:aws:lambda:my-region:123456789101:function:my-function:my-version"}'
+curl -X POST <RESTATE_META_URL>/deployments -H 'content-type: application/json' -d '{"arn": "arn:aws:lambda:my-region:123456789101:function:my-function:my-version"}'
 ```
 
 ## Tutorial
@@ -198,10 +198,10 @@ Stop the runtime (and remove any intermediate state) with `docker stop restate_d
 Connect to the Restate (e.g. via an SSH session if it is running on EC2) runtime and execute the discovery curl command:
 
 ```shell
-curl -X POST http://<your-restate-runtime-endpoint>:9070/deployments -H 'content-type: application/json' -d '{"arn": "<lambda-function-arn>"  }'
+curl -X POST <RESTATE_META_URL>/deployments -H 'content-type: application/json' -d '{"arn": "<LAMBDA_FUNCTION_ARN>"  }'
 ```
 
-If you are running the runtime locally, replace `<your-restate-runtime-endpoint>` by `localhost`.
+If you are running the runtime locally, replace `<RESTATE_META_URL>` by `http://localhost:9070`.
 If the runtime is running somewhere else, then replace it accordingly.
 
 When executing this command, you should see the discovered services printed out!
@@ -212,10 +212,10 @@ When executing this command, you should see the discovered services printed out!
 
 #### Send requests
 
-Now let's invoke the `MultiWord` method of our service! Don't forget to replace `<your-restate-runtime-endpoint>` accordingly.
+Now let's invoke the `MultiWord` method of our service! Don't forget to replace `<RESTATE_INGRESS_URL>` accordingly.
 
 ```shell
-curl -X POST http://<your-restate-runtime-endpoint>:8080/org.example.Greeter/MultiWord -H 'content-type: application/json' -d '{"name": "Pete"}'
+curl -X POST <RESTATE_INGRESS_URL>/org.example.Greeter/MultiWord -H 'content-type: application/json' -d '{"name": "Pete"}'
 ```
 
 You should see the response:

@@ -130,25 +130,25 @@ You can resolve awakeables from outside Restate by sending requests to Restate's
 To resolve an awakeable with a JSON payload:
 
 ```shell
-curl -X POST http://<restate-runtime-host-port>/dev.restate.Awakeables/Resolve -H 'content-type: application/json' -d '{"id": "<AWAKEABLE_ID>", "json_result": <JSON_VALUE_RESULT>}'
+curl -X POST <RESTATE_INGRESS_URL>/dev.restate.Awakeables/Resolve -H 'content-type: application/json' -d '{"id": "<AWAKEABLE_ID>", "json_result": <JSON_VALUE_RESULT>}'
 ```
 
 For example:
 
 ```shell
-curl -X POST http://localhost:8080/dev.restate.Awakeables/Resolve -H 'content-type: application/json' -d '{"id": "T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE", "json_result": {"hello": "world"}}'
+curl -X POST localhost:8080/dev.restate.Awakeables/Resolve -H 'content-type: application/json' -d '{"id": "T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE", "json_result": {"hello": "world"}}'
 ```
 
 To reject an awakeable:
 
 ```shell
-curl -X POST http://<restate-runtime-host-port>/dev.restate.Awakeables/Reject -H 'content-type: application/json' -d '{"id": "<AWAKEABLE_ID>", "reason": "<FAILURE_REASON>"}'
+curl -X POST <RESTATE_INGRESS_URL>/dev.restate.Awakeables/Reject -H 'content-type: application/json' -d '{"id": "<AWAKEABLE_ID>", "reason": "<FAILURE_REASON>"}'
 ```
 
 For example:
 
 ```shell
-curl -X POST http://<restate-runtime-host-port>/dev.restate.Awakeables/Reject -H 'content-type: application/json' -d '{"id": "T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE", "reason": "Very bad error!"}'
+curl -X POST localhost:8080/dev.restate.Awakeables/Reject -H 'content-type: application/json' -d '{"id": "T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE", "reason": "Very bad error!"}'
 ```
 
 Look at the [Protobuf definitions](https://github.com/restatedev/proto/blob/main/dev/restate/services.proto)
