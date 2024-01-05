@@ -1,0 +1,102 @@
+---
+sidebar_position: 4
+description: "Use the CLI to interact with Restate."
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# CLI 
+
+You can use the CLI to interact with Restate, and manage you services, deployments and invocations.
+
+## Installation
+
+Install the Restate CLI via:
+
+<Tabs groupId="operating-systems">
+<TabItem value="lin" label="npm">
+
+```shell
+npm install @restatedev/restate
+```
+
+</TabItem>
+<TabItem value="mac" label="Homebrew">
+
+```shell
+brew install restatedev/tap/restate
+```
+
+</TabItem>
+</Tabs>
+
+
+## Configuration
+
+There are two ways to configure the CLI: via environment variables or via a configuration file.
+
+### Using environment variables
+
+- `RESTATE_HOST`: The hostname/IP address of the server. Default is `localhost`.
+- `RESTATE_HOST_SCHEME`: Default is `http`.
+- `RESTATE_META_URL`: To specify the full URL of meta service (scheme+host+port).
+- `RESTATE_DATAFUSION_HTTP_URL`: To specify the full URL of datafusion HTTP endpoint.
+- `RESTATE_AUTH_TOKEN`: Set if authentication is required.
+
+### Using a configuration file
+
+You can also specify the configuration in a `.env` file. The CLI will look for a `.env` file in its current directory.
+
+For example, to connect to a Restate meta running at `http://myhost:7777`, save the following in a `.env` file:
+
+```
+RESTATE_META_URL=http://myhost:7777
+```
+
+## Usage
+
+Here are a few useful commands:
+
+**Printing help**
+
+```shell 
+restate --help
+```
+
+**Downloading an example or template**
+
+```shell
+restate example
+```
+
+Follow the prompts to select which template you want to download.
+
+**Listing your services**
+
+```shell
+restate svc list
+```
+
+**Listing ongoing invocations**
+
+```shell
+restate inv list
+```
+
+**Describing the status of an invocation**
+
+```shell
+restate inv describe <invocation-id>
+```
+
+Use this command to understand the progress of the invocation: the status, any errors and retries that occurred, the current journal, etc.
+
+**Cancel an ongoing invocation**
+
+```shell
+restate inv cancel <invocation-id>
+```
+
+Use this command to cancel an invocation and its children. 
+Use the `--kill` flag to ungracefully kill the invocation and its children.
