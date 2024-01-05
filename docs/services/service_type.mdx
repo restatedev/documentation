@@ -36,10 +36,10 @@ Because keyed services are executed serially on a per-key basis, it means that i
 ```typescript
 const client = new ServiceB(ctx);
 await ctx.oneWayCall(() =>
-  client.do(TestRequest.create({ key: "Pete", number: 1 }))
+  client.do(TestRequest.create({ key: "Restate", number: 1 }))
 );
 await ctx.oneWayCall(() =>
-  client.do(TestRequest.create({ key: "Pete", number: 2 }))
+  client.do(TestRequest.create({ key: "Restate", number: 2 }))
 );
 ```
 
@@ -48,9 +48,9 @@ await ctx.oneWayCall(() =>
 
 ```java
 GreeterRestate.GreeterRestateClient client = GreeterRestate.newClient(ctx);
-var req1 = TestRequest.newBuilder().setName("Pete").setNumber(1).build();
+var req1 = TestRequest.newBuilder().setName("Restate").setNumber(1).build();
 client.oneWay().greet(req1);
-var req2 = TestRequest.newBuilder().setName("Pete").setNumber(2).build();
+var req2 = TestRequest.newBuilder().setName("Restate").setNumber(2).build();
 client.oneWay().greet(req2);
 ```
 

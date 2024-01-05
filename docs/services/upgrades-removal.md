@@ -16,7 +16,7 @@ When registering a new deployment, Restate will detect if it contains already re
 For example, let's assume there is a `greeter.Greeter` service deployed on the deployment available at `http://greeter-v1/`. To update it, deploy a new deployment available at `http://greeter-v2/`, containing the new revision of `greeter.Greeter`, and then register it:
 
 ```bash
-$ curl <RESTATE_META_ENDPOINT>/deployments -H 'content-type: application/json' -d '{"uri": "http://greeter-v2/"}'
+$ curl <RESTATE_META_URL>/deployments -H 'content-type: application/json' -d '{"uri": "http://greeter-v2/"}'
 ```
 
 This returns:
