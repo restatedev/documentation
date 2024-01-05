@@ -296,7 +296,7 @@ Configuring the Kafka clusters through [environment variables](/restate/configur
 To connect event handlers to a Kafka topic, you need to create a subscription using the [Admin API](/references/admin-api):
 
 ```bash
-$ curl <RESTATE_META_ENDPOINT>/subscriptions --json '{"source": "kafka://<CLUSTER_NAME>/<TOPIC_NAME>", "sink": "service://<SERVICE_NAME>/<METHOD_NAME>"}'
+$ curl <RESTATE_META_ENDPOINT>/subscriptions -H 'content-type: application/json' -d '{"source": "kafka://<CLUSTER_NAME>/<TOPIC_NAME>", "sink": "service://<SERVICE_NAME>/<METHOD_NAME>"}'
 ```
 
 For example:
@@ -305,14 +305,14 @@ For example:
 <TabItem value="ts" label="TypeScript" default>
 
 ```bash
-$ curl <RESTATE_META_ENDPOINT>/subscriptions --json '{"source": "kafka://my-cluster/my-topic", "sink": "service://myRouter/eventHandler"}'
+$ curl localhost:9070/subscriptions -H 'content-type: application/json' -d '{"source": "kafka://my-cluster/my-topic", "sink": "service://myRouter/eventHandler"}'
 ```
 
 </TabItem>
 <TabItem value="ts-grpc" label="TypeScript-gRPC">
 
 ```bash
-$ curl <RESTATE_META_ENDPOINT>/subscriptions --json '{"source": "kafka://my-cluster/my-topic", "sink": "service://MyService/Handle"}'
+$ curl localhost:9070/subscriptions -H 'content-type: application/json' -d '{"source": "kafka://my-cluster/my-topic", "sink": "service://MyService/Handle"}'
 ```
 
 </TabItem>
@@ -320,7 +320,7 @@ $ curl <RESTATE_META_ENDPOINT>/subscriptions --json '{"source": "kafka://my-clus
 <TabItem value="java" label="Java">
 
 ```bash
-$ curl <RESTATE_META_ENDPOINT>/subscriptions --json '{"source": "kafka://my-cluster/my-topic", "sink": "service://MyService/Handle"}'
+$ curl localhost:9070/subscriptions -H 'content-type: application/json' -d '{"source": "kafka://my-cluster/my-topic", "sink": "service://MyService/Handle"}'
 ```
 
 </TabItem>
@@ -333,7 +333,7 @@ Once you've created a subscription, Restate immediately starts consuming events 
 You can add additional configuration parameters to the subscription through the `options` field, for example to start consuming the topic from the beginning:
 
 ```bash
-$ curl <RESTATE_ADMIN_ENDPOINT>/subscriptions --json '{"source": "kafka://<CLUSTER_NAME>/<TOPIC_NAME>", "sink": "service://<SERVICE_NAME>/<METHOD_NAME>", "options": {"auto.offset.reset": "earliest"}}'
+$ curl <RESTATE_META_ENDPOINT>/subscriptions -H 'content-type: application/json' -d '{"source": "kafka://<CLUSTER_NAME>/<TOPIC_NAME>", "sink": "service://<SERVICE_NAME>/<METHOD_NAME>", "options": {"auto.offset.reset": "earliest"}}'
 ```
 
 The `options` field accepts any configuration parameter from [librdkafka configuration](https://github.com/confluentinc/librdkafka/blob/master/CONFIGURATION.md).
@@ -343,15 +343,27 @@ The `options` field accepts any configuration parameter from [librdkafka configu
 List the current subscriptions via:
 
 ```shell
-$ curl <RESTATE_ADMIN_ENDPOINT>/subscriptions
+$ curl <RESTATE_META_ENDPOINT>/subscriptions
+```
+
+For example:
+
+```shell
+curl localhost:9070/subscriptions
 ```
 
 ### Deleting a subscription
 
-The creation of a subscription returns an identifier. You can use this identifier to delete a subscription:
+The creation and listing of subscriptions returns an identifier. You can use this identifier to delete a subscription:
 
 ```shell
-$ curl -X DELETE <RESTATE_ADMIN_ENDPOINT>/subscriptions/<SUBSCRIPTION_IDENTIFIER>
+$ curl -X DELETE <RESTATE_META_ENDPOINT>/subscriptions/<SUBSCRIPTION_IDENTIFIER>
+```
+
+For example:
+
+```shell
+curl -X DELETE localhost:9070/subscriptions/018cd978aa9f77b5a80454bc060c2a77
 ```
 
 When you delete a subscription, Restate stops the consumer group associated to it.
