@@ -3,6 +3,9 @@ sidebar_position: 6
 description: "Restate's service versioning strategy."
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Upgrades & removal
 
 Restate comes with different solutions to update the services, to simplify development and evolution of your codebase without sacrificing Restate's strong guarantees.
@@ -15,6 +18,16 @@ When registering a new deployment, Restate will detect if it contains already re
 
 For example, let's assume there is a `greeter.Greeter` service deployed on the deployment available at `http://greeter-v1/`. To update it, deploy a new deployment available at `http://greeter-v2/`, containing the new revision of `greeter.Greeter`, and then register it:
 
+<Tabs groupId="interface" queryString>
+<TabItem value="cli" label="CLI">
+
+```shell
+restate deployments register http://greeter-v2/
+```
+
+</TabItem>
+<TabItem value="curl" label="curl">
+
 ```bash
 curl <RESTATE_META_URL>/deployments -H 'content-type: application/json' -d '{"uri": "http://greeter-v2/"}'
 ```
@@ -23,15 +36,18 @@ This returns:
 
 ```json
 {
-  "id": "Z3JlZXRlci12Mi8",
-  "services": [
-    {
-      "name": "greeter.Greeter",
-      "revision": 2
-    }
-  ]
+    "id": "Z3JlZXRlci12Mi8",
+    "services": [
+{
+    "name": "greeter.Greeter",
+    "revision": 2
+}
+    ]
 }
 ```
+
+</TabItem>
+</Tabs>
 
 This notifies that Restate detected a new revision of an already existing service, and from now on it will route any invocation of `greeter.Greeter` to `http://greeter-v2/`, while any existing invocation to `greeter.Greeter`, e.g. an invocation sleeping for some time, will continue executing on `http://greeter-v1/` until the end.
 
@@ -94,13 +110,34 @@ When updating Keyed and Singleton services, the new revisions will continue to u
 
 ## Removing a service
 
-It is not possible to remove a single service directly, but it is possible to remove the deployment containing it. To remove a service, the suggested procedure is the following:
+It is not possible to remove a single service directly, but it is possible to remove the deployment containing it. To remove a deployment, the suggested procedure is the following:
 
 1. Find out which deployment is serving the latest revision of the service. You can do it with:
+
+<Tabs groupId="interface" queryString>
+<TabItem value="cli" label="CLI">
+
+```shell
+restate deployments list
+```
+
+You can use the ID printed in the list output toget more information about the deployment:
+
+```shell
+restate deployments describe <DEPLOYMENT_ID>
+```
+
+</TabItem>
+<TabItem value="curl" label="curl">
 
 ```bash
 curl <RESTATE_META_ENDPOINT>/services/{SERVICE_NAME}
 ```
+
+</TabItem>
+</Tabs>
+
+
 
 2. Make sure that removing this deployment won't affect other services you don't want to remove.
 3. Make sure no other Restate service is using this service anymore.
@@ -108,9 +145,26 @@ curl <RESTATE_META_ENDPOINT>/services/{SERVICE_NAME}
 5. Check through the Status introspection that you have no pending requests to this service anymore.
 6. Remove the deployment containing the service with:
 
-```bash
-curl -X DELETE <RESTATE_META_ENDPOINT>/deployments/{DEPLOYMENT_ID}?force=true
+
+<Tabs groupId="interface" queryString>
+<TabItem value="cli" label="CLI">
+
+```shell
+restate deployments remove <DEPLOYMENT_ID>
 ```
+
+If the deployment isn't drained yet but you still want to remove it, use the `--force` flag.
+
+</TabItem>
+<TabItem value="curl" label="curl">
+
+```bash
+curl -X DELETE <RESTATE_META_ENDPOINT>/deployments/<DEPLOYMENT_ID>?force=true
+```
+
+
+</TabItem>
+</Tabs>
 
 :::info
 Currently Restate doesn't implement all the checks to safely remove a service deployment, so you have to force the removal through the `force` query parameter.

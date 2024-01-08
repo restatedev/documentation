@@ -5,19 +5,32 @@ description: "Learn how to inspect/troubleshoot stuck or failing invocations."
 draft: false
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Introspection
 
-Restate exposes information on invocations and application state via its Introspection SQL API. You can use this to gain insight into the status of invocations and the service state that is stored.
+Restate exposes information on invocations and application state via its CLI and Introspection SQL API. You can use this to gain insight into the status of invocations and the service state that is stored.
 
 This can be useful for troubleshooting. For example, a handler might be blocked for a specific key, and you want to kill the invocation that is blocking it but you don't know the invocation ID. Or you want to check what is currently stored in the state of a service.
 
-To let you do this, Restate exposes two SQL tables that you can query via the [*psql* client](https://www.postgresql.org/docs/current/app-psql.html):
+## Setting up introspection
+
+<Tabs groupId="interface" queryString>
+<TabItem value="cli" label="CLI">
+
+The CLI is the easiest way to get started with introspection.  
+Have a look at the [installation guide](/restate/cli) for the CLI.
+
+</TabItem>
+<TabItem value="psql" label="psql">
+
+
+Restate exposes two SQL tables that you can query via the [*psql* client](https://www.postgresql.org/docs/current/app-psql.html):
 - `sys_status` table to inspect invocation status.
 - `sys_invocation_state` table to inspect the in-memory state of the invoker
 - `sys_journal` table to inspect the journal of running invocations
 - `state` table to inspect application state.
-
-## Connecting the *psql* client to Restate
 
 [Install the *psql* client](https://www.postgresql.org/download/).
 
@@ -31,7 +44,28 @@ You can change the default port `9071` by supplying the `-p` argument.
 
 The Restate Introspection SQL API has been implemented based on [DataFusion](https://arrow.apache.org/datafusion/) and supports standard SQL syntax.
 
+</TabItem>
+</Tabs>
+
+
 ## Inspecting invocations
+
+<Tabs groupId="interface" queryString>
+<TabItem value="cli" label="CLI">
+
+To get an overview of invocation inspection with the CLI, do:
+
+```shell
+restate invocations --help
+```
+
+:::info
+The CLI only allows you to interact with active invocations. Active invocations are invocations that haven't completed yet and are either invoked or suspended.
+:::
+
+</TabItem>
+<TabItem value="psql" label="psql">
+
 You can query the status of invocations via the `sys_status` table.
 
 To retrieve the schema of the `sys_status` table, connect the *psql* client to Restate and execute:
@@ -45,48 +79,161 @@ An exhaustive description of the schema can be found in [the references](/refere
 The `sys_status` table only contains entries for active invocations. Active invocations are invocations that haven't completed yet and are either invoked or suspended.
 :::
 
+</TabItem>
+</Tabs>
+
+
 ### Key queries
-This following list contains some key queries on the `sys_status` table to give you an idea of the insights you can get from it:
+This following list contains some key queries to give you an idea of the insights you can get from it:
 
 - List the ongoing invocations by executing:
-    ```sql
-    select * from sys_status;
-    ```
+
+<Tabs groupId="interface" queryString>
+<TabItem value="cli" label="CLI">
+
+```shell
+restate invocations list
+```
+
+</TabItem>
+<TabItem value="psql" label="psql">
+
+```sql
+select * from sys_status;
+```
+
+</TabItem>
+</Tabs>
+
 
 - Retrieve the invocation ID (`id`) that is currently blocking a service-key combination via:
-    ```sql
-    select method, status, id from sys_status where service = 'test.MyServiceName' and service_key = 'myKey';
-    ```
+
+<Tabs groupId="interface" queryString>
+    <TabItem value="cli" label="CLI">
+
+        ```shell
+        restate
+        ```
+
+    </TabItem>
+    <TabItem value="psql" label="psql">
+
+        ```sql
+        select method, status, id from sys_status where service = 'test.MyServiceName' and service_key = 'myKey';
+        ```
+
+    </TabItem>
+</Tabs>
+
   You can then use the invocation ID to [kill the invocation](./invocation.md#cancel-an-invocation).
 
 - Check the status of an invocation via:
-    ```sql
-    select service, method, status from sys_status where id = 'T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE';
-    ```
-  The status field shows that the invocation is either in status `invoked`, meaning actively processing, or in status is `suspended`, meaning waiting on some external input (e.g. request-response call, awakeable, sleep, ...).
+
+<Tabs groupId="interface" queryString>
+    <TabItem value="cli" label="CLI">
+
+        ```shell
+        restate invocations describe <INVOCATION_ID>
+        ```
+
+        Check the status field in the invocation information in the output.
+
+    </TabItem>
+    <TabItem value="psql" label="psql">
+
+        ```sql
+        select service, method, status from sys_status where id = '<INVOCATION_ID>';
+        ```
+
+        The status field shows that the invocation is either in status `invoked`, meaning actively processing, or in status is `suspended`, meaning waiting on some external input (e.g. request-response call, awakeable, sleep, ...).
+
+    </TabItem>
+</Tabs>
+
 
 - Check when an invocation was modified the last time via:
-    ```sql
-    select modified_at from sys_status where id = 'T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE';
-    ```
-  This includes any modification to the row in the table (e.g. when the service last switched its status from `invoked` to `suspended`, or when the last journal entry was added).
+
+<Tabs groupId="interface" queryString>
+    <TabItem value="cli" label="CLI">
+
+        ```shell
+        restate
+        ```
+
+    </TabItem>
+    <TabItem value="psql" label="psql">
+
+        ```sql
+        select modified_at from sys_status where id = '<INVOCATION_ID>';
+        ```
+        This includes any modification to the row in the table (e.g. when the service last switched its status from `invoked` to `suspended`, or when the last journal entry was added).
+
+    </TabItem>
+</Tabs>
+
 
 - To find out if an invocation was triggered via the ingress or by another service:
-    ```sql
-    select invoked_by, invoked_by_service, invoked_by_id from sys_status where id = 'T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE';
-    ```
-  The `invoked_by` field contains either `ingress` or `service`. If the invocation was triggered by another service, then the fields `invoked_by_service` and `invoked_by_id` will supply more information about the invoking service.
+
+<Tabs groupId="interface" queryString>
+    <TabItem value="cli" label="CLI">
+
+        ```shell
+        restate invocations describe <INVOCATION_ID>
+        ```
+
+        You can check this at the root of the tree in the invocation progress.
+
+    </TabItem>
+    <TabItem value="psql" label="psql">
+
+        ```sql
+        select invoked_by, invoked_by_service, invoked_by_id from sys_status where id = '<INVOCATION_ID>';
+        ```
+        The `invoked_by` field contains either `ingress` or `service`. If the invocation was triggered by another service, then the fields `invoked_by_service` and `invoked_by_id` will supply more information about the invoking service.
+
+    </TabItem>
+</Tabs>
 
 - Retrieve the trace ID based on a invocation ID:
-    ```sql
-    select trace_id from sys_status where id = 'T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE';
-    ```
+
+<Tabs groupId="interface" queryString>
+    <TabItem value="cli" label="CLI">
+
+        ```shell
+        restate
+        ```
+
+    </TabItem>
+    <TabItem value="psql" label="psql">
+
+        ```sql
+        select trace_id from sys_status where id = '<INVOCATION_ID>';
+        ```
+
+    </TabItem>
+</Tabs>
+
   Afterwards, you can use this trace ID to [search for spans in Jaeger](/restate/tracing#searching-traces).
 
 - Retrieve all invocations that have not seen any activity for more than 1 hour:
-    ```sql
-    select * from sys_status where to_timestamp(modified_at) <= now() - interval '1' hour;
-    ```
+
+<Tabs groupId="interface" queryString>
+    <TabItem value="cli" label="CLI">
+
+        ```shell
+        restate
+        ```
+
+    </TabItem>
+    <TabItem value="psql" label="psql">
+
+        ```sql
+        select * from sys_status where to_timestamp(modified_at) <= now() - interval '1' hour;
+        ```
+
+    </TabItem>
+</Tabs>
+
 
 ## Inspecting the attempt status of an invocation
 
@@ -112,7 +259,7 @@ select * from sys_invocation_state where service = 'test.MyServiceName' and serv
 Or, if you already have an invocation ID, you can query with that directly:
 
 ```sql
-select * from sys_invocation_state where id = 'T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE';
+select * from sys_invocation_state where id = '<INVOCATION_ID>';
 ```
 
 It can be useful to filter for all invocations that are failing to be executed against the deployment:
@@ -142,11 +289,15 @@ Or, if you only know the invocation ID, you can use the `sys_status` table to fi
 
 ```sql
 select * from sys_journal where service = 'test.MyServiceName' and service_key = (
-    select service_key from sys_status where id = 'T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE'
+    select service_key from sys_status where id = '<INVOCATION_ID>'
   );
 ```
 
 ## Inspecting application state
+
+:::note
+Inspecting the application state is currently only possible via the CLI.
+:::
 
 You can query the application state via the `state` table.
 
