@@ -4,6 +4,9 @@ sidebar_position: 1
 description: "Learn how to run Restate TypeScript services on AWS Lambda."
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # AWS Lambda + TypeScript
 
 ## Deploying services as AWS Lambda functions
@@ -35,9 +38,27 @@ See [the documentation](/restate/managed_service) for more details.
 To let Restate discover the services, execute the following curl command,
 pointed at the Restate runtime and with the Lambda function ARN in the data field.
 
+<Tabs groupId="interface" queryString>
+<TabItem value="cli" label="CLI">
+
+```shell
+restate deployments register "arn:aws:lambda:my-region:123456789101:function:my-function:my-version"
+```
+
+Replace the Lambda function ARN in the data field.
+
+</TabItem>
+<TabItem value="curl" label="curl">
+
 ```shell
 curl <RESTATE_META_URL>/deployments -H 'content-type: application/json' -d '{"arn": "arn:aws:lambda:my-region:123456789101:function:my-function:my-version"}'
 ```
+
+Replace `<RESTATE_META_URL>` and the Lambda function ARN in the data field.
+
+</TabItem>
+</Tabs>
+
 
 ## Tutorial
 
@@ -111,7 +132,7 @@ The AWS console lets you test your Lambda functions.
 Go to your Lambda function and click on the `Test` tab.
 Here, you can send requests to your Lambda function.
 
-You can test discovery by sending this event JSON to your Lambda function:
+You can test service registration by sending this event JSON to your Lambda function:
 
 ```json
 {
@@ -195,20 +216,35 @@ Stop the runtime (and remove any intermediate state) with `docker stop restate_d
 
 ### Discovering the services behind the Lambda endpoint
 
-Connect to the Restate (e.g. via an SSH session if it is running on EC2) runtime and execute the discovery curl command:
+Connect to the Restate (e.g. via an SSH session if it is running on EC2) runtime and execute the registration curl command:
+
+<Tabs groupId="interface" queryString>
+<TabItem value="cli" label="CLI">
+
+```shell
+restate deployments register <LAMBDA_FUNCTION_ARN>
+```
+
+Replace the Lambda function ARN in the data field.
+
+</TabItem>
+<TabItem value="curl" label="curl">
 
 ```shell
 curl <RESTATE_META_URL>/deployments -H 'content-type: application/json' -d '{"arn": "<LAMBDA_FUNCTION_ARN>"  }'
 ```
 
+Replace `<RESTATE_META_URL>` and the Lambda function ARN in the data field.
+
+</TabItem>
+</Tabs>
+
+
+
 If you are running the runtime locally, replace `<RESTATE_META_URL>` by `http://localhost:9070`.
 If the runtime is running somewhere else, then replace it accordingly.
 
 When executing this command, you should see the discovered services printed out!
-
-```json
-{"services":["org.example.Greeter"]}
-```
 
 #### Send requests
 

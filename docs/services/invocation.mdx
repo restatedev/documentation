@@ -3,6 +3,9 @@ sidebar_position: 5
 description: "Explore the different ways to invoke Restate services."
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Invocation
 
 An invocation is a single call to a service method.
@@ -72,7 +75,7 @@ Restate also natively supports gRPC-web. You can use a [gRPC-web code generator]
 You can send requests to Restate providing an idempotency key, through the [`Idempotency-Key` header](https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/):
 
 ```shell
-curl <RESTATE_INGRESS_URL>/org.example.Greeter/Greet -H 'idempotency-key: <idempotency-key>' -H 'content-type: application/json' -d '{"name": "Pete"}'
+curl <RESTATE_INGRESS_URL>/org.example.Greeter/Greet -H 'idempotency-key: <IDEMPOTENCY_KEY>' -H 'content-type: application/json' -d '{"name": "Pete"}'
 ```
 
 After the invocation completes, Restate persists the response for a retention period of 30 minutes.
@@ -156,6 +159,23 @@ The response of the handler will then be propagated back to its caller where it 
 Canceling an invocation is a non-blocking operation. This means that the cancellation is not guaranteed to have completed when the API call returns. In some rare cases, cancellations will not have an effect. In these cases, users need to retry the operation.
 :::
 
+<Tabs groupId="interface" queryString>
+<TabItem value="cli" label="CLI">
+
+Retrieve the invocation identifier from the logs or traces, or use the CLI:
+```shell
+restate invocations list
+```
+
+You can cancel an invocation using the CLI:
+
+```shell
+restate invocations cancel <INVOCATION_IDENTIFIER>
+```
+
+</TabItem>
+<TabItem value="curl" label="curl">
+
 ```shell
 curl -X DELETE <RESTATE_ADMIN_URL>/invocations/<INVOCATION_IDENTIFIER>
 ```
@@ -167,6 +187,9 @@ curl -X DELETE http://localhost:9070/invocations/T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWH
 ```
 
 For more details on the API, refer to the [admin API docs](/references/admin-api).
+
+</TabItem>
+</Tabs>
 
 ## Kill an invocation
 
@@ -185,6 +208,23 @@ One-way calls and delayed calls will not be killed because they are considered d
 Killing an invocation might leave the service instance in an inconsistent state, just like how killing a process in your operating system may cause the open files to become corrupted. Use it with caution and try to fix the invocation in other ways before resorting to killing it.
 :::
 
+<Tabs groupId="interface" queryString>
+<TabItem value="cli" label="CLI">
+
+Retrieve the invocation identifier from the logs or traces, or use the CLI:
+```shell
+restate invocations list
+```
+
+You can kill an invocation using the CLI, by using cancel and the `--force` flag:
+
+```shell
+restate invocations cancel --force <INVOCATION_IDENTIFIER>
+```
+
+</TabItem>
+<TabItem value="curl" label="curl">
+
 To kill an invocation, send the following request to the Restate admin API:
 
 ```shell
@@ -198,6 +238,9 @@ $ curl -X DELETE http://localhost:9070/invocations/T4pIkIJIGAsBiiGDV2dxK7PkkKnWy
 ```
 
 For more details on the API, refer to the [admin API docs](/references/admin-api).
+
+</TabItem>
+</Tabs>
 
 ## Invocation execution timeout(s)
 
