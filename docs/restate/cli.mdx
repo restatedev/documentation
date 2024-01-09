@@ -66,6 +66,13 @@ RESTATE_META_URL=http://myhost:7777
 
 Here are a few useful commands:
 
+**Check if the CLI is configured correctly**
+
+```shell
+restate whoami
+```
+
+
 **Printing help**
 
 ```shell 
@@ -86,6 +93,22 @@ Follow the prompts to select which template you want to download.
 restate svc list
 ```
 
+**Show the status of the service(s)**
+
+```shell
+restate svc status
+```
+
+Shows a summary of the services and their methods.
+It shows counters for the invocations in the various states (pending, running, suspended, etc.)
+It also lists a sample of active service keys.
+
+To print the status of a specific service:
+
+```shell
+restate svc status <SERVICE_NAME>
+```
+
 **Listing ongoing invocations**
 
 ```shell
@@ -95,7 +118,7 @@ restate inv list
 **Describing the status of an invocation**
 
 ```shell
-restate inv describe <invocation-id>
+restate inv describe <INVOCATION_ID>
 ```
 
 Use this command to understand the progress of the invocation: the status, any errors and retries that occurred, the current journal, etc.
@@ -103,8 +126,13 @@ Use this command to understand the progress of the invocation: the status, any e
 **Cancel an ongoing invocation**
 
 ```shell
-restate inv cancel <invocation-id>
+restate inv cancel <INVOCATION_ID>
 ```
 
 Use this command to cancel an invocation and its children. 
 Use the `--kill` flag to ungracefully kill the invocation and its children.
+
+:::tip
+The CLI can be a useful tool for debugging and troubleshooting.
+Have a look at the [introspection page](/services/introspection) for a list of useful commands .
+:::
