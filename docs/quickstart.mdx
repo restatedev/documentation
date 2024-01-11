@@ -15,6 +15,7 @@ This guide takes you through your first steps with Restate.
     - TypeScript: Latest stable version of [NodeJS](https://nodejs.org/en/) >= v18.17.1 and [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 9.6.7
     - Java: [JDK](https://whichjdk.com/) >= 17
 - [Docker](https://docs.docker.com/engine/install/) to run Restate
+- (Optional): Restate CLI: [Installation guide](/restate/cli#installation)
 
 ## Step 1: Scaffold the project
 
@@ -39,8 +40,13 @@ npm install
 </TabItem>
 <TabItem value="jvm" label="Java" default>
 
-Grab the Java Hello world example:
+Grab the Java Hello world example via the Restate CLI:
 
+```shell
+restate example java-hello-world-http && cd java-hello-world-http
+```
+
+Or via `wget`:
 ```shell
 wget https://github.com/restatedev/examples/releases/latest/download/java-hello-world-http.zip && unzip java-hello-world-http.zip -d java-hello-world-http && rm java-hello-world-http.zip
 ```
@@ -104,18 +110,6 @@ Run the Restate Docker container:
 docker run --name restate_dev --rm -d --network=host docker.io/restatedev/restate:VAR::RESTATE_VERSION
 ```
 
-Register the service:
-
-Now, we need to tell Restate where the service is running.
-We do this by sending a request to the endpoint of the runtime at `http://localhost:9070/deployments`
-and providing it with the deployment endpoint of the service `http://localhost:9080`.
-```shell
-curl -X POST http://localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'
-```
-Restate then sends a request to the service deployment to ask which services and methods
-are running behind this deployment and will keep track of these (including of the method signatures).
-After executing this curl request, you should see the discovered services and methods printed to your terminal.
-
 :::tip
 Restate is a single self-contained binary and Docker just one of the ways to run it. You can also obtain the binary from the
 [releases page](https://github.com/restatedev/restate/releases), from our [Homebrew tap](https://github.com/restatedev/homebrew-tap)
@@ -123,6 +117,25 @@ with `brew install restatedev/tap/restate`, or from [npm](https://www.npmjs.com/
 with `npm install @restatedev/restate-server`.
 :::
 
+Register the service:
+
+Now, we need to tell Restate where the service is running.
+
+We can do this via the CLI:
+
+```shell
+restate dep register http://localhost:9080
+```
+
+Or via `curl`, by sending a request to the endpoint of the runtime at `http://localhost:9070/deployments`
+and providing it with the deployment endpoint of the service `http://localhost:9080`.
+```shell
+curl -X POST http://localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'
+```
+
+Restate then sends a request to the service deployment to ask which services and methods
+are running behind this deployment and will keep track of these (including of the method signatures).
+After executing this curl request, you should see the discovered services and methods printed to your terminal.
 
 </TabItem>
 <TabItem value="mac" label="macOS">
@@ -133,24 +146,32 @@ Run the Restate Docker container:
 docker run --name restate_dev --rm -d -p 8080:8080 -p 9070:9070 -p 9071:9071 docker.io/restatedev/restate:VAR::RESTATE_VERSION
 ```
 
-Register the services:
-
-Now, we need to tell Restate where the service is running.
-We do this by sending a request to the endpoint of the runtime at `http://localhost:9070/deployments`
-and providing it with the deployment endpoint of the service `http://host.docker.internal:9080`.
-```shell
-curl -X POST http://localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
-```
-Restate then sends a request to the service deployment to ask which services and methods
-are running behind this deployment and will keep track of these (including of the method signatures).
-After executing this curl request, you should see the discovered services and methods printed to your terminal.
-
 :::tip
 Restate is a single self-contained binary and Docker just one of the ways to run it. You can also obtain the binary from the
 [releases page](https://github.com/restatedev/restate/releases), from our [Homebrew tap](https://github.com/restatedev/homebrew-tap)
 with `brew install restatedev/tap/restate`, or from [npm](https://www.npmjs.com/package/@restatedev/restate-server)
 with `npm install @restatedev/restate-server`.
 :::
+
+Register the services:
+
+Now, we need to tell Restate where the service is running. To do this, we register a new "deployment" on restate server.
+
+We can do this via the CLI:
+
+```shell
+restate dep register http://host.docker.internal:9080
+```
+
+Or via `curl`, by sending a request to the endpoint of the runtime at `http://localhost:9070/deployments`
+and providing it with the deployment endpoint of the service `http://host.docker.internal:9080`.
+```shell
+curl -X POST http://localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
+```
+
+Restate then sends a request to the service deployment to ask which services and methods
+are running behind this deployment and will keep track of these (including of the method signatures).
+After executing this curl request, you should see the discovered services and methods printed to your terminal.
 
 </TabItem>
 </Tabs>
