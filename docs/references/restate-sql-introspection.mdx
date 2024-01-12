@@ -68,3 +68,38 @@ The schema of these tables is described in the following.
 | `invoked_service`     | `Utf8`    | If this entry represents an outbound invocation, indicates the name of the invoked service.                                                                                    | `com.example.Greeter` |
 | `invoked_method`      | `Utf8`    | If this entry represents an outbound invocation, indicates the name of the invoked method.                                                                                     | `Greet`               |
 | `invoked_service_key` | `Binary`  | If this entry represents an outbound invocation, indicates the key of that invocation.                                                                                         | `bob`                 |
+
+## Table: `sys_inbox`
+
+|  Column name        | Type        | Description                                                                                                                                                                     | Example                |
+|---------------------|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------|
+| `id`                 | `Utf8`     | [Invocation ID](/services/invocation#invocation-identifier), an opaque token that can be used to cancel an invocation of a service with the [admin API](/references/admin-api). |                        |
+| `partition_key`      | `UInt64`   | Internal column that is used for partitioning the services invocations. Can be ignored.                                                                                         |                        |
+| `service`            | `Utf8`     | The name for the invoked service.                                                                                                                                               | `foo.bar.Greeter`      |
+| `method`             | `Utf8`     | The invoked RPC method.                                                                                                                                                         | `greet`                |
+| `service_key`        | `Utf8`     | The service key.                                                                                                                                                                | `bob`                  |
+| `sequence_number`    | `UInt64`   | Internal identified. Can be ignored.                                                                                                                                            |                        |
+| `invoked_by`         | `Utf8`     | Enum describing the invoker of this service: `ingress` = invoked externally / `service` = invoked by a service.                                                                 |                        |
+| `invoked_by_service` | `Utf8`     | The name of the invoking service. Or `null` if invoked via the ingress.                                                                                                         | `com.example.Greeter`  |
+| `invoked_by_id`      | `Utf8`     | The Invocation ID of the service that triggered this invocation. Or `null` if invoked externally.                                                                               |                        |
+| `trace_id`           | `Utf8`     | The ID of the trace that is assigned to this invocation. Only relevant when tracing is enabled.                                                                                 |                        |
+| `created_at`         | `Date64`   | Timestamp indicating the start of this invocation.                                                                                                                              |                        |
+
+## Table: `sys_service`
+
+|  Column name    | Type        | Description                                                           | Example                |
+|-----------------|-------------|-----------------------------------------------------------------------|------------------------|
+| `name`          | `Utf8`      | The name of the registered user service                               | `com.example.Greeter`  |
+| `revision`      | `UInt64`    | The latest deployed revision                                          | `5`                    |
+| `public`        | `Boolean`   | Whether the service is accessible through the ingress endpoint or not |                        |
+| `instance_type` | `Utf8`      | Identifies if this is a Keyed, Unkeyed, or Singleton service          | `Keyed`                |
+| `deployment_id` | `Utf8`      | The ID of the latest deployment                                       |                        |
+
+## Table: `sys_deployment`
+
+|  Column name    | Type        | Description                                                           | Example                |
+|-----------------|-------------|-----------------------------------------------------------------------|------------------------|
+| `id`            | `Utf8`      | The ID of the service deployment                                      |                        |
+| `ty`            | `Utf8`      | The type of the endpoint, this can be `http` or `lambda`              | `http`                 |
+| `endpoint`      | `Utf8`      | The address of the endpoint (http URL or Lambda ARN)                  |                        |
+| `created_at`    | `Date64`    | Timestamp indicating the deployment registration time.                |                        |

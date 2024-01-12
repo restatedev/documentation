@@ -21,7 +21,7 @@ token will be needed for all interactions with the cluster.
 There are several API endpoints at this hostname:
 
 ### Registering services (9070)
-A Restate meta endpoint, which can be used to register Restate Lambda functions written in 
+A Restate admin endpoint, which can be used to register Restate Lambda functions written in 
 [TypeScript](/services/deployment/lambda/lambda-typescript#discovering-the-services-behind-the-lambda-endpoint) and [Java](/services/deployment/lambda/lambda-java#discovering-the-services-behind-the-lambda-endpoint),
 with a bearer token set.
 ```bash

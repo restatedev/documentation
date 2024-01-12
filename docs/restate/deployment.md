@@ -10,13 +10,14 @@ Restate is currently a single binary that contains everything you need. You can 
 with `brew install restatedev/tap/restate`, or from [npm](https://www.npmjs.com/package/@restatedev/restate)
 with `npm install @restatedev/restate-server`.
 
-The binary exposes three services by default, each on different ports:
+The binary exposes four services by default, each on different ports:
 
-| Name     | Port | Description                                                                                                                    | Protocol                                          |
-|----------|------|--------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
-| Ingress  | 8080 | Acts as an API gateway for all services registered with Restate                                                                | gRPC + [Connect Protocol](https://connect.build/) |
-| Admin    | 9070 | Allows for CRUD operations on service/service deployment metadata, eg for service registration                                 | REST                                              |
-| Postgres | 9071 | Exposes Restate RocksDB read-only storage operations using the Postgres protocol. See [Introspection](/services/introspection) | Postgres                                          |
+| Name      | Port | Description                                                                                                                    | Protocol                                          |
+|-----------|------|--------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
+| Node-ctrl | 5122 | control port for restate server nodes                                                                                          | gRPC + HTTP for prometheus metrics `/metrics`     |
+| Ingress   | 8080 | Acts as an API gateway for all services registered with Restate                                                                | gRPC + [Connect Protocol](https://connect.build/) |
+| Admin     | 9070 | Allows for CRUD operations on service/service deployment metadata, eg for service registration                                 | REST                                              |
+| Postgres  | 9071 | Exposes Restate RocksDB read-only storage operations using the Postgres protocol. See [Introspection](/services/introspection) | Postgres                                          |
 
 It will store metadata and RocksDB data in the relative directory of /target under the current working directory of the process.
 

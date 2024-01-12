@@ -16,7 +16,7 @@ When registering a new deployment, Restate will detect if it contains already re
 For example, let's assume there is a `greeter.Greeter` service deployed on the deployment available at `http://greeter-v1/`. To update it, deploy a new deployment available at `http://greeter-v2/`, containing the new revision of `greeter.Greeter`, and then register it:
 
 ```bash
-$ curl <RESTATE_META_ENDPOINT>/deployments -H 'content-type: application/json' -d '{"uri": "http://greeter-v2/"}'
+$ curl <RESTATE_ADMIN_URL>/deployments -H 'content-type: application/json' -d '{"uri": "http://greeter-v2/"}'
 ```
 
 This returns:
@@ -38,7 +38,7 @@ This notifies that Restate detected a new revision of an already existing servic
 To check which endpoint is currently serving new invocations of `greeter.Greeter`:
 
 ```bash
-$ curl <RESTATE_META_ENDPOINT>/services/greeter.Greeter
+$ curl <RESTATE_ADMIN_URL>/services/greeter.Greeter
 ```
 
 This returns:
@@ -55,7 +55,7 @@ This returns:
 To get more info about the deployment serving it:
 
 ```bash
-$ curl <RESTATE_META_ENDPOINT>/deployments/Z3JlZXRlci12Mi8
+$ curl <RESTATE_ADMIN_URL>/deployments/Z3JlZXRlci12Mi8
 ```
 
 ```json
@@ -99,7 +99,7 @@ It is not possible to remove a single service directly, but it is possible to re
 1. Find out which deployment is serving the latest revision of the service. You can do it with:
 
 ```bash
-$ curl <RESTATE_META_ENDPOINT>/services/{SERVICE_NAME}
+$ curl <RESTATE_ADMIN_URL>/services/{SERVICE_NAME}
 ```
 
 2. Make sure that removing this deployment won't affect other services you don't want to remove.
@@ -109,7 +109,7 @@ $ curl <RESTATE_META_ENDPOINT>/services/{SERVICE_NAME}
 6. Remove the deployment containing the service with:
 
 ```bash
-$ curl -X DELETE <RESTATE_META_ENDPOINT>/deployments/{DEPLOYMENT_ID}?force=true
+$ curl -X DELETE <RESTATE_ADMIN_URL>/deployments/{DEPLOYMENT_ID}?force=true
 ```
 
 :::info

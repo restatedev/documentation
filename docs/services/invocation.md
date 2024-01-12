@@ -105,7 +105,7 @@ This feature can be especially useful when you need to invoke a service method i
 When registering a service deployment, every service is by default accessible both by other services, and by sending requests to Restate using HTTP and/or gRPC. You can configure a service as `private`, such that you can't invoke it by sending requests to Restate, through the [Admin APIs](/references/admin-api):
 
 ```shell
-$ curl -X PATCH <RESTATE_META_ENDPOINT>/services/<SERVICE_NAME> -H 'content-type: application/json' -d '{"public": false}'
+$ curl -X PATCH <RESTATE_ADMIN_URL>/services/<SERVICE_NAME> -H 'content-type: application/json' -d '{"public": false}'
 ```
 
 For example:
@@ -157,7 +157,7 @@ Canceling an invocation is a non-blocking operation. This means that the cancell
 :::
 
 ```shell
-$ curl -X DELETE <RESTATE_META_URL>/invocations/<INVOCATION_IDENTIFIER>
+$ curl -X DELETE <RESTATE_ADMIN_URL>/invocations/<INVOCATION_IDENTIFIER>
 ```
 
 For example:
@@ -188,7 +188,7 @@ Killing an invocation might leave the service instance in an inconsistent state,
 To kill an invocation, send the following request to the Restate admin API:
 
 ```shell
-$ curl -X DELETE <RESTATE_META_URL>/invocations/<INVOCATION_IDENTIFIER>?mode=kill
+$ curl -X DELETE <RESTATE_ADMIN_URL>/invocations/<INVOCATION_IDENTIFIER>?mode=kill
 ```
 
 For example:

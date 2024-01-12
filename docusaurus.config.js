@@ -12,8 +12,8 @@ const redocusaurus = [
     config: "redocly.yaml",
     specs: [
       {
-        id: "meta-rest-api",
-        spec: "static/schemas/openapi-meta.json",
+        id: "admin-rest-api",
+        spec: "static/schemas/openapi-admin.json",
       },
     ],
   },
