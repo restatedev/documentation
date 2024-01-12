@@ -18,7 +18,7 @@ Install the Restate CLI via:
 <TabItem value="lin" label="npm">
 
 ```shell
-npm install @restatedev/restate
+npm i @restatedev/restate
 ```
 
 </TabItem>
@@ -89,7 +89,13 @@ Follow the prompts to select which template you want to download.
 **Listing your services**
 
 ```shell
-restate svc list
+restate services list
+```
+
+Or use the shorthand:
+
+```shell
+restate svc ls
 ```
 
 **Show the status of the service(s)**
@@ -111,6 +117,12 @@ restate svc status <SERVICE_NAME>
 **Listing ongoing invocations**
 
 ```shell
+restate invocations list -w
+```
+
+Or use the shorthand:
+
+```shell
 restate inv list -w
 ```
 This starts a watch-mode listing of ongoing invocations. Many of the CLI commands support `-w`, check `--help` to learn more.
@@ -121,6 +133,8 @@ This starts a watch-mode listing of ongoing invocations. Many of the CLI command
 restate inv describe <INVOCATION_ID>
 ```
 
+You can also use `get` as a shorthand for `describe`.
+
 Use this command to understand the progress of the invocation: the status, any errors and retries that occurred, the current journal, etc.
 
 **Cancel an ongoing invocation**
@@ -129,7 +143,9 @@ Use this command to understand the progress of the invocation: the status, any e
 restate inv cancel <INVOCATION_ID>
 ```
 
-Use this command to cancel an invocation and its children. 
+You can also use `rm` as a shorthand for `cancel`.
+
+Use this command to cancel an invocation and its children.
 Use the `--kill` flag to ungracefully kill the invocation and its children.
 
 :::tip

@@ -58,7 +58,7 @@ The Restate Introspection SQL API has been implemented based on [DataFusion](htt
 To get an overview of invocation inspection with the CLI, do:
 
 ```shell
-restate invocations --help
+restate inv --help
 ```
 
 :::info
@@ -98,7 +98,7 @@ Below, we list some common queries that you can execute to inspect invocations.
 <TabItem value="cli" label="CLI">
 
 ```shell
-restate invocations list
+restate inv ls
 ```
 
 </TabItem>
@@ -117,7 +117,7 @@ select * from sys_status;
     <TabItem value="cli" label="CLI">
 
         ```shell
-        restate invocations describe <INVOCATION_ID>
+        restate inv get <INVOCATION_ID>
         ```
 
         Check the status field in the invocation information in the output.
@@ -141,7 +141,7 @@ select * from sys_status;
     <TabItem value="cli" label="CLI">
 
         ```shell
-        restate invocations describe <INVOCATION_ID>
+        restate inv get <INVOCATION_ID>
         ```
 
         You see the journal printed in the output.
@@ -174,7 +174,7 @@ To have a look at the invocations that are currently in a retry loop, you can ex
     <TabItem value="cli" label="CLI">
 
         ```shell
-        restate invocations list --status backing-off
+        restate inv ls --status backing-off
         ```
 
     </TabItem>
@@ -198,7 +198,7 @@ You can retrieve the invocation ID (`id`) that is currently blocking a service-k
     <TabItem value="cli" label="CLI">
 
         ```shell
-        restate invocations list --key <KEY> --service <SERVICE>
+        restate inv ls --key <KEY> --service <SERVICE>
         ```
 
     </TabItem>
@@ -219,7 +219,7 @@ You can then use the invocation ID to [kill the invocation](/services/invocation
     <TabItem value="cli" label="CLI">
 
         ```shell
-        restate invocations describe <INVOCATION_ID>
+        restate inv get <INVOCATION_ID>
         ```
 
         Check the `Modified at` field in the invocation information in the output.
@@ -242,7 +242,7 @@ To find out if an invocation was triggered via the ingress or by another service
     <TabItem value="cli" label="CLI">
 
         ```shell
-        restate invocations describe <INVOCATION_ID>
+        restate inv get <INVOCATION_ID>
         ```
 
         You can check this at the root of the tree in the invocation progress.
@@ -264,7 +264,7 @@ To find out if an invocation was triggered via the ingress or by another service
     <TabItem value="cli" label="CLI">
 
         ```shell
-        restate invocations describe <INVOCATION_ID>
+        restate inv get <INVOCATION_ID>
         ```
 
     </TabItem>
@@ -286,7 +286,7 @@ To find out if an invocation was triggered via the ingress or by another service
         To list the oldest invocations that are not making progress:
 
         ```shell
-        restate invocations list --oldest-first --status pending,backing-off,suspended
+        restate inv ls --oldest-first --status pending,backing-off,suspended
         ```
 
     </TabItem>
@@ -327,7 +327,7 @@ Zombie invocations are invocations that are pinned to a specific deployment but 
 ## Inspecting application state
 
 :::note
-Inspecting the application state is currently only possible via the CLI.
+Inspecting the application state is currently only possible via `psql`.
 :::
 
 You can query the application state via the `state` table.
