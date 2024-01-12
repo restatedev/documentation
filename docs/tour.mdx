@@ -155,7 +155,7 @@ When Restate first comes up, it doesn't know anything about our services. Let's 
 <TabItem value="lin" label="Linux">
 
 ```shell
-curl -X POST http://localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'
+curl localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'
 ```
 
 </TabItem>
@@ -165,7 +165,7 @@ You do this by sending a request to the Restate endpoint at `http://localhost:90
 and providing it with the service deployment URL `http://host.docker.internal:9080`.
 
 ```shell
-curl -X POST http://localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
+curl localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
 ```
 
 </TabItem>
@@ -303,7 +303,7 @@ Add a ticket to a cart by calling `UserSession/addTicket`.
 <TabItem value="ts" label="TypeScript">
 
 ```shell
-curl -X POST http://localhost:8080/UserSession/addTicket \
+curl localhost:8080/UserSession/addTicket \
     -H 'content-type: application/json' \
     -d '{"key": "123", "request": "456"}'
 ```
@@ -312,7 +312,7 @@ curl -X POST http://localhost:8080/UserSession/addTicket \
 <TabItem value="java" label="Java">
 
 ```shell
-curl -X POST http://localhost:8080/example.UserSession/AddTicket \
+curl localhost:8080/example.UserSession/AddTicket \
     -H 'content-type: application/json' \
     -d '{"user_id": "123", "ticket_id": "456"}'
 ```
@@ -328,7 +328,7 @@ You can call the `UserSession/checkout` function to proceed with the purchase, a
 <TabItem value="ts" label="TypeScript">
 
 ```shell
-curl -X POST http://localhost:8080/UserSession/checkout \
+curl localhost:8080/UserSession/checkout \
     -H 'content-type: application/json' \
     -d '{"key": "123"}'
 ```
@@ -339,7 +339,7 @@ In `src/app` you will find the skeletons of the various services to help you sta
 <TabItem value="java" label="Java">
 
 ```shell
-curl -X POST http://localhost:8080/example.UserSession/Checkout \
+curl localhost:8080/example.UserSession/Checkout \
     -H 'content-type: application/json' \
     -d '{"user_id": "123"}'
 ```
@@ -963,7 +963,7 @@ const expireTicket = async (
 
 Call the `expireTicket` function with:
 ```shell
-curl -X POST http://localhost:8080/UserSession/expireTicket \
+curl localhost:8080/UserSession/expireTicket \
     -H 'content-type: application/json' \
     -d '{"key": "123", "request": "456"}'
 ```
@@ -1004,7 +1004,7 @@ public void expireTicket(RestateContext ctx, ExpireTicketRequest request) throws
 
 Restart the service and call the `expireTicket` function with:
 ```shell
-curl -X POST http://localhost:8080/example.UserSession/ExpireTicket \
+curl localhost:8080/example.UserSession/ExpireTicket \
     -H 'content-type: application/json' \
     -d '{"user_id": "123", "ticket_id":"456"}'
 ```
@@ -1727,7 +1727,7 @@ const expireTicket = async (
 
 Call the `expireTicket` function with:
 ```shell
-curl -X POST http://localhost:8080/UserSession/expireTicket \
+curl localhost:8080/UserSession/expireTicket \
 -H 'content-type: application/json' \
 -d '{"key": "123", "request": "456"}'
 ```
@@ -1754,7 +1754,7 @@ public void expireTicket(RestateContext ctx, ExpireTicketRequest request) throws
 
 Call the `expireTicket` function with:
 ```shell
-curl -X POST http://localhost:8080/example.UserSession/ExpireTicket \
+curl localhost:8080/example.UserSession/ExpireTicket \
 -H 'content-type: application/json' \
 -d '{"user_id": "123", "ticket_id": "456"}'
 ```
@@ -2617,7 +2617,7 @@ docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOIN
 
 Register the services again (required because the state got wiped when the runtime was restarted with the `--rm` flag):
 ```shell
-curl -X POST http://localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'
+curl localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'
 ```
 
 </TabItem>
@@ -2630,7 +2630,7 @@ docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOIN
 
 Register the services again (required because the state got wiped when the runtime was restarted with the `--rm` flag):
 ```shell
-curl -X POST http://localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
+curl localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
 ```
 
 </TabItem>

@@ -24,8 +24,9 @@ There are several API endpoints at this hostname:
 A Restate admin endpoint, which can be used to register Restate Lambda functions written in 
 [TypeScript](/services/deployment/lambda/lambda-typescript#discovering-the-services-behind-the-lambda-endpoint) and [Java](/services/deployment/lambda/lambda-java#discovering-the-services-behind-the-lambda-endpoint),
 with a bearer token set.
+
 ```bash
-curl -H "Authorization: Bearer $(cat /token)" https://yourcluster.dev.restate.cloud:9070/deployments -H 'content-type: application/json' -d '{"uri": "https://<lambda-function-endpoint>/default/my-greeter", "additional_headers": {"x-api-key": "your-api-key"} }'
+curl -H "Authorization: Bearer $(cat /token)" https://<CLUSTER_NAME>.dev.restate.cloud:9070/deployments -H 'content-type: application/json' -d '{"uri": "https://<LAMBDA_FUNCTION_ENDPOINT>/default/my-greeter", "additional_headers": {"x-api-key": "<YOUR_API_KEY>"} }'
 ```
 
 ### Invoking services (8080)
@@ -33,7 +34,7 @@ A Restate ingress endpoint, which can be used to invoke Restate Lambda functions
 [TypeScript or Java](/services/deployment/lambda/lambda-typescript#send-requests),
 with a bearer token set.
 ```bash
-curl -H "Authorization: Bearer $(cat /token)" https://yourcluster.dev.restate.cloud:8080/org.example.Greeter/MultiWord -H 'content-type: application/json' -d '{"name": "Pete"}'
+curl -H "Authorization: Bearer $(cat /token)" https://<CLUSTER_NAME>.dev.restate.cloud:8080/org.example.Greeter/MultiWord -H 'content-type: application/json' -d '{"name": "Pete"}'
 ```
 This endpoint is rate limited to 36000 requests per hour.
 
@@ -41,7 +42,7 @@ This endpoint is rate limited to 36000 requests per hour.
 A Restate introspection endpoint, which can be used as described in the
 [introspection docs](/services/introspection) with a user and password set:
 ```bash
-PGPASSWORD=$(cat /token) psql -U yourcluster -h yourcluster.dev.restate.cloud -p 9071
+PGPASSWORD=$(cat /token) psql -U yourcluster -h <CLUSTER_NAME>.dev.restate.cloud -p 9071
 ```
 
 ### Observability (3100)
@@ -136,5 +137,5 @@ Once you have a role that has permission to call the Lambda, and allows Restate 
 the Lambda:
 
 ```shell
-curl -X POST http://<your-restate-runtime-endpoint>:9070/deployments -H 'content-type: application/json' -d '{"arn": "<lambda-function-arn>", "assume_role_arn": "<role-arn>" }'
+curl <RESTATE_ADMIN_URL>/deployments -H 'content-type: application/json' -d '{"arn": "<LAMBDA_FUNCTION_ARN>", "assume_role_arn": "<ROLE_ARN>" }'
 ```

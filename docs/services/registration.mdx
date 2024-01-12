@@ -3,21 +3,59 @@ sidebar_position: 4
 description: "Find out how to register new services with Restate."
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Registration
 
-After deploying a service deployment, in order to use it, it must be registered with Restate as follows with curl  (>v7.82.0):
+After deploying a service deployment, in order to use it, it must be registered with Restate as follows:
+
+<Tabs groupId="interface" queryString>
+<TabItem value="cli" label="CLI">
+
+```shell
+restate deployments register <SERVICE_ENDPOINT_URI>
+```
+
+Or you can use the shorthand:
+
+```shell
+restate dp add <SERVICE_ENDPOINT_URI>
+```
+
+</TabItem>
+<TabItem value="curl" label="curl">
 
 ```bash
-$ curl <RESTATE_ADMIN_URL>/deployments -H 'content-type: application/json' -d '{"uri": "<SERVICE_ENDPOINT_URI>"}'
+curl <RESTATE_ADMIN_URL>/deployments -H 'content-type: application/json' -d '{"uri": "<SERVICE_ENDPOINT_URI>"}'
 ```
+
+</TabItem>
+</Tabs>
+
+
 
 When registering a service deployment, Restate uses a mechanism similar to "reflections" to discover the available services and their schemas and properties. A service can be registered only once, and subsequent registration requests to the same deployment will fail. For more details on how to update services, check the [versioning documentation](/services/upgrades-removal).
 
-The deployment creation can be forced to overwrite an existing deployment using curl (>v7.82.0):
+The deployment creation can be forced to overwrite an existing deployment:
+
+<Tabs groupId="interface" queryString>
+<TabItem value="cli" label="CLI">
+
+```shell
+restate dp add --force <SERVICE_ENDPOINT_URI>
+```
+
+</TabItem>
+<TabItem value="curl" label="curl">
 
 ```bash
-$ curl <RESTATE_ADMIN_URL>/deployments -H 'content-type: application/json' -d '{"uri": "<SERVICE_ENDPOINT_URI>", "force": true}'
+curl <RESTATE_ADMIN_URL>/deployments -H 'content-type: application/json' -d '{"uri": "<SERVICE_ENDPOINT_URI>", "force": true}'
 ```
+
+</TabItem>
+</Tabs>
+
 
 This will forcefully overwrite the existing service deployment with the same uri, forcing the discovery process again. It will also remove services that were served by that deployment and are not available anymore.
 
