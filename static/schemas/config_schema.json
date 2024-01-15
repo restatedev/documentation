@@ -23,8 +23,6 @@
     },
     "meta": {
       "default": {
-        "rest_address": "0.0.0.0:9070",
-        "rest_concurrency_limit": 1000,
         "service_client": {
           "http": {
             "keep_alive_options": {
@@ -83,20 +81,19 @@
               "aws_profile": null
             }
           },
-          "tmp_dir": "/tmp/invoker-018c643db86e77aabbf01537673fc85a"
+          "tmp_dir": "/tmp/invoker-018d0f34591972a0af655e981a8a1cdd"
         },
         "kafka": {
           "clusters": {}
+        },
+        "partition_processor": {
+          "max_batch_duration": "50ms"
         },
         "partitions": 1024,
         "storage_query_datafusion": {
           "memory_limit": null,
           "query_parallelism": null,
           "temp_folder": null
-        },
-        "storage_query_http": {
-          "http_address": "0.0.0.0:9072",
-          "http_concurrency_limit": 1000
         },
         "storage_query_postgres": {
           "bind_address": "0.0.0.0:9071"
@@ -113,6 +110,21 @@
         }
       },
       "$ref": "#/definitions/WorkerOptions"
+    },
+    "node_ctrl": {
+      "default": {
+        "bind_address": "0.0.0.0:5122",
+        "disable_prometheus": false,
+        "histogram_inactivity_timeout": null
+      },
+      "$ref": "#/definitions/NodeCtrlOptions"
+    },
+    "admin": {
+      "default": {
+        "bind_address": "0.0.0.0:9070",
+        "concurrency_limit": 1000
+      },
+      "$ref": "#/definitions/AdminOptions"
     },
     "tokio_runtime": {
       "default": {
@@ -236,20 +248,6 @@
       "title": "Meta options",
       "type": "object",
       "properties": {
-        "rest_address": {
-          "title": "Rest endpoint address",
-          "description": "Address to bind for the Meta Operational REST APIs.",
-          "default": "0.0.0.0:9070",
-          "type": "string"
-        },
-        "rest_concurrency_limit": {
-          "title": "Rest concurrency limit",
-          "description": "Concurrency limit for the Meta Operational REST APIs.",
-          "default": 1000,
-          "type": "integer",
-          "format": "uint",
-          "minimum": 0.0
-        },
         "storage_path": {
           "title": "Storage path",
           "description": "Root path for Meta storage.",
@@ -319,7 +317,7 @@
         },
         "proxy_uri": {
           "title": "Proxy URI",
-          "description": "A URI, such as `http://127.0.0.1:10001`, of a server to which all invocations should be sent, with the `Host` header set to the service endpoint URI. HTTPS proxy URIs are supported, but only HTTP endpoint traffic will be proxied currently. Can be overridden by the `HTTP_PROXY` environment variable.",
+          "description": "A URI, such as `http://127.0.0.1:10001`, of a server to which all invocations should be sent, with the `Host` header set to the deployment URI. HTTPS proxy URIs are supported, but only HTTP endpoint traffic will be proxied currently. Can be overridden by the `HTTP_PROXY` environment variable.",
           "default": null,
           "type": [
             "string",
@@ -330,12 +328,12 @@
     },
     "Http2KeepAliveOptions": {
       "title": "HTTP/2 Keep alive options",
-      "description": "Configuration for the HTTP/2 keep-alive mechanism, using PING frames.\n\nPlease note: most gateways don't propagate the HTTP/2 keep-alive between downstream and upstream hosts. In those environments, you need to make sure the gateway can detect a broken connection to the upstream service endpoint(s).",
+      "description": "Configuration for the HTTP/2 keep-alive mechanism, using PING frames.\n\nPlease note: most gateways don't propagate the HTTP/2 keep-alive between downstream and upstream hosts. In those environments, you need to make sure the gateway can detect a broken connection to the upstream deployment(s).",
       "type": "object",
       "properties": {
         "interval": {
           "title": "HTTP/2 Keep-alive interval",
-          "description": "Sets an interval for HTTP/2 PING frames should be sent to keep a connection alive.\n\nYou should set this timeout with a value lower than the `response_abort_timeout`.",
+          "description": "Sets an interval for HTTP/2 PING frames should be sent to keep a connection alive.\n\nYou should set this timeout with a value lower than the `abort_timeout`.",
           "default": "40s",
           "type": "string"
         },
@@ -395,13 +393,6 @@
             "temp_folder": null
           },
           "$ref": "#/definitions/StorageQueryDatafusionOptions"
-        },
-        "storage_query_http": {
-          "default": {
-            "http_address": "0.0.0.0:9072",
-            "http_concurrency_limit": 1000
-          },
-          "$ref": "#/definitions/StorageQueryHttpOptions"
         },
         "storage_query_postgres": {
           "default": {
@@ -467,9 +458,15 @@
                 "aws_profile": null
               }
             },
-            "tmp_dir": "/tmp/invoker-018c643db86f74ce922f05651d8051e9"
+            "tmp_dir": "/tmp/invoker-018d0f3459197d0e93a65ffc9db55665"
           },
           "$ref": "#/definitions/InvokerOptions"
+        },
+        "partition_processor": {
+          "default": {
+            "max_batch_duration": "50ms"
+          },
+          "$ref": "#/definitions/PartitionProcessorOptions"
         },
         "partitions": {
           "title": "Partitions",
@@ -530,26 +527,6 @@
             "integer",
             "null"
           ],
-          "format": "uint",
-          "minimum": 0.0
-        }
-      }
-    },
-    "StorageQueryHttpOptions": {
-      "title": "Storage query http options",
-      "type": "object",
-      "properties": {
-        "http_address": {
-          "title": "Rest endpoint address",
-          "description": "Address to bind for the Storage HTTP APIs.",
-          "default": "0.0.0.0:9072",
-          "type": "string"
-        },
-        "http_concurrency_limit": {
-          "title": "Rest concurrency limit",
-          "description": "Concurrency limit for the Storage HTTP APIs.",
-          "default": 1000,
-          "type": "integer",
           "format": "uint",
           "minimum": 0.0
         }
@@ -741,7 +718,7 @@
         },
         "message_size_warning": {
           "title": "Message size warning",
-          "description": "Threshold to log a warning in case protocol messages coming from service endpoint are larger than the specified amount.",
+          "description": "Threshold to log a warning in case protocol messages coming from a service are larger than the specified amount.",
           "default": 10485760,
           "type": "integer",
           "format": "uint",
@@ -749,7 +726,7 @@
         },
         "message_size_limit": {
           "title": "Message size limit",
-          "description": "Threshold to fail the invocation in case protocol messages coming from service endpoint are larger than the specified amount.",
+          "description": "Threshold to fail the invocation in case protocol messages coming from a service are larger than the specified amount.",
           "default": null,
           "type": [
             "integer",
@@ -761,7 +738,7 @@
         "tmp_dir": {
           "title": "Temporary directory",
           "description": "Temporary directory to use for the invoker temporary files. If empty, the system temporary directory will be used instead.",
-          "default": "/tmp/invoker-018c643db86f7855b8a3c1cee7a6fa91",
+          "default": "/tmp/invoker-018d0f345919743096f476d6429402d1",
           "type": "string"
         },
         "concurrency_limit": {
@@ -889,6 +866,65 @@
           }
         }
       ]
+    },
+    "PartitionProcessorOptions": {
+      "description": "Partition processor options",
+      "type": "object",
+      "properties": {
+        "max_batch_duration": {
+          "title": "Maximum batch duration",
+          "description": "The maximum duration the partition processor can spend on batching commands before checking for signals from its actuators. The larger the value, the fewer disk writes are being performed which can improve overall throughput at the cost of potentially longer invocation latencies.",
+          "default": "50ms",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "NodeCtrlOptions": {
+      "title": "Node ctrl service options",
+      "type": "object",
+      "properties": {
+        "bind_address": {
+          "description": "Address to bind for the Node ctrl Service.",
+          "default": "0.0.0.0:5122",
+          "type": "string"
+        },
+        "histogram_inactivity_timeout": {
+          "description": "Timeout for idle histograms.\n\nThe duration after which a histogram is considered idle and will be removed from metric responses to save memory. Unsetting means that histograms will never be removed.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "disable_prometheus": {
+          "description": "Disable prometheus metric recording and reporting. Default is `false`.",
+          "default": false,
+          "type": "boolean"
+        }
+      }
+    },
+    "AdminOptions": {
+      "title": "Admin server options",
+      "type": "object",
+      "properties": {
+        "bind_address": {
+          "title": "Endpoint address",
+          "description": "Address to bind for the Admin APIs.",
+          "default": "0.0.0.0:9070",
+          "type": "string"
+        },
+        "concurrency_limit": {
+          "title": "Concurrency limit",
+          "description": "Concurrency limit for the Admin APIs.",
+          "default": 1000,
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0.0
+        }
+      }
     },
     "Options": {
       "title": "Runtime options",

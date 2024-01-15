@@ -53,19 +53,19 @@ message GreetingRequest {
 
 ## META0003
 
-Cannot reach the endpoint to execute service discovery. Make sure:
+Cannot reach the service deployment to execute service discovery. Make sure:
 
-* The provided `uri` is correct
-* The service endpoint is up and running
-* The Restate runtime can reach the service endpoint through the configured `uri`
+* The provided `URI`/`ARN` is correct
+* The deployment is up and running
+* Restate can reach the deployment through the configured `URI`/`ARN`
 * If additional authentication is required, make sure it's configured through `additional_headers`
 
 ## META0004
 
-Cannot register the provided service endpoint, because it conflicts with the uri of an already registered service endpoint.
+Cannot register the provided deployment, because it conflicts with the uri of an already registered deployment.
 
-In Restate service endpoints have a unique uri and are immutable, thus it's not possible to discover the same endpoint uri twice. 
-Make sure, when updating a service endpoint, to assign it a new uri. 
+In Restate deployments have a unique uri/arn and are immutable, thus it's not possible to discover the same deployment twice. 
+Make sure, when updating a deployment, to assign it a new uri/arn. 
 
 You can force the override using the `"force": true` field in the discover request, but beware that this can lead in-flight invocations to an unrecoverable error state.  
 
@@ -73,18 +73,19 @@ See the [versioning documentation](https://docs.restate.dev/services/upgrades-re
 
 ## META0005
 
-Cannot propagate endpoint/service metadata to Restate components. If you see this error when starting Restate, this might indicate a corrupted Meta storage.
+Cannot propagate deployment/service metadata to Restate components. If you see this error when starting Restate, this might indicate a corrupted Meta storage.
 
-We recommend wiping the Meta storage and recreate it by registering endpoints in the same order they were registered before.
+We recommend wiping the Meta storage and recreating it by registering deployments in the same order they were registered before.
 
 ## META0006
 
-Cannot register the newly discovered service revision in the provided service endpoint, because it conflicts with an already existing service revision.
+Cannot register the newly discovered service revision in the provided deployment, because it conflicts with an already existing service revision.
 
 When implementing a new service revision, make sure that:
 
-* The service instance type and the key definition, if any, is exactly the same as of the previous revisions.
+* The service instance type and the key definition, if any, are exactly the same as of the previous revisions.
 * The Protobuf contract and message definitions are backward compatible.
+  * The new revision must implement all the methods of the previous revisions.
 
 See the [versioning documentation](https://docs.restate.dev/services/upgrades-removal) for more information.
 
@@ -113,7 +114,7 @@ Please look at the [Kafka documentation page](https://docs.restate.dev/services/
 
 ## RT0001
 
-The invocation response stream was aborted due to the timeout configured in `worker.invoker.response_abort_timeout`.
+The invocation response stream was aborted due to the timeout configured in `worker.invoker.abort_timeout`.
 This timeout is fired when Restate has an open invocation, and it's waiting only for response messages, but no message is seen for the configured time.
 
 Suggestions:
@@ -129,7 +130,7 @@ For a complete list of configuration options, and a sample configuration, check 
 
 ## RT0003
 
-The invocation failed because the invoker received a message from a service endpoint larger than the `worker.invoker.message_size_limit`.
+The invocation failed because Restate received a message from a service larger than the `worker.invoker.message_size_limit`.
 
 Suggestions:
 
@@ -159,22 +160,22 @@ Suggestions:
 
 ## RT0006
 
-An error occurred while invoking the service endpoint. 
+An error occurred while invoking the service deployment. 
 This is a generic error which can be caused by many reasons, including:
 
 * Transient network or storage errors
-* Misconfiguration of the service endpoint and/or of the Restate runtime
+* Misconfiguration of the deployment and/or of the Restate runtime
 * Non-deterministic user code execution
 * Restate runtime and/or SDK bug
 
-We suggest checking the service endpoint logs as well to get any hint on the error cause.
+We suggest checking the service and/or deployment logs as well to get any hint on the error cause.
 
 ## RT0007
 
-A retry-able error was received from the service endpoint while processing the invocation.
+A retry-able error was received from the service deployment while processing the invocation.
 
 Suggestions:
 
-* Check the service endpoint logs to get more info about the error cause, like the stacktrace.
+* Check the service/deployment logs to get more info about the error cause, like the stacktrace.
 * Look at the https://docs.restate.dev/services/sdk/error-handling for more info about error handling in services.
 
