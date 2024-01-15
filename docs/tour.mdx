@@ -139,7 +139,7 @@ docker run --name restate_dev --rm -d --network=host docker.io/restatedev/restat
 <TabItem value="mac" label="macOS">
 
 ```shell
-docker run --name restate_dev --rm -d -p 8080:8080 -p 9070:9070 -p 9071:9071 docker.io/restatedev/restate:VAR::RESTATE_VERSION
+docker run --name restate_dev --rm -d -p 8080:8080 -p 9070-9071:9070-9071 docker.io/restatedev/restate:VAR::RESTATE_VERSION
 ```
 
 </TabItem>
@@ -2625,7 +2625,7 @@ curl localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": 
 
 ```shell
 docker stop restate_dev && \
-docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://host.docker.internal:4317 -p 8080:8080 -p 9070:9070 -p 9071:9071 docker.io/restatedev/restate:VAR::RESTATE_VERSION
+docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://host.docker.internal:4317 -p 8080:8080 -p 9070-9071:9070-9071 docker.io/restatedev/restate:VAR::RESTATE_VERSION
 ```
 
 Register the services again (required because the state got wiped when the runtime was restarted with the `--rm` flag):
