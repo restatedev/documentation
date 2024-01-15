@@ -6,8 +6,6 @@ observability:
     format: Pretty
     disable_ansi_codes: false
 meta:
-  rest_address: 0.0.0.0:9070
-  rest_concurrency_limit: 1000
   storage_path: target/meta/
   service_client:
     http:
@@ -26,9 +24,6 @@ worker:
     memory_limit: null
     temp_folder: null
     query_parallelism: null
-  storage_query_http:
-    http_address: 0.0.0.0:9072
-    http_concurrency_limit: 1000
   storage_query_postgres:
     bind_address: 0.0.0.0:9071
   storage_rocksdb:
@@ -59,7 +54,7 @@ worker:
     abort_timeout: 1m
     message_size_warning: 10485760
     message_size_limit: null
-    tmp_dir: /tmp/invoker-018c643db9d470de8a5b6494e44fff48
+    tmp_dir: /tmp/invoker-018d0f345a8b7a49b31b539397596963
     concurrency_limit: null
     service_client:
       http:
@@ -71,7 +66,16 @@ worker:
         aws_profile: null
         assume_role_external_id: null
     disable_eager_state: false
+  partition_processor:
+    max_batch_duration: 50ms
   partitions: 1024
+node_ctrl:
+  bind_address: 0.0.0.0:5122
+  histogram_inactivity_timeout: null
+  disable_prometheus: false
+admin:
+  bind_address: 0.0.0.0:9070
+  concurrency_limit: 1000
 tokio_runtime:
   worker_threads: null
   max_blocking_threads: null
