@@ -32,7 +32,7 @@ Add the Restate CDK support library to your project:
 npm install @restatedev/restate-cdk
 ```
 
-### Deploy your handler code to AWS Lambda
+### Deploy your handlers to AWS Lambda
 
 Define one or more Lambda functions in your CDK stack to model the service handlers in your chosen language. Depending
 on the SDK and programming language, you may need an additional build process such as Gradle, to bundle your business
@@ -83,47 +83,44 @@ const service: lambda.Function = new lambda.Function(scope, "RestateService", {
 Restate is [very easy to deploy](/restate/deployment), and we provide a CDK construct to make it super simple to deploy
 a self-hosted development server on Amazon EC2. Once you have a Restate service, you can optionally deploy your own
 Restate server in the same or separate CDK stack.
-See [Deploying Restate on Amazon EC2 with CDK](/restate/deployment#amazon-ec2-with-cdk) for more information on using
-the `SingleNodeRestateInstance` construct.
+See [Deploying Restate on Amazon EC2 with CDK](/restate/deployment#amazon-ec2-with-cdk) for more information on how to
+deploy Restate itself in your own CDK stack.
 
-### Register Lambda-based services with Restate
+### Register Lambda handlers with Restate
 
 To enable our Lambda handlers to receive Restate requests, we need to create a deployment with Restate.
 The `LambdaServiceRegistry` construct represents a collection of Lambda-backed Restate services and takes
 care of creating/updating Restate Deployments backed by the specified Lambda functions any time you deploy a change
 to your stack. Restate uses Lambda versioning to consistently target the same function configuration from a given
-deployment revision.
+deployment revision. Note that this is a quiescent component: it deploys a custom CloudFormation resource provider which
+is only activated during changes to the referenced Lambda functions, typically while you deploy your CDK stack. 
 
 <Tabs>
 <TabItem value="cloud" label="Restate Cloud" default>
 
-When using Restate Cloud managed service, you model it with the `RestateCloudEndpoint` construct. As well as holding
+When using Restate Cloud managed service, you model it with the `RestateCloudEnvironment` construct. As well as holding
 the specific configuration properties, this construct creates an IAM role that can be assumed by the Restate Managed
 Service AWS account, with permission to invoke any version of all the listed service handlers Lambda functions.
 
 :::caution
-The `RestateCloudEndpoint` construct creates an IAM role that can be assumed by the Restate Managed Service AWS account!
+The `RestateCloudEnvironment` construct creates an IAM role that can be assumed by the Restate Cloud AWS service account
+in order to be able to invoke your services.
 :::
 
 ```typescript
 import * as restate from "@restatedev/restate-cdk";
 
-const restateService = new restate.RestateCloudEndpoint(scope, "RestateCloud", {
+const environment = new restate.RestateCloudEnvironment(scope, "RestateCloud", {
   clusterId: "restate-cluster-id",
   authTokenSecretArn: restateAuthToken.secretFullArn,
 });
 
-const handlers = new restate.LambdaServiceRegistry(scope, "RestateServiceRegistry", {
-  serviceHandlers: {
+const handlers = new restate.LambdaServiceRegistry(scope, "ServiceRegistry", {
+  environment,
+  handlers: {
     "namespace.Service": service,
-    // additional handlers as needed
+    // ...additional handlers as needed
   },
-  restate: restateService,
-});
-handlers.register({
-  metaEndpoint: restateService.metaEndpoint,
-  invokerRoleArn: restateService.invokerRole.roleArn,
-  authTokenSecretArn: restateService.authToken.secretArn,
 });
 ```
 </TabItem>
@@ -132,19 +129,19 @@ handlers.register({
 ```typescript
 import * as restate from "@restatedev/restate-cdk";
 
-// const restateService: restate.SingleNodeRestateInstance = ...;
-
-const handlers = new restate.LambdaServiceRegistry(scope, "RestateServiceRegistry", {
-  serviceHandlers: {
-    "namespace.Service": service,
-    // additional handlers as needed
-  },
-  restate: restateService,
+new restate.SingleNodeRestateDeployment(scope, "Restate", {
+  logGroup: new logs.LogGroup(scope, "RestateLogs", {
+    retention: logs.RetentionDays.THREE_MONTHS,
+    removalPolicy: cdk.RemovalPolicy.DESTROY,
+  }),
 });
-handlers.register({
-  metaEndpoint: restateService.metaEndpoint,
-  invokerRoleArn: restateService.invokerRole.roleArn,
-  authTokenSecretArn: restateService.authToken.secretArn,
+
+const handlers = new restate.LambdaServiceRegistry(scope, "ServiceRegistry", {
+  environment,
+  handlers: {
+    "namespace.Service": service,
+    // ...additional handlers as needed
+  },
 });
 ```
 </TabItem>
@@ -154,7 +151,9 @@ handlers.register({
 
 You can use the following examples as references for your own CDK projects:
 
-- [hello-world-lambda-cdk](https://github.com/restatedev/examples/tree/main/kotlin/hello-world-lambda-cdk) - provides a
-  simple example of a Lambda-deployed Kotlin handler
+- [hello-world-lambda-cdk (Kotlin)](https://github.com/restatedev/examples/tree/main/kotlin/hello-world-lambda-cdk) -
+  provides a simple example of a Lambda-deployed Kotlin handler with a CDK stack modeled in TypeScript
+- [hello-world-lambda-cdk (TypeScript)](https://github.com/restatedev/examples/tree/main/typescript/hello-world-lambda-cdk) -
+  provides a simple example of a Lambda-deployed TypeScript handler with a CDK stack modeled in TypeScript
 - [Restate Holiday](https://github.com/restatedev/restate-holiday) - a more complex example of a fictional reservation
-  service demonstrating the Saga orchestration pattern
+  service demonstrating the Saga orchestration pattern across multiple Restate services implemented in TypeScript

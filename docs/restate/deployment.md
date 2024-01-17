@@ -1,16 +1,13 @@
 ---
 sidebar_position: 3
-description: "Deploy Restate on Kubernetes with this guide."
+description: "Deploy Restate on Kubernetes or to AWS with this guide."
 ---
 
 # Deployment
-Restate is currently a single binary that contains everything you need. You can obtain the binary from the
-[releases page](https://github.com/restatedev/restate/releases), as part of a
-[Docker image](https://hub.docker.com/r/restatedev/restate), from our [Homebrew tap](https://github.com/restatedev/homebrew-tap)
-with `brew install restatedev/tap/restate`, or from [npm](https://www.npmjs.com/package/@restatedev/restate)
-with `npm install @restatedev/restate-server`.
 
-The binary exposes four services by default, each on different ports:
+Restate is a single binary that contains everything you need to host an environment. See the [Get Restate](https://restate.dev/get-restate/) page for various ways of obtaining it.
+
+The server process exposes four services by default, available on different ports:
 
 | Name      | Port | Description                                                                                                                    | Protocol                                          |
 |-----------|------|--------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
@@ -19,13 +16,17 @@ The binary exposes four services by default, each on different ports:
 | Admin     | 9070 | Allows for CRUD operations on service/service deployment metadata, eg for service registration                                 | REST                                              |
 | Postgres  | 9071 | Exposes Restate RocksDB read-only storage operations using the Postgres protocol. See [Introspection](/services/introspection) | Postgres                                          |
 
-It will store metadata and RocksDB data in the relative directory of /target under the current working directory of the process.
+It will store metadata and RocksDB data in the relative directory of /target under the current working directory of the
+process.
 
-It requires outbound connectivity to services in order to discover them and to send requests.
+The Restate server requires outbound connectivity to the services you deploy in order to discover and send requests to them.
+
+In the next sections we will show you two different ways to deploy Restate on your own infrastructure.
 
 ## Kubernetes
 
-The recommended Kubernetes deployment strategy is a one-replica StatefulSet. We recommend installing Restate in its own namespace.
+The recommended Kubernetes deployment strategy is a one-replica StatefulSet. We recommend installing Restate in its own
+namespace.
 
 ```yaml
 apiVersion: v1
@@ -110,8 +111,8 @@ The [Restate CDK support library](https://www.npmjs.com/package/@restatedev/rest
 for managing Restate server deployments on AWS. We currently offer support for a simple single-node deployment to Amazon
 EC2.
 
-If you don't have an existing CDK project, follow the CDK [Getting started](https://docs.aws.amazon.com/cdk/v2/guide/hello_world.html)
-page to set one up.
+If you don't have an existing CDK project, follow the
+CDK [Getting started](https://docs.aws.amazon.com/cdk/v2/guide/hello_world.html) page to set one up.
 
 ### Adding the Restate CDK support library
 
@@ -123,14 +124,15 @@ npm install @restatedev/restate-cdk
 
 ### Deploying a single-node Restate server
 
-The `SingleNodeRestateInstance` construct deploys a single-node server on Amazon EC2, suitable for development purposes.
-A single EC2 instance will be deployed in a new internet-connected VPC – or you can provide one explicitly. You can
-optionally enable tracing integration, which will grant the instance role permission to send traces to AWS X-Ray.
+The `SingleNodeRestateDeployment` construct deploys a single-node server on Amazon EC2, suitable for development
+purposes. An EC2 instance will be created in a new internet-connected VPC – alternatively, you can provide one
+explicitly. You can optionally enable tracing integration, which will grant the instance role permission to send traces
+to AWS X-Ray.
 
 ```typescript
 import * as restate from "@restatedev/restate-cdk";
 
-const restateService = new restate.SingleNodeRestateInstance(scope, "RestateServer", {
+const environment = new restate.SingleNodeRestateDeployment(this, "Restate", {
   restateTag: "latest",
   tracing: restate.TracingMode.AWS_XRAY,
   logGroup: new logs.LogGroup(scope, "RestateLogs", {
