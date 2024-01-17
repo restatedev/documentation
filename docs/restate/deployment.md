@@ -1,18 +1,13 @@
 ---
 sidebar_position: 3
-description: "Deploy Restate on Kubernetes with this guide."
+description: "Deploy Restate on Kubernetes or to AWS with this guide."
 ---
 
 # Deployment
 
-Restate is currently a single binary that contains everything you need. You can obtain the binary from the
-[releases page](https://github.com/restatedev/restate/releases), as part of a
-[Docker image](https://hub.docker.com/r/restatedev/restate), from
-our [Homebrew tap](https://github.com/restatedev/homebrew-tap)
-with `brew install restatedev/tap/restate`, or from [npm](https://www.npmjs.com/package/@restatedev/restate)
-with `npm install @restatedev/restate-server`.
+Restate is a single binary that contains everything you need to host an environment. See the [Get Restate](https://restate.dev/get-restate/) page for various ways of obtaining it.
 
-The binary exposes four services by default, each on different ports:
+The server process exposes four services by default, available on different ports:
 
 | Name      | Port | Description                                                                                                                    | Protocol                                          |
 |-----------|------|--------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
@@ -24,7 +19,9 @@ The binary exposes four services by default, each on different ports:
 It will store metadata and RocksDB data in the relative directory of /target under the current working directory of the
 process.
 
-It requires outbound connectivity to services in order to discover them and to send requests.
+The Restate server requires outbound connectivity to the services you deploy in order to discover and send requests to them.
+
+In the next sections we will show you two different ways to deploy Restate on your own infrastructure.
 
 ## Kubernetes
 
