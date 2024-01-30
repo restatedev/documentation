@@ -23,6 +23,63 @@ You can invoke services over HTTP 1.1 or higher.
 Request/response bodies should be encoded as either JSON or Protobuf.
 You can send requests directly from the browser or via `curl` without generating a client.
 
+<Tabs groupId="sdk" queryString>
+<TabItem value="ts" label="TypeScript" default>
+
+For the handler API, you need to craft a message with a key (only if you are invoking a keyed service) and a request, similar to this protobuf message:
+
+```proto
+message RpcRequest {
+    string key = 1 [(dev.restate.ext.field) = KEY];
+    google.protobuf.Value request = 2;
+}
+```
+
+Then use this message to invoke the function:
+
+```shell
+curl <RESTATE_INGRESS_URL>/<SERVICE_NAME>/<FUNCTION_NAME> -H 'content-type: application/json' -d '{"key": "<KEY_OF_KEYED_SERVICE>", "request": <REQUEST_DATA>}}'
+```
+
+The service name is the one specified when binding the service to the HTTP deployment server, and the function name is the one specified when binding the function to the service.
+
+For example, for a keyed service `greeter-service` with the following implementation:
+
+```ts
+const router = restate.keyedRouter({
+    greet: async (ctx: restate.RpcContext, name: string, req: { age: number } ) => {
+        return `Hello ${name} of ${req.age} years old`;
+    },
+});
+
+export const handler = restate
+    .createServer()
+    .bindKeyedRouter("greeter-service", router)
+    .listen();
+```
+
+You can invoke the function `greet` using `curl`:
+
+```shell
+curl localhost:8080/greeter-service/greet -H 'content-type: application/json' -d '{"key": "John Doe", "request": {"age": 55}}'
+```
+
+You should see the response:
+
+```json
+{"response":"Hello John Doe of 55 years old"}
+```
+
+If this would be an unkeyed service and the request would be just the string name,
+then you could invoke the function `greet` of the unkeyed `greeter-service` using `curl` as follows:
+
+```shell
+curl localhost:8080/greeter-service/greet -H 'content-type: application/json' -d '{"request": "John Doe"}}'
+```
+
+</TabItem>
+<TabItem value="ts-grpc" label="TypeScript-gRPC">
+
 For example, to invoke the service `org.example.Greeter` method `Greet` using `curl`:
 
 ```shell
@@ -35,18 +92,38 @@ You should see the response:
 {"greeting":"Hello Restate"}
 ```
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+For example, to invoke the service `org.example.Greeter` method `Greet` using `curl`:
+
+```shell
+curl <RESTATE_INGRESS_URL>/org.example.Greeter/Greet -H 'content-type: application/json' -d '{"name": "Restate"}'
+```
+
+You should see the response:
+
+```json
+{"greeting":"Hello Restate"}
+```
+
+</TabItem>
+</Tabs>
+
 The rules to invoke a service are the following:
 
-* The request path is in the format of `{serviceName}/{methodName}`
+* The request path is in the format of `<SERVICE_NAME>/<METHOD_NAME>`
 * The request method is `POST`
 * The request body is encoded either with:
-    * Json, with the header `Content-Type: application/json`, or with
+    * JSON, with the header `Content-Type: application/json`, or with
     * Protobuf, with the header `Content-Type: application/proto`
 
 The response body will have the same content type as the request.
 
+:::note
 This is supported via the [Connect Protocol](https://connect.build/docs/protocol/), allowing you to send gRPC-like requests as regular HTTP requests.
 For more detail, check out the [Connect documentation](https://connect.build/).
+:::
 
 ### Over gRPC and gRPC-web
 
