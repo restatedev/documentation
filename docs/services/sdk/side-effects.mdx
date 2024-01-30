@@ -6,32 +6,36 @@ description: "Learn how to store the results of non-deterministic operations."
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Side effects
+# Determinism & side effects
 
 :::danger
 Restate uses an execution log for replay after failures and suspensions.
 For this to work, the user code needs to be deterministic.
 :::
 
+For random generators (UUIDs, random numbers) there are built-in helper functions, as [listed below](/services/sdk/side-effects#built-in-helper-functions).
+For all other non-deterministic code, you need to use side effects.
+
+## Side effects
 Side effects help relaxing the constraints on determinism.
-If your code does something that is not deterministic then you have to wrap it in a side effect.
+If your code does something that is non-deterministic, then you have to wrap it in a side effect.
 By doing this, Restate makes sure that the result is persistently stored in the execution log
 and that the value is retained during replays.
 
-Here is an example in which a unique ID is generated and stored in Restate:
+Here is an example of a database request for which the string return value is stored as a side effect in Restate:
 
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-const uuid = await ctx.sideEffect(async () => uuid());
+const result = await ctx.sideEffect<string>(async () => doDbRequest());
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java
-var uuid = ctx.sideEffect(CoreSerdes.STRING_UTF8, () -> UUID.randomUUID().toString());
+var result = ctx.sideEffect(CoreSerdes.STRING_UTF8, () -> doDbRequest());
 ```
 
 You need to define the return value type of the side effect, so that the Restate SDK knows how to serialize and deserialize it.
@@ -41,18 +45,16 @@ For more information, have a look at the documentation on [serialization](/servi
 </TabItem>
 </Tabs>
 
-Once stored, every retry of the example code snippet will get the same UUID.
-For example, imagine a payment service where you want to avoid having duplicate payments during retries.
-You could use a side effect to generate and store a UUID and then use that UUID as identifier of the payment.
-You only allow the payment to go through if no payment with that UUID was done yet.
-Restate guarantees that once the UUID is stored, it is retained during retries.
+Once stored, the request to the database will not get re-executed upon replay, but the first result will be used instead.
 
 :::caution
 You cannot invoke any methods on the Restate context within a side effect!
 This includes actions such as getting state, calling another service, and nesting side effects.
 :::
 
-## Retrying on failure
+
+
+### Retrying on failure
 
 If the side effect closure throws an error, then it is retried infinitely using an exponential backoff strategy until it succeeds.
 
@@ -139,7 +141,7 @@ ctx.sideEffect(CoreSerdes.BOOLEAN, () -> {
 </TabItem>
 </Tabs>
 
-## Terminal failures of side effects
+### Terminal failures of side effects
 
 By default, a side effect function is retried infinitely on failure.
 If you want to let the side effect fail terminally, then you have to throw a terminal error.
@@ -208,3 +210,73 @@ You can throw a terminal exception via `dev.restate.sdk.core.TerminalException` 
 </Tabs>
 
 
+## Built-in helper functions
+Two common non-deterministic actions are the generation of UUIDs and random numbers.
+The SDK provides helper functions for those.
+
+### Generating UUIDs
+
+<Tabs groupId="sdk" queryString>
+<TabItem value="ts" label="TypeScript">
+
+```typescript
+const uuid = ctx.rand.uuidv4();
+```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+UUID uuid = ctx.random().nextUUID();
+```
+
+:::note
+`ctx.random()` returns a `RestateRandom` instance. This is a subclass of `java.util.Random` that seeds it on the invocation ID, to always return the same value on retries.
+:::
+
+</TabItem>
+</Tabs>
+
+:::danger
+Do not use this in cryptographic contexts.
+:::
+
+:::tip
+You can use this to generate stable idempotency keys with one line of code.
+For example, imagine a payment service where you want to avoid having duplicate payments during retries.
+You could use this utility to generate a UUID and then use that UUID as identifier of the payment.
+You only allow the payment to go through if no payment with that UUID was done yet.
+Restate guarantees that once the UUID is stored, it is retained during retries.
+:::
+
+### Generating random numbers
+
+<Tabs groupId="sdk" queryString>
+<TabItem value="ts" label="TypeScript">
+
+```typescript
+const randomNumber = ctx.rand.random();
+```
+
+Calls to `ctx.rand.random()` return a new pseudorandom float within the range [0,1].
+
+:::note
+This is the equivalent of JS `Math.random()` but deterministic, because it gets seeded by the invocation ID of the current invocation.
+Since retries use the same invocation ID, they will get the same random number.
+:::
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+int value = ctx.random().nextInt();
+```
+
+You can use any of the methods of [`java.util.Random`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Random.html) to generate random numbers: for example, `nextBoolean()`, `nextLong()`, `nextFloat()`, etc.
+
+:::note
+`ctx.random()` returns a `RestateRandom` instance. This is a subclass of `java.util.Random` that seeds it on the invocation ID, to always return the same value on retries.
+:::
+
+</TabItem>
+</Tabs>
