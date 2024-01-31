@@ -4,16 +4,18 @@ description: ""
 draft: "true"
 ---
 
-# Services, workflows, virtual objects
+# Building blocks
 
-TBD when the proposal is out for the next iteration of keyed services
+Restate gives you some building blocks to build your application with.
 
-## Functions
+## Services
+- RPC : just functions you can invoke but now with durable execution
+- no concurrency limits
 
 ## Virtual objects
-- keyed
+- keys: how are they specified and data types
 - locking
-- concurrency guarantees
+- concurrency limits/guarantees per key: only one concurrent operation per key. Unless shared context used.
 - state
 
 
@@ -23,10 +25,15 @@ Has a clearly specified lifetime: while run() is in progress.
 
 You can interact with it via signals: functions that are allowed to get executed concurrently with the workflow's run() method.
 
+- locking: shared context vs exclusive context
+- concurrency guarantees
+
+
 ## When to use what?
 
-Functions ->
+Services -> If you don't need state or concurrency limits, but just have a function that you want to execute durably.
 
-Virtual objects -> If you have
+Virtual objects -> If you need keyed concurrency guarantees, and if you want to store application state in Restate.
 
-Workflows ->
+Workflows -> If you have a certain workflow that you want to execute durably, and you want to be able to interact with it via signals.
+And you might want to do some extra things like keeping the history.
