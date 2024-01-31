@@ -2582,7 +2582,7 @@ Then restart the runtime with the tracing endpoint defined as an environment var
 
 ```shell
 docker stop restate_dev && \
-docker run --name restate_dev --rm -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://localhost:4317 -p 8080:8080 -p 9070:9070 -p 9071:9071 --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
+docker run --name restate_dev --rm -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://host.docker.internal:4317 -p 8080:8080 -p 9070:9070 -p 9071:9071 --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
 ```
 
 Register the services again (required because the state got wiped when the runtime was restarted with the `--rm` flag):

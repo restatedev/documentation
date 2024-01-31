@@ -49,7 +49,7 @@ jaegertracing/all-in-one:1.46
 Then launch Restate with the tracing endpoint defined as an environment variable:
 
 ```shell
-docker run --name restate_dev --rm -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://localhost:4317 -p 8080:8080 -p 9070:9070 -p 9071:9071 --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
+docker run --name restate_dev --rm -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://host.docker.internal:4317 -p 8080:8080 -p 9070:9070 -p 9071:9071 --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
 ```
 
 Go to the Jaeger UI at http://localhost:16686.
