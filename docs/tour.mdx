@@ -128,22 +128,10 @@ If you do not want to follow along by coding yourself, you can run the solution 
 
 Next, let's launch Restate itself. Restate can be deployed as a simple standalone binary, all the way up to a fully managed service. In this tour we'll be running it standalone from a container image.
 
-<Tabs groupId="operating-systems">
-<TabItem value="lin" label="Linux">
-
 ```shell
-docker run --name restate_dev --rm -d --network=host docker.io/restatedev/restate:VAR::RESTATE_VERSION
+docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
 ```
 
-</TabItem>
-<TabItem value="mac" label="macOS">
-
-```shell
-docker run --name restate_dev --rm -d -p 8080:8080 -p 9070-9071:9070-9071 docker.io/restatedev/restate:VAR::RESTATE_VERSION
-```
-
-</TabItem>
-</Tabs>
 
 When you are finished with the tour, you can stop Restate with `docker stop restate_dev`. This also deletes any persisted state because we start the container with the `--rm` flag. You can restart Restate at a later time (without losing state) with `docker restart restate_dev`. You can view Restate logs using `docker logs restate_dev` or follow them live by adding `--follow`.
 
@@ -151,25 +139,9 @@ When you are finished with the tour, you can stop Restate with `docker stop rest
 
 When Restate first comes up, it doesn't know anything about our services. Let's tell it where they are running. You can trigger service discovery by calling the Restate admin API informing it about the service deployment where our service is listening.
 
-<Tabs groupId="operating-systems">
-<TabItem value="lin" label="Linux">
-
-```shell
-curl localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'
-```
-
-</TabItem>
-<TabItem value="mac" label="macOS">
-
-You do this by sending a request to the Restate endpoint at `http://localhost:9070/deployments`
-and providing it with the service deployment URL `http://host.docker.internal:9080`.
-
 ```shell
 curl localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
 ```
-
-</TabItem>
-</Tabs>
 
 Restate will send a discovery request to the service deployment to find the services and methods run behind this endpoint. Restate keeps track of which services run where (including of the method signatures). Restate also keeps track of multiple revisions as your APIs evolve, and routes requests appropriately.
 
@@ -2607,35 +2579,17 @@ docker run -d --name jaeger \
 ```
 
 Then restart the runtime with the tracing endpoint defined as an environment variable:
-<Tabs groupId="operating-systems">
-<TabItem value="lin" label="Linux">
 
 ```shell
 docker stop restate_dev && \
-docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://localhost:4317 --network=host docker.io/restatedev/restate:VAR::RESTATE_VERSION
+docker run --name restate_dev --rm -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://host.docker.internal:4317 -p 8080:8080 -p 9070:9070 -p 9071:9071 --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
 ```
 
 Register the services again (required because the state got wiped when the runtime was restarted with the `--rm` flag):
-```shell
-curl localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'
-```
 
-</TabItem>
-<TabItem value="mac" label="macOS">
-
-```shell
-docker stop restate_dev && \
-docker run --name restate_dev --rm -d -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://host.docker.internal:4317 -p 8080:8080 -p 9070-9071:9070-9071 docker.io/restatedev/restate:VAR::RESTATE_VERSION
-```
-
-Register the services again (required because the state got wiped when the runtime was restarted with the `--rm` flag):
 ```shell
 curl localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
 ```
-
-</TabItem>
-</Tabs>
-
 
 Go to the Jaeger UI at http://localhost:16686.
 

@@ -102,13 +102,10 @@ Once you have implemented your service, run it:
 
 ## Step 3: Launch the Restate runtime
 
-<Tabs groupId="operating-systems">
-<TabItem value="lin" label="Linux">
-
 Run the Restate Docker container:
 
 ```shell
-docker run --name restate_dev --rm -d --network=host docker.io/restatedev/restate:VAR::RESTATE_VERSION
+docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
 ```
 
 :::tip
@@ -118,39 +115,6 @@ Restate is a single self-contained binary and Docker just one of the ways to run
 Register the service:
 
 Now, we need to tell Restate where the service is running.
-
-We can do this via the CLI:
-
-```shell
-restate dp add localhost:9080
-```
-
-Or via `curl`, by sending a request to the endpoint of the runtime at `http://localhost:9070/deployments`
-and providing it with the deployment endpoint of the service `http://localhost:9080`.
-```shell
-curl localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'
-```
-
-Restate then sends a request to the service deployment to ask which services and methods
-are running behind this deployment and will keep track of these (including of the method signatures).
-After executing this curl request, you should see the discovered services and methods printed to your terminal.
-
-</TabItem>
-<TabItem value="mac" label="macOS">
-
-Run the Restate Docker container:
-
-```shell
-docker run --name restate_dev --rm -d -p 8080:8080 -p 9070-9071:9070-9071 docker.io/restatedev/restate:VAR::RESTATE_VERSION
-```
-
-:::tip
-Restate is a single self-contained binary and Docker just one of the ways to run it. Check out our [download page](https://restate.dev/get-restate/) for how to install the binary via Homebrew and npm.
-:::
-
-Register the services:
-
-Now, we need to tell Restate where the service is running. To do this, we register a new "deployment" on restate server.
 
 We can do this via the CLI:
 
@@ -167,9 +131,6 @@ curl localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": 
 Restate then sends a request to the service deployment to ask which services and methods
 are running behind this deployment and will keep track of these (including of the method signatures).
 After executing this curl request, you should see the discovered services and methods printed to your terminal.
-
-</TabItem>
-</Tabs>
 
 ## Step 4: Send requests to the service
 
