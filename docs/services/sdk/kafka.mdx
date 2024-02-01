@@ -37,22 +37,23 @@ You can handle events within keyed routers, where the key of the Kafka record ma
 ```typescript
 import * as restate from "@restatedev/restate-sdk";
 
-const eventHandler = async (ctx: restate.RpcContext, event: restate.Event) => {
-    // Extract event payload as json
-    const { myData } = event.json<{ myData: string }>();
-    // OR extract event payload as raw bytes and deserialize it
-    // using the format of your choice (e.g. Avro, Protobuf, ...)
-    const bodyBuffer = event.body();
-
-    // --- Business logic
-};
-
 const router = restate.keyedRouter({
-    eventHandler: restate.keyedEventHandler(eventHandler),
-    // Other rpc or event handlers
+    eventHandler: restate.keyedEventHandler(async (ctx: restate.RpcContext, event: restate.Event) => {
+        // Extract event payload as json
+        const { myData } = event.json<{ myData: string }>();
+        // OR extract event payload as raw bytes and deserialize it
+        // using the format of your choice (e.g. Avro, Protobuf, ...)
+        const bodyBuffer = event.body();
+
+        // --- Business logic),
+        // Other rpc or event handlers
+    };
 });
 
-restate.createServer().bindKeyedRouter("myRouter", router).listen();
+restate
+    .createServer()
+    .bindKeyedRouter("myRouter", router)
+    .listen();
 ```
 
 The Kafka record key must be a valid UTF-8 string, otherwise Restate won't be able to deliver the event to the service.
