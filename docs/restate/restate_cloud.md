@@ -3,15 +3,18 @@ sidebar_position: 7
 description: "Try out Restate without any servers."
 ---
 
-# Managed service
+# Restate Cloud
 
 If you're using Restate with a function as a service platform, it can be challenging to 
 continuously run the runtime in your infrastructure. To make Restate easier to test out,
-we offer a managed cluster to private beta users by request. If you'd like access,
-please email [info@restate.dev](mailto:info@restate.dev).
+we offer a managed cluster to users by request. 
+
+:::info Join the waitlist
+If you'd like to try out Restate Cloud, join the waitlist by filling out the [request form](https://restate.dev/get-restate-cloud/).
+:::
 
 ## SLA
-The managed service is intended to help people try out Restate, and **should never be used in
+Restate Cloud is intended to help people try out Restate, and **should never be used in
 production. We offer no promises of data durability or uptime.**
 
 ## Using your cluster
@@ -94,7 +97,7 @@ for more tips.
 ## Giving permission for your cluster to Invoke your Lambdas
 Managed service clusters by default assume a role in Restate's AWS account: `arn:aws:iam::663487780041:role/restate-dev`.
 However, allowing this role to invoke your Lambda via its resource policy is dangerous and not recommended, as this will
-allow *any* managed cluster to invoke your Lambda, not just yours!
+allow *any* Restate Cloud cluster to invoke your Lambda, not just yours!
 
 Instead, cross account Lambda access should be achieved with [Role Chaining](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_terms-and-concepts.html).
 First, set up a role on one your own AWS accounts that Restate will assume when calling your Lambda. This role needs
