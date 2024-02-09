@@ -51,8 +51,7 @@ const config = {
     [
       "classic",
       /** @type {import('@docusaurus/preset-classic').Options} */
-      ({
-        docs: {
+      ({docs: {
           remarkPlugins: [
             [
               variableInjector, // replaces eg VAR::RESTATE_VERSION with config strings
@@ -66,11 +65,11 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
         },
-        blog: false,
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
         },
       }),
+
     ],
     redocusaurus,
   ],
@@ -79,6 +78,14 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     {
       image: "img/restate-og.png",
+      announcementBar: {
+        id: 'support_us',
+        content:
+            '🎉️ <a target="_blank" href="https://restate.dev/blog/release-announcement-restate-0.7-is-here/">Restate 0.7</a> is out now! 🎉️',
+        backgroundColor: '#c6c9fe',
+        textColor: '#1d2d35',
+        isCloseable: false,
+      },
       navbar: {
         title: "",
         logo: {
