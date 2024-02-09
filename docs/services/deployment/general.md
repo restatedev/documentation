@@ -15,5 +15,5 @@ Moreover, service deployments are **immutable**, and are assumed to be reachable
 
 
 :::info Running services locally
-Have a look at the [Quickstart](/quickstart) to set up your local development environment.
+Have a look at the [Quickstart](/get_started/quickstart) to set up your local development environment.
 :::
