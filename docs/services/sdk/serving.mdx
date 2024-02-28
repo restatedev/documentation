@@ -95,6 +95,20 @@ restate
   .listen(9080);
 ```
 
+If you need to manually control or customize the HTTP2 server, you can call `http2Handler()` instead of `listen()`, and then use it to manually instantiate the HTTP server:
+
+```ts
+const http2Handler = restate
+    .endpoint()
+    .bindService({
+        descriptor: protoMetadata,
+        service: "Greeter",
+        instance: new GreeterService(),
+    })
+    .http2Handler()
+const httpServer = http2.createServer(http2Handler);
+httpServer.listen(port);
+```
 
 </TabItem>
 <TabItem value="ts-grpc" label="TypeScript-gRPC">
@@ -124,6 +138,21 @@ service Greeter {
 - For the `instance` field, provide an instance of the service implementation. 
 
 Finally, call `listen(port?)` to specify the port on which the endpoint should listen for connections and requests.
+
+If you need to manually control or customize the HTTP2 server, you can call `http2Handler()` instead of `listen()`, and then use it to manually instantiate the HTTP server:
+
+```ts
+const http2Handler = restate
+    .endpoint()
+    .bindService({
+        descriptor: protoMetadata,
+        service: "Greeter",
+        instance: new GreeterService(),
+    })
+    .http2Handler()
+const httpServer = http2.createServer(http2Handler);
+httpServer.listen(port);
+```
 
 </TabItem>
 
