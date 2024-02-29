@@ -112,7 +112,7 @@ This example shows a greeter service comprising two methods:
 
 ```typescript
 const router = restate.keyedRouter({
-    greet: async (ctx: restate.Context, name: string) => {
+    greet: async (ctx: restate.KeyedContext, name: string) => {
         return `Hello ${name}!`;
     },
     countGreetings: async (ctx: restate.KeyedContext, name: string) => {
@@ -134,11 +134,10 @@ restate
 ```
 
 The app logic is implemented inside the `greet` and `countGreetings` functions.
-The `restate.Context` is supplied as the first argument.
+The `restate.KeyedContext` is supplied as the first argument.
 The [Restate context](/services/sdk/restate-context) enables interaction with Restate (call other methods, retrieve state, etc.).
-The `countGreetings` function uses the `restate.KeyedContext` because it needs access to the K/V state stored in Restate.
-The KeyedContext makes sure that invocations are sequenced per key. So there is at most one ongoing invocation for a specific key.
-This guarantees that at most one function is changing the state for a specific key.
+The `countGreetings` function uses the `restate.KeyedContext` because it belongs to a keyed service.
+For unkeyed services, you would use `restate.Context`.
 
 Finally, the Restate server is set up to serve both functions.
 The service is registered as a keyed service under the path `greeter`, and the `greet` and `countGreetings` routes are added.
@@ -170,7 +169,7 @@ import {
 export class GreeterService implements Greeter {
     async greet(request: GreetRequest): Promise<GreetResponse> {
         // Retrieving the Restate context
-        const ctx = restate.useContext(this);
+        const ctx = restate.useKeyedContext(this);
         return GreetResponse.create({ greeting: `Hello ${request.name}` });
     }
 
@@ -204,7 +203,7 @@ restate
 
 The interface of the gRPC service is defined in the [Protobuf](https://protobuf.dev/) service contracts, that are shown below.
 Within the method, the Restate context is retrieved, enabling interaction with Restate (e.g. calling other services).
-For keyed services, where we want to sequence invocations per key or have access to K/V state, you use the KeyedContext as shown in the `countGreetings` function.
+For keyed services, you use the `restate.KeyedContext`. For unkeyed services, instead, you use the `restate.Context`.
 Finally, the Restate server is set up to serve both methods of the greeter service.
 
 This is what corresponding Protobuf definition would look like for this service:
@@ -278,7 +277,7 @@ It has the name of the service (`Greeter`) with `Restate` appended to it.
 
 The [Restate context](/services/sdk/restate-context) is supplied to the method as the first argument.
 The context enables interaction with Restate (e.g. calling other services, setting timers).
-The `greet` method uses an ObjectContext since it uses Restate's K/V state, so it needs invocations to be sequenced per key, to avoid state inconsistencies when multiple functions would be writing to the same state key.
+The `greet` method uses an ObjectContext since it is a keyed service. For unkeyed services, use `Context`.
 Finally, the Restate server is set up to serve both methods of the greeter service.
 
 This is what corresponding Protobuf definition would look like for this service:

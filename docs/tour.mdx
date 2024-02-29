@@ -394,7 +394,7 @@ For example, for the `Checkout` service, you create a router with the `checkout`
 
 ```typescript
 const checkout = async (
-    ctx: restate.KeyedContext,
+    ctx: restate.Context,
     request: { userId: string; tickets: string[] },
 ) => {
     return true;
@@ -415,16 +415,15 @@ You specify a keyed service by creating a keyed router with its set of functions
 ```typescript
 const keyedServiceRouter = restate.keyedRouter({
   hello: async (ctx: restate.KeyedContext, key: string, request: Request) => { ... },
-  callMe: async (ctx: restate.Context, key: string) => { ... },
-  maybe: async (ctx: restate.Context) => { ... },
+  callMe: async (ctx: restate.KeyedContext, key: string) => { ... },
+  maybe: async (ctx: restate.KeyedContext) => { ... },
   withSomething: async () => { ... }
 });
 ```
 
 The functions of a keyed router have three optional parameters
 
-* A `ctx` of type `restate.Context` which allows to interact with Restate.
-If you need access to K/V state or want to sequence invocations per key (at most one ongoing invocation per key), then use the `restate.KeyedContext`.
+* A `ctx` of type `restate.KeyedContext` which allows to interact with Restate.
 * A `key` parameter of type string which represents the key of the invoked service.
 * A `request` parameter of type JSON object which represents additional invocation data.
 

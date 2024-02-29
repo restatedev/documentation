@@ -17,6 +17,8 @@ You can retrieve the context object as follows:
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript" default>
 
+For unkeyed routers:
+
 ```typescript
 import * as restate from "@restatedev/restate-sdk";
 
@@ -26,11 +28,7 @@ const greet = async (ctx: restate.Context, name: string) => {
 };
 ```
 
-The Restate context is supplied as the first argument `ctx` to the handler.
-The arguments behind that are optional. For more information on the handler signature, have a look at the [serving docs](/services/sdk/serving).
-
-If you use a keyed service, and you want your invocations to be keyed, you need to use the keyed context.
-This is required to use Restate's K/V state store.
+For keyed routers:
 
 ```typescript
 import * as restate from "@restatedev/restate-sdk";
@@ -41,9 +39,13 @@ const greet = async (ctx: restate.KeyedContext, name: string) => {
 };
 ```
 
+The Restate context is supplied as the first argument `ctx` to the handler.
+The arguments behind that are optional. For more information on the handler signature, have a look at the [serving docs](/services/sdk/serving).
+
 </TabItem>
 <TabItem value="ts-grpc" label="TypeScript-gRPC">
 
+For unkeyed routers:
 
 ```typescript
 import * as restate from "@restatedev/restate-sdk";
@@ -55,8 +57,7 @@ async greet(request: Request): Promise<Response> {
 }
 ```
 
-If you use a keyed service, and you want your invocations to be keyed, you need to use the keyed context.
-This is required to use Restate's K/V state store.
+For keyed routers:
 
 ```typescript
 import * as restate from "@restatedev/restate-sdk";
@@ -74,7 +75,7 @@ async greet(request: Request): Promise<Response> {
 
 The Restate context is supplied as the first argument `ctx` to the method.
 
-For example:
+For unkeyed services:
 
 ```java
 public class Greeter extends GreeterRestate.GreeterRestateImplBase {
@@ -86,8 +87,7 @@ public class Greeter extends GreeterRestate.GreeterRestateImplBase {
 }
 ```
 
-If you use a keyed service, and you want your invocations to be keyed, you need to use the object context.
-This is required to use Restate's K/V state store.
+For keyed services:
 
 ```java
 public class Greeter extends GreeterRestate.GreeterRestateImplBase {
@@ -106,7 +106,9 @@ Have a look at the [Context JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api
 <details>
 <summary>Alternative: vanilla gRPC</summary>
 
-If you do not use Restate's generated protobuf code, you can access the restate context as follows:
+If you do not use Restate's generated protobuf code, you can access the restate context as follows.
+
+For unkeyed services:
 
 ```java
 import dev.restate.sdk.Context;
@@ -115,7 +117,7 @@ import dev.restate.sdk.Context;
 Context ctx = Context.current();
 ```
 
-For the keyed context, do:
+For keyed services:
 
 ```java
 import dev.restate.sdk.ObjectContext;
@@ -139,12 +141,4 @@ All method calls made through the Restate context are durably stored in the exec
 and can be replayed in case of failure, ensuring that your service is always reliable and fault-tolerant.
 This means that if you do actions (e.g. calling other services, sleep) without making use of the Restate SDK,
 you do not have these benefits.
-:::
-
-:::danger
-If you want to have at most one ongoing invocation per key (e.g. when interacting with state),
-make sure you use the ObjectContext (for Java) or KeyedContext (for TypeScript).
-The ObjectContext makes sure that invocations are sequenced per key. So there is at most one ongoing invocation for a specific key.
-This guarantees that at most one function is changing the state for a specific key.
-This is required to prevent inconsistent state when multiple invocations would be writing to the same key.
 :::
