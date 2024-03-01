@@ -128,7 +128,7 @@ const router = restate.keyedRouter({
 
 // Create the Restate server to accept requests
 restate
-    .createServer()
+    .endpoint()
     .bindKeyedRouter("greeter", router)
     .listen();
 ```
@@ -139,7 +139,7 @@ The [Restate context](/services/sdk/restate-context) enables interaction with Re
 The `countGreetings` function uses the `restate.KeyedContext` because it belongs to a keyed service.
 For unkeyed services, you would use `restate.Context`.
 
-Finally, the Restate server is set up to serve both functions.
+Finally, the endpoint is set up to serve both functions.
 The service is registered as a keyed service under the path `greeter`, and the `greet` and `countGreetings` routes are added.
 The `greet` function can now be called by sending a request to `<RESTATE_INGRESS_URL>/greeter/greet` or `<RESTATE_INGRESS_URL>/greeter/countGreetings`.
 
@@ -190,9 +190,9 @@ export class GreeterService implements Greeter {
 }
 
 // Setting up the Restate server to serve the GreeterService methods.
-// The server will listen on port 8000 for connections and requests.
+// The endpoint will be attached to port 8000 for connections and requests.
 restate
-    .createServer()
+    .endpoint()
     .bindService({
         descriptor: protoMetadata,
         service: "Greeter",
@@ -204,7 +204,7 @@ restate
 The interface of the gRPC service is defined in the [Protobuf](https://protobuf.dev/) service contracts, that are shown below.
 Within the method, the Restate context is retrieved, enabling interaction with Restate (e.g. calling other services).
 For keyed services, you use the `restate.KeyedContext`. For unkeyed services, instead, you use the `restate.Context`.
-Finally, the Restate server is set up to serve both methods of the greeter service.
+Finally, the endpoint is set up to serve both methods of the greeter service.
 
 This is what corresponding Protobuf definition would look like for this service:
 
