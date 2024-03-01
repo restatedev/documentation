@@ -8,7 +8,7 @@ import TabItem from '@theme/TabItem';
 
 # Restate context
 
-In Restate services, all interaction with the runtime occur through the Restate context.
+In Restate services, all interaction with the runtime occurs through the Restate context.
 This context provides a set of methods that allow you to perform actions such as getting or setting state, or
 calling other services.
 
@@ -17,10 +17,23 @@ You can retrieve the context object as follows:
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript" default>
 
+For unkeyed routers:
+
 ```typescript
 import * as restate from "@restatedev/restate-sdk";
 
-const greet = async (ctx: restate.RpcContext, name: string) => {
+const greet = async (ctx: restate.Context, name: string) => {
+
+    //...the rest of your code...
+};
+```
+
+For keyed routers:
+
+```typescript
+import * as restate from "@restatedev/restate-sdk";
+
+const greet = async (ctx: restate.KeyedContext, name: string) => {
 
     //...the rest of your code...
 };
@@ -32,6 +45,7 @@ The arguments behind that are optional. For more information on the handler sign
 </TabItem>
 <TabItem value="ts-grpc" label="TypeScript-gRPC">
 
+For unkeyed routers:
 
 ```typescript
 import * as restate from "@restatedev/restate-sdk";
@@ -43,38 +57,73 @@ async greet(request: Request): Promise<Response> {
 }
 ```
 
+For keyed routers:
+
+```typescript
+import * as restate from "@restatedev/restate-sdk";
+
+async greet(request: Request): Promise<Response> {
+    const ctx = restate.useKeyedContext(this);
+
+    //...the rest of your code...
+};
+```
+
 </TabItem>
 
 <TabItem value="java" label="Java">
 
 The Restate context is supplied as the first argument `ctx` to the method.
 
-For example:
+For unkeyed services:
 
 ```java
 public class Greeter extends GreeterRestate.GreeterRestateImplBase {
 
   @Override
-  public GreetResponse greet(RestateContext ctx, GreetRequest request) {
+  public GreetResponse greet(Context ctx, GreetRequest request) {
     // implement your method
   }
 }
 ```
 
+For keyed services:
+
+```java
+public class Greeter extends GreeterRestate.GreeterRestateImplBase {
+
+    @Override
+    public GreetResponse greet(ObjectContext ctx, GreetRequest request) {
+        // implement your method
+    }
+}
+```
+
 :::note
-Have a look at the [JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api/latest/dev/restate/sdk/RestateContext.html) for an overview of what you can do with the Restate context.
+Have a look at the [Context JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api/latest/dev/restate/sdk/Context.html) and [ObjectContext JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api/latest/dev/restate/sdk/ObjectContext.html) for an overview of what you can do with the Restate context.
 :::
 
 <details>
 <summary>Alternative: vanilla gRPC</summary>
 
-If you do not use Restate's generated protobuf code, you can access the restate context as follows
+If you do not use Restate's generated protobuf code, you can access the restate context as follows.
+
+For unkeyed services:
 
 ```java
-import dev.restate.sdk.blocking.RestateContext;
+import dev.restate.sdk.Context;
 
 // Inside your method:
-RestateContext ctx = restateContext();
+Context ctx = Context.current();
+```
+
+For keyed services:
+
+```java
+import dev.restate.sdk.ObjectContext;
+
+// Inside your method:
+ObjectContext ctx = ObjectContext.current();
 ```
 
 </details>

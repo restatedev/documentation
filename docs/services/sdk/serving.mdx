@@ -26,8 +26,8 @@ For **unkeyed services**, the router looks as follows:
 ```typescript
 const serviceRouter = restate.router({
     hello: async () => { ... },
-    callMe: async (ctx: restate.RpcContext) => { ... },
-    maybe: async (ctx: restate.RpcContext, request: Request) => { ... }
+    callMe: async (ctx: restate.Context) => { ... },
+    maybe: async (ctx: restate.Context, request: Request) => { ... }
 });
 ```
 
@@ -36,7 +36,7 @@ This means that the `hello` function can be called via `<RESTATE_INGRESS_URL>/my
 
 The functions of an unkeyed router have two optional parameters:
 
-- A `ctx` of type `restate.RpcContext` which allows to interact with Restate.
+- A `ctx` of type `restate.Context` which allows to interact with Restate.
 - A `request` of type JSON object that represents additional invocation data.
 
 The parameter names may be chosen differently.
@@ -46,9 +46,9 @@ For **keyed services**, the router looks as follows:
 // 2. Create a router for keyed services (if any):
 const keyedServiceRouter = restate.keyedRouter({
     hello: async () => { ... },
-    callMe: async (ctx: restate.RpcContext) => { ... },
-    maybe: async (ctx: restate.RpcContext, key: string) => { ... },
-    withSomething: async (ctx: restate.RpcContext, key: string, request: Request) => { ... }
+    callMe: async (ctx: restate.KeyedContext) => { ... },
+    maybe: async (ctx: restate.KeyedContext, key: string) => { ... },
+    withSomething: async (ctx: restate.KeyedContext, key: string, request: Request) => { ... }
 });
 ```
 
@@ -57,7 +57,8 @@ This means that the `hello` function can be called via `<RESTATE_INGRESS_URL>/my
 
 The functions of a keyed router have three optional parameters:
 
-- A `ctx` of type `restate.RpcContext` which allows to interact with Restate.
+- A `ctx` of type `restate.KeyedContext` which allows to interact with Restate.
+The `restate.KeyedContext` allows the same operations as the `restate.Context` but is enriched with the extra functionality for keyed services (e.g. access to K/V state).
 - A `key` parameter of type string which represents the key of the invoked service.
 - A `request` parameter of type JSON object which represents additional invocation data.
 
