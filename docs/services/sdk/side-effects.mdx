@@ -34,6 +34,12 @@ Here is an example of a database request for which the string return value is st
 const result = await ctx.sideEffect<string>(async () => doDbRequest());
 ```
 
+:::danger
+Always immediately await side effects, before doing any other context calls.
+If not, you might bump into non-determinism errors during replay,
+because the side effect can get interleaved with the other context calls in the journal in a non-deterministic way.
+:::
+
 </TabItem>
 <TabItem value="java" label="Java">
 
