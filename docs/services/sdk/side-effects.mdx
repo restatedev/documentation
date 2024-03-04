@@ -234,7 +234,7 @@ Creates a Promise that is either:
 2. Rejected when any Promise is rejected.
 
 Similar to [`Promise.all()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all),
-but the outcome is stored in the Restate journal to be deterministically replayed.
+but the outcome is stored in the Restate journal to be deterministically replayable.
 
 **CombineablePromise.any():**
 
@@ -244,11 +244,11 @@ const result = await CombineablePromise.any([promise1, promise2]);
 
 Creates a promise with two possible outcomes:
 1. The promise resolves with the first successful result from the input promises, once any of them resolves.
-2. The promise gets rejected when all the input's promises are rejected (including when an empty iterable is passed),
+2. The promise gets rejected when all the input promises are rejected (including when an empty iterable is passed),
 returning an `AggregateError` containing an array of the reasons for rejection.
 
 Similar to [`Promise.any()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/any),
-but the outcome is stored in the Restate journal to be deterministically replayed.
+but the outcome is stored in the Restate journal to be deterministically replayable.
 
 **CombineablePromise.race():**
 
@@ -261,7 +261,7 @@ Creates a Promise that is:
 2. Rejected when any of the provided Promises are rejected.
 
 Similar to [`Promise.race()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/race),
-but the outcome is stored in the Restate journal to be deterministically replayed.
+but the outcome is stored in the Restate journal to be deterministically replayable.
 
 **CombineablePromise.allSettled():**
 
@@ -269,11 +269,11 @@ but the outcome is stored in the Restate journal to be deterministically replaye
 const result = await CombineablePromise.allSettled([promise1, promise2]);
 ```
 
-Creates a promise that fulfills when all the input's promises settle (including when an empty iterable is passed),
-with an array of objects that describe the outcome of each promise (either resolved or rejected).
+Creates a promise that resolves once all the input promises have settled (including when an empty iterable is passed).
+It returns an array of objects describing the outcome of each promise, whether resolved or rejected.
 
 Similar to [`Promise.allSettled()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled),
-but the outcome is stored in the Restate journal to be deterministically replayed.
+but the outcome is stored in the Restate journal to be deterministically replayable.
 
 </TabItem>
 <TabItem value="java" label="Java">
