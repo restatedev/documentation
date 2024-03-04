@@ -96,16 +96,6 @@ const config = {
         },
         items: [
           {
-            href: "/services/sdk/overview?sdk=ts",
-            label: "TypeScript SDK",
-            position: "right",
-          },
-          {
-            to: "/services/sdk/overview?sdk=java",
-            label: "Java SDK",
-            position: "right",
-          },
-          {
             to: "https://restate.dev/get-restate/",
             label: "Get Restate",
             position: "right",

@@ -5,6 +5,90 @@ description: "Learn how to run Restate applications on Kubernetes."
 
 # Kubernetes
 
+This page describes how to deploy Restate and Restate services on [Kubernetes](https://kubernetes.io/).
+
+## Deploying Restate on K8S
+The recommended Kubernetes deployment strategy is a one-replica StatefulSet. We recommend installing Restate in its own
+namespace.
+
+```yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: restate
+  name: restate
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: restate
+  namespace: restate
+spec:
+  serviceName: restate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: restate
+  template:
+    metadata:
+      labels:
+        app: restate
+    spec:
+      imagePullSecrets:
+        - name: github
+      containers:
+        - name: restate
+          image: docker.io/restatedev/restate:VAR::RESTATE_VERSION
+          env:
+            - name: RESTATE_TRACING__LOG_FORMAT
+              value: Json
+          ports:
+            - containerPort: 9070
+              name: admin
+            - containerPort: 8080
+              name: ingress
+            - containerPort: 9071
+              name: storage
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests: # you may need to adjust these for your use case
+              cpu: 100m
+              memory: 1Gi
+          volumeMounts:
+            - mountPath: /target
+              name: storage
+  volumeClaimTemplates:
+    - metadata:
+        name: storage
+        labels:
+          app: restate
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 64Gi # for example; this is often expandable later anyway
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: restate
+  namespace: restate
+spec:
+  selector:
+    app: restate
+  ports:
+    - port: 9070
+      name: admin
+    - port: 8080
+      name: ingress
+    - port: 9071
+      name: storage
+  type: ClusterIP
+```
+
+## Deploying Restate services on K8S
 Service deployments can be deployed like any gRPC service; a Deployment of more than one replica is generally appropriate. However,
 like gRPC services, they must be appropriately load balanced at L7 if you want multiple service deployment pods. Native Kubernetes
 ClusterIP load balancing will lead to the Restate binary sending all requests to a single pod, as HTTP2 connections
@@ -20,7 +104,7 @@ Otherwise, some recommended approaches are detailed below:
 | Minikube        | For local development it's likely not worth worrying about; see below                                                             |
 | Any             | Use an envoy sidecar on the restate pod; see below                                                                                |
 
-## Local Kubernetes development
+### Local Kubernetes development
 
 A simple deployment setup (eg, for local use with Minikube) with a single pod in Kubernetes is as follows:
 
@@ -64,7 +148,7 @@ spec:
 
 L7 load balancing is not needed when there is only one pod, so it's acceptable to use a normal ClusterIP Service.
 
-## Knative
+### Knative
 
 Restate supports Knative services. Knative allows scaling to zero when there are no in-flight invocations and automatically configures an L7 load balancer. There are no special requirements to deploy a service deployment container with Knative:
 
@@ -93,7 +177,7 @@ The service will be accessible at `http://<service-name>.<namespace>.svc`.
 
 By default Knative exposes the service through the Ingress. This is not required by Restate, and you can disable this behavior adding the argument `--cluster-local` to the aforementioned creation command.
 
-## Simple L7 load balancing with an Envoy sidecar
+### Simple L7 load balancing with an Envoy sidecar
 
 A simple approach to L7 load balancing is to set up an Envoy sidecar in the Restate pod which acts as a transparent HTTP proxy
 which will resolve and L7 load balance to Kubernetes Services based on their DNS name. For this to work, Services must be
