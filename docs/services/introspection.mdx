@@ -330,28 +330,62 @@ Zombie invocations are invocations that are pinned to a specific deployment but 
 
 ## Inspecting application state
 
-:::note
-Inspecting the application state is currently only possible via `psql`.
+To retrieve the state of a specific service and service key , do:
+<Tabs groupId="interface" queryString>
+<TabItem value="cli" label="CLI">
+
+```shell
+restate state get <SERVICE_NAME> <SERVICE_KEY>
+```
+
+Instead of `state`, you can use the alias `kv`.
+
+For example:
+
+```shell
+restate kv get counter bob
+```
+
+This will output the state of the service `counter` with the key `bob`:
+
+```log
+🤖 State:
+―――――――――
+
+service  counter
+key      bob
+
+KEY   VAL
+seen  8
+```
+
+:::info
+If the values are not JSON-encoded UTF-8 strings, then it is also possible to use the `--binary` flag,
+and get the value as base64 encoded string.
 :::
 
+</TabItem>
+<TabItem value="psql" label="psql">
+
 You can query the application state via the `state` table.
-You can retrieve the state of a specific service and service key via:
 
 ```sql
 select * from state where service = 'test.MyServiceName' and service_key = 'myKey';
 ```
 
-You can retrieve the state of a specific service, service key and state key (`key` column) via:
+:::info Take into account the data types of the included columns.
+If your state value is a regular string, then you can access its content in the column `value_utf8`.
+:::
+
+
+To retrieve the state of a specific service, service key and state key, do:
 
 ```sql
-select * from state where service = 'test.MyServiceName' and service_key = 'myKey' and key = 'myStateKey';
+select * from state where service = 'MyServiceName' and service_key = 'myKey' and key = 'myStateKey';
 ```
 
 The state key is the name you used to store the state with the SDK. For example, the code snippet `ctx.set("count", 1)` stores `1` under the key `count`.
 
-:::info Take into account the data types of the included columns.
-If your state value is a regular string, then you can access its content in the column `value_utf8`.
-:::
 
 :::tip Joining the tables
 To join the `sys_status` and `state` table, you can use the `service` and `service_key` columns:
@@ -359,3 +393,60 @@ To join the `sys_status` and `state` table, you can use the `service` and `servi
 select * from sys_status JOIN state on sys_status.service = state.service and sys_status.service_key = state.service_key;
 ```
 :::
+</TabItem>
+</Tabs>
+
+### To edit application state
+
+<Tabs groupId="interface" queryString>
+<TabItem value="cli" label="CLI">
+
+To edit the application state, do:
+
+```shell
+restate state edit <SERVICE_NAME> <SERVICE_KEY>
+```
+
+This command opens your default editor (as configured in the `cli env`).
+It sends the new state values back to the runtime to be applied.
+
+:::info
+Use `--binary` if the values are not JSON-encoded UTF-8 strings.
+In this case, you need to decode the base64-encoded string, and encode it back to base64 after editing.
+:::
+
+:::danger Editing state during ongoing invocations
+If during the editing of the state with the CLI, an invocation changed the state as well, then the edit of the CLI will not take affect.
+If you want the CLI state edit to be applied even if the state has changed in the meantime, then use the `--force` flag.
+:::
+
+An example on how to edit the K/V state of the service `counter` for the key `bob`:
+
+```shell
+restate state edit counter bob -w
+```
+
+After changing the state in our editor, we get:
+
+```log
+ℹ️  About to write the following state :
+―――――――――――――――――――――――――――――――――――――――
+
+
+service  counter
+key      bob
+force?   false
+binary?  false
+
+KEY   VAL
+seen  8
+
+✔ Are you sure? · yes
+
+
+Enqueued successfully for processing
+```
+
+</TabItem>
+</Tabs>
+
