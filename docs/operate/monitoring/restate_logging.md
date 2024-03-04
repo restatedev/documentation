@@ -1,9 +1,9 @@
 ---
-sidebar_position: 5
+sidebar_position: 2
 description: "Find out how to configure logging for Restate."
 ---
 
-# Logging
+# Restate Server Logging
 
 By default, Restate logs INFO, WARN and ERROR events using a pretty format.
 
