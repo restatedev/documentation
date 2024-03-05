@@ -64,8 +64,6 @@ Replace `<RESTATE_ADMIN_URL>` and the Lambda function ARN in the data field.
 
 This tutorial shows how to deploy a greeter service written with the Restate TypeScript SDK on AWS Lambda.
 
-[Go to the GitHub repository of this tutorial](https://github.com/restatedev/examples/tree/main/typescript/hello-world-lambda)
-
 ### Prerequisites
 
 - Latest stable version of [NodeJS](https://nodejs.org/en/) >= v18.17.1 and [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 9.6.7
@@ -77,24 +75,30 @@ This tutorial shows how to deploy a greeter service written with the Restate Typ
 
 Clone the GitHub repository for the latest release:
 ```shell
-git clone --depth 1 git@github.com:restatedev/examples.git
+npx -y @restatedev/create-app@latest && cd restate-node-template
 ```
 
-You can find the example code in the `typescript/hello-world-lambda` directory.
-We are going to deploy the service defined in `src/app.ts` on AWS Lambda.
-To do this, we need to create a zip file that includes the service code and the required dependencies to run it.
-
-### Creating a zip file from our code base
-
-First, get all dependencies and build tools:
+Get all dependencies:
 ```
 npm install
 ```
 
-Next, generate the 'proto' files for the gRPC definitions:
+### Converting to a Lambda handler
+
+We are going to deploy the service defined in `src/app.ts` on AWS Lambda.
+
+To do this, we need to switch the endpoint definition to a Lambda handler.
+Replace `.listen(9080)` by `.lambdaHandler()` to get:
+```typescript
+restate
+  .createServer()
+  .bindRouter(service.path, router)
+  .lambdaHandler();
 ```
-npm run proto
-```
+
+### Creating a zip file from our code base
+
+Now, we need to create a zip file that includes the service code and the required dependencies to run it.
 
 To build the code and make the zip file, do
 ```
