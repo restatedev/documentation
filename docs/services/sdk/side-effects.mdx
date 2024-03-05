@@ -283,10 +283,12 @@ The SDK provides combinators for working with `Awaitable`.
 **Awaitable.all():**
 
 ```shell
-SomeResponse res = (SomeResponse) Awaitable.all(a1, a2, a3).await();
+Awaitable.all(a1, a2, a3).await();
 ```
 
 Creates an Awaitable that awaits all of the provided Awaitables to resolve.
+
+Similar to [`CompleteableFuture.allOf()`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/CompletableFuture.html#allOf(java.util.concurrent.CompletableFuture...)), but the outcome is stored in the Restate journal to be deterministically replayable.
 
 **Awaitable.any():**
 
@@ -295,6 +297,9 @@ SomeResponse res = (SomeResponse) Awaitable.any(a1, a2, a3).await();
 ```
 
 Creates an Awaitable that awaits any of the provided Awaitables to resolve.
+
+Similar to [`CompleteableFuture.anyOf()`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/CompletableFuture.html#anyOf(java.util.concurrent.CompletableFuture...)), but the outcome is stored in the Restate journal to be deterministically replayable.
+
 
 </TabItem>
 </Tabs>
