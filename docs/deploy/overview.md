@@ -43,7 +43,7 @@ A service deployment can be a Lambda function, a Kubernetes pod, a Knative Servi
 
 The URL (including path prefix) MUST be **unique**, meaning that no two deployments with the same URL can exist at the same time in a Restate instance.
 
-Moreover, service deployments are **immutable**, and are assumed to be reachable throughout the entire lifecycle of an invocation. To deploy any change to a service, either in the Protobuf definition or in the business logic, you should deploy a new deployment with a new URL. See the [versioning documentation](/operate/upgrades-removal) for more details on how to update services.
+Moreover, service deployments are **immutable**, and are assumed to be reachable throughout the entire lifecycle of an invocation. To deploy any change to a service, either in the Protobuf definition or in the business logic, you should deploy a new deployment with a new URL. See the [versioning documentation](/operate/versioning) for more details on how to update services.
 
 
 :::info Running services locally
