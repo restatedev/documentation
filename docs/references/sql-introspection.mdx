@@ -3,9 +3,9 @@ sidebar_position: 3
 description: "API reference for inspecting the invocation status and service state."
 ---
 
-# Restate SQL Introspection API
+# SQL Introspection API
 
-Restate exposes two tables that can be queried via [psql](https://www.postgresql.org/docs/current/app-psql.html).
+Restate exposes a set of tables that can be queried via [psql](https://www.postgresql.org/docs/current/app-psql.html).
 The schema of these tables is described in the following.
 
 ## Table: `state`
@@ -28,7 +28,7 @@ The schema of these tables is described in the following.
 | `method`               | `Utf8`   | The invoked RPC method.                                                                                                                                                         | `greet`               |
 | `service_key`          | `Utf8`   | The service key.                                                                                                                                                                | `bob`                 |
 | `status`               | `Utf8`   | Enum value: `invoked` or `suspended`.                                                                                                                                           |                       |
-| `id`                   | `Utf8`   | [Invocation ID](/services/invocation#invocation-identifier), an opaque token that can be used to cancel an invocation of a service with the [admin API](/references/admin-api). |                       |
+| `id`                   | `Utf8`   | [Invocation ID](/operate/invocation#invocation-identifier), an opaque token that can be used to cancel an invocation of a service with the [admin API](/references/admin-api). |                       |
 | `invoked_by`           | `Utf8`   | Enum describing the invoker of this service: `ingress` = invoked externally / `service` = invoked by a service.                                                                 |                       |
 | `invoked_by_service`   | `Utf8`   | The name of the invoking service. Or `null` if invoked via the ingress.                                                                                                         | `com.example.Greeter` |
 | `invoked_by_id`        | `Utf8`   | The Invocation ID of the service that triggered this invocation. Or `null` if invoked externally.                                                                               |                       |
@@ -45,7 +45,7 @@ The schema of these tables is described in the following.
 | `partition_key`              | `UInt64`  | Internal column that is used for partitioning the services invocations. Can be ignored.                                                                                         |                   |
 | `service`                    | `Utf8`    | The name for the invoked service.                                                                                                                                               | `foo.bar.Greeter` |
 | `service_key`                | `Utf8`    | The service key.                                                                                                                                                                | `bob`             |
-| `id`                         | `Utf8`    | [Invocation ID](/services/invocation#invocation-identifier), an opaque token that can be used to cancel an invocation of a service with the [admin API](/references/admin-api). |                   |
+| `id`                         | `Utf8`    | [Invocation ID](/operate/invocation#invocation-identifier), an opaque token that can be used to cancel an invocation of a service with the [admin API](/references/admin-api). |                   |
 | `in_flight`                  | `Boolean` | Indicates whether there is currently an attempt running for this invocation.                                                                                                    |                   |
 | `retry_count`                | `UInt64`  | The number of attempts since the last successful attempt of this invocation. Increments on start, so 2 or more means a failure occurred.                                        |                   |
 | `last_start_at`              | `Date64`  | Timestamp indicating the start of the most recent attempt of this invocation.                                                                                                   |                   |
@@ -73,7 +73,7 @@ The schema of these tables is described in the following.
 
 |  Column name        | Type        | Description                                                                                                                                                                     | Example                |
 |---------------------|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------|
-| `id`                 | `Utf8`     | [Invocation ID](/services/invocation#invocation-identifier), an opaque token that can be used to cancel an invocation of a service with the [admin API](/references/admin-api). |                        |
+| `id`                 | `Utf8`     | [Invocation ID](/operate/invocation#invocation-identifier), an opaque token that can be used to cancel an invocation of a service with the [admin API](/references/admin-api). |                        |
 | `partition_key`      | `UInt64`   | Internal column that is used for partitioning the services invocations. Can be ignored.                                                                                         |                        |
 | `service`            | `Utf8`     | The name for the invoked service.                                                                                                                                               | `foo.bar.Greeter`      |
 | `method`             | `Utf8`     | The invoked RPC method.                                                                                                                                                         | `greet`                |

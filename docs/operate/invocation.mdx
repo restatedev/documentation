@@ -14,8 +14,8 @@ An invocation is a single call to a service method.
 
 There are different ways to invoke a Restate service:
 
-* From within another service, as described in the [SDK service communication documentation](/services/sdk/service-communication)
-* By sending a request to Restate [over HTTP](/services/invocation#over-http), or [via gRPC or gRPC-web](/services/invocation#grpc-and-grpc-web)
+* From within another service, as described in the [SDK service communication documentation](/develop/sdk/service-communication)
+* By sending a request to Restate [over HTTP](/operate/invocation#over-http), or [via gRPC or gRPC-web](/operate/invocation#over-grpc-and-grpc-web)
 
 ### Over HTTP
 
@@ -164,7 +164,7 @@ The `Idempotency-Key` header works with both HTTP and gRPC/gRPC-web.
 
 ### Invoke a service without waiting for the response
 
-You can invoke a service without waiting for the response, similar to [one-way calls in the SDK](/services/sdk/service-communication#one-way-calls), by using the Restate built-in `dev.restate.Ingress/Invoke` service method, which can be invoked like any other user service, using gRPC, gRPC-web or Connect.
+You can invoke a service without waiting for the response, similar to [one-way calls in the SDK](/develop/sdk/service-communication#one-way-calls), by using the Restate built-in `dev.restate.Ingress/Invoke` service method, which can be invoked like any other user service, using gRPC, gRPC-web or Connect.
 
 For example, using [Connect](#connect-grpc-on-http) and `curl`:
 
@@ -172,7 +172,7 @@ For example, using [Connect](#connect-grpc-on-http) and `curl`:
 curl <RESTATE_INGRESS_URL>/dev.restate.Ingress/Invoke -H 'content-type: application/json' -d '{"service": "org.example.Greeter", "method": "Greet", "argument": {"name": "Pete"}}'
 ```
 
-The response contains the [Invocation identifier](#invocation-identifier). You can use this identifier to cancel or kill the invocation as described in [the below paragraph](/services/invocation#cancel-an-invocation).
+The response contains the [Invocation identifier](#invocation-identifier). You can use this identifier to cancel or kill the invocation as described in [the below paragraph](/operate/invocation#cancel-an-invocation).
 
 For the complete documentation of the `dev.restate.Ingress` built-in service, check out the [Restate protobuf definitions](https://github.com/restatedev/proto/blob/main/dev/restate/services.proto).
 
@@ -325,12 +325,12 @@ For more details on the API, refer to the [admin API docs](/references/admin-api
 
 ## Invocation execution timeout(s)
 
-For each retry attempt, Restate internally holds an inactivity timer to track whether the service is active and generating some work, such as setting state, invoking other services, etc. This timer can be configured with the option [`worker.invoker.inactivity_timeout`](https://docs.restate.dev/restate/configuration).
+For each retry attempt, Restate internally holds an inactivity timer to track whether the service is active and generating some work, such as setting state, invoking other services, etc. This timer can be configured with the option [`worker.invoker.inactivity_timeout`](/operate/configuration).
 
 Once the `inactivity_timeout` is fired, Restate tries to gracefully suspend the invocation while waiting for an event that triggers the resumption of the invocation.
 When suspending, the Restate SDK will continue executing the service code until it reaches a _suspension point_, that is a point in your service code where it's safe to interrupt the execution, for example when `await`ing on a response from another service.
 
-When suspending, Restate internally starts another timer to protect Restate from connection issues and/or misbehaving code/SDKs that prevent the tear down of the connection. This timer can be configured with the option [`worker.invoker.abort_timeout`](https://docs.restate.dev/restate/configuration).
+When suspending, Restate internally starts another timer to protect Restate from connection issues and/or misbehaving code/SDKs that prevent the tear down of the connection. This timer can be configured with the option [`worker.invoker.abort_timeout`](/operate/configuration).
 Once the `abort_timeout` is fired, the connection to the deployment endpoint is closed, and all in-flight progress is discarded.
 
-If you have [side effects](sdk/side-effects) that take more than `inactivity_timeout + abort_timeout` to execute, you might need to tune these timeouts accordingly, for example by increasing the `inactivity_timeout` to a value larger than the expected side effect duration.
+If you have [side effects](/develop/sdk/side-effects) that take more than `inactivity_timeout + abort_timeout` to execute, you might need to tune these timeouts accordingly, for example by increasing the `inactivity_timeout` to a value larger than the expected side effect duration.

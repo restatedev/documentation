@@ -25,7 +25,7 @@ There are several API endpoints at this hostname:
 
 ### Registering services (9070)
 A Restate admin endpoint, which can be used to register Restate Lambda functions written in 
-[TypeScript](/services/deployment/lambda/lambda-typescript#discovering-the-services-behind-the-lambda-endpoint) and [Java](/services/deployment/lambda/lambda-java#discovering-the-services-behind-the-lambda-endpoint),
+[TypeScript](/deploy/lambda/lambda-typescript#discovery-of-services) and [Java](/deploy/lambda/lambda-java#discovery-of-services),
 with a bearer token set.
 
 ```bash
@@ -34,7 +34,7 @@ curl -H "Authorization: Bearer $(cat /token)" https://<CLUSTER_NAME>.dev.restate
 
 ### Invoking services (8080)
 A Restate ingress endpoint, which can be used to invoke Restate Lambda functions written in
-[TypeScript or Java](/services/deployment/lambda/lambda-typescript#send-requests),
+[TypeScript or Java](/deploy/lambda/lambda-typescript#send-requests),
 with a bearer token set.
 ```bash
 curl -H "Authorization: Bearer $(cat /token)" https://<CLUSTER_NAME>.dev.restate.cloud:8080/org.example.Greeter/MultiWord -H 'content-type: application/json' -d '{"name": "Pete"}'
@@ -43,7 +43,7 @@ This endpoint is rate limited to 36000 requests per hour.
 
 ### Introspection (9071)
 A Restate introspection endpoint, which can be used as described in the
-[introspection docs](/services/introspection) with a user and password set:
+[introspection docs](/operate/introspection) with a user and password set:
 ```bash
 PGPASSWORD=$(cat /token) psql -U yourcluster -h <CLUSTER_NAME>.dev.restate.cloud -p 9071
 ```
