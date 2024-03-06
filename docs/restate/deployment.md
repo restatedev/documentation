@@ -5,7 +5,8 @@ description: "Deploy Restate on Kubernetes or to AWS with this guide."
 
 # Deployment
 
-Restate is a single binary that contains everything you need to host an environment. See the [Get Restate](https://restate.dev/get-restate/) page for various ways of obtaining it.
+Restate is a single binary that contains everything you need to host an environment. See
+the [Get Restate](https://restate.dev/get-restate/) page for various ways of obtaining it.
 
 The server process exposes four services by default, available on different ports:
 
@@ -19,7 +20,8 @@ The server process exposes four services by default, available on different port
 It will store metadata and RocksDB data in the relative directory of /target under the current working directory of the
 process.
 
-The Restate server requires outbound connectivity to the services you deploy in order to discover and send requests to them.
+The Restate server requires outbound connectivity to the services you deploy in order to discover and send requests to
+them.
 
 In the next sections we will show you two different ways to deploy Restate on your own infrastructure.
 
@@ -32,8 +34,6 @@ namespace.
 apiVersion: v1
 kind: Namespace
 metadata:
-  labels:
-    kubernetes.io/metadata.name: restate
   name: restate
 ---
 apiVersion: apps/v1
@@ -52,8 +52,6 @@ spec:
       labels:
         app: restate
     spec:
-      imagePullSecrets:
-        - name: github
       containers:
         - name: restate
           image: docker.io/restatedev/restate:VAR::RESTATE_VERSION
@@ -67,7 +65,8 @@ spec:
               name: ingress
             - containerPort: 9071
               name: storage
-          imagePullPolicy: IfNotPresent
+            - containerPort: 5122
+              name: metrics
           resources:
             requests: # you may need to adjust these for your use case
               cpu: 100m
@@ -75,6 +74,11 @@ spec:
           volumeMounts:
             - mountPath: /target
               name: storage
+            - mountPath: /tmp
+              name: tmp
+      volumes:
+        - emptyDir: { }
+          name: tmp
   volumeClaimTemplates:
     - metadata:
         name: storage
@@ -102,8 +106,14 @@ spec:
       name: ingress
     - port: 9071
       name: storage
+    - port: 5122
+      name: metrics
   type: ClusterIP
 ```
+
+If you want to run multiple Restate clusters in Kubernetes, or want advanced functionality like online volume expansion
+and network policies, you can also use the [Restate Operator](https://github.com/restatedev/restate-operator). Details
+of how to install it and deploy a cluster can be found in the README.
 
 ## Amazon EC2 with CDK
 
@@ -133,12 +143,12 @@ to AWS X-Ray.
 import * as restate from "@restatedev/restate-cdk";
 
 const environment = new restate.SingleNodeRestateDeployment(this, "Restate", {
-  restateTag: "latest",
-  tracing: restate.TracingMode.AWS_XRAY,
-  logGroup: new logs.LogGroup(scope, "RestateLogs", {
-    logGroupName: "/restate/server-logs",
-    retention: logs.RetentionDays.ONE_MONTH,
-  }),
+	restateTag: "latest",
+	tracing: restate.TracingMode.AWS_XRAY,
+	logGroup: new logs.LogGroup(scope, "RestateLogs", {
+		logGroupName: "/restate/server-logs",
+		retention: logs.RetentionDays.ONE_MONTH,
+	}),
 });
 ```
 
