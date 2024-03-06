@@ -111,9 +111,11 @@ spec:
   type: ClusterIP
 ```
 
+:::tip Restate Kubernetes Operator
 If you want to run multiple Restate clusters in Kubernetes, or want advanced functionality like online volume expansion
 and network policies, you can also use the [Restate Operator](https://github.com/restatedev/restate-operator). Details
 of how to install it and deploy a cluster can be found in the README.
+:::
 
 ## Amazon EC2 with CDK
 
