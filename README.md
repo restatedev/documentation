@@ -36,8 +36,8 @@ The `main` branch of the documentation is continuously deployed at https://main.
 
 Before releasing the documentation, update schemas and version of Restate artifacts, either:
 
-* Automatically by executing the _Pre-release updates_ workflow.
-* Manually, as described [here](#manually-update-the-schemas).
+- Automatically by executing the _Pre-release updates_ workflow.
+- Manually, as described [here](#manually-update-the-schemas).
 
 Once the branch `main` is ready to be released, create and push the release tag:
 
@@ -63,7 +63,6 @@ $ ./tools/generate.sh <PATH to Restate repo clone>
 
 The config file `restate.config.json` contains versions of various Restate artifacts:
 
-* TypeScript SDK: `TYPESCRIPT_SDK_VERSION`
-* Java SDK: `JAVA_SDK_VERSION`
-* Runtime: `RESTATE_VERSION`
-* Tour: `TOUR_VERSION` (This counts for the TypeScript and Java Tour).
+- TypeScript SDK: `TYPESCRIPT_SDK_VERSION`
+- Java SDK: `JAVA_SDK_VERSION`
+- Runtime: `RESTATE_VERSION`

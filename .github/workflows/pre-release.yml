@@ -12,7 +12,7 @@ on:
         required: false
         type: string
       sdkJavaVersion:
-        description: 'sdk-java version (without prepending v).'
+        description: "sdk-java version (without prepending v)."
         required: false
         type: string
       tourVersion:
@@ -86,14 +86,6 @@ jobs:
           file: restate.config.json
           field: JAVA_SDK_VERSION
           value: ${{ inputs.sdkJavaVersion }}
-
-      - name: Update restate.config.json with new tour version (TypeScript + Java)
-        uses: jossef/action-set-json-field@v2.1
-        if: ${{ inputs.tourVersion != '' }}
-        with:
-          file: restate.config.json
-          field: TOUR_VERSION
-          value: ${{ inputs.tourVersion }}
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
