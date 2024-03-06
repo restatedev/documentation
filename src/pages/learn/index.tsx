@@ -11,6 +11,7 @@ import {
   Tags,
   TagList,
   type Guide,
+  type Levels,
   type TagType,
 } from '../../data/guides';
 import Heading from '@theme/Heading';
@@ -147,7 +148,12 @@ function GuideFilters() {
           </Heading>
           <span>{siteCountPlural(filteredGuides.length)}</span>
         </div>
+      </div>
+      <div>
         <GuideFilterToggle />
+      </div>
+      <div>
+        <SearchBar />
       </div>
       <ul className={clsx('clean-list', styles.checkboxList)}>
         {TagList.map((tag, i) => {
@@ -165,7 +171,7 @@ function GuideFilters() {
                   id={id}
                   label={label}
                   icon={
-                    tag === 'favorite' ? (<a>  🚀</a>) : (
+                    tag === 'favorite' ? (<a style={{marginLeft: 8,}}>  🚀</a>) : (
                       <span
                         style={{
                           backgroundColor: color,
@@ -304,17 +310,23 @@ function GuideCards() {
 
 export default function LearnCenter(): JSX.Element {
   return (
-    <Layout title={TITLE} description={DESCRIPTION}>
-      <main className="margin-vert--lg">
-        <LearnCenterHeader />
-        <GuideFilters />
-        <div
-          style={{display: 'flex', marginLeft: 'auto'}}
-          className="container">
-          <SearchBar />
-        </div>
-        <GuideCards />
-      </main>
-    </Layout>
+      <Layout title={TITLE} description={DESCRIPTION}>
+        <main className="margin-vert--lg">
+          <LearnCenterHeader />
+          <div style={{ display: 'flex' }}>
+            <div style={{ paddingRight: '0.3rem',  paddingLeft: '1rem', width: '20%' }}>
+              <GuideFilters />
+            </div>
+            <div>
+              <div style={{ display: 'flex', marginBottom: '0.3rem' , width: '80%' }}>
+                <div>
+                  <GuideCards />
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </Layout>
   );
 }
+

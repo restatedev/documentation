@@ -32,9 +32,6 @@ export type TagType =
   | 'workflows'
   | 'eventprocessing'
   | 'deployment'
-  | 'basics'
-  | 'intermediate'
-  | 'advanced'
   | 'java'
   | 'typescript'
   | 'blog'
@@ -52,7 +49,7 @@ const Guides: Guide[] = [
     preview: require('./guides/observability.jpeg'),
     website: '/quickstart',
     source: null,
-    tags: ['favorite', 'tutorial', 'basics', 'java', 'typescript'],
+    tags: ['favorite', 'tutorial', 'java', 'typescript'],
   },
   {
     title: 'Tour of Restate',
@@ -60,7 +57,7 @@ const Guides: Guide[] = [
     preview: require('../../static/img/tour-of-restate-diagram-handler.png'),
     website: '/tour',
     source: null,
-    tags: ['favorite', 'tutorial', 'basics', 'java', 'typescript'],
+    tags: ['favorite', 'tutorial', 'java', 'typescript'],
   },
   {
     title: 'Restate on AWS Lambda via AWS console',
@@ -68,7 +65,7 @@ const Guides: Guide[] = [
     preview: require('./guides/lambda-console-guide.png'),
     website: '/guides/lambda_deployment',
     source: 'https://github.com/restatedev/examples/tree/main/typescript/hello-world-lambda',
-    tags: ['basics', 'deployment', 'typescript'],
+    tags: ['deployment', 'typescript'],
   },
   {
     title: 'Kafka Event Processing with Restate',
@@ -77,7 +74,7 @@ const Guides: Guide[] = [
     preview: require('./guides/kakfa-guide.png'),
     website: 'https://restate.dev/blog/restate--kafka-event-driven-apps-where-event-driven-is-an-implementation-detail/',
     source: null,
-    tags: ['eventprocessing', 'basics'],
+    tags: ['eventprocessing'],
   },
   {
     title: "Graceful cancellations",
@@ -85,7 +82,7 @@ const Guides: Guide[] = [
     preview: require('./guides/cancellation-signal-propagation.png'),
     website: 'https://restate.dev/blog/graceful-cancellations-how-to-keep-your-application-and-workflow-state-consistent/',
     source: 'https://github.com/restatedev/examples/blob/main/typescript/patterns/src/compensations.ts',
-    tags: ['deployment', 'basics'],
+    tags: ['deployment'],
   },
   {
     title: 'Restate + Kubernetes',
@@ -94,7 +91,7 @@ const Guides: Guide[] = [
     preview: require('./guides/kubernetes.png'),
     website: '/guides/kubernetes',
     source: 'https://github.com/algolia/docsearch/tree/main/packages/website',
-    tags: ['deployment', 'basics'],
+    tags: ['deployment'],
   }
 
   // Add new guides in alphabetical order!
@@ -126,22 +123,24 @@ export const Tags: {[type in TagType]: Tag} = {
     color: '#e9669e',
   },
 
-  tipsntricks: {
-    label: translate({message: 'Tips & Tricks'}),
+  java: {
+    label: translate({message: 'Java'}),
     description: translate({
-      message: 'Useful tips and tricks to make working with Restate easy!',
-      id: 'showcase.tag.tipsntricks.description',
+      message:
+          'Guides using the Java SDK.',
+      id: 'showcase.tag.java.description',
     }),
-    color: '#39ca30',
+    color: '#ffcfc3',
   },
 
-  devex: {
-    label: translate({message: 'Developer Experience'}),
+  typescript: {
+    label: translate({message: 'TypeScript'}),
     description: translate({
-      message: 'Learn how to get the best developer experience when working with Restate!',
-      id: 'showcase.tag.devex.description',
+      message:
+          'Guides using the TypeScript SDK.',
+      id: 'showcase.tag.typescript.description',
     }),
-    color: '#dfd545',
+    color: '#fff200',
   },
 
   workflows: {
@@ -172,55 +171,6 @@ export const Tags: {[type in TagType]: Tag} = {
       id: 'showcase.tag.deployment.description',
     }),
     color: '#fe6829',
-  },
-
-  basics: {
-    label: translate({message: 'Basics'}),
-    description: translate({
-      message:
-        'Guides on basic topics.',
-      id: 'showcase.tag.basics.description',
-    }),
-    color: '#8c2f00',
-  },
-
-  intermediate: {
-    label: translate({message: 'Intermediate'}),
-    description: translate({
-      message: 'Guides on intermediate topics.',
-      id: 'showcase.tag.intermediate.description',
-    }),
-    color: '#4267b2', // Facebook blue
-  },
-
-  advanced: {
-    label: translate({message: 'Advanced'}),
-    description: translate({
-      message:
-        'Guides on advanced topics.',
-      id: 'showcase.tag.advanced.description',
-    }),
-    color: '#14cfc3',
-  },
-
-  java: {
-    label: translate({message: 'Java SDK'}),
-    description: translate({
-      message:
-        'Guides using the Java SDK.',
-      id: 'showcase.tag.java.description',
-    }),
-    color: '#ffcfc3',
-  },
-
-  typescript: {
-    label: translate({message: 'TypeScript SDK'}),
-    description: translate({
-      message:
-        'Guides using the TypeScript SDK.',
-      id: 'showcase.tag.typescript.description',
-    }),
-    color: '#fff200',
   },
 
   blog: {
