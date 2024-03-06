@@ -46,7 +46,7 @@ export default function GuideFilterToggle(): JSX.Element {
   };
 
   return (
-    <div className="row" style={{alignItems: 'center'}}>
+    <div className="row" style={{alignItems: 'center', marginLeft: 'inherit'}}>
       <input
         type="checkbox"
         id={id}

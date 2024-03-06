@@ -30,6 +30,7 @@ export type TagType =
   | 'tipsntricks'
   | 'devex'
   | 'workflows'
+  | 'microservices'
   | 'eventprocessing'
   | 'deployment'
   | 'java'
@@ -37,7 +38,6 @@ export type TagType =
   | 'blog'
   | 'tutorial'
   | 'video'
-  | 'pattern'
   | 'example';
 
 // Add sites to this list
@@ -82,7 +82,7 @@ const Guides: Guide[] = [
     preview: require('./guides/cancellation-signal-propagation.png'),
     website: 'https://restate.dev/blog/graceful-cancellations-how-to-keep-your-application-and-workflow-state-consistent/',
     source: 'https://github.com/restatedev/examples/blob/main/typescript/patterns/src/compensations.ts',
-    tags: ['deployment'],
+    tags: ['deployment', 'workflows', 'microservices'],
   },
   {
     title: 'Restate + Kubernetes',
@@ -153,6 +153,16 @@ export const Tags: {[type in TagType]: Tag} = {
     color: '#a44fb7',
   },
 
+  microservices: {
+    label: translate({message: 'Microservices'}),
+    description: translate({
+      message:
+          'Learn how to use Restate for Microservices Orchestration.',
+      id: 'showcase.tag.workflows.description',
+    }),
+    color: '#a44fb7',
+  },
+
   eventprocessing: {
     label: translate({message: 'Event Processing'}),
     description: translate({
@@ -201,16 +211,6 @@ export const Tags: {[type in TagType]: Tag} = {
       id: 'showcase.tag.video.description',
     }),
     color: '#205d14',
-  },
-
-  pattern: {
-    label: translate({message: 'Pattern'}),
-    description: translate({
-      message:
-        'Common patterns to help you speed up your development.',
-      id: 'showcase.tag.pattern.description',
-    }),
-    color: '#2c2681',
   },
 
   example: {
