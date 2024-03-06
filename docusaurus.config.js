@@ -134,8 +134,17 @@ const config = {
           target: "_self",
         },
         items: [
-          {to: '/', label: 'Build', position: 'left'},
-          {to: 'learn', label: 'Learn', position: 'left'},
+          {
+            to: '/',
+            label: 'Build',
+            position: 'left',
+            activeBaseRegex: '^/$',
+          },
+          {
+            to: 'learn',
+            label: 'Learn',
+            position: 'left'
+          },
           {
             to: "https://restate.dev/get-restate/",
             label: "Get Restate",
