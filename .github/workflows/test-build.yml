@@ -26,3 +26,31 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Test build website
         run: yarn build
+
+
+      # Test TypeScript code snippets
+      - name: Compile TypeScript code snippets
+        run: npm install --prefix code_snippets/ts && npm run build --prefix code_snippets/ts
+
+      - name: Check if TypeScript code snippet build is successful
+        run: |
+          if [ -d "code_snippets/ts/dist" ]; then
+          echo "TypeScript compilation successful"
+          else
+          echo "TypeScript compilation failed"
+          exit 1
+          fi
+
+      # Setup Java
+      - uses: actions/setup-java@v3
+        if: github.event.inputs.sdkJavaVersion != ''
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # Check Java code snippets
+      - name: Test Java code snippets
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: check
+          build-root-directory: code_snippets/java
