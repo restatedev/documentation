@@ -85,8 +85,8 @@ const config = {
       announcementBar: {
         id: 'support_us',
         content:
-            '🎉️ <a target="_blank" href="https://restate.dev/blog/release-announcement-restate-0.7-is-here/">Restate 0.7</a> is out now! 🎉️',
-        backgroundColor: '#c6c9fe',
+            '🎉️ <a target="_blank" href="https://restate.dev/blog/release-announcement-restate-0.8-has-arrived/">Restate 0.8</a> is out now! 🎉️',
+        backgroundColor: '#d8dbff',
         textColor: '#1d2d35',
         isCloseable: false,
       },
