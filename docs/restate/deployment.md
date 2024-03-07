@@ -28,87 +28,11 @@ In the next sections we will show you two different ways to deploy Restate on yo
 ## Kubernetes
 
 The recommended Kubernetes deployment strategy is a one-replica StatefulSet. We recommend installing Restate in its own
-namespace.
+namespace. The easiest way to do this is with
+our [Helm chart](https://github.com/restatedev/restate/tree/main/charts/restate-helm):
 
-```yaml
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: restate
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: restate
-  namespace: restate
-spec:
-  serviceName: restate
-  replicas: 1
-  selector:
-    matchLabels:
-      app: restate
-  template:
-    metadata:
-      labels:
-        app: restate
-    spec:
-      containers:
-        - name: restate
-          image: docker.io/restatedev/restate:VAR::RESTATE_VERSION
-          env:
-            - name: RESTATE_TRACING__LOG_FORMAT
-              value: Json
-          ports:
-            - containerPort: 9070
-              name: admin
-            - containerPort: 8080
-              name: ingress
-            - containerPort: 9071
-              name: storage
-            - containerPort: 5122
-              name: metrics
-          resources:
-            requests: # you may need to adjust these for your use case
-              cpu: 100m
-              memory: 1Gi
-          volumeMounts:
-            - mountPath: /target
-              name: storage
-            - mountPath: /tmp
-              name: tmp
-      volumes:
-        - emptyDir: { }
-          name: tmp
-  volumeClaimTemplates:
-    - metadata:
-        name: storage
-        labels:
-          app: restate
-      spec:
-        accessModes:
-          - ReadWriteOnce
-        resources:
-          requests:
-            storage: 64Gi # for example; this is often expandable later anyway
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: restate
-  namespace: restate
-spec:
-  selector:
-    app: restate
-  ports:
-    - port: 9070
-      name: admin
-    - port: 8080
-      name: ingress
-    - port: 9071
-      name: storage
-    - port: 5122
-      name: metrics
-  type: ClusterIP
+```shell
+helm install restate oci://ghcr.io/restatedev/restate-helm --namespace restate --create-namespace
 ```
 
 :::tip Restate Kubernetes Operator
