@@ -2,7 +2,7 @@ import * as restate from "@restatedev/restate-sdk";
 
 const router = restate.router({
     greet: async (ctx: restate.Context, name: string) => {
-        // <start_here>
+        // <start_create>
         // 1. Generate the ID
         const awakeable = ctx.awakeable<string>();
         const id = awakeable.id
@@ -12,6 +12,14 @@ const router = restate.router({
 
         // 3. Wait for the ID to returned and retrieve the payload
         const result = await awakeable.promise;
-        // <end_here>
+        // <end_create>
+
+        // <start_resolve>
+        ctx.resolveAwakeable(id, "hello");
+        // <end_resolve>
+
+        // <start_reject>
+        ctx.rejectAwakeable(id, "my error reason");
+        // <end_reject>
     },
 })

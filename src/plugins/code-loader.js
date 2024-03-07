@@ -3,17 +3,23 @@
 const fs = require('fs');
 
 const plugin = (options) => {
-    const codeLoadRegex = /CODE_LOAD::([^\s]+)/g;
+    const codeLoadRegex = /^CODE_LOAD::([^#]+)(?:#([^#]+)-([^#]+))?$/g;
 
-    const replace = (str) => str.replace(codeLoadRegex, (match, filePath) => {
+    const replace = (str) => str.replace(codeLoadRegex, (match, filePath, customStartTag, customEndTag) => {
         const fileContent = fs.readFileSync('./code_snippets/' + filePath, 'utf8');
 
+        // If custom tags are specified, extract them
+        const startTag = customStartTag ?? "<start_here>";
+        const endTag = customEndTag ?? "<end_here>";
+
+        console.info(`Loaded code snippet from ${filePath} with tags: ${startTag} and ${endTag}`)
+
         // Split to only keep lines between "start_here" and "end_here"
-        const lines = fileContent.split("<start_here>").pop().split("<end_here>").shift();
+        const lines = fileContent.split(startTag).pop().split(endTag).shift();
 
         // If start and end tags were used, Remove the last empty line with the "//" symbol
-        const startLine = fileContent.includes("start_here") ? 1 : 0;
-        const endLine = fileContent.includes("end_here") ? -1 : lines.length;
+        const startLine = fileContent.includes(startTag) ? 1 : 0;
+        const endLine = fileContent.includes(endTag) ? -1 : lines.length;
         const indentedCodeSnippet = lines.split("\n").slice(startLine, endLine).join("\n");
 
         // The code snippet can have leading whitespace on each line, so we need to reformat it
