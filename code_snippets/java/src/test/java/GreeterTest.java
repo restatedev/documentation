@@ -1,5 +1,3 @@
-package dev.restate.sdk.examples;
-
 import dev.restate.sdk.examples.generated.GreeterGrpc;
 import dev.restate.sdk.examples.generated.GreeterGrpc.GreeterBlockingStub;
 import dev.restate.sdk.examples.generated.GreeterProto.GreetRequest;
