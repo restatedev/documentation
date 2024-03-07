@@ -9,7 +9,7 @@ const plugin = (options) => {
         const fileContent = fs.readFileSync('./code_snippets/' + filePath, 'utf8');
 
         // Split to only keep lines between "start_here" and "end_here"
-        const lines = fileContent.split("start_here").pop().split("end_here").shift();
+        const lines = fileContent.split("<start_here>").pop().split("<end_here>").shift();
 
         // If start and end tags were used, Remove the last empty line with the "//" symbol
         const startLine = fileContent.includes("start_here") ? 1 : 0;
