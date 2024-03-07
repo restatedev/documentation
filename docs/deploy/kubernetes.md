@@ -8,85 +8,21 @@ description: "Learn how to run Restate applications on Kubernetes."
 This page describes how to deploy Restate and Restate services on [Kubernetes](https://kubernetes.io/).
 
 ## Deploying Restate on K8S
-The recommended Kubernetes deployment strategy is a one-replica StatefulSet. We recommend installing Restate in its own
-namespace.
+## Kubernetes
 
-```yaml
-apiVersion: v1
-kind: Namespace
-metadata:
-  labels:
-    kubernetes.io/metadata.name: restate
-  name: restate
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: restate
-  namespace: restate
-spec:
-  serviceName: restate
-  replicas: 1
-  selector:
-    matchLabels:
-      app: restate
-  template:
-    metadata:
-      labels:
-        app: restate
-    spec:
-      imagePullSecrets:
-        - name: github
-      containers:
-        - name: restate
-          image: docker.io/restatedev/restate:VAR::RESTATE_VERSION
-          env:
-            - name: RESTATE_TRACING__LOG_FORMAT
-              value: Json
-          ports:
-            - containerPort: 9070
-              name: admin
-            - containerPort: 8080
-              name: ingress
-            - containerPort: 9071
-              name: storage
-          imagePullPolicy: IfNotPresent
-          resources:
-            requests: # you may need to adjust these for your use case
-              cpu: 100m
-              memory: 1Gi
-          volumeMounts:
-            - mountPath: /target
-              name: storage
-  volumeClaimTemplates:
-    - metadata:
-        name: storage
-        labels:
-          app: restate
-      spec:
-        accessModes:
-          - ReadWriteOnce
-        resources:
-          requests:
-            storage: 64Gi # for example; this is often expandable later anyway
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: restate
-  namespace: restate
-spec:
-  selector:
-    app: restate
-  ports:
-    - port: 9070
-      name: admin
-    - port: 8080
-      name: ingress
-    - port: 9071
-      name: storage
-  type: ClusterIP
+The recommended Kubernetes deployment strategy is a one-replica StatefulSet. We recommend installing Restate in its own
+namespace. The easiest way to do this is with
+our [Helm chart](https://github.com/restatedev/restate/tree/main/charts/restate-helm):
+
+```shell
+helm install restate oci://ghcr.io/restatedev/restate-helm --namespace restate --create-namespace
 ```
+
+:::tip Restate Kubernetes Operator
+If you want to run multiple Restate clusters in Kubernetes, or want advanced functionality like online volume expansion
+and network policies, you can also use the [Restate Operator](https://github.com/restatedev/restate-operator). Details
+of how to install it and deploy a cluster can be found in the README.
+:::
 
 ## Deploying Restate services on K8S
 Service deployments can be deployed like any gRPC service; a Deployment of more than one replica is generally appropriate. However,

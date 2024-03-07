@@ -31,12 +31,12 @@ to AWS X-Ray.
 import * as restate from "@restatedev/restate-cdk";
 
 const environment = new restate.SingleNodeRestateDeployment(this, "Restate", {
-  restateTag: "latest",
-  tracing: restate.TracingMode.AWS_XRAY,
-  logGroup: new logs.LogGroup(scope, "RestateLogs", {
-    logGroupName: "/restate/server-logs",
-    retention: logs.RetentionDays.ONE_MONTH,
-  }),
+	restateTag: "latest",
+	tracing: restate.TracingMode.AWS_XRAY,
+	logGroup: new logs.LogGroup(scope, "RestateLogs", {
+		logGroupName: "/restate/server-logs",
+		retention: logs.RetentionDays.ONE_MONTH,
+	}),
 });
 ```
 
