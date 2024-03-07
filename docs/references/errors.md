@@ -1,5 +1,5 @@
 ---
-sidebar_position: 10
+sidebar_position: 4
 slug: errors
 ---
 
@@ -69,7 +69,7 @@ Make sure, when updating a deployment, to assign it a new uri/arn.
 
 You can force the override using the `"force": true` field in the discover request, but beware that this can lead in-flight invocations to an unrecoverable error state.  
 
-See the [versioning documentation](https://docs.restate.dev/services/upgrades-removal) for more information.
+See the [versioning documentation](/operate/versioning) for more information.
 
 ## META0005
 
@@ -87,7 +87,7 @@ When implementing a new service revision, make sure that:
 * The Protobuf contract and message definitions are backward compatible.
   * The new revision must implement all the methods of the previous revisions.
 
-See the [versioning documentation](https://docs.restate.dev/services/upgrades-removal) for more information.
+See the [versioning documentation](/operate/versioning) for more information.
 
 ## META0007
 
@@ -110,7 +110,7 @@ The provided subscription is invalid. Subscriptions should have:
 * A `sink` field in the format of `service://<SERVICE_NAME>/<METHOD_NAME>`. When registering, service and method should have been previously registered as well.
 * Additional constraints may apply depending on the sink service contract
 
-Please look at the [Kafka documentation page](https://docs.restate.dev/services/sdk/kafka) for more details on subscriptions and event handlers.
+Please look at the [Kafka documentation page](/develop/sdk/kafka) for more details on subscriptions and event handlers.
 
 ## RT0001
 
@@ -126,7 +126,7 @@ Suggestions:
 
 Cannot start Restate because the configuration cannot be parsed. Check the configuration file and the environment variables provided.
 
-For a complete list of configuration options, and a sample configuration, check https://docs.restate.dev/restate/configuration
+For a complete list of configuration options, and a sample configuration, check the [configuration docs](/operate/configuration).
 
 ## RT0003
 
@@ -177,5 +177,5 @@ A retry-able error was received from the service deployment while processing the
 Suggestions:
 
 * Check the service/deployment logs to get more info about the error cause, like the stacktrace.
-* Look at the https://docs.restate.dev/services/sdk/error-handling for more info about error handling in services.
+* Look at the [error handling docs](/develop/sdk/error-handling) for more info about error handling in services.
 

@@ -1,0 +1,91 @@
+---
+sidebar_position: 1
+description: "Find out how to register new deployments with Restate."
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Registration
+
+After deploying a service deployment, in order to use it, it must be registered with Restate as follows:
+
+<Tabs groupId="interface" queryString>
+<TabItem value="cli" label="CLI">
+
+```shell
+restate deployments register <SERVICE_ENDPOINT_URI>
+```
+
+Or you can use the shorthand:
+
+```shell
+restate dp add <SERVICE_ENDPOINT_URI>
+```
+
+For example when running Restate locally as a binary, via `npx`, or via `Homebrew`:
+
+```bash
+restate dp add localhost:9080
+```
+
+When running Restate in a Docker container with the `--add-host=host.docker.internal:host-gateway` option, use:
+
+```bash
+restate dp add http://host.docker.internal:9080
+```
+
+
+</TabItem>
+<TabItem value="curl" label="curl">
+
+```bash
+curl <RESTATE_ADMIN_URL>/deployments -H 'content-type: application/json' -d '{"uri": "<SERVICE_ENDPOINT_URI>"}'
+```
+
+For example when running Restate locally as a binary, via `npx`, or via `Homebrew`:
+
+```bash
+curl localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "localhost:9080"}'
+```
+
+When running Restate in a Docker container with the `--add-host=host.docker.internal:host-gateway` option, use:
+
+```bash
+curl localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
+```
+
+</TabItem>
+</Tabs>
+
+
+
+When registering a service deployment, Restate uses a mechanism similar to "reflections" to discover the available services and their schemas and properties. A service can be registered only once, and subsequent registration requests to the same deployment will fail. For more details on how to update services, check the [versioning documentation](/operate/versioning).
+
+The deployment creation can be forced to overwrite an existing deployment:
+
+<Tabs groupId="interface" queryString>
+<TabItem value="cli" label="CLI">
+
+```shell
+restate dp add --force <SERVICE_ENDPOINT_URI>
+```
+
+</TabItem>
+<TabItem value="curl" label="curl">
+
+```bash
+curl <RESTATE_ADMIN_URL>/deployments -H 'content-type: application/json' -d '{"uri": "<SERVICE_ENDPOINT_URI>", "force": true}'
+```
+
+</TabItem>
+</Tabs>
+
+
+This will forcefully overwrite the existing service deployment with the same uri, forcing the discovery process again. It will also remove services that were served by that deployment and are not available anymore.
+
+:::warning
+Forcing a deployment registration is a feature designed to simplify local Restate service development, and should never be used in a production Restate deployment, as it potentially breaks all the in-flight invocations to that deployment.
+:::
+
+For more details on the API, refer to the [admin API docs](/references/admin-api#tag/deployment/operation/create_deployment).

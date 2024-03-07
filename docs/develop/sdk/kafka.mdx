@@ -1,0 +1,374 @@
+---
+sidebar_position: 10
+description: "Receive events from Kafka."
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Kafka
+
+Restate can consume events directly from Kafka. To do that, you need to:
+
+* Develop an event handler, to consume events within your Restate service
+* Deploy Restate with the configuration to connect to a Kafka cluster
+* Wire up an event handler with a Kafka topic through a subscription
+
+:::caution
+Kafka support is in development, and it isn't ready for production usage. Next releases might break the current API.
+:::
+
+## Event handler
+
+Depending on your use case you can build different types of event handlers. We distinguish between the following scenarios:
+
+* Handle events with a string key from Kafka in Restate services keyed with a `string` key.
+* Process generic events from Kafka in order (currently only supported by the TypeScript gRPC API and the Java API.)
+
+An event handlers can profit from the same features as other Restate handlers, including durable execution, [service communication](/develop/sdk/service-communication) and [side effects](/develop/sdk/side-effects).
+
+<Tabs groupId="sdk" queryString>
+<TabItem value="ts" label="TypeScript" default>
+
+** Handling events with string key **
+
+You can handle events within keyed routers, where the key of the Kafka record matches the key used by the router:
+
+```typescript
+import * as restate from "@restatedev/restate-sdk";
+
+const router = restate.keyedRouter({
+    eventHandler: restate.keyedEventHandler(async (ctx: restate.KeyedContext, event: restate.Event) => {
+        // Extract event payload as json
+        const { myData } = event.json<{ myData: string }>();
+        // OR extract event payload as raw bytes and deserialize it
+        // using the format of your choice (e.g. Avro, Protobuf, ...)
+        const bodyBuffer = event.body();
+
+        // --- Business logic),
+        // Other rpc or event handlers
+    };
+});
+
+restate
+    .endpoint()
+    .bindKeyedRouter("myRouter", router)
+    .listen();
+```
+
+The Kafka record key must be a valid UTF-8 string, otherwise Restate won't be able to deliver the event to the service.
+
+You can mix event handlers with other event handlers or RPC handlers. For example, assume you're implementing a `profile` router to handle and store user profiles in Restate, where the key is the profile's unique identifier.
+In the same service, you can implement an RPC method called `get` to retrieve the profile, and you can attach an event handler called `updateProfile` to consume events from Kafka to update the profile.
+
+For each event key (= Kafka record key), the events are delivered in the order in which they arrived on the topic partition.
+
+</TabItem>
+<TabItem value="ts-grpc" label="TypeScript-gRPC">
+
+** Handling keyed events within keyed services**
+
+You can handle events within keyed services, where the key of the Kafka record matches the key used by the service.
+
+To do so, define the event handler as any other method and use the `EVENT_PAYLOAD` annotation to receive the event payload:
+
+```protobuf
+syntax = "proto3";
+import "dev/restate/ext.proto";
+
+service MyService {
+    option (dev.restate.ext.service_type) = KEYED;
+
+    // A method of this service
+    rpc MyMethod(MyMethodRequest) returns (google.protobuf.Empty);
+
+    // Event handler method
+    rpc HandleEvent(MyEvent) returns (google.protobuf.Empty);
+}
+
+message MyMethodRequest {
+    string id = 1 [(dev.restate.ext.field) = KEY];
+    // ... Other fields
+}
+
+message MyEvent {
+    string id = 1 [(dev.restate.ext.field) = KEY];
+
+    bytes payload = 2 [(dev.restate.ext.field) = EVENT_PAYLOAD];
+
+    // This is optional
+    map<string, string> metadata = 3 [(dev.restate.ext.field) = EVENT_METADATA];
+}
+```
+
+```typescript
+import * as restate from "@restatedev/restate-sdk";
+
+import { MyService, MyEvent } from "./generated/my_service";
+import Empty from "./generated/google/protobuf/empty";
+
+export class MyServiceImpl implements MyService {
+    async handleEvent(request: MyEvent): Promise<Empty> {
+      const ctx = restate.useKeyedContext(this);
+      const payload = request.payload;
+
+      // Handle event
+
+      return Empty.create({});
+    }
+
+    // ... Other service methods
+}
+```
+
+:::tip Combining RPC and Kafka within a service
+You can mix methods receiving events with regular RPC methods. For example, assume you're implementing a `Profile` service to handle and store user profiles in Restate, where the key is the profile's unique identifier.
+In the same service, you can implement an RPC  `Get` method to retrieve the profile, and you can attach an `UpdateProfile` event handler to consume events from Kafka to update the profile.
+:::
+
+For each event key (= Kafka record key), the events are delivered in the order in which they arrived on the topic partition.
+
+There are some constraints for the annotated fields:
+
+* The event handler's key input type must be `string`.
+* The Kafka record key must contain a valid UTF-8 string, otherwise Restate won't be able to deliver the event to the service.
+* You can use only `string` or `bytes` types with fields annotated as `EVENT_PAYLOAD`.
+* You can also get the event metadata defining a field as `map<string, string>` and annotating it with `EVENT_METADATA`.
+
+** Handling generic events from Kafka **
+
+You can handle generic events from Kafka by defining ad-hoc services that process `dev.restate.Event`:
+
+```protobuf
+syntax = "proto3";
+import "dev/restate/ext.proto";
+import "dev/restate/events.proto";
+
+service MyService {
+    option (dev.restate.ext.service_type) = KEYED;
+
+    rpc Handle(dev.restate.Event) returns (google.protobuf.Empty);
+}
+```
+
+If the service is keyed, events with the same key are delivered in the order in which they arrived on the topic partition.
+If the service is unkeyed, events will be delivered in parallel without ordering guarantees.
+
+Event handlers can be useful when you need to pre-process an event before sending it to one or more Restate services, such as when the key is serialized using a custom format, or when the destination of the event is encoded in the payload.
+
+</TabItem>
+
+<TabItem value="java" label="Java">
+
+** Handling keyed events within keyed services **
+
+You can handle events within keyed services, where the key of the Kafka record matches the key used by the service.
+
+To do so, define the event handler as any other method and use the `EVENT_PAYLOAD` annotation to receive the event payload:
+
+```protobuf
+syntax = "proto3";
+import "dev/restate/ext.proto";
+
+service MyService {
+    option (dev.restate.ext.service_type) = KEYED;
+
+    // A method of this service
+    rpc MyMethod(MyMethodRequest) returns (google.protobuf.Empty);
+
+    // Event handler method
+    rpc Handle(MyEvent) returns (google.protobuf.Empty);
+}
+
+message MyMethodRequest {
+    string id = 1 [(dev.restate.ext.field) = KEY];
+    // ... Other fields
+}
+
+message MyEvent {
+    string id = 1 [(dev.restate.ext.field) = KEY];
+
+    bytes payload = 2 [(dev.restate.ext.field) = EVENT_PAYLOAD];
+
+    // This is optional
+    map<string, string> metadata = 3 [(dev.restate.ext.field) = EVENT_METADATA];
+}
+```
+
+```java
+import dev.restate.generated.MyEvent;
+
+@Override
+public void handle(ObjectContext ctx, MyEvent event) {
+
+    // Do something with event
+}
+```
+
+<details>
+<summary>Alternative: vanilla gRPC</summary>
+
+```java
+import dev.restate.generated.MyEvent;
+
+@Override
+public void handle(MyEvent event, StreamObserver<Empty> responseObserver) {
+
+    // Do something with event
+
+    responseObserver.onNext(Empty.getDefaultInstance());
+    responseObserver.onCompleted();
+}
+```
+</details>
+
+:::tip Combining RPC and Kafka within a service
+You can mix methods receiving events with regular RPC methods. For example, assume you're implementing a `Profile` service to handle and store user profiles in Restate, where the key is the profile's unique identifier.
+In the same service, you can implement an RPC  `Get` method to retrieve the profile, and you can attach an `UpdateProfile` event handler to consume events from Kafka to update the profile.
+:::
+
+For each event key (= Kafka record key), the events are delivered in the order in which they arrived on the topic partition.
+
+There are some constraints for the annotated fields:
+
+* The event handler's key input type must be `string`.
+* The Kafka record key must contain a valid UTF-8 string, otherwise Restate won't be able to deliver the event to the service.
+* You can use only `string` or `bytes` types with fields annotated as `EVENT_PAYLOAD`.
+* You can also get the event metadata defining a field as `map<string, string>` and annotating it with `EVENT_METADATA`.
+
+** Handling generic events from Kafka **
+
+You can handle generic events from Kafka by defining ad-hoc services that process `dev.restate.Event`:
+
+```protobuf
+syntax = "proto3";
+import "dev/restate/ext.proto";
+import "dev/restate/events.proto";
+
+service MyService {
+    option (dev.restate.ext.service_type) = KEYED;
+
+    rpc Handle(dev.restate.Event) returns (google.protobuf.Empty);
+}
+```
+
+If the service is keyed, events with the same key are delivered in the order in which they arrived on the topic partition.
+If the service is unkeyed, events are delivered in parallel without ordering guarantees.
+
+Event handlers can be useful when you need to pre-process an event before sending it to one or more Restate services, such as when the key is serialized using a custom format, or when the destination of the event is encoded in the payload.
+
+</TabItem>
+
+</Tabs>
+
+## Event metadata
+
+Each event carries a `metadata` map that contains the following entries:
+
+* `restate.subscription.id`: The subscription identifier, as shown by the [Admin API](../../references/admin-api).
+* `kafka.offset`: The record offset.
+* `kafka.partition`: The record partition.
+* `kafka.timestamp`: The record timestamp.
+
+## Configure Kafka clusters when deploying Restate
+
+To connect to a Kafka topic, you must configure the Kafka cluster to connect to.
+
+You can define Kafka clusters in the [Restate configuration file](/operate/configuration#configuration-file):
+
+```yaml
+worker:
+  kafka:
+    clusters:
+      my-cluster: # Cluster name
+        bootstrap.servers: localhost:9092
+        # You can add here any config param from
+        # https://github.com/confluentinc/librdkafka/blob/master/CONFIGURATION.md
+```
+
+Check the [configuration documentation](/operate/configuration) for more details.
+
+:::caution 
+Configuring the Kafka clusters through [environment variables](/operate/configuration#overriding-configuration-entries-with-environment-variables) is not supported.
+:::
+
+## Connect an event handler with a topic
+
+To connect event handlers to a Kafka topic, you need to create a subscription using the [Admin API](/references/admin-api):
+
+```bash
+curl <RESTATE_ADMIN_URL>/subscriptions -H 'content-type: application/json' -d '{"source": "kafka://<CLUSTER_NAME>/<TOPIC_NAME>", "sink": "service://<SERVICE_NAME>/<METHOD_NAME>"}'
+```
+
+For example:
+
+<Tabs groupId="sdk" queryString>
+<TabItem value="ts" label="TypeScript" default>
+
+```bash
+curl <RESTATE_ADMIN_URL>/subscriptions -H 'content-type: application/json' -d '{"source": "kafka://my-cluster/my-topic", "sink": "service://myRouter/eventHandler"}'
+```
+
+</TabItem>
+<TabItem value="ts-grpc" label="TypeScript-gRPC">
+
+```bash
+curl <RESTATE_ADMIN_URL>/subscriptions -H 'content-type: application/json' -d '{"source": "kafka://my-cluster/my-topic", "sink": "service://MyService/Handle"}'
+```
+
+</TabItem>
+
+<TabItem value="java" label="Java">
+
+```bash
+curl <RESTATE_ADMIN_URL>/subscriptions -H 'content-type: application/json' -d '{"source": "kafka://my-cluster/my-topic", "sink": "service://MyService/Handle"}'
+```
+
+</TabItem>
+</Tabs>
+
+Once you've created a subscription, Restate immediately starts consuming events from Kafka.
+
+### Additional subscription configuration
+
+You can add additional configuration parameters to the subscription through the `options` field, for example to start consuming the topic from the beginning:
+
+```bash
+curl <RESTATE_ADMIN_URL>/subscriptions -H 'content-type: application/json' -d '{"source": "kafka://<CLUSTER_NAME>/<TOPIC_NAME>", "sink": "service://<SERVICE_NAME>/<METHOD_NAME>", "options": {"auto.offset.reset": "earliest"}}'
+```
+
+The `options` field accepts any configuration parameter from [librdkafka configuration](https://github.com/confluentinc/librdkafka/blob/master/CONFIGURATION.md).
+
+### Listing subscriptions
+
+List the current subscriptions via:
+
+```shell
+curl <RESTATE_ADMIN_URL>/subscriptions
+```
+
+For example:
+
+```shell
+curl localhost:9070/subscriptions
+```
+
+### Deleting a subscription
+
+The creation and listing of subscriptions returns an identifier. You can use this identifier to delete a subscription:
+
+```shell
+curl -X DELETE <RESTATE_ADMIN_URL>/subscriptions/<SUBSCRIPTION_IDENTIFIER>
+```
+
+For example:
+
+```shell
+curl -X DELETE localhost:9070/subscriptions/018cd978aa9f77b5a80454bc060c2a77
+```
+
+When you delete a subscription, Restate stops the consumer group associated to it.
+
+:::info
+Due to the current implementation, once you delete the subscription, there might still be messages enqueued in Restate to be processed by the subscriber service. This behaviour might change in next releases.
+:::

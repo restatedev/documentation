@@ -1,0 +1,336 @@
+---
+sidebar_position: 2
+description: "Explore the different ways to invoke Restate services."
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Invocation
+
+An invocation is a single call to a service method.
+
+## Invoking Restate services
+
+There are different ways to invoke a Restate service:
+
+* From within another service, as described in the [SDK service communication documentation](/develop/sdk/service-communication)
+* By sending a request to Restate [over HTTP](/operate/invocation#over-http), or [via gRPC or gRPC-web](/operate/invocation#over-grpc-and-grpc-web)
+
+### Over HTTP
+
+You can invoke services over HTTP 1.1 or higher.
+Request/response bodies should be encoded as either JSON or Protobuf.
+You can send requests directly from the browser or via `curl` without generating a client.
+
+<Tabs groupId="sdk" queryString>
+<TabItem value="ts" label="TypeScript" default>
+
+For the handler API, you need to craft a message with a key (only if you are invoking a keyed service) and a request, similar to this protobuf message:
+
+```proto
+message RpcRequest {
+    string key = 1 [(dev.restate.ext.field) = KEY];
+    google.protobuf.Value request = 2;
+}
+```
+
+Then use this message to invoke the function:
+
+```shell
+curl <RESTATE_INGRESS_URL>/<SERVICE_NAME>/<FUNCTION_NAME> -H 'content-type: application/json' -d '{"key": "<KEY_OF_KEYED_SERVICE>", "request": <REQUEST_DATA>}}'
+```
+
+The service name is the one specified when binding the service to the HTTP deployment server, and the function name is the one specified when binding the function to the service.
+
+For example, for a keyed service `greeter-service` with the following implementation:
+
+```ts
+const router = restate.keyedRouter({
+    greet: async (ctx: restate.KeyedContext, name: string, req: { age: number } ) => {
+        return `Hello ${name} of ${req.age} years old`;
+    },
+});
+
+export const handler = restate
+    .endpoint()
+    .bindKeyedRouter("greeter-service", router)
+    .listen();
+```
+
+You can invoke the function `greet` using `curl`:
+
+```shell
+curl localhost:8080/greeter-service/greet -H 'content-type: application/json' -d '{"key": "John Doe", "request": {"age": 55}}'
+```
+
+You should see the response:
+
+```json
+{"response":"Hello John Doe of 55 years old"}
+```
+
+If this would be an unkeyed service and the request would be just the string name,
+then you could invoke the function `greet` of the unkeyed `greeter-service` using `curl` as follows:
+
+```shell
+curl localhost:8080/greeter-service/greet -H 'content-type: application/json' -d '{"request": "John Doe"}}'
+```
+
+</TabItem>
+<TabItem value="ts-grpc" label="TypeScript-gRPC">
+
+For example, to invoke the service `org.example.Greeter` method `Greet` using `curl`:
+
+```shell
+curl <RESTATE_INGRESS_URL>/org.example.Greeter/Greet -H 'content-type: application/json' -d '{"name": "Restate"}'
+```
+
+You should see the response:
+
+```json
+{"greeting":"Hello Restate"}
+```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+For example, to invoke the service `org.example.Greeter` method `Greet` using `curl`:
+
+```shell
+curl <RESTATE_INGRESS_URL>/org.example.Greeter/Greet -H 'content-type: application/json' -d '{"name": "Restate"}'
+```
+
+You should see the response:
+
+```json
+{"greeting":"Hello Restate"}
+```
+
+</TabItem>
+</Tabs>
+
+The rules to invoke a service are the following:
+
+* The request path is in the format of `<SERVICE_NAME>/<METHOD_NAME>`
+* The request method is `POST`
+* The request body is encoded either with:
+    * JSON, with the header `Content-Type: application/json`, or with
+    * Protobuf, with the header `Content-Type: application/proto`
+
+The response body will have the same content type as the request.
+
+:::note
+This is supported via the [Connect Protocol](https://connect.build/docs/protocol/), allowing you to send gRPC-like requests as regular HTTP requests.
+For more detail, check out the [Connect documentation](https://connect.build/).
+:::
+
+### Over gRPC and gRPC-web
+
+You can send requests to your services as regular [gRPC](https://grpc.io/) requests.
+
+You can use any gRPC code generator to generate a gRPC client to invoke a Restate service. Check out the [awesome-grpc page](https://github.com/grpc-ecosystem/awesome-grpc) for a comprehensive list of clients, code generators and tools.
+
+For example, to invoke the service `org.example.Greeter` method `Greet` using [`grpcurl`](https://github.com/fullstorydev/grpcurl):
+
+```shell
+grpcurl -plaintext -d '{"name": "Pete"} <RESTATE_INGRESS_URL> org.example.Greeter/Greet
+```
+
+Restate supports [gRPC reflections](https://github.com/grpc/grpc/blob/master/doc/server-reflection.md), hence some tools like `grpcurl` will automatically discover the protobuf definitions of the services to invoke.
+
+For example, to query the available services in the runtime:
+
+```shell
+grpcurl -plaintext <RESTATE_INGRESS_URL> describe
+```
+
+Restate also natively supports gRPC-web. You can use a [gRPC-web code generator](https://www.npmjs.com/package/grpc-web) and point it directly to Restate, without using a 3rd party proxy to translate gRPC-web to gRPC.
+
+### Invoke a service idempotently
+
+You can send requests to Restate providing an idempotency key, through the [`Idempotency-Key` header](https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/):
+
+```shell
+curl <RESTATE_INGRESS_URL>/org.example.Greeter/Greet -H 'idempotency-key: <IDEMPOTENCY_KEY>' -H 'content-type: application/json' -d '{"name": "Pete"}'
+```
+
+After the invocation completes, Restate persists the response for a retention period of 30 minutes.
+If you re-invoke the service with the same idempotency key within 30 minutes, Restate sends back the same response and doesn't re-execute the request to the service.
+
+You can tune the retention period by setting the header `idempotency-retention-period: <seconds>`
+
+The `Idempotency-Key` header works with both HTTP and gRPC/gRPC-web.
+
+### Invoke a service without waiting for the response
+
+You can invoke a service without waiting for the response, similar to [one-way calls in the SDK](/develop/sdk/service-communication#one-way-calls), by using the Restate built-in `dev.restate.Ingress/Invoke` service method, which can be invoked like any other user service, using gRPC, gRPC-web or Connect.
+
+For example, using [Connect](#connect-grpc-on-http) and `curl`:
+
+```shell
+curl <RESTATE_INGRESS_URL>/dev.restate.Ingress/Invoke -H 'content-type: application/json' -d '{"service": "org.example.Greeter", "method": "Greet", "argument": {"name": "Pete"}}'
+```
+
+The response contains the [Invocation identifier](#invocation-identifier). You can use this identifier to cancel or kill the invocation as described in [the below paragraph](/operate/invocation#cancel-an-invocation).
+
+For the complete documentation of the `dev.restate.Ingress` built-in service, check out the [Restate protobuf definitions](https://github.com/restatedev/proto/blob/main/dev/restate/services.proto).
+
+:::tip
+This feature can be especially useful when you need to invoke a service method implementing a long-running workflow.
+:::
+
+## Private services
+
+When registering a service deployment, every service is by default accessible both by other services, and by sending requests to Restate using HTTP and/or gRPC. You can configure a service as `private`, such that you can't invoke it by sending requests to Restate, through the [Admin APIs](/references/admin-api):
+
+```shell
+curl -X PATCH <RESTATE_ADMIN_URL>/services/<SERVICE_NAME> -H 'content-type: application/json' -d '{"public": false}'
+```
+
+For example:
+
+```shell
+curl -X PATCH localhost:9070/services/org.example.ExampleService -H 'content-type: application/json' -d '{"public": false}'
+```
+
+You can revert it back to public with `{"public": true}`. Private services can still be reached by other Restate services.
+For more details on the API, refer to the [admin API docs](/references/admin-api#tag/service/operation/modify_service).
+
+## Invocation identifier
+
+Every invocation to a service gets a unique identifier assigned by Restate, called _Invocation identifier_. You can use this identifier to filter your structured logs, find traces, and execute some management operations such as cancelling an invocation.
+
+You can find this identifier in the runtime logs and OpenTelemetry traces by looking for the `restate.invocation.id`, for example:
+
+```log {7}
+2023-05-19T15:02:28.656467Z INFO restate_invoker::invocation_task
+  Executing invocation at deployment
+    http.url: http://localhost:9080/invoke/coordinator.Coordinator/Sleep
+  in restate_invoker::invocation_task::invoker_invocation_task
+    rpc.system: "restate"
+    rpc.service: coordinator.Coordinator
+    restate.invocation.id: T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE
+```
+
+:::note
+
+The Invocation identifier is opaque and its current format should not be relied on, as it might change in future Restate versions.
+
+:::
+
+## Cancel an invocation
+
+If an invocation takes too long to complete or is no longer of interest, you can cancel it.
+Canceling an invocation allows it to free any resources it is holding and roll back any changes it has made so far.
+In order to roll back changes correctly, the service handlers need to contain the necessary compensation logic.
+If the required compensation logic is implemented, then the service state stays consistent even in the presence of cancellations.
+
+The cancellation process works recursively in the following way:
+First, Restate tries to cancel the leaves of the current invocation, i.e. interrupt ongoing sleeps and awakeables or try to cancel calls to other services.
+Once the leaves are canceled, a terminal error is thrown in the service handler at the point in the code that the invocation had reached.
+This allows the handler to run its specific compensation logic.
+The response of the handler will then be propagated back to its caller where it will continue with the cancellation process.
+
+:::note
+Canceling an invocation is a non-blocking operation. This means that the cancellation is not guaranteed to have completed when the API call returns. In some rare cases, cancellations will not have an effect. In these cases, users need to retry the operation.
+:::
+
+<Tabs groupId="interface" queryString>
+<TabItem value="cli" label="CLI">
+
+Retrieve the invocation identifier from the logs or traces, or use the CLI:
+```shell
+restate inv ls
+```
+
+You can cancel an invocation using the CLI:
+
+```shell
+restate inv cancel <INVOCATION_IDENTIFIER>
+```
+
+You can also use the abbreviation `rm` instead of `cancel`.
+
+
+</TabItem>
+<TabItem value="curl" label="curl">
+
+```shell
+curl -X DELETE <RESTATE_ADMIN_URL>/invocations/<INVOCATION_IDENTIFIER>
+```
+
+For example:
+
+```shell
+curl -X DELETE http://localhost:9070/invocations/T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE
+```
+
+For more details on the API, refer to the [admin API docs](/references/admin-api).
+
+</TabItem>
+</Tabs>
+
+## Kill an invocation
+
+In a few cases, it is not possible for Restate to cancel an invocation.
+For example, if the service deployment is permanently unavailable, Restate cannot invoke the service handler to run its compensation logic which is needed to complete the cancellation.
+For these cases, Restate provides the ability to kill an invocation.
+
+Killing an invocation means that every call in the call tree of the invocation will be stopped immediately without giving the service handler a chance to react and execute compensation logic.
+This entails that killing the invocation **will not** roll back its progress.
+
+:::note
+One-way calls and delayed calls will not be killed because they are considered detached from the originating call tree.
+:::
+
+:::danger
+Killing an invocation might leave the service instance in an inconsistent state, just like how killing a process in your operating system may cause the open files to become corrupted. Use it with caution and try to fix the invocation in other ways before resorting to killing it.
+:::
+
+<Tabs groupId="interface" queryString>
+<TabItem value="cli" label="CLI">
+
+Retrieve the invocation identifier from the logs or traces, or use the CLI:
+```shell
+restate inv ls
+```
+
+You can kill an invocation using the CLI, by using cancel and the `--kill` flag:
+
+```shell
+restate inv cancel --kill <INVOCATION_IDENTIFIER>
+
+You can also use the abbreviation `rm` instead of `cancel`.
+
+</TabItem>
+<TabItem value="curl" label="curl">
+
+To kill an invocation, send the following request to the Restate admin API:
+
+```shell
+curl -X DELETE <RESTATE_ADMIN_URL>/invocations/<INVOCATION_IDENTIFIER>?mode=kill
+```
+
+For example:
+
+```shell
+curl -X DELETE http://localhost:9070/invocations/T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE?mode=kill
+```
+
+For more details on the API, refer to the [admin API docs](/references/admin-api).
+
+</TabItem>
+</Tabs>
+
+## Invocation execution timeout(s)
+
+For each retry attempt, Restate internally holds an inactivity timer to track whether the service is active and generating some work, such as setting state, invoking other services, etc. This timer can be configured with the option [`worker.invoker.inactivity_timeout`](/operate/configuration).
+
+Once the `inactivity_timeout` is fired, Restate tries to gracefully suspend the invocation while waiting for an event that triggers the resumption of the invocation.
+When suspending, the Restate SDK will continue executing the service code until it reaches a _suspension point_, that is a point in your service code where it's safe to interrupt the execution, for example when `await`ing on a response from another service.
+
+When suspending, Restate internally starts another timer to protect Restate from connection issues and/or misbehaving code/SDKs that prevent the tear down of the connection. This timer can be configured with the option [`worker.invoker.abort_timeout`](/operate/configuration).
+Once the `abort_timeout` is fired, the connection to the deployment endpoint is closed, and all in-flight progress is discarded.
+
+If you have [side effects](/develop/sdk/side-effects) that take more than `inactivity_timeout + abort_timeout` to execute, you might need to tune these timeouts accordingly, for example by increasing the `inactivity_timeout` to a value larger than the expected side effect duration.
