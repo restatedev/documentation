@@ -1,4 +1,4 @@
-// Your custom Docusaurus plugin
+// Plugin to load code snippets from files and replace the CODE_LOAD tag with the content of the file
 
 const fs = require('fs');
 
