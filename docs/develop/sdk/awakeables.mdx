@@ -43,15 +43,7 @@ The SDK deserializes the payload with `JSON.parse(result.toString()) as T`.
 <TabItem value="java" label="Java">
 
 ```java
-// 1. Generate the ID
-Awakeable<String> awakeable = ctx.awakeable(CoreSerdes.STRING_UTF8);
-
-// 2. Send the ID to some external system
-String awakeableId = awakeable.id();
-// ... send a request to another system and include the awakeableId as callback url...
-
-// 3. Wait for the ID to returned and retrieve the payload
-String payload = awakeable.await();
+CODE_LOAD::java/src/main/java/develop/Awakeables.java#<start_create>-<end_create>
 ```
 
 You need to define the deserializer for the payload.
@@ -84,7 +76,7 @@ Make sure that the payload you send, has the type that is expected on the receiv
 <TabItem value="java" label="Java">
 
 ```java
-ctx.awakeableHandle(awakeableId).resolve(CoreSerdes.STRING_UTF8, "hello");
+CODE_LOAD::java/src/main/java/develop/Awakeables.java#<start_resolve>-<end_resolve>
 ```
 
 You need to define the serializer for the payload.
@@ -107,12 +99,11 @@ CODE_LOAD::ts/src/develop/awakeable.ts#<start_reject>-<end_reject>
 <TabItem value="java" label="Java">
 
 ```java
-ctx.awakeableHandle(awakeableId).reject("my error reason");
+CODE_LOAD::java/src/main/java/develop/Awakeables.java#<start_reject>-<end_reject>
 ```
 
 </TabItem>
 </Tabs>
-
 
 
 ## Completing awakeables from outside Restate
