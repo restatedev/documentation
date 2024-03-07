@@ -38,7 +38,7 @@ You can handle events within keyed routers, where the key of the Kafka record ma
 import * as restate from "@restatedev/restate-sdk";
 
 const router = restate.keyedRouter({
-    eventHandler: restate.keyedEventHandler(async (ctx: restate.RpcContext, event: restate.Event) => {
+    eventHandler: restate.keyedEventHandler(async (ctx: restate.KeyedContext, event: restate.Event) => {
         // Extract event payload as json
         const { myData } = event.json<{ myData: string }>();
         // OR extract event payload as raw bytes and deserialize it
@@ -51,7 +51,7 @@ const router = restate.keyedRouter({
 });
 
 restate
-    .createServer()
+    .endpoint()
     .bindKeyedRouter("myRouter", router)
     .listen();
 ```
@@ -109,7 +109,7 @@ import Empty from "./generated/google/protobuf/empty";
 
 export class MyServiceImpl implements MyService {
     async handleEvent(request: MyEvent): Promise<Empty> {
-      const ctx = restate.useContext(this);
+      const ctx = restate.useKeyedContext(this);
       const payload = request.payload;
 
       // Handle event
@@ -177,7 +177,7 @@ service MyService {
     rpc MyMethod(MyMethodRequest) returns (google.protobuf.Empty);
 
     // Event handler method
-    rpc HandleEvent(MyEvent) returns (google.protobuf.Empty);
+    rpc Handle(MyEvent) returns (google.protobuf.Empty);
 }
 
 message MyMethodRequest {
@@ -199,7 +199,7 @@ message MyEvent {
 import dev.restate.generated.MyEvent;
 
 @Override
-public void handle(RestateContext ctx, MyEvent event) {
+public void handle(ObjectContext ctx, MyEvent event) {
 
     // Do something with event
 }

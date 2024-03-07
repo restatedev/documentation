@@ -47,13 +47,13 @@ For example, for a keyed service `greeter-service` with the following implementa
 
 ```ts
 const router = restate.keyedRouter({
-    greet: async (ctx: restate.RpcContext, name: string, req: { age: number } ) => {
+    greet: async (ctx: restate.KeyedContext, name: string, req: { age: number } ) => {
         return `Hello ${name} of ${req.age} years old`;
     },
 });
 
 export const handler = restate
-    .createServer()
+    .endpoint()
     .bindKeyedRouter("greeter-service", router)
     .listen();
 ```

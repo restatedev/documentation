@@ -12,7 +12,7 @@ on:
         required: false
         type: string
       sdkJavaVersion:
-        description: 'sdk-java version (without prepending v).'
+        description: "sdk-java version (without prepending v)."
         required: false
         type: string
       tourVersion:
@@ -87,13 +87,40 @@ jobs:
           field: JAVA_SDK_VERSION
           value: ${{ inputs.sdkJavaVersion }}
 
-      - name: Update restate.config.json with new tour version (TypeScript + Java)
-        uses: jossef/action-set-json-field@v2.1
-        if: ${{ inputs.tourVersion != '' }}
+      # Upgrade TS code snippets if new version is provided
+      - name: Upgrade TS Restate SDK
+        if: github.event.inputs.sdkTypescriptVersion != ''
+        run: npm --prefix code_snippets/ts install @restatedev/restate-sdk@^${{ inputs.sdkTypescriptVersion }}
+
+      # Test if TS code snippets compile and build
+      - name: Compile TypeScript code snippets
+        run: npm install --prefix code_snippets/ts && npm run build --prefix code_snippets/ts
+      - name: Check if TypeScript code snippet build is successful
+        run: |
+          if [ -d "code_snippets/ts/dist" ]; then
+          echo "TypeScript compilation successful"
+          else
+          echo "TypeScript compilation failed"
+          exit 1
+          fi
+
+      # Setup Java
+      - uses: actions/setup-java@v3
         with:
-          file: restate.config.json
-          field: TOUR_VERSION
-          value: ${{ inputs.tourVersion }}
+          distribution: 'temurin'
+          java-version: '17'
+
+      # Upgrade Java code snippets if new version is provided
+      - name: Find and replace restateVersion in build.gradle.kts for Java code snippets
+        if: github.event.inputs.sdkJavaVersion != ''
+        run: sed -i 's/val restateVersion = "[0-9A-Z.-]*"/val restateVersion = "${{ inputs.sdkJavaVersion }}"/' code_snippets/java/build.gradle.kts
+
+      # Check Java code snippets
+      - name: Test Java code snippets
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: check
+          build-root-directory: code_snippets/java
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5

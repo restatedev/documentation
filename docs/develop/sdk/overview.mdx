@@ -32,7 +32,7 @@ The Handler API does not require this.
 <TabItem value="java" label="Java">
 
 :::tip
-To get started, check out a template project of [the Java examples](https://github.com/restatedev/examples/tree/main/java).
+To get started, check out [the Java template project](https://github.com/restatedev/examples/tree/main/templates/java-gradle).
 :::
 
 Scaffold a project using the build tool of your choice. For example, with Gradle (Kotlin script):
@@ -41,7 +41,7 @@ Scaffold a project using the build tool of your choice. For example, with Gradle
 gradle init --type java-application
 ```
 
-Add the dependency sdk-api:
+Add the dependency `sdk-api`:
 
 ```
 implementation("dev.restate:sdk-api:VAR::JAVA_SDK_VERSION")
@@ -111,33 +111,16 @@ This example shows a greeter service comprising two methods:
 - `countGreetings`: maintains a record of the number of times it has received a request for a given name.
 
 ```typescript
-const router = restate.keyedRouter({
-    greet: async (ctx: restate.RpcContext, name: string) => {
-        return `Hello ${name}!`;
-    },
-    countGreetings: async (ctx: restate.RpcContext, name: string) => {
-        // Retrieve state; number of times this name was seen
-        let seen = await ctx.get<number>("seen") || 0;
-        seen += 1;
-        // Set the incremented counter as the new state
-        ctx.set("seen", seen);
-
-        return `Hello ${name} for the ${seen}th time!`
-    }
-})
-
-// Create the Restate server to accept requests
-restate
-    .createServer()
-    .bindKeyedRouter("greeter", router)
-    .listen();
+CODE_LOAD::ts/src/overview_handler.ts
 ```
 
 The app logic is implemented inside the `greet` and `countGreetings` functions.
-The `restate.RpcContext` is supplied as the first argument.
+The `restate.KeyedContext` is supplied as the first argument.
 The [Restate context](/develop/sdk/restate-context) enables interaction with Restate (call other methods, retrieve state, etc.).
+The `countGreetings` function uses the `restate.KeyedContext` because it belongs to a keyed service.
+For unkeyed services, you would use `restate.Context`.
 
-Finally, the Restate server is set up to serve both functions.
+Finally, the endpoint is set up to serve both functions.
 The service is registered as a keyed service under the path `greeter`, and the `greet` and `countGreetings` routes are added.
 The `greet` function can now be called by sending a request to `<RESTATE_INGRESS_URL>/greeter/greet` or `<RESTATE_INGRESS_URL>/greeter/countGreetings`.
 
@@ -166,12 +149,14 @@ import {
 // Implementation of the gRPC service
 export class GreeterService implements Greeter {
     async greet(request: GreetRequest): Promise<GreetResponse> {
+        // Retrieving the Restate context
+        const ctx = restate.useKeyedContext(this);
         return GreetResponse.create({ greeting: `Hello ${request.name}` });
     }
 
     async countGreetings(request: GreetRequest): Promise<GreetResponse> {
         // Retrieving the Restate context
-        const ctx = restate.useContext(this);
+        const ctx = restate.useKeyedContext(this);
 
         // Retrieve state; number of times this name was seen
         let seen = (await ctx.get<number>("seen")) || 0;
@@ -186,9 +171,9 @@ export class GreeterService implements Greeter {
 }
 
 // Setting up the Restate server to serve the GreeterService methods.
-// The server will listen on port 8000 for connections and requests.
+// The endpoint will be attached to port 8000 for connections and requests.
 restate
-    .createServer()
+    .endpoint()
     .bindService({
         descriptor: protoMetadata,
         service: "Greeter",
@@ -198,8 +183,9 @@ restate
 ```
 
 The interface of the gRPC service is defined in the [Protobuf](https://protobuf.dev/) service contracts, that are shown below.
-Within the method, the Restate context is retrieved, enabling interaction with Restate (e.g. getting state, calling other services).
-Finally, the Restate server is set up to serve both methods of the greeter service.
+Within the method, the Restate context is retrieved, enabling interaction with Restate (e.g. calling other services).
+For keyed services, you use the `restate.KeyedContext`. For unkeyed services, instead, you use the `restate.Context`.
+Finally, the endpoint is set up to serve both methods of the greeter service.
 
 This is what corresponding Protobuf definition would look like for this service:
 
@@ -238,40 +224,15 @@ Restate uses [protobuf](https://protobuf.dev/) to define the service and its met
 - `greet`: maintains a record of the number of times it has received a request for a given name, and prints a greeting.
 
 ```java
-package dev.restate.sdk.examples;
-
-import dev.restate.sdk.blocking.RestateContext;
-import dev.restate.sdk.core.CoreSerdes;
-import dev.restate.sdk.core.StateKey;
-import dev.restate.sdk.examples.generated.*;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
-
-import static dev.restate.sdk.examples.generated.GreeterProto.*;
-
-public class Greeter extends GreeterRestate.GreeterRestateImplBase {
-
-  private static final StateKey<Integer> COUNT = StateKey.of("count", CoreSerdes.INT);
-
-  @Override
-  public GreetResponse greet(RestateContext ctx, GreetRequest request) {
-    int count = ctx.get(COUNT).orElse(1);
-    ctx.set(COUNT, count + 1);
-
-    return GreetResponse.newBuilder()
-            .setMessage("Hello " + request.getName() + " for the " + count + " time!")
-            .build();
-  }
-
-  public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder().withService(new Greeter()).buildAndListen();
-  }
-}
+CODE_LOAD::java/src/main/java/Greeter.java
 ```
+
 The `Greeter` class extends `GreeterRestate.GreeterRestateImplBase`, which is the base generated by the Restate protoc generator.
 It has the name of the service (`Greeter`) with `Restate` appended to it.
 
 The [Restate context](/develop/sdk/restate-context) is supplied to the method as the first argument.
- The context enables interaction with Restate (e.g. getting state, calling other services).
+The context enables interaction with Restate (e.g. calling other services, setting timers).
+The `greet` method uses an ObjectContext since it is a keyed service. For unkeyed services, use `Context`.
 Finally, the Restate server is set up to serve both methods of the greeter service.
 
 This is what corresponding Protobuf definition would look like for this service:
@@ -314,22 +275,22 @@ An example:
 ```java
 package dev.restate.sdk.examples;
 
-import dev.restate.sdk.blocking.RestateBlockingService;
-import dev.restate.sdk.blocking.RestateContext;
-import dev.restate.sdk.core.StateKey;
+import dev.restate.sdk.Component;
+import dev.restate.sdk.ObjectContext;
+import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.CoreSerdes;
 import dev.restate.sdk.examples.generated.*;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 import io.grpc.stub.StreamObserver;
 import static dev.restate.sdk.examples.generated.GreeterProto.*;
 
-public class Greeter extends GreeterGrpc.GreeterImplBase implements RestateService {
+public class Greeter extends GreeterGrpc.GreeterImplBase implements Component {
 
   private static final StateKey<Integer> COUNT = StateKey.of("count", CoreSerdes.INT);
 
   @Override
   public void greet(GreetRequest request, StreamObserver<GreetResponse> responseObserver) {
-    RestateContext ctx = restateContext();
+    ObjectContext ctx = ObjectContext.current();
 
     int count = ctx.get(COUNT).orElse(1);
     ctx.set(COUNT, count + 1);

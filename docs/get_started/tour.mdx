@@ -62,7 +62,7 @@ This guide is written for:
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
-Download the [tutorial](https://github.com/restatedev/examples/tree/main/typescript/tour-of-restate):
+Download the [tutorial](https://github.com/restatedev/examples/tree/main/tutorials/tour-of-restate-java):
 
 - Via the CLI:
     ```shell
@@ -72,7 +72,7 @@ Download the [tutorial](https://github.com/restatedev/examples/tree/main/typescr
 - Via git clone:
     ```shell
     git clone git@github.com:restatedev/examples.git
-    cd examples/typescript/tour-of-restate
+    cd examples/tutorials/tour-of-restate-typescript
     ```
 
 - Via `wget`:
@@ -90,7 +90,7 @@ npm install && npm run build
 </TabItem>
 <TabItem value="java" label="Java">
 
-Download the [tutorial](https://github.com/restatedev/examples/tree/main/java/tour-of-restate):
+Download the [tutorial](https://github.com/restatedev/examples/tree/main/tutorials/tour-of-restate-typescript):
 
 - Via the CLI:
     ```shell
@@ -100,12 +100,12 @@ Download the [tutorial](https://github.com/restatedev/examples/tree/main/java/to
 - Via git clone:
     ```shell
     git clone git@github.com:restatedev/examples.git
-    cd examples/java/tour-of-restate
+    cd examples/tutorials/tour-of-restate-java
     ```
 
 - Via `wget`:
     ```shell
-    wget https://github.com/restatedev/examples/releases/latest/download/java-tour-of-restate.zip && unzip java-tour-of-restate.zip -d java-tour-of-restate && rm java-tour-of-restate.zip
+    wget https://github.com/restatedev/examples/releases/latest/download/java-tour-of-restate.zip && unzip java-tour-of-restate.zip -d java-tour-of-restate && rm java-tour-of-restate.zip && cd java-tour-of-restate
     ```
 
 This GitHub repository contains the basic skeleton of the Java services that you develop in this tutorial.
@@ -377,15 +377,15 @@ You specify an unkeyed service by creating a router with its set of functions.
 
 ```typescript
 const serviceRouter = restate.router({
-    hello: async (ctx: restate.RpcContext, request: Request) => { ... },
-    callMe: async (ctx: restate.RpcContext) => { ... },
+    hello: async (ctx: restate.Context, request: Request) => { ... },
+    callMe: async (ctx: restate.Context) => { ... },
     maybe: async () => { ... }
 });
 ```
 
 The functions of an unkeyed router have two optional parameters:
 
-* A `ctx` of type `restate.RpcContext` which allows to interact with Restate.
+* A `ctx` of type `restate.Context` which allows to interact with Restate.
 * A `request` of type JSON object which represents additional invocation data.
 
 You can choose the parameter names differently.
@@ -394,7 +394,7 @@ For example, for the `Checkout` service, you create a router with the `checkout`
 
 ```typescript
 const checkout = async (
-    ctx: restate.RpcContext,
+    ctx: restate.Context,
     request: { userId: string; tickets: string[] },
 ) => {
     return true;
@@ -414,16 +414,16 @@ You specify a keyed service by creating a keyed router with its set of functions
 
 ```typescript
 const keyedServiceRouter = restate.keyedRouter({
-  hello: async (ctx: restate.RpcContext, key: string, request: Request) => { ... },
-  callMe: async (ctx: restate.RpcContext, key: string) => { ... },
-  maybe: async (ctx: restate.RpcContext) => { ... },
+  hello: async (ctx: restate.KeyedContext, key: string, request: Request) => { ... },
+  callMe: async (ctx: restate.KeyedContext, key: string) => { ... },
+  maybe: async (ctx: restate.KeyedContext) => { ... },
   withSomething: async () => { ... }
 });
 ```
 
 The functions of a keyed router have three optional parameters
 
-* A `ctx` of type `restate.RpcContext` which allows to interact with Restate.
+* A `ctx` of type `restate.KeyedContext` which allows to interact with Restate.
 * A `key` parameter of type string which represents the key of the invoked service.
 * A `request` parameter of type JSON object which represents additional invocation data.
 
@@ -496,7 +496,7 @@ Imagine you have a keyed service which is the single writer to a database and ev
 Then you can scale your application and never have concurrent invocations writing to the same database row.
 This resolves common data consistency issues such as lost updates or non-repeatable reads.
 
-Have a look at the product service of the [shopping cart example](https://github.com/restatedev/examples/tree/main/typescript/ecommerce-store).
+Have a look at the product service of the [shopping cart example](https://github.com/restatedev/examples/tree/main/end-to-end-applications/typescript/ecommerce-store).
 The service is keyed on product ID, just like the database table it writes to. Restate ensures that there are never concurrent writes to the same product.
 :::
 
@@ -534,7 +534,7 @@ import * as restate from "@restatedev/restate-sdk";
 import { ticketServiceApi } from "./ticket_service";
 
 const addTicket = async (
-  ctx: restate.RpcContext,
+  ctx: restate.KeyedContext,
   userId: string,
   ticketId: string,
 ) => {
@@ -544,7 +544,7 @@ const addTicket = async (
 };
 ```
 
-To make the call, you supply the exported `ticketServiceApi` to the RpcContext via the `rpc` function to specify which service to invoke.
+To make the call, you supply the exported `ticketServiceApi` to the context via the `rpc` function to specify which service to invoke.
 Then you call the `reserve` function, which returns a Promise that gets resolved with the `boolean` response.
 
 Try it out by running the services via `npm run app` and send a request to `UserSession/addTicket`, as we did [previously](#calling-services-from-outside-restate).
@@ -577,7 +577,7 @@ To also log the messages, use `RESTATE_DEBUG_LOGGING=JOURNAL_VERBOSE`.
 
 ```java
 @Override
-public BoolValue addTicket(RestateContext ctx, ReserveTicket request) throws TerminalException {
+public BoolValue addTicket(ObjectContext ctx, ReserveTicket request) throws TerminalException {
     //highlight-start
     var ticketClnt = TicketServiceRestate.newClient(ctx);
     var success = ticketClnt.reserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build()).await();
@@ -645,7 +645,7 @@ This is not the best way to sleep in a Restate service! The Restate SDK offers a
 ```typescript
 import { setTimeout } from "timers/promises";
 
-const reserve = async (ctx: restate.RpcContext) => {
+const reserve = async (ctx: restate.KeyedContext) => {
   //bad-code-start
   await setTimeout(35000);
   //bad-code-end
@@ -688,7 +688,7 @@ Once the runtime has received the response, it invokes the `addTicket` function 
 
 ```java
 @Override
-public BoolValue reserve(RestateContext ctx, Ticket request) throws TerminalException {
+public BoolValue reserve(ObjectContext ctx, Ticket request) throws TerminalException {
   //bad-code-start
   try {
     Thread.sleep(65000);
@@ -765,7 +765,7 @@ Add the following code to the `UserSession/checkout` function:
 ```typescript
 import { checkoutApi } from "./checkout";
 
-const checkout = async (ctx: restate.RpcContext, userId: string) => {
+const checkout = async (ctx: restate.KeyedContext, userId: string) => {
   //highlight-start
   const checkoutRequest = { userId: userId, tickets: ["456"] };
   const success = await ctx.rpc(checkoutApi).checkout(checkoutRequest);
@@ -796,7 +796,7 @@ Notice that the `UserSession` didn't get suspended because the response came bef
 
 ```java
 @Override
-public BoolValue checkout(RestateContext ctx, CheckoutRequest request) throws TerminalException {
+public BoolValue checkout(ObjectContext ctx, CheckoutRequest request) throws TerminalException {
     //highlight-start
     var checkoutClnt = CheckoutRestate.newClient(ctx);
     var checkoutSuccess = checkoutClnt.checkout(
@@ -838,11 +838,11 @@ Up to now, all our service calls waited for a response. This is referred to as r
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
-Update `expireTicket` to use `RpcContext.send` to send a one-way message to release the reservation:
+Update `expireTicket` to use `ctx.send` to send a one-way message to release the reservation:
 
 ```typescript
 const addTicket = async (
-    ctx: restate.RpcContext,
+    ctx: restate.KeyedContext,
     userId: string,
     ticketId: string,
 ) => {
@@ -853,7 +853,7 @@ const addTicket = async (
 };
 ```
 
-Note that `RpcContext.send` isn't an asynchronous operation which returns a promise.
+Note that `ctx.send` isn't an asynchronous operation which returns a promise.
 Therefore, there is no need to await it.
 
 Once you have adapted the code, try it out by calling the `UserSession/addTicket` function, as [explained earlier](#calling-services-from-outside-restate).
@@ -884,7 +884,7 @@ Update the reserve request in `addTicket` to use `oneWay()` to send a one-way me
 
 ```java
 @Override
-public void addTicket(RestateContext ctx, ReserveTicket request) throws TerminalException {
+public void addTicket(ObjectContext ctx, ReserveTicket request) throws TerminalException {
     var ticketClnt = TicketServiceRestate.newClient(ctx);
     //highlight-next-line
     ticketClnt.oneWay().reserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build());
@@ -943,7 +943,7 @@ When you are done with the implementation, send a request to `UserSession/expire
 
 ```typescript
 const expireTicket = async (
-  ctx: restate.RpcContext,
+  ctx: restate.KeyedContext,
   userId: string,
   ticketId: string,
 ) => {
@@ -986,7 +986,7 @@ Have a look at the logs again to see what happened:
 
 ```java
 @Override
-public void expireTicket(RestateContext ctx, ExpireTicketRequest request) throws TerminalException {
+public void expireTicket(ObjectContext ctx, ExpireTicketRequest request) throws TerminalException {
     //highlight-start
     var ticketClnt = TicketServiceRestate.newClient(ctx);
     ticketClnt.oneWay().unreserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build());
@@ -1050,7 +1050,7 @@ Restate offers the same mechanism for timers.
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-const reserve = async (ctx: restate.RpcContext) => {
+const reserve = async (ctx: restate.KeyedContext) => {
   //good-code-start
   await ctx.sleep(35000);
   //good-code-end
@@ -1063,7 +1063,7 @@ const reserve = async (ctx: restate.RpcContext) => {
 
 ```java
 @Override
-public BoolValue reserve(RestateContext ctx, Ticket request) throws TerminalException {
+public BoolValue reserve(ObjectContext ctx, Ticket request) throws TerminalException {
     //good-code-start
     ctx.sleep(Duration.ofSeconds(65));
     //good-code-end
@@ -1140,11 +1140,11 @@ In `UserSession/addTicket`, revert the call to `reserve` to a request-response c
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
-Replace the `RpcContext.send()` with `RpcContext.rpc()`, to end up with:
+Replace the `ctx.send()` with `ctx.rpc()`, to end up with:
 
 ```ts
 const addTicket = async (
-  ctx: restate.RpcContext,
+  ctx: restate.KeyedContext,
   userId: string,
   ticketId: string,
 ) => {
@@ -1189,7 +1189,7 @@ const addTicket = async (
 
 ```java
 @Override
-public BoolValue addTicket(RestateContext ctx, ReserveTicket request) throws TerminalException {
+public BoolValue addTicket(ObjectContext ctx, ReserveTicket request) throws TerminalException {
     // highlight-start
     var ticketClnt = TicketServiceRestate.newClient(ctx);
     var reservationSuccess = ticketClnt.reserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build()).await();
@@ -1268,7 +1268,7 @@ This would make the `UserSession/addTicket` function look as follows:
 
 ```typescript
 const addTicket = async (
-  ctx: restate.RpcContext,
+  ctx: restate.KeyedContext,
   userId: string,
   ticketId: string,
 ) => {
@@ -1293,7 +1293,7 @@ const addTicket = async (
 
 ```java
 @Override
-public BoolValue addTicket(RestateContext ctx, ReserveTicket request) throws TerminalException {
+public BoolValue addTicket(ObjectContext ctx, ReserveTicket request) throws TerminalException {
     var ticketClnt = TicketServiceRestate.newClient(ctx);
     var reservationSuccess = ticketClnt
         .reserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build())
@@ -1436,7 +1436,7 @@ Have a look at the highlighted code:
 
 ```ts
 const addTicket = async (
-  ctx: restate.RpcContext,
+  ctx: restate.KeyedContext,
   userId: string,
   ticketId: string) => {
 
@@ -1470,7 +1470,7 @@ public static final StateKey<Set<String>> STATE_KEY =
 //highlight-end
 
 @Override
-public BoolValue addTicket(RestateContext ctx, ReserveTicket request) throws TerminalException {
+public BoolValue addTicket(ObjectContext ctx, ReserveTicket request) throws TerminalException {
     var ticketClnt = TicketServiceRestate.newClient(ctx);
     var reservationSuccess = ticketClnt
         .reserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build())
@@ -1577,7 +1577,7 @@ Also adapt the `UserSession/checkout` function, to use the tickets:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-const checkout = async (ctx: restate.RpcContext, userId: string) => {
+const checkout = async (ctx: restate.KeyedContext, userId: string) => {
   // 1. Retrieve the tickets from state
   //highlight-next-line
   const tickets = (await ctx.get<string[]>("tickets")) ?? [];
@@ -1614,7 +1614,7 @@ const checkout = async (ctx: restate.RpcContext, userId: string) => {
 public static final StateKey<Set<String>> STATE_KEY = StateKey.of("tickets", JacksonSerdes.of(new TypeReference<>() {}));
 
 @Override
-public BoolValue checkout(RestateContext ctx, CheckoutRequest request) throws TerminalException {
+public BoolValue checkout(ObjectContext ctx, CheckoutRequest request) throws TerminalException {
     // 1. Retrieve the tickets from state
     //highlight-next-line
     var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
@@ -1665,7 +1665,7 @@ You have almost fully implemented the user session service. After checkout, let'
 
 ```ts
 const expireTicket = async (
-  ctx: restate.RpcContext,
+  ctx: restate.KeyedContext,
   userId: string,
   ticketId: string,
 ) => {
@@ -1678,7 +1678,7 @@ const expireTicket = async (
 
 ```java
 @Override
-public void expireTicket(RestateContext ctx, ExpireTicketRequest request) throws TerminalException {
+public void expireTicket(ObjectContext ctx, ExpireTicketRequest request) throws TerminalException {
     var ticketClnt = TicketServiceRestate.newClient(ctx);
     ticketClnt.oneWay().unreserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build());
 }
@@ -1699,7 +1699,7 @@ If this is the case, then you call `TicketService/unreserve` and remove it from 
 
 ```ts
 const expireTicket = async (
-  ctx: restate.RpcContext,
+  ctx: restate.KeyedContext,
   userId: string,
   ticketId: string,
 ) => {
@@ -1731,7 +1731,7 @@ curl localhost:8080/UserSession/expireTicket \
 public static final StateKey<Set<String>> STATE_KEY = StateKey.of("tickets", JacksonSerdes.of(new TypeReference<>() {}));
 
 @Override
-public void expireTicket(RestateContext ctx, ExpireTicketRequest request) throws TerminalException {
+public void expireTicket(ObjectContext ctx, ExpireTicketRequest request) throws TerminalException {
   var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
 
   var removed = tickets.removeIf(s -> s.equals(request.getTicketId()));
@@ -1787,7 +1787,7 @@ Remove the sleep that you added before.
 <TabItem value="ts" label="TypeScript">
 
 ```ts
-const reserve = async (ctx: restate.RpcContext) => {
+const reserve = async (ctx: restate.KeyedContext) => {
   const status =
     (await ctx.get<TicketStatus>("status")) ?? TicketStatus.Available;
 
@@ -1807,7 +1807,7 @@ const reserve = async (ctx: restate.RpcContext) => {
 public static final StateKey<TicketStatus> STATE_KEY = StateKey.of("status", JacksonSerdes.of(TicketStatus.class));
 
 @Override
-public BoolValue reserve(RestateContext ctx, Ticket request) throws TerminalException {
+public BoolValue reserve(ObjectContext ctx, Ticket request) throws TerminalException {
   var status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
 
   if (status.equals(TicketStatus.Available)) {
@@ -1838,7 +1838,7 @@ The function should clear the value of the `"status"` key if it's not on status 
 <TabItem value="ts" label="TypeScript">
 
 ```ts
-const unreserve = async (ctx: restate.RpcContext) => {
+const unreserve = async (ctx: restate.KeyedContext) => {
     const status =
         (await ctx.get<TicketStatus>("status")) ?? TicketStatus.Available;
 
@@ -1853,7 +1853,7 @@ const unreserve = async (ctx: restate.RpcContext) => {
 
 ```java
 @Override
-public void unreserve(RestateContext ctx, Ticket request) throws TerminalException {
+public void unreserve(ObjectContext ctx, Ticket request) throws TerminalException {
     var status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
 
     if (!status.equals(TicketStatus.Sold)) {
@@ -1882,7 +1882,7 @@ The function should set the value of the `"status"` key to `TicketStatus.Sold` i
 <TabItem value="ts" label="TypeScript">
 
 ```ts
-const markAsSold = async (ctx: restate.RpcContext) => {
+const markAsSold = async (ctx: restate.KeyedContext) => {
     const status =
     (await ctx.get<TicketStatus>("status")) ?? TicketStatus.Available;
 
@@ -1898,7 +1898,7 @@ const markAsSold = async (ctx: restate.RpcContext) => {
 
 ```java
 @Override
-public void markAsSold(RestateContext ctx, Ticket request) throws TerminalException {
+public void markAsSold(ObjectContext ctx, Ticket request) throws TerminalException {
     var status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
 
     if (status.equals(TicketStatus.Reserved)) {
@@ -1960,7 +1960,7 @@ Use a side effect in `Checkout/checkout` to create and store a UUID (with the [u
 import { v4 as uuid } from "uuid";
 
 const checkout = async (
-  ctx: restate.RpcContext,
+  ctx: restate.Context,
   request: { userId: string; tickets: string[] },
 ) => {
   // highlight-next-line
@@ -1976,7 +1976,7 @@ const checkout = async (
 import java.util.UUID;
 
 @Override
-public BoolValue checkout(RestateContext ctx, CheckoutFlowRequest request) throws TerminalException {
+public BoolValue checkout(Context ctx, CheckoutFlowRequest request) throws TerminalException {
     // highlight-next-line
     var idempotencyKey = ctx.sideEffect(CoreSerdes.STRING_UTF8, () -> UUID.randomUUID().toString());
     return BoolValue.of(true);
@@ -2076,7 +2076,7 @@ My idempotency key: 43ba6b58-e6f8-4bc2-8112-7c93aedf59d1
 Remove the sleep again, before you continue.
 
 :::caution
-You can't execute any RestateContext calls from within a side effect.
+You can't execute any context calls from within a side effect.
 This is invalid code.
 :::
 
@@ -2102,7 +2102,7 @@ Also return the boolean result at the end of the `checkout` function.
 
 ```typescript
 const checkout = async (
-  ctx: restate.RpcContext,
+  ctx: restate.Context,
   request: { userId: string; tickets: string[] },
 ) => {
   const idempotencyKey = await ctx.sideEffect<string>(async () => uuid());
@@ -2148,7 +2148,7 @@ Payment call succeeded for idempotency key 923d1558-bf17-4c94-b027-4cfd778049fe 
 PaymentClient paymentClient = PaymentClient.get();
 
 @Override
-public BoolValue checkout(RestateContext ctx, CheckoutFlowRequest request) throws TerminalException {
+public BoolValue checkout(Context ctx, CheckoutFlowRequest request) throws TerminalException {
     // Generate idempotency key for the stripe client
     var idempotencyKey = ctx.sideEffect(CoreSerdes.STRING_UTF8, () -> UUID.randomUUID().toString());
 
@@ -2209,7 +2209,7 @@ The `Checkout/checkout` function now looks like the following:
 
 ```ts
 const checkout = async (
-  ctx: restate.RpcContext,
+  ctx: restate.Context,
   request: { userId: string; tickets: string[] },
 ) => {
   const idempotencyKey = await ctx.sideEffect(async () => uuid());
@@ -2243,7 +2243,7 @@ PaymentClient paymentClient = PaymentClient.get();
 EmailClient emailClient = EmailClient.get();
 
 @Override
-public BoolValue checkout(RestateContext ctx, CheckoutFlowRequest request) throws TerminalException {
+public BoolValue checkout(Context ctx, CheckoutFlowRequest request) throws TerminalException {
     var idempotencyKey = ctx.sideEffect(CoreSerdes.STRING_UTF8, () -> UUID.randomUUID().toString());
 
     var totalPrice = request.getTicketsList().size() * 40.0;
@@ -2271,7 +2271,7 @@ The `UserSession/checkout` function now looks like the following:
 <TabItem value="ts" label="TypeScript">
 
 ```ts
-const checkout = async (ctx: restate.RpcContext, userId: string) => {
+const checkout = async (ctx: restate.KeyedContext, userId: string) => {
   const tickets = (await ctx.get<string[]>("tickets")) ?? [];
 
   if (tickets.length === 0) {
@@ -2301,7 +2301,7 @@ const checkout = async (ctx: restate.RpcContext, userId: string) => {
 
 ```java
 @Override
-public BoolValue checkout(RestateContext ctx, CheckoutRequest request) throws TerminalException {
+public BoolValue checkout(ObjectContext ctx, CheckoutRequest request) throws TerminalException {
     var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
 
     if (tickets.isEmpty()) {

@@ -32,12 +32,31 @@ This command generates static content into the `build` directory and can be serv
 
 The `main` branch of the documentation is continuously deployed at https://main.documentation-beg.pages.dev.
 
+## Adding code snippets
+If you want to add code snippets to the docs, they should be testable and compileable on PR merges and releases.
+Follow these steps:
+1. Add you code snippet in the folder [`code_snippets`](/code_snippets) in the subprojects for the respective language: [TypeScript](code_snippets/ts) or [Java](code_snippets/java).
+2. If you only want to use a section of the code snippet in the docs. Specify the start by specifying a comment `<start_here>` and the end by specifying a comment `<end_here>` inside the code snippet. For example:
+```
+greet: async (ctx: restate.Context, name: string) => {
+    // <start_here>
+    // option 1: use full API spec
+    ctx.send(myGreeterApi).greet("Pete");
+    // <end_here>
+},
+```
+3. Refer to the code snippet from within the markdown documentation file as follows `CODE_LOAD::<path_to_snippet>`. You need to put this inside a code block with the language specified. The path is relative from **within** the code_snippets folder. For example, `CODE_LOAD::java/src/main/java/Greeter.java`.
+
+Code snippets will be compiled and build on PRs and releases. 
+
+Details on how code snippets are parsed and inserted can be found in the [code-loader.js](src/plugins/code-loader.js) file.
+
 ## Releasing the documentation
 
 Before releasing the documentation, update schemas and version of Restate artifacts, either:
 
-* Automatically by executing the _Pre-release updates_ workflow.
-* Manually, as described [here](#manually-update-the-schemas).
+- Automatically by executing the _Pre-release updates_ workflow.
+- Manually, as described [here](#manually-update-the-schemas).
 
 Once the branch `main` is ready to be released, create and push the release tag:
 
@@ -63,7 +82,6 @@ $ ./tools/generate.sh <PATH to Restate repo clone>
 
 The config file `restate.config.json` contains versions of various Restate artifacts:
 
-* TypeScript SDK: `TYPESCRIPT_SDK_VERSION`
-* Java SDK: `JAVA_SDK_VERSION`
-* Runtime: `RESTATE_VERSION`
-* Tour: `TOUR_VERSION` (This counts for the TypeScript and Java Tour).
+- TypeScript SDK: `TYPESCRIPT_SDK_VERSION`
+- Java SDK: `JAVA_SDK_VERSION`
+- Runtime: `RESTATE_VERSION`
