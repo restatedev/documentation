@@ -34,15 +34,7 @@ You can use awakeables in the SDK by doing the following:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-// 1. Generate the ID
-const awakeable = ctx.awakeable<string>();
-const id = awakeable.id
-
-// 2. Send the ID to some external system
-// ... here goes your custom code to send the ID ...
-
-// 3. Wait for the ID to returned and retrieve the payload
-const result = await awakeable.promise;
+CODE_LOAD::ts/src/develop/awakeable.ts
 ```
 
 The SDK deserializes the payload with `JSON.parse(result.toString()) as T`.
@@ -82,7 +74,7 @@ Use the awakeable ID that you received from the other service, and do the follow
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-ctx.resolveAwakeable(id, "hello");
+CODE_LOAD::ts/src/develop/awakeable_resolve.ts
 ```
 
 The SDK serializes the payload with `Buffer.from(JSON.stringify(payload))` and deserializes it in the receiving service with `JSON.parse(result.toString()) as T`.
@@ -108,7 +100,7 @@ You can also reject an awakeable, that is completing it with a failure. This wil
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-ctx.rejectAwakeable(id, "my error reason");
+CODE_LOAD::ts/src/develop/awakeable_reject.ts
 ```
 
 </TabItem>
