@@ -12,8 +12,19 @@ const plugin = (options) => {
         const lines = fileContent.split("start_here").pop().split("end_here").shift();
 
         // If start and end tags were used, Remove the last empty line with the "//" symbol
+        const startLine = fileContent.includes("start_here") ? 1 : 0;
         const endLine = fileContent.includes("end_here") ? -1 : lines.length;
-        return lines.split("\n").slice(0, endLine).join("\n").trim();
+        const indentedCodeSnippet = lines.split("\n").slice(startLine, endLine).join("\n");
+
+        // The code snippet can have leading whitespace on each line, so we need to reformat it
+        // and remove the common whitespace
+        // Determine common leading whitespace
+        const leadingWhitespace = indentedCodeSnippet.match(/^\s*/)[0];
+
+        // Remove leading whitespace from each line
+        return indentedCodeSnippet.split('\n')
+            .map(line => line.replace(new RegExp(`^${leadingWhitespace}`), ''))
+            .join('\n');
     });
 
     const transformer = async (ast) => {

@@ -6,8 +6,6 @@ const darkCodeTheme = require("prism-react-renderer").themes.dracula;
 const variableInjector = require("./src/plugins/variable-injector");
 const variablesReplacements = require("./restate.config.json");
 const codeLoaderPlugin = require("./src/plugins/code-loader");
-// const codeSnippets = require("/home/giselle/dev/documentation/src/code_snippets");
-
 
 const redocusaurus = [
   "redocusaurus",
@@ -211,8 +209,7 @@ const config = {
       },
     },
   themes: [
-    "docusaurus-json-schema-plugin",
-    // 'docusaurus-theme-github-codeblock'
+    "docusaurus-json-schema-plugin"
   ],
   scripts: ["/js/store-query-parameter.js"],
 };

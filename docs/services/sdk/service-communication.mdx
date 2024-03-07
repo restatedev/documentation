@@ -22,28 +22,14 @@ To make request-response calls to the `Greeter` service, do the following:
 On the side of the service that you are going to call, you export the API definition, as follows (for more details look at the [serving docs](/services/sdk/serving)): 
 
 ```ts
-const greeterRouter = restate.router({
-  greet:    async(ctx: restate.Context, name: string) => { ... }
-});
-
-// Option 1: export only the type signature of the router
-export type myGreeterApiType = typeof greeterRouter;
-
-// Option 2: export the API definition with type and name (path)
-export const myGreeterApi: restate.ServiceApi<typeof greeterRouter> = { path : "greeter" };
-
-restate.endpoint().bindRouter("greeter", greeterRouter).listen(9080);
+CODE_LOAD::ts/src/service_communication.ts
 ```
 
 On the client side (service which is doing the call), you use the exported API definition to do the RPC.
 For example, call the `greet` function of the `greeter` service for the name `Pete` via:
 
 ```ts
-// Option 1: use only types and supply service name separately. 
-const result1 = await ctx.rpc<myGreeterApiType>({path: "greeter"}).greet("Restate");
-
-// Option 2: use full API spec
-const result2 = await ctx.rpc(myGreeterApi).greet("Restate");
+CODE_LOAD::ts/src/one_way_call.ts
 ```
 
 </TabItem>
