@@ -35,7 +35,7 @@ The `main` branch of the documentation is continuously deployed at https://main.
 ## Adding code snippets
 If you want to add code snippets to the docs, they should be testable and compileable on PR merges and releases.
 Follow these steps:
-1. Add you code snippet in the folder `code_snippets` in the subprojects for the respective language.
+1. Add you code snippet in the folder [`code_snippets`](/code_snippets) in the subprojects for the respective language: [TypeScript](code_snippets/ts) or [Java](code_snippets/java).
 2. If you only want to use a section of the code snippet in the docs. Specify the start by specifying a comment `<start_here>` and the end by specifying a comment `<end_here>` inside the code snippet. For example:
 ```
 greet: async (ctx: restate.Context, name: string) => {
