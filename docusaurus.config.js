@@ -5,6 +5,7 @@ const lightCodeTheme = require("prism-react-renderer").themes.github;
 const darkCodeTheme = require("prism-react-renderer").themes.dracula;
 const variableInjector = require("./src/plugins/variable-injector");
 const variablesReplacements = require("./restate.config.json");
+const codeLoaderPlugin = require("./src/plugins/code-loader");
 
 const redocusaurus = [
   "redocusaurus",
@@ -60,6 +61,9 @@ const config = {
                 replacements: variablesReplacements,
               },
             ],
+            [codeLoaderPlugin, {
+                codeSnippets: {},
+            }]
           ],
           routeBasePath: "/", // Set this value to '/'.
           sidebarPath: require.resolve("./sidebars.js"),
@@ -204,7 +208,9 @@ const config = {
         searchParameters: {},
       },
     },
-  themes: ["docusaurus-json-schema-plugin"],
+  themes: [
+    "docusaurus-json-schema-plugin"
+  ],
   scripts: ["/js/store-query-parameter.js"],
 };
 
