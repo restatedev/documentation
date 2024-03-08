@@ -17,30 +17,12 @@ You can retrieve the context object as follows:
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript" default>
 
-For unkeyed routers:
-
 ```typescript
-import * as restate from "@restatedev/restate-sdk";
-
-const greet = async (ctx: restate.Context, name: string) => {
-
-    //...the rest of your code...
-};
-```
-
-For keyed routers:
-
-```typescript
-import * as restate from "@restatedev/restate-sdk";
-
-const greet = async (ctx: restate.KeyedContext, name: string) => {
-
-    //...the rest of your code...
-};
+CODE_LOAD::ts/src/develop/restate_context.ts
 ```
 
 The Restate context is supplied as the first argument `ctx` to the handler.
-The arguments behind that are optional. For more information on the handler signature, have a look at the [serving docs](/develop/sdk/serving).
+The arguments behind that are optional. For more information about the handler signature, have a look at the [serving docs](/develop/sdk/serving).
 
 </TabItem>
 <TabItem value="ts-grpc" label="TypeScript-gRPC">
@@ -48,25 +30,13 @@ The arguments behind that are optional. For more information on the handler sign
 For unkeyed routers:
 
 ```typescript
-import * as restate from "@restatedev/restate-sdk";
-
-async greet(request: Request): Promise<Response> {
-  const ctx = restate.useContext(this);
-
-  //...the rest of your code...
-}
+CODE_LOAD::ts-grpc/src/develop/restate_context.ts#<start_unkeyed>-<end_unkeyed>
 ```
 
 For keyed routers:
 
 ```typescript
-import * as restate from "@restatedev/restate-sdk";
-
-async greet(request: Request): Promise<Response> {
-    const ctx = restate.useKeyedContext(this);
-
-    //...the rest of your code...
-};
+CODE_LOAD::ts-grpc/src/develop/restate_context.ts#<start_keyed>-<end_keyed>
 ```
 
 </TabItem>
@@ -78,25 +48,13 @@ The Restate context is supplied as the first argument `ctx` to the method.
 For unkeyed services:
 
 ```java
-public class Greeter extends GreeterRestate.GreeterRestateImplBase {
-
-  @Override
-  public GreetResponse greet(Context ctx, GreetRequest request) {
-    // implement your method
-  }
-}
+CODE_LOAD::java/src/main/java/develop/ContextUnkeyedExample.java
 ```
 
 For keyed services:
 
 ```java
-public class Greeter extends GreeterRestate.GreeterRestateImplBase {
-
-    @Override
-    public GreetResponse greet(ObjectContext ctx, GreetRequest request) {
-        // implement your method
-    }
-}
+CODE_LOAD::java/src/main/java/develop/ContextKeyedExample.java
 ```
 
 :::note
@@ -111,21 +69,15 @@ If you do not use Restate's generated protobuf code, you can access the restate 
 For unkeyed services:
 
 ```java
-import dev.restate.sdk.Context;
-
-// Inside your method:
-Context ctx = Context.current();
+CODE_LOAD::java/src/main/java/develop/ContextVanillaUnkeyedExample.java
 ```
 
 For keyed services:
 
 ```java
-import dev.restate.sdk.ObjectContext;
-
-// Inside your method:
-ObjectContext ctx = ObjectContext.current();
+CODE_LOAD::java/src/main/java/develop/ContextVanillaKeyedExample.java
 ```
-
+    
 </details>
 
 </TabItem>

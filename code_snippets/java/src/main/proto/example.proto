@@ -8,7 +8,7 @@ import "google/protobuf/empty.proto";
 option java_package = "example.generated";
 option java_outer_classname = "ExampleProto";
 
-service Example {
+service KeyedExample {
   option (dev.restate.ext.service_type) = KEYED;
 
   rpc Greet (ExampleRequest) returns (google.protobuf.Empty);
@@ -16,4 +16,15 @@ service Example {
 
 message ExampleRequest {
   string name = 1 [(dev.restate.ext.field) = KEY];
+}
+
+
+service UnkeyedExample {
+  option (dev.restate.ext.service_type) = UNKEYED;
+
+  rpc Greet (Request) returns (google.protobuf.Empty);
+}
+
+message Request {
+  string name = 1;
 }
