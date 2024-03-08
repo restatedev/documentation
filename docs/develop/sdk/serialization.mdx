@@ -14,6 +14,7 @@ For some SDK operations, Restate needs to send data over the network, for exampl
 <TabItem value="ts" label="TypeScript">
 
 The SDK serializes values with `Buffer.from(JSON.stringify(payload))` and deserializes them with `JSON.parse(result.toString()) as T`.
+Make sure that the data you want to serialize is JSON serializable.
 
 </TabItem>
 <TabItem value="java" label="Java">
@@ -21,40 +22,31 @@ The SDK serializes values with `Buffer.from(JSON.stringify(payload))` and deseri
     
 There are multiple ways to specify which (de)serializers should be used.
 
-** Restate's `CoreSerdes` for primitive types **
+**Restate's `CoreSerdes` for primitive types**
 
 For serializing primitive types, use Restate's built-in `CoreSerdes`.
 The following serializers are included:
 
 ```java
-CoreSerdes.VOID
-CoreSerdes.BYTES
-CoreSerdes.STRING_UTF8
-CoreSerdes.BOOLEAN
-CoreSerdes.BYTE
-CoreSerdes.SHORT
-CoreSerdes.INT
-CoreSerdes.LONG
-CoreSerdes.FLOAT
-CoreSerdes.DOUBLE
+CODE_LOAD::java/src/main/java/develop/SerializationExample.java
 ```
 
 For example, to specify the serializer for state of type Long:
 
 ```java
-StateKey<Long> STATE_KEY = StateKey.of("my-key", CoreSerdes.LONG);
+CODE_LOAD::java/src/main/java/develop/SerializationExample.java#<start_statekey>-<end_statekey>
 ```
 
-** Restate's `CoreSerdes` for Protobuf **
+**Restate's `CoreSerdes` for Protobuf**
 
 You can also use Restate's built-in `CoreSerdes` to create serializers for Protobuf.
 For example, for the Protobuf message type `GreetingResponse`, we can create a serializer as follows:
 
 ```java
-CoreSerdes.ofProtobuf(GreetingResponse.parser());
+CODE_LOAD::java/src/main/java/develop/SerializationExample.java#<start_protoserdes>-<end_protoserdes>
 ```
 
-** Jackson serialization **
+**Jackson serialization**
 
 If you want to use [Jackson Databind](https://github.com/FasterXML/jackson) to (de)serialize POJOs, add the dependency sdk-serde-jackson.
 For example, in Gradle:
@@ -66,39 +58,27 @@ implementation("dev.restate:sdk-serde-jackson:VAR::JAVA_SDK_VERSION")
 And then use `JacksonSerdes`. For example, to create a Serde for the `Person` class, you can do:
 
 ```java
-JacksonSerdes.of(Person.class)
+CODE_LOAD::java/src/main/java/develop/SerializationExample.java#<start_pojoserdes>-<end_pojoserdes>
 ```
 
 Alternatively, you can also supply the TypeReference of a generic type, for example:
 
 ```java
-JacksonSerdes.of(new TypeReference<List<Integer>>() { })
+CODE_LOAD::java/src/main/java/develop/SerializationExample.java#<start_typerefserdes>-<end_typerefserdes>
 ```
 
-** Custom serializers **
+**Custom serializers**
 
 You can implement custom serializers by implementing the `dev.restate.sdk.core.Serde` interface:
 
 ```java
-class MyPersonSerde implements Serde<Person> {
-    @Override
-    public byte[] serialize(@Nullable Person value) {
-        // convert value to a ByteArray
-        return valueAsByteArray;
-    }
-
-    @Override
-    public Person deserialize(byte[] value) {
-        // convert value to Person
-        return person;
-    }
-}
+CODE_LOAD::java/src/main/java/develop/SerializationExample.java#<start_customserdes>-<end_customserdes>
 ```
 
 And then use it, for example, to create a state key for Person objects:
 
 ```java
-StateKey.of("person", new MyPersonSerde());
+CODE_LOAD::java/src/main/java/develop/SerializationExample.java#<start_person_state_key>-<end_person_state_key>
 ```
 
 </TabItem>
