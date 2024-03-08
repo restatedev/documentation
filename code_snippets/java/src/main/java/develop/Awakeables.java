@@ -41,8 +41,4 @@ public class Awakeables extends GreeterRestate.GreeterRestateImplBase {
                 .setMessage("Hello")
                 .build();
     }
-
-    public static void main(String[] args) {
-        RestateHttpEndpointBuilder.builder().withService(new Awakeables()).buildAndListen();
-    }
 }
