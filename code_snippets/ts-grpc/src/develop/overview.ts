@@ -4,7 +4,7 @@ import {
     GreetRequest,
     GreetResponse,
     protoMetadata,
-} from "../generated/proto/example";
+} from "../generated/proto/greeter";
 
 // Implementation of the gRPC service
 export class GreeterService implements Greeter {

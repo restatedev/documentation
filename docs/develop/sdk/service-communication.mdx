@@ -22,14 +22,14 @@ To make request-response calls to the `Greeter` service, do the following:
 On the side of the service that you are going to call, you export the API definition, as follows (for more details look at the [serving docs](/develop/sdk/serving)):
 
 ```ts
-CODE_LOAD::ts/src/develop/service_communication.ts
+CODE_LOAD::ts/src/develop/service_communication.ts#<start_api_export>-<end_api_export>
 ```
 
 On the client side (service which is doing the call), you use the exported API definition to do the RPC.
 For example, call the `greet` function of the `greeter` service for the name `Pete` via:
 
 ```ts
-CODE_LOAD::ts/src/develop/one_way_call.ts
+CODE_LOAD::ts/src/develop/service_communication.ts#<start_request_response>-<end_request_response>
 ```
 
 </TabItem>
@@ -39,10 +39,7 @@ To do request-response calls, use the gRPC client implementation supplied via th
 In this example, the `Greet` function requires a `Request` Protobuf message as input with a single `name` parameter.
 
 ```typescript
-const client = new GreeterClientImpl(ctx);
-const greeting = await client.greet(
-    GreetRequest.create({ name: "Restate" })
-);
+CODE_LOAD::ts-grpc/src/develop/service_communication.ts#<start_request_response>-<end_request_response>
 ```
 
 </TabItem>
@@ -52,11 +49,8 @@ Use Restate's generated clients to do the call.
 For example, if you have a `Greeter` service with a method `greet`:
 
 ```java
-GreeterRestate.GreeterRestateClient client = GreeterRestate.newClient(ctx);
-var req = GreetRequest.newBuilder().setName("Restate").build();
-GreetResponse response = client.greet(req).await();
+CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_request_response>-<end_request_response>
 ```
-
 
 <details>
 <summary>Alternative: vanilla gRPC</summary>
@@ -65,11 +59,7 @@ You can do request-response calls via `ctx.call` by supplying it with the gRPC m
 In this example, the `Greet` function requires a `Request` Protobuf message as input with a single `name` parameter.
 
 ```java
-var req = GreetRequest.newBuilder().setName("Pete").build();
-GreetResponse response = ctx.call(
-    GreeterGrpc.getGreetMethod(),
-    req
-).await();
+CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_grpc_request_response>-<end_grpc_request_response>
 ```
 
 </details>
@@ -94,11 +84,7 @@ On the side of the service that you are going to call, you export the API defini
 On the client side (service which is doing the call), you use the exported API definition to do the one-way call. For example, call the `greet` function of the `greeter` service for the name `Pete` via:
 
 ```ts
-// option 1: use only types and supply service name separately
-ctx.send<myGreeterApiType>({path: "greeter"}).greet("Pete");
-
-// option 2: use full API spec
-ctx.send(myGreeterApi).greet("Pete");
+CODE_LOAD::ts/src/develop/service_communication.ts#<start_one_way>-<end_one_way>
 ```
 
 </TabItem>
@@ -107,10 +93,7 @@ ctx.send(myGreeterApi).greet("Pete");
 Use the gRPC client implementation supplied via the generated Protobuf code to do the call, but wrap the call with `ctx.oneWayCall` as shown below:
 
 ```typescript
-const client = new GreeterClientImpl(ctx);
-await ctx.oneWayCall(() =>
-    client.greet(Request.create({ name: "Pete" }))
-);
+CODE_LOAD::ts-grpc/src/develop/service_communication.ts#<start_one_way>-<end_one_way>
 ```
 
 You need to await the Promise that is returned from `oneWayCall()`, otherwise a failure in sending the message does not get propagated back to your user code.
@@ -129,11 +112,8 @@ Use Restate's generated clients to do the call.
 For example, if you have a `Greeter` service with a method `greet`:
 
 ```java
-GreeterRestate.GreeterRestateClient client = GreeterRestate.newClient(ctx);
-var req = GreetingRequest.newBuilder().setName("Pete").build();
-client.oneWay().greet(req);
+CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_one_way>-<end_one_way>
 ```
-
 
 <details>
 <summary>Alternative: vanilla gRPC</summary>
@@ -142,11 +122,7 @@ You can do one-way calls via `ctx.oneWayCall` by supplying it with the gRPC meth
 In this example, the `Greet` function requires a `Request` Protobuf message as input with a single `name` parameter.
 
 ```java
-var req = GreetRequest.newBuilder().setName("Pete").build();
-ctx.oneWayCall(
-  GreeterGrpc.getGreetMethod(),
-  req
-);
+CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_grpc_one_way>-<end_grpc_one_way>
 ```
 
 </details>
@@ -167,22 +143,14 @@ On the side of the service that you are going to call, you export the API defini
 On the client side (service which is doing the call), you use the exported API definition to do the delayed one-way call. For example, call the `greet` function of the `greeter` service for the name `Pete` with a delay of 5 seconds  via:
 
 ```ts
-// option 1: use only types and supply service name separately
-ctx.sendDelayed<myGreeterApiType>({path: "greeter"}, 5000).greet("Pete");
-
-// option 2: use full API spec
-ctx.sendDelayed(myGreeterApi, 5000).greet("Pete");
+CODE_LOAD::ts/src/develop/service_communication.ts#<start_delayed>-<end_delayed>
 ```
 
 </TabItem>
 <TabItem value="ts-grpc" label="TypeScript-gRPC">
 
 ```typescript
-const client = new GreeterClientImpl(ctx);
-await ctx.delayedCall(() =>
-  client.greet(Request.create({ name: "Pete" })),
-  5000
-);
+CODE_LOAD::ts-grpc/src/develop/service_communication.ts#<start_delayed>-<end_delayed>
 ```
 
 </TabItem>
@@ -192,9 +160,7 @@ Use Restate's generated clients to do the call.
 For example, if you have a `Greeter` service with a method `greet`:
 
 ```java
-GreeterRestate.GreeterRestateClient client = GreeterRestate.newClient(ctx);
-var req = GreetRequest.newBuilder().setName("Pete").build();
-client.delayed(Duration.ofSeconds(1)).greet(req);
+CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_delayed>-<end_delayed>
 ```
 
 <details>
@@ -204,12 +170,7 @@ You can do delayed calls via `ctx.delayedCall` by supplying it with the gRPC met
 In this example, the `Greet` function requires a `Request` Protobuf message as input with a single `name` parameter.
 
 ```java
-var req = GreetRequest.newBuilder().setName("Pete").build();
-ctx.delayedCall(
-  GreeterGrpc.getGreetMethod(),
-  req,
-  Duration.ofMinutes(15)
-);
+CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_grpc_delayed>-<end_grpc_delayed>
 ```
 
 </details>
