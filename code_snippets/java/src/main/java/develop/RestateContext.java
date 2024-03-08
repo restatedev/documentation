@@ -8,7 +8,7 @@ import dev.restate.sdk.ObjectContext;
 import example.generated.*;
 import io.grpc.stub.StreamObserver;
 
-class ContextKeyedExample extends ExampleRestate.ExampleRestateImplBase {
+class ContextKeyedExample extends KeyedExampleRestate.KeyedExampleRestateImplBase {
 
     // <start_keyed>
     @Override
@@ -29,7 +29,7 @@ class ContextUnkeyedExample extends UnkeyedExampleRestate.UnkeyedExampleRestateI
     // <end_unkeyed>
 }
 
-class ContextVanillaGrpcKeyedExample extends ExampleGrpc.ExampleImplBase {
+class ContextVanillaGrpcKeyedExample extends KeyedExampleGrpc.KeyedExampleImplBase {
 
     // <start_grpc_keyed>
     @Override
