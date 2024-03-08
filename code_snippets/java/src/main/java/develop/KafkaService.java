@@ -3,8 +3,8 @@ package develop;
 // <start_here>
 import com.google.protobuf.ByteString;
 import dev.restate.sdk.ObjectContext;
-import static dev.restate.sdk.examples.generated.KafkaExampleProto.*;
-import dev.restate.sdk.examples.generated.MyServiceRestate;
+import static example.generated.KafkaExampleProto.*;
+import example.generated.MyServiceRestate;
 
 public class KafkaService extends MyServiceRestate.MyServiceRestateImplBase {
 

@@ -1,10 +1,12 @@
+package develop;
+
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.common.CoreSerdes;
 import dev.restate.sdk.common.StateKey;
-import dev.restate.sdk.examples.generated.*;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import static greeter.generated.GreeterProto.*;
+import greeter.generated.GreeterRestate;
 
-import static dev.restate.sdk.examples.generated.GreeterProto.*;
 
 public class Greeter extends GreeterRestate.GreeterRestateImplBase {
 

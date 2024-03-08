@@ -3,9 +3,8 @@ package develop;
 import dev.restate.sdk.Awakeable;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.common.CoreSerdes;
-import dev.restate.sdk.examples.generated.GreeterRestate;
-
-import static dev.restate.sdk.examples.generated.GreeterProto.*;
+import static greeter.generated.GreeterProto.*;
+import greeter.generated.GreeterRestate;
 
 public class Awakeables extends GreeterRestate.GreeterRestateImplBase {
 

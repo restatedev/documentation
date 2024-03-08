@@ -3,7 +3,6 @@ import com.google.protobuf.gradle.id
 plugins {
   java
   application
-
   id("com.google.protobuf") version "0.9.1"
 }
 
@@ -63,5 +62,5 @@ tasks.withType<Test> {
 
 // Set main class
 application {
-  mainClass.set("dev.restate.sdk.examples.Greeter")
+  mainClass.set("develop.Greeter")
 }

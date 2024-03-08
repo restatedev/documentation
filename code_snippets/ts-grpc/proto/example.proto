@@ -1,20 +1,21 @@
 syntax = "proto3";
 
-package org.example;
+package example;
 
 import "dev/restate/ext.proto";
 
-service ExampleService {
+service Greeter {
+	option (dev.restate.ext.service_type) = KEYED;
 
-	option (dev.restate.ext.service_type) = UNKEYED;
+	rpc Greet(GreetRequest) returns (GreetResponse) {};
 
-	rpc SampleCall(SampleRequest) returns (SampleResponse) {};
+	rpc CountGreetings(GreetRequest) returns (GreetResponse) {};
 }
 
-message SampleRequest {
-	string request = 1;
+message GreetRequest {
+	string name = 1 [(dev.restate.ext.field) = KEY];
 }
 
-message SampleResponse {
-	string response = 1;
+message GreetResponse {
+	string greeting = 1;
 }

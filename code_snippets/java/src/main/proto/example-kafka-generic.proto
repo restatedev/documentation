@@ -1,11 +1,16 @@
 syntax = "proto3";
 
+package example;
+
 import "dev/restate/ext.proto";
 //highlight-next-line
 import "dev/restate/events.proto";
 import "google/protobuf/empty.proto";
 
-service MyService {
+option java_package = "example.generated";
+option java_outer_classname = "KafkaGenericExampleProto";
+
+service MyKafkaService {
   option (dev.restate.ext.service_type) = KEYED;
 
   //highlight-next-line

@@ -2,8 +2,9 @@ package develop;
 
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.common.TerminalException;
-import static dev.restate.sdk.examples.generated.GreeterProto.*;
-import dev.restate.sdk.examples.generated.GreeterRestate;
+import greeter.generated.GreeterRestate;
+
+import static greeter.generated.GreeterProto.*;
 
 public class ErrorHandling extends GreeterRestate.GreeterRestateImplBase {
 
