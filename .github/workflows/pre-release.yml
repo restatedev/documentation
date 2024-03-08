@@ -95,12 +95,29 @@ jobs:
       # Test if TS code snippets compile and build
       - name: Compile TypeScript code snippets
         run: npm install --prefix code_snippets/ts && npm run build --prefix code_snippets/ts
-      - name: Check if TypeScript code snippet build is successful
+      - name: Check if TypeScript code snippets build is successful
         run: |
           if [ -d "code_snippets/ts/dist" ]; then
           echo "TypeScript compilation successful"
           else
           echo "TypeScript compilation failed"
+          exit 1
+          fi
+
+      # Upgrade TS gRPC code snippets if new version is provided
+      - name: Upgrade TS Restate SDK for gRPC code snippets
+        if: github.event.inputs.sdkTypescriptVersion != ''
+        run: npm --prefix code_snippets/ts-grpc install @restatedev/restate-sdk@^${{ inputs.sdkTypescriptVersion }}
+
+      # Test if TS code snippets compile and build
+      - name: Compile TypeScript gRPC code snippets
+        run: npm install --prefix code_snippets/ts-grpc && npm run proto --prefix code_snippets/ts-grpc && npm run build --prefix code_snippets/ts-grpc
+      - name: Check if TypeScript gRPC code snippets build is successful
+        run: |
+          if [ -d "code_snippets/ts-grpc/dist" ]; then
+          echo "TypeScript gRPC code snippets compilation successful"
+          else
+          echo "TypeScript gRPC code snippets compilation failed"
           exit 1
           fi
 

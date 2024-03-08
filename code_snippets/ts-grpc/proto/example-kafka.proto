@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+import "dev/restate/ext.proto";
+import "google/protobuf/empty.proto";
+
+service MyService {
+  option (dev.restate.ext.service_type) = KEYED;
+
+  // Event handler method
+  // highlight-next-line
+  rpc HandleEvent(MyEvent) returns (google.protobuf.Empty);
+}
+
+//highlight-start
+message MyEvent {
+  string id = 1 [(dev.restate.ext.field) = KEY];
+  bytes payload = 2 [(dev.restate.ext.field) = EVENT_PAYLOAD];
+
+  // This is optional
+  map<string, string> metadata = 3 [(dev.restate.ext.field) = EVENT_METADATA];
+}
+//highlight-end
