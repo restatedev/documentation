@@ -16,6 +16,7 @@ dependencies {
   // Restate SDK
   implementation("dev.restate:sdk-api:$restateVersion")
   implementation("dev.restate:sdk-http-vertx:$restateVersion")
+  implementation("dev.restate:sdk-lambda:$restateVersion")
   // To use Jackson to read/write state entries (optional)
   implementation("dev.restate:sdk-serde-jackson:$restateVersion")
 
