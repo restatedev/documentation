@@ -7,6 +7,8 @@ import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.examples.generated.*;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 
+import java.time.Duration;
+
 import static dev.restate.sdk.examples.generated.GreeterProto.*;
 
 public class DurableTimers extends GreeterRestate.GreeterRestateImplBase {
