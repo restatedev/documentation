@@ -27,8 +27,8 @@ npm run bundle
 AWS Lambda assumes that the handler can be found under `index.handler` in the uploaded code.
 By default, this is also the case for the Lambda functions developed with the Restate SDK.
 
-
 ## Managed service
+
 If you'd prefer not to manage a runtime instance, we are trialing a managed service that lets you work
 with Lambda services without running any infrastructure.
 See [the documentation](/deploy/restate_cloud) for more details.
@@ -59,7 +59,6 @@ Replace `<RESTATE_ADMIN_URL>` and the Lambda function ARN in the data field.
 </TabItem>
 </Tabs>
 
-
 ## Tutorial
 
 This tutorial shows how to deploy a greeter service written with the Restate TypeScript SDK on AWS Lambda.
@@ -74,11 +73,13 @@ This tutorial shows how to deploy a greeter service written with the Restate Typ
 ### Clone the repository
 
 Clone the GitHub repository for the latest release:
+
 ```shell
 npx -y @restatedev/create-app@latest && cd restate-node-template
 ```
 
 Get all dependencies:
+
 ```
 npm install
 ```
@@ -88,10 +89,11 @@ npm install
 We are going to deploy the service defined in `src/app.ts` on AWS Lambda.
 
 To do this, we need to switch the endpoint definition to a Lambda handler.
-Replace `.listen(9080)` by `.lambdaHandler()` to get:
+Replace `.listen(9080)` by `.lambdaHandler()` and export it as `handler` to get:
+
 ```typescript
-restate
-  .createServer()
+export const handler = restate
+  .endpoint()
   .bindRouter(service.path, router)
   .lambdaHandler();
 ```
@@ -101,6 +103,7 @@ restate
 Now, we need to create a zip file that includes the service code and the required dependencies to run it.
 
 To build the code and make the zip file, do
+
 ```
 npm run bundle
 ```
@@ -156,6 +159,7 @@ You can test service registration by sending this event JSON to your Lambda func
   "isBase64Encoded": true
 }
 ```
+
 The response should have status code 200 with a long base64 encoded body representing the services,
 methods and Protobuf metadata behind the Lambda endpoint.
 
@@ -208,6 +212,7 @@ see https://github.com/awslabs/aws-sdk-rust/issues/703#issuecomment-1811480196.
 ```shell
 docker run -e AWS_PROFILE -v ~/.aws/:/root/.aws --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
 ```
+
 Consult the runtime logs via `docker logs restate_dev`.
 
 Stop the runtime (and remove any intermediate state) with `docker stop restate_dev`.
@@ -237,8 +242,6 @@ Replace `<RESTATE_ADMIN_URL>` and the Lambda function ARN in the data field.
 </TabItem>
 </Tabs>
 
-
-
 If you are running the runtime locally, replace `<RESTATE_ADMIN_URL>` by `http://localhost:9070`.
 If the runtime is running somewhere else, then replace it accordingly.
 
@@ -253,8 +256,9 @@ curl <RESTATE_INGRESS_URL>/org.example.Greeter/MultiWord -H 'content-type: appli
 ```
 
 You should see the response:
+
 ```json
-{"greeting":"Hello Pete no.1!"}
+{ "greeting": "Hello Pete no.1!" }
 ```
 
 This method increases a counter that is keyed by the name in the request. Send some subsequent requests for different names and watch the counters incrementing.
@@ -266,8 +270,10 @@ This makes the code easier and the execution faster.
 :::
 
 ### 🏁 You did it!
+
 You successfully added a Lambda function as a Restate service and sent requests to it.
 
 Here are some next steps for you to try:
+
 - Add a new method to the greeter function and redeploy the Lambda function with the new methods enabled.
 - Create and deploy a new Lambda function that calls the greeter function.
