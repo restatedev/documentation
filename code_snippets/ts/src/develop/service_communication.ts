@@ -21,7 +21,7 @@ const router = restate.router({
     greet: async (ctx: restate.Context, name: string) => {
         // <start_request_response>
         // option 1: use full API spec
-        const response1 = await ctx.rpc(myGreeterApi).greet("Pete");
+        const response1 = await ctx.rpc(myGreeterApi).greet("Restate");
 
         // option 2: use only types and supply service name separately
         const response2 = await ctx.rpc<myGreeterApiType>({path: "greeter"}).greet("Pete");
@@ -30,18 +30,18 @@ const router = restate.router({
 
         // <start_one_way>
         // option 1: use full API spec
-        ctx.send(myGreeterApi).greet("Pete");
+        ctx.send(myGreeterApi).greet("Restate");
 
         // option 2: use only types and supply service name separately
-        ctx.send<myGreeterApiType>({path: "greeter"}).greet("Pete");
+        ctx.send<myGreeterApiType>({path: "greeter"}).greet("Restate");
         // <end_one_way>
 
         // <start_delayed>
         // option 1: use full API spec
-        ctx.sendDelayed(myGreeterApi, 5000).greet("Pete");
+        ctx.sendDelayed(myGreeterApi, 5000).greet("Restate");
 
         // option 1: use only types and supply service name separately
-        ctx.sendDelayed<myGreeterApiType>({path: "greeter"}, 5000).greet("Pete");
+        ctx.sendDelayed<myGreeterApiType>({path: "greeter"}, 5000).greet("Restate");
         // <end_delayed>
 
     },

@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package counter;
+
+// Import the Restate contract extensions
+import "dev/restate/ext.proto";
+
+service Counter {
+  // Define the service type
+  option (dev.restate.ext.service_type) = KEYED;
+
+  // Define the service methods
+  rpc Get (GetRequest) returns (Response);
+  rpc Add (AddRequest) returns (Response);
+}
+
+message GetRequest {
+  // Define the key
+  string name = 1 [(dev.restate.ext.field) = KEY];
+}
+
+message AddRequest {
+  string name = 1 [(dev.restate.ext.field) = KEY];
+  int64 number = 2;
+}
+
+message Response {
+  string message = 1;
+}
