@@ -1,12 +1,23 @@
 // Plugin to load code snippets from files and replace the CODE_LOAD tag with the content of the file
 
 const fs = require('fs');
+const fetch = require('node-fetch');
 
 const plugin = (options) => {
     const codeLoadRegex = /^CODE_LOAD::([^#]+)(?:#([^#]+)-([^#]+))?$/g;
 
-    const replace = (str) => str.replace(codeLoadRegex, (match, filePath, customStartTag, customEndTag) => {
-        const fileContent = fs.readFileSync('./code_snippets/' + filePath, 'utf8');
+    async function replaceAsync(str, regex, asyncFn) {
+        let promise;
+        str.replace(regex, (full, ...args) => {
+            promise = asyncFn(full, ...args);
+            return full;
+        });
+        const data = await promise;
+        return str.replace(regex, () => data);
+    }
+
+    const replace = async (str) => replaceAsync(str, codeLoadRegex, async (match, filePath, customStartTag, customEndTag) => {
+        const fileContent = await readFileOrFetch(filePath);
 
         // If custom tags are specified, extract them
         const startTag = customStartTag ?? "<start_here>";
@@ -35,12 +46,24 @@ const plugin = (options) => {
 
     const transformer = async (ast) => {
         const {visit} = await import('unist-util-visit')
-        visit(ast, ['code', 'inlineCode'], (node) => {
-            node.value = replace(node.value)
+        await visit(ast, ['code', 'inlineCode'], async (node) => {
+            node.value = await replace(node.value)
         });
     };
 
     return transformer;
 };
+
+async function readFileOrFetch(filepath) {
+    if (filepath.startsWith('https://raw.githubusercontent.com/')) {
+        const response = await fetch(filepath);
+        if (!response.ok) {
+            throw new Error('Failed to fetch file from GitHub');
+        }
+        return await response.text();
+    } else {
+        return fs.readFileSync('./code_snippets/' + filepath, 'utf8');
+    }
+}
 
 module.exports = plugin;
