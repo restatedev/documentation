@@ -5,25 +5,40 @@ const fetch = require('node-fetch');
 
 const plugin = (options) => {
     const codeLoadRegex = /^CODE_LOAD::([^#]+)(?:#([^#]+)-([^#]+))?$/g;
-
-    async function replaceAsync(str, regex, asyncFn) {
-        let promise;
-        str.replace(regex, (full, ...args) => {
-            promise = asyncFn(full, ...args);
-            return full;
+    const injectCode = async (str) => {
+        let fileData = null;
+        str.replace(codeLoadRegex, (match, filePath, customStartTag, customEndTag) => {
+            fileData = {
+                filePath: filePath,
+                customStartTag: customStartTag ?? "<start_here>",
+                customEndTag: customEndTag ?? "<end_here>"
+            }
+            return match;
         });
-        const data = await promise;
-        return str.replace(regex, () => data);
+
+        if(!fileData){
+            return str;
+        }
+
+        const fileContent = await readFileOrFetch(fileData.filePath);
+        const data = extractAndClean(fileContent, fileData.customStartTag, fileData.customEndTag);
+        return str.replace(codeLoadRegex, () => data);
     }
 
-    const replace = async (str) => replaceAsync(str, codeLoadRegex, async (match, filePath, customStartTag, customEndTag) => {
-        const fileContent = await readFileOrFetch(filePath);
+    async function readFileOrFetch(filepath) {
+        if (filepath.startsWith('https://raw.githubusercontent.com/')) {
+            const response = await fetch(filepath);
+            if (!response.ok) {
+                throw new Error('Failed to fetch file from GitHub');
+            }
+            return await response.text();
+        } else {
+            return fs.readFileSync('./code_snippets/' + filepath, 'utf8');
+        }
+    }
 
-        // If custom tags are specified, extract them
-        const startTag = customStartTag ?? "<start_here>";
-        const endTag = customEndTag ?? "<end_here>";
-
-        console.info(`Loaded code snippet from ${filePath} with tags: ${startTag} and ${endTag}`)
+    function extractAndClean(fileContent, startTag, endTag){
+        console.info(`Loaded code snippet from with tags: ${startTag} and ${endTag}`)
 
         // Split to only keep lines between "start_here" and "end_here"
         const lines = fileContent.split(startTag).pop().split(endTag).shift();
@@ -42,28 +57,23 @@ const plugin = (options) => {
         return indentedCodeSnippet.split('\n')
             .map(line => line.replace(new RegExp(`^${leadingWhitespace}`), ''))
             .join('\n');
-    });
+    }
+
+
 
     const transformer = async (ast) => {
         const {visit} = await import('unist-util-visit')
-        await visit(ast, ['code', 'inlineCode'], async (node) => {
-            node.value = await replace(node.value)
+        const codes = [];
+        await visit(ast, ['code', 'inlineCode'], (node) => {
+            codes.push(node);
         });
+
+        await Promise.all(codes.map(async (node) => {
+            node.value = await injectCode(node.value);
+        }));
     };
 
     return transformer;
 };
-
-async function readFileOrFetch(filepath) {
-    if (filepath.startsWith('https://raw.githubusercontent.com/')) {
-        const response = await fetch(filepath);
-        if (!response.ok) {
-            throw new Error('Failed to fetch file from GitHub');
-        }
-        return await response.text();
-    } else {
-        return fs.readFileSync('./code_snippets/' + filepath, 'utf8');
-    }
-}
 
 module.exports = plugin;
