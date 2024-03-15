@@ -374,13 +374,10 @@ So at most one invocation can run at a time for the same ticket ID or user ID re
 **Specifying unkeyed services**
 
 You specify an unkeyed service by creating a router with its set of functions.
+For example, for the `Checkout` service, you create a router with the `handle` function:
 
 ```typescript
-const serviceRouter = restate.router({
-    hello: async (ctx: restate.Context, request: Request) => { ... },
-    callMe: async (ctx: restate.Context) => { ... },
-    maybe: async () => { ... }
-});
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part1/checkout.ts#<start_checkout>-<end_checkout>
 ```
 
 The functions of an unkeyed router have two optional parameters:
@@ -390,25 +387,15 @@ The functions of an unkeyed router have two optional parameters:
 
 You can choose the parameter names differently.
 
-For example, for the `Checkout` service, you create a router with the `checkout` function:
-
-```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part1/checkout.ts#<start_checkout>-<end_checkout>
-```
-
 The `Checkout` service only has a single function, but you can add more functions to the router if you want.
 
 **Specifying keyed services**
 
-You specify a keyed service by creating a keyed router with its set of functions:
+You specify a keyed service by creating a keyed router with its set of functions.
+For example, the `UserSession` service has the following keyed router:
 
 ```typescript
-const keyedServiceRouter = restate.keyedRouter({
-  hello: async (ctx: restate.KeyedContext, key: string, request: Request) => { ... },
-  callMe: async (ctx: restate.KeyedContext, key: string) => { ... },
-  maybe: async (ctx: restate.KeyedContext) => { ... },
-  withSomething: async () => { ... }
-});
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/app/user_session.ts#<start_user_session>-<end_user_session>
 ```
 
 The functions of a keyed router have three optional parameters
@@ -418,13 +405,6 @@ The functions of a keyed router have three optional parameters
 * A `request` parameter of type JSON object which represents additional invocation data.
 
 You can choose the parameter names differently.
-
-For example, the `UserSession` service has the following keyed router:
-
-```typescript
-export const userSessionRouter = restate.keyedRouter({ addTicket, expireTicket, checkout });
-```
-
 As mentioned, for keyed services there can be at most one concurrent invocation to any method of the service.
 This means that for the same value of `key`, an unfinished call to `addTicket()` will block subsequent calls to `expireTicket()` or `checkout()` until `addTicket()` has finished. This holds true even if you omit the `key` parameter from the function signature, as we have done with the `maybe()` and `withSomething()` functions above.
 
@@ -435,9 +415,7 @@ You export the `service` API by creating a service API instance which specifies 
 For example, for the `UserSession` service, you export the following service API:
 
 ```typescript
-export const userSessionApi: restate.ServiceApi<typeof userSessionRouter> = {
-    path: "UserSession",
-};
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part1/user_session.ts#<start_user_session_api>-<end_user_session_api>
 ```
 
 You can now call the service at the endpoint `http://localhost:8080/<servicePath>/<functionName>`.
@@ -631,23 +609,19 @@ This is not the best way to sleep in a Restate service! The Restate SDK offers a
 
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
-
+Add the import:
 ```typescript
-import { setTimeout } from "timers/promises";
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part1/ticket_service.ts#<start_import_sleep>-<end_import_sleep>
+```
 
-const reserve = async (ctx: restate.KeyedContext) => {
-  //bad-code-start
-  await setTimeout(35000);
-  //bad-code-end
-  return true;
-};
-
+Add the sleep:
+```typescript
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part1/ticket_service.ts#<start_reserve>-<end_reserve>
 ```
 
 Call `UserSession/addTicket` again and have a look at the SDK logs.
 Now that the ticket service responds after 35 seconds, you see that the `addTicket` function suspends after 30 seconds.
 Once the runtime has received the response, it invokes the `addTicket` function again and the original call finishes.
-
 <details>
 <summary>Show the logs</summary>
 
@@ -739,7 +713,7 @@ Each invocation gets an ID assigned by Restate. You can find the ID printed in t
 
 ### 📝 Try it out
 
-Make the `UserSession/checkout` function call the `Checkout/checkout` function.
+Make the `UserSession/checkout` function call the `Checkout/handle` function.
 
 For the request field, you can use a hard-coded string array for now: `["456"]`.
 You will fix this later on.
@@ -752,17 +726,14 @@ Add the following code to the `UserSession/checkout` function:
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
+Import the checkout API:
 ```typescript
-import { checkoutApi } from "./checkout";
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part1/user_session.ts#<start_checkout_api_import>-<end_checkout_api_import>
+```
 
-const checkout = async (ctx: restate.KeyedContext, userId: string) => {
-  //highlight-start
-  const checkoutRequest = { userId: userId, tickets: ["456"] };
-  const success = await ctx.rpc(checkoutApi).checkout(checkoutRequest);
-  //highlight-end
-
-  return sucess;
-};
+Then call the `Checkout/handle` function:
+```typescript
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part1/user_session.ts#<start_checkout>-<end_checkout>
 ```
 
 Call the `UserSession/checkout` function as you did [earlier](#calling-services-from-outside-restate) and have a look at the logs again to see what happened:
@@ -771,9 +742,9 @@ Call the `UserSession/checkout` function as you did [earlier](#calling-services-
 [restate] [2023-08-15T21:06:12.672Z] DEBUG: [UserSession/checkout] [K1qex52CPYkBiiHHQJdwvLuBqEHXFQU3] : Invoking function.
 [restate] [2023-08-15T21:06:12.673Z] DEBUG: [UserSession/checkout] [K1qex52CPYkBiiHHQJdwvLuBqEHXFQU3] : Adding message to journal and sending to Restate ; InvokeEntryMessage
 [restate] [2023-08-15T21:06:12.674Z] DEBUG: [UserSession/checkout] [K1qex52CPYkBiiHHQJdwvLuBqEHXFQU3] : Scheduling suspension in 30000 ms
-[restate] [2023-08-15T21:06:12.676Z] DEBUG: [Checkout/checkout] [H32MEMFENfUBiiHHQJxy5oLQ-W4akbii] : Invoking function.
-[restate] [2023-08-15T21:06:12.677Z] DEBUG: [Checkout/checkout] [H32MEMFENfUBiiHHQJxy5oLQ-W4akbii] : Journaled and sent output message ; OutputStreamEntryMessage
-[restate] [2023-08-15T21:06:12.677Z] DEBUG: [Checkout/checkout] [H32MEMFENfUBiiHHQJxy5oLQ-W4akbii] : Function completed successfully.
+[restate] [2023-08-15T21:06:12.676Z] DEBUG: [Checkout/handle] [H32MEMFENfUBiiHHQJxy5oLQ-W4akbii] : Invoking function.
+[restate] [2023-08-15T21:06:12.677Z] DEBUG: [Checkout/handle] [H32MEMFENfUBiiHHQJxy5oLQ-W4akbii] : Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [2023-08-15T21:06:12.677Z] DEBUG: [Checkout/handle] [H32MEMFENfUBiiHHQJxy5oLQ-W4akbii] : Function completed successfully.
 [restate] [2023-08-15T21:06:12.679Z] DEBUG: [UserSession/checkout] [K1qex52CPYkBiiHHQJdwvLuBqEHXFQU3] : Received completion message from Restate, adding to journal. ; CompletionMessage
 [restate] [2023-08-15T21:06:12.679Z] DEBUG: [UserSession/checkout] [K1qex52CPYkBiiHHQJdwvLuBqEHXFQU3] : Journaled and sent output message ; OutputStreamEntryMessage
 [restate] [2023-08-15T21:06:12.679Z] DEBUG: [UserSession/checkout] [K1qex52CPYkBiiHHQJdwvLuBqEHXFQU3] : Function completed successfully.
@@ -805,8 +776,8 @@ Restart the service and call the `UserSession/checkout` function as you did earl
 2023-12-08 17:23:36 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.UserSession/Checkout
 2023-12-08 17:23:36 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=WAITING_START, id=K1qex52CPYkAYxKBuwOeQaft5poL25oAg) to REPLAYING
 2023-12-08 17:23:36 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.UserSession', state=REPLAYING, id=K1qex52CPYkAYxKBuwOeQaft5poL25oAg) to PROCESSING
-2023-12-08 17:23:36 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.Checkout/Checkout
-2023-12-08 17:23:36 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.Checkout/Checkout
+2023-12-08 17:23:36 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.Checkout/handle
+2023-12-08 17:23:36 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.Checkout/handle
 2023-12-08 17:23:36 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.Checkout', state=WAITING_START, id=wo9n3xmho8AAYxKBuwrduexnv56Z7B7pw) to REPLAYING
 2023-12-08 17:23:36 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.Checkout', state=REPLAYING, id=wo9n3xmho8AAYxKBuwrduexnv56Z7B7pw) to PROCESSING
 2023-12-08 17:23:36 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.Checkout', state=PROCESSING, id=wo9n3xmho8AAYxKBuwrduexnv56Z7B7pw) to CLOSED
@@ -828,19 +799,10 @@ Up to now, all our service calls waited for a response. This is referred to as r
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
-Update `expireTicket` to use `ctx.send` to send a one-way message to release the reservation:
+Update `addTicket` to use `ctx.send` to send a one-way message to release the reservation:
 
 ```typescript
-const addTicket = async (
-    ctx: restate.KeyedContext,
-    userId: string,
-    ticketId: string,
-) => {
-    // highlight-start
-    ctx.send(ticketServiceApi).reserve(ticketId);
-    // highlight-end
-    return true;
-};
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part1/user_session.ts#<start_add_ticket>-<end_add_ticket>
 ```
 
 Note that `ctx.send` isn't an asynchronous operation which returns a promise.
@@ -932,15 +894,7 @@ When you are done with the implementation, send a request to `UserSession/expire
 <summary>Solution</summary>
 
 ```typescript
-const expireTicket = async (
-  ctx: restate.KeyedContext,
-  userId: string,
-  ticketId: string,
-) => {
-  // highlight-start
-  ctx.send(ticketServiceApi).unreserve(ticketId);
-  // highlight-end
-};
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part1/user_session.ts#<start_expire_ticket>-<end_expire_ticket>
 ```
 
 Call the `expireTicket` function with:
@@ -1040,12 +994,7 @@ Restate offers the same mechanism for timers.
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-const reserve = async (ctx: restate.KeyedContext) => {
-  //good-code-start
-  await ctx.sleep(35000);
-  //good-code-end
-  return true;
-};
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part1b/ticket_service.ts#<start_reserve>-<end_reserve>
 ```
 
 </TabItem>
@@ -1262,8 +1211,7 @@ const addTicket = async (
   userId: string,
   ticketId: string,
 ) => {
-  const reservationSuccess = await ctx
-    .rpc(ticketServiceApi)
+  const reservationSuccess = await ctx.rpc(ticketServiceApi)
     .reserve(ticketId);
 
   if (reservationSuccess) {
@@ -1425,25 +1373,7 @@ Have a look at the highlighted code:
 <TabItem value="ts" label="TypeScript">
 
 ```ts
-const addTicket = async (
-  ctx: restate.KeyedContext,
-  userId: string,
-  ticketId: string) => {
-
-    // ... reserve call returning success ...
-
-    if (reservationSuccess) {
-      //highlight-next-line
-      const tickets = (await ctx.get<string[]>("tickets")) ?? [];
-      tickets.push(ticketId);
-      //highlight-next-line
-      ctx.set("tickets", tickets);
-
-      // ... expireTicket call ...
-    }
-
-    return reservationSuccess;
-}
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part2/user_session.ts#<start_add_ticket>-<end_add_ticket>
 ```
 
 To retrieve the cart, you use `ctx.get`.
@@ -1496,7 +1426,7 @@ Have a look at the documentation on serialization to learn more about the differ
 You can store multiple key-value pairs, by using different state keys.
 Here, you get the value under the key `"tickets"`.
 Restate ensures that you get the cart belonging to the current user ID (key of the service).
-
+issue320_docs_injection_code_snippets
 After you added the ticket to the cart array, you set the state to the new value with `ctx.set`.
 
 Run the services and call the `addTicket` function, to see the interaction with state.
@@ -1567,32 +1497,7 @@ Also adapt the `UserSession/checkout` function, to use the tickets:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-const checkout = async (ctx: restate.KeyedContext, userId: string) => {
-  // 1. Retrieve the tickets from state
-  //highlight-next-line
-  const tickets = (await ctx.get<string[]>("tickets")) ?? [];
-
-  // 2. If there are no tickets, return `false`
-  //highlight-start
-  if (tickets.length === 0) {
-    return false;
-  }
-  //highlight-end
-
-  // 3. Call the `checkout` function of the checkout service with the tickets
-  const checkoutSuccess = await ctx
-    .rpc(checkoutApi)
-    .checkout({ userId: userId, tickets: tickets });
-
-  // 4. If this was successful, empty the tickets.
-  // Otherwise, let the user try again.
-  if (checkoutSuccess) {
-    // highlight-next-line
-    ctx.clear("tickets");
-  }
-
-  return checkoutSuccess;
-};
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part2/user_session.ts#<start_checkout>-<end_checkout>
 ```
 
 </TabItem>
@@ -1653,14 +1558,8 @@ You have almost fully implemented the user session service. After checkout, let'
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
-```ts
-const expireTicket = async (
-  ctx: restate.KeyedContext,
-  userId: string,
-  ticketId: string,
-) => {
-  ctx.send(ticketServiceApi).unreserve(ticketId);
-};
+```typescript
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part1/user_session.ts#<start_expire_ticket>-<end_expire_ticket>
 ```
 
 </TabItem>
@@ -1688,24 +1587,8 @@ If this is the case, then you call `TicketService/unreserve` and remove it from 
 <TabItem value="ts" label="TypeScript">
 
 ```ts
-const expireTicket = async (
-  ctx: restate.KeyedContext,
-  userId: string,
-  ticketId: string,
-) => {
-  const tickets = (await ctx.get<string[]>("tickets")) ?? [];
-
-  const ticketIndex = tickets.findIndex(ticket => ticket === ticketId);
-
-  if (ticketIndex != -1) {
-    tickets.splice(ticketIndex, 1);
-    ctx.set("tickets", tickets);
-
-    ctx.send(ticketServiceApi).unreserve(ticketId);
-  }
-};
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part2/user_session.ts#<start_expire_ticket>-<end_expire_ticket>
 ```
-
 
 Call the `expireTicket` function with:
 ```shell
@@ -1776,18 +1659,8 @@ Remove the sleep that you added before.
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
-```ts
-const reserve = async (ctx: restate.KeyedContext) => {
-  const status =
-    (await ctx.get<TicketStatus>("status")) ?? TicketStatus.Available;
-
-  if (status === TicketStatus.Available) {
-    ctx.set("status", TicketStatus.Reserved);
-    return true;
-  } else {
-    return false;
-  }
-};
+```typescript
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part2/ticket_service.ts#<start_reserve>-<end_reserve>
 ```
 
 </TabItem>
@@ -1828,14 +1701,7 @@ The function should clear the value of the `"status"` key if it's not on status 
 <TabItem value="ts" label="TypeScript">
 
 ```ts
-const unreserve = async (ctx: restate.KeyedContext) => {
-    const status =
-        (await ctx.get<TicketStatus>("status")) ?? TicketStatus.Available;
-
-    if (status !== TicketStatus.Sold) {
-        ctx.clear("status");
-    }
-};
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part2/ticket_service.ts#<start_unreserve>-<end_unreserve>
 ```
 
 </TabItem>
@@ -1872,15 +1738,7 @@ The function should set the value of the `"status"` key to `TicketStatus.Sold` i
 <TabItem value="ts" label="TypeScript">
 
 ```ts
-const markAsSold = async (ctx: restate.KeyedContext) => {
-    const status =
-    (await ctx.get<TicketStatus>("status")) ?? TicketStatus.Available;
-
-    if (status === TicketStatus.Reserved) {
-        ctx.set("status", TicketStatus.Sold);
-    }
-  }
-};
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part2/ticket_service.ts#<start_mark_as_sold>-<end_mark_as_sold>
 ```
 
 </TabItem>
@@ -1899,7 +1757,7 @@ public void markAsSold(ObjectContext ctx, Ticket request) throws TerminalExcepti
 </TabItem>
 </Tabs>
 
-In the next section, you implement the `Checkout/checkout` function that calls `markAsSold`.
+In the next section, you implement the `Checkout/handle` function that calls `markAsSold`.
 This ties the final parts together.
 </details>
 </>
@@ -1913,12 +1771,14 @@ This ties the final parts together.
 ```shell
 npm run part2
 ```
+
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```shell
 ./gradlew -PmainClass=dev.restate.tour.part2.AppMain run
 ```
+
 </TabItem>
 </Tabs>
 :::
@@ -1941,7 +1801,7 @@ You can use a side effect to avoid re-execution during replay for any arbitrary 
 This includes pieces of time-consuming, deterministic user code.
 :::
 
-Use a side effect in `Checkout/checkout` to create and store a UUID (with the [uuid library](https://www.npmjs.com/package/uuid)) or idempotency key:
+Use a side effect in `Checkout/handle` to create and store a UUID (with the [uuid library](https://www.npmjs.com/package/uuid)) or idempotency key:
 
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
@@ -1988,6 +1848,7 @@ To experiment, you can print the idempotency key to the console and add a sleep 
 console.log("My idempotency key: " + idempotencyKey);
 await ctx.sleep(31000);
 ```
+
 </TabItem>
 <TabItem value="java" label="Java">
 
@@ -2009,26 +1870,26 @@ Call `UserSession/checkout` and have a look at the logs to see what happens.
 
 ```log
 ... logs of `UserSession/checkout` ...
-[restate] [2023-08-16T08:00:37.965Z] DEBUG: [Checkout/checkout] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Invoking function.
-[restate] [2023-08-16T08:00:37.966Z] DEBUG: [Checkout/checkout] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Adding message to journal and sending to Restate ; undefined
-[restate] [2023-08-16T08:00:37.966Z] DEBUG: [Checkout/checkout] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Scheduling suspension in 30000 ms
-[restate] [2023-08-16T08:00:37.967Z] DEBUG: [Checkout/checkout] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Received completion message from Restate, adding to journal. ; CompletionMessage
+[restate] [2023-08-16T08:00:37.965Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Invoking function.
+[restate] [2023-08-16T08:00:37.966Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Adding message to journal and sending to Restate ; undefined
+[restate] [2023-08-16T08:00:37.966Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Scheduling suspension in 30000 ms
+[restate] [2023-08-16T08:00:37.967Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Received completion message from Restate, adding to journal. ; CompletionMessage
 //highlight-next-line
 My idempotency key: dd92178a-85ca-4002-bfd5-0f3ed167317d
-[restate] [2023-08-16T08:00:37.967Z] DEBUG: [Checkout/checkout] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Adding message to journal and sending to Restate ; SleepEntryMessage
-[restate] [2023-08-16T08:00:37.967Z] DEBUG: [Checkout/checkout] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Scheduling suspension in 30000 ms
+[restate] [2023-08-16T08:00:37.967Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Adding message to journal and sending to Restate ; SleepEntryMessage
+[restate] [2023-08-16T08:00:37.967Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Scheduling suspension in 30000 ms
 [restate] [2023-08-16T08:01:07.965Z] DEBUG: [UserSession/checkout] [K1qex52CPYkBiiHV5Zl7vY2Gie86MAZl] : Writing suspension message to journal. ; SuspensionMessage
 [restate] [2023-08-16T08:01:07.966Z] DEBUG: [UserSession/checkout] [K1qex52CPYkBiiHV5Zl7vY2Gie86MAZl] : Suspending function.
-[restate] [2023-08-16T08:01:07.967Z] DEBUG: [Checkout/checkout] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Writing suspension message to journal. ; SuspensionMessage
-[restate] [2023-08-16T08:01:07.967Z] DEBUG: [Checkout/checkout] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Suspending function.
+[restate] [2023-08-16T08:01:07.967Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Writing suspension message to journal. ; SuspensionMessage
+[restate] [2023-08-16T08:01:07.967Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Suspending function.
 //highlight-next-line
-[restate] [2023-08-16T08:01:08.981Z] DEBUG: [Checkout/checkout] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Resuming (replaying) function.
-[restate] [2023-08-16T08:01:08.983Z] DEBUG: [Checkout/checkout] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Matched and replayed message from journal ; undefined
+[restate] [2023-08-16T08:01:08.981Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Resuming (replaying) function.
+[restate] [2023-08-16T08:01:08.983Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Matched and replayed message from journal ; undefined
 //highlight-next-line
 My idempotency key: dd92178a-85ca-4002-bfd5-0f3ed167317d
-[restate] [2023-08-16T08:01:08.983Z] DEBUG: [Checkout/checkout] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Matched and replayed message from journal ; SleepEntryMessage
-[restate] [2023-08-16T08:01:08.984Z] DEBUG: [Checkout/checkout] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Journaled and sent output message ; OutputStreamEntryMessage
-[restate] [2023-08-16T08:01:08.984Z] DEBUG: [Checkout/checkout] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Function completed successfully.
+[restate] [2023-08-16T08:01:08.983Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Matched and replayed message from journal ; SleepEntryMessage
+[restate] [2023-08-16T08:01:08.984Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [2023-08-16T08:01:08.984Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Function completed successfully.
 
 ... logs of `UserSessionService/Checkout` ...
 ```
@@ -2038,16 +1899,16 @@ My idempotency key: dd92178a-85ca-4002-bfd5-0f3ed167317d
 
 ```log
 ... logs of `UserSession/checkout` ...
-2023-12-08 18:52:51 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.Checkout/Checkout
-2023-12-08 18:52:51 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.Checkout/Checkout
+2023-12-08 18:52:51 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.Checkout/handle
+2023-12-08 18:52:51 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.Checkout/handle
 2023-12-08 18:52:51 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.Checkout', state=WAITING_START, id=dx-wgiQBdawAYxKWJ7TdVm2cWcw8ENKuQ) to REPLAYING
 2023-12-08 18:52:51 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.Checkout', state=REPLAYING, id=dx-wgiQBdawAYxKWJ7TdVm2cWcw8ENKuQ) to PROCESSING
 //highlight-next-line
 My idempotency key: 43ba6b58-e6f8-4bc2-8112-7c93aedf59d1
 2023-12-08 18:53:51 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.Checkout', state=PROCESSING, id=dx-wgiQBdawAYxKWJ7TdVm2cWcw8ENKuQ) to CLOSED
 2023-12-08 18:53:51 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
-2023-12-08 18:53:52 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.Checkout/Checkout
-2023-12-08 18:53:52 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.Checkout/Checkout
+2023-12-08 18:53:52 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.Checkout/handle
+2023-12-08 18:53:52 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.Checkout/handle
 //highlight-next-line
 2023-12-08 18:53:52 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.Checkout', state=WAITING_START, id=dx-wgiQBdawAYxKWJ7TdVm2cWcw8ENKuQ) to REPLAYING
 //highlight-next-line
@@ -2113,14 +1974,14 @@ You should see similar logs:
 
 ```log
 // ... UserSessionService/Checkout logs ...
-[restate] [2023-08-16T08:08:45.987Z] DEBUG: [Checkout/checkout] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Invoking function.
-[restate] [2023-08-16T08:08:45.987Z] DEBUG: [Checkout/checkout] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Adding message to journal and sending to Restate ; undefined
-[restate] [2023-08-16T08:08:45.987Z] DEBUG: [Checkout/checkout] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Scheduling suspension in 30000 ms
-[restate] [2023-08-16T08:08:45.988Z] DEBUG: [Checkout/checkout] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Received completion message from Restate, adding to journal. ; CompletionMessage
+[restate] [2023-08-16T08:08:45.987Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Invoking function.
+[restate] [2023-08-16T08:08:45.987Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Adding message to journal and sending to Restate ; undefined
+[restate] [2023-08-16T08:08:45.987Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Scheduling suspension in 30000 ms
+[restate] [2023-08-16T08:08:45.988Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Received completion message from Restate, adding to journal. ; CompletionMessage
 // highlight-next-line
 Payment call succeeded for idempotency key 923d1558-bf17-4c94-b027-4cfd778049fe and amount 40
-[restate] [2023-08-16T08:08:45.988Z] DEBUG: [Checkout/checkout] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Journaled and sent output message ; OutputStreamEntryMessage
-[restate] [2023-08-16T08:08:45.988Z] DEBUG: [Checkout/checkout] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Function completed successfully.
+[restate] [2023-08-16T08:08:45.988Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [2023-08-16T08:08:45.988Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Function completed successfully.
 [restate] [2023-08-16T08:08:45.989Z] DEBUG: [UserSession/checkout] [K1qex52CPYkBiiHV5Zl7vY2Gie86MAZl] : Received completion message from Restate, adding to journal. ; CompletionMessage
 [restate] [2023-08-16T08:08:45.989Z] DEBUG: [UserSession/checkout] [K1qex52CPYkBiiHV5Zl7vY2Gie86MAZl] : Adding message to journal and sending to Restate ; ClearStateEntryMessage
 [restate] [2023-08-16T08:08:45.989Z] DEBUG: [UserSession/checkout] [K1qex52CPYkBiiHV5Zl7vY2Gie86MAZl] : Journaled and sent output message ; OutputStreamEntryMessage
@@ -2156,8 +2017,8 @@ Add some tickets to your cart, then call `UserSession/checkout`, and check out t
 
 ```log
 // ... UserSessionService/Checkout logs ...
-2023-12-08 19:18:10 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.Checkout/Checkout
-2023-12-08 19:18:10 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.Checkout/Checkout
+2023-12-08 19:18:10 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.Checkout/handle
+2023-12-08 19:18:10 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.Checkout/handle
 2023-12-08 19:18:10 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.Checkout', state=WAITING_START, id=oS57gfN60H0AYxKb83nekCzcSbHKhVlhg) to REPLAYING
 2023-12-08 19:18:10 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.Checkout', state=REPLAYING, id=oS57gfN60H0AYxKb83nekCzcSbHKhVlhg) to PROCESSING
 //highlight-next-line
@@ -2192,7 +2053,7 @@ Once this works, you implement the rest of the checkout workflow:
 <details>
 <summary>Solution</summary>
 
-The `Checkout/checkout` function now looks like the following:
+The `Checkout/handle` function now looks like the following:
 
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
@@ -2260,30 +2121,8 @@ The `UserSession/checkout` function now looks like the following:
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
-```ts
-const checkout = async (ctx: restate.KeyedContext, userId: string) => {
-  const tickets = (await ctx.get<string[]>("tickets")) ?? [];
-
-  if (tickets.length === 0) {
-    return false;
-  }
-
-  const checkoutSuccess = await ctx
-    .rpc(checkoutApi)
-    .checkout({ userId: userId, tickets: tickets! });
-
-  if (checkoutSuccess) {
-    // mark tickets as sold if checkout was successful
-    //highlight-start
-    for (const ticketId of tickets) {
-      ctx.send(ticketServiceApi).markAsSold(ticketId);
-    }
-    //highlight-end
-    ctx.clear("tickets");
-  }
-
-  return checkoutSuccess;
-};
+```typescript
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part3/user_session.ts#<start_checkout>-<end_checkout>
 ```
 
 </TabItem>
@@ -2370,17 +2209,13 @@ These features are switched on by default. No need to do anything.
 ### Side effect retries
 
 Also side effects are retried until they succeed.
-You can observe this behavior by using the `paymentClient.failingCall` in `Checkout/checkout`:
+You can observe this behavior by using the `paymentClient.failingCall` in `Checkout/handle`:
 
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-const paymentClient = PaymentClient.get();
-//highlight-start
-const doPayment = () => paymentClient.failingCall(idempotencyKey, amount)
-const success = await ctx.sideEffect(doPayment);
-//highlight-end
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part4/checkout.ts#<start_failing_client>-<end_failing_client>
 ```
 
 </TabItem>
@@ -2405,15 +2240,15 @@ Have a look at the logs to see the retries.
 <TabItem value="ts" label="TypeScript">
 
 ```log
-[restate] [2023-08-16T08:24:28.507Z] DEBUG: [Checkout/checkout] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Invoking function.
-[restate] [2023-08-16T08:24:28.507Z] DEBUG: [Checkout/checkout] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Adding message to journal and sending to Restate ; undefined
-[restate] [2023-08-16T08:24:28.507Z] DEBUG: [Checkout/checkout] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Scheduling suspension in 30000 ms
-[restate] [2023-08-16T08:24:28.508Z] DEBUG: [Checkout/checkout] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Received completion message from Restate, adding to journal. ; CompletionMessage
+[restate] [2023-08-16T08:24:28.507Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Invoking function.
+[restate] [2023-08-16T08:24:28.507Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Adding message to journal and sending to Restate ; undefined
+[restate] [2023-08-16T08:24:28.507Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Scheduling suspension in 30000 ms
+[restate] [2023-08-16T08:24:28.508Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Received completion message from Restate, adding to journal. ; CompletionMessage
 // highlight-next-line
 Payment call failed for idempotency key adab6b35-0536-4348-8912-35f8cd474cf8 and amount 40. Retrying...
-[restate] [2023-08-16T08:24:28.508Z] DEBUG: [Checkout/checkout] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Adding message to journal and sending to Restate ; undefined
-[restate] [2023-08-16T08:24:28.508Z] DEBUG: [Checkout/checkout] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Scheduling suspension in 30000 ms
-[restate] [2023-08-16T08:24:28.509Z] DEBUG: [Checkout/checkout] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Received completion message from Restate, adding to journal. ; CompletionMessage
+[restate] [2023-08-16T08:24:28.508Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Adding message to journal and sending to Restate ; undefined
+[restate] [2023-08-16T08:24:28.508Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Scheduling suspension in 30000 ms
+[restate] [2023-08-16T08:24:28.509Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Received completion message from Restate, adding to journal. ; CompletionMessage
 // highlight-start
 [restate] [2023-08-16T08:24:28.509Z] DEBUG: Error while executing side effect 'side-effect': Error - Payment call failed
 [restate] [2023-08-16T08:24:28.519Z] DEBUG: Error: Payment call failed
@@ -2428,15 +2263,15 @@ Payment call failed for idempotency key adab6b35-0536-4348-8912-35f8cd474cf8 and
     at processTicksAndRejections (node:internal/process/task_queues:95:5)
     at dispatchUnkeyedRpcHandler (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/server/base_restate_server.ts:366:18)
 [restate] [2023-08-16T08:24:28.520Z] DEBUG: Retrying in 10 ms
-[restate] [2023-08-16T08:24:28.520Z] DEBUG: [Checkout/checkout] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Adding message to journal and sending to Restate ; SleepEntryMessage
+[restate] [2023-08-16T08:24:28.520Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Adding message to journal and sending to Restate ; SleepEntryMessage
 // highlight-end
-[restate] [2023-08-16T08:24:28.520Z] DEBUG: [Checkout/checkout] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Scheduling suspension in 30000 ms
-[restate] [2023-08-16T08:24:28.532Z] DEBUG: [Checkout/checkout] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Received completion message from Restate, adding to journal. ; CompletionMessage
+[restate] [2023-08-16T08:24:28.520Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Scheduling suspension in 30000 ms
+[restate] [2023-08-16T08:24:28.532Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Received completion message from Restate, adding to journal. ; CompletionMessage
 // highlight-next-line
 Payment call failed for idempotency key adab6b35-0536-4348-8912-35f8cd474cf8 and amount 40. Retrying...
-[restate] [2023-08-16T08:24:28.532Z] DEBUG: [Checkout/checkout] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Adding message to journal and sending to Restate ; undefined
-[restate] [2023-08-16T08:24:28.532Z] DEBUG: [Checkout/checkout] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Scheduling suspension in 30000 ms
-[restate] [2023-08-16T08:24:28.532Z] DEBUG: [Checkout/checkout] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Received completion message from Restate, adding to journal. ; CompletionMessage
+[restate] [2023-08-16T08:24:28.532Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Adding message to journal and sending to Restate ; undefined
+[restate] [2023-08-16T08:24:28.532Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Scheduling suspension in 30000 ms
+[restate] [2023-08-16T08:24:28.532Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Received completion message from Restate, adding to journal. ; CompletionMessage
 // highlight-start
 [restate] [2023-08-16T08:24:28.532Z] DEBUG: Error while executing side effect 'side-effect': Error - Payment call failed
 [restate] [2023-08-16T08:24:28.534Z] DEBUG: Error: Payment call failed
@@ -2450,30 +2285,30 @@ Payment call failed for idempotency key adab6b35-0536-4348-8912-35f8cd474cf8 and
     at dispatchUnkeyedRpcHandler (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/server/base_restate_server.ts:366:18)
     at HostedGrpcServiceMethod.invoke (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/types/grpc.ts:49:23)
 [restate] [2023-08-16T08:24:28.534Z] DEBUG: Retrying in 20 ms
-[restate] [2023-08-16T08:24:28.534Z] DEBUG: [Checkout/checkout] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Adding message to journal and sending to Restate ; SleepEntryMessage
+[restate] [2023-08-16T08:24:28.534Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Adding message to journal and sending to Restate ; SleepEntryMessage
 // highlight-end
-[restate] [2023-08-16T08:24:28.534Z] DEBUG: [Checkout/checkout] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Scheduling suspension in 30000 ms
-[restate] [2023-08-16T08:24:28.556Z] DEBUG: [Checkout/checkout] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Received completion message from Restate, adding to journal. ; CompletionMessage
+[restate] [2023-08-16T08:24:28.534Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Scheduling suspension in 30000 ms
+[restate] [2023-08-16T08:24:28.556Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Received completion message from Restate, adding to journal. ; CompletionMessage
 // highlight-next-line
 Payment call succeeded for idempotency key adab6b35-0536-4348-8912-35f8cd474cf8 and amount 40
-[restate] [2023-08-16T08:24:28.557Z] DEBUG: [Checkout/checkout] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Adding message to journal and sending to Restate ; undefined
-[restate] [2023-08-16T08:24:28.557Z] DEBUG: [Checkout/checkout] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Scheduling suspension in 30000 ms
-[restate] [2023-08-16T08:24:28.557Z] DEBUG: [Checkout/checkout] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Received completion message from Restate, adding to journal. ; CompletionMessage
+[restate] [2023-08-16T08:24:28.557Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Adding message to journal and sending to Restate ; undefined
+[restate] [2023-08-16T08:24:28.557Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Scheduling suspension in 30000 ms
+[restate] [2023-08-16T08:24:28.557Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Received completion message from Restate, adding to journal. ; CompletionMessage
 Payment successful. Notifying user about shipment.
 Notifying user 123 of payment success
-[restate] [2023-08-16T08:24:28.557Z] DEBUG: [Checkout/checkout] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Adding message to journal and sending to Restate ; undefined
-[restate] [2023-08-16T08:24:28.557Z] DEBUG: [Checkout/checkout] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Scheduling suspension in 30000 ms
-[restate] [2023-08-16T08:24:28.558Z] DEBUG: [Checkout/checkout] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Received completion message from Restate, adding to journal. ; CompletionMessage
-[restate] [2023-08-16T08:24:28.558Z] DEBUG: [Checkout/checkout] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Journaled and sent output message ; OutputStreamEntryMessage
-[restate] [2023-08-16T08:24:28.558Z] DEBUG: [Checkout/checkout] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Function completed successfully.
+[restate] [2023-08-16T08:24:28.557Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Adding message to journal and sending to Restate ; undefined
+[restate] [2023-08-16T08:24:28.557Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Scheduling suspension in 30000 ms
+[restate] [2023-08-16T08:24:28.558Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Received completion message from Restate, adding to journal. ; CompletionMessage
+[restate] [2023-08-16T08:24:28.558Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [2023-08-16T08:24:28.558Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Function completed successfully.
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```log
-2023-12-08 19:19:19 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.Checkout/Checkout
-2023-12-08 19:19:19 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.Checkout/Checkout
+2023-12-08 19:19:19 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.Checkout/handle
+2023-12-08 19:19:19 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.Checkout/handle
 2023-12-08 19:19:19 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.Checkout', state=WAITING_START, id=A_4bZOnRySIAYxKcNoWdW2NM1C4TC7P1A) to REPLAYING
 2023-12-08 19:19:19 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.Checkout', state=REPLAYING, id=A_4bZOnRySIAYxKcNoWdW2NM1C4TC7P1A) to PROCESSING
 Payment call failed for idempotency key 9ead78c9-c95b-43e5-aa7c-be0ba361ede9 and amount 40.0. Retrying...
@@ -2514,8 +2349,8 @@ java.lang.Error: Payment call failed
         at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128) ~[?:?]
         at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628) ~[?:?]
         at java.lang.Thread.run(Thread.java:829) [?:?]
-2023-12-08 19:19:19 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.Checkout/Checkout
-2023-12-08 19:19:19 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.Checkout/Checkout
+2023-12-08 19:19:19 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.Checkout/handle
+2023-12-08 19:19:19 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.Checkout/handle
 2023-12-08 19:19:19 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.Checkout', state=WAITING_START, id=A_4bZOnRySIAYxKcNoWdW2NM1C4TC7P1A) to REPLAYING
 2023-12-08 19:19:19 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.Checkout', state=REPLAYING, id=A_4bZOnRySIAYxKcNoWdW2NM1C4TC7P1A) to PROCESSING
 Payment call failed for idempotency key 9ead78c9-c95b-43e5-aa7c-be0ba361ede9 and amount 40.0. Retrying...
@@ -2556,8 +2391,8 @@ java.lang.Error: Payment call failed
         at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128) ~[?:?]
         at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628) ~[?:?]
         at java.lang.Thread.run(Thread.java:829) [?:?]
-2023-12-08 19:19:19 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.Checkout/Checkout
-2023-12-08 19:19:19 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.Checkout/Checkout
+2023-12-08 19:19:19 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.Checkout/handle
+2023-12-08 19:19:19 [vert.x-eventloop-thread-0] DEBUG RestateGrpcServer:112 - Start processing call to example.Checkout/handle
 2023-12-08 19:19:19 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.Checkout', state=WAITING_START, id=A_4bZOnRySIAYxKcNoWdW2NM1C4TC7P1A) to REPLAYING
 2023-12-08 19:19:19 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.Checkout', state=REPLAYING, id=A_4bZOnRySIAYxKcNoWdW2NM1C4TC7P1A) to PROCESSING
 Payment call succeeded for idempotency key 9ead78c9-c95b-43e5-aa7c-be0ba361ede9 and amount 40.0
@@ -2596,7 +2431,7 @@ docker run --name restate_dev --rm -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=h
 ```
 
 Register the services again (required because the state got wiped when the runtime was restarted with the `--rm` flag):
-
+end_side_effect_retries
 ```shell
 curl localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
 ```

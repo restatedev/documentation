@@ -59,8 +59,6 @@ const plugin = (options) => {
             .join('\n');
     }
 
-
-
     const transformer = async (ast) => {
         const {visit} = await import('unist-util-visit')
         const codes = [];
