@@ -127,7 +127,7 @@ npm run app
 You can run the solution of a specific part by running, for example for part 2:
 
 ```shell
-npm run part2
+npm run part3
 ```
 
 </TabItem>
@@ -140,7 +140,7 @@ npm run part2
 If you do not want to follow along by coding yourself, you can run the solution of a specific part by running, for example for part 2:
 
 ```shell
-./gradlew -PmainClass=dev.restate.tour.part2.AppMain run
+./gradlew -PmainClass=dev.restate.tour.part3.AppMain run
 ```
 
 </TabItem>
@@ -480,8 +480,7 @@ The keys remain locked and the system can't process any more requests.
 
 ## Service calls
 
-:::note
-Implement it yourself or follow along by looking at the code under `part1`.
+:::note Implement it yourself or follow along by looking at the code under `part1`.
 :::
 
 One of the key parts of distributed applications is service-to-service communication.
@@ -534,13 +533,7 @@ The call to `expireTicket` finishes earlier than the `unreserve` function becaus
 <TabItem value="java" label="Java">
 
 ```java
-@Override
-public void expireTicket(ObjectContext ctx, ExpireTicketRequest request) throws TerminalException {
-    //highlight-start
-    var ticketClnt = TicketServiceRestate.newClient(ctx);
-    ticketClnt.oneWay().unreserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build());
-    //highlight-end
-}
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/UserSession.java#<start_expire_ticket>-<end_expire_ticket>
 ```
 
 Create a new client by using the generated code,
@@ -635,20 +628,11 @@ To also log the messages, use `RESTATE_DEBUG_LOGGING=JOURNAL_VERBOSE`.
 <TabItem value="java" label="Java">
 
 ```java
-@Override
-public BoolValue addTicket(ObjectContext ctx, ReserveTicket request) throws TerminalException {
-    //highlight-start
-    var ticketClnt = TicketServiceRestate.newClient(ctx);
-    var success = ticketClnt.reserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build()).await();
-
-    return success;
-    //highlight-end
-}
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/UserSession.java#<start_add_ticket>-<end_add_ticket>
 ```
 
-There are two differences with one-way calls. You don't call `oneWay()` on the client, and you use `.await()` to wait for the response to the call.
+There are two differences with one-way calls: you don't call `oneWay()` on the client, and you use `.await()` to wait for the response to the call.
 Once you have added this to the code, restart the service and try it out by calling the `UserSession/addTicket` method as [explained earlier](#calling-services-from-outside-restate).
-
 
 <details>
 <summary>Show the logs</summary>
@@ -740,17 +724,7 @@ Once the runtime has received the response, it invokes the `addTicket` function 
 [//]: # (TODO: mention where the 60s is coming from - this is different than the 30s auto-suspend delay in JS SDK)
 
 ```java
-@Override
-public BoolValue reserve(ObjectContext ctx, Ticket request) throws TerminalException {
-  //bad-code-start
-  try {
-    Thread.sleep(65000);
-  } catch (InterruptedException e) {
-    throw new RuntimeException(e);
-  }
-  //bad-code-end
-  return BoolValue.of(true);
-}
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/TicketService.java#<start_reserve>-<end_reserve>
 ```
 
 Call `UserSession/addTicket` again and have a look at the SDK logs.
@@ -845,17 +819,7 @@ Notice that the `UserSession` didn't get suspended because the response came bef
 <TabItem value="java" label="Java">
 
 ```java
-@Override
-public BoolValue checkout(ObjectContext ctx, CheckoutRequest request) throws TerminalException {
-    //highlight-start
-    var checkoutClnt = CheckoutRestate.newClient(ctx);
-    var checkoutSuccess = checkoutClnt.checkout(
-        CheckoutFlowRequest.newBuilder().setUserId(request.getUserId()).addTickets("456").build()
-    ).await();
-
-    return checkoutSuccess;
-    //highlight-end
-}
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/UserSession.java#<start_checkout>-<end_checkout>
 ```
 
 Restart the service and call the `UserSession/checkout` function as you did earlier and have a look at the logs again to see what happened.
@@ -903,8 +867,7 @@ npm run part1
 
 ## Durable timers
 
-:::note
-Implement it yourself or follow along by looking at the code under `part2`.
+:::note Implement it yourself or follow along by looking at the code under `part2`.
 :::
 
 Restate suspends a function invocation when it waits on external input.
@@ -919,21 +882,14 @@ Restate offers the same mechanism for timers.
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part1b/ticket_service.ts#<start_reserve>-<end_reserve>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part2/ticket_service.ts#<start_reserve>-<end_reserve>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java
-@Override
-public BoolValue reserve(ObjectContext ctx, Ticket request) throws TerminalException {
-    //good-code-start
-    ctx.sleep(Duration.ofSeconds(65));
-    //good-code-end
-
-    return BoolValue.of(true);
-}
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part2/TicketService.java#<start_reserve>-<end_reserve>
 ```
 
 </TabItem>
@@ -1036,31 +992,14 @@ This would make the `UserSession/addTicket` function look as follows:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part1b/user_session.ts#<start_add_ticket>-<end_add_ticket>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part2/user_session.ts#<start_add_ticket>-<end_add_ticket>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java
-@Override
-public BoolValue addTicket(ObjectContext ctx, ReserveTicket request) throws TerminalException {
-    var ticketClnt = TicketServiceRestate.newClient(ctx);
-    var reservationSuccess = ticketClnt
-        .reserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build())
-        .await();
-
-    if (reservationSuccess.getValue()) {
-        var userSessionClnt = UserSessionRestate.newClient(ctx);
-    // highlight-start
-        userSessionClnt.delayed(Duration.ofMinutes(15)).expireTicket(
-            ExpireTicketRequest.newBuilder().setTicketId(request.getTicketId()).setUserId(request.getUserId()).build()
-        );
-    // highlight-end
-    }
-
-    return reservationSuccess;
-}
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part2/UserSession.java#<start_add_ticket>-<end_add_ticket>
 ```
 
 </TabItem>
@@ -1137,9 +1076,7 @@ CODE_LOAD::ts/src/get_started/tour.ts#<start_sleep_and_send>-<end_sleep_and_send
 <TabItem value="java" label="Java">
 
 ```java
-ctx.sleep(Duration.ofMinutes(15));
-var ticketClnt = TicketServiceRestate.newClient(ctx);
-ticketClnt.oneWay().unreserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build());
+CODE_LOAD::java/src/main/java/get_started/Tour.java#<start_sleep_and_send>-<end_sleep_and_send>
 ```
 
 </TabItem>
@@ -1153,7 +1090,33 @@ If you do a delayed call, the invocation isn't ongoing until the delay has passe
 
 :::
 
+:::info
+🚩 Explore the intermediate solution in `part2`, and run it with:
+
+<Tabs groupId="sdk" queryString>
+<TabItem value="ts" label="TypeScript">
+
+```shell
+npm run part2
+```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```shell
+./gradlew -PmainClass=dev.restate.tour.part2.AppMain run
+```
+
+</TabItem>
+</Tabs>
+:::
+
 ## Persistent application state
+
+:::note Implement it yourself or follow along by looking at the code under `part3`.
+:::
+
+
 
 Applications often need to keep state. For example, the user session service
 needs to track the shopping cart items.
@@ -1182,7 +1145,7 @@ Have a look at the highlighted code:
 <TabItem value="ts" label="TypeScript">
 
 ```ts
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part2/user_session.ts#<start_add_ticket>-<end_add_ticket>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part3/user_session.ts#<start_add_ticket>-<end_add_ticket>
 ```
 
 To retrieve the cart, you use `ctx.get`.
@@ -1192,36 +1155,7 @@ This returns `null` if the value has never been set.
 <TabItem value="java" label="Java">
 
 ```java
-// At the top of the class, define the state key: supply a name and (de)serializer
-//highlight-start
-public static final StateKey<Set<String>> STATE_KEY =
-    StateKey.of("tickets", JacksonSerdes.of(new TypeReference<>() {}));
-//highlight-end
-
-@Override
-public BoolValue addTicket(ObjectContext ctx, ReserveTicket request) throws TerminalException {
-    var ticketClnt = TicketServiceRestate.newClient(ctx);
-    var reservationSuccess = ticketClnt
-        .reserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build())
-        .await();
-
-    if (reservationSuccess.getValue()) {
-        // Retrieve the state
-        //highlight-next-line
-        var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
-        tickets.add(request.getTicketId());
-        // Set the state to the new value
-        //highlight-next-line
-        ctx.set(STATE_KEY, tickets);
-
-        var userSessionClnt = UserSessionRestate.newClient(ctx);
-        userSessionClnt.delayed(Duration.ofMinutes(15)).expireTicket(
-            ExpireTicketRequest.newBuilder().setTicketId(request.getTicketId()).setUserId(request.getUserId()).build()
-        );
-    }
-
-    return reservationSuccess;
-}
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/UserSession.java#<start_add_ticket>-<end_add_ticket>
 ```
 
 To retrieve the cart, you use `ctx.get` with a state key that describes the name and the (de)serializers to be used.
@@ -1306,45 +1240,14 @@ Also adapt the `UserSession/checkout` function, to use the tickets:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part2/user_session.ts#<start_checkout>-<end_checkout>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part3/user_session.ts#<start_checkout>-<end_checkout>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java
-// Add to top of class
-//highlight-next-line
-public static final StateKey<Set<String>> STATE_KEY = StateKey.of("tickets", JacksonSerdes.of(new TypeReference<>() {}));
-
-@Override
-public BoolValue checkout(ObjectContext ctx, CheckoutRequest request) throws TerminalException {
-    // 1. Retrieve the tickets from state
-    //highlight-next-line
-    var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
-
-    // 2. If there are no tickets, return `false`
-    //highlight-start
-    if (tickets.isEmpty()) {
-        return BoolValue.of(false);
-    }
-    //highlight-end
-
-    // 3. Call the `checkout` function of the checkout service with the tickets
-    var checkoutClnt = CheckoutRestate.newClient(ctx);
-    var checkoutSuccess = checkoutClnt.checkout(
-        Tour.CheckoutFlowRequest.newBuilder().setUserId(request.getUserId()).addAllTickets(tickets).build()
-    ).await();
-
-    // 4. If this was successful, empty the tickets.
-    // Otherwise, let the user try again.
-    if (checkoutSuccess.getValue()) {
-    //highlight-next-line
-        ctx.clear(STATE_KEY);
-    }
-
-    return checkoutSuccess;
-}
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/UserSession.java#<start_checkout>-<end_checkout>
 ```
 
 </TabItem>
@@ -1362,30 +1265,8 @@ Have a look at the documentation on [introspection](/operate/introspection) to l
 
 #### Finishing `UserSession/expireTicket`
 
-You have almost fully implemented the user session service. After checkout, let's finish `UserSession/expireTicket`. At the moment you have the following code:
-
-<Tabs groupId="sdk" queryString>
-<TabItem value="ts" label="TypeScript">
-
-```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part1/user_session.ts#<start_expire_ticket>-<end_expire_ticket>
-```
-
-</TabItem>
-<TabItem value="java" label="Java">
-
-```java
-@Override
-public void expireTicket(ObjectContext ctx, ExpireTicketRequest request) throws TerminalException {
-    var ticketClnt = TicketServiceRestate.newClient(ctx);
-    ticketClnt.oneWay().unreserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build());
-}
-```
-
-</TabItem>
-</Tabs>
-
-Before you call `unreserve`, you first need to check if the ticket is still hold by the user.
+You have almost fully implemented the user session service. After checkout, let's finish `UserSession/expireTicket`.
+Before you call `unreserve`, you first need to check if the ticket is still held by the user.
 Retrieve the state and check if the ticket ID is in there.
 If this is the case, then you call `TicketService/unreserve` and remove it from the state.
 
@@ -1396,7 +1277,7 @@ If this is the case, then you call `TicketService/unreserve` and remove it from 
 <TabItem value="ts" label="TypeScript">
 
 ```ts
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part2/user_session.ts#<start_expire_ticket>-<end_expire_ticket>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part3/user_session.ts#<start_expire_ticket>-<end_expire_ticket>
 ```
 
 Call the `expireTicket` function with:
@@ -1410,20 +1291,7 @@ curl localhost:8080/UserSession/expireTicket \
 <TabItem value="java" label="Java">
 
 ```java
-public static final StateKey<Set<String>> STATE_KEY = StateKey.of("tickets", JacksonSerdes.of(new TypeReference<>() {}));
-
-@Override
-public void expireTicket(ObjectContext ctx, ExpireTicketRequest request) throws TerminalException {
-  var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
-
-  var removed = tickets.removeIf(s -> s.equals(request.getTicketId()));
-
-  if (removed) {
-    ctx.set(STATE_KEY, tickets);
-    var ticketClnt = TicketServiceRestate.newClient(ctx);
-    ticketClnt.oneWay().unreserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build());
-  }
-}
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/UserSession.java#<start_expire_ticket>-<end_expire_ticket>
 ```
 
 Call the `expireTicket` function with:
@@ -1469,26 +1337,14 @@ Remove the sleep that you added before.
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part2/ticket_service.ts#<start_reserve>-<end_reserve>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part3/ticket_service.ts#<start_reserve>-<end_reserve>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java
-public static final StateKey<TicketStatus> STATE_KEY = StateKey.of("status", JacksonSerdes.of(TicketStatus.class));
-
-@Override
-public BoolValue reserve(ObjectContext ctx, Ticket request) throws TerminalException {
-  var status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
-
-  if (status.equals(TicketStatus.Available)) {
-    ctx.set(STATE_KEY, TicketStatus.Reserved);
-    return BoolValue.of(true);
-  } else {
-    return BoolValue.of(false);
-  }
-}
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/TicketService.java#<start_reserve>-<end_reserve>
 ```
 
 </TabItem>
@@ -1510,21 +1366,14 @@ The function should clear the value of the `"status"` key if it's not on status 
 <TabItem value="ts" label="TypeScript">
 
 ```ts
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part2/ticket_service.ts#<start_unreserve>-<end_unreserve>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part3/ticket_service.ts#<start_unreserve>-<end_unreserve>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java
-@Override
-public void unreserve(ObjectContext ctx, Ticket request) throws TerminalException {
-    var status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
-
-    if (!status.equals(TicketStatus.Sold)) {
-        ctx.clear(STATE_KEY);
-    }
-}
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/TicketService.java#<start_unreserve>-<end_unreserve>
 ```
 </TabItem>
 </Tabs>
@@ -1547,21 +1396,14 @@ The function should set the value of the `"status"` key to `TicketStatus.Sold` i
 <TabItem value="ts" label="TypeScript">
 
 ```ts
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part2/ticket_service.ts#<start_mark_as_sold>-<end_mark_as_sold>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part3/ticket_service.ts#<start_mark_as_sold>-<end_mark_as_sold>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java
-@Override
-public void markAsSold(ObjectContext ctx, Ticket request) throws TerminalException {
-    var status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
-
-    if (status.equals(TicketStatus.Reserved)) {
-        ctx.set(STATE_KEY, TicketStatus.Sold);
-    }
-}
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/TicketService.java#<start_mark_as_sold>-<end_mark_as_sold>
 ```
 </TabItem>
 </Tabs>
@@ -1572,20 +1414,20 @@ This ties the final parts together.
 </>
 
 :::info
-🚩 Explore the intermediate solution in `part2`, and run it with:
+🚩 Explore the intermediate solution in `part3`, and run it with:
 
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```shell
-npm run part2
+npm run part3
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```shell
-./gradlew -PmainClass=dev.restate.tour.part2.AppMain run
+./gradlew -PmainClass=dev.restate.tour.part3.AppMain run
 ```
 
 </TabItem>
@@ -1595,7 +1437,7 @@ npm run part2
 
 ## Determinism & side effects
 
-:::note Implement it yourself or follow along by looking at the code under `part3`.
+:::note Implement it yourself or follow along by looking at the code under `part4`.
 :::
 
 Restate's replay mechanism makes applications resilient to failures.
@@ -1621,21 +1463,14 @@ Add the following code snippet to the `Checkout/handle` function:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part3/checkout.ts#<start_side_effects>-<end_side_effects>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part4/checkout.ts#<start_side_effects>-<end_side_effects>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java
-import java.util.UUID;
-
-@Override
-public BoolValue checkout(Context ctx, CheckoutFlowRequest request) throws TerminalException {
-    // highlight-next-line
-    var idempotencyKey = ctx.sideEffect(CoreSerdes.STRING_UTF8, () -> UUID.randomUUID().toString());
-    return BoolValue.of(true);
-}
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part4/Checkout.java#<start_side_effects>-<end_side_effects>
 ```
 
 </TabItem>
@@ -1655,8 +1490,7 @@ CODE_LOAD::ts/src/get_started/tour.ts#<start_idempotency_key_retry>-<end_idempot
 <TabItem value="java" label="Java">
 
 ```java
-System.out.println("My idempotency key: " + idempotencyKey);
-ctx.sleep(Duration.ofSeconds(61));
+CODE_LOAD::java/src/main/java/get_started/Tour.java#<start_idempotency_key_retry>-<end_idempotency_key_retry>
 ```
 
 </TabItem>
@@ -1759,35 +1593,14 @@ The `Checkout/handle` function now looks like the following:
 <TabItem value="ts" label="TypeScript">
 
 ```ts
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part3/checkout.ts#<start_checkout>-<end_checkout>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part4/checkout.ts#<start_checkout>-<end_checkout>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
-[//]: # (dev/restate/tour/part3/Checkout.java)
 ```java
-PaymentClient paymentClient = PaymentClient.get();
-EmailClient emailClient = EmailClient.get();
-
-@Override
-public BoolValue checkout(Context ctx, CheckoutFlowRequest request) throws TerminalException {
-    var idempotencyKey = ctx.sideEffect(CoreSerdes.STRING_UTF8, () -> UUID.randomUUID().toString());
-
-    var totalPrice = request.getTicketsList().size() * 40.0;
-
-    boolean success = ctx.sideEffect(CoreSerdes.BOOLEAN, () -> paymentClient.call(idempotencyKey, totalPrice));
-
-    //highlight-start
-    if (success) {
-        ctx.sideEffect(CoreSerdes.BOOLEAN, ()-> emailClient.notifyUserOfPaymentSuccess(request.getUserId()));
-    } else {
-        ctx.sideEffect(CoreSerdes.BOOLEAN, () -> emailClient.notifyUserOfPaymentFailure(request.getUserId()));
-    }
-    //highlight-end
-
-    return BoolValue.of(success);
-}
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part4/Checkout.java#<start_checkout>-<end_checkout>
 ```
 
 </TabItem>
@@ -1799,38 +1612,15 @@ The `UserSession/checkout` function now looks like the following:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part3/user_session.ts#<start_checkout>-<end_checkout>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part4/user_session.ts#<start_checkout>-<end_checkout>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java
-@Override
-public BoolValue checkout(ObjectContext ctx, CheckoutRequest request) throws TerminalException {
-    var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
-
-    if (tickets.isEmpty()) {
-        return BoolValue.of(false);
-    }
-
-    var checkoutClnt = CheckoutRestate.newClient(ctx);
-    var checkoutSuccess = checkoutClnt.checkout(
-        CheckoutFlowRequest.newBuilder().setUserId(request.getUserId()).addAllTickets(tickets).build()
-    ).await();
-
-    if (checkoutSuccess.getValue()) {
-        //highlight-start
-        var ticketClnt = TicketServiceRestate.newClient(ctx);
-        tickets.forEach(t -> ticketClnt.oneWay().markAsSold(Ticket.newBuilder().setTicketId(t).build()));
-        //highlight-end
-        ctx.clear(STATE_KEY);
-    }
-
-    return checkoutSuccess;
-}
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part4/UserSession.java#<start_checkout>-<end_checkout>
 ```
-
 
 </TabItem>
 </Tabs>
@@ -1842,20 +1632,20 @@ public BoolValue checkout(ObjectContext ctx, CheckoutRequest request) throws Ter
 Try it out by reserving some new tickets and buying them by checking out the cart.
 
 :::info
-🚩 Explore the intermediate solution in `part3`, and run it with:
+🚩 Explore the intermediate solution in `part4`, and run it with:
 
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```shell
-npm run part3
+npm run part4
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```shell
-./gradlew -PmainClass=dev.restate.tour.part3.AppMain run
+./gradlew -PmainClass=dev.restate.tour.part4.AppMain run
 ```
 
 </TabItem>
@@ -1865,7 +1655,7 @@ npm run part3
 
 ## Resiliency
 
-:::note Implement it yourself or follow along by looking at the code under `part4`.
+:::note Implement it yourself or follow along by looking at the code under `part5`.
 :::
 
 As you have discovered throughout this tutorial, Restate makes your applications resilient out-of-the-box by:
@@ -1892,19 +1682,17 @@ You can observe this behavior by using the `paymentClient.failingCall` in `Check
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part4/checkout.ts#<start_failing_client>-<end_failing_client>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part5/checkout.ts#<start_failing_client>-<end_failing_client>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java
-boolean success = ctx.sideEffect(CoreSerdes.BOOLEAN, () -> paymentClient.failingCall(idempotencyKey, totalPrice));
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part5/Checkout.java#<start_failing_client>-<end_failing_client>
 ```
 </TabItem>
 </Tabs>
-
-
 
 You now call `paymentClient.failingCall` which fails two times before succeeding.
 A failing side effect is retried until it succeeds.
@@ -1930,13 +1718,13 @@ Payment call failed for idempotency key adab6b35-0536-4348-8912-35f8cd474cf8 and
 [restate] [2023-08-16T08:24:28.509Z] DEBUG: Error while executing side effect 'side-effect': Error - Payment call failed
 [restate] [2023-08-16T08:24:28.519Z] DEBUG: Error: Payment call failed
     at PaymentClient.failingCall (/Users/till/restate/git/tour-of-restate-typescript/src/aux/payment_client.ts:37:13)
-    at doPayment (/Users/till/restate/git/tour-of-restate-typescript/src/part4/checkout.ts:29:47)
+    at doPayment (/Users/till/restate/git/tour-of-restate-typescript/src/part5/checkout.ts:29:47)
     at AsyncLocalStorage.run (node:async_hooks:346:14)
     at executeAndLogSideEffect (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:234:69)
     at executeWithRetries (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:428:20)
     at RestateGrpcContextImpl.sideEffect (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:300:12)
     at RpcContextImpl.sideEffect (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:552:21)
-    at checkout (/Users/till/restate/git/tour-of-restate-typescript/src/part4/checkout.ts:30:29)
+    at checkout (/Users/till/restate/git/tour-of-restate-typescript/src/part5/checkout.ts:30:29)
     at processTicksAndRejections (node:internal/process/task_queues:95:5)
     at dispatchUnkeyedRpcHandler (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/server/base_restate_server.ts:366:18)
 [restate] [2023-08-16T08:24:28.520Z] DEBUG: Retrying in 10 ms
@@ -1953,12 +1741,12 @@ Payment call failed for idempotency key adab6b35-0536-4348-8912-35f8cd474cf8 and
 [restate] [2023-08-16T08:24:28.532Z] DEBUG: Error while executing side effect 'side-effect': Error - Payment call failed
 [restate] [2023-08-16T08:24:28.534Z] DEBUG: Error: Payment call failed
     at PaymentClient.failingCall (/Users/till/restate/git/tour-of-restate-typescript/src/aux/payment_client.ts:37:13)
-    at doPayment (/Users/till/restate/git/tour-of-restate-typescript/src/part4/checkout.ts:29:47)
+    at doPayment (/Users/till/restate/git/tour-of-restate-typescript/src/part5/checkout.ts:29:47)
     at AsyncLocalStorage.run (node:async_hooks:346:14)
     at executeAndLogSideEffect (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:234:69)
     at executeWithRetries (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:428:20)
     at processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at checkout (/Users/till/restate/git/tour-of-restate-typescript/src/part4/checkout.ts:30:19)
+    at checkout (/Users/till/restate/git/tour-of-restate-typescript/src/part5/checkout.ts:30:19)
     at dispatchUnkeyedRpcHandler (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/server/base_restate_server.ts:366:18)
     at HostedGrpcServiceMethod.invoke (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/types/grpc.ts:49:23)
 [restate] [2023-08-16T08:24:28.534Z] DEBUG: Retrying in 20 ms
@@ -1992,9 +1780,9 @@ Payment call failed for idempotency key 9ead78c9-c95b-43e5-aa7c-be0ba361ede9 and
 2023-12-08 19:19:19 [pool-2-thread-1] WARN  GrpcServerCallListenerAdaptor:78 - Error when processing the invocation
 java.lang.Error: Payment call failed
         at dev.restate.tour.auxiliary.PaymentClient.failingCall(PaymentClient.java:24) ~[main/:?]
-        at dev.restate.tour.part4.Checkout.lambda$checkout$1(Checkout.java:27) ~[main/:?]
+        at dev.restate.tour.part5.Checkout.lambda$checkout$1(Checkout.java:27) ~[main/:?]
         at dev.restate.sdk.RestateContextImpl.sideEffect(RestateContextImpl.java:143) ~[sdk-api-0.0.1-SNAPSHOT.jar:?]
-        at dev.restate.tour.part4.Checkout.checkout(Checkout.java:27) ~[main/:?]
+        at dev.restate.tour.part5.Checkout.checkout(Checkout.java:27) ~[main/:?]
         at dev.restate.tour.generated.CheckoutRestate$HandlerAdapter.invoke(CheckoutRestate.java:137) ~[main/:?]
         at io.grpc.stub.ServerCalls$UnaryServerCallHandler$UnaryServerCallListener.onHalfClose(ServerCalls.java:182) ~[grpc-stub-1.58.0.jar:1.58.0]
         at io.grpc.PartialForwardingServerCallListener.onHalfClose(PartialForwardingServerCallListener.java:35) ~[grpc-api-1.58.0.jar:1.58.0]
@@ -2011,9 +1799,9 @@ java.lang.Error: Payment call failed
 2023-12-08 19:19:19 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:228 - Closing state machine with failure
 java.lang.Error: Payment call failed
         at dev.restate.tour.auxiliary.PaymentClient.failingCall(PaymentClient.java:24) ~[main/:?]
-        at dev.restate.tour.part4.Checkout.lambda$checkout$1(Checkout.java:27) ~[main/:?]
+        at dev.restate.tour.part5.Checkout.lambda$checkout$1(Checkout.java:27) ~[main/:?]
         at dev.restate.sdk.RestateContextImpl.sideEffect(RestateContextImpl.java:143) ~[sdk-api-0.0.1-SNAPSHOT.jar:?]
-        at dev.restate.tour.part4.Checkout.checkout(Checkout.java:27) ~[main/:?]
+        at dev.restate.tour.part5.Checkout.checkout(Checkout.java:27) ~[main/:?]
         at dev.restate.tour.generated.CheckoutRestate$HandlerAdapter.invoke(CheckoutRestate.java:137) ~[main/:?]
         at io.grpc.stub.ServerCalls$UnaryServerCallHandler$UnaryServerCallListener.onHalfClose(ServerCalls.java:182) ~[grpc-stub-1.58.0.jar:1.58.0]
         at io.grpc.PartialForwardingServerCallListener.onHalfClose(PartialForwardingServerCallListener.java:35) ~[grpc-api-1.58.0.jar:1.58.0]
@@ -2034,9 +1822,9 @@ Payment call failed for idempotency key 9ead78c9-c95b-43e5-aa7c-be0ba361ede9 and
 2023-12-08 19:19:19 [pool-2-thread-1] WARN  GrpcServerCallListenerAdaptor:78 - Error when processing the invocation
 java.lang.Error: Payment call failed
         at dev.restate.tour.auxiliary.PaymentClient.failingCall(PaymentClient.java:24) ~[main/:?]
-        at dev.restate.tour.part4.Checkout.lambda$checkout$1(Checkout.java:27) ~[main/:?]
+        at dev.restate.tour.part5.Checkout.lambda$checkout$1(Checkout.java:27) ~[main/:?]
         at dev.restate.sdk.RestateContextImpl.sideEffect(RestateContextImpl.java:143) ~[sdk-api-0.0.1-SNAPSHOT.jar:?]
-        at dev.restate.tour.part4.Checkout.checkout(Checkout.java:27) ~[main/:?]
+        at dev.restate.tour.part5.Checkout.checkout(Checkout.java:27) ~[main/:?]
         at dev.restate.tour.generated.CheckoutRestate$HandlerAdapter.invoke(CheckoutRestate.java:137) ~[main/:?]
         at io.grpc.stub.ServerCalls$UnaryServerCallHandler$UnaryServerCallListener.onHalfClose(ServerCalls.java:182) ~[grpc-stub-1.58.0.jar:1.58.0]
         at io.grpc.PartialForwardingServerCallListener.onHalfClose(PartialForwardingServerCallListener.java:35) ~[grpc-api-1.58.0.jar:1.58.0]
@@ -2053,9 +1841,9 @@ java.lang.Error: Payment call failed
 2023-12-08 19:19:19 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:228 - Closing state machine with failure
 java.lang.Error: Payment call failed
         at dev.restate.tour.auxiliary.PaymentClient.failingCall(PaymentClient.java:24) ~[main/:?]
-        at dev.restate.tour.part4.Checkout.lambda$checkout$1(Checkout.java:27) ~[main/:?]
+        at dev.restate.tour.part5.Checkout.lambda$checkout$1(Checkout.java:27) ~[main/:?]
         at dev.restate.sdk.RestateContextImpl.sideEffect(RestateContextImpl.java:143) ~[sdk-api-0.0.1-SNAPSHOT.jar:?]
-        at dev.restate.tour.part4.Checkout.checkout(Checkout.java:27) ~[main/:?]
+        at dev.restate.tour.part5.Checkout.checkout(Checkout.java:27) ~[main/:?]
         at dev.restate.tour.generated.CheckoutRestate$HandlerAdapter.invoke(CheckoutRestate.java:137) ~[main/:?]
         at io.grpc.stub.ServerCalls$UnaryServerCallHandler$UnaryServerCallListener.onHalfClose(ServerCalls.java:182) ~[grpc-stub-1.58.0.jar:1.58.0]
         at io.grpc.PartialForwardingServerCallListener.onHalfClose(PartialForwardingServerCallListener.java:35) ~[grpc-api-1.58.0.jar:1.58.0]
@@ -2150,19 +1938,19 @@ For more information, have a look at the [tracing docs](/operate/monitoring/trac
 ## 🏁 The end
 You reached the end of this tutorial!
 
-:::info 🚩 Have a look at the fully implemented app in `part4`, and run it with:
+:::info 🚩 Have a look at the fully implemented app in `part5`, and run it with:
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```shell
-npm run part4
+npm run part5
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```shell
-./gradlew -PmainClass=dev.restate.tour.part4.AppMain run
+./gradlew -PmainClass=dev.restate.tour.part5.AppMain run
 ```
 
 </TabItem>
