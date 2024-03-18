@@ -24,7 +24,7 @@ Restate applications are made up of services that expose methods to each other a
 2. **Ticket service**: manages the ticket allocation.
 3. **Checkout**: handles the checkout process of the ticket sale.
 
-![Tour of Restate diagram](/img/tour-of-restate-diagram-handler.png)
+![Tour of Restate diagram](/img/tour.svg)
 
 As we go, you will discover how Restate can help you with some intricacies in this application.
 
@@ -64,21 +64,30 @@ This guide is written for:
 
 Download the [tutorial](https://github.com/restatedev/examples/tree/main/tutorials/tour-of-restate-java):
 
-- Via the CLI:
-    ```shell
-    restate example typescript-tour-of-restate && cd typescript-tour-of-restate
-    ```
+<Tabs groupId="download">
+<TabItem value="cli" label="CLI">
 
-- Via git clone:
-    ```shell
-    git clone git@github.com:restatedev/examples.git
-    cd examples/tutorials/tour-of-restate-typescript
-    ```
+```shell
+restate example typescript-tour-of-restate && cd typescript-tour-of-restate
+```
 
-- Via `wget`:
-    ```shell
-    wget https://github.com/restatedev/examples/releases/latest/download/typescript-tour-of-restate.zip && unzip typescript-tour-of-restate.zip -d typescript-tour-of-restate && rm typescript-tour-of-restate.zip
-    ```
+</TabItem>
+<TabItem value="git" label="git clone">
+
+```shell
+git clone git@github.com:restatedev/examples.git
+cd examples/tutorials/tour-of-restate-typescript
+```
+
+</TabItem>
+<TabItem value="wget" label="wget">
+
+```shell
+wget https://github.com/restatedev/examples/releases/latest/download/typescript-tour-of-restate.zip && unzip typescript-tour-of-restate.zip -d typescript-tour-of-restate && rm typescript-tour-of-restate.zip
+```
+
+</TabItem>
+</Tabs>
 
 This GitHub repository contains the basic skeleton of the NodeJS/TypeScript services that you develop in this tutorial.
 
@@ -92,21 +101,30 @@ npm install && npm run build
 
 Download the [tutorial](https://github.com/restatedev/examples/tree/main/tutorials/tour-of-restate-typescript):
 
-- Via the CLI:
-    ```shell
-    restate example java-tour-of-restate && cd java-tour-of-restate
-    ```
+<Tabs groupId="download">
+<TabItem value="cli" label="CLI">
 
-- Via git clone:
-    ```shell
-    git clone git@github.com:restatedev/examples.git
-    cd examples/tutorials/tour-of-restate-java
-    ```
+```shell
+restate example java-tour-of-restate && cd java-tour-of-restate
+```
 
-- Via `wget`:
-    ```shell
-    wget https://github.com/restatedev/examples/releases/latest/download/java-tour-of-restate.zip && unzip java-tour-of-restate.zip -d java-tour-of-restate && rm java-tour-of-restate.zip && cd java-tour-of-restate
-    ```
+</TabItem>
+<TabItem value="git" label="git clone">
+
+```shell
+git clone git@github.com:restatedev/examples.git
+cd examples/tutorials/tour-of-restate-java
+```
+
+</TabItem>
+<TabItem value="wget" label="wget">
+
+```shell
+wget https://github.com/restatedev/examples/releases/latest/download/java-tour-of-restate.zip && unzip java-tour-of-restate.zip -d java-tour-of-restate && rm java-tour-of-restate.zip && cd java-tour-of-restate
+```
+
+</TabItem>
+</Tabs>
 
 This GitHub repository contains the basic skeleton of the Java services that you develop in this tutorial.
 
@@ -149,7 +167,10 @@ If you do not want to follow along by coding yourself, you can run the solution 
 Next, let's launch Restate itself. Restate can be deployed as a simple standalone binary, all the way up to a fully managed service. In this tour we'll be running it standalone from a container image.
 
 ```shell
-docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
+docker run --name restate_dev --rm \
+  -p 8080:8080 -p 9070:9070 -p 9071:9071 \
+  --add-host=host.docker.internal:host-gateway \
+  docker.io/restatedev/restate:VAR::RESTATE_VERSION
 ```
 
 
@@ -160,7 +181,9 @@ When you are finished with the tour, you can stop Restate with `docker stop rest
 When Restate first comes up, it doesn't know anything about our services. Let's tell it where they are running. You can trigger service discovery by calling the Restate admin API informing it about the service deployment where our service is listening.
 
 ```shell
-curl localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
+curl localhost:9070/deployments \
+  -H 'content-type: application/json' \
+  -d '{"uri": "http://host.docker.internal:9080"}'
 ```
 
 Restate will send a discovery request to the service deployment to find the services and methods run behind this endpoint. Restate keeps track of which services run where (including of the method signatures). Restate also keeps track of multiple revisions as your APIs evolve, and routes requests appropriately.
@@ -171,29 +194,32 @@ You can pipe the output of `curl` into the `jq` utility to reformat the JSON out
 
 You should now see the registered services printed out to your terminal:
 
+<details>
+<summary>Terminal output</summary>
+
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```json
 {
-  "id": "bG9jYWxob3N0OjgwODAv",
-  "services": [
-    {
-      "name": "TicketService",
-      "revision": 1
-      /* ... Additional information on registered methods ...*/
-    },
-    {
-      "name": "UserSession",
-      "revision": 1
-      /* ... Additional information on registered methods ...*/
-    },
-    {
-      "name": "Checkout",
-      "revision": 1
-      /* ... Additional information on registered methods ...*/
-    }
-  ]
+    "id": "bG9jYWxob3N0OjgwODAv",
+    "services": [
+{
+    "name": "TicketService",
+    "revision": 1
+    /* ... Additional information on registered methods ...*/
+},
+{
+    "name": "UserSession",
+    "revision": 1
+    /* ... Additional information on registered methods ...*/
+},
+{
+    "name": "Checkout",
+    "revision": 1
+    /* ... Additional information on registered methods ...*/
+}
+    ]
 }
 ```
 
@@ -204,21 +230,21 @@ You should now see the registered services printed out to your terminal:
 {
     "id": "bG9jYWxob3N0OjgwODAv",
     "services": [
-        {
-            "name": "example.TicketService",
-            "revision": 1
-            /* ... Additional information on registered methods ...*/
-        },
-        {
-            "name": "example.UserSession",
-            "revision": 1
-            /* ... Additional information on registered methods ...*/
-        },
-        {
-            "name": "example.Checkout",
-            "revision": 1
-            /* ... Additional information on registered methods ...*/
-        }
+{
+    "name": "example.TicketService",
+    "revision": 1
+    /* ... Additional information on registered methods ...*/
+},
+{
+    "name": "example.UserSession",
+    "revision": 1
+    /* ... Additional information on registered methods ...*/
+},
+{
+    "name": "example.Checkout",
+    "revision": 1
+    /* ... Additional information on registered methods ...*/
+}
     ]
 }
 ```
@@ -226,66 +252,7 @@ You should now see the registered services printed out to your terminal:
 </TabItem>
 </Tabs>
 
-
-The Restate logs will show the new service registrations taking place.
-
-<Tabs groupId="sdk" queryString>
-<TabItem value="ts" label="TypeScript">
-<details>
-<summary>Show the runtime logs</summary>
-
-```
-2023-08-15T13:24:52.879977Z INFO restate_schema_impl::schemas_impl
-  Registering deployment
-    restate.deployment.id: bG9jYWxob3N0OjgwODAv
-    restate.deployment.url: http://localhost:9080/
-2023-08-15T13:24:52.880010Z INFO restate_schema_impl::schemas_impl
-  Registering service
-    rpc.service: "UserSession"
-    restate.deployment.url: http://localhost:9080/
-2023-08-15T13:24:52.881233Z INFO restate_schema_impl::schemas_impl
-  Registering service
-    rpc.service: "TicketService"
-    restate.deployment.url: http://localhost:9080/
-2023-08-15T13:24:52.881422Z INFO restate_schema_impl::schemas_impl
-  Registering service
-    rpc.service: "Checkout"
-    restate.deployment.url: http://localhost:9080/
-```
-
-For MacOS users, the address will be `http://host.docker.internal:9080/`.
-
 </details>
-</TabItem>
-
-<TabItem value="java" label="Java">
-<details>
-<summary>Show the runtime logs</summary>
-
-```
-2023-12-06T21:06:02.404764Z INFO restate_schema_impl::schemas_impl
-  Registering deployment
-    restate.deployment.id: aG9zdC5kb2NrZXIuaW50ZXJuYWw6OTA4MC8=
-    restate.deployment.address: http://localhost:9080/
-2023-12-06T21:06:02.404876Z INFO restate_schema_impl::schemas_impl
-  Registering service
-    rpc.service: "example.Checkout"
-    restate.deployment.address: http://localhost:9080/
-2023-12-06T21:06:02.405255Z INFO restate_schema_impl::schemas_impl
-  Registering service
-    rpc.service: "example.UserSession"
-    restate.deployment.address: http://localhost:9080/
-2023-12-06T21:06:02.405491Z INFO restate_schema_impl::schemas_impl
-  Registering service
-    rpc.service: "example.TicketService"
-    restate.deployment.address: http://localhost:9080/
-```
-
-For MacOS users, the address will be `http://host.docker.internal:9080/`.
-
-</details>
-</TabItem>
-</Tabs>
 
 ### Calling services from outside Restate
 
@@ -517,17 +484,23 @@ In the service logs, you see that the `expireTicket` function gets executed,
 after which the `unreserve` function gets executed.
 The call to `expireTicket` finishes earlier than the `unreserve` function because it didn't wait for the response of the `unreserve` function.
 
-```log
-[restate] [2023-08-15T21:13:54.707Z] DEBUG: [UserSession/expireTicket] [K1qex52CPYkBiiHLgq92RZrEuQ502v1K] : Invoking function.
-[restate] [2023-08-15T21:13:54.708Z] DEBUG: [UserSession/expireTicket] [K1qex52CPYkBiiHLgq92RZrEuQ502v1K] : Adding message to journal and sending to Restate ; BackgroundInvokeEntryMessage
-[restate] [2023-08-15T21:13:54.708Z] DEBUG: [UserSession/expireTicket] [K1qex52CPYkBiiHLgq92RZrEuQ502v1K] : Journaled and sent output message ; OutputStreamEntryMessage
-//highlight-next-line
-[restate] [2023-08-15T21:13:54.709Z] DEBUG: [UserSession/expireTicket] [K1qex52CPYkBiiHLgq92RZrEuQ502v1K] : Function completed successfully.
-[restate] [2023-08-15T21:13:54.713Z] DEBUG: [TicketService/unreserve] [IwF2v7ci3eUBiiHLgrFz6rkvK_3tRk6Z] : Invoking function.
-[restate] [2023-08-15T21:13:54.713Z] DEBUG: [TicketService/unreserve] [IwF2v7ci3eUBiiHLgrFz6rkvK_3tRk6Z] : Journaled and sent output message ; OutputStreamEntryMessage
-//highlight-next-line
-[restate] [2023-08-15T21:13:54.713Z] DEBUG: [TicketService/unreserve] [IwF2v7ci3eUBiiHLgrFz6rkvK_3tRk6Z] : Function completed successfully.
-```
+<details>
+<summary>Show the logs</summary>
+
+    ```log
+    [restate] [2023-08-15T21:13:54.707Z] DEBUG: [UserSession/expireTicket] [K1qex52CPYkBiiHLgq92RZrEuQ502v1K] : Invoking function.
+    [restate] [2023-08-15T21:13:54.708Z] DEBUG: [UserSession/expireTicket] [K1qex52CPYkBiiHLgq92RZrEuQ502v1K] : Adding message to journal and sending to Restate ; BackgroundInvokeEntryMessage
+    [restate] [2023-08-15T21:13:54.708Z] DEBUG: [UserSession/expireTicket] [K1qex52CPYkBiiHLgq92RZrEuQ502v1K] : Journaled and sent output message ; OutputStreamEntryMessage
+    //highlight-next-line
+    [restate] [2023-08-15T21:13:54.709Z] DEBUG: [UserSession/expireTicket] [K1qex52CPYkBiiHLgq92RZrEuQ502v1K] : Function completed successfully.
+    [restate] [2023-08-15T21:13:54.713Z] DEBUG: [TicketService/unreserve] [IwF2v7ci3eUBiiHLgrFz6rkvK_3tRk6Z] : Invoking function.
+    [restate] [2023-08-15T21:13:54.713Z] DEBUG: [TicketService/unreserve] [IwF2v7ci3eUBiiHLgrFz6rkvK_3tRk6Z] : Journaled and sent output message ; OutputStreamEntryMessage
+    //highlight-next-line
+    [restate] [2023-08-15T21:13:54.713Z] DEBUG: [TicketService/unreserve] [IwF2v7ci3eUBiiHLgrFz6rkvK_3tRk6Z] : Function completed successfully.
+    ```
+
+</details>
+
 
 </TabItem>
 <TabItem value="java" label="Java">
@@ -552,6 +525,9 @@ curl localhost:8080/example.UserSession/ExpireTicket \
 In the service logs, you see that the `expireTicket` function gets executed, after which the `unreserve` function gets executed.
 The call to `expireTicket` finishes earlier than the `unreserve` function because `expireTicket` didn't wait for the response of the `unreserve` function.
 
+<details>
+<summary>Show the logs</summary>
+
 ```log
 //highlight-next-line
 2023-12-08 17:56:13 [vert.x-eventloop-thread-0] DEBUG RequestHttpServerHandler:157 - Handling request to example.UserSession/ExpireTicket
@@ -569,6 +545,8 @@ The call to `expireTicket` finishes earlier than the `unreserve` function becaus
 2023-12-08 17:56:13 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:665 - Transitioning InvocationStateMachine(serviceName='example.TicketService', state=PROCESSING, id=x3s6u2-HrNkAYxKJMZbeomyz3qH5PqvCg) to CLOSED
 2023-12-08 17:56:13 [vert.x-eventloop-thread-0] DEBUG InvocationStateMachine:206 - Closing state machine
 ```
+
+</details>
 
 </TabItem>
 </Tabs>
@@ -1450,9 +1428,9 @@ In `Checkout/handle`, we first want to trigger the payment. This happens in two 
 This token will be supplied in the payment request to ensure that a customer never pays multiple times.
 2. Then, we use a side effect to trigger the payment via an external payment provider (`PaymentClient`).
 You can find a payment client stub in `auxiliary/PaymentClient`. Do the following:
-    1.  Create a new payment client in `Checkout/handle`.
-    2.  Assume every ticket costs 40 dollars.
-    3.  Then, use `call(idempotencyKey, amount)` to execute the payment for a certain idempotency key (String) and total amount (double/number).
+    1. Create a new payment client in `Checkout/handle`.
+    2. Then, use `call(idempotencyKey, amount)` to execute the payment for a certain idempotency key (String) and total amount (double/number).
+    Assume every ticket costs 40 dollars.
     Store the boolean result of the call as the return value of the side effect.
     The side effect executes the supplied function and stores the return value in Restate.
     Upon replay, the stored value gets inserted and the function doesn't get re-executed.
@@ -1497,6 +1475,7 @@ CODE_LOAD::java/src/main/java/get_started/Tour.java#<start_idempotency_key_retry
 </Tabs>
 
 Call `UserSession/checkout` and have a look at the logs to see what happens.
+Don't forget to remove the throwing of the error again before you continue.
 
 <details>
 <summary>Show the logs</summary>
@@ -1559,10 +1538,6 @@ My idempotency key: 43ba6b58-e6f8-4bc2-8112-7c93aedf59d1
 </Tabs>
 
 </details>
-
-:::info
-Remove the throwing of the error, before you continue.
-:::
 
 :::tip
 You can use a side effect to avoid re-execution during replay for any arbitrary piece of user code.
@@ -1917,22 +1892,6 @@ Have a look at the traces of the `checkout` call:
 You can see the calls that were done to Restate, for example invoke, sleep, one way call, get state, etc., and their timings.
 If you expand one of the traces, you can see tags describing some metadata of the context call, for example invocation id and call arguments.
 
-
-You can use Jaeger's search feature to find specific traces.
-For example, to find the traces of a specific invocation, you can enter the Restate invocation ID, which you can find in the logs, into the search field `Tags`:
-```
-restate.invocation.id="T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE"
-```
-![Checkout call search](/img/jaeger_invocationid_search_handler.png)
-
-Or for example, to search all traces of `checkout` calls, you can select `invoke checkout` in the `Operation` dropdown.
-
-Note that one-way calls are shown as separate traces.
-The traces of the original call contain the one-way call, but the timing represents only the scheduling of the one-way call in the runtime.
-To search for the traces of the execution of the one-way call, you can use the `restate.invocation.id`:
-
-![Jaeger background call](/img/jaeger_tour_background_call_handler.png)
-
 For more information, have a look at the [tracing docs](/operate/monitoring/tracing).
 
 ## 🏁 The end
@@ -1971,10 +1930,5 @@ Let's recap what you've covered:
 - tracing with Jaeger
 
 ## Next steps
-This tutorial didn't cover anything related to deployment.
-In this tutorial, you ran the services as long-running services in Docker containers.
-Restate services can run with minimal changes on AWS Lambda as well.
-
-Possible next step:
-- [Run the examples](https://github.com/restatedev/examples)
+- [Have a look at the examples](https://github.com/restatedev/examples)
 - [Check out the SDK documentation](/category/javatypescript-sdk)
