@@ -133,19 +133,13 @@ This GitHub repository contains the basic skeleton of the Java services that you
 
 ### Starting the components
 
-Let's start a basic version of the Restate services that we will be using for this tour. This is where our application logic will reside.
+Let's run the services that we will be implementing. For now, most functions are empty placeholders.
 
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 ```shell
 npm run app
-```
-
-You can run the solution of a specific part by running, for example for part 2:
-
-```shell
-npm run part3
 ```
 
 </TabItem>
@@ -164,7 +158,8 @@ If you do not want to follow along by coding yourself, you can run the solution 
 </TabItem>
 </Tabs>
 
-Next, let's launch Restate itself. Restate can be deployed as a simple standalone binary, all the way up to a fully managed service. In this tour we'll be running it standalone from a container image.
+Next, let's launch Restate itself. Restate can be deployed as a single standalone binary.
+To run Restate with Docker:
 
 ```shell
 docker run --name restate_dev --rm \
@@ -173,12 +168,12 @@ docker run --name restate_dev --rm \
   docker.io/restatedev/restate:VAR::RESTATE_VERSION
 ```
 
-
-When you are finished with the tour, you can stop Restate with `docker stop restate_dev`. This also deletes any persisted state because we start the container with the `--rm` flag. You can restart Restate at a later time (without losing state) with `docker restart restate_dev`. You can view Restate logs using `docker logs restate_dev` or follow them live by adding `--follow`.
+When you stop the container, any persisted state is dropped because we start the container with the `--rm` flag.
 
 ### Registering services with Restate
 
-When Restate first comes up, it doesn't know anything about our services. Let's tell it where they are running. You can trigger service discovery by calling the Restate admin API informing it about the service deployment where our service is listening.
+When Restate first comes up, it doesn't know anything about our services. Let's tell it where they are running.
+You can register services by calling the Restate Admin API (default port `9070`) and supplying it the service endpoint URI:
 
 ```shell
 curl localhost:9070/deployments \
@@ -186,11 +181,7 @@ curl localhost:9070/deployments \
   -d '{"uri": "http://host.docker.internal:9080"}'
 ```
 
-Restate will send a discovery request to the service deployment to find the services and methods run behind this endpoint. Restate keeps track of which services run where (including of the method signatures). Restate also keeps track of multiple revisions as your APIs evolve, and routes requests appropriately.
-
-:::tip
-You can pipe the output of `curl` into the `jq` utility to reformat the JSON output and make it easier to read.
-:::
+Once registered, Restate knows which services run behind the endpoint (including of the method signatures) and can invoke them.
 
 You should now see the registered services printed out to your terminal:
 
@@ -308,13 +299,9 @@ In `src/main/java/dev/restate/tour/app` you will find the skeletons of the vario
 </TabItem>
 </Tabs>
 
-:::tip
-Only public Restate services are callable from outside Restate using the ingress endpoint. [You can mark services as private](/operate/invocation#private-services) which makes them available only to other Restate services.
-:::
-
 ## Services and concurrency
 
-Restate supports three distinct kinds of services:
+Restate supports two distinct kinds of services:
 
 1. **Keyed service**:
 All service invocations are sharded on a user-defined key.
@@ -325,9 +312,6 @@ No key defined.
 No concurrency guarantees or limitations.
 Invocations are processed as they come in.
 You would get the same behavior with a keyed service with random keys.
-3. **Singleton service** (not available for TypeScript Handler API): No key defined. There is at most one concurrent invocation for this entire service. You can
-see this as a keyed service where all invocations have an identical key. This service type does not scale up, so
-don't use it for heavy load.
 
 In this example app, the `Checkout` service is an unkeyed service, while the `TicketService` and `UserSession` services are keyed services.
 The `TicketService` is keyed by the ticket ID, while the `UserSession` service is keyed by the user ID.
@@ -347,12 +331,10 @@ For example, for the `Checkout` service, you create a router with the `handle` f
 CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part1/checkout.ts#<start_checkout>-<end_checkout>
 ```
 
-The functions of an unkeyed router have two optional parameters:
+The functions of an unkeyed router have two parameters:
 
 * A `ctx` of type `restate.Context` which allows to interact with Restate.
 * A `request` of type JSON object which represents additional invocation data.
-
-You can choose the parameter names differently.
 
 The `Checkout` service only has a single function, but you can add more functions to the router if you want.
 
@@ -365,15 +347,16 @@ For example, the `UserSession` service has the following keyed router:
 CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/app/user_session.ts#<start_user_session>-<end_user_session>
 ```
 
-The functions of a keyed router have three optional parameters
+The functions of a keyed router have three parameters
 
 * A `ctx` of type `restate.KeyedContext` which allows to interact with Restate.
 * A `key` parameter of type string which represents the key of the invoked service.
 * A `request` parameter of type JSON object which represents additional invocation data.
 
 You can choose the parameter names differently.
+
 As mentioned, for keyed services there can be at most one concurrent invocation to any method of the service.
-This means that for the same value of `key`, an unfinished call to `addTicket()` will block subsequent calls to `expireTicket()` or `checkout()` until `addTicket()` has finished. This holds true even if you omit the `key` parameter from the function signature, as we have done with the `maybe()` and `withSomething()` functions above.
+This means that for the same value of `key`, an unfinished call to `addTicket()` will block subsequent calls to `expireTicket()` or `checkout()` until `addTicket()` has finished.
 
 **Exporting the service API**
 
@@ -425,14 +408,10 @@ To learn more about gRPC, have a look at the [gRPC documentation](https://grpc.i
 </Tabs>
 
 :::tip
-The concurrency guarantees of keyed services make it a lot easier to reason about interaction with external systems.
-
-Imagine you have a keyed service which is the single writer to a database and every key only interacts with an isolated set of database rows.
+The concurrency guarantees of keyed services simplify reasoning about interaction with external systems, because you are sure that there is only a single ongoing invocation for a single key.
+For example, imagine you have a keyed service which is the single writer to a database and every key only interacts with an isolated set of database rows.
 Then you can scale your application and never have concurrent invocations writing to the same database row.
 This resolves common data consistency issues such as lost updates or non-repeatable reads.
-
-Have a look at the product service of the [shopping cart example](https://github.com/restatedev/examples/tree/main/end-to-end-applications/typescript/ecommerce-store).
-The service is keyed on product ID, just like the database table it writes to. Restate ensures that there are never concurrent writes to the same product.
 :::
 
 :::caution
@@ -487,17 +466,17 @@ The call to `expireTicket` finishes earlier than the `unreserve` function becaus
 <details>
 <summary>Show the logs</summary>
 
-    ```log
-    [restate] [2023-08-15T21:13:54.707Z] DEBUG: [UserSession/expireTicket] [K1qex52CPYkBiiHLgq92RZrEuQ502v1K] : Invoking function.
-    [restate] [2023-08-15T21:13:54.708Z] DEBUG: [UserSession/expireTicket] [K1qex52CPYkBiiHLgq92RZrEuQ502v1K] : Adding message to journal and sending to Restate ; BackgroundInvokeEntryMessage
-    [restate] [2023-08-15T21:13:54.708Z] DEBUG: [UserSession/expireTicket] [K1qex52CPYkBiiHLgq92RZrEuQ502v1K] : Journaled and sent output message ; OutputStreamEntryMessage
-    //highlight-next-line
-    [restate] [2023-08-15T21:13:54.709Z] DEBUG: [UserSession/expireTicket] [K1qex52CPYkBiiHLgq92RZrEuQ502v1K] : Function completed successfully.
-    [restate] [2023-08-15T21:13:54.713Z] DEBUG: [TicketService/unreserve] [IwF2v7ci3eUBiiHLgrFz6rkvK_3tRk6Z] : Invoking function.
-    [restate] [2023-08-15T21:13:54.713Z] DEBUG: [TicketService/unreserve] [IwF2v7ci3eUBiiHLgrFz6rkvK_3tRk6Z] : Journaled and sent output message ; OutputStreamEntryMessage
-    //highlight-next-line
-    [restate] [2023-08-15T21:13:54.713Z] DEBUG: [TicketService/unreserve] [IwF2v7ci3eUBiiHLgrFz6rkvK_3tRk6Z] : Function completed successfully.
-    ```
+```log
+[restate] [UserSession/expireTicket][inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz][2024-03-18T16:14:24.671Z] DEBUG: Invoking function.
+[restate] [UserSession/expireTicket][inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz][2024-03-18T16:14:24.672Z] DEBUG: Adding message to journal and sending to Restate ; BackgroundInvokeEntryMessage
+[restate] [UserSession/expireTicket][inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz][2024-03-18T16:14:24.673Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
+//highlight-next-line
+[restate] [UserSession/expireTicket][inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz][2024-03-18T16:14:24.673Z] DEBUG: Function completed successfully.
+[restate] [TicketService/unreserve][inv_1k78Krj3GqrK3GuJXkgaXBbg69R47TCeAN][2024-03-18T16:14:24.677Z] DEBUG: Invoking function.
+[restate] [TicketService/unreserve][inv_1k78Krj3GqrK3GuJXkgaXBbg69R47TCeAN][2024-03-18T16:14:24.677Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
+//highlight-next-line
+[restate] [TicketService/unreserve][inv_1k78Krj3GqrK3GuJXkgaXBbg69R47TCeAN][2024-03-18T16:14:24.677Z] DEBUG: Function completed successfully.
+```
 
 </details>
 
@@ -572,8 +551,8 @@ Add the highlighted code snippet to the `addTicket` function in the `UserSession
 CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part1/user_session.ts#<start_add_ticket>-<end_add_ticket>
 ```
 
-To make the call, you supply the exported `ticketServiceApi` to the context via the `rpc` function to specify which service to invoke.
-Then you call the `reserve` function, which returns a Promise that, in this case, gets resolved with the `boolean` response.
+You do the call via `ctx.rpc` and supply the exported `ticketServiceApi` to specify which service to invoke.
+Then you call the `reserve` function, which returns a Promise that will get resolved with the `boolean` response.
 
 Run the services via `npm run app` and send a request to `UserSession/addTicket`, as we did [previously](#calling-services-from-outside-restate).
 
@@ -585,22 +564,22 @@ The call to `addTicket` finishes earlier than the `reserve` function because it 
 <summary>Show the logs</summary>
 
 ```log
-[restate] [2023-08-15T20:53:51.026Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHDd1Z6crtc63up0wAD] : Invoking function.
-[restate] [2023-08-15T20:53:51.026Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHDd1Z6crtc63up0wAD] : Adding message to journal and sending to Restate ; InvokeEntryMessage
-[restate] [2023-08-15T20:53:51.027Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHDd1Z6crtc63up0wAD] : Scheduling suspension in 30000 ms
-[restate] [2023-08-15T20:53:51.029Z] DEBUG: [TicketService/reserve] [IwF2v7ci3eUBiiHEvH1866jAt-dCQtFY] : Invoking function.
-[restate] [2023-08-15T20:53:51.029Z] DEBUG: [TicketService/reserve] [IwF2v7ci3eUBiiHEvH1866jAt-dCQtFY] : Journaled and sent output message ; OutputStreamEntryMessage
-[restate] [2023-08-15T20:53:51.029Z] DEBUG: [TicketService/reserve] [IwF2v7ci3eUBiiHEvH1866jAt-dCQtFY] : Function completed successfully.
-[restate] [2023-08-15T20:53:51.031Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHDd1Z6crtc63up0wAD] : Received completion message from Restate, adding to journal. ; CompletionMessage
-[restate] [2023-08-15T20:53:51.031Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHDd1Z6crtc63up0wAD] : Journaled and sent output message ; OutputStreamEntryMessage
-[restate] [2023-08-15T20:53:51.031Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHDd1Z6crtc63up0wAD] : Function completed successfully.
+//highlight-next-line
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM95mw1LLMMJY1Y0thJ9ugFGN][2024-03-18T16:30:28.790Z] DEBUG: Invoking function.
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM95mw1LLMMJY1Y0thJ9ugFGN][2024-03-18T16:30:28.792Z] DEBUG: Adding message to journal and sending to Restate ; InvokeEntryMessage
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM95mw1LLMMJY1Y0thJ9ugFGN][2024-03-18T16:30:28.792Z] DEBUG: Scheduling suspension in 30000 ms
+    //highlight-next-line
+[restate] [TicketService/reserve][inv_1k78Krj3GqrK6odGaRe866kHZilkVf1H4l][2024-03-18T16:30:28.796Z] DEBUG: Invoking function.
+[restate] [TicketService/reserve][inv_1k78Krj3GqrK6odGaRe866kHZilkVf1H4l][2024-03-18T16:30:28.796Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
+    //highlight-next-line
+[restate] [TicketService/reserve][inv_1k78Krj3GqrK6odGaRe866kHZilkVf1H4l][2024-03-18T16:30:28.796Z] DEBUG: Function completed successfully.
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM95mw1LLMMJY1Y0thJ9ugFGN][2024-03-18T16:30:28.799Z] DEBUG: Received completion message from Restate, adding to journal. ; CompletionMessage
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM95mw1LLMMJY1Y0thJ9ugFGN][2024-03-18T16:30:28.800Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
+    //highlight-next-line
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM95mw1LLMMJY1Y0thJ9ugFGN][2024-03-18T16:30:28.800Z] DEBUG: Function completed successfully.
 ```
 
 </details>
-
-To better understand what's going on, you can increase the log level by setting the environment variable `RESTATE_DEBUG_LOGGING=JOURNAL`.
-You can silence the logging by removing this environment variable in `package.json`, where the scripts are defined.
-To also log the messages, use `RESTATE_DEBUG_LOGGING=JOURNAL_VERBOSE`.
 
 </TabItem>
 <TabItem value="java" label="Java">
@@ -640,9 +619,9 @@ Once you have added this to the code, restart the service and try it out by call
 
 The call you just added seems like a regular RPC call as you might know them from other service frameworks. This similarity is superficial; under the hood the Restate runtime and SDK cooperate to deliver resiliency and efficiency.
 
-When an incoming request is sent to Restate, the runtime first persists it. It establishes a connection to the user session service, and sends the request over to begin a new invocation. All communications between the service and other Restate components goes over this connection. In particular, the user session service does not communicate directly with the ticket service.
+When an incoming request is sent to Restate, the runtime first persists it. It establishes a connection to the user session service, and sends the request over to begin a new invocation. All communications between the service and other Restate components goes over this connection.
 
-When the user session service makes an RPC to the ticket service, this request goes over the open connection to the runtime. Once again, this is durably persisted in the Restate journal, before it is passed on (by Restate) to the ticket service. In case of a failure, Restate takes care of retrying according to the configured policy. We will cover [Resiliency](#resiliency) in more detail later on. When the ticket service responds, its response is then sent back to the runtime, which persists it and forwards it to the user session service to continue execution.
+When the user session service makes an RPC to the ticket service, this request goes over the open connection to the runtime. Once again, this is durably persisted in the Restate journal, before it is passed on (by Restate) to the ticket service. In case of failures, Restate takes care of retries. When the ticket service responds, its response is then sent back to the runtime, which persists it and forwards it to the user session service to continue execution.
 
 When services take a while to respond, Restate suspends the calling execution to free up the resources for other invocations. When the calling service is unblocked to resume, Restate invokes it again and sends over a replay log. This replay log contains all the state that the previously completed steps generated prior to suspension. The service replays the log, and the service resumes execution from the point where it left off prior to suspending.
 
@@ -655,7 +634,7 @@ The suspension mechanism is especially beneficial if you deploy your services to
 To see this work in practice, let's pretend that ticket reservations take a while by making the `TicketService/reserve` function sleep for a while.
 
 :::caution
-This is not the best way to sleep in a Restate service! The Restate SDK offers a native way to suspend execution for a period of time. We will cover [suspendable sleep a bit later on](#suspendable-sleep) in the tour.
+This is not the best way to sleep in a Restate service! The Restate SDK offers a native way to suspend execution for a period of time. We will cover [suspendable sleep later on](#suspendable-sleep).
 :::
 
 <Tabs groupId="sdk" queryString>
@@ -677,29 +656,27 @@ Once the runtime has received the response, it invokes the `addTicket` function 
 <summary>Show the logs</summary>
 
 ```log
-[restate] [2023-08-15T20:58:25.433Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHF0pFyZoYvJ5G_WZMF] : Invoking function.
-[restate] [2023-08-15T20:58:25.434Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHF0pFyZoYvJ5G_WZMF] : Adding message to journal and sending to Restate ; InvokeEntryMessage
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM968NomaJHFQH9MgVlD4B5AZ][2024-03-19T07:49:43.849Z] DEBUG: Invoking function.
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM968NomaJHFQH9MgVlD4B5AZ][2024-03-19T07:49:43.850Z] DEBUG: Adding message to journal and sending to Restate ; InvokeEntryMessage
 //highlight-next-line
-[restate] [2023-08-15T20:58:25.434Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHF0pFyZoYvJ5G_WZMF] : Scheduling suspension in 30000 ms
-[restate] [2023-08-15T20:58:25.436Z] DEBUG: [TicketService/reserve] [IwF2v7ci3eUBiiHF0pNxZqnhNkoJPdn7] : Invoking function.
-[restate] [2023-08-15T20:58:55.436Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHF0pFyZoYvJ5G_WZMF] : Writing suspension message to journal. ; SuspensionMessage
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM968NomaJHFQH9MgVlD4B5AZ][2024-03-19T07:49:43.851Z] DEBUG: Scheduling suspension in 30000 ms
+[restate] [TicketService/reserve][inv_1k78Krj3GqrK4tGbnNcKlrKTRsIDu7R6xz][2024-03-19T07:49:43.855Z] DEBUG: Invoking function.
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM968NomaJHFQH9MgVlD4B5AZ][2024-03-19T07:50:13.853Z] DEBUG: Writing suspension message to journal. ; SuspensionMessage
 //highlight-next-line
-[restate] [2023-08-15T20:58:55.438Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHF0pFyZoYvJ5G_WZMF] : Suspending function.
-[restate] [2023-08-15T20:59:00.440Z] DEBUG: [TicketService/reserve] [IwF2v7ci3eUBiiHF0pNxZqnhNkoJPdn7] : Journaled and sent output message ; OutputStreamEntryMessage
-[restate] [2023-08-15T20:59:00.441Z] DEBUG: [TicketService/reserve] [IwF2v7ci3eUBiiHF0pNxZqnhNkoJPdn7] : Function completed successfully.
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM968NomaJHFQH9MgVlD4B5AZ][2024-03-19T07:50:13.853Z] DEBUG: Suspending function.
+[restate] [TicketService/reserve][inv_1k78Krj3GqrK4tGbnNcKlrKTRsIDu7R6xz][2024-03-19T07:50:18.860Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [TicketService/reserve][inv_1k78Krj3GqrK4tGbnNcKlrKTRsIDu7R6xz][2024-03-19T07:50:18.861Z] DEBUG: Function completed successfully.
 //highlight-next-line
-[restate] [2023-08-15T20:59:00.458Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHF0pFyZoYvJ5G_WZMF] : Resuming (replaying) function.
-[restate] [2023-08-15T20:59:00.459Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHF0pFyZoYvJ5G_WZMF] : Matched and replayed message from journal ; InvokeEntryMessage
-[restate] [2023-08-15T20:59:00.460Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHF0pFyZoYvJ5G_WZMF] : Journaled and sent output message ; OutputStreamEntryMessage
-[restate] [2023-08-15T20:59:00.460Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHF0pFyZoYvJ5G_WZMF] : Function completed successfully.
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM968NomaJHFQH9MgVlD4B5AZ][2024-03-19T07:50:18.906Z] DEBUG: Resuming (replaying) function.
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM968NomaJHFQH9MgVlD4B5AZ][2024-03-19T07:50:18.906Z] DEBUG: Matched and replayed message from journal ; InvokeEntryMessage
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM968NomaJHFQH9MgVlD4B5AZ][2024-03-19T07:50:18.906Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM968NomaJHFQH9MgVlD4B5AZ][2024-03-19T07:50:18.906Z] DEBUG: Function completed successfully.
 ```
 
 </details>
 
 </TabItem>
 <TabItem value="java" label="Java">
-
-[//]: # (TODO: mention where the 60s is coming from - this is different than the 30s auto-suspend delay in JS SDK)
 
 ```java
 CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/TicketService.java#<start_reserve>-<end_reserve>
@@ -740,13 +717,8 @@ Once the runtime has received the response, it invokes the `addTicket` function 
 </TabItem>
 </Tabs>
 
-:::tip Terminating invocations
-[By default](/operate/configuration/#default-configuration), Restate will keep retrying failed invocations until they succeed. If at any point during testing you create an invocation that you want to permanently terminate, you can kill it using the [Admin API](https://docs.restate.dev/references/admin-api#tag/invocation) and the invocation id from the logs:
-
-```shell
-curl -X DELETE http://localhost:9070/invocations/<invocation_id>
-```
-
+:::tip Cancelling and killing invocations
+[By default](/operate/configuration/#default-configuration), Restate will keep retrying failed invocations until they succeed. If at any point during testing you create an invocation that you want to permanently terminate, you can cancel ([docs](/operate/invocation#cancel-an-invocation)) or kill ([docs](/operate/invocation#kill-an-invocation)) it its invocation ID.
 Each invocation gets an ID assigned by Restate. You can find the ID printed in the service logs.
 :::
 
@@ -780,15 +752,15 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_i
 Call the `UserSession/checkout` function as you did [earlier](#calling-services-from-outside-restate) and have a look at the logs again to see what happened:
 
 ```log
-[restate] [2023-08-15T21:06:12.672Z] DEBUG: [UserSession/checkout] [K1qex52CPYkBiiHHQJdwvLuBqEHXFQU3] : Invoking function.
-[restate] [2023-08-15T21:06:12.673Z] DEBUG: [UserSession/checkout] [K1qex52CPYkBiiHHQJdwvLuBqEHXFQU3] : Adding message to journal and sending to Restate ; InvokeEntryMessage
-[restate] [2023-08-15T21:06:12.674Z] DEBUG: [UserSession/checkout] [K1qex52CPYkBiiHHQJdwvLuBqEHXFQU3] : Scheduling suspension in 30000 ms
-[restate] [2023-08-15T21:06:12.676Z] DEBUG: [Checkout/handle] [H32MEMFENfUBiiHHQJxy5oLQ-W4akbii] : Invoking function.
-[restate] [2023-08-15T21:06:12.677Z] DEBUG: [Checkout/handle] [H32MEMFENfUBiiHHQJxy5oLQ-W4akbii] : Journaled and sent output message ; OutputStreamEntryMessage
-[restate] [2023-08-15T21:06:12.677Z] DEBUG: [Checkout/handle] [H32MEMFENfUBiiHHQJxy5oLQ-W4akbii] : Function completed successfully.
-[restate] [2023-08-15T21:06:12.679Z] DEBUG: [UserSession/checkout] [K1qex52CPYkBiiHHQJdwvLuBqEHXFQU3] : Received completion message from Restate, adding to journal. ; CompletionMessage
-[restate] [2023-08-15T21:06:12.679Z] DEBUG: [UserSession/checkout] [K1qex52CPYkBiiHHQJdwvLuBqEHXFQU3] : Journaled and sent output message ; OutputStreamEntryMessage
-[restate] [2023-08-15T21:06:12.679Z] DEBUG: [UserSession/checkout] [K1qex52CPYkBiiHHQJdwvLuBqEHXFQU3] : Function completed successfully.
+[restate] [UserSession/checkout][inv_1gdJBtdVEcM919dOBhoVBm3fUMlaIHnANr][2024-03-19T07:57:24.018Z] DEBUG: Invoking function.
+[restate] [UserSession/checkout][inv_1gdJBtdVEcM919dOBhoVBm3fUMlaIHnANr][2024-03-19T07:57:24.019Z] DEBUG: Adding message to journal and sending to Restate ; InvokeEntryMessage
+[restate] [UserSession/checkout][inv_1gdJBtdVEcM919dOBhoVBm3fUMlaIHnANr][2024-03-19T07:57:24.020Z] DEBUG: Scheduling suspension in 30000 ms
+[restate] [Checkout/handle][inv_16WnWCiCVV5G2gUUevDM4uIli4v7TN9k2d][2024-03-19T07:57:24.023Z] DEBUG: Invoking function.
+[restate] [Checkout/handle][inv_16WnWCiCVV5G2gUUevDM4uIli4v7TN9k2d][2024-03-19T07:57:24.024Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [Checkout/handle][inv_16WnWCiCVV5G2gUUevDM4uIli4v7TN9k2d][2024-03-19T07:57:24.024Z] DEBUG: Function completed successfully.
+[restate] [UserSession/checkout][inv_1gdJBtdVEcM919dOBhoVBm3fUMlaIHnANr][2024-03-19T07:57:24.026Z] DEBUG: Received completion message from Restate, adding to journal. ; CompletionMessage
+[restate] [UserSession/checkout][inv_1gdJBtdVEcM919dOBhoVBm3fUMlaIHnANr][2024-03-19T07:57:24.027Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [UserSession/checkout][inv_1gdJBtdVEcM919dOBhoVBm3fUMlaIHnANr][2024-03-19T07:57:24.027Z] DEBUG: Function completed successfully.
 ```
 
 Notice that the `UserSession` didn't get suspended because the response came before the suspension timeout hit.
@@ -885,27 +857,27 @@ Finally, you see the responses of both functions coming in.
 <TabItem value="ts" label="TypeScript">
 
 ```log
-[restate] [2023-08-15T21:23:49.536Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHN6ft5nYhPYl4Q3r4Y] : Invoking function.
-[restate] [2023-08-15T21:23:49.537Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHN6ft5nYhPYl4Q3r4Y] : Adding message to journal and sending to Restate ; InvokeEntryMessage
-[restate] [2023-08-15T21:23:49.538Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHN6ft5nYhPYl4Q3r4Y] : Scheduling suspension in 30000 ms
-[restate] [2023-08-15T21:23:49.540Z] DEBUG: [TicketService/reserve] [IwF2v7ci3eUBiiHN6gh7cpkCpv4OREYE] : Invoking function.
-[restate] [2023-08-15T21:23:49.540Z] DEBUG: [TicketService/reserve] [IwF2v7ci3eUBiiHN6gh7cpkCpv4OREYE] : Adding message to journal and sending to Restate ; SleepEntryMessage
-[restate] [2023-08-15T21:23:49.540Z] DEBUG: [TicketService/reserve] [IwF2v7ci3eUBiiHN6gh7cpkCpv4OREYE] : Scheduling suspension in 30000 ms
+restate] [UserSession/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:18.538Z] DEBUG: Invoking function.
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:18.539Z] DEBUG: Adding message to journal and sending to Restate ; InvokeEntryMessage
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:18.539Z] DEBUG: Scheduling suspension in 30000 ms
+[restate] [TicketService/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:18.543Z] DEBUG: Invoking function.
+[restate] [TicketService/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:18.543Z] DEBUG: Adding message to journal and sending to Restate ; SleepEntryMessage
+[restate] [TicketService/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:18.543Z] DEBUG: Scheduling suspension in 30000 ms
 // highlight-start
-[restate] [2023-08-15T21:24:19.541Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHN6ft5nYhPYl4Q3r4Y] : Writing suspension message to journal. ; SuspensionMessage
-[restate] [2023-08-15T21:24:19.547Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHN6ft5nYhPYl4Q3r4Y] : Suspending function.
-[restate] [2023-08-15T21:24:19.551Z] DEBUG: [TicketService/reserve] [IwF2v7ci3eUBiiHN6gh7cpkCpv4OREYE] : Writing suspension message to journal. ; SuspensionMessage
-[restate] [2023-08-15T21:24:19.552Z] DEBUG: [TicketService/reserve] [IwF2v7ci3eUBiiHN6gh7cpkCpv4OREYE] : Suspending function.
-[restate] [2023-08-15T21:24:24.555Z] DEBUG: [TicketService/reserve] [IwF2v7ci3eUBiiHN6gh7cpkCpv4OREYE] : Resuming (replaying) function.
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:48.568Z] DEBUG: Writing suspension message to journal. ; SuspensionMessage
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:48.568Z] DEBUG: Suspending function.
+[restate] [TicketService/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:48.569Z] DEBUG: Writing suspension message to journal. ; SuspensionMessage
+[restate] [TicketService/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:48.569Z] DEBUG: Suspending function.
+[restate] [TicketService/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:53.554Z] DEBUG: Resuming (replaying) function.
 // highlight-end
-[restate] [2023-08-15T21:24:24.556Z] DEBUG: [TicketService/reserve] [IwF2v7ci3eUBiiHN6gh7cpkCpv4OREYE] : Matched and replayed message from journal ; SleepEntryMessage
-[restate] [2023-08-15T21:24:24.557Z] DEBUG: [TicketService/reserve] [IwF2v7ci3eUBiiHN6gh7cpkCpv4OREYE] : Journaled and sent output message ; OutputStreamEntryMessage
-[restate] [2023-08-15T21:24:24.557Z] DEBUG: [TicketService/reserve] [IwF2v7ci3eUBiiHN6gh7cpkCpv4OREYE] : Function completed successfully.
+[restate] [TicketService/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:53.554Z] DEBUG: Matched and replayed message from journal ; SleepEntryMessage
+[restate] [TicketService/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:53.554Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [TicketService/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:53.554Z] DEBUG: Function completed successfully.
 // highlight-next-line
-[restate] [2023-08-15T21:24:24.564Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHN6ft5nYhPYl4Q3r4Y] : Resuming (replaying) function.
-[restate] [2023-08-15T21:24:24.565Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHN6ft5nYhPYl4Q3r4Y] : Matched and replayed message from journal ; InvokeEntryMessage
-[restate] [2023-08-15T21:24:24.565Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHN6ft5nYhPYl4Q3r4Y] : Journaled and sent output message ; OutputStreamEntryMessage
-[restate] [2023-08-15T21:24:24.565Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHN6ft5nYhPYl4Q3r4Y] : Function completed successfully.
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:53.598Z] DEBUG: Resuming (replaying) function.
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:53.598Z] DEBUG: Matched and replayed message from journal ; InvokeEntryMessage
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:53.598Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:53.598Z] DEBUG: Function completed successfully.
 ```
 
 </TabItem>
@@ -992,19 +964,19 @@ To test it out, put the delay to a lower value, for example 5 seconds, call the 
 
 ```log
 ... logs from reserve call ...
-[restate] [2023-08-15T21:29:44.426Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHT-at6er1g5Tkk14Ni] : Matched and replayed message from journal ; InvokeEntryMessage
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM90xbqbDEnOzNgilf2WmjZTP][2024-03-19T08:49:43.081Z] DEBUG: Received completion message from Restate, adding to journal. ; CompletionMessage
 // highlight-next-line
-[restate] [2023-08-15T21:29:44.427Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHT-at6er1g5Tkk14Ni] : Adding message to journal and sending to Restate ; BackgroundInvokeEntryMessage
-[restate] [2023-08-15T21:29:44.427Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHT-at6er1g5Tkk14Ni] : Journaled and sent output message ; OutputStreamEntryMessage
-[restate] [2023-08-15T21:29:44.427Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHT-at6er1g5Tkk14Ni] : Function completed successfully.
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM90xbqbDEnOzNgilf2WmjZTP][2024-03-19T08:49:43.081Z] DEBUG: Adding message to journal and sending to Restate ; BackgroundInvokeEntryMessage
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM90xbqbDEnOzNgilf2WmjZTP][2024-03-19T08:49:43.081Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM90xbqbDEnOzNgilf2WmjZTP][2024-03-19T08:49:43.081Z] DEBUG: Function completed successfully.
+[restate] [UserSession/expireTicket][inv_1gdJBtdVEcM93r8tce9IfwnbiAsk8lCevD][2024-03-19T08:49:48.092Z] DEBUG: Invoking function.
+[restate] [UserSession/expireTicket][inv_1gdJBtdVEcM93r8tce9IfwnbiAsk8lCevD][2024-03-19T08:49:48.093Z] DEBUG: Adding message to journal and sending to Restate ; BackgroundInvokeEntryMessage
+[restate] [UserSession/expireTicket][inv_1gdJBtdVEcM93r8tce9IfwnbiAsk8lCevD][2024-03-19T08:49:48.093Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [UserSession/expireTicket][inv_1gdJBtdVEcM93r8tce9IfwnbiAsk8lCevD][2024-03-19T08:49:48.093Z] DEBUG: Function completed successfully.
 // highlight-next-line
-[restate] [2023-08-15T21:29:49.442Z] DEBUG: [UserSession/expireTicket] [K1qex52CPYkBiiHU-694wqUVn-2P15Au] : Invoking function.
-[restate] [2023-08-15T21:29:49.443Z] DEBUG: [UserSession/expireTicket] [K1qex52CPYkBiiHU-694wqUVn-2P15Au] : Adding message to journal and sending to Restate ; BackgroundInvokeEntryMessage
-[restate] [2023-08-15T21:29:49.444Z] DEBUG: [UserSession/expireTicket] [K1qex52CPYkBiiHU-694wqUVn-2P15Au] : Journaled and sent output message ; OutputStreamEntryMessage
-[restate] [2023-08-15T21:29:49.444Z] DEBUG: [UserSession/expireTicket] [K1qex52CPYkBiiHU-694wqUVn-2P15Au] : Function completed successfully.
-[restate] [2023-08-15T21:29:49.456Z] DEBUG: [TicketService/unreserve] [IwF2v7ci3eUBiiHT-bh91JO16nzGk-X0] : Invoking function.
-[restate] [2023-08-15T21:29:49.457Z] DEBUG: [TicketService/unreserve] [IwF2v7ci3eUBiiHT-bh91JO16nzGk-X0] : Journaled and sent output message ; OutputStreamEntryMessage
-[restate] [2023-08-15T21:29:49.457Z] DEBUG: [TicketService/unreserve] [IwF2v7ci3eUBiiHT-bh91JO16nzGk-X0] : Function completed successfully.
+[restate] [TicketService/unreserve][inv_1k78Krj3GqrK529L4BRmz8ntFtiw2DkahH][2024-03-19T08:49:48.141Z] DEBUG: Invoking function.
+[restate] [TicketService/unreserve][inv_1k78Krj3GqrK529L4BRmz8ntFtiw2DkahH][2024-03-19T08:49:48.141Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [TicketService/unreserve][inv_1k78Krj3GqrK529L4BRmz8ntFtiw2DkahH][2024-03-19T08:49:48.141Z] DEBUG: Function completed successfully.
 ```
 
 </TabItem>
@@ -1107,10 +1079,10 @@ This eliminates the need for a session database.
 :::
 
 The isolation level of the application state depends on the service type:
-1. Keyed service: Application state is isolated per key.
+1. **Keyed service**: Application state is isolated per key.
 All the invocations for the same key have access to the same application state.
 Restate's state feature is most useful for this service type.
-2. Unkeyed service: State is isolated per invocation. Using state isn't useful
+2. **Unkeyed service**: State is isolated per invocation. Using state isn't useful
 for this service type.
 
 ### Getting and setting K/V state
@@ -1147,33 +1119,27 @@ Have a look at the documentation on serialization to learn more about the differ
 You can store multiple key-value pairs, by using different state keys.
 Here, you get the value under the key `"tickets"`.
 Restate ensures that you get the cart belonging to the current user ID (key of the service).
-issue320_docs_injection_code_snippets
 After you added the ticket to the cart array, you set the state to the new value with `ctx.set`.
 
 Run the services and call the `addTicket` function, to see the interaction with state.
 
+<details>
+<summary>Show the logs</summary>
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
-<details>
-<summary>Show the logs</summary>
+
 
 ```log
 ... logs from reserve call ...
 // highlight-start
-[restate] [2023-08-16T07:32:02.415Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHVZ9t6j52X1BcPKa1N] : Adding message to journal and sending to Restate ; GetStateEntryMessage
-[restate] [2023-08-16T07:32:02.415Z] DEBUG: [UserSession/addTicket] [K1qex52CPYkBiiHVZ9t6j52X1BcPKa1N] : Adding message to journal and sending to Restate ; SetStateEntryMessage
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM97yGYEG5NWYtbMlnSAGHGY9][2024-03-19T08:55:20.941Z] DEBUG: Adding message to journal and sending to Restate ; GetStateEntryMessage
+[restate] [UserSession/addTicket][inv_1gdJBtdVEcM97yGYEG5NWYtbMlnSAGHGY9][2024-03-19T08:55:20.941Z] DEBUG: Adding message to journal and sending to Restate ; SetStateEntryMessage
 // highlight-end
 ... logs from expireTicket call ...
 ```
 
 You see that when you request the state, it gets logged in the journal.
-
-</details>
-
-:::info
-You can store any object in the state as long as the value can be serialized with `Buffer.from(JSON.stringify(yourObject))`.
-:::
 
 </TabItem>
 <TabItem value="java" label="Java">
@@ -1183,12 +1149,25 @@ You can store any object in the state as long as the value can be serialized wit
 [//]: # (The Java SDK doesn't currently log anything on get/set state!)
 [//]: # (</details>)
 
-:::info
-To enable the Restate SDK to serialize arbitrary objects, add the `dev.restate:sdk-serde-jackson:VAR::JAVA_SDK_VERSION` dependency.
-:::
 
 </TabItem>
 </Tabs>
+
+</details>
+
+:::note Serialization
+
+<Tabs>
+<TabItem value="ts" label="TypeScript">
+You can store any object in the state as long as the value can be serialized with `Buffer.from(JSON.stringify(yourObject))`.
+</TabItem>
+<TabItem value="java" label="Java">
+To enable the Restate SDK to serialize arbitrary objects, add the `dev.restate:sdk-serde-jackson:VAR::JAVA_SDK_VERSION` dependency.
+</TabItem>
+</Tabs>
+
+:::
+
 
 When starting the invocation, Restate attaches the application state to the request.
 So when you operate on the state in your function with `ctx.get` and `ctx.set`, you get access to a local copy of the state for fast access.
@@ -1212,7 +1191,7 @@ Add several tickets to the state to see how the query result gets updated.
 
 You can also stop and relaunch the service or restart the runtime (`docker restart restate_dev`), to see that this has no influence on the tickets.
 
-Also adapt the `UserSession/checkout` function, to use the tickets:
+Now, adapt the `UserSession/checkout` function, to use the tickets:
 
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
@@ -1292,12 +1271,7 @@ Implement the `TicketService/reserve`, `TicketService/unreserve`, and `TicketSer
 While you are developing them, you can use psql to monitor the state of the `TicketService`:
 
 ```shell
-psql -h localhost -p 9071 -c "SELECT * FROM state WHERE service like '\''%TicketService%'\''";'
-```
-
-Use `watch` to see the state change in real-time:
-```shell
-watch -n 1 'psql -h localhost -p 9071 -c "select service, service_key_utf8, key, value_utf8 from state where service like '\''%TicketService%'\''";'
+watch -n 1 'psql -h localhost -p 9071 -c "select service, service_key, key, value_utf8 from state where service like '\''%TicketService%'\''";'
 ```
 
 1. Implement the `TicketService/reserve` function.
@@ -1429,11 +1403,12 @@ This token will be supplied in the payment request to ensure that a customer nev
 2. Then, we use a side effect to trigger the payment via an external payment provider (`PaymentClient`).
 You can find a payment client stub in `auxiliary/PaymentClient`. Do the following:
     1. Create a new payment client in `Checkout/handle`.
-    2. Then, use `call(idempotencyKey, amount)` to execute the payment for a certain idempotency key (String) and total amount (double/number).
+    2. From within a side effect, execute the payment via `paymentClient.call(idempotencyKey, amount)`.
     Assume every ticket costs 40 dollars.
     Store the boolean result of the call as the return value of the side effect.
-    The side effect executes the supplied function and stores the return value in Restate.
-    Upon replay, the stored value gets inserted and the function doesn't get re-executed.
+
+The side effect executes the supplied function and stores the return value in Restate.
+Upon replay, the stored value gets inserted and the function doesn't get re-executed.
 
 Add the following code snippet to the `Checkout/handle` function:
 
@@ -1484,29 +1459,20 @@ Don't forget to remove the throwing of the error again before you continue.
 <TabItem value="ts" label="TypeScript">
 
 ```log
-... logs of `UserSession/checkout` ...
-[restate] [2023-08-16T08:00:37.965Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Invoking function.
-[restate] [2023-08-16T08:00:37.966Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Adding message to journal and sending to Restate ; undefined
-[restate] [2023-08-16T08:00:37.966Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Scheduling suspension in 30000 ms
-[restate] [2023-08-16T08:00:37.967Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Received completion message from Restate, adding to journal. ; CompletionMessage
-//highlight-next-line
-My idempotency key: dd92178a-85ca-4002-bfd5-0f3ed167317d
-[restate] [2023-08-16T08:00:37.967Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Adding message to journal and sending to Restate ; SleepEntryMessage
-[restate] [2023-08-16T08:00:37.967Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Scheduling suspension in 30000 ms
-[restate] [2023-08-16T08:01:07.965Z] DEBUG: [UserSession/checkout] [K1qex52CPYkBiiHV5Zl7vY2Gie86MAZl] : Writing suspension message to journal. ; SuspensionMessage
-[restate] [2023-08-16T08:01:07.966Z] DEBUG: [UserSession/checkout] [K1qex52CPYkBiiHV5Zl7vY2Gie86MAZl] : Suspending function.
-[restate] [2023-08-16T08:01:07.967Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Writing suspension message to journal. ; SuspensionMessage
-[restate] [2023-08-16T08:01:07.967Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Suspending function.
-//highlight-next-line
-[restate] [2023-08-16T08:01:08.981Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Resuming (replaying) function.
-[restate] [2023-08-16T08:01:08.983Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Matched and replayed message from journal ; undefined
-//highlight-next-line
-My idempotency key: dd92178a-85ca-4002-bfd5-0f3ed167317d
-[restate] [2023-08-16T08:01:08.983Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Matched and replayed message from journal ; SleepEntryMessage
-[restate] [2023-08-16T08:01:08.984Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Journaled and sent output message ; OutputStreamEntryMessage
-[restate] [2023-08-16T08:01:08.984Z] DEBUG: [Checkout/handle] [f7_cNhBPYp4BiiHV5Zxwno4-FrEGNoOL] : Function completed successfully.
-
 ... logs of `UserSessionService/Checkout` ...
+[restate] [Checkout/handle][inv_1jhuapyO2Bpg3prqzrAJOFs99mt7jv5x3r][2024-03-19T09:15:30.498Z] DEBUG: Invoking function.
+//highlight-next-line
+My idempotency key: e25b747f-ecfb-443b-8939-1935392aab6b
+Trace: [restate] [Checkout/handle][inv_1jhuapyO2Bpg3prqzrAJOFs99mt7jv5x3r][2024-03-19T09:15:30.499Z] TRACE: Function completed with an error: Something happened! Error: Something happened!
+... rest of trace  ...
+[restate] [Checkout/handle][inv_1jhuapyO2Bpg3prqzrAJOFs99mt7jv5x3r][2024-03-19T09:15:30.512Z] DEBUG: Invocation ended with retryable error. ; ErrorMessage
+[restate] [Checkout/handle][inv_1jhuapyO2Bpg3prqzrAJOFs99mt7jv5x3r][2024-03-19T09:15:30.568Z] DEBUG: Invoking function.
+//highlight-next-line
+My idempotency key: e25b747f-ecfb-443b-8939-1935392aab6b
+Trace: [restate] [Checkout/handle][inv_1jhuapyO2Bpg3prqzrAJOFs99mt7jv5x3r][2024-03-19T09:15:30.568Z] TRACE: Function completed with an error: Something happened! Error: Something happened!
+... rest of trace  ...
+[restate] [Checkout/handle][inv_1jhuapyO2Bpg3prqzrAJOFs99mt7jv5x3r][2024-03-19T09:15:30.568Z] DEBUG: Invocation ended with retryable error. ; ErrorMessage
+... retries continue ...
 ```
 
 </TabItem>
@@ -1680,68 +1646,44 @@ Have a look at the logs to see the retries.
 <TabItem value="ts" label="TypeScript">
 
 ```log
-[restate] [2023-08-16T08:24:28.507Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Invoking function.
-[restate] [2023-08-16T08:24:28.507Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Adding message to journal and sending to Restate ; undefined
-[restate] [2023-08-16T08:24:28.507Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Scheduling suspension in 30000 ms
-[restate] [2023-08-16T08:24:28.508Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Received completion message from Restate, adding to journal. ; CompletionMessage
+[restate] [Checkout/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.676Z] DEBUG: Invoking function.
 // highlight-next-line
-Payment call failed for idempotency key adab6b35-0536-4348-8912-35f8cd474cf8 and amount 40. Retrying...
-[restate] [2023-08-16T08:24:28.508Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Adding message to journal and sending to Restate ; undefined
-[restate] [2023-08-16T08:24:28.508Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Scheduling suspension in 30000 ms
-[restate] [2023-08-16T08:24:28.509Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Received completion message from Restate, adding to journal. ; CompletionMessage
-// highlight-start
-[restate] [2023-08-16T08:24:28.509Z] DEBUG: Error while executing side effect 'side-effect': Error - Payment call failed
-[restate] [2023-08-16T08:24:28.519Z] DEBUG: Error: Payment call failed
-    at PaymentClient.failingCall (/Users/till/restate/git/tour-of-restate-typescript/src/aux/payment_client.ts:37:13)
-    at doPayment (/Users/till/restate/git/tour-of-restate-typescript/src/part5/checkout.ts:29:47)
-    at AsyncLocalStorage.run (node:async_hooks:346:14)
-    at executeAndLogSideEffect (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:234:69)
-    at executeWithRetries (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:428:20)
-    at RestateGrpcContextImpl.sideEffect (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:300:12)
-    at RpcContextImpl.sideEffect (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:552:21)
-    at checkout (/Users/till/restate/git/tour-of-restate-typescript/src/part5/checkout.ts:30:29)
-    at processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at dispatchUnkeyedRpcHandler (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/server/base_restate_server.ts:366:18)
-[restate] [2023-08-16T08:24:28.520Z] DEBUG: Retrying in 10 ms
-[restate] [2023-08-16T08:24:28.520Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Adding message to journal and sending to Restate ; SleepEntryMessage
-// highlight-end
-[restate] [2023-08-16T08:24:28.520Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Scheduling suspension in 30000 ms
-[restate] [2023-08-16T08:24:28.532Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Received completion message from Restate, adding to journal. ; CompletionMessage
+Payment call failed for idempotency key 608e3977-7c91-4fc2-bf56-3c9c0c2cbabd and amount 40. Retrying...
+[restate] [Checkout/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.678Z] DEBUG: Adding message to journal and sending to Restate ; SideEffectEntryMessage
+[restate] [Checkout/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.678Z] DEBUG: Scheduling suspension in 30000 ms
+[restate] [Checkout/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.679Z] DEBUG: Received entry ack message from Restate, adding to journal. ; EntryAckMessage
+[restate] [Checkout/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.680Z] DEBUG: Error while executing side effect 'side-effect': Error - Payment call failed
+[restate] [Checkout/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.692Z] DEBUG: Error: Payment call failed
+... rest of trace ...
+[restate] [Checkout/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.692Z] DEBUG: Retrying in 10 ms
+[restate] [Checkout/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.692Z] DEBUG: Adding message to journal and sending to Restate ; SleepEntryMessage
+[restate] [Checkout/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.692Z] DEBUG: Scheduling suspension in 30000 ms
+[restate] [Checkout/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.705Z] DEBUG: Received completion message from Restate, adding to journal. ; CompletionMessage
 // highlight-next-line
-Payment call failed for idempotency key adab6b35-0536-4348-8912-35f8cd474cf8 and amount 40. Retrying...
-[restate] [2023-08-16T08:24:28.532Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Adding message to journal and sending to Restate ; undefined
-[restate] [2023-08-16T08:24:28.532Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Scheduling suspension in 30000 ms
-[restate] [2023-08-16T08:24:28.532Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Received completion message from Restate, adding to journal. ; CompletionMessage
-// highlight-start
-[restate] [2023-08-16T08:24:28.532Z] DEBUG: Error while executing side effect 'side-effect': Error - Payment call failed
-[restate] [2023-08-16T08:24:28.534Z] DEBUG: Error: Payment call failed
-    at PaymentClient.failingCall (/Users/till/restate/git/tour-of-restate-typescript/src/aux/payment_client.ts:37:13)
-    at doPayment (/Users/till/restate/git/tour-of-restate-typescript/src/part5/checkout.ts:29:47)
-    at AsyncLocalStorage.run (node:async_hooks:346:14)
-    at executeAndLogSideEffect (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:234:69)
-    at executeWithRetries (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/restate_context_impl.ts:428:20)
-    at processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at checkout (/Users/till/restate/git/tour-of-restate-typescript/src/part5/checkout.ts:30:19)
-    at dispatchUnkeyedRpcHandler (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/server/base_restate_server.ts:366:18)
-    at HostedGrpcServiceMethod.invoke (/Users/till/restate/git/tour-of-restate-typescript/node_modules/@restatedev/restate-sdk/src/types/grpc.ts:49:23)
-[restate] [2023-08-16T08:24:28.534Z] DEBUG: Retrying in 20 ms
-[restate] [2023-08-16T08:24:28.534Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Adding message to journal and sending to Restate ; SleepEntryMessage
-// highlight-end
-[restate] [2023-08-16T08:24:28.534Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Scheduling suspension in 30000 ms
-[restate] [2023-08-16T08:24:28.556Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Received completion message from Restate, adding to journal. ; CompletionMessage
+Payment call failed for idempotency key 608e3977-7c91-4fc2-bf56-3c9c0c2cbabd and amount 40. Retrying...
+[restate] [Checkout/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.705Z] DEBUG: Adding message to journal and sending to Restate ; SideEffectEntryMessage
+[restate] [Checkout/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.705Z] DEBUG: Scheduling suspension in 30000 ms
+[restate] [Checkout/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.706Z] DEBUG: Received entry ack message from Restate, adding to journal. ; EntryAckMessage
+[restate] [Checkout/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.706Z] DEBUG: Error while executing side effect 'side-effect': Error - Payment call failed
+[restate] [Checkout/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.707Z] DEBUG: Error: Payment call failed
+... rest of trace ...
+[restate] [Checkout/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.707Z] DEBUG: Retrying in 20 ms
+[restate] [Checkout/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.707Z] DEBUG: Adding message to journal and sending to Restate ; SleepEntryMessage
+[restate] [Checkout/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.707Z] DEBUG: Scheduling suspension in 30000 ms
+[restate] [Checkout/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.730Z] DEBUG: Received completion message from Restate, adding to journal. ; CompletionMessage
+Payment call succeeded for idempotency key 608e3977-7c91-4fc2-bf56-3c9c0c2cbabd and amount 40
+[restate] [Checkout/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.730Z] DEBUG: Adding message to journal and sending to Restate ; SideEffectEntryMessage
+[restate] [Checkout/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.730Z] DEBUG: Scheduling suspension in 30000 ms
+[restate] [Checkout/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.731Z] DEBUG: Received entry ack message from Restate, adding to journal. ; EntryAckMessage
 // highlight-next-line
-Payment call succeeded for idempotency key adab6b35-0536-4348-8912-35f8cd474cf8 and amount 40
-[restate] [2023-08-16T08:24:28.557Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Adding message to journal and sending to Restate ; undefined
-[restate] [2023-08-16T08:24:28.557Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Scheduling suspension in 30000 ms
-[restate] [2023-08-16T08:24:28.557Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Received completion message from Restate, adding to journal. ; CompletionMessage
-Payment successful. Notifying user about shipment.
 Notifying user 123 of payment success
-[restate] [2023-08-16T08:24:28.557Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Adding message to journal and sending to Restate ; undefined
-[restate] [2023-08-16T08:24:28.557Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Scheduling suspension in 30000 ms
-[restate] [2023-08-16T08:24:28.558Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Received completion message from Restate, adding to journal. ; CompletionMessage
-[restate] [2023-08-16T08:24:28.558Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Journaled and sent output message ; OutputStreamEntryMessage
-[restate] [2023-08-16T08:24:28.558Z] DEBUG: [Checkout/handle] [bE19gwjrZxIBiiHKisNy5Jjvmc0fMHyk] : Function completed successfully.
+[restate] [Checkout/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.731Z] DEBUG: Adding message to journal and sending to Restate ; SideEffectEntryMessage
+[restate] [Checkout/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.732Z] DEBUG: Scheduling suspension in 30000 ms
+[restate] [Checkout/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.732Z] DEBUG: Received entry ack message from Restate, adding to journal. ; EntryAckMessage
+[restate] [Checkout/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.733Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
+[restate] [Checkout/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.733Z] DEBUG: Function completed successfully.
 ```
+
 
 </TabItem>
 <TabItem value="java" label="Java">
@@ -1863,22 +1805,24 @@ docker run -d --name jaeger \
     jaegertracing/all-in-one:1.46
 ```
 
-Then restart the runtime with the tracing endpoint defined as an environment variable:
+Then stop the Restate container and start it again with the tracing endpoint defined as an environment variable:
 
 ```shell
-docker stop restate_dev && \
-docker run --name restate_dev --rm -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://host.docker.internal:4317 -p 8080:8080 -p 9070:9070 -p 9071:9071 --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
+docker run --name restate_dev --rm \
+    -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://host.docker.internal:4317 \
+    -p 8080:8080 -p 9070:9070 -p 9071:9071 \
+    --add-host=host.docker.internal:host-gateway \
+    docker.io/restatedev/restate:VAR::RESTATE_VERSION
 ```
 
 Register the services again (required because the state got wiped when the runtime was restarted with the `--rm` flag):
-end_side_effect_retries
 ```shell
 curl localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
 ```
 
-Go to the Jaeger UI at http://localhost:16686.
-
 Send requests to the runtime by adding tickets and checking out.
+
+Go to the Jaeger UI at http://localhost:16686.
 
 In the Jaeger UI, select the `UserSession` service from the service dropdown.
 You should see the `addTicket` and `checkout` requests listed:
@@ -1915,7 +1859,6 @@ npm run part5
 </TabItem>
 </Tabs>
 :::
-
 
 
 Let's recap what you've covered:
