@@ -3,11 +3,15 @@ package develop;
 import static counter.CounterOuterClass.*;
 import counter.CounterRestate;
 import dev.restate.sdk.ObjectContext;
+import dev.restate.sdk.common.TerminalException;
+import greeter.generated.GreeterProto;
+import greeter.generated.GreeterProto.GreetResponse;
+import greeter.generated.GreeterRestate;
 
-public class ServiceTypes extends CounterRestate.CounterRestateImplBase {
+public class ServiceTypes extends GreeterRestate.GreeterRestateImplBase {
 
     @Override
-    public Response count(ObjectContext ctx, AddRequest request) {
+    public GreetResponse greet(ObjectContext ctx, GreeterProto.GreetRequest request) throws TerminalException {
 
         // <start_ordering>
         CounterRestate.CounterRestateClient client = CounterRestate.newClient(ctx);
@@ -19,9 +23,7 @@ public class ServiceTypes extends CounterRestate.CounterRestateImplBase {
         );
         // <end_ordering>
 
-        return Response.newBuilder()
-                .setMessage("Hello")
-                .build();
+        return GreetResponse.getDefaultInstance();
     }
 
     private String doDbRequest(){ return ""; }
