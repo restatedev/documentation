@@ -7,13 +7,18 @@ import dev.restate.sdk.common.CoreSerdes;
 import dev.restate.sdk.common.StateKey;
 import greeter.generated.GreeterRestate;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
 public class State extends GreeterRestate.GreeterRestateImplBase {
 
     @Override
     public GreetResponse greet(ObjectContext ctx, GreetRequest request) {
 
         // <start_statekeys>
-        ctx.stateKeys();
+        Collection<String> keys = ctx.stateKeys();
         // <end_statekeys>
 
 
