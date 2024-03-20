@@ -21,6 +21,28 @@
       },
       "$ref": "#/definitions/ObservabilityOptions"
     },
+    "tokio_runtime": {
+      "default": {
+        "max_blocking_threads": null,
+        "worker_threads": null
+      },
+      "$ref": "#/definitions/Options"
+    },
+    "node_name": {
+      "default": "LocalNode",
+      "type": "string"
+    },
+    "node_id": {
+      "default": null,
+      "anyOf": [
+        {
+          "$ref": "#/definitions/PlainNodeId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "meta": {
       "default": {
         "service_client": {
@@ -81,7 +103,7 @@
               "aws_profile": null
             }
           },
-          "tmp_dir": "/tmp/invoker-018d0f34591972a0af655e981a8a1cdd"
+          "tmp_dir": "/var/folders/tw/68_ctnh50rn41q721zt5pwfc0000gn/T/invoker-018e5c99443673e1879eda0f3ee61743"
         },
         "kafka": {
           "clusters": {}
@@ -99,7 +121,8 @@
           "bind_address": "0.0.0.0:9071"
         },
         "storage_rocksdb": {
-          "cache_size": 1073741824,
+          "cache_size": 0,
+          "disable_statistics": false,
           "max_total_wal_size": 2147483648,
           "path": "target/db/",
           "threads": 10,
@@ -111,13 +134,13 @@
       },
       "$ref": "#/definitions/WorkerOptions"
     },
-    "node_ctrl": {
+    "server": {
       "default": {
         "bind_address": "0.0.0.0:5122",
         "disable_prometheus": false,
         "histogram_inactivity_timeout": null
       },
-      "$ref": "#/definitions/NodeCtrlOptions"
+      "$ref": "#/definitions/NodeServerOptions"
     },
     "admin": {
       "default": {
@@ -126,12 +149,36 @@
       },
       "$ref": "#/definitions/AdminOptions"
     },
-    "tokio_runtime": {
+    "bifrost": {
       "default": {
-        "max_blocking_threads": null,
-        "worker_threads": null
+        "default_provider": "File",
+        "providers_config": {
+          "File": {
+            "path": "target/logs/"
+          }
+        }
       },
-      "$ref": "#/definitions/Options"
+      "$ref": "#/definitions/BifrostOptions"
+    },
+    "cluster_controller": {
+      "default": {},
+      "$ref": "#/definitions/ClusterControllerOptions"
+    },
+    "roles": {
+      "description": "Defines the roles which this Restate node should run",
+      "default": [
+        "Worker",
+        "ClusterController"
+      ],
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "cluster_controller_address": {
+      "description": "Configures the cluster controller address. If it is not specified, then this node needs to run the cluster controller",
+      "default": "",
+      "type": "string"
     }
   },
   "definitions": {
@@ -243,6 +290,40 @@
           ]
         }
       ]
+    },
+    "Options": {
+      "title": "Runtime options",
+      "description": "Configuration for the Tokio runtime used by Restate.",
+      "type": "object",
+      "properties": {
+        "worker_threads": {
+          "title": "Worker threads",
+          "description": "Configure the number of [worker threads](https://docs.rs/tokio/latest/tokio/runtime/struct.Builder.html#method.worker_threads) of the Tokio runtime. If not set, it uses the Tokio default, where worker_threads is equal to number of cores.",
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint",
+          "minimum": 0.0
+        },
+        "max_blocking_threads": {
+          "title": "Max blocking threads",
+          "description": "Configure the number of [max blocking threads](https://docs.rs/tokio/latest/tokio/runtime/struct.Builder.html#method.max_blocking_threads) of the Tokio runtime. If not set, it uses the Tokio default 512.",
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint",
+          "minimum": 0.0
+        }
+      }
+    },
+    "PlainNodeId": {
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0.0
     },
     "MetaOptions": {
       "title": "Meta options",
@@ -402,7 +483,8 @@
         },
         "storage_rocksdb": {
           "default": {
-            "cache_size": 1073741824,
+            "cache_size": 0,
+            "disable_statistics": false,
             "max_total_wal_size": 2147483648,
             "path": "target/db/",
             "threads": 10,
@@ -458,7 +540,7 @@
                 "aws_profile": null
               }
             },
-            "tmp_dir": "/tmp/invoker-018d0f3459197d0e93a65ffc9db55665"
+            "tmp_dir": "/var/folders/tw/68_ctnh50rn41q721zt5pwfc0000gn/T/invoker-018e5c99443678e78bcb01d256ea7012"
           },
           "$ref": "#/definitions/InvokerOptions"
         },
@@ -470,7 +552,7 @@
         },
         "partitions": {
           "title": "Partitions",
-          "description": "Number of partitions to be used to process messages.\n\nNote: This config entry **will be removed** in future Restate releases, as the partitions number will be dynamically configured depending on the load.",
+          "description": "Number of partitions to be used to process messages.\n\nNote: This config entry **will be removed** in future Restate releases, as the partitions number will be dynamically configured depending on the load.\n\nCannot be higher than `4611686018427387903` (You should almost never need as many partitions anyway)",
           "default": 1024,
           "type": "integer",
           "format": "uint64",
@@ -564,7 +646,7 @@
         },
         "write_buffer_size": {
           "title": "Write Buffer size",
-          "description": "The size of a single memtable. Once memtable exceeds this size, it is marked immutable and a new one is created.",
+          "description": "The size of a single memtable. Once memtable exceeds this size, it is marked immutable and a new one is created. The default is set such that 3 column families per table will use a total of 50% of the global memory limit (`MEMORY_LIMIT`), which defaults to 3GiB, leading to a value of 64MiB with 8 tables.",
           "default": 0,
           "type": "integer",
           "format": "uint",
@@ -580,11 +662,16 @@
         },
         "cache_size": {
           "title": "Maximum cache size",
-          "description": "The memory size used for rocksdb caches.",
-          "default": 1073741824,
+          "description": "The memory size used for rocksdb caches. The default is roughly 33% of the global memory limit (set with `MEMORY_LIMIT`), which defaults to 3GiB, leading to a value of 1GiB.",
+          "default": 0,
           "type": "integer",
           "format": "uint",
           "minimum": 0.0
+        },
+        "disable_statistics": {
+          "description": "Disable rocksdb statistics collection",
+          "default": false,
+          "type": "boolean"
         }
       }
     },
@@ -738,7 +825,7 @@
         "tmp_dir": {
           "title": "Temporary directory",
           "description": "Temporary directory to use for the invoker temporary files. If empty, the system temporary directory will be used instead.",
-          "default": "/tmp/invoker-018d0f345919743096f476d6429402d1",
+          "default": "/var/folders/tw/68_ctnh50rn41q721zt5pwfc0000gn/T/invoker-018e5c994437788fb15df27316cfda07",
           "type": "string"
         },
         "concurrency_limit": {
@@ -882,12 +969,12 @@
         }
       }
     },
-    "NodeCtrlOptions": {
-      "title": "Node ctrl service options",
+    "NodeServerOptions": {
+      "title": "Node server options",
       "type": "object",
       "properties": {
         "bind_address": {
-          "description": "Address to bind for the Node ctrl Service.",
+          "description": "Address to bind for the Node server.",
           "default": "0.0.0.0:5122",
           "type": "string"
         },
@@ -926,34 +1013,28 @@
         }
       }
     },
-    "Options": {
-      "title": "Runtime options",
-      "description": "Configuration for the Tokio runtime used by Restate.",
+    "BifrostOptions": {
+      "title": "Bifrost options",
       "type": "object",
       "properties": {
-        "worker_threads": {
-          "title": "Worker threads",
-          "description": "Configure the number of [worker threads](https://docs.rs/tokio/latest/tokio/runtime/struct.Builder.html#method.worker_threads) of the Tokio runtime. If not set, it uses the Tokio default, where worker_threads is equal to number of cores.",
-          "default": null,
-          "type": [
-            "integer",
-            "null"
-          ],
-          "format": "uint",
-          "minimum": 0.0
+        "default_provider": {
+          "title": "The default kind of loglet to be used",
+          "default": "File",
+          "type": "string"
         },
-        "max_blocking_threads": {
-          "title": "Max blocking threads",
-          "description": "Configure the number of [max blocking threads](https://docs.rs/tokio/latest/tokio/runtime/struct.Builder.html#method.max_blocking_threads) of the Tokio runtime. If not set, it uses the Tokio default 512.",
-          "default": null,
-          "type": [
-            "integer",
-            "null"
-          ],
-          "format": "uint",
-          "minimum": 0.0
+        "providers_config": {
+          "default": {
+            "File": {
+              "path": "target/logs/"
+            }
+          },
+          "type": "string"
         }
       }
+    },
+    "ClusterControllerOptions": {
+      "title": "Controller service options",
+      "type": "object"
     }
   }
 }
