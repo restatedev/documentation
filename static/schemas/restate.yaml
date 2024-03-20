@@ -11,7 +11,7 @@ tokio_runtime:
 node_name: LocalNode
 node_id: null
 meta:
-  storage_path: target/meta/
+  storage_path: ./restate-data/meta
   service_client:
     http:
       keep_alive_options:
@@ -32,7 +32,7 @@ worker:
   storage_query_postgres:
     bind_address: 0.0.0.0:9071
   storage_rocksdb:
-    path: target/db/
+    path: ./restate-data/db
     threads: 10
     write_buffer_size: 0
     max_total_wal_size: 2147483648
@@ -60,7 +60,7 @@ worker:
     abort_timeout: 1m
     message_size_warning: 10485760
     message_size_limit: null
-    tmp_dir: /var/folders/tw/68_ctnh50rn41q721zt5pwfc0000gn/T/invoker-018e5c9948497714a7a15271dc469905
+    tmp_dir: /var/folders/tw/68_ctnh50rn41q721zt5pwfc0000gn/T/invoker-018e5c9a5b2e7951a5413b7ff99a0c72
     concurrency_limit: null
     service_client:
       http:
@@ -86,7 +86,7 @@ bifrost:
   default_provider: File
   providers_config:
     File:
-      path: target/logs/
+      path: ./restate-data/logs
 cluster_controller: {}
 roles:
 - Worker
