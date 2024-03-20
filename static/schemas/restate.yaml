@@ -5,6 +5,11 @@ observability:
     filter: warn,restate=info
     format: Pretty
     disable_ansi_codes: false
+tokio_runtime:
+  worker_threads: null
+  max_blocking_threads: null
+node_name: LocalNode
+node_id: null
 meta:
   storage_path: target/meta/
   service_client:
@@ -31,7 +36,8 @@ worker:
     threads: 10
     write_buffer_size: 0
     max_total_wal_size: 2147483648
-    cache_size: 1073741824
+    cache_size: 0
+    disable_statistics: false
   ingress_grpc:
     bind_address: 0.0.0.0:8080
     concurrency_limit: 10000000
@@ -54,7 +60,7 @@ worker:
     abort_timeout: 1m
     message_size_warning: 10485760
     message_size_limit: null
-    tmp_dir: /tmp/invoker-018d0f345a8b7a49b31b539397596963
+    tmp_dir: /var/folders/tw/68_ctnh50rn41q721zt5pwfc0000gn/T/invoker-018e5c9948497714a7a15271dc469905
     concurrency_limit: null
     service_client:
       http:
@@ -69,14 +75,21 @@ worker:
   partition_processor:
     max_batch_duration: 50ms
   partitions: 1024
-node_ctrl:
+server:
   bind_address: 0.0.0.0:5122
   histogram_inactivity_timeout: null
   disable_prometheus: false
 admin:
   bind_address: 0.0.0.0:9070
   concurrency_limit: 1000
-tokio_runtime:
-  worker_threads: null
-  max_blocking_threads: null
+bifrost:
+  default_provider: File
+  providers_config:
+    File:
+      path: target/logs/
+cluster_controller: {}
+roles:
+- Worker
+- ClusterController
+cluster_controller_address: ''
 
