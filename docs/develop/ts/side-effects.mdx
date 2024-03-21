@@ -1,0 +1,295 @@
+---
+sidebar_position: 5
+description: "Learn how to store the results of non-deterministic operations."
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Determinism & side effects
+
+:::danger
+Restate uses an execution log for replay after failures and suspensions.
+For this to work, the user code needs to be deterministic.
+:::
+
+To help you with keeping code execution deterministic, the SDK has a few built-in functions:
+1. **Side effects**: For all other non-deterministic code, you need to use side effects, as explained [below](/develop/sdk/side-effects#side-effects).
+2. **Promise/awaitable combinators**: Check the built-in helper functions [listed below](/develop/sdk/side-effects#promise-awaitable-combinators).
+3. **Random generators:** For example UUIDs and random numbers. Check the built-in helper functions [listed below](/develop/sdk/side-effects#built-in-helper-functions).
+
+
+## Side effects
+Side effects help relaxing the constraints on determinism.
+If your code does something that is non-deterministic, then you have to wrap it in a side effect.
+By doing this, Restate makes sure that the result is persistently stored in the execution log
+and that the value is retained during replays.
+
+Here is an example of a database request for which the string return value is stored as a side effect in Restate:
+
+<Tabs groupId="sdk" queryString>
+<TabItem value="ts" label="TypeScript">
+
+```typescript
+CODE_LOAD::ts/src/develop/side_effects.ts#<start_side_effect>-<end_side_effect>
+```
+
+:::danger
+Always immediately await side effects, before doing any other context calls.
+If not, you might bump into non-determinism errors during replay,
+because the side effect can get interleaved with the other context calls in the journal in a non-deterministic way.
+:::
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_side_effect>-<end_side_effect>
+```
+
+You need to define the return value type of the side effect, so that the Restate SDK knows how to serialize and deserialize it.
+For the primitive types, you can use Restate's built-in `dev.restate.sdk.core.CoreSerdes`, for example `CoreSerdes.STRING_UTF8` or `CoreSerdes.BOOLEAN`.
+For more information, have a look at the documentation on [serialization](/develop/sdk/serialization).
+
+</TabItem>
+</Tabs>
+
+Once stored, the request to the database will not get re-executed upon replay, but the first result will be used instead.
+
+:::caution
+You cannot invoke any methods on the Restate context within a side effect!
+This includes actions such as getting state, calling another service, and nesting side effects.
+:::
+
+
+
+### Retrying on failure
+
+If the side effect closure throws an error, then it is retried infinitely using an exponential backoff strategy until it succeeds.
+
+<Tabs groupId="sdk" queryString>
+<TabItem value="ts" label="TypeScript">
+
+```typescript
+CODE_LOAD::ts/src/develop/side_effects.ts#<start_retry>-<end_retry>
+```
+
+**Manually controlling the retry policy**
+
+Instead of using an infinite exponential backoff strategy, you can also specify a finite retry policy when executing a side effect.
+A finite retry policy retries a failing side effect function until all retry attempts are depleted.
+If this happens, then the side effect fails terminally with a `restate.TerminalError` which is propagated to the user code.
+In order to configure the retry policy you need to provide a `RetrySettings` object:
+
+```typescript
+CODE_LOAD::ts/src/develop/side_effects.ts#<start_manual>-<end_manual>
+```
+
+The `RetrySettings` object has the following fields:
+- `initialDelayMs` (number): The initial delay between retries. As more retries happen, the delay may change per the policy.
+- `maxDelayMs` (number): Optionally, the maximum delay between retries. No matter what the policy says, this is the maximum time
+  that Restate sleeps between retries. If not set, there is effectively no limit (internally the limit is Number.MAX_SAFE_INTEGER).
+- `maxRetries` (number): The maximum number of retries before this function fails with an exception. If not set, there is effectively no limit (internally the limit is Number.MAX_SAFE_INTEGER).
+- `policy`:  Optionally, the retry policy to use (`FIXED_DELAY` or `EXPONENTIAL_BACKOFF`). Defaults to `EXPONENTIAL_BACKOFF`.
+- `name` (string): Optionally, the name of side effect action that is used in error and log messages around retries.
+
+For example:
+```typescript
+CODE_LOAD::ts/src/develop/side_effects.ts#<start_retry_settings>-<end_retry_settings>
+```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_retry_settings>-<end_retry_settings>
+```
+
+</TabItem>
+</Tabs>
+
+### Terminal failures of side effects
+
+By default, a side effect function is retried infinitely on failure.
+If you want to let the side effect fail terminally, then you have to throw a terminal error.
+A terminal error will stop the infinite retry strategy and lets the SDK propagate the error to the user code where it can be handled.
+The terminal error will also be recorded in the journal so that it will be deterministically thrown on replay.
+
+<Tabs groupId="sdk" queryString>
+<TabItem value="ts" label="TypeScript">
+
+You can throw a terminal error by using `restate.TerminalError`:
+
+```typescript
+CODE_LOAD::ts/src/develop/side_effects.ts#<start_terminal>-<end_terminal>
+```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+You can throw a terminal exception via `TerminalException` and supply it with a `TerminalException.Code` and a message:
+
+```java
+CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_terminal>-<end_terminal>
+```
+
+</TabItem>
+</Tabs>
+
+## Promise/Awaitable combinators
+
+<Tabs groupId="sdk" queryString>
+<TabItem value="ts" label="TypeScript">
+The SDK provides combinators for working with promises.
+
+**CombineablePromise.all():**
+
+```typescript
+CODE_LOAD::ts/src/develop/side_effects.ts#<start_combine_all>-<end_combine_all>
+```
+Creates a Promise that is either:
+1. Resolved with an array of results, when all of the provided Promises resolve.
+2. Rejected when any Promise is rejected.
+
+Similar to [`Promise.all()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all),
+but the outcome is stored in the Restate journal to be deterministically replayable.
+
+**CombineablePromise.any():**
+
+```typescript
+CODE_LOAD::ts/src/develop/side_effects.ts#<start_combine_any>-<end_combine_any>
+```
+
+Creates a promise with two possible outcomes:
+1. The promise resolves with the first successful result from the input promises, once any of them resolves.
+2. The promise gets rejected when all the input promises are rejected (including when an empty iterable is passed),
+returning an `AggregateError` containing an array of the reasons for rejection.
+
+Similar to [`Promise.any()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/any),
+but the outcome is stored in the Restate journal to be deterministically replayable.
+
+**CombineablePromise.race():**
+
+```typescript
+CODE_LOAD::ts/src/develop/side_effects.ts#<start_combine_race>-<end_combine_race>
+```
+
+Creates a Promise that is:
+1. Resolved when any of the provided Promises are resolved.
+2. Rejected when any of the provided Promises are rejected.
+
+Similar to [`Promise.race()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/race),
+but the outcome is stored in the Restate journal to be deterministically replayable.
+
+**CombineablePromise.allSettled():**
+
+```typescript
+CODE_LOAD::ts/src/develop/side_effects.ts#<start_combine_allsettled>-<end_combine_allsettled>
+```
+
+Creates a promise that resolves once all the input promises have settled (including when an empty iterable is passed).
+It returns an array of objects describing the outcome of each promise, whether resolved or rejected.
+
+Similar to [`Promise.allSettled()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled),
+but the outcome is stored in the Restate journal to be deterministically replayable.
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+The SDK provides combinators for working with `Awaitable`.
+
+**Awaitable.all():**
+
+```java
+CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_combine_all>-<end_combine_all>
+```
+
+Creates an `Awaitable` that awaits all of the provided Awaitables to resolve.
+
+Similar to [`CompleteableFuture.allOf()`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/CompletableFuture.html#allOf(java.util.concurrent.CompletableFuture...)), but the outcome is stored in the Restate journal to be deterministically replayable.
+
+**Awaitable.any():**
+
+```java
+CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_combine_any>-<end_combine_any>
+```
+
+Creates an `Awaitable` that awaits any of the provided Awaitables to resolve.
+
+Similar to [`CompleteableFuture.anyOf()`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/CompletableFuture.html#anyOf(java.util.concurrent.CompletableFuture...)), but the outcome is stored in the Restate journal to be deterministically replayable.
+
+
+</TabItem>
+</Tabs>
+
+## Built-in helper functions
+Two common non-deterministic actions are the generation of UUIDs and random numbers.
+The SDK provides helper functions for those.
+
+### Generating UUIDs
+
+<Tabs groupId="sdk" queryString>
+<TabItem value="ts" label="TypeScript">
+
+```typescript
+CODE_LOAD::ts/src/develop/side_effects.ts#<start_uuid>-<end_uuid>
+
+```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_uuid>-<end_uuid>
+```
+
+:::note
+`ctx.random()` returns a `RestateRandom` instance. This is a subclass of `java.util.Random` that seeds it on the invocation ID, to always return the same value on retries.
+:::
+
+</TabItem>
+</Tabs>
+
+:::danger
+Do not use this in cryptographic contexts.
+:::
+
+:::tip
+You can use this to generate stable idempotency keys with one line of code.
+For example, imagine a payment service where you want to avoid having duplicate payments during retries.
+You could use this utility to generate a UUID and then use that UUID as identifier of the payment.
+You only allow the payment to go through if no payment with that UUID was done yet.
+Restate guarantees that once the UUID is stored, it is retained during retries.
+:::
+
+### Generating random numbers
+
+<Tabs groupId="sdk" queryString>
+<TabItem value="ts" label="TypeScript">
+
+```typescript
+CODE_LOAD::ts/src/develop/side_effects.ts#<start_random_nb>-<end_random_nb>
+```
+
+This returns a new pseudorandom float within the range [0,1].Calls to `ctx.rand.random()`
+
+:::note
+This is the equivalent of JS `Math.random()` but deterministic, because it gets seeded by the invocation ID of the current invocation.
+Since retries use the same invocation ID, they will get the same random number.
+:::
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_random_nb>-<end_random_nb>
+```
+
+You can use any of the methods of [`java.util.Random`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Random.html) to generate random numbers: for example, `nextBoolean()`, `nextLong()`, `nextFloat()`, etc.
+
+:::note
+`ctx.random()` returns a `RestateRandom` instance. This is a subclass of `java.util.Random` that seeds it on the invocation ID, to always return the same value on retries.
+:::
+
+</TabItem>
+</Tabs>
