@@ -23,9 +23,9 @@ Kafka support is in development, and it isn't ready for production usage. Next r
 Depending on your use case you can build different types of event handlers. We distinguish between the following scenarios:
 
 * Handle events with a string key from Kafka in Restate services keyed with a `string` key.
-* Process generic events from Kafka in order (currently only supported by the TypeScript gRPC API and the Java API.)
+* Process generic events from Kafka in order (currently only supported by the TypeScript gRPC API)
 
-An event handlers can profit from the same features as other Restate handlers, including durable execution, [service communication](/develop/sdk/service-communication) and [side effects](/develop/sdk/side-effects).
+An event handlers can profit from the same features as other Restate handlers, including durable execution, [service communication](/develop/ts/service-communication) and [side effects](/develop/ts/side-effects).
 
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript" default>
@@ -90,60 +90,6 @@ If the service is unkeyed, events will be delivered in parallel without ordering
 Event handlers can be useful when you need to pre-process an event before sending it to one or more Restate services, such as when the key is serialized using a custom format, or when the destination of the event is encoded in the payload.
 
 </TabItem>
-
-<TabItem value="java" label="Java">
-
-**Handling keyed events within keyed services**
-
-You can handle events within keyed services, where the key of the Kafka record matches the key used by the service.
-
-To do so, define the event handler as any other method and use the `EVENT_PAYLOAD` annotation to receive the event payload:
-
-```protobuf
-CODE_LOAD::java/src/main/proto/example-kafka.proto
-```
-
-```java
-CODE_LOAD::java/src/main/java/develop/KafkaService.java
-```
-
-<details>
-<summary>Alternative: vanilla gRPC</summary>
-
-```java
-CODE_LOAD::java/src/main/java/develop/KafkaVanillaGRPCService.java
-```
-</details>
-
-:::tip Combining RPC and Kafka within a service
-You can mix methods receiving events with regular RPC methods. For example, assume you're implementing a `Profile` service to handle and store user profiles in Restate, where the key is the profile's unique identifier.
-In the same service, you can implement an RPC  `Get` method to retrieve the profile, and you can attach an `UpdateProfile` event handler to consume events from Kafka to update the profile.
-:::
-
-For each event key (= Kafka record key), the events are delivered in the order in which they arrived on the topic partition.
-
-There are some constraints for the annotated fields:
-
-* The event handler's key input type must be `string`.
-* The Kafka record key must contain a valid UTF-8 string, otherwise Restate won't be able to deliver the event to the service.
-* You can use only `string` or `bytes` types with fields annotated as `EVENT_PAYLOAD`.
-* You can also get the event metadata defining a field as `map<string, string>` and annotating it with `EVENT_METADATA`.
-
-**Handling generic events from Kafka**
-
-You can handle generic events from Kafka by defining ad-hoc services that process `dev.restate.Event`:
-
-```protobuf
-CODE_LOAD::java/src/main/proto/example-kafka-generic.proto
-```
-
-If the service is keyed, events with the same key are delivered in the order in which they arrived on the topic partition.
-If the service is unkeyed, events are delivered in parallel without ordering guarantees.
-
-Event handlers can be useful when you need to pre-process an event before sending it to one or more Restate services, such as when the key is serialized using a custom format, or when the destination of the event is encoded in the payload.
-
-</TabItem>
-
 </Tabs>
 
 ## Event metadata
@@ -200,16 +146,6 @@ curl localhost:9070/subscriptions \
 
 </TabItem>
 <TabItem value="ts-grpc" label="TypeScript-gRPC">
-
-```bash
-curl localhost:9070/subscriptions \
-    -H 'content-type: application/json' \
-    -d '{"source": "kafka://my-cluster/my-topic", "sink": "service://MyService/Handle"}'
-```
-
-</TabItem>
-
-<TabItem value="java" label="Java">
 
 ```bash
 curl localhost:9070/subscriptions \

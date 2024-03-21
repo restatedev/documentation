@@ -1,0 +1,35 @@
+---
+sidebar_position: 8
+description: "Restate's retry strategy and how to manage it from the SDK."
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Error handling
+
+Restate takes care of retries of failed invocations. 
+It does this for all kinds of errors, such as transient network errors and errors thrown inside handlers. 
+By default, Restate does infinite retries with an exponential backoff strategy.
+
+For situations where you do not want the invocation to be retried, but instead you want the error message
+to be propagated back to the caller, you can use a terminal error.
+
+You can throw a terminal exception with a `TerminalException.Code` and a message, as follows:
+
+```java
+CODE_LOAD::java/src/main/java/develop/ErrorHandling.java
+```
+
+:::note Errors during side effect execution
+Throwing errors inside a side effect has the same semantics as anywhere else in your handler code.
+By default, Restate infinitely retries the invocation, and therefore the side effect.
+Errors that should not be retried, should be thrown as terminal errors, as described earlier.
+Invocation retries are triggered by Restate, not by the SDKs.
+:::
+
+You can catch terminal exceptions. For example, you can catch the terminal exception that comes out of a [call to another service](/develop/java/service-communication#request-response-calls), and build your control flow around it.
+
+You can throw a terminal error anywhere in your handler.
+Restate will propagate the error code and message back to the caller and will consider this invocation to be finished. 
+
