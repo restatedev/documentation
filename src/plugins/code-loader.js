@@ -5,14 +5,23 @@ const fetch = require('node-fetch');
 
 const plugin = (options) => {
     const codeLoadRegex = /^CODE_LOAD::([^#]+)(?:#([^#]+)-([^#]+))?$/g;
+
     const injectCode = async (str) => {
         let fileData = null;
         str.replace(codeLoadRegex, (match, filePath, customStartTag, customEndTag) => {
-            fileData = {
-                filePath: filePath,
-                customStartTag: customStartTag ?? "<start_here>",
-                customEndTag: customEndTag ?? "<end_here>"
+            // If custom start and end tags are provided, check if they are present in the file, otherwise fail
+            if (customStartTag && !fileContent.includes(customStartTag)) {
+                throw new Error(`Custom start tag "${customStartTag}" not found in file ${filePath}`);
             }
+            if (customEndTag && !fileContent.includes(customEndTag)) {
+                throw new Error(`Custom end tag "${customEndTag}" not found in file ${filePath}`);
+            }
+
+            const startTag = customStartTag ?? "<start_here>";
+            const endTag = customEndTag ?? "<end_here>";
+            console.info(`Loading code snippet from ${filePath} with tags: ${startTag} and ${endTag}`)
+
+            fileData = { filePath: filePath, startTag, endTag }
             return match;
         });
 
@@ -21,7 +30,7 @@ const plugin = (options) => {
         }
 
         const fileContent = await readFileOrFetch(fileData.filePath);
-        const data = extractAndClean(fileContent, fileData.customStartTag, fileData.customEndTag);
+        const data = extractAndClean(fileContent, fileData.startTag, fileData.endTag);
         return str.replace(codeLoadRegex, () => data);
     }
 
