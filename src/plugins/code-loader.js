@@ -1,13 +1,41 @@
 // Plugin to load code snippets from files and replace the CODE_LOAD tag with the content of the file
 
 const fs = require('fs');
+const fetch = require('node-fetch');
 
 const plugin = (options) => {
     const codeLoadRegex = /^CODE_LOAD::([^#]+)(?:#([^#]+)-([^#]+))?$/g;
 
-    const replace = (str) => str.replace(codeLoadRegex, (match, filePath, customStartTag, customEndTag) => {
-        const fileContent = fs.readFileSync('./code_snippets/' + filePath, 'utf8');
+    const injectCode = async (str) => {
+        let fileData = null;
+        str.replace(codeLoadRegex, (match, filePath, customStartTag, customEndTag) => {
+            console.info(`Loading code snippet from with optional custom tags: ${customStartTag} and ${customEndTag}`)
+            fileData = { filePath, customStartTag, customEndTag }
+            return match;
+        });
 
+        if(!fileData){
+            return str;
+        }
+
+        const fileContent = await readFileOrFetch(fileData.filePath);
+        const data = extractAndClean(fileContent, fileData.customStartTag, fileData.customEndTag);
+        return str.replace(codeLoadRegex, () => data);
+    }
+
+    async function readFileOrFetch(filepath) {
+        if (filepath.startsWith('https://raw.githubusercontent.com/')) {
+            const response = await fetch(filepath);
+            if (!response.ok) {
+                throw new Error('Failed to fetch file from GitHub');
+            }
+            return await response.text();
+        } else {
+            return fs.readFileSync('./code_snippets/' + filepath, 'utf8');
+        }
+    }
+
+    function extractAndClean(fileContent, customStartTag, customEndTag){
         // If custom start and end tags are provided, check if they are present in the file, otherwise fail
         if (customStartTag && !fileContent.includes(customStartTag)) {
             throw new Error(`Custom start tag "${customStartTag}" not found in file ${filePath}`);
@@ -18,7 +46,6 @@ const plugin = (options) => {
 
         const startTag = customStartTag ?? "<start_here>";
         const endTag = customEndTag ?? "<end_here>";
-        console.info(`Loading code snippet from ${filePath} with tags: ${startTag} and ${endTag}`)
 
         // Split to only keep lines between "start_here" and "end_here"
         const lines = fileContent.split(startTag).pop().split(endTag).shift();
@@ -37,13 +64,18 @@ const plugin = (options) => {
         return indentedCodeSnippet.split('\n')
             .map(line => line.replace(new RegExp(`^${leadingWhitespace}`), ''))
             .join('\n');
-    });
+    }
 
     const transformer = async (ast) => {
         const {visit} = await import('unist-util-visit')
-        visit(ast, ['code', 'inlineCode'], (node) => {
-            node.value = replace(node.value)
+        const codes = [];
+        await visit(ast, ['code', 'inlineCode'], (node) => {
+            codes.push(node);
         });
+
+        await Promise.all(codes.map(async (node) => {
+            node.value = await injectCode(node.value);
+        }));
     };
 
     return transformer;
