@@ -8,7 +8,6 @@ description: "Learn how to run Restate applications on Kubernetes."
 This page describes how to deploy Restate and Restate services on [Kubernetes](https://kubernetes.io/).
 
 ## Deploying Restate on K8S
-## Kubernetes
 
 The recommended Kubernetes deployment strategy is a one-replica StatefulSet. We recommend installing Restate in its own
 namespace. The easiest way to do this is with
