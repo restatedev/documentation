@@ -43,28 +43,6 @@ CODE_LOAD::ts-grpc/src/develop/service_communication.ts#<start_request_response>
 ```
 
 </TabItem>
-<TabItem value="java" label="Java">
-
-Use Restate's generated clients to do the call.
-For example, if you have a `Greeter` service with a method `greet`:
-
-```java
-CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_request_response>-<end_request_response>
-```
-
-<details>
-<summary>Alternative: vanilla gRPC</summary>
-
-You can do request-response calls via `ctx.call` by supplying it with the gRPC method descriptor and request, by using the generated Protobuf code.
-In this example, the `Greet` function requires a `Request` Protobuf message as input with a single `name` parameter.
-
-```java
-CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_grpc_request_response>-<end_grpc_request_response>
-```
-
-</details>
-
-</TabItem>
 </Tabs>
 
 The Restate SDK sends these requests to Restate, that logs them in the Restate journal.
@@ -106,28 +84,6 @@ You cannot wrap any other types of operations with `oneWayCall()`! This is inval
 
 
 </TabItem>
-<TabItem value="java" label="Java">
-
-Use Restate's generated clients to do the call.
-For example, if you have a `Greeter` service with a method `greet`:
-
-```java
-CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_one_way>-<end_one_way>
-```
-
-<details>
-<summary>Alternative: vanilla gRPC</summary>
-
-You can do one-way calls via `ctx.oneWayCall` by supplying it with the gRPC method descriptor and request, by using the generated Protobuf code.
-In this example, the `Greet` function requires a `Request` Protobuf message as input with a single `name` parameter.
-
-```java
-CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_grpc_one_way>-<end_grpc_one_way>
-```
-
-</details>
-
-</TabItem>
 </Tabs>
 
 
@@ -154,29 +110,6 @@ CODE_LOAD::ts-grpc/src/develop/service_communication.ts#<start_delayed>-<end_del
 ```
 
 </TabItem>
-<TabItem value="java" label="Java">
-
-Use Restate's generated clients to do the call.
-For example, if you have a `Greeter` service with a method `greet`:
-
-```java
-CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_delayed>-<end_delayed>
-```
-
-<details>
-<summary>Alternative: vanilla gRPC</summary>
-
-You can do delayed calls via `ctx.delayedCall` by supplying it with the gRPC method descriptor and request, by using the generated Protobuf code.
-In this example, the `Greet` function requires a `Request` Protobuf message as input with a single `name` parameter.
-
-```java
-CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_grpc_delayed>-<end_grpc_delayed>
-```
-
-</details>
-
-</TabItem>
 </Tabs>
-
 
 Restate takes care of the scheduling and the durability of the delayed call.

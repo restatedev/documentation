@@ -27,9 +27,6 @@ and that the value is retained during replays.
 
 Here is an example of a database request for which the string return value is stored as a side effect in Restate:
 
-<Tabs groupId="sdk" queryString>
-<TabItem value="ts" label="TypeScript">
-
 ```typescript
 CODE_LOAD::ts/src/develop/side_effects.ts#<start_side_effect>-<end_side_effect>
 ```
@@ -40,19 +37,6 @@ If not, you might bump into non-determinism errors during replay,
 because the side effect can get interleaved with the other context calls in the journal in a non-deterministic way.
 :::
 
-</TabItem>
-<TabItem value="java" label="Java">
-
-```java
-CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_side_effect>-<end_side_effect>
-```
-
-You need to define the return value type of the side effect, so that the Restate SDK knows how to serialize and deserialize it.
-For the primitive types, you can use Restate's built-in `dev.restate.sdk.core.CoreSerdes`, for example `CoreSerdes.STRING_UTF8` or `CoreSerdes.BOOLEAN`.
-For more information, have a look at the documentation on [serialization](/develop/sdk/serialization).
-
-</TabItem>
-</Tabs>
 
 Once stored, the request to the database will not get re-executed upon replay, but the first result will be used instead.
 
@@ -66,9 +50,6 @@ This includes actions such as getting state, calling another service, and nestin
 ### Retrying on failure
 
 If the side effect closure throws an error, then it is retried infinitely using an exponential backoff strategy until it succeeds.
-
-<Tabs groupId="sdk" queryString>
-<TabItem value="ts" label="TypeScript">
 
 ```typescript
 CODE_LOAD::ts/src/develop/side_effects.ts#<start_retry>-<end_retry>
@@ -98,16 +79,6 @@ For example:
 CODE_LOAD::ts/src/develop/side_effects.ts#<start_retry_settings>-<end_retry_settings>
 ```
 
-</TabItem>
-<TabItem value="java" label="Java">
-
-```java
-CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_retry_settings>-<end_retry_settings>
-```
-
-</TabItem>
-</Tabs>
-
 ### Terminal failures of side effects
 
 By default, a side effect function is retried infinitely on failure.
@@ -115,31 +86,13 @@ If you want to let the side effect fail terminally, then you have to throw a ter
 A terminal error will stop the infinite retry strategy and lets the SDK propagate the error to the user code where it can be handled.
 The terminal error will also be recorded in the journal so that it will be deterministically thrown on replay.
 
-<Tabs groupId="sdk" queryString>
-<TabItem value="ts" label="TypeScript">
-
 You can throw a terminal error by using `restate.TerminalError`:
 
 ```typescript
 CODE_LOAD::ts/src/develop/side_effects.ts#<start_terminal>-<end_terminal>
 ```
 
-</TabItem>
-<TabItem value="java" label="Java">
-
-You can throw a terminal exception via `TerminalException` and supply it with a `TerminalException.Code` and a message:
-
-```java
-CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_terminal>-<end_terminal>
-```
-
-</TabItem>
-</Tabs>
-
 ## Promise/Awaitable combinators
-
-<Tabs groupId="sdk" queryString>
-<TabItem value="ts" label="TypeScript">
 The SDK provides combinators for working with promises.
 
 **CombineablePromise.all():**
@@ -193,62 +146,16 @@ It returns an array of objects describing the outcome of each promise, whether r
 Similar to [`Promise.allSettled()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled),
 but the outcome is stored in the Restate journal to be deterministically replayable.
 
-</TabItem>
-<TabItem value="java" label="Java">
-
-The SDK provides combinators for working with `Awaitable`.
-
-**Awaitable.all():**
-
-```java
-CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_combine_all>-<end_combine_all>
-```
-
-Creates an `Awaitable` that awaits all of the provided Awaitables to resolve.
-
-Similar to [`CompleteableFuture.allOf()`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/CompletableFuture.html#allOf(java.util.concurrent.CompletableFuture...)), but the outcome is stored in the Restate journal to be deterministically replayable.
-
-**Awaitable.any():**
-
-```java
-CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_combine_any>-<end_combine_any>
-```
-
-Creates an `Awaitable` that awaits any of the provided Awaitables to resolve.
-
-Similar to [`CompleteableFuture.anyOf()`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/CompletableFuture.html#anyOf(java.util.concurrent.CompletableFuture...)), but the outcome is stored in the Restate journal to be deterministically replayable.
-
-
-</TabItem>
-</Tabs>
-
 ## Built-in helper functions
 Two common non-deterministic actions are the generation of UUIDs and random numbers.
 The SDK provides helper functions for those.
 
 ### Generating UUIDs
 
-<Tabs groupId="sdk" queryString>
-<TabItem value="ts" label="TypeScript">
-
 ```typescript
 CODE_LOAD::ts/src/develop/side_effects.ts#<start_uuid>-<end_uuid>
 
 ```
-
-</TabItem>
-<TabItem value="java" label="Java">
-
-```java
-CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_uuid>-<end_uuid>
-```
-
-:::note
-`ctx.random()` returns a `RestateRandom` instance. This is a subclass of `java.util.Random` that seeds it on the invocation ID, to always return the same value on retries.
-:::
-
-</TabItem>
-</Tabs>
 
 :::danger
 Do not use this in cryptographic contexts.
@@ -264,9 +171,6 @@ Restate guarantees that once the UUID is stored, it is retained during retries.
 
 ### Generating random numbers
 
-<Tabs groupId="sdk" queryString>
-<TabItem value="ts" label="TypeScript">
-
 ```typescript
 CODE_LOAD::ts/src/develop/side_effects.ts#<start_random_nb>-<end_random_nb>
 ```
@@ -277,19 +181,3 @@ This returns a new pseudorandom float within the range [0,1].Calls to `ctx.rand.
 This is the equivalent of JS `Math.random()` but deterministic, because it gets seeded by the invocation ID of the current invocation.
 Since retries use the same invocation ID, they will get the same random number.
 :::
-
-</TabItem>
-<TabItem value="java" label="Java">
-
-```java
-CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_random_nb>-<end_random_nb>
-```
-
-You can use any of the methods of [`java.util.Random`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Random.html) to generate random numbers: for example, `nextBoolean()`, `nextLong()`, `nextFloat()`, etc.
-
-:::note
-`ctx.random()` returns a `RestateRandom` instance. This is a subclass of `java.util.Random` that seeds it on the invocation ID, to always return the same value on retries.
-:::
-
-</TabItem>
-</Tabs>
