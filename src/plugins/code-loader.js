@@ -8,11 +8,17 @@ const plugin = (options) => {
     const replace = (str) => str.replace(codeLoadRegex, (match, filePath, customStartTag, customEndTag) => {
         const fileContent = fs.readFileSync('./code_snippets/' + filePath, 'utf8');
 
-        // If custom tags are specified, extract them
+        // If custom start and end tags are provided, check if they are present in the file, otherwise fail
+        if (customStartTag && !fileContent.includes(customStartTag)) {
+            throw new Error(`Custom start tag "${customStartTag}" not found in file ${filePath}`);
+        }
+        if (customEndTag && !fileContent.includes(customEndTag)) {
+            throw new Error(`Custom end tag "${customEndTag}" not found in file ${filePath}`);
+        }
+
         const startTag = customStartTag ?? "<start_here>";
         const endTag = customEndTag ?? "<end_here>";
-
-        console.info(`Loaded code snippet from ${filePath} with tags: ${startTag} and ${endTag}`)
+        console.info(`Loading code snippet from ${filePath} with tags: ${startTag} and ${endTag}`)
 
         // Split to only keep lines between "start_here" and "end_here"
         const lines = fileContent.split(startTag).pop().split(endTag).shift();
