@@ -328,7 +328,7 @@ You specify an unkeyed service by creating a router with its set of functions.
 For example, for the `Checkout` service, you create a router with the `handle` function:
 
 ```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part1/checkout.ts#<start_checkout>-<end_checkout>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part1/checkout.ts#<start_checkout>-<end_checkout>
 ```
 
 The functions of an unkeyed router have two parameters:
@@ -344,7 +344,7 @@ You specify a keyed service by creating a keyed router with its set of functions
 For example, the `UserSession` service has the following keyed router:
 
 ```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/app/user_session.ts#<start_user_session>-<end_user_session>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/app/user_session.ts#<start_user_session>-<end_user_session>
 ```
 
 The functions of a keyed router have three parameters
@@ -365,7 +365,7 @@ You export the `service` API by creating a service API instance which specifies 
 For example, for the `UserSession` service, you export the following service API:
 
 ```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part1/user_session.ts#<start_user_session_api>-<end_user_session_api>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part1/user_session.ts#<start_user_session_api>-<end_user_session_api>
 ```
 
 You can now call the service at the endpoint `http://localhost:8080/<servicePath>/<functionName>`.
@@ -445,7 +445,7 @@ Let the `expireTicket` function call the `TicketService/unreserve` function.
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part1/user_session.ts#<start_expire_ticket>-<end_expire_ticket>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part1/user_session.ts#<start_expire_ticket>-<end_expire_ticket>
 ```
 
 Specify that you want to call the `TicketService` by supplying `ticketServiceApi` to the `send` function.
@@ -485,7 +485,7 @@ The call to `expireTicket` finishes earlier than the `unreserve` function becaus
 <TabItem value="java" label="Java">
 
 ```java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/UserSession.java#<start_expire_ticket>-<end_expire_ticket>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/UserSession.java#<start_expire_ticket>-<end_expire_ticket>
 ```
 
 Create a new client by using the generated code,
@@ -550,7 +550,7 @@ Add the highlighted code snippet to the `addTicket` function in the `UserSession
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part1/user_session.ts#<start_add_ticket>-<end_add_ticket>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part1/user_session.ts#<start_add_ticket>-<end_add_ticket>
 ```
 
 You do the call via `ctx.rpc` and supply the exported `ticketServiceApi` to specify which service to invoke.
@@ -587,7 +587,7 @@ The call to `addTicket` finishes earlier than the `reserve` function because it 
 <TabItem value="java" label="Java">
 
 ```java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/UserSession.java#<start_add_ticket>-<end_add_ticket>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/UserSession.java#<start_add_ticket>-<end_add_ticket>
 ```
 
 There are two differences with one-way calls: you don't call `oneWay()` on the client, and you use `.await()` to wait for the response to the call.
@@ -645,12 +645,12 @@ This is not the best way to sleep in a Restate service! The Restate SDK offers a
 <TabItem value="ts" label="TypeScript">
 Add the import:
 ```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part1/ticket_service.ts#<start_import_sleep>-<end_import_sleep>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part1/ticket_service.ts#<start_import_sleep>-<end_import_sleep>
 ```
 
 Add the sleep:
 ```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part1/ticket_service.ts#<start_reserve>-<end_reserve>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part1/ticket_service.ts#<start_reserve>-<end_reserve>
 ```
 
 Call `UserSession/addTicket` again and have a look at the SDK logs.
@@ -683,7 +683,7 @@ Once the runtime has received the response, it invokes the `addTicket` function 
 <TabItem value="java" label="Java">
 
 ```java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/TicketService.java#<start_reserve>-<end_reserve>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/TicketService.java#<start_reserve>-<end_reserve>
 ```
 
 Call `UserSession/addTicket` again and have a look at the SDK logs.
@@ -748,12 +748,12 @@ Add the following code to the `UserSession/checkout` function:
 
 Import the checkout API:
 ```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part1/user_session.ts#<start_checkout_api_import>-<end_checkout_api_import>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part1/user_session.ts#<start_checkout_api_import>-<end_checkout_api_import>
 ```
 
 Then call the `Checkout/handle` function:
 ```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part1/user_session.ts#<start_checkout>-<end_checkout>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part1/user_session.ts#<start_checkout>-<end_checkout>
 ```
 
 Call the `UserSession/checkout` function as you did [earlier](#calling-services-from-outside-restate) and have a look at the logs again to see what happened:
@@ -776,7 +776,7 @@ Notice that the `UserSession` didn't get suspended because the response came bef
 <TabItem value="java" label="Java">
 
 ```java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/UserSession.java#<start_checkout>-<end_checkout>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/UserSession.java#<start_checkout>-<end_checkout>
 ```
 
 Restart the service and call the `UserSession/checkout` function as you did earlier and have a look at the logs again to see what happened.
@@ -841,14 +841,14 @@ Restate offers the same mechanism for timers.
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part2/ticket_service.ts#<start_reserve>-<end_reserve>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part2/ticket_service.ts#<start_reserve>-<end_reserve>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part2/TicketService.java#<start_reserve>-<end_reserve>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part2/TicketService.java#<start_reserve>-<end_reserve>
 ```
 
 </TabItem>
@@ -957,14 +957,14 @@ This would make the `UserSession/addTicket` function look as follows:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part2/user_session.ts#<start_add_ticket>-<end_add_ticket>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part2/user_session.ts#<start_add_ticket>-<end_add_ticket>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part2/UserSession.java#<start_add_ticket>-<end_add_ticket>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part2/UserSession.java#<start_add_ticket>-<end_add_ticket>
 ```
 
 </TabItem>
@@ -1108,7 +1108,7 @@ Have a look at the highlighted code:
 <TabItem value="ts" label="TypeScript">
 
 ```ts
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part3/user_session.ts#<start_add_ticket>-<end_add_ticket>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part3/user_session.ts#<start_add_ticket>-<end_add_ticket>
 ```
 
 To retrieve the cart, you use `ctx.get`.
@@ -1118,7 +1118,7 @@ This returns `null` if the value has never been set.
 <TabItem value="java" label="Java">
 
 ```java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/UserSession.java#<start_add_ticket>-<end_add_ticket>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/UserSession.java#<start_add_ticket>-<end_add_ticket>
 ```
 
 To retrieve the cart, you use `ctx.get` with a state key that describes the name and the (de)serializers to be used.
@@ -1155,7 +1155,7 @@ You see that when you request the state, it gets logged in the journal.
 </TabItem>
 <TabItem value="java" label="Java">
 
-To see the state interaction printed,  you need to put the log level to trace in `src/main/resources/log4j.properties`:
+To see the state interaction printed, you need to put the log level to trace in `src/main/resources/log4j.properties`:
 
 ```properties
 logger.app.level = trace
@@ -1225,14 +1225,14 @@ Now, adapt the `UserSession/checkout` function, to use the tickets:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part3/user_session.ts#<start_checkout>-<end_checkout>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part3/user_session.ts#<start_checkout>-<end_checkout>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/UserSession.java#<start_checkout>-<end_checkout>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/UserSession.java#<start_checkout>-<end_checkout>
 ```
 
 </TabItem>
@@ -1262,7 +1262,7 @@ If this is the case, then you call `TicketService/unreserve` and remove it from 
 <TabItem value="ts" label="TypeScript">
 
 ```ts
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part3/user_session.ts#<start_expire_ticket>-<end_expire_ticket>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part3/user_session.ts#<start_expire_ticket>-<end_expire_ticket>
 ```
 
 Call the `expireTicket` function with:
@@ -1276,7 +1276,7 @@ curl localhost:8080/UserSession/expireTicket \
 <TabItem value="java" label="Java">
 
 ```java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/UserSession.java#<start_expire_ticket>-<end_expire_ticket>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/UserSession.java#<start_expire_ticket>-<end_expire_ticket>
 ```
 
 Call the `expireTicket` function with:
@@ -1317,14 +1317,14 @@ Remove the sleep that you added before.
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part3/ticket_service.ts#<start_reserve>-<end_reserve>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part3/ticket_service.ts#<start_reserve>-<end_reserve>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/TicketService.java#<start_reserve>-<end_reserve>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/TicketService.java#<start_reserve>-<end_reserve>
 ```
 
 </TabItem>
@@ -1346,14 +1346,14 @@ The function should clear the value of the `"status"` key if it's not on status 
 <TabItem value="ts" label="TypeScript">
 
 ```ts
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part3/ticket_service.ts#<start_unreserve>-<end_unreserve>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part3/ticket_service.ts#<start_unreserve>-<end_unreserve>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/TicketService.java#<start_unreserve>-<end_unreserve>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/TicketService.java#<start_unreserve>-<end_unreserve>
 ```
 </TabItem>
 </Tabs>
@@ -1376,14 +1376,14 @@ The function should set the value of the `"status"` key to `TicketStatus.Sold` i
 <TabItem value="ts" label="TypeScript">
 
 ```ts
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part3/ticket_service.ts#<start_mark_as_sold>-<end_mark_as_sold>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part3/ticket_service.ts#<start_mark_as_sold>-<end_mark_as_sold>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/TicketService.java#<start_mark_as_sold>-<end_mark_as_sold>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/TicketService.java#<start_mark_as_sold>-<end_mark_as_sold>
 ```
 </TabItem>
 </Tabs>
@@ -1444,14 +1444,14 @@ Add the following code snippet to the `Checkout/handle` function:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part4/checkout.ts#<start_side_effects>-<end_side_effects>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part4/checkout.ts#<start_side_effects>-<end_side_effects>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part4/Checkout.java#<start_side_effects>-<end_side_effects>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part4/Checkout.java#<start_side_effects>-<end_side_effects>
 ```
 
 </TabItem>
@@ -1565,14 +1565,14 @@ The `Checkout/handle` function now looks like the following:
 <TabItem value="ts" label="TypeScript">
 
 ```ts
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part4/checkout.ts#<start_checkout>-<end_checkout>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part4/checkout.ts#<start_checkout>-<end_checkout>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part4/Checkout.java#<start_checkout>-<end_checkout>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part4/Checkout.java#<start_checkout>-<end_checkout>
 ```
 
 </TabItem>
@@ -1584,14 +1584,14 @@ The `UserSession/checkout` function now looks like the following:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part4/user_session.ts#<start_checkout>-<end_checkout>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part4/user_session.ts#<start_checkout>-<end_checkout>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part4/UserSession.java#<start_checkout>-<end_checkout>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part4/UserSession.java#<start_checkout>-<end_checkout>
 ```
 
 </TabItem>
@@ -1654,14 +1654,14 @@ You can observe this behavior by using the `paymentClient.failingCall` in `Check
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part5/checkout.ts#<start_failing_client>-<end_failing_client>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part5/checkout.ts#<start_failing_client>-<end_failing_client>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part5/Checkout.java#<start_failing_client>-<end_failing_client>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part5/Checkout.java#<start_failing_client>-<end_failing_client>
 ```
 </TabItem>
 </Tabs>
