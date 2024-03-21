@@ -14,9 +14,9 @@ For this to work, the user code needs to be deterministic.
 :::
 
 To help you with keeping code execution deterministic, the SDK has a few built-in functions:
-1. **Side effects**: For all other non-deterministic code, you need to use side effects, as explained [below](/develop/sdk/side-effects#side-effects).
-2. **Promise/awaitable combinators**: Check the built-in helper functions [listed below](/develop/sdk/side-effects#promise-awaitable-combinators).
-3. **Random generators:** For example UUIDs and random numbers. Check the built-in helper functions [listed below](/develop/sdk/side-effects#built-in-helper-functions).
+1. **Side effects**: For all other non-deterministic code, you need to use side effects, as explained [below](/develop/java/side-effects#side-effects).
+2. **Promise/awaitable combinators**: Check the built-in helper functions [listed below](/develop/java/side-effects#promise-awaitable-combinators).
+3. **Random generators:** For example UUIDs and random numbers. Check the built-in helper functions [listed below](/develop/java/side-effects#built-in-helper-functions).
 
 
 ## Side effects
@@ -33,7 +33,7 @@ CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_side_effect>-<end_
 
 You need to define the return value type of the side effect, so that the Restate SDK knows how to serialize and deserialize it.
 For the primitive types, you can use Restate's built-in `dev.restate.sdk.core.CoreSerdes`, for example `CoreSerdes.STRING_UTF8` or `CoreSerdes.BOOLEAN`.
-For more information, have a look at the documentation on [serialization](/develop/sdk/serialization).
+For more information, have a look at the documentation on [serialization](/develop/java/serialization).
 
 Once stored, the request to the database will not get re-executed upon replay, but the first result will be used instead.
 

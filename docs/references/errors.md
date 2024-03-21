@@ -110,7 +110,7 @@ The provided subscription is invalid. Subscriptions should have:
 * A `sink` field in the format of `service://<SERVICE_NAME>/<METHOD_NAME>`. When registering, service and method should have been previously registered as well.
 * Additional constraints may apply depending on the sink service contract
 
-Please look at the [Kafka documentation page](https://docs.restate.dev/develop/sdk/kafka) for more details on subscriptions and event handlers.
+Please look at the Kafka documentation page(for [TypeScript](/develop/ts/kafka) or [Java](/develop/java/kafka)) for more details on subscriptions and event handlers.
 
 ## META0010 {#META0010}
 
@@ -198,7 +198,7 @@ A retry-able error was received from the service deployment while processing the
 Suggestions:
 
 * Check the service/deployment logs to get more info about the error cause, like the stacktrace.
-* Look at the https://docs.restate.dev/develop/sdk/error-handling for more info about error handling in services.
+* Look at the error handling SDK docs (for [Java](/develop/java/error-handling) or [TypeScript](/develop/ts/error-handling)) for more information about error handling in services.
 
 ## RT0008 {#RT0008}
 
