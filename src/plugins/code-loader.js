@@ -9,19 +9,8 @@ const plugin = (options) => {
     const injectCode = async (str) => {
         let fileData = null;
         str.replace(codeLoadRegex, (match, filePath, customStartTag, customEndTag) => {
-            // If custom start and end tags are provided, check if they are present in the file, otherwise fail
-            if (customStartTag && !fileContent.includes(customStartTag)) {
-                throw new Error(`Custom start tag "${customStartTag}" not found in file ${filePath}`);
-            }
-            if (customEndTag && !fileContent.includes(customEndTag)) {
-                throw new Error(`Custom end tag "${customEndTag}" not found in file ${filePath}`);
-            }
-
-            const startTag = customStartTag ?? "<start_here>";
-            const endTag = customEndTag ?? "<end_here>";
-            console.info(`Loading code snippet from ${filePath} with tags: ${startTag} and ${endTag}`)
-
-            fileData = { filePath: filePath, startTag, endTag }
+            console.info(`Loading code snippet from with optional custom tags: ${customStartTag} and ${customEndTag}`)
+            fileData = { filePath, customStartTag, customEndTag }
             return match;
         });
 
@@ -30,7 +19,7 @@ const plugin = (options) => {
         }
 
         const fileContent = await readFileOrFetch(fileData.filePath);
-        const data = extractAndClean(fileContent, fileData.startTag, fileData.endTag);
+        const data = extractAndClean(fileContent, fileData.customStartTag, fileData.customEndTag);
         return str.replace(codeLoadRegex, () => data);
     }
 
@@ -46,8 +35,17 @@ const plugin = (options) => {
         }
     }
 
-    function extractAndClean(fileContent, startTag, endTag){
-        console.info(`Loaded code snippet from with tags: ${startTag} and ${endTag}`)
+    function extractAndClean(fileContent, customStartTag, customEndTag){
+        // If custom start and end tags are provided, check if they are present in the file, otherwise fail
+        if (customStartTag && !fileContent.includes(customStartTag)) {
+            throw new Error(`Custom start tag "${customStartTag}" not found in file ${filePath}`);
+        }
+        if (customEndTag && !fileContent.includes(customEndTag)) {
+            throw new Error(`Custom end tag "${customEndTag}" not found in file ${filePath}`);
+        }
+
+        const startTag = customStartTag ?? "<start_here>";
+        const endTag = customEndTag ?? "<end_here>";
 
         // Split to only keep lines between "start_here" and "end_here"
         const lines = fileContent.split(startTag).pop().split(endTag).shift();
