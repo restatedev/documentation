@@ -49,7 +49,7 @@ You can also use custom tags. Please keep the tags a bit uniform and descriptive
 3. Refer to the code snippet from within the markdown documentation file as follows `CODE_LOAD::<path_to_snippet>`. If you use custom tags, specify them as  `CODE_LOAD::<path_to_snippet>#<start_custom_tag>-<end_custom_tag>`. You need to put this inside a code block with the language specified. The path is relative from **within** the code_snippets folder. For example, `CODE_LOAD::java/src/main/java/Greeter.java#<start_greet_function>-<end_greet_function`. 
 
 4. You can also use GitHub links for your code snippets. For example: 
-`CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/issue320_docs_injection_code_snippets/tutorials/tour-of-restate-typescript/src/part1/user_session.ts#<start_expire_ticket>-<end_expire_ticket>`
+`CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part1/user_session.ts#<start_expire_ticket>-<end_expire_ticket>`
 
 
 Code snippets will be compiled and build on PRs and releases. 
