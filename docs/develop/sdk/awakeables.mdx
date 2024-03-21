@@ -34,15 +34,7 @@ You can use awakeables in the SDK by doing the following:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-// 1. Generate the ID
-const awakeable = ctx.awakeable<string>();
-const id = awakeable.id
-
-// 2. Send the ID to some external system
-// ... here goes your custom code to send the ID ...
-
-// 3. Wait for the ID to returned and retrieve the payload
-const result = await awakeable.promise;
+CODE_LOAD::ts/src/develop/awakeable.ts#<start_create>-<end_create>
 ```
 
 The SDK deserializes the payload with `JSON.parse(result.toString()) as T`.
@@ -51,15 +43,7 @@ The SDK deserializes the payload with `JSON.parse(result.toString()) as T`.
 <TabItem value="java" label="Java">
 
 ```java
-// 1. Generate the ID
-Awakeable<String> awakeable = ctx.awakeable(CoreSerdes.STRING_UTF8);
-
-// 2. Send the ID to some external system
-String awakeableId = awakeable.id();
-// ... send a request to another system and include the awakeableId as callback url...
-
-// 3. Wait for the ID to returned and retrieve the payload
-String payload = awakeable.await();
+CODE_LOAD::java/src/main/java/develop/Awakeables.java#<start_create>-<end_create>
 ```
 
 You need to define the deserializer for the payload.
@@ -82,7 +66,7 @@ Use the awakeable ID that you received from the other service, and do the follow
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-ctx.resolveAwakeable(id, "hello");
+CODE_LOAD::ts/src/develop/awakeable.ts#<start_resolve>-<end_resolve>
 ```
 
 The SDK serializes the payload with `Buffer.from(JSON.stringify(payload))` and deserializes it in the receiving service with `JSON.parse(result.toString()) as T`.
@@ -92,7 +76,7 @@ Make sure that the payload you send, has the type that is expected on the receiv
 <TabItem value="java" label="Java">
 
 ```java
-ctx.awakeableHandle(awakeableId).resolve(CoreSerdes.STRING_UTF8, "hello");
+CODE_LOAD::java/src/main/java/develop/Awakeables.java#<start_resolve>-<end_resolve>
 ```
 
 You need to define the serializer for the payload.
@@ -108,19 +92,18 @@ You can also reject an awakeable, that is completing it with a failure. This wil
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-ctx.rejectAwakeable(id, "my error reason");
+CODE_LOAD::ts/src/develop/awakeable.ts#<start_reject>-<end_reject>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java
-ctx.awakeableHandle(awakeableId).reject("my error reason");
+CODE_LOAD::java/src/main/java/develop/Awakeables.java#<start_reject>-<end_reject>
 ```
 
 </TabItem>
 </Tabs>
-
 
 
 ## Completing awakeables from outside Restate
@@ -130,25 +113,33 @@ You can resolve awakeables from outside Restate by sending requests to Restate's
 To resolve an awakeable with a JSON payload:
 
 ```shell
-curl <RESTATE_INGRESS_URL>/dev.restate.Awakeables/Resolve -H 'content-type: application/json' -d '{"id": "<AWAKEABLE_ID>", "json_result": <JSON_VALUE_RESULT>}'
+curl <RESTATE_INGRESS_URL>/dev.restate.Awakeables/Resolve \
+  -H 'content-type: application/json' \
+  -d '{"id": "<AWAKEABLE_ID>", "json_result": <JSON_VALUE_RESULT>}'
 ```
 
 For example:
 
 ```shell
-curl localhost:8080/dev.restate.Awakeables/Resolve -H 'content-type: application/json' -d '{"id": "T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE", "json_result": {"hello": "world"}}'
+curl localhost:8080/dev.restate.Awakeables/Resolve \
+  -H 'content-type: application/json'
+  -d '{"id": "T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE", "json_result": {"hello": "world"}}'
 ```
 
 To reject an awakeable:
 
 ```shell
-curl <RESTATE_INGRESS_URL>/dev.restate.Awakeables/Reject -H 'content-type: application/json' -d '{"id": "<AWAKEABLE_ID>", "reason": "<FAILURE_REASON>"}'
+curl <RESTATE_INGRESS_URL>/dev.restate.Awakeables/Reject \
+  -H 'content-type: application/json' \
+  -d '{"id": "<AWAKEABLE_ID>", "reason": "<FAILURE_REASON>"}'
 ```
 
 For example:
 
 ```shell
-curl localhost:8080/dev.restate.Awakeables/Reject -H 'content-type: application/json' -d '{"id": "T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE", "reason": "Very bad error!"}'
+curl localhost:8080/dev.restate.Awakeables/Reject \
+  -H 'content-type: application/json' \
+  -d '{"id": "T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE", "reason": "Very bad error!"}'
 ```
 
 Look at the [Protobuf definitions](https://github.com/restatedev/proto/blob/main/dev/restate/services.proto)

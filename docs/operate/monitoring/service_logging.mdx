@@ -23,13 +23,12 @@ The default behavior is (when `RESTATE_DEBUG_LOGGING` is not set)
 - Otherwise, the `INVOKE` setting is used.
 
 **Console logging**
+
 If you use the default Node console logger, log statements will be printed over and over again during replays.
 To avoid this, you can use the Restate context logger, which is a wrapper around the console logger that suppresses duplicate log statements during replays:
 
 ```typescript
-ctx.console.info("This will not be printed again during replays");
-ctx.console.debug("This will not be printed again during replays");
-// Any other console logging method can be used
+CODE_LOAD::ts/src/operate/monitoring.ts
 ```
 
 </TabItem>
@@ -38,13 +37,13 @@ ctx.console.debug("This will not be printed again during replays");
 
 The Java SDK uses [log4j2](https://logging.apache.org/log4j/2.x/manual/configuration.html) as logging facade. To enable logging, add `log4j2-core` to the dependencies. For example, for Gradle:
 
-```
+```kt
 implementation("org.apache.logging.log4j:log4j-core:2.20.0")
 ```
 
 And configure the logging adding the file `resources/log4j2.properties`:
 
-```
+```log
 # Set to debug or trace if log4j initialization is failing
 status = warn
 

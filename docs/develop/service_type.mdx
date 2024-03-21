@@ -34,30 +34,20 @@ Because keyed services are executed serially on a per-key basis, it means that i
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-const client = new ServiceB(ctx);
-await ctx.oneWayCall(() =>
-  client.do(TestRequest.create({ key: "Restate", number: 1 }))
-);
-await ctx.oneWayCall(() =>
-  client.do(TestRequest.create({ key: "Restate", number: 2 }))
-);
+CODE_LOAD::ts/src/develop/service_types.ts#<start_ordering>-<end_ordering>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java
-GreeterRestate.GreeterRestateClient client = GreeterRestate.newClient(ctx);
-var req1 = TestRequest.newBuilder().setName("Restate").setNumber(1).build();
-client.oneWay().greet(req1);
-var req2 = TestRequest.newBuilder().setName("Restate").setNumber(2).build();
-client.oneWay().greet(req2);
+CODE_LOAD::java/src/main/java/develop/ServiceTypes.java#<start_ordering>-<end_ordering>
 ```
 
 </TabItem>
 </Tabs>
 
-It is guaranteed that the invocation with `number: 1` will be executed before the invocation with `number: 2`. It is not guaranteed though that invocation `number: 2` will be executed immediately after invocation `number: 1`, as any other service, or a call from the ingress, could interleave these two calls enqueuing a third one.
+It is guaranteed that the invocation with number `1` will be executed before the invocation with number `2`. It is not guaranteed though that invocation `number: 2` will be executed immediately after invocation `number: 1`, as any other service, or a call from the ingress, could interleave these two calls enqueuing a third one.
 
 ### Common pitfalls
 
@@ -99,38 +89,10 @@ The service contract is defined using [Protobuf](https://protobuf.dev/programmin
 
 ### Protobuf service definition
 
-Below a sample Protobuf service definition for the service `counter.Counter`:
+Below a sample Protobuf service definition for the service `Counter`:
 
 ```protobuf
-syntax = "proto3";
-
-package counter;
-
-// Import the Restate contract extensions
-import "dev/restate/ext.proto";
-
-service Counter {
-  // Define the service type
-  option (dev.restate.ext.service_type) = KEYED;
-
-  // Define the service methods
-  rpc Get (GetRequest) returns (Response);
-  rpc Add (AddRequest) returns (Response);
-}
-
-message GetRequest {
-  // Define the key
-  string counter_name = 1 [(dev.restate.ext.field) = KEY];
-}
-
-message AddRequest {
-  string counter_name = 1 [(dev.restate.ext.field) = KEY];
-  int64 value = 2;
-}
-
-message Response {
-  int64 value = 1;
-}
+CODE_LOAD::java/src/main/proto/counter.proto
 ```
 
 ### Defining service instance and key
@@ -160,13 +122,7 @@ For keyed services, you're required to specify in every input message the field 
 * There is only one key field.
 * The field type is `string`.
 
-For example:
-
-```protobuf
-message GetRequest {
-  string counter_name = 1 [(dev.restate.ext.field) = KEY];
-}
-```
+For an example, have a look at the `GetRequest` and `AddRequest` messages in the sample Protobuf service.
 
 ### How to use the contract
 

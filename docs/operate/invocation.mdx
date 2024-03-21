@@ -26,103 +26,62 @@ You can send requests directly from the browser or via `curl` without generating
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript" default>
 
-For the handler API, you need to craft a message with a key (only if you are invoking a keyed service) and a request, similar to this protobuf message:
-
-```proto
-message RpcRequest {
-    string key = 1 [(dev.restate.ext.field) = KEY];
-    google.protobuf.Value request = 2;
-}
-```
-
-Then use this message to invoke the function:
+For the handler API, you invoke the function with a payload with the `request` and an optional `key` (for keyed services) fields.
+For example, to invoke the function `greet` of the service `greeter` using `curl`:
 
 ```shell
-curl <RESTATE_INGRESS_URL>/<SERVICE_NAME>/<FUNCTION_NAME> -H 'content-type: application/json' -d '{"key": "<KEY_OF_KEYED_SERVICE>", "request": <REQUEST_DATA>}}'
+curl <RESTATE_INGRESS_URL>/<SERVICE_NAME>/<FUNCTION_NAME> \
+    -H 'content-type: application/json' \
+    -d '{"key": "<KEY_OF_KEYED_SERVICE>", "request": <REQUEST_DATA>}}'
 ```
 
 The service name is the one specified when binding the service to the HTTP deployment server, and the function name is the one specified when binding the function to the service.
+For unkeyed services, drop the `key` field from the request.
 
-For example, for a keyed service `greeter-service` with the following implementation:
+Restate relies on the fields being named `key` and `request`, so do not use other names here.
 
-```ts
-const router = restate.keyedRouter({
-    greet: async (ctx: restate.KeyedContext, name: string, req: { age: number } ) => {
-        return `Hello ${name} of ${req.age} years old`;
-    },
-});
-
-export const handler = restate
-    .endpoint()
-    .bindKeyedRouter("greeter-service", router)
-    .listen();
-```
-
-You can invoke the function `greet` using `curl`:
+For example, to call the `greet` function of a keyed service `greeter` that takes a request of the form `{age: number}`:
 
 ```shell
-curl localhost:8080/greeter-service/greet -H 'content-type: application/json' -d '{"key": "John Doe", "request": {"age": 55}}'
+curl localhost:8080/greeter/greet \
+    -H 'content-type: application/json' \
+    -d '{"key": "John Doe", "request": {"age": 55}}'
 ```
 
-You should see the response:
-
-```json
-{"response":"Hello John Doe of 55 years old"}
-```
-
-If this would be an unkeyed service and the request would be just the string name,
-then you could invoke the function `greet` of the unkeyed `greeter-service` using `curl` as follows:
-
-```shell
-curl localhost:8080/greeter-service/greet -H 'content-type: application/json' -d '{"request": "John Doe"}}'
-```
 
 </TabItem>
 <TabItem value="ts-grpc" label="TypeScript-gRPC">
 
-For example, to invoke the service `org.example.Greeter` method `Greet` using `curl`:
+For example, to invoke the service `org.example.Greeter` and method `Greet` using `curl`:
 
 ```shell
-curl <RESTATE_INGRESS_URL>/org.example.Greeter/Greet -H 'content-type: application/json' -d '{"name": "Restate"}'
-```
-
-You should see the response:
-
-```json
-{"greeting":"Hello Restate"}
+curl <RESTATE_INGRESS_URL>/org.example.Greeter/Greet \
+    -H 'content-type: application/json' \
+    -d '{"name": "Restate"}'
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
-For example, to invoke the service `org.example.Greeter` method `Greet` using `curl`:
+For example, to invoke the service `org.example.Greeter` and method `Greet` using `curl`:
 
 ```shell
-curl <RESTATE_INGRESS_URL>/org.example.Greeter/Greet -H 'content-type: application/json' -d '{"name": "Restate"}'
-```
-
-You should see the response:
-
-```json
-{"greeting":"Hello Restate"}
+curl <RESTATE_INGRESS_URL>/org.example.Greeter/Greet \
+    -H 'content-type: application/json' \
+    -d '{"name": "Restate"}'
 ```
 
 </TabItem>
 </Tabs>
 
-The rules to invoke a service are the following:
-
-* The request path is in the format of `<SERVICE_NAME>/<METHOD_NAME>`
-* The request method is `POST`
-* The request body is encoded either with:
-    * JSON, with the header `Content-Type: application/json`, or with
-    * Protobuf, with the header `Content-Type: application/proto`
-
+:::note Protobuf-encoded request bodies
+If the request body is encoded with Protobuf, use `Content-Type: application/proto` as the header.
 The response body will have the same content type as the request.
+:::
 
 :::note
-This is supported via the [Connect Protocol](https://connect.build/docs/protocol/), allowing you to send gRPC-like requests as regular HTTP requests.
-For more detail, check out the [Connect documentation](https://connect.build/).
+This follows the [Connect Protocol](https://connect.build/docs/protocol/), allowing you to send gRPC-like requests as regular HTTP requests.
+For more details, check out the [Connect documentation](https://connect.build/).
 :::
 
 ### Over gRPC and gRPC-web
@@ -134,7 +93,7 @@ You can use any gRPC code generator to generate a gRPC client to invoke a Restat
 For example, to invoke the service `org.example.Greeter` method `Greet` using [`grpcurl`](https://github.com/fullstorydev/grpcurl):
 
 ```shell
-grpcurl -plaintext -d '{"name": "Pete"} <RESTATE_INGRESS_URL> org.example.Greeter/Greet
+grpcurl -plaintext -d '{"name": "Restate"}' <RESTATE_INGRESS_URL> org.example.Greeter/Greet
 ```
 
 Restate supports [gRPC reflections](https://github.com/grpc/grpc/blob/master/doc/server-reflection.md), hence some tools like `grpcurl` will automatically discover the protobuf definitions of the services to invoke.
@@ -152,7 +111,10 @@ Restate also natively supports gRPC-web. You can use a [gRPC-web code generator]
 You can send requests to Restate providing an idempotency key, through the [`Idempotency-Key` header](https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/):
 
 ```shell
-curl <RESTATE_INGRESS_URL>/org.example.Greeter/Greet -H 'idempotency-key: <IDEMPOTENCY_KEY>' -H 'content-type: application/json' -d '{"name": "Pete"}'
+curl <RESTATE_INGRESS_URL>/org.example.Greeter/Greet \
+  -H 'idempotency-key: <IDEMPOTENCY_KEY>' \
+  -H 'content-type: application/json' \
+  -d '{"name": "Restate"}'
 ```
 
 After the invocation completes, Restate persists the response for a retention period of 30 minutes.
@@ -166,13 +128,16 @@ The `Idempotency-Key` header works with both HTTP and gRPC/gRPC-web.
 
 You can invoke a service without waiting for the response, similar to [one-way calls in the SDK](/develop/sdk/service-communication#one-way-calls), by using the Restate built-in `dev.restate.Ingress/Invoke` service method, which can be invoked like any other user service, using gRPC, gRPC-web or Connect.
 
-For example, using [Connect](#connect-grpc-on-http) and `curl`:
+For example, using HTTP and `curl`:
 
 ```shell
-curl <RESTATE_INGRESS_URL>/dev.restate.Ingress/Invoke -H 'content-type: application/json' -d '{"service": "org.example.Greeter", "method": "Greet", "argument": {"name": "Pete"}}'
+curl <RESTATE_INGRESS_URL>/dev.restate.Ingress/Invoke \
+  -H 'content-type: application/json' \
+  -d '{"service": "org.example.Greeter", "method": "Greet", "argument": {"name": "Restate"}}'
 ```
 
-The response contains the [Invocation identifier](#invocation-identifier). You can use this identifier to cancel or kill the invocation as described in [the below paragraph](/operate/invocation#cancel-an-invocation).
+The response contains the [Invocation identifier](#invocation-identifier).
+You can use this identifier to cancel or kill the invocation as described in [the below paragraph](/operate/invocation#cancel-an-invocation).
 
 For the complete documentation of the `dev.restate.Ingress` built-in service, check out the [Restate protobuf definitions](https://github.com/restatedev/proto/blob/main/dev/restate/services.proto).
 
@@ -185,13 +150,17 @@ This feature can be especially useful when you need to invoke a service method i
 When registering a service deployment, every service is by default accessible both by other services, and by sending requests to Restate using HTTP and/or gRPC. You can configure a service as `private`, such that you can't invoke it by sending requests to Restate, through the [Admin APIs](/references/admin-api):
 
 ```shell
-curl -X PATCH <RESTATE_ADMIN_URL>/services/<SERVICE_NAME> -H 'content-type: application/json' -d '{"public": false}'
+curl -X PATCH <RESTATE_ADMIN_URL>/services/<SERVICE_NAME> \
+  -H 'content-type: application/json' \
+  -d '{"public": false}'
 ```
 
 For example:
 
 ```shell
-curl -X PATCH localhost:9070/services/org.example.ExampleService -H 'content-type: application/json' -d '{"public": false}'
+curl -X PATCH localhost:9070/services/org.example.ExampleService \
+  -H 'content-type: application/json' \
+  -d '{"public": false}'
 ```
 
 You can revert it back to public with `{"public": true}`. Private services can still be reached by other Restate services.
@@ -280,7 +249,7 @@ For these cases, Restate provides the ability to kill an invocation.
 Killing an invocation means that every call in the call tree of the invocation will be stopped immediately without giving the service handler a chance to react and execute compensation logic.
 This entails that killing the invocation **will not** roll back its progress.
 
-:::note
+:::warning
 One-way calls and delayed calls will not be killed because they are considered detached from the originating call tree.
 :::
 
@@ -296,10 +265,11 @@ Retrieve the invocation identifier from the logs or traces, or use the CLI:
 restate inv ls
 ```
 
-You can kill an invocation using the CLI, by using cancel and the `--kill` flag:
+Kill the invocation by using cancel and the `--kill` flag:
 
 ```shell
 restate inv cancel --kill <INVOCATION_IDENTIFIER>
+```
 
 You can also use the abbreviation `rm` instead of `cancel`.
 
@@ -322,15 +292,3 @@ For more details on the API, refer to the [admin API docs](/references/admin-api
 
 </TabItem>
 </Tabs>
-
-## Invocation execution timeout(s)
-
-For each retry attempt, Restate internally holds an inactivity timer to track whether the service is active and generating some work, such as setting state, invoking other services, etc. This timer can be configured with the option [`worker.invoker.inactivity_timeout`](/operate/configuration).
-
-Once the `inactivity_timeout` is fired, Restate tries to gracefully suspend the invocation while waiting for an event that triggers the resumption of the invocation.
-When suspending, the Restate SDK will continue executing the service code until it reaches a _suspension point_, that is a point in your service code where it's safe to interrupt the execution, for example when `await`ing on a response from another service.
-
-When suspending, Restate internally starts another timer to protect Restate from connection issues and/or misbehaving code/SDKs that prevent the tear down of the connection. This timer can be configured with the option [`worker.invoker.abort_timeout`](/operate/configuration).
-Once the `abort_timeout` is fired, the connection to the deployment endpoint is closed, and all in-flight progress is discarded.
-
-If you have [side effects](/develop/sdk/side-effects) that take more than `inactivity_timeout + abort_timeout` to execute, you might need to tune these timeouts accordingly, for example by increasing the `inactivity_timeout` to a value larger than the expected side effect duration.

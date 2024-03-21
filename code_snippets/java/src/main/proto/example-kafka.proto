@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package example;
+
+import "google/protobuf/empty.proto";
+import "dev/restate/ext.proto";
+
+option java_package = "example.generated";
+option java_outer_classname = "KafkaExampleProto";
+
+service MyService {
+  option (dev.restate.ext.service_type) = KEYED;
+
+  // Event handler method
+  // highlight-next-line
+  rpc Handle(MyEvent) returns (google.protobuf.Empty);
+}
+
+// highlight-start
+message MyEvent {
+  string id = 1 [(dev.restate.ext.field) = KEY];
+  bytes payload = 2 [(dev.restate.ext.field) = EVENT_PAYLOAD];
+
+  // This is optional
+  map<string, string> metadata = 3 [(dev.restate.ext.field) = EVENT_METADATA];
+}
+// highlight-end

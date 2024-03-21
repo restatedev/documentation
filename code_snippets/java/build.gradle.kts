@@ -3,7 +3,6 @@ import com.google.protobuf.gradle.id
 plugins {
   java
   application
-
   id("com.google.protobuf") version "0.9.1"
 }
 
@@ -17,6 +16,7 @@ dependencies {
   // Restate SDK
   implementation("dev.restate:sdk-api:$restateVersion")
   implementation("dev.restate:sdk-http-vertx:$restateVersion")
+  implementation("dev.restate:sdk-lambda:$restateVersion")
   // To use Jackson to read/write state entries (optional)
   implementation("dev.restate:sdk-serde-jackson:$restateVersion")
 
@@ -63,5 +63,5 @@ tasks.withType<Test> {
 
 // Set main class
 application {
-  mainClass.set("dev.restate.sdk.examples.Greeter")
+  mainClass.set("develop.Greeter")
 }

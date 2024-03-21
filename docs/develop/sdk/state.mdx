@@ -16,12 +16,24 @@ Have a look at the [introspection docs](/operate/introspection#inspecting-applic
 :::
 
 ## Listing state keys
-To list all the keys that have entries in the state store for that invocation (and its keyed service instance),, do:
+To list all the keys that have entries in the state store for that invocation (and its keyed service instance), do:
 
-```
-ctx.stateKeys();
+<Tabs groupId="sdk" queryString>
+<TabItem value="ts" label="TypeScript">
+
+```typescript
+CODE_LOAD::ts/src/develop/state.ts#<start_statekeys>-<end_statekeys>
 ```
 
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+CODE_LOAD::java/src/main/java/develop/State.java#<start_statekeys>-<end_statekeys>
+```
+
+</TabItem>
+</Tabs>
 
 ## Retrieving state
 To retrieve state in Restate, you can do the following:
@@ -30,7 +42,7 @@ To retrieve state in Restate, you can do the following:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-const myValue: string | null = await ctx.get<string>("my-key");
+CODE_LOAD::ts/src/develop/state.ts#<start_get>-<end_get>
 ```
 
 Replace `my-key` with the key you want to retrieve.
@@ -42,7 +54,7 @@ buffer with `Buffer.from(JSON.stringify(yourObject))`.
 For example, to retrieve a number type, you could use the following code:
 
 ```typescript
-const myValue = (await ctx.get<number>("my-key")) || 0;
+CODE_LOAD::ts/src/develop/state.ts#<start_get_nb>-<end_get_nb>
 ```
 
 This would retrieve the value of the `my-key` key. If the value is `null`, then it will return 0.
@@ -50,28 +62,14 @@ This would retrieve the value of the `my-key` key. If the value is `null`, then 
 </TabItem>
 <TabItem value="java" label="Java">
 
-First, you need to define the state key: a combination of a key name and (de)serializer:
-```java
-import dev.restate.sdk.core.CoreSerdes;
-import dev.restate.sdk.core.StateKey;
-
-// Store a String:
-StateKey<String> STATE_KEY = StateKey.of("my-key", CoreSerdes.STRING_UTF8);
-
-// Store a Long:
-StateKey<Long> STATE_KEY = StateKey.of("my-key", CoreSerdes.LONG);
-
-// Store a Double:
-StateKey<Double> STATE_KEY = StateKey.of("my-key", CoreSerdes.DOUBLE);
-```
-
+First, you need to define the state key: a combination of a key name and (de)serializer.
 You can use Restate's built-in `CoreSerdes` for serialization of primitive types.
 For the serialization of custom types, have a look at the [serialization documentation](/develop/sdk/serialization).
 
 Once you have defined the `STATE_KEY`, you can retrieve the state in your methods as follows:
 
 ```java
-var state = ctx.get(STATE_KEY)
+CODE_LOAD::java/src/main/java/develop/State.java#<start_get>-<end_get>
 ```
 
 This will return either the value that was stored or `null` if no value was stored.
@@ -87,7 +85,7 @@ To set a key-value pair in Restate, do:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-ctx.set("my-key", "my-new-value");
+CODE_LOAD::ts/src/develop/state.ts#<start_set>-<end_set>
 ```
 
 The value can be of any type that can be serialized as a Buffer.
@@ -99,7 +97,7 @@ And replace `my-new-value` with the value that you want to set.
 <TabItem value="java" label="Java">
 
 ```java
-ctx.set(STATE_KEY, "my-new-value");
+CODE_LOAD::java/src/main/java/develop/State.java#<start_set>-<end_set>
 ```
 
 Have a look at [the docs on retrieving state](/develop/sdk/state#retrieving-state) to understand how to create the state key.
@@ -111,9 +109,6 @@ Replace `my-new-value` with the value that you want to set.
 </TabItem>
 </Tabs>
 
-
-
-
 ## Clearing state
 To delete the value of a key in Restate, do:
 
@@ -121,25 +116,33 @@ To delete the value of a key in Restate, do:
 <TabItem value="ts" label="TypeScript">
 
 ```typescript
-ctx.clear("my-key");
+CODE_LOAD::ts/src/develop/state.ts#<start_clear>-<end_clear>
 ```
 
 Replace `my-key` with the key that you are setting.
+
+
+To delete all K/V state entries for the invocation (and its keyed service instance), do:
+
+```typescript
+CODE_LOAD::ts/src/develop/state.ts#<start_clear_all>-<end_clear_all>
+```
+
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java
-ctx.clear(STATE_KEY);
+CODE_LOAD::java/src/main/java/develop/State.java#<start_clear>-<end_clear>
 ```
 
 Have a look at [the docs on retrieving state](/develop/sdk/state#retrieving-state) to understand how to create the state key.
 
-</TabItem>
-</Tabs>
-
 To delete all K/V state entries for the invocation (and its keyed service instance), do:
 
+```java
+CODE_LOAD::java/src/main/java/develop/State.java#<start_clear_all>-<end_clear_all>
 ```
-ctx.clearAll();
-```
+
+</TabItem>
+</Tabs>

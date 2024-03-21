@@ -24,11 +24,7 @@ This router is used to link the function you implemented with an API path.
 For **unkeyed services**, the router looks as follows:
 
 ```typescript
-const serviceRouter = restate.router({
-    hello: async () => { ... },
-    callMe: async (ctx: restate.Context) => { ... },
-    maybe: async (ctx: restate.Context, request: Request) => { ... }
-});
+CODE_LOAD::ts/src/develop/serving.ts#<start_unkeyed>-<end_unkeyed>
 ```
 
 This example shows a router for an unkeyed service with three functions and their respective API paths (`hello`, `callMe`, and `maybe`).
@@ -43,13 +39,7 @@ The parameter names may be chosen differently.
 
 For **keyed services**, the router looks as follows:
 ```typescript
-// 2. Create a router for keyed services (if any):
-const keyedServiceRouter = restate.keyedRouter({
-    hello: async () => { ... },
-    callMe: async (ctx: restate.KeyedContext) => { ... },
-    maybe: async (ctx: restate.KeyedContext, key: string) => { ... },
-    withSomething: async (ctx: restate.KeyedContext, key: string, request: Request) => { ... }
-});
+CODE_LOAD::ts/src/develop/serving.ts#<start_keyed>-<end_keyed>
 ```
 
 This example shows a router for a keyed service with four functions and their respective API paths (`hello`, `callMe`, `maybe`, and `withSomething`).
@@ -68,15 +58,14 @@ The parameter names may be chosen differently.
 
 You use the exported serviceApi to call this service from within other services (see [service communication docs](/develop/sdk/service-communication))
 
+For unkeyed routers, use the following syntax:
 ```typescript
-export const myServiceApi: restate.ServiceApi<typeof serviceRouter> = {
-    path: "myServicePath",
-};
+CODE_LOAD::ts/src/develop/serving.ts#<start_unkeyed_api>-<end_unkeyed_api>
+```
 
-// use the same syntax for keyed services:
-export const myKeyedServiceApi: restate.ServiceApi<typeof keyedServiceRouter> = {
-    path: "myServicePath",
-};
+For keyed routers, use the same syntax:
+```typescript
+CODE_LOAD::ts/src/develop/serving.ts#<start_keyed_api>-<end_keyed_api>
 ```
 This means that the `hello` function of this service can be called via `<RESTATE_INGRESS_URL>/myServicePath/hello`.
 
@@ -87,42 +76,20 @@ You need to supply the service path and router.
 Finally, specify the port of the endpoint (default is `9080`):
 
 ```typescript
-restate
-  .endpoint()
-  // bind the keyed services to the Restate server
-  .bindRouter(myServiceApi.path, serviceRouter)
-  // bind the unkeyed services to the Restate server
-  .bindKeyedRouter(myKeyedServiceApi.path, keyedServiceRouter)
-  .listen(9080);
+CODE_LOAD::ts/src/develop/serving.ts#<start_endpoint>-<end_endpoint>
 ```
 
 If you need to manually control or customize the HTTP2 server, you can call `http2Handler()` instead of `listen()`, and then use it to manually instantiate the HTTP server:
 
 ```ts
-const http2Handler = restate
-    .endpoint()
-    .bindService({
-        descriptor: protoMetadata,
-        service: "Greeter",
-        instance: new GreeterService(),
-    })
-    .http2Handler()
-const httpServer = http2.createServer(http2Handler);
-httpServer.listen(port);
+CODE_LOAD::ts/src/develop/serving.ts#<start_custom_endpoint>-<end_custom_endpoint>
 ```
 
 </TabItem>
 <TabItem value="ts-grpc" label="TypeScript-gRPC">
 
 ```typescript
-restate
-  .endpoint()
-  .bindService({
-    descriptor: protoMetadata,
-    service: "Greeter",
-    instance: new GreeterService(),
-  })
-  .listen(9080);
+CODE_LOAD::ts-grpc/src/develop/serving.ts#<start_endpoint>-<end_endpoint>
 ```
 
 First, call the `endpoint()` method to create a new endpoint.
@@ -143,24 +110,15 @@ Finally, call `listen(port?)` to specify the port on which the endpoint should l
 If you need to manually control or customize the HTTP2 server, you can call `http2Handler()` instead of `listen()`, and then use it to manually instantiate the HTTP server:
 
 ```ts
-const http2Handler = restate
-    .endpoint()
-    .bindService({
-        descriptor: protoMetadata,
-        service: "Greeter",
-        instance: new GreeterService(),
-    })
-    .http2Handler()
-const httpServer = http2.createServer(http2Handler);
-httpServer.listen(port);
+CODE_LOAD::ts-grpc/src/develop/serving.ts#<start_custom_endpoint>-<end_custom_endpoint>
 ```
-
+    
 </TabItem>
 
 <TabItem value="java" label="Java">
 
 ```java
-RestateHttpEndpointBuilder.builder().withService(new Greeter()).buildAndListen();
+CODE_LOAD::java/src/main/java/develop/ServingHttp.java
 ```
 
 First, create a `RestateHttpEndpointBuilder`, then bind one or multiple services to the server.
@@ -179,12 +137,7 @@ only minimal changes are required, as compared to the long-running service:
 <TabItem value="ts" label="TypeScript" default>
 
 ```typescript
-export const handler = restate
-  .endpoint()
-  .bindRouter(myServiceApi.path, serviceRouter)
-  .bindKeyedRouter(myKeyedServiceApi.path, keyedServiceRouter)
-  //highlight-next-line
-  .lambdaHandler();
+CODE_LOAD::ts/src/develop/serving.ts#<start_lambda>-<end_lambda>
 ```
 
 You can create a Lambda handler in the same way as we did for the [HTTP server](/develop/sdk/serving#creating-an-http-endpoint), but with calling `lambdaHandler()` instead of `listen()`.
@@ -196,15 +149,7 @@ for guidance on how to deploy your services on AWS Lambda.
 <TabItem value="ts-grpc" label="TypeScript-gRPC">
 
 ```typescript
-export const handler = restate
-    .endpoint()
-    .bindService({
-        descriptor: protoMetadata,
-        service: "Greeter",
-        instance: new GreeterService(),
-    })
-    //highlight-next-line
-    .lambdaHandler();
+CODE_LOAD::ts-grpc/src/develop/serving.ts#<start_lambda>-<end_lambda>
 ```
 
 You can create a Lambda handler in the same way as we did for the [HTTP server](/develop/sdk/serving#creating-an-http-endpoint), but with calling `lambdaHandler()` instead of `listen()`.
@@ -225,15 +170,7 @@ implementation("dev.restate:sdk-lambda:VAR::JAVA_SDK_VERSION")
 Register your Lambda services as follows:
 
 ```java
-import dev.restate.sdk.lambda.LambdaRestateServer;
-import dev.restate.sdk.lambda.LambdaRestateServerFactory;
-
-public class MyLambdaHandler extends BaseRestateLambdaHandler {
-  @Override
-  public void register(RestateLambdaEndpointBuilder builder) {
-    builder.withService(new Greeter());
-  }
-}
+CODE_LOAD::java/src/main/java/develop/ServingLambda.java
 ```
 
 Create a class that extends `BaseRestateLambdaHandler` with your services binded to it.

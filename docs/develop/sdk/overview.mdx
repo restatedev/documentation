@@ -10,40 +10,39 @@ import TabItem from '@theme/TabItem';
 
 Restate offers a Java SDK ([sdk-java repo](https://github.com/restatedev/sdk-java)) and a TypeScript SDK ([sdk-typescript repo](https://github.com/restatedev/sdk-typescript)).
 
+:::info TS Handler API vs. gRPC API
+Restate currently supports two TypeScript APIs for implementing services: the Handler API and the gRPC API.
+The gRPC API requires you to specify the services, methods and data types via a Protobuf definition, as explained in the [service contract docs](/develop/service_type#restate-service-contract).
+The Handler API does not require this.
+:::
+
 ## Installation
 
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
 :::tip
-To get started quickly, use the [template generator](https://github.com/restatedev/node-template-generator)
+Have a look at the [TypeScript Quickstart](/get_started/quickstart?sdk=ts)!
 :::
-
 
 Add the `@restatedev/restate-sdk` dependency to your NodeJS project to start developing Restate services.
-
-:::info
-Restate currently supports two TypeScript APIs for implementing services: the Handler API and the gRPC API.
-The gRPC API requires you to specify the services, methods and data types via a Protobuf definition, as explained in the [service contract docs](/develop/service_type#restate-service-contract).
-The Handler API does not require this.
-:::
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 :::tip
-To get started, check out [the Java template project](https://github.com/restatedev/examples/tree/main/templates/java-gradle).
+Have a look at the [Java Quickstart](/get_started/quickstart?sdk=jvm)!
 :::
 
 Scaffold a project using the build tool of your choice. For example, with Gradle (Kotlin script):
 
-```
+```shell
 gradle init --type java-application
 ```
 
 Add the dependency `sdk-api`:
 
-```
+```kotlin
 implementation("dev.restate:sdk-api:VAR::JAVA_SDK_VERSION")
 ```
 
@@ -53,48 +52,10 @@ Depending on the deployment target, add one of the following dependencies:
 
 To use Jackson for serialization, add the following dependency: `dev.restate:sdk-serde-jackson:VAR::JAVA_SDK_VERSION`
 
-Now you need to configure the protobuf plugin to build your Protobuf contracts. For example, with Gradle (Kotlin script):
+Now you need to configure the protobuf plugin to build your Protobuf contracts.
+Have a look at the [`build.gradle.kts` file of the Java Gradle template](https://github.com/restatedev/examples/blob/main/templates/java-gradle/build.gradle.kts) for an example.
 
-```kotlin
-import com.google.protobuf.gradle.id
-
-plugins {
-    // ...
-    id("com.google.protobuf") version "0.9.1"
-    // ...
-}
-
-dependencies {
-    // ...
-    // You need the following dependencies to compile the generated code
-    implementation("com.google.protobuf:protobuf-java:3.24.3")
-    implementation("io.grpc:grpc-stub:1.58.0")
-    implementation("io.grpc:grpc-protobuf:1.58.0")
-    compileOnly("org.apache.tomcat:annotations-api:6.0.53")
-}
-
-// Configure protoc plugin
-protobuf {
-    protoc { artifact = "com.google.protobuf:protoc:3.24.3" }
-
-    plugins {
-        // The Restate plugin depends on the gRPC generated code
-        id("grpc") { artifact = "io.grpc:protoc-gen-grpc-java:1.58.0" }
-        id("restate") { artifact = "dev.restate:protoc-gen-restate:VAR::JAVA_SDK_VERSION:all@jar" }
-    }
-
-    generateProtoTasks {
-        all().forEach {
-            it.plugins {
-                id("grpc")
-                id("restate")
-            }
-        }
-    }
-}
-```
-
-For Maven you can use the [xolstice Protobuf plugin](https://www.xolstice.org/protobuf-maven-plugin/index.html).
+For Maven, you can use the [xolstice Protobuf plugin](https://www.xolstice.org/protobuf-maven-plugin/index.html).
 
 </TabItem>
 </Tabs>
@@ -111,7 +72,7 @@ This example shows a greeter service comprising two methods:
 - `countGreetings`: maintains a record of the number of times it has received a request for a given name.
 
 ```typescript
-CODE_LOAD::ts/src/overview_handler.ts
+CODE_LOAD::ts/src/develop/overview_handler.ts
 ```
 
 The app logic is implemented inside the `greet` and `countGreetings` functions.
@@ -138,48 +99,7 @@ This example shows a greeter service comprising two methods:
 - `countGreetings`: maintains a record of the number of times it has received a request for a given name.
 
 ```typescript
-import * as restate from "@restatedev/restate-sdk";
-import {
-    Greeter,
-    GreetRequest,
-    GreetResponse,
-    protoMetadata,
-} from "./generated/proto/example";
-
-// Implementation of the gRPC service
-export class GreeterService implements Greeter {
-    async greet(request: GreetRequest): Promise<GreetResponse> {
-        // Retrieving the Restate context
-        const ctx = restate.useKeyedContext(this);
-        return GreetResponse.create({ greeting: `Hello ${request.name}` });
-    }
-
-    async countGreetings(request: GreetRequest): Promise<GreetResponse> {
-        // Retrieving the Restate context
-        const ctx = restate.useKeyedContext(this);
-
-        // Retrieve state; number of times this name was seen
-        let seen = (await ctx.get<number>("seen")) || 0;
-        seen += 1;
-        // Set the incremented counter as the new state
-        await ctx.set("seen", seen);
-
-        return GreetResponse.create({
-            greeting: `Hello ${request.name} for the ${seen}th time!`,
-        });
-    }
-}
-
-// Setting up the Restate server to serve the GreeterService methods.
-// The endpoint will be attached to port 8000 for connections and requests.
-restate
-    .endpoint()
-    .bindService({
-        descriptor: protoMetadata,
-        service: "Greeter",
-        instance: new GreeterService(),
-    })
-    .listen();
+CODE_LOAD::ts-grpc/src/develop/overview.ts
 ```
 
 The interface of the gRPC service is defined in the [Protobuf](https://protobuf.dev/) service contracts, that are shown below.
@@ -190,27 +110,7 @@ Finally, the endpoint is set up to serve both methods of the greeter service.
 This is what corresponding Protobuf definition would look like for this service:
 
 ```protobuf
-syntax = "proto3";
-
-package example;
-
-import "dev/restate/ext.proto";
-
-service Greeter {
-    option (dev.restate.ext.service_type) = KEYED;
-
-    rpc Greet(GreetRequest) returns (GreetResponse) {};
-
-    rpc CountGreetings(GreetRequest) returns (GreetResponse) {};
-}
-
-message GreetRequest {
-    string name = 1 [(dev.restate.ext.field) = KEY];
-}
-
-message GreetResponse {
-    string greeting = 1;
-}
+CODE_LOAD::ts-grpc/proto/greeter.proto
 ```
 
 To understand the Restate-specific parts of this Protobuf definition, have a look at the documentation [here](/develop/service_type#restate-service-contract).
@@ -224,7 +124,7 @@ Restate uses [protobuf](https://protobuf.dev/) to define the service and its met
 - `greet`: maintains a record of the number of times it has received a request for a given name, and prints a greeting.
 
 ```java
-CODE_LOAD::java/src/main/java/Greeter.java
+CODE_LOAD::java/src/main/java/develop/Greeter.java
 ```
 
 The `Greeter` class extends `GreeterRestate.GreeterRestateImplBase`, which is the base generated by the Restate protoc generator.
@@ -238,28 +138,7 @@ Finally, the Restate server is set up to serve both methods of the greeter servi
 This is what corresponding Protobuf definition would look like for this service:
 
 ```protobuf
-syntax = "proto3";
-
-package greeter;
-
-import "dev/restate/ext.proto";
-
-option java_package = "dev.restate.sdk.examples.generated";
-option java_outer_classname = "GreeterProto";
-
-service Greeter {
-  option (dev.restate.ext.service_type) = KEYED;
-
-  rpc Greet (GreetRequest) returns (GreetResponse);
-}
-
-message GreetRequest {
-  string name = 1 [(dev.restate.ext.field) = KEY];
-}
-
-message GreetResponse {
-  string message = 1;
-}
+CODE_LOAD::java/src/main/proto/greeter.proto
 ```
 
 To understand the Restate-specific parts of this Protobuf definition, have a look at the documentation [here](/develop/service_type#restate-service-contract).
@@ -273,38 +152,7 @@ However, it is also possible to use the vanilla generated protobuf code by `prot
 An example:
 
 ```java
-package dev.restate.sdk.examples;
-
-import dev.restate.sdk.Component;
-import dev.restate.sdk.ObjectContext;
-import dev.restate.sdk.common.StateKey;
-import dev.restate.sdk.common.CoreSerdes;
-import dev.restate.sdk.examples.generated.*;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
-import io.grpc.stub.StreamObserver;
-import static dev.restate.sdk.examples.generated.GreeterProto.*;
-
-public class Greeter extends GreeterGrpc.GreeterImplBase implements Component {
-
-  private static final StateKey<Integer> COUNT = StateKey.of("count", CoreSerdes.INT);
-
-  @Override
-  public void greet(GreetRequest request, StreamObserver<GreetResponse> responseObserver) {
-    ObjectContext ctx = ObjectContext.current();
-
-    int count = ctx.get(COUNT).orElse(1);
-    ctx.set(COUNT, count + 1);
-
-    responseObserver.onNext(GreetResponse.newBuilder()
-                    .setMessage("Hello " + request.getName() + " for the " + count + " time!")
-            .build());
-    responseObserver.onCompleted();
-  }
-
-  public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder().withService(new Greeter()).buildAndListen();
-  }
-}
+CODE_LOAD::java/src/main/java/develop/GreeterVanillaGrpc.java
 ```
 
 </details>
