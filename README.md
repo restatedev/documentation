@@ -90,3 +90,11 @@ The config file `restate.config.json` contains versions of various Restate artif
 - TypeScript SDK: `TYPESCRIPT_SDK_VERSION`
 - Java SDK: `JAVA_SDK_VERSION`
 - Runtime: `RESTATE_VERSION`
+
+### Algolia
+The documentation uses Algolia for search. 
+The Algolia crawler runs one time per week. 
+So if a release contains big changes to the docs (e.g. links), then it might be a good idea to run it manually: 
+1. Go to https://crawler.algolia.com/ and log in
+2. Go to `restate` crawler
+3. Click `restart crawling`. Once this is done, the search is fully up to date!
