@@ -1,11 +1,9 @@
 ---
-id: Overview
+id: OVERVIEW
 [//]: # (sidebar_position: 1 --> this is now set by sidebars.js)
 slug: /
 description: "Documentation overview"
 ---
-
-# Overview
 
 Build applications with **distributed durable async/await**.
 Write RPC and event handlers, and Restate makes them reliable by adding durability to invocations, promises, communication and state.
