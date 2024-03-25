@@ -1,45 +1,26 @@
 ---
 sidebar_position: 3
 description: ""
-draft: "true"
 ---
 
 # Restate Components
 
-Restate gives you some components to build your application with.
+Restate lets you compose applications from two types of components: services and virtual objects.
 
 ## Services
-- contain handlers
-- similar to RPC: just functions you can invoke but now with durable execution
-- no concurrency limits
-## Services
-- RPC : just functions you can invoke but now with durable execution
-- no concurrency limits
+Services expose a collection of handlers. Each handler is a function that you can invoke. Services are stateless and don't have any concurrency limits.
+
 
 ## Virtual objects
-- contain handlers
-- keys: how are they specified and data types
-- keys: how are they specified and data types
-- locking
-- concurrency limits/guarantees per key: only one concurrent operation per key. Unless shared context used.
-- state
 
-
-## Workflows
-Single run function which specifies the workflow.
-Has a clearly specified lifetime: while run() is in progress.
-
-You can interact with it via signals: functions that are allowed to get executed concurrently with the workflow's run() method.
-
-- locking: shared context vs exclusive context
-- concurrency guarantees
-
+Virtual objects expose a bundled set of handlers with access to K/V state stored in Restate.
+Each virtual object can be accessed by a key, and each key has its own state.
+The handlers of a virtual object can read and write to the state of the object.
+To ensure consistent writes to the state, Restate provides concurrency guarantees per key.
+At most one handler can execute at a time for a given key.
 
 ## When to use what?
 
-Services -> If you don't need state or concurrency limits, but just have a function that you want to execute durably.
+Use **services** when you don't need state or concurrency limits, but just have a function that you want to execute durably.
 
-Virtual objects -> If you need keyed concurrency guarantees, and if you want to store application state in Restate.
-
-Workflows -> If you have a certain workflow that you want to execute durably, and you want to be able to interact with it via signals.
-And you might want to do some extra things like keeping the history.
+Use **virtual objects** when you need keyed concurrency guarantees, and if you want to store application state in Restate.

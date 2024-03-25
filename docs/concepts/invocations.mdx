@@ -1,0 +1,51 @@
+---
+sidebar_position: 4
+description: ""
+---
+
+# Invocations
+To invoke a handler, you sent the request to the Restate server (not directly to the component).
+Restate then registers the request and drives the execution of the handler.
+
+## Starting an invocation
+The handlers of a component can be invoked in two ways:
+- **Inbound invocations**: You can invoke handlers from the outside in three ways:
+    - Over HTTP by sending a request to the Restate Server (ingress at port `8080`).
+    - Programmatically via embedded typed clients.
+    - Over Kafka by letting Restate subscribe to a Kafka topic.
+- **From another handler**: Handlers can invoke each other via RPC, by using the Restate SDK.
+
+Invocations get a unique identifier. This identifier is used to track the progress of the invocation, and lets you correlate logs and metrics.
+
+## Invocation types
+- **One-way invocations** are used when you don't need a response from the handler.
+[<img src="/img/java.svg" width="28" alt="Java SDK Documentation"></img>](/concepts/invocations)
+[<img class="sdkicon" src="/img/typescript.svg" width="26" alt="TypeScript Documentation"></img>](/concepts/invocations)
+- **Request-response invocations** are used when you need a response from the handler.
+[<img class="sdkicon" src="/img/java.svg" width="28" alt="Java SDK Documentation"></img>](/concepts/invocations)
+[<img class="sdkicon" src="/img/typescript.svg" width="26" alt="TypeScript Documentation"></img>](/concepts/invocations)
+- **Delayed invocations** are used when you want to schedule a handler to be invoked at a later time.
+[<img class="sdkicon" src="/img/java.svg" width="28" alt="Java SDK Documentation"></img>](/concepts/invocations)
+[<img class="sdkicon" src="/img/typescript.svg" width="26" alt="TypeScript Documentation"></img>](/concepts/invocations)
+
+## Idempotent invocations
+You can add an idempotency key in the header of the request to make an inbound invocation idempotent.
+Restate will then deduplicate requests with the same idempotency key, and will only execute the handler once.
+Duplicate requests will get the same response as the first request, or will latch on to the first invocation if it's still running.
+
+## Inspecting invocations
+Restate proxies and manages inbound as well as service-to-service invocations.
+This makes it a great source of observability data for your application.
+You can inspect invocations via the CLI.
+
+Restate also exposes traces via OpenTelemetry, which can be sent to your observability platform of choice (e.g. Jaeger).
+
+## Cancelling and killing invocations
+
+The Restate CLI allows you to cancel or kill invocations.
+If necessary, you can register compensating actions in your handlers to ensure that the system remains consistent amid cancellations (blog post on [graceful cancellations](https://restate.dev/blog/graceful-cancellations-how-to-keep-your-application-and-workflow-state-consistent/)).
+
+For cancellations, Restate will gracefully stop the handler by executing all compensation actions.
+For kills, Restate will immediately stop the handler without executing any compensation actions.
+
+
