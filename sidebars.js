@@ -16,7 +16,7 @@ const sidebars = {
 
   // To add an external link to the Java docs, we had to switch to a manually defined sidebar for the references section.
   tutorialSidebar: [
-    {type: 'doc', id: 'OVERVIEW', className: 'sidebar-title'},
+    {type: 'doc', id: 'OVERVIEW', label: 'OVERVIEW', className: 'sidebar-title'},
 
     {type: 'html', value: '<hr class="margin-vert--sm">'},
     {type: 'category', label: 'GET STARTED', collapsed: false, items: [

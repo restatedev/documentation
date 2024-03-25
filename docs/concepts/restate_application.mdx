@@ -1,0 +1,29 @@
+---
+sidebar_position: 1
+description: ""
+---
+
+# Restate Application
+
+A Restate application exists out of the following parts:
+
+![Application overview](/img/application_overview.svg)
+
+1. **Restate Server**: The server intercepts incoming requests and drives their execution till the end.
+2. **Components**: The building blocks of the application which process incoming requests. These run like regular RPC services (e.g. a NodeJS app in a Docker container).
+They have the SDK embedded as a dependency, which handles the communication with the Restate server. Components can be written in any language for which there is an SDK available (currently [TypeScript](/category/typescript-sdk) and [Java](/category/java-sdk)). There are two types of components:
+    1. **Services**: expose a set of handlers on an endpoint. Each handler can be invoked over RPC. Handlers are independent, stateless, and can be invoked concurrently.
+    2. **Virtual objects**: expose a bundled set of handlers with access to K/V state stored in Restate. Each virtual object has a key (unique identifier). Requests to a single virtual object (single key) are executed sequentially.
+3. **Invocation**: A request to execute a handler that is part of either a service, or a virtual object.
+
+
+## Invocation
+When you invoke a handler, this request is sent to the Restate server (not directly to the component).
+Restate then registers the reqeuest and drives the execution of the handler.
+
+The handlers of a component can be invoked in two ways:
+- **From the outside**: You can invoke handlers over HTTP by sending a request to the Restate Server (ingress at port `8080`). You can also send requests programmatically via embedded typed clients.
+- **From another handler**: Handlers can invoke each other via RPC, by using the Restate SDK.
+
+Invocations get a unique identifier. This identifier is used to track the progress of the invocation, and lets you correlate logs and metrics.
+
