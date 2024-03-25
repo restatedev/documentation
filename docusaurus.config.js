@@ -7,6 +7,10 @@ const variableInjector = require("./src/plugins/variable-injector");
 const variablesReplacements = require("./restate.config.json");
 const codeLoaderPlugin = require("./src/plugins/code-loader");
 
+const {
+  remarkCodeHike,
+} = require("@code-hike/mdx")
+
 const redocusaurus = [
   "redocusaurus",
   {
@@ -53,6 +57,12 @@ const config = {
       "classic",
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({docs: {
+          beforeDefaultRemarkPlugins: [
+            [codeLoaderPlugin, {
+              codeSnippets: {},
+            }],
+            [remarkCodeHike, { theme: "nord" }],
+          ],
           remarkPlugins: [
             [
               variableInjector, // replaces eg VAR::RESTATE_VERSION with config strings
@@ -60,9 +70,7 @@ const config = {
                 replacements: variablesReplacements,
               },
             ],
-            [codeLoaderPlugin, {
-                codeSnippets: {},
-            }]
+
           ],
           routeBasePath: "/", // Set this value to '/'.
           sidebarPath: require.resolve("./sidebars.js"),
@@ -70,8 +78,10 @@ const config = {
           // Remove this to remove the "edit this page" links.
         },
         theme: {
-          customCss: [require.resolve("./src/css/custom.css"),],
-        },
+          customCss: [
+            require.resolve("@code-hike/mdx/styles.css"),
+            require.resolve("./src/css/custom.css"),
+          ]},
       }),
 
     ],
@@ -206,7 +216,8 @@ const config = {
       },
     },
   themes: [
-    "docusaurus-json-schema-plugin"
+    "docusaurus-json-schema-plugin",
+    "mdx-v2"
   ],
   scripts: ["/js/store-query-parameter.js"],
 };
