@@ -209,6 +209,7 @@ const config = {
     "docusaurus-json-schema-plugin"
   ],
   scripts: ["/js/store-query-parameter.js"],
+  stylesheets: ["https://fonts.googleapis.com/icon?family=Material+Icons",],
 };
 
 module.exports = config;
