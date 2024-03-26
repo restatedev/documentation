@@ -1,0 +1,116 @@
+---
+sidebar_position: 1
+description: ""
+---
+
+
+# Durable Promises
+
+
+Restate provides a distributed, durable version of common primitives that can be used to build resilient, distributed applications.
+
+<iframe src="https://replit.com/@giselle7/JavaRestateTemplate?embed=true?embed=true" width="600" height="400"></iframe>
+
+
+<CH.Spotlight className="durable-promises">
+
+```ts
+export const router = restate.keyedRouter({
+    create: async ( ctx: restate.KeyedContext, orderId: string, order: Order) => {
+        const { id, totalCost, deliveryDelay } = order;
+
+    }
+});
+```
+
+    ---
+
+```diff
+export const router = restate.keyedRouter({
+    create: async ( ctx: restate.KeyedContext, orderId: string, order: Order) => {
+        const { id, totalCost, deliveryDelay } = order;
+
+        ctx.send(orderstatus.service).setStatus(id, Status.CREATED);
+
+    }
+});
+```
+
+
+    **Durable RPC**:
+
+    ---
+
+```diff
+export const router = restate.keyedRouter({
+    create: async ( ctx: restate.KeyedContext, orderId: string, order: Order) => {
+        const { id, totalCost, deliveryDelay } = order;
+
+        ctx.send(orderstatus.service).setStatus(id, Status.CREATED);
+
+        // 2. Handle payment
+        const token = ctx.rand.uuidv4();
+        const paid = await ctx.sideEffect(() => paymentClnt.charge(id, token, totalCost));
+
+        if (!paid) {
+        ctx.send(orderstatus.service).setStatus(id, Status.REJECTED);
+        return;
+        }
+
+    }
+});
+```
+
+   **Durable timers**: durably sleep or schedule a function to be executed at a later time.
+
+    ---
+
+```diff
+export const router = restate.keyedRouter({
+    create: async ( ctx: restate.KeyedContext, orderId: string, order: Order) => {
+    const { id, totalCost, deliveryDelay } = order;
+
+    // 1. Set status
+    ctx.send(orderstatus.service).setStatus(id, Status.CREATED);
+
+    // 2. Handle payment
+    const token = ctx.rand.uuidv4();
+    const paid = await ctx.sideEffect(() => paymentClnt.charge(id, token, totalCost));
+
+    if (!paid) {
+    ctx.send(orderstatus.service).setStatus(id, Status.REJECTED);
+    return;
+}
+
+    // 3. Schedule preparation
+    ctx.send(orderstatus.service).setStatus(id, Status.SCHEDULED);
+    await ctx.sleep(deliveryDelay);
+
+    // 4. Trigger preparation
+    const preparationPromise = ctx.awakeable();
+    await ctx.sideEffect(() => restaurant.prepare(id, preparationPromise.id));
+    ctx.send(orderstatus.service).setStatus(id, Status.IN_PREPARATION);
+
+    await preparationPromise.promise;
+    ctx.send(orderstatus.service).setStatus(id, Status.SCHEDULING_DELIVERY);
+
+    // 5. Find a driver and start delivery
+    await deliver(ctx, order);
+    ctx.send(orderstatus.service).setStatus(id, Status.DELIVERED);
+}
+});
+    ```
+
+    **Durable webhooks**: register a webhook in Restate and receive a durable promise that will be resolved when the webhook is triggered.
+
+    ---
+
+    ```diff
+    ctx.timer
+    ```
+
+    **Durable side effects**
+
+    Timers are
+
+</CH.Spotlight>
