@@ -1,0 +1,31 @@
+
+# Restate Components
+
+Restate lets you compose applications from two types of components: services and virtual objects.
+
+## Services
+Services expose a collection of handlers. Each handler is a function that you can invoke. Services are stateless and don't have any concurrency limits.
+
+**TODO: Add basic example for each language:**
+- Code example: handler + service + endpoint
+- Example of calling the service: curl request / typed client
+
+
+## Virtual objects
+
+Virtual objects expose a bundled set of handlers with access to K/V state stored in Restate.
+Each virtual object can be accessed by a key, and each key has its own state.
+The handlers of a virtual object can read and write to the state of the object.
+To ensure consistent writes to the state, Restate provides concurrency guarantees per key.
+At most one handler can execute at a time for a given key.
+
+**TODO: Add basic example for each language:**
+- Code example that uses state: handler + object + endpoint
+- Example of calling the object: curl request / typed client
+
+
+## When to use what?
+
+Use **services** when you don't need state or concurrency limits, but just have a function that you want to execute durably.
+
+Use **virtual objects** when you need keyed concurrency guarantees, and if you want to store application state in Restate.
