@@ -69,10 +69,16 @@ You can add an idempotency key in the header of the request to make an inbound i
 Restate will then deduplicate requests with the same idempotency key, and will only execute the handler once.
 Duplicate requests will get the same response as the first request, or will latch on to the first invocation if it's still running.
 
+**TODO: Add example of how to do this**
+
+Note that, you don't need idempotency tokens for invocations that are invoked programmatically or via Kafka, as Restate will make sure that they are executed only once.
+
 ## Inspecting invocations
 Restate proxies and manages inbound as well as service-to-service invocations.
 This makes it a great source of observability data for your application.
 You can inspect invocations via the CLI.
+
+**TODO here comes a horizontal "slideshow" of a  few CLI commands with their output.**
 
 Restate also exposes traces via OpenTelemetry, which can be sent to your observability platform of choice (e.g. Jaeger).
 
