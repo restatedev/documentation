@@ -3,17 +3,48 @@ sidebar_position: 4
 description: ""
 ---
 
-# Invocations
-To invoke a handler, you sent the request to the Restate server (not directly to the component).
-Restate then registers the request and drives the execution of the handler.
+import FeatureWidget from "../../src/components/HomepageFeatures";
 
-## Starting an invocation
-The handlers of a component can be invoked in two ways:
-- Over HTTP by sending a request to the Restate Server (ingress at port `8080`).
-- Programmatically
-    - From a Restate handler
-    - via embedded typed clients.
-- Over Kafka by letting Restate subscribe to a Kafka topic.
+
+# Invocations
+
+An invocation is a request to execute a handler that is part of either a service, or a virtual object.
+
+
+## Invoking a handler
+There are three ways to invoke a handler:
+
+<FeatureWidget features={[
+    {
+        title: 'HTTP requests',
+        Svg: require('/img/http-icon.svg').default,
+        description: (
+            <>
+                Send an HTTP request to the Restate Server (ingress port <code>8080</code>), with the handler name in the path, and the payload in the body.
+            </>
+        ),
+    },
+    {
+        title: 'Programmatically',
+        Svg: require('/img/code-icon.svg').default,
+        description: (
+            <>
+                From within a Restate handler, by using the SDK. Or via embedded typed clients.
+            </>
+        ),
+    },
+    {
+        title: 'Kafka events',
+        Svg: require('/img/kafka-icon.svg').default,
+        description: (
+            <>
+                Restate subscribes to a Kafka topic, and invokes a handler should for each message that arrives.
+            </>
+        ),
+    },
+]}/>
+
+All invocations are proxied through the Restate Server, which registers the request, routes the request to the correct handler, and drives the execution of the handler.
 
 Invocations get a unique identifier. This identifier is used to track the progress of the invocation, and lets you correlate logs and metrics.
 

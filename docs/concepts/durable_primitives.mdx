@@ -4,14 +4,64 @@ description: ""
 ---
 
 
-# Durable Promises
-
+# Durable Primitives
 
 Restate provides a distributed, durable version of common primitives that can be used to build resilient, distributed applications.
 
+You implement your business logic as handlers that use the Restate SDK to get access to these primitives.
 
-- durable promises
-- durable RPC
-- durable timers
-- durable webhooks
-- durable side effects
+## Durable <mark class="accent">functions</mark>
+
+In Restate, you define your business logic as a handler function. The handler can be called by other handlers or by external systems.
+Handlers take part in durable execution, meaning that Restate keeps track of their progress and recovers them to the previously reached state in case of failures.
+
+```ts
+CODE_LOAD::ts/src/concepts/food_ordering.ts
+```
+
+## Durable <mark class="accent">RPC</mark>
+Call other handlers in a resilient way.
+When a failure happens, Restate handles retries and recovers partial progress.
+
+```ts
+CODE_LOAD::ts/src/concepts/durable_promises.ts#<start_rpc>-<end_rpc>
+```
+
+
+## Durable <mark class="accent">queues</mark>
+Send one-way messages to other handlers in a resilient way.
+When a failure happens, Restate handles retries and recovers partial progress.
+
+```ts
+CODE_LOAD::ts/src/concepts/durable_promises.ts#<start_queue>-<end_queue>
+```
+
+
+## Durable <mark class="accent">timers</mark>
+Durably sleep or schedule a function to be executed at a later time.
+
+```ts
+CODE_LOAD::ts/src/concepts/durable_promises.ts#<start_timers>-<end_timers>
+```
+
+
+
+## Durable <mark class="accent">promises</mark>
+Register a webhook in Restate and receive a durable promise that will be resolved when the webhook is triggered.
+
+```ts
+CODE_LOAD::ts/src/concepts/durable_promises.ts#<start_awakeable>-<end_awakeable>
+```
+
+
+## Durable <mark class="accent">side effects</mark>
+Store the result of a computation in Restate. The result gets replayed in case of failures and the function is not executed again.
+
+```ts
+CODE_LOAD::ts/src/concepts/durable_promises.ts#<start_side_effect>-<end_side_effect>
+```
+
+## Durable <mark class="accent">state</mark>
+
+Store the state of your application in Restate. State changes are persisted and get replayed in case of failures.
+

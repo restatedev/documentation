@@ -70,7 +70,7 @@ const config = {
           // Remove this to remove the "edit this page" links.
         },
         theme: {
-          customCss: require.resolve("./src/css/custom.css"),
+          customCss: [require.resolve("./src/css/custom.css"),],
         },
       }),
 
