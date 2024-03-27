@@ -141,7 +141,13 @@ You can add an idempotency key in the header of the request to make an inbound i
 Restate will then deduplicate requests with the same idempotency key, and will only execute the handler once.
 Duplicate requests will get the same response as the first request, or will latch on to the first invocation if it's still running.
 
-**TODO: Add example of how to do this**
+```bash
+curl localhost:8080/org.example.Greeter/Greet \
+  # focus
+  -H 'idempotency-key: ad5472esg4dsg525dssdfa5loi' \
+  -H 'content-type: application/json' \
+  -d '{"name": "Restate"}'
+```
 
 Note that, you don't need idempotency tokens for invocations that are invoked programmatically or via Kafka, as Restate will make sure that they are executed only once.
 
@@ -152,9 +158,13 @@ You can inspect invocations via the CLI.
 
 <TerminalAnimation listOfSteps={[
     `$ restate invocations list
-Total 0 (delta 0), reused 0 (delta 0), pack-reused 0
-To github.com:restatedev/examples.git
-* [new tag]         v0.8.2 -> v0.8.2`,
+ Ingress base URL  http://localhost:8080/
+ Admin base URL    http://localhost:9070/
+
+    Local Environment
+     Config Dir        /home/giselle/.config/restate
+     Config File       /home/giselle/.config/restate/conf
+     Loaded .env file  /home/giselle/.env`,
     `$ eiusmod tempor incididunt
 ut labore et dolore`,
     `$ magna aliqua
