@@ -61,7 +61,7 @@ const config = {
             [codeLoaderPlugin, {
               codeSnippets: {},
             }],
-            [remarkCodeHike, { theme: "nord" }],
+            [remarkCodeHike, { theme: "github-light" }],
           ],
           remarkPlugins: [
             [

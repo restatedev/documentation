@@ -1,87 +1,93 @@
 ---
 sidebar_position: 1
 description: ""
+toc: false
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 
-# Durable Promises
+# Durable Building Blocks
+Restate provides a distributed, durable version of common coding primitives. You can use these to build resilient, distributed applications.
+
+You implement your business logic in handlers. These handlers have access to these building blocks via the Restate SDK, that is loaded as a dependency.
+
+Let's have a look at a handler that processes food orders:
 
 
-Restate provides a distributed, durable version of common primitives that can be used to build resilient, distributed applications.
+
 
 [//]: # (<iframe src="https://replit.com/@giselle7/JavaRestateTemplate?embed=true" width="600" height="400"></iframe>)
 
-<Tabs>
-  <TabItem value="ts" label="TypeScript">
 
 <CH.Spotlight className="durable-promises">
 
-```ts
-export const router = restate.keyedRouter({
-    create: async ( ctx: restate.KeyedContext) => {
-
-        const response1 = await ctx.rpc(myGreeterApi).greet("Restate");
-
-    }
-});
-```
-
-    ---
-
-```ts
-
-```
-
-
-    **Durable RPC**: call handlers in a durable way.
-    When a failure happens, Restate handles retries and recovers partial progress.
-
-    ---
-
-```diff
-export const router = restate.keyedRouter({
-    create: async ( ctx: restate.KeyedContext, orderId: string, order: Order) => {
-        const { id, totalCost, deliveryDelay } = order;
-
-        ctx.send(orderstatus.service).setStatus(id, Status.CREATED);
-
-        // 2. Handle payment
-        const token = ctx.rand.uuidv4();
-        const paid = await ctx.sideEffect(() => paymentClnt.charge(id, token, totalCost));
-
-        if (!paid) {
-        ctx.send(orderstatus.service).setStatus(id, Status.REJECTED);
-        return;
-        }
-
-    }
-});
-```
-
-   **Durable timers**: durably sleep or schedule a function to be executed at a later time.
-
-    ---
-
-```ts
-    ctx.awakeable()
+    ```ts order_processor.ts
+    CODE_LOAD::ts/src/concepts/food_ordering.ts
     ```
 
-    **Durable webhooks**: register a webhook in Restate and receive a durable promise that will be resolved when the webhook is triggered.
+    ---
+
+    ```ts order_processor.ts
+    CODE_LOAD::ts/src/concepts/food_ordering_functions.ts
+    ```
+
+
+    **Durable <mark class="accent">functions</mark>**<br/>
+    <p class="font-size-90">Handlers take part in durable execution, meaning that Restate keeps track of their progress and recovers them to the previously reached state in case of failures.</p>
+
 
     ---
 
-    ```ts
-    await ctx.sideEffect(async () => callDb())
+```ts order_processor.ts
+CODE_LOAD::ts/src/concepts/food_ordering_rpc.ts
+```
+
+
+
+    **Durable <mark class="accent">RPC</mark>**<br/>
+    <p class="font-size-90">Handlers can call other handlers in a resilient way.
+    When a failure happens, Restate handles retries and recovers partial progress.</p>
+
+    ---
+
+    ```ts order_processor.ts
+    CODE_LOAD::ts/src/concepts/food_ordering_queues.ts
     ```
 
-    **Durable side effects**: store the result of a computation in Restate. The result gets replayed in case of failures and the function is not executed again.
+
+    **Durable <mark class="accent">queues</mark>**
+    <p class="font-size-90">Handlers can send one-way messages to other handlers in a resilient way.
+        When a failure happens, Restate handles retries and recovers partial progress.</p>
+
+    ---
+
+
+    ```ts order_processor.ts
+    CODE_LOAD::ts/src/concepts/food_ordering_timers.ts
+    ```
+
+    **Durable <mark class="accent">timers</mark>**<br/>
+    <p class="font-size-90">Handlers can sleep or schedule a function to be executed at a later time. When running on serverless platforms, Restate lets the handler suspend while waiting to free up resources. </p>
+
+    ---
+
+
+    ```ts order_processor.ts
+    CODE_LOAD::ts/src/concepts/food_ordering_awakeables.ts
+    ```
+
+    **Durable <mark class="accent">promises</mark>**<br/>
+    <p class="font-size-90">Register a webhook in Restate and receive a durable promise that will be resolved when the webhook is triggered.</p>
+
+    ---
+
+    ```ts order_processor.ts
+    CODE_LOAD::ts/src/concepts/food_ordering_side_effect.ts
+    ```
+
+    **Durable <mark class="accent">side effects</mark>**<br/>
+    <p class="font-size-90">Store the result of a computation in Restate. The result gets replayed in case of failures and the function is not executed again.</p>
 
 </CH.Spotlight>
-
-  </TabItem>
-          <TabItem value="java" label="Java">
-          </TabItem>
-</Tabs>
