@@ -3,6 +3,7 @@ import {ObjectContext} from "@restatedev/restate-sdk";
 
 
 // <start_here>
+// focus
 async function process(ctx: ObjectContext, order: Order) {
 
     // 1. Set status
@@ -37,6 +38,7 @@ async function process(ctx: ObjectContext, order: Order) {
     await ctx.objectClient(deliveryManager, order.id)
         .startDelivery(order);
     ctx.set("status", Status.DELIVERED);
+// focus
 }
 // <end_here>
 

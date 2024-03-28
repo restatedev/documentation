@@ -10,8 +10,11 @@ async function process(ctx: ObjectContext, order: Order) {
 
     // 2. Handle payment
     const token = ctx.rand.uuidv4();
+    // focus
     const paid = await ctx.sideEffect(() =>
+        // focus
         paymentClnt.charge(order.id, token, order.totalCost)
+        // focus
     );
 
     if (!paid) {
@@ -25,8 +28,11 @@ async function process(ctx: ObjectContext, order: Order) {
 
     // 4. Trigger preparation
     const preparationPromise = ctx.awakeable();
+    // focus
     await ctx.sideEffect(() =>
+        // focus
         restaurant.prepare(order.id, preparationPromise.id)
+        // focus
     );
     ctx.set("status", Status.IN_PREPARATION);
 

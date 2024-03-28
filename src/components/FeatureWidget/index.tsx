@@ -4,16 +4,16 @@ import styles from './styles.module.css';
 
 type FeatureItem = {
   title: string;
-  Svg: React.ComponentType<React.ComponentProps<'svg'>>;
+  iconPath: string;
   description: JSX.Element;
 };
 
 
-function Feature({title, Svg, description}: FeatureItem) {
+function Feature({title, iconPath, description}: FeatureItem) {
   return (
     <div className={clsx('col col--4')}>
       <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
+          <img className={styles.featureSvg} src={iconPath} />
       </div>
       <div className="text--center padding-horiz--md">
         <h4>{title}</h4>

@@ -1,23 +1,23 @@
 ---
-sidebar_position: 4
+sidebar_position: 3
 description: ""
 ---
 
-import FeatureWidget from "../../src/components/HomepageFeatures";
-
+import TerminalAnimation from "../../src/components/TerminalAnimation";
+import FeatureWidget from "../../src/components/FeatureWidget";
 
 # Invocations
 
 An invocation is a request to execute a handler that is part of either a service, or a virtual object.
 
-
 ## Invoking a handler
 There are three ways to invoke a handler:
+
 
 <FeatureWidget features={[
     {
         title: 'HTTP requests',
-        Svg: require('/img/http-icon.svg').default,
+        iconPath: '/img/http-icon.svg',
         description: (
             <>
                 Send an HTTP request to the Restate Server (ingress port <code>8080</code>), with the handler name in the path, and the payload in the body.
@@ -26,7 +26,7 @@ There are three ways to invoke a handler:
     },
     {
         title: 'Programmatically',
-        Svg: require('/img/code-icon.svg').default,
+        iconPath: '/img/code-icon.svg',
         description: (
             <>
                 From within a Restate handler, by using the SDK. Or via embedded typed clients.
@@ -35,7 +35,7 @@ There are three ways to invoke a handler:
     },
     {
         title: 'Kafka events',
-        Svg: require('/img/kafka-icon.svg').default,
+        iconPath: '/img/kafka-icon.svg',
         description: (
             <>
                 Restate subscribes to a Kafka topic, and invokes a handler should for each message that arrives.
@@ -49,27 +49,102 @@ All invocations are proxied through the Restate Server, which registers the requ
 Invocations get a unique identifier. This identifier is used to track the progress of the invocation, and lets you correlate logs and metrics.
 
 ## Invocation types
-- **Request-response invocations** are used when you want to wait on a response from the handler.
-[<img class="sdkicon" src="/img/java.svg" width="28" alt="Java SDK Documentation"></img>](/concepts/invocations)
-[<img class="sdkicon" src="/img/typescript.svg" width="26" alt="TypeScript Documentation"></img>](/concepts/invocations)
-[<img class="sdkicon" src="/img/http-icon.svg" width="26" alt="HTTP Documentation"></img>](/concepts/invocations)
-- **One-way invocations** are used when you don't want to wait on a response from the handler, but just want to trigger an asynchronous action.
-This returns an invocation ID with which you can retrieve the result of the invocation later, if desired.
-[<img class="sdkicon" src="/img/java.svg" width="28" alt="Java SDK Documentation"></img>](/concepts/invocations)
-[<img class="sdkicon" src="/img/typescript.svg" width="26" alt="TypeScript Documentation"></img>](/concepts/invocations)
-[<img class="sdkicon" src="/img/http-icon.svg" width="26" alt="HTTP Documentation"></img>](/concepts/invocations)
-[<img class="sdkicon" src="/img/kafka-icon.svg" width="26" height="26" alt="Kafka Documentation"></img>](/concepts/invocations)
-- **Delayed invocations** are used when you want to schedule a handler to be invoked at a later time.
-[<img class="sdkicon" src="/img/java.svg" width="28" alt="Java SDK Documentation"></img>](/concepts/invocations)
-[<img class="sdkicon" src="/img/typescript.svg" width="26" alt="TypeScript Documentation"></img>](/concepts/invocations)
-[<img class="sdkicon" src="/img/http-icon.svg" width="26" alt="HTTP Documentation"></img>](/concepts/invocations)
+
+[//]: # ([<img class="sdkicon" src="/img/java.svg" width="28" alt="Java SDK Documentation"></img>]&#40;/concepts/invocations&#41;)
+
+[//]: # ([<img class="sdkicon" src="/img/typescript.svg" width="26" alt="TypeScript Documentation"></img>]&#40;/concepts/invocations&#41;)
+
+[//]: # ([<img class="sdkicon" src="/img/http-icon.svg" width="26" alt="HTTP Documentation"></img>]&#40;/concepts/invocations&#41;)
+
+[//]: # ([<img class="sdkicon" src="/img/kafka-icon.svg" width="26" height="26" alt="Kafka Documentation"></img>]&#40;/concepts/invocations&#41;)
+
+<CH.Spotlight className="durable-promises">
+
+    <CH.Code rows={2}>
+
+        ```typescript TypeScript
+        await ctx.rpc(myGreeterApi).greet("Restate");
+        ```
+
+        ```java Java
+        GreeterRestateClient client = GreeterRestate.newClient(ctx);
+        GreetResponse response = client.greet(request).await();
+        ```
+
+        ```bash Bash
+        curl localhost:8080/myservice/hello \
+            -H 'content-type: application/json' \
+            -d '{"request": "Restate"}'
+        ```
+
+    </CH.Code>
+
+    ---
+
+    **<mark class="accent">Request-response</mark> invocations** are used when you want to wait on a response from the handler.
+
+    ---
+
+    <CH.Code rows={2}>
+
+        ```typescript TypeScript
+        ctx.send(myGreeterApi).greet("Restate");
+        ```
+
+        ```java Java
+        GreeterRestateClient client = GreeterRestate.newClient(ctx);
+        GreetResponse response = client.oneWay().greet(request);
+        ```
+
+        ```bash Bash
+        curl localhost:8080/myservice/hello \
+            -H 'content-type: application/json' \
+            -d '{"request": "Restate"}'
+        ```
+
+    </CH.Code>
+
+    **<mark class="accent">One-way</mark> invocations** are used when you don't want to wait on a response from the handler, but just want to trigger an asynchronous action.
+    This returns an invocation ID with which you can retrieve the result of the invocation later, if desired.
+
+
+    ---
+
+    <CH.Code rows={2}>
+
+        ```typescript TypeScript
+        ctx.sendDelayed(myGreeterApi, 10000).greet("Restate");
+        ```
+
+        ```java Java
+        GreeterRestateClient client = GreeterRestate.newClient(ctx);
+        GreetResponse response = client.oneWay().delay(1000).greet(request);
+        ```
+
+        ```bash Bash
+        curl localhost:8080/myservice/hello \
+            -H 'content-type: application/json' \
+            -d '{"request": "Restate"}'
+        ```
+
+    </CH.Code>
+
+    **<mark class="accent">Delayed</mark> invocations** are used when you want to schedule a handler to be invoked at a later time.
+
+</CH.Spotlight>
 
 ## Idempotent invocations
 You can add an idempotency key in the header of the request to make an inbound invocation idempotent.
 Restate will then deduplicate requests with the same idempotency key, and will only execute the handler once.
 Duplicate requests will get the same response as the first request, or will latch on to the first invocation if it's still running.
 
-**TODO: Add example of how to do this**
+```bash
+curl localhost:8080/org.example.Greeter/Greet \
+  # focus
+  -H 'idempotency-key: ad5472esg4dsg525dssdfa5loi' \
+  -H 'content-type: application/json' \
+  -d '{"name": "Restate"}'
+```
 
 Note that, you don't need idempotency tokens for invocations that are invoked programmatically or via Kafka, as Restate will make sure that they are executed only once.
 
@@ -78,7 +153,116 @@ Restate proxies and manages inbound as well as service-to-service invocations.
 This makes it a great source of observability data for your application.
 You can inspect invocations via the CLI.
 
-**TODO here comes a horizontal "slideshow" of a  few CLI commands with their output.**
+<TerminalAnimation listOfSteps={[
+    `$ restate invocations list
+ Ingress base URL  http://localhost:8080/
+ Admin base URL    http://localhost:9070/
+
+    Local Environment
+     Config Dir        /home/giselle/.config/restate
+     Config File       /home/giselle/.config/restate/conf
+     Loaded .env file  /home/giselle/.env`,
+    `$ eiusmod tempor incididunt
+ut labore et dolore`,
+    `$ magna aliqua
+ut enim ad minim veniam
+quis nostrud
+exercitation ullamco laboris nisi ut aliquip
+ex ea commodo consequat
+$ duis aute irure dolor
+in reprehenderit`,
+    `$ in voluptate
+velit esse cillum dolore
+$ eu fugiat nulla pariatur`,
+    `$ excepteur sint occaecat
+cupidatat non proident
+sunt in culpa qui
+officia deserunt
+$ mollit anim id est laborum`
+]}/>
+
+
+[//]: # (<CH.Slideshow>)
+
+[//]: # ()
+[//]: # (    ```shell terminal)
+
+[//]: # (    git push origin v0.8.2)
+
+[//]: # (    Total 0 &#40;delta 0&#41;, reused 0 &#40;delta 0&#41;, pack-reused 0)
+
+[//]: # (    To github.com:restatedev/examples.git)
+
+[//]: # (    * [new tag]         v0.8.2 -> v0.8.2)
+
+[//]: # (    ```)
+
+[//]: # ()
+[//]: # (    ---)
+
+[//]: # ()
+[//]: # (    ```shell terminal)
+
+[//]: # (    git push origin v0.8.2)
+
+[//]: # (    Total 0 &#40;delta 0&#41;, reused 0 &#40;delta 0&#41;, pack-reused 0)
+
+[//]: # (    To github.com:restatedev/examples.git)
+
+[//]: # (    * [new tag]         v0.8.2 -> v0.8.2)
+
+[//]: # (    ```)
+
+[//]: # ()
+[//]: # (    ---)
+
+[//]: # ()
+[//]: # (    ```shell terminal)
+
+[//]: # (    git push origin v0.8.2)
+
+[//]: # (    Total 0 &#40;delta 0&#41;, reused 0 &#40;delta 0&#41;, pack-reused 0)
+
+[//]: # (    To github.com:restatedev/examples.git)
+
+[//]: # (    * [new tag]         v0.8.2 -> v0.8.2)
+
+[//]: # (    ```)
+
+[//]: # ()
+[//]: # (    ---)
+
+[//]: # ()
+[//]: # (    ```shell terminal)
+
+[//]: # (    git push origin v0.8.2)
+
+[//]: # (    Total 0 &#40;delta 0&#41;, reused 0 &#40;delta 0&#41;, pack-reused 0)
+
+[//]: # (    To github.com:restatedev/examples.git)
+
+[//]: # (    * [new tag]         v0.8.2 -> v0.8.2)
+
+[//]: # (    ```)
+
+[//]: # ()
+[//]: # (    ---)
+
+[//]: # ()
+[//]: # (    ```shell terminal)
+
+[//]: # (    git push origin v0.8.2)
+
+[//]: # (    Total 0 &#40;delta 0&#41;, reused 0 &#40;delta 0&#41;, pack-reused 0)
+
+[//]: # (    To github.com:restatedev/examples.git)
+
+[//]: # (    * [new tag]         v0.8.2 -> v0.8.2)
+
+[//]: # (    ```)
+
+[//]: # ()
+[//]: # (</CH.Slideshow>)
 
 Restate also exposes traces via OpenTelemetry, which can be sent to your observability platform of choice (e.g. Jaeger).
 

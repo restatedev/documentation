@@ -24,12 +24,15 @@ async function process(ctx: ObjectContext, order: Order) {
     await ctx.sleep(order.deliveryDelay);
 
     // 4. Trigger preparation
+    // focus
     const preparationPromise = ctx.awakeable();
     await ctx.sideEffect(() =>
+        // focus
         restaurant.prepare(order.id, preparationPromise.id)
     );
     ctx.set("status", Status.IN_PREPARATION);
 
+    // focus
     await preparationPromise.promise;
     ctx.set("status", Status.SCHEDULING_DELIVERY);
 
