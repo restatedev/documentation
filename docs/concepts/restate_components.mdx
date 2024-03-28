@@ -1,14 +1,18 @@
 ---
-sidebar_position: 5
+sidebar_position: 2
 description: ""
 ---
 
-# Restate Components
+# Components
 
-Restate lets you compose applications from two types of components: services and virtual objects.
+Handlers are bundled into components. There are two types of components in Restate: services and virtual objects.
+
+Components run like regular RPC services (e.g. a NodeJS app in a Docker container).
+Components can be written in any language for which there is an SDK available (currently [TypeScript](/category/typescript-sdk) and [Java](/category/java-sdk)).
+There are two types of components: services and virtual objects.
 
 ## Services
-Services expose a collection of handlers. Each handler is a function that you can invoke. Services are stateless and don't have any concurrency limits.
+Services expose a collection of handlers. The handlers of services are independent, stateless, and can be invoked concurrently.
 
 **TODO: Add basic example for each language:**
 - Code example: handler + service + endpoint
@@ -18,7 +22,8 @@ Services expose a collection of handlers. Each handler is a function that you ca
 ## Virtual objects
 
 Virtual objects expose a bundled set of handlers with access to K/V state stored in Restate.
-Each virtual object can be accessed by a key, and each key has its own state.
+Each virtual object has a key (unique identifier).
+A virtual object can be accessed by its key, and each virtual object has its own isolated K/V state.
 The handlers of a virtual object can read and write to the state of the object.
 To ensure consistent writes to the state, Restate provides concurrency guarantees per key.
 At most one handler can execute at a time for a given key.

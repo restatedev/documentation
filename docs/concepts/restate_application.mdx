@@ -3,16 +3,56 @@ sidebar_position: 4
 description: ""
 ---
 
+import FeatureWidget from "../../src/components/FeatureWidget";
+
 # Restate Application
-
-From a helicopter view, a Restate application has the following parts:
-
-![Application overview](/img/application_overview.svg)
+To understand how the different parts fit together, have a look at this helicopter view of a Restate application:
+<center>
+    <img src="/img/application_overview.svg" alt="Application overview" />
+</center>
 
 1. **Restate Server**: The server intercepts incoming requests and drives their execution till the end.
-2. **Components**: The building blocks of the application which process incoming requests. These run like regular RPC services (e.g. a NodeJS app in a Docker container).
-They have the SDK embedded as a dependency, which handles the communication with the Restate server. Components can be written in any language for which there is an SDK available (currently [TypeScript](/category/typescript-sdk) and [Java](/category/java-sdk)). There are two types of components:
-    1. **Services**: expose a set of handlers on an endpoint. Each handler can be invoked over RPC. Handlers are independent, stateless, and can be invoked concurrently.
-    2. **Virtual objects**: expose a bundled set of handlers with access to K/V state stored in Restate. Each virtual object has a key (unique identifier). Requests to a single virtual object (single key) are executed sequentially.
-3. **Invocation**: A request to execute a handler that is part of either a service, or a virtual object. This request can come from the outside or from another handler.
+2. **Components**: Contain the handlers which process incoming requests.
+3. **Invocation**: A request to execute a handler that is part of either a service, or a virtual object.
+
+The only part we did not discuss yet is the Restate Server.
+The Restate Server is the central piece of the application.
+It sits in between the components and proxies invocations to them.
+It is responsible for managing the lifecycle of the components and the invocations.
+
+The Restate Server has features of an event broker, a workflow engine, and a service mesh, while maintaining a few important characteristics:
+
+<FeatureWidget features={[
+    {
+        title: 'Single binary',
+        iconPath: '/img/box.png', //https://www.flaticon.com/free-icon/box_2630085?term=box&page=1&position=6&origin=search&related_id=2630085
+        // Maybe instead put Restate icon inside the box
+        description: (
+            <>
+                The Restate Server runs as a single binary with zero dependencies. It runs with low operational overhead on any platform, also locally.
+            </>
+        ),
+    },
+    {
+        title: 'Low latency',
+        iconPath: '/img/rush.png', // https://www.flaticon.com/free-icon/rush_7323234
+        // Maybe put the rush signs behind the Restate icon
+        description: (
+            <>
+                Restate has an event-driven foundation. You can put it in the hot, latency-sensitive paths of your applications.
+            </>
+        ),
+    },
+    {
+        title: 'Lightweight',
+        iconPath: '/img/feather.png', // https://www.flaticon.com/free-icon/feather_6308219?term=feather&page=1&position=2&origin=search&related_id=6308219
+        // Maybe instead put Restate icon inside the pinch: https://www.flaticon.com/free-icon/pinch_9443603
+        description: (
+            <>
+                Restate is written in Rust, to be self-contained and resource-efficient. It has a composable architecture to tailor to your needs.
+            </>
+        ),
+    },
+]}/>
+
 

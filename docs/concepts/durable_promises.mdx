@@ -10,13 +10,11 @@ import TabItem from '@theme/TabItem';
 
 # Durable Building Blocks
 
-## Why?
 Distributed systems are inherently complex and failures are inevitable.
 Almost any application is a distributed system, since they are composed of different components that communicate over the network (e.g. services, databases, queues, etc).
-With every component, the number of possible failure scenarios increases: network partitions, hardware failures, software bugs, etc.
+With every component, the number of possible failure scenarios increases: network partitions, hardware failures, timeouts, race conditions etc.
 Building reliable applications that can recover from failures is a challenging task.
 
-## What?
 Restate lets you write distributed applications that are resilient to failures.
 It does this by providing a distributed, durable version of common building blocks.
 
@@ -87,14 +85,3 @@ CODE_LOAD::ts/src/concepts/food_ordering_rpc.ts
 
 </CH.Spotlight>
 
-## How?
-The way Restate achieves all of this is via durable execution.
-Durable execution is the act of tracking code execution to enable recovery of partial progress in case of failures.
-Restate implements durable execution by keeping track of the progress of execution in a central, persisted log that can be replayed in case of failures.
-
-Restate uses a combination of a server and SDK libraries to provide durable execution.
-The SDKs are responsible for tracking the progress of the execution and sending it to the runtime.
-The Restate server is responsible for storing the progress in a durable log and triggering retries in case of failures.
-When the Restate server triggers a retry, it sends the progress log to the SDK, which replays the log to continue the execution from where it left off.
-
-**TODO: Add a diagram showing how durable execution works in Restate with explanation. Similar to homepage**
