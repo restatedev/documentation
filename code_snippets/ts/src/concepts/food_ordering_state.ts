@@ -3,10 +3,10 @@ import {ObjectContext} from "@restatedev/restate-sdk";
 
 
 // <start_here>
-// focus
 async function process(ctx: ObjectContext, order: Order) {
 
     // 1. Set status
+    // focus
     ctx.set("status", Status.CREATED);
 
     // 2. Handle payment
@@ -16,11 +16,13 @@ async function process(ctx: ObjectContext, order: Order) {
     );
 
     if (!paid) {
+        // focus
         ctx.set("status", Status.REJECTED);
         return;
     }
 
     // 3. Wait until the requested preparation time
+    // focus
     ctx.set("status", Status.SCHEDULED);
     await ctx.sleep(order.deliveryDelay);
 
@@ -29,16 +31,18 @@ async function process(ctx: ObjectContext, order: Order) {
     await ctx.sideEffect(() =>
         restaurant.prepare(order.id, preparationPromise.id)
     );
+    // focus
     ctx.set("status", Status.IN_PREPARATION);
 
     await preparationPromise.promise;
+    // focus
     ctx.set("status", Status.SCHEDULING_DELIVERY);
 
     // 5. Find a driver and start delivery
     await ctx.objectClient(deliveryManager, order.id)
         .startDelivery(order);
+    // focus
     ctx.set("status", Status.DELIVERED);
-// focus
 }
 // <end_here>
 

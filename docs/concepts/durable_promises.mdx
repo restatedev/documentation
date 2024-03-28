@@ -9,17 +9,24 @@ import TabItem from '@theme/TabItem';
 
 
 # Durable Building Blocks
-Restate provides a distributed, durable version of common coding primitives. You can use these to build resilient, distributed applications.
 
-You implement your business logic in handlers. These handlers have access to these building blocks via the Restate SDK, that is loaded as a dependency.
+## Why?
+Distributed systems are inherently complex and failures are inevitable.
+Almost any application is a distributed system, since they are composed of different components that communicate over the network (e.g. services, databases, queues, etc).
+With every component, the number of possible failure scenarios increases: network partitions, hardware failures, software bugs, etc.
+Building reliable applications that can recover from failures is a challenging task.
+
+## What?
+Restate lets you write distributed applications that are resilient to failures.
+It does this by providing a distributed, durable version of common building blocks.
+
+For these building blocks, Restate handles failure recovery, idempotency, state, and consistency.
+This way, you can implement otherwise tricky patterns in a few lines of code without worrying about these concerns.
+
+Restate lets you implement your business logic in handlers.
+These handlers have access to these building blocks via the Restate SDK, that is loaded as a dependency.
 
 Let's have a look at a handler that processes food orders:
-
-
-
-
-[//]: # (<iframe src="https://replit.com/@giselle7/JavaRestateTemplate?embed=true" width="600" height="400"></iframe>)
-
 
 <CH.Spotlight className="durable-promises">
 
@@ -46,30 +53,9 @@ CODE_LOAD::ts/src/concepts/food_ordering_rpc.ts
 
 
 
-    **Durable <mark class="accent">RPC</mark>**<br/>
-    <p class="font-size-90">Handlers can call other handlers in a resilient way.
+    **Durable <mark class="accent">RPCs</mark> and <mark class="accent">queues</mark>**<br/>
+    <p class="font-size-90">Handlers can call other handlers in a resilient way, with or without waiting for the response.
     When a failure happens, Restate handles retries and recovers partial progress.</p>
-
-    ---
-
-    ```ts order_processor.ts
-    CODE_LOAD::ts/src/concepts/food_ordering_queues.ts
-    ```
-
-
-    **Durable <mark class="accent">queues</mark>**
-    <p class="font-size-90">Handlers can send one-way messages to other handlers in a resilient way.
-        When a failure happens, Restate handles retries and recovers partial progress.</p>
-
-    ---
-
-
-    ```ts order_processor.ts
-    CODE_LOAD::ts/src/concepts/food_ordering_timers.ts
-    ```
-
-    **Durable <mark class="accent">timers</mark>**<br/>
-    <p class="font-size-90">Handlers can sleep or schedule a function to be executed at a later time. When running on serverless platforms, Restate lets the handler suspend while waiting to free up resources. </p>
 
     ---
 
@@ -78,8 +64,17 @@ CODE_LOAD::ts/src/concepts/food_ordering_rpc.ts
     CODE_LOAD::ts/src/concepts/food_ordering_awakeables.ts
     ```
 
-    **Durable <mark class="accent">promises</mark>**<br/>
-    <p class="font-size-90">Register a webhook in Restate and receive a durable promise that will be resolved when the webhook is triggered.</p>
+    **Durable <mark class="accent">promises and timers</mark>**<br/>
+    <p class="font-size-90">Register promises in Restate to make them resilient to failures (e.g. webhooks, timers). Restate lets the handler suspend while awaiting the promise, and invokes it again when the result is available. A great match for function-as-a-service platforms.</p>
+
+    ---
+
+    ```ts order_processor.ts
+    CODE_LOAD::ts/src/concepts/food_ordering_state.ts
+    ```
+
+    **Consistent <mark class="accent">K/V state</mark>**<br/>
+    <p class="font-size-90">Store the result of a computation in Restate. The result gets replayed in case of failures and the function is not executed again.</p>
 
     ---
 
@@ -91,3 +86,15 @@ CODE_LOAD::ts/src/concepts/food_ordering_rpc.ts
     <p class="font-size-90">Store the result of a computation in Restate. The result gets replayed in case of failures and the function is not executed again.</p>
 
 </CH.Spotlight>
+
+## How?
+The way Restate achieves all of this is via durable execution.
+Durable execution is the act of tracking code execution to enable recovery of partial progress in case of failures.
+Restate implements durable execution by keeping track of the progress of execution in a central, persisted log that can be replayed in case of failures.
+
+Restate uses a combination of a server and SDK libraries to provide durable execution.
+The SDKs are responsible for tracking the progress of the execution and sending it to the runtime.
+The Restate server is responsible for storing the progress in a durable log and triggering retries in case of failures.
+When the Restate server triggers a retry, it sends the progress log to the SDK, which replays the log to continue the execution from where it left off.
+
+**TODO: Add a diagram showing how durable execution works in Restate with explanation. Similar to homepage**

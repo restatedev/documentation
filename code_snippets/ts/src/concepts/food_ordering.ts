@@ -35,7 +35,8 @@ async function process(ctx: ObjectContext, order: Order) {
 
     // 5. Find a driver and start delivery
     await ctx.objectClient(deliveryManager, order.id)
-        .start(order);
+        .startDelivery(order);
+    ctx.set("status", Status.DELIVERED);
 }
 // <end_here>
 
