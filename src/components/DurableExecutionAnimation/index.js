@@ -3,11 +3,11 @@ import React, {useEffect, useState} from "react"
 
 class Ingress extends React.Component {
     render() {
-        return <div className="col col--2 padding-horiz--sm">
+        return <div className="col col--1 padding-horiz--sm">
             <div id="ingress" className="h-100">
                 <div id="placeholder">
                     <h6>
-                        <a className="rpc_arrow text--center color-1 set-color"/>
+                        <a className="rpc_arrow text--center color-1 set-color smallest_font"/>
                     </h6>
                 </div>
                 <div
@@ -20,7 +20,7 @@ class Ingress extends React.Component {
                             className="text--center display-inline-block padding--sm"
                         />
                         <div
-                            className="smaller_font display-inline-block text--center color-1 set-bg set-color align-middle">
+                            className="smallest_font display-inline-block text--center color-1 set-bg set-color align-middle margin-bottom--md">
                             HTTP request <br/> addTicket <br/>
                             (Joe, seat2B)
                         </div>
@@ -61,18 +61,18 @@ class Runtime extends React.Component {
                         src="/img/durable_execution_animation/restate.png"
                     />
                 </div>
-                <h5>State</h5>
+                <h6>State</h6>
                 <div id="restate-state">
-                    <p id="restate_user_state" className="text--center">
+                    <p id="restate_user_state" className="text--center smaller_font">
                         cartService: Joe - cart=[]
                     </p>
                 </div>
-                <h5>Journals</h5>
+                <h6>Journals</h6>
                 <div
                     id="restate_journal_cart"
                     className="bg-primary-line padding--sm display-none"
                 >
-                    <p className="color-1 set-color set-bg text--center">
+                    <p className="color-1 set-color set-bg text--center smaller_font">
                         addTicket ( Joe, seat2B )
                     </p>
                     <div
@@ -114,7 +114,7 @@ class Runtime extends React.Component {
                     </div>
                 </div>
                 <div id="rpc_arrow_request" className="margin--sm display-none">
-                    <div className="smaller_font color-2 set-color set-bg text--center">
+                    <div className="smaller_font color-2 set-color set-bg text--center smaller_font">
                         RPC: reserve {"{"} seat2B {"}"}
                     </div>
                     <div className="vertical_rpc_arrow color-2 set-color text--center">
@@ -125,7 +125,7 @@ class Runtime extends React.Component {
                     <div className="vertical_rpc_arrow color-3 set-color text--center">
                         ↑
                     </div>
-                    <div className="smaller_font color-3 set-color set-bg text--center">
+                    <div className="smaller_font color-3 set-color set-bg text--center smaller_font">
                         RPC: response {"{"} success {"}"}
                     </div>
                 </div>
@@ -133,7 +133,7 @@ class Runtime extends React.Component {
                     id="restate_journal_ticket"
                     className="bg-primary-line padding--sm display-none"
                 >
-                    <p className="color-2 set-color set-bg text--center">
+                    <p className="color-2 set-color set-bg text--center smaller_font">
                         reserve ( seat2B )
                     </p>
                     <div
@@ -158,9 +158,9 @@ class Runtime extends React.Component {
 
 class Services extends React.Component {
     render() {
-        return <div className="col col--6 padding-horiz--md">
+        return <div className="col col--7 padding-horiz--md">
             <div id="cart_service_div" className="row margin-vert--none margin-horiz--none display-none">
-                <div className="col col--2 padding-horiz--none margin-bottom--md">
+                <div className="col col--1 padding-horiz--none margin-bottom--md">
                     <div
                         id="cart_request_arrow"
                         className="horizontal_rpc_arrow text--center color-1 set-color display-none padding-horiz--none"
@@ -180,7 +180,7 @@ class Services extends React.Component {
                         ←
                     </div>
                 </div>
-                <div className="col col--10 padding-horiz--none bg-light section_animation">
+                <div className="col col--11 padding-horiz--none bg-light section_animation smaller_font">
                     <div id="cart_service_box">
                         <div className="flex-none border-b">
                             <div className="flex items-center h-8 padding-horiz--md">
@@ -206,8 +206,9 @@ class Services extends React.Component {
                         </div>
                         <pre className="margin--none padding--sm suspended" id="cart_service">
                     <span className="hljs-keyword">async</span> addTicket ={" "}
-                            <span className="hljs-keyword">async</span> (ctx, userId,
-                    ticketId) =&gt; {"{"}
+                            <span className="hljs-keyword">async</span> {"(ctx, userId, ticketId)"}
+                            =&gt;
+                            {"{"}
                             {"\n"}
                             {"  "}
                             <span className="hljs-keyword">const</span> success ={" "}
@@ -291,7 +292,7 @@ class Services extends React.Component {
                 </div>
             </div>
             <div id="ticket_service_div" className="row margin-vert--none margin-horiz--none display-none">
-                <div className="col col--2 padding-horiz--none margin-bottom--md">
+                <div className="col col--1 padding-horiz--none margin-bottom--md">
                     <div
                         id="ticket_request_arrow"
                         className="horizontal_rpc_arrow text--center color-2 set-color display-none"
@@ -305,7 +306,7 @@ class Services extends React.Component {
                         ←
                     </div>
                 </div>
-                <div className="col col--10 padding-horiz--none bg-light section_animation">
+                <div className="col col--11 padding-horiz--none bg-light section_animation">
                     <div id="ticket_service_box">
                         <div className="flex-none border-b">
                             <div className="flex items-center h-8 padding-horiz--md">
@@ -331,7 +332,7 @@ class Services extends React.Component {
                         </div>
                         <pre className="margin--none padding--sm suspended" id="ticket_service">
                     <span className="hljs-keyword">async</span> reserve ={" "}
-                            <span className="hljs-keyword">async</span> (ctx, ticketId)
+                            <span className="hljs-keyword">async</span> {"(ctx, ticketId)"}
                     =&gt; {"{"}
                             {"\n"}
                             {"  "}...{"\n"}
@@ -366,7 +367,7 @@ class Services extends React.Component {
 
 class Animation extends React.Component {
     render() {
-        return <div class="container">
+        return <div className="container">
             <div id="animation"
                 className="row justify-content-center color-primary padding--md"
             >
@@ -378,26 +379,21 @@ class Animation extends React.Component {
     }
 }
 
-let animationInterval = null;
-let defaultAnimation = null;
-
 export default function DurableExecutionAnimation() {
     console.info("Called DurableExecutionAnimation");
 
+    const [defaultAnimation, setDefaultAnimation] = useState(null);
     const [animationIndex, setAnimationIndex] = useState(0);
-    const [isPlaying, setIsPlaying] = useState(true);
-    const [cartSvcCode, setCartSvcCode] = useState(document.getElementById("cart_service"));
+    const [cartSvcCode, setCartSvcCode] = useState(null);
     const [cartSvcCodeLine, setCartSvcCodeLine] = useState(0);
-    const [ticketSvcCode, setTicketSvcCode] = useState(document.getElementById("ticket_service"));
+    const [ticketSvcCode, setTicketSvcCode] = useState(null);
     const [ticketSvcCodeLine, setTicketSvcCodeLine] = useState(0);
-    // const [progressBar, setProgressBar] = useState(null);
-    // const [playPauseButton, setPlayPauseButton] = useState(null);
-    const maxAnimationIndex = 15;
-
 
     useEffect(() => {
         // save what the animation looks like on the first step so we can reset it later
-        defaultAnimation = document.getElementById("animation").innerHTML;
+        setDefaultAnimation(document.getElementById("animation").innerHTML);
+        setCartSvcCode(document.getElementById("cart_service").innerHTML);
+        setTicketSvcCode(document.getElementById("ticket_service").innerHTML);
     }, []);
 
     function highlightNextCartSvcCodeLine() {
@@ -405,20 +401,18 @@ export default function DurableExecutionAnimation() {
         // Update cart service code highlighting
         // Update state for journal element visibility
         setCartSvcCodeLine(prevLine => {
-            const newLine = prevLine + 1;
-            const cartSvcCode = document.getElementById("cart_service");
-            cartSvcCode.innerHTML = cartSvcCode.innerHTML.split(",")
+            document.getElementById("cart_service").innerHTML = cartSvcCode.split("\n")
                 .map((line, index) =>
-                    index === newLine
-                        ? `<mark className="code-highlight color-${newLine + 1} set-bg">${line}</mark>`
+                    index === prevLine
+                        ? `<mark className="code-highlight color-${prevLine + 1} set-bg">${line}</mark>`
                         : line,
                 )
                 .join("\n");
-            const journalCartElement = document.getElementById("journal_cart_" + newLine);
+            const journalCartElement = document.getElementById("journal_cart_" + prevLine);
             if (journalCartElement) journalCartElement.classList.remove("display-none");
-            const restateJournalElement = document.getElementById("restate_journal_cart_" + newLine);
+            const restateJournalElement = document.getElementById("restate_journal_cart_" + prevLine);
             if (restateJournalElement) restateJournalElement.classList.remove("display-none");
-            return newLine;
+            return prevLine + 1;
         });
     }
 
@@ -427,283 +421,267 @@ export default function DurableExecutionAnimation() {
         // Update ticket service code highlighting
         // Update state for journal element visibility
         setTicketSvcCodeLine(prevLine => {
-            const newLine = prevLine + 1;
-            const ticketSvcCode = document.getElementById("ticket_service");
-            ticketSvcCode.innerHTML = ticketSvcCode.innerHTML.split(",")
+            document.getElementById("ticket_service").innerHTML = ticketSvcCode.split("\n")
                 .map((line, index) =>
-                    index === newLine
-                        ? `<mark className="code-highlight color-${newLine + 2} set-bg">${line}</mark>`
+                    index === prevLine
+                        ? `<mark className="code-highlight color-${prevLine + 1} set-bg">${line}</mark>`
                         : line,
                 )
                 .join("\n");
-            const journalTicketElement = document.getElementById("journal_ticket_" + newLine);
+            const journalTicketElement = document.getElementById("journal_ticket_" + prevLine);
             if (journalTicketElement) journalTicketElement.classList.remove("display-none");
-            const restateJournalTicketElement = document.getElementById("restate_journal_ticket_" + newLine);
+            const restateJournalTicketElement = document.getElementById("restate_journal_ticket_" + prevLine);
             if (restateJournalTicketElement) restateJournalTicketElement.classList.remove("display-none");
-            return newLine;
+            return prevLine + 1;
         });
     }
 
     function resetAnimation() {
         console.info("Called resetAnimation");
-        setAnimationIndex(-1)
+        setAnimationIndex(0)
         setCartSvcCodeLine(0)
         setTicketSvcCodeLine(0)
         document.getElementById("animation").innerHTML = defaultAnimation;
     }
 
     function animate(fastForwarding = false) {
-
-        console.info("Called animate");
-        switch (animationIndex) {
-            case 0: {
-                // Show the ingress call
-                console.info("Animation step 0 Show the ingress call")
-                document
-                    .getElementById("ingress_call")
-                    .classList.remove("display-none");
-                break;
-            }
-            case 1: {
-                // Create journal in Restate
-                console.info("Animation step 1 Create journal in Restate")
-                document
-                    .getElementById("restate_journal_cart")
-                    .classList.remove("display-none");
-                break;
-            }
-            case 2: {
-                // Invoke the service
-                console.info("Animation step 2 Invoke the service")
-                document
-                    .getElementById("cart_service_div")
-                    .classList.remove("display-none");
-                document.getElementById("cart_service").classList.remove("suspended");
-                document
-                    .getElementById("cart_title_suspended")
-                    .classList.add("display-none");
-                document
-                    .getElementById("cart_title_invoked")
-                    .classList.remove("display-none");
-                highlightNextCartSvcCodeLine()
-                document
-                    .getElementById("journal_cart")
-                    .classList.remove("display-none");
-                document
-                    .getElementById("cart_request_arrow")
-                    .classList.remove("display-none");
-                break;
-            }
-            case 3: {
-                // Execute first line
-                console.info("Animation step 3 Execute first line")
-                highlightNextCartSvcCodeLine()
-                document
-                    .getElementById("cart_request_arrow")
-                    .classList.add("display-none");
-                break;
-            }
-            case 4: {
-                console.info("Animation step 4")
-                document
-                    .getElementById("cart_suspend_arrow")
-                    .classList.remove("display-none");
-                break;
-            }
-            case 5: {
-                // suspension
-                console.info("Animation step 5 suspension")
-                document.getElementById("journal_cart").classList.add("display-none");
-                document.getElementById("cart_service").classList.add("suspended");
-                document
-                    .getElementById("cart_title_suspended")
-                    .classList.remove("display-none");
-                document
-                    .getElementById("cart_title_invoked")
-                    .classList.add("display-none");
-                document
-                    .getElementById("cart_suspend_arrow")
-                    .classList.add("display-none");
-
-                // start of call to ticket service
-                document
-                    .getElementById("rpc_arrow_request")
-                    .classList.remove("display-none");
-                document
-                    .getElementById("restate_journal_ticket")
-                    .classList.remove("display-none");
-                break;
-            }
-            case 6: {
-                // start executing ticket service
-                console.log("Animation step 6 start executing ticket service")
-                document
-                    .getElementById("ticket_service_div")
-                    .classList.remove("display-none");
-                document.getElementById("ticket_service").classList.remove("suspended");
-                document
-                    .getElementById("ticket_title_suspended")
-                    .classList.add("display-none");
-                document
-                    .getElementById("ticket_title_invoked")
-                    .classList.remove("display-none");
-                highlightNextTicketSvcCodeLine();
-                document
-                    .getElementById("journal_ticket")
-                    .classList.remove("display-none");
-                document
-                    .getElementById("ticket_request_arrow")
-                    .classList.remove("display-none");
-                break;
-            }
-            case 7: {
-                // get response ticket service
-                console.log("Animation step 7 get response ticket service")
-                highlightNextTicketSvcCodeLine();
-                document
-                    .getElementById("ticket_request_arrow")
-                    .classList.add("display-none");
-                document
-                    .getElementById("ticket_response_arrow")
-                    .classList.remove("display-none");
-                break;
-            }
-            case 8: {
-                console.log("Animation step 8")
-                highlightNextCartSvcCodeLine()
-                document
-                    .getElementById("rpc_arrow_request")
-                    .classList.add("display-none");
-                document
-                    .getElementById("rpc_arrow_response")
-                    .classList.remove("display-none");
-                document
-                    .getElementById("ticket_service_div")
-                    .classList.add("display-none");
-                document.getElementById("ticket_service").classList.add("suspended");
-                document
-                    .getElementById("ticket_title_suspended")
-                    .classList.remove("display-none");
-                document
-                    .getElementById("ticket_title_invoked")
-                    .classList.add("display-none");
-                document.getElementById("journal_ticket").classList.add("display-none");
-                document
-                    .getElementById("journal_ticket_1")
-                    .classList.add("display-none");
-                document
-                    .getElementById("ticket_response_arrow")
-                    .classList.add("display-none");
-                break;
-            }
-            case 9: {
-                console.log("Animation step 9")
-                document
-                    .getElementById("restate_journal_ticket")
-                    .classList.add("display-none");
-                document
-                    .getElementById("restate_journal_ticket_1")
-                    .classList.add("display-none");
-                document
-                    .getElementById("rpc_arrow_response")
-                    .classList.add("display-none");
-                document
-                    .getElementById("cart_request_arrow")
-                    .classList.remove("display-none");
-                document
-                    .getElementById("journal_cart")
-                    .classList.remove("display-none");
-                document.getElementById("cart_service").classList.remove("suspended");
-                document
-                    .getElementById("cart_title_suspended")
-                    .classList.add("display-none");
-                document
-                    .getElementById("cart_title_invoked")
-                    .classList.remove("display-none");
-                break;
-            }
-            case 10: {
-                console.log("Animation step 10")
-                highlightNextCartSvcCodeLine()
-                break;
-            }
-            case 11: {
-                console.log("Animation step 11")
-                highlightNextCartSvcCodeLine()
-                // Set the state
-                document.getElementById("restate_user_state").innerHTML =
-                    "cartService: Joe - cart=<mark class='code-highlight color-5 set-bg set-color'>[seat2B]</mark>";
-                break;
-            }
-            case 12: {
-                console.log("Animation step 12")
-                highlightNextCartSvcCodeLine();
-                highlightNextCartSvcCodeLine();
-                document
-                    .getElementById("cart_request_arrow")
-                    .classList.add("display-none");
-                document
-                    .getElementById("cart_response_arrow")
-                    .classList.remove("display-none");
-                break;
-            }
-            case 13: {
-                console.log("Animation step 13")
-                document.getElementById("journal_cart").classList.add("display-none");
-                document
-                    .getElementById("cart_response_arrow")
-                    .classList.add("display-none");
-                document
-                    .getElementById("cart_service_div")
-                    .classList.add("display-none");
-                document.getElementById("cart_service").classList.add("suspended");
-                document
-                    .getElementById("cart_title_suspended")
-                    .classList.remove("display-none");
-                document
-                    .getElementById("cart_title_invoked")
-                    .classList.add("display-none");
-                break;
-            }
-            case 14: {
-                console.log("Animation step 14")
-                document.getElementById("ingress_call").classList.add("display-none");
-                document
-                    .getElementById("response_ingress_call")
-                    .classList.remove("display-none");
-                break;
-            }
-            case 15: {
-                console.log("Animation step 15 RESET")
-                resetAnimation();
-                break;
-            }
-        }
-
         setAnimationIndex(prevState => {
-            console.info("Called setAnimationIndex");
-            return prevState + 1
+            console.info("Called animate for animation index ", prevState);
+            switch (prevState) {
+                case 0: {
+                    // Show the ingress call
+                    console.info("Animation step 0 Show the ingress call")
+                    document
+                        .getElementById("ingress_call")
+                        .classList.remove("display-none");
+                    break;
+                }
+                case 1: {
+                    // Create journal in Restate
+                    console.info("Animation step 1 Create journal in Restate")
+                    document
+                        .getElementById("restate_journal_cart")
+                        .classList.remove("display-none");
+                    break;
+                }
+                case 2: {
+                    // Invoke the service
+                    console.info("Animation step 2 Invoke the service")
+                    document
+                        .getElementById("cart_service_div")
+                        .classList.remove("display-none");
+                    document.getElementById("cart_service").classList.remove("suspended");
+                    document
+                        .getElementById("cart_title_suspended")
+                        .classList.add("display-none");
+                    document
+                        .getElementById("cart_title_invoked")
+                        .classList.remove("display-none");
+                    highlightNextCartSvcCodeLine()
+                    document
+                        .getElementById("journal_cart")
+                        .classList.remove("display-none");
+                    document
+                        .getElementById("cart_request_arrow")
+                        .classList.remove("display-none");
+                    break;
+                }
+                case 3: {
+                    // Execute first line
+                    console.info("Animation step 3 Execute first line")
+                    highlightNextCartSvcCodeLine()
+                    document
+                        .getElementById("cart_request_arrow")
+                        .classList.add("display-none");
+                    break;
+                }
+                case 4: {
+                    console.info("Animation step 4")
+                    document
+                        .getElementById("cart_suspend_arrow")
+                        .classList.remove("display-none");
+                    break;
+                }
+                case 5: {
+                    // suspension
+                    console.info("Animation step 5 suspension")
+                    document.getElementById("journal_cart").classList.add("display-none");
+                    document.getElementById("cart_service").classList.add("suspended");
+                    document
+                        .getElementById("cart_title_suspended")
+                        .classList.remove("display-none");
+                    document
+                        .getElementById("cart_title_invoked")
+                        .classList.add("display-none");
+                    document
+                        .getElementById("cart_suspend_arrow")
+                        .classList.add("display-none");
+
+                    // start of call to ticket service
+                    document
+                        .getElementById("rpc_arrow_request")
+                        .classList.remove("display-none");
+                    document
+                        .getElementById("restate_journal_ticket")
+                        .classList.remove("display-none");
+                    break;
+                }
+                case 6: {
+                    // start executing ticket service
+                    console.log("Animation step 6 start executing ticket service")
+                    document
+                        .getElementById("ticket_service_div")
+                        .classList.remove("display-none");
+                    document.getElementById("ticket_service").classList.remove("suspended");
+                    document
+                        .getElementById("ticket_title_suspended")
+                        .classList.add("display-none");
+                    document
+                        .getElementById("ticket_title_invoked")
+                        .classList.remove("display-none");
+                    highlightNextTicketSvcCodeLine();
+                    document
+                        .getElementById("journal_ticket")
+                        .classList.remove("display-none");
+                    document
+                        .getElementById("ticket_request_arrow")
+                        .classList.remove("display-none");
+                    break;
+                }
+                case 7: {
+                    // get response ticket service
+                    console.log("Animation step 7 get response ticket service")
+                    highlightNextTicketSvcCodeLine();
+                    document
+                        .getElementById("ticket_request_arrow")
+                        .classList.add("display-none");
+                    document
+                        .getElementById("ticket_response_arrow")
+                        .classList.remove("display-none");
+                    break;
+                }
+                case 8: {
+                    console.log("Animation step 8")
+                    highlightNextCartSvcCodeLine()
+                    document
+                        .getElementById("rpc_arrow_request")
+                        .classList.add("display-none");
+                    document
+                        .getElementById("rpc_arrow_response")
+                        .classList.remove("display-none");
+                    document
+                        .getElementById("ticket_service_div")
+                        .classList.add("display-none");
+                    document.getElementById("ticket_service").classList.add("suspended");
+                    document
+                        .getElementById("ticket_title_suspended")
+                        .classList.remove("display-none");
+                    document
+                        .getElementById("ticket_title_invoked")
+                        .classList.add("display-none");
+                    document.getElementById("journal_ticket").classList.add("display-none");
+                    document
+                        .getElementById("journal_ticket_1")
+                        .classList.add("display-none");
+                    document
+                        .getElementById("ticket_response_arrow")
+                        .classList.add("display-none");
+                    break;
+                }
+                case 9: {
+                    console.log("Animation step 9")
+                    document
+                        .getElementById("restate_journal_ticket")
+                        .classList.add("display-none");
+                    document
+                        .getElementById("restate_journal_ticket_1")
+                        .classList.add("display-none");
+                    document
+                        .getElementById("rpc_arrow_response")
+                        .classList.add("display-none");
+                    document
+                        .getElementById("cart_request_arrow")
+                        .classList.remove("display-none");
+                    document
+                        .getElementById("journal_cart")
+                        .classList.remove("display-none");
+                    document.getElementById("cart_service").classList.remove("suspended");
+                    document
+                        .getElementById("cart_title_suspended")
+                        .classList.add("display-none");
+                    document
+                        .getElementById("cart_title_invoked")
+                        .classList.remove("display-none");
+                    break;
+                }
+                case 10: {
+                    console.log("Animation step 10")
+                    highlightNextCartSvcCodeLine()
+                    break;
+                }
+                case 11: {
+                    console.log("Animation step 11")
+                    highlightNextCartSvcCodeLine()
+                    // Set the state
+                    document.getElementById("restate_user_state").innerHTML =
+                        "cartService: Joe - cart=<mark className='code-highlight color-5 set-bg set-color'>[seat2B]</mark>";
+                    break;
+                }
+                case 12: {
+                    console.log("Animation step 12")
+                    highlightNextCartSvcCodeLine();
+                    highlightNextCartSvcCodeLine();
+                    document
+                        .getElementById("cart_request_arrow")
+                        .classList.add("display-none");
+                    document
+                        .getElementById("cart_response_arrow")
+                        .classList.remove("display-none");
+                    break;
+                }
+                case 13: {
+                    console.log("Animation step 13")
+                    document.getElementById("journal_cart").classList.add("display-none");
+                    document
+                        .getElementById("cart_response_arrow")
+                        .classList.add("display-none");
+                    document
+                        .getElementById("cart_service_div")
+                        .classList.add("display-none");
+                    document.getElementById("cart_service").classList.add("suspended");
+                    document
+                        .getElementById("cart_title_suspended")
+                        .classList.remove("display-none");
+                    document
+                        .getElementById("cart_title_invoked")
+                        .classList.add("display-none");
+                    break;
+                }
+                case 14: {
+                    console.log("Animation step 14")
+                    document.getElementById("ingress_call").classList.add("display-none");
+                    document
+                        .getElementById("response_ingress_call")
+                        .classList.remove("display-none");
+                    break;
+                }
+                case 15: {
+                    console.log("Animation step 15 RESET")
+                    resetAnimation();
+                    break;
+                }
+            }
+
+
+            const newVal = prevState + 1;
+            console.info("Called setAnimationIndex to " + newVal);
+            return newVal;
         });
     }
 
-// Repeatedly call to update the animation
-    if(animationInterval) clearInterval(animationInterval);
-    animationInterval = setInterval(animate, 1200);
 
 
-    function togglePlayPause() {
-        if (isPlaying) {
-            // Pause the animation
-            clearInterval(animationInterval);
-            // playPauseButton.innerHTML = "&#9658;
-        } else {
-            // Start or resume the animation
-            if(animationInterval) clearInterval(animationInterval);
-            animationInterval = setInterval(animate, 1200);
-            // playPauseButton.innerHTML = "||";
-        }
-        setIsPlaying(prevState => !prevState);
-    }
+    setTimeout(animate, 2000)
 
     return (
         <div>
@@ -718,6 +696,7 @@ export default function DurableExecutionAnimation() {
                         max={14}
                         step={1}
                         value={animationIndex}
+                        readOnly={true}
                     />
                 </div>
             </div>
