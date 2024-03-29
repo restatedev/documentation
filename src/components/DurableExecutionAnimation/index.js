@@ -3,24 +3,24 @@ import React, {useEffect, useState} from "react"
 
 class Ingress extends React.Component {
     render() {
-        return <div className="col col--2 px-3 mx-sm-3">
+        return <div className="col col--2 padding-horiz--sm">
             <div id="ingress" className="h-100">
                 <div id="placeholder">
                     <h6>
-                        <a className="rpc_arrow text-center color-1 set-color"/>
+                        <a className="rpc_arrow text--center color-1 set-color"/>
                     </h6>
                 </div>
                 <div
                     id="ingress_call"
-                    className="color-1 set-color display-none p-2"
+                    className="color-1 set-color display-none padding--sm"
                 >
-                    <div className=" horizontal_rpc_arrow display-inline-block text-center">
+                    <div className="horizontal_rpc_arrow display-inline-block text--center">
                         <img
                             src="/img/durable_execution_animation/click.png"
-                            className="only-on-light text-center display-inline-block p-2"
+                            className="text--center display-inline-block padding--sm"
                         />
                         <div
-                            className="smaller_font display-inline-block text-center color-1 set-bg set-color align-middle">
+                            className="smaller_font display-inline-block text--center color-1 set-bg set-color align-middle">
                             HTTP request <br/> addTicket <br/>
                             (Joe, seat2B)
                         </div>
@@ -29,15 +29,15 @@ class Ingress extends React.Component {
                 </div>
                 <div
                     id="response_ingress_call"
-                    className="color-7 set-color display-none p-2"
+                    className="color-7 set-color display-none padding--sm"
                 >
-                    <div className="horizontal_rpc_arrow display-inline-block text-center">
+                    <div className="horizontal_rpc_arrow display-inline-block text--center">
                         <img
                             src="/img/durable_execution_animation/add-cart.png"
-                            className="only-on-light text-center display-inline-block p-2"
+                            className="text--center display-inline-block padding--sm"
                         />
                         <div
-                            className="smaller_font display-inline-block text-center color-7 set-bg set-color align-middle">
+                            className="smaller_font display-inline-block text--center color-7 set-bg set-color align-middle">
                             HTTP response <br/> addTicket <br/> {"{"} success {"}"}
                         </div>
                         ←
@@ -50,29 +50,29 @@ class Ingress extends React.Component {
 
 class Runtime extends React.Component {
     render() {
-        return <div className="col col--4 px-3">
+        return <div className="col col--4 padding-horiz--md">
             <div
                 id="restate-runtime"
-                className="section_animation color-lowlatency set-border bg-light justify-content-center my-1 p-3"
+                className="section_animation color-primary set-border bg-light justify-content-center margin-vert--sm padding--md"
             >
-                <div className="text-center">
+                <div className="text--center">
                     <img
-                        className="logo-animation only-on-light img-fluid"
+                        className="logo-animation img-fluid"
                         src="/img/durable_execution_animation/restate.png"
                     />
                 </div>
                 <h5>State</h5>
                 <div id="restate-state">
-                    <p id="restate_user_state" className="text-center">
+                    <p id="restate_user_state" className="text--center">
                         cartService: Joe - cart=[]
                     </p>
                 </div>
                 <h5>Journals</h5>
                 <div
                     id="restate_journal_cart"
-                    className="bg-primary-line p-2 display-none"
+                    className="bg-primary-line padding--sm display-none"
                 >
-                    <p className="color-1 set-color set-bg text-center">
+                    <p className="color-1 set-color set-bg text--center">
                         addTicket ( Joe, seat2B )
                     </p>
                     <div
@@ -113,27 +113,27 @@ class Runtime extends React.Component {
                         |||||
                     </div>
                 </div>
-                <div id="rpc_arrow_request" className="m-2 display-none">
-                    <div className="smaller_font color-2 set-color set-bg text-center">
+                <div id="rpc_arrow_request" className="margin--sm display-none">
+                    <div className="smaller_font color-2 set-color set-bg text--center">
                         RPC: reserve {"{"} seat2B {"}"}
                     </div>
-                    <div className="vertical_rpc_arrow color-2 set-color text-center">
+                    <div className="vertical_rpc_arrow color-2 set-color text--center">
                         ↓
                     </div>
                 </div>
-                <div id="rpc_arrow_response" className="m-2 display-none">
-                    <div className="vertical_rpc_arrow color-3 set-color text-center">
+                <div id="rpc_arrow_response" className="margin--sm display-none">
+                    <div className="vertical_rpc_arrow color-3 set-color text--center">
                         ↑
                     </div>
-                    <div className="smaller_font color-3 set-color set-bg text-center">
+                    <div className="smaller_font color-3 set-color set-bg text--center">
                         RPC: response {"{"} success {"}"}
                     </div>
                 </div>
                 <div
                     id="restate_journal_ticket"
-                    className="bg-primary-line p-2 display-none"
+                    className="bg-primary-line padding--sm display-none"
                 >
-                    <p className="color-2 set-color set-bg text-center">
+                    <p className="color-2 set-color set-bg text--center">
                         reserve ( seat2B )
                     </p>
                     <div
@@ -158,53 +158,53 @@ class Runtime extends React.Component {
 
 class Services extends React.Component {
     render() {
-        return <div className="col col--6 px-3">
-            <div id="cart_service_div" className="row my-2 mx-0 display-none">
-                <div className="col col--2 px-0 mb-3">
+        return <div className="col col--6 padding-horiz--md">
+            <div id="cart_service_div" className="row margin-vert--none margin-horiz--none display-none">
+                <div className="col col--2 padding-horiz--none margin-bottom--md">
                     <div
                         id="cart_request_arrow"
-                        className="horizontal_rpc_arrow text-center color-1 set-color display-none px-0"
+                        className="horizontal_rpc_arrow text--center color-1 set-color display-none padding-horiz--none"
                     >
                         →
                     </div>
                     <div
                         id="cart_suspend_arrow"
-                        className="horizontal_rpc_arrow text-center color-2 set-color display-none px-0"
+                        className="horizontal_rpc_arrow text--center color-2 set-color display-none padding-horiz--none"
                     >
                         ←
                     </div>
                     <div
                         id="cart_response_arrow"
-                        className="horizontal_rpc_arrow text-center color-7 set-color display-none px-0"
+                        className="horizontal_rpc_arrow text--center color-7 set-color display-none padding-horiz--none"
                     >
                         ←
                     </div>
                 </div>
-                <div className="col col--10 px-0 bg-light section_animation">
+                <div className="col col--10 padding-horiz--none bg-light section_animation">
                     <div id="cart_service_box">
                         <div className="flex-none border-b">
-                            <div className="flex items-center h-8 px-3">
+                            <div className="flex items-center h-8 padding-horiz--md">
                                 <div className="ide_button"/>
                                 <div className="ide_button"/>
                                 <div className="ide_button"/>
-                                <div className="service-name px-2">CartService</div>
+                                <div className="service-name padding-horiz--sm">CartService</div>
                                 <div
                                     id="cart_title_suspended"
-                                    className="service-name color-red px-2"
+                                    className="service-name color-red padding-horiz--sm"
                                 >
                                     {" "}
                                     suspended...
                                 </div>
                                 <div
                                     id="cart_title_invoked"
-                                    className="service-name color-green px-2 display-none"
+                                    className="service-name color-green padding-horiz--sm display-none"
                                 >
                                     {" "}
                                     invoked...
                                 </div>
                             </div>
                         </div>
-                        <pre className="m-0 p-2 suspended" id="cart_service">
+                        <pre className="margin--none padding--sm suspended" id="cart_service">
                     <span className="hljs-keyword">async</span> addTicket ={" "}
                             <span className="hljs-keyword">async</span> (ctx, userId,
                     ticketId) =&gt; {"{"}
@@ -239,52 +239,50 @@ class Services extends React.Component {
                             {"}"}
                   </pre>
                     </div>
-                    {/*                </div>*/}
-                    {/*                <div class="col-xl-5 col-lg-13 col-md-13 col-sm-13 px-0">*/}
                     <div
                         id="journal_cart"
-                        className="smallest_font display-none p-2 bg-light"
+                        className="smallest_font display-none padding--sm bg-light"
                     >
-                        <a className="smaller_font text-center">
+                        <a className="smaller_font text--center">
                             Journal: <br/>
                         </a>
                         <div
                             id="journal_cart_0"
-                            className="text-center display-inline-block color-1 set-bg set-color px-1"
+                            className="text--center display-inline-block color-1 set-bg set-color padding-horiz--xs"
                         >
                             (Joe, seat2B) <br/> state(cart=[])
                         </div>
                         <div
                             id="journal_cart_1"
-                            className="text-center display-inline-block display-none color-2 set-bg set-color px-1"
+                            className="text--center display-inline-block display-none color-2 set-bg set-color padding-horiz--xs"
                         >
                             RPC reserve <br/>
                             {"{"} seat2B {"}"}
                         </div>
                         <div
                             id="journal_cart_2"
-                            className="text-center display-inline-block display-none color-3 set-bg set-color px-1"
+                            className="text--center display-inline-block display-none color-3 set-bg set-color padding-horiz--xs"
                         >
                             RPC resp <br/>
                             {"{"} success {"}"}
                         </div>
                         <div
                             id="journal_cart_3"
-                            className="text-center display-inline-block display-none color-4 set-bg set-color px-1"
+                            className="text--center display-inline-block display-none color-4 set-bg set-color padding-horiz--xs"
                         >
                             getState <br/>
                             cart=[]
                         </div>
                         <div
                             id="journal_cart_4"
-                            className="text-center display-inline-block display-none color-5 set-bg set-color px-1"
+                            className="text--center display-inline-block display-none color-5 set-bg set-color padding-horiz--xs"
                         >
                             setState <br/>
                             cart=[seat2B]
                         </div>
                         <div
                             id="journal_cart_6"
-                            className="text-center display-inline-block display-none color-7 set-bg set-color px-1"
+                            className="text--center display-inline-block display-none color-7 set-bg set-color padding-horiz--xs"
                         >
                             response <br/>
                             {"{"} success {"}"}
@@ -292,46 +290,46 @@ class Services extends React.Component {
                     </div>
                 </div>
             </div>
-            <div id="ticket_service_div" className="row my-2 mx-0 display-none">
-                <div className="col col--2 px-0 mb-3">
+            <div id="ticket_service_div" className="row margin-vert--none margin-horiz--none display-none">
+                <div className="col col--2 padding-horiz--none margin-bottom--md">
                     <div
                         id="ticket_request_arrow"
-                        className="horizontal_rpc_arrow text-center color-2 set-color display-none"
+                        className="horizontal_rpc_arrow text--center color-2 set-color display-none"
                     >
                         →
                     </div>
                     <div
                         id="ticket_response_arrow"
-                        className="horizontal_rpc_arrow text-center color-3 set-color display-none"
+                        className="horizontal_rpc_arrow text--center color-3 set-color display-none"
                     >
                         ←
                     </div>
                 </div>
-                <div className="col col--10 px-0 bg-light section_animation">
+                <div className="col col--10 padding-horiz--none bg-light section_animation">
                     <div id="ticket_service_box">
                         <div className="flex-none border-b">
-                            <div className="flex items-center h-8 px-3">
+                            <div className="flex items-center h-8 padding-horiz--md">
                                 <div className="ide_button"/>
                                 <div className="ide_button"/>
                                 <div className="ide_button"/>
-                                <div className="service-name px-2">TicketService:</div>
+                                <div className="service-name padding-horiz--sm">TicketService:</div>
                                 <div
                                     id="ticket_title_suspended"
-                                    className="service-name color-red px-2"
+                                    className="service-name color-red padding-horiz--sm"
                                 >
                                     {" "}
                                     suspended...
                                 </div>
                                 <div
                                     id="ticket_title_invoked"
-                                    className="service-name color-green px-2 display-none"
+                                    className="service-name color-green padding-horiz--sm display-none"
                                 >
                                     {" "}
                                     invoked...
                                 </div>
                             </div>
                         </div>
-                        <pre className="m-0 p-2 suspended" id="ticket_service">
+                        <pre className="margin--none padding--sm suspended" id="ticket_service">
                     <span className="hljs-keyword">async</span> reserve ={" "}
                             <span className="hljs-keyword">async</span> (ctx, ticketId)
                     =&gt; {"{"}
@@ -340,24 +338,22 @@ class Services extends React.Component {
                             {"}"}
                   </pre>
                     </div>
-                    {/*                </div>*/}
-                    {/*                <div class="col-xl-5 col-lg-13 col-md-13 col-sm-13 px-0">*/}
                     <div
                         id="journal_ticket"
-                        className="smallest_font display-none p-2 bg-light"
+                        className="smallest_font display-none padding--sm bg-light"
                     >
-                        <a className="text-center smaller_font">
+                        <a className="text--center smaller_font">
                             Journal: <br/>
                         </a>
                         <div
                             id="journal_ticket_0"
-                            className="text-center display-inline-block color-2 set-bg set-color px-1"
+                            className="text--center display-inline-block color-2 set-bg set-color padding-horiz--xs"
                         >
                             (seat2B) <br/> state()
                         </div>
                         <div
                             id="journal_ticket_1"
-                            className="text-center display-inline-block display-none color-3 set-bg set-color px-1"
+                            className="text--center display-inline-block display-none color-3 set-bg set-color padding-horiz--xs"
                         >
                             response: <br/> {"{"} success {"}"}
                         </div>
@@ -372,7 +368,7 @@ class Animation extends React.Component {
     render() {
         return <div class="container">
             <div id="animation"
-                className="row justify-content-center color-lowlatency p-3"
+                className="row justify-content-center color-primary padding--md"
             >
                 <Ingress/>
                 <Runtime/>
@@ -717,7 +713,7 @@ export default function DurableExecutionAnimation() {
                     <input
                         type="range"
                         id="progressBar"
-                        className="p-0 display-inline-block m-2 align-middle"
+                        className="padding--none display-inline-block margin--sm align-middle"
                         min={0}
                         max={14}
                         step={1}
