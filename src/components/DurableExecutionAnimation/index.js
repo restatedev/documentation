@@ -3,7 +3,7 @@ import React, {useEffect, useState} from "react"
 
 class Ingress extends React.Component {
     render() {
-        return <div className="col-xl-2 col-lg-2 col-md-2 col-sm-2 px-3 mx-sm-3">
+        return <div className="col col--2 px-3 mx-sm-3">
             <div id="ingress" className="h-100">
                 <div id="placeholder">
                     <h6>
@@ -50,7 +50,7 @@ class Ingress extends React.Component {
 
 class Runtime extends React.Component {
     render() {
-        return <div className="col-xl-4 col-lg-4 col-md-4 col-sm-14 px-3">
+        return <div className="col col--4 px-3">
             <div
                 id="restate-runtime"
                 className="section_animation color-lowlatency set-border bg-light justify-content-center my-1 p-3"
@@ -158,9 +158,9 @@ class Runtime extends React.Component {
 
 class Services extends React.Component {
     render() {
-        return <div className="col-xl-8 col-lg-8 col-md-8 col-sm-14 px-3">
+        return <div className="col col--6 px-3">
             <div id="cart_service_div" className="row my-2 mx-0 display-none">
-                <div className="col-xl-2 col-lg-3 col-md-3 col-sm-3 px-0 mb-3">
+                <div className="col col--2 px-0 mb-3">
                     <div
                         id="cart_request_arrow"
                         className="horizontal_rpc_arrow text-center color-1 set-color display-none px-0"
@@ -180,7 +180,7 @@ class Services extends React.Component {
                         ←
                     </div>
                 </div>
-                <div className="col-xl-14 col-lg-13 col-md-13 col-sm-13 px-0 bg-light section_animation">
+                <div className="col col--10 px-0 bg-light section_animation">
                     <div id="cart_service_box">
                         <div className="flex-none border-b">
                             <div className="flex items-center h-8 px-3">
@@ -293,7 +293,7 @@ class Services extends React.Component {
                 </div>
             </div>
             <div id="ticket_service_div" className="row my-2 mx-0 display-none">
-                <div className="col-xl-2 col-lg-3 col-md-3 col-sm-3 px-0 mb-3">
+                <div className="col col--2 px-0 mb-3">
                     <div
                         id="ticket_request_arrow"
                         className="horizontal_rpc_arrow text-center color-2 set-color display-none"
@@ -307,7 +307,7 @@ class Services extends React.Component {
                         ←
                     </div>
                 </div>
-                <div className="col-xl-14 col-lg-13 col-md-13 col-sm-13 px-0 bg-light section_animation">
+                <div className="col col--10 px-0 bg-light section_animation">
                     <div id="ticket_service_box">
                         <div className="flex-none border-b">
                             <div className="flex items-center h-8 px-3">
@@ -370,36 +370,13 @@ class Services extends React.Component {
 
 class Animation extends React.Component {
     render() {
-        return <div
-            id="animation"
-            className="row justify-content-center color-lowlatency p-3"
-        >
-            <Ingress/>
-            <Runtime/>
-            <Services/>
-        </div>;
-    }
-}
-
-class ProgressBar extends React.Component {
-    render() {
-        return <div className="row justify-content-center m-2">
-            <div className="col-xl-10 col-lg-10 px-0 mb-3 text-center">
-                <button
-                    id="playPauseButton"
-                    className="display-inline-block btn-restate color-lowlatency text-white set-bg px-2"
-                >
-                    ||
-                </button>
-                <input
-                    type="range"
-                    id="progressBar"
-                    className="p-0 display-inline-block w-75 m-2 align-middle"
-                    min={0}
-                    max={14}
-                    step={1}
-                    defaultValue={0}
-                />
+        return <div class="container">
+            <div id="animation"
+                className="row justify-content-center color-lowlatency p-3"
+            >
+                <Ingress/>
+                <Runtime/>
+                <Services/>
             </div>
         </div>;
     }
@@ -412,21 +389,20 @@ export default function DurableExecutionAnimation() {
     console.info("Called DurableExecutionAnimation");
 
     const [animationIndex, setAnimationIndex] = useState(0);
-    // const [defaultAnimation, setDefaultAnimation] = useState(undefined);
     const [isPlaying, setIsPlaying] = useState(true);
     const [cartSvcCode, setCartSvcCode] = useState(document.getElementById("cart_service"));
     const [cartSvcCodeLine, setCartSvcCodeLine] = useState(0);
     const [ticketSvcCode, setTicketSvcCode] = useState(document.getElementById("ticket_service"));
     const [ticketSvcCodeLine, setTicketSvcCodeLine] = useState(0);
-
+    // const [progressBar, setProgressBar] = useState(null);
+    // const [playPauseButton, setPlayPauseButton] = useState(null);
     const maxAnimationIndex = 15;
-    const [progressBar, setProgressBar] = useState(document.getElementById("progressBar"));
-    const [playPauseButton, setPlayPauseButton] = useState(document.getElementById("playPauseButton"));
 
-    if(animationIndex === 1) {
+
+    useEffect(() => {
         // save what the animation looks like on the first step so we can reset it later
         defaultAnimation = document.getElementById("animation").innerHTML;
-    }
+    }, []);
 
     function highlightNextCartSvcCodeLine() {
         console.info("Called highlightNextCartSvcCodeLine");
@@ -712,72 +688,43 @@ export default function DurableExecutionAnimation() {
             console.info("Called setAnimationIndex");
             return prevState + 1
         });
-
-        // if (!fastForwarding)
-            // progressBar.dispatchEvent(new Event("updateProgressBar"));
     }
 
 // Repeatedly call to update the animation
     if(animationInterval) clearInterval(animationInterval);
     animationInterval = setInterval(animate, 1200);
 
-    // playPauseButton.addEventListener("click", togglePlayPause);
-    // progressBar.addEventListener("input", updateProgressInAnimation);
-    // progressBar.addEventListener("updateProgressBar", updateProgressBar);
 
     function togglePlayPause() {
         if (isPlaying) {
             // Pause the animation
             clearInterval(animationInterval);
-            playPauseButton.innerHTML = "&#9658;";
+            // playPauseButton.innerHTML = "&#9658;
         } else {
             // Start or resume the animation
+            if(animationInterval) clearInterval(animationInterval);
             animationInterval = setInterval(animate, 1200);
-            playPauseButton.innerHTML = "||";
+            // playPauseButton.innerHTML = "||";
         }
         setIsPlaying(prevState => !prevState);
     }
 
-    function updateProgressBar() {
-        // Update the progress bar based on the animation index
-        progressBar.value = animationIndex;
-    }
-
-    let progressUpdater = undefined;
-
-    async function updateProgressInAnimation() {
-        // Prevent the animation from flipping if a user is dragging the progress bar
-        if (progressUpdater) {
-            progressUpdater = undefined;
-            progressUpdater = setTimeout(forwardAnimation, 0);
-            return;
-        }
-
-        // Stop the animation from progressing on its own
-        if (isPlaying) clearInterval(animationInterval);
-
-        progressUpdater = setTimeout(forwardAnimation, 0);
-
-        // let the animation progress on its own again
-        if (isPlaying) animationInterval = setInterval(animate, 1200);
-    }
-
-    async function forwardAnimation() {
-        // forward the animation to the selected frame
-        if (animationIndex > progressBar.value || progressBar.value === 0) {
-            resetAnimation();
-        }
-        while (animationIndex < progressBar.value) {
-            animate(true);
-            await new Promise((r) => setTimeout(r, 1));
-        }
-    }
-
-
     return (
         <div>
             <Animation/>
-            <ProgressBar/>
+            <div className="row justify-content-center">
+                <div className="col col--8 text--center">
+                    <input
+                        type="range"
+                        id="progressBar"
+                        className="p-0 display-inline-block m-2 align-middle"
+                        min={0}
+                        max={14}
+                        step={1}
+                        value={animationIndex}
+                    />
+                </div>
+            </div>
         </div>
     )
 }
