@@ -238,7 +238,7 @@ class Services extends React.Component {
                             {"  "}
                             <span className="hljs-keyword">return</span> success;{"\n"}
                             {"}"}
-                  </pre>
+      </pre>
                     </div>
                     <div
                         id="journal_cart"
@@ -333,7 +333,7 @@ class Services extends React.Component {
                         <pre className="margin--none padding--sm suspended" id="ticket_service">
                     <span className="hljs-keyword">async</span> reserve ={" "}
                             <span className="hljs-keyword">async</span> {"(ctx, ticketId)"}
-                    =&gt; {"{"}
+                            =&gt; {"{"}
                             {"\n"}
                             {"  "}...{"\n"}
                             {"}"}
@@ -365,6 +365,18 @@ class Services extends React.Component {
     }
 }
 
+const defaultAnimation = "<div class=\"col col--1 padding-horiz--sm\"><div id=\"ingress\" class=\"h-100\"><div id=\"placeholder\"><h6><a class=\"rpc_arrow text--center color-1 set-color smallest_font\"></a></h6></div><div id=\"ingress_call\" class=\"color-1 set-color display-none padding--sm\"><div class=\"horizontal_rpc_arrow display-inline-block text--center\"><img src=\"/img/durable_execution_animation/click.png\" class=\"text--center display-inline-block padding--sm\"><div class=\"smallest_font display-inline-block text--center color-1 set-bg set-color align-middle margin-bottom--md\">HTTP request <br> addTicket <br>(Joe, seat2B)</div>→</div></div><div id=\"response_ingress_call\" class=\"color-7 set-color display-none padding--sm\"><div class=\"horizontal_rpc_arrow display-inline-block text--center\"><img src=\"/img/durable_execution_animation/add-cart.png\" class=\"text--center display-inline-block padding--sm\"><div class=\"smaller_font display-inline-block text--center color-7 set-bg set-color align-middle\">HTTP response <br> addTicket <br> { success }</div>←</div></div></div></div><div class=\"col col--4 padding-horiz--md\"><div id=\"restate-runtime\" class=\"section_animation color-primary set-border bg-light justify-content-center margin-vert--sm padding--md\"><div class=\"text--center\"><img class=\"logo-animation img-fluid\" src=\"/img/durable_execution_animation/restate.png\"></div><h6>State</h6><div id=\"restate-state\"><p id=\"restate_user_state\" class=\"text--center smaller_font\">cartService: Joe - cart=[]</p></div><h6>Journals</h6><div id=\"restate_journal_cart\" class=\"bg-primary-line padding--sm display-none\"><p class=\"color-1 set-color set-bg text--center smaller_font\">addTicket ( Joe, seat2B )</p><div id=\"restate_journal_cart_0\" class=\"box color-1 set-bg-dark\"> ||||| </div><div id=\"restate_journal_cart_1\" class=\"box color-2 set-bg-dark display-none\">|||||</div><div id=\"restate_journal_cart_2\" class=\"box color-3 set-bg-dark display-none\">|||||</div><div id=\"restate_journal_cart_3\" class=\"box color-4 set-bg-dark display-none\">|||||</div><div id=\"restate_journal_cart_4\" class=\"box color-5 set-bg-dark display-none\">|||||</div><div id=\"restate_journal_cart_6\" class=\"box color-7 set-bg-dark display-none\">|||||</div></div><div id=\"rpc_arrow_request\" class=\"margin--sm display-none\"><div class=\"smaller_font color-2 set-color set-bg text--center smaller_font\">RPC: reserve { seat2B }</div><div class=\"vertical_rpc_arrow color-2 set-color text--center\">↓</div></div><div id=\"rpc_arrow_response\" class=\"margin--sm display-none\"><div class=\"vertical_rpc_arrow color-3 set-color text--center\">↑</div><div class=\"smaller_font color-3 set-color set-bg text--center smaller_font\">RPC: response { success }</div></div><div id=\"restate_journal_ticket\" class=\"bg-primary-line padding--sm display-none\"><p class=\"color-2 set-color set-bg text--center smaller_font\">reserve ( seat2B )</p><div id=\"restate_journal_ticket_0\" class=\"box color-2 set-bg-dark\"> ||||| </div><div id=\"restate_journal_ticket_1\" class=\"box color-3 set-bg-dark display-none\"> ||||| </div></div></div></div><div class=\"col col--7 padding-horiz--md\"><div id=\"cart_service_div\" class=\"row margin-vert--none margin-horiz--none display-none\"><div class=\"col col--1 padding-horiz--none margin-bottom--md\"><div id=\"cart_request_arrow\" class=\"horizontal_rpc_arrow text--center color-1 set-color display-none padding-horiz--none\">→</div><div id=\"cart_suspend_arrow\" class=\"horizontal_rpc_arrow text--center color-2 set-color display-none padding-horiz--none\">←</div><div id=\"cart_response_arrow\" class=\"horizontal_rpc_arrow text--center color-7 set-color display-none padding-horiz--none\">←</div></div><div class=\"col col--11 padding-horiz--none bg-light section_animation smaller_font\"><div id=\"cart_service_box\"><div class=\"flex-none border-b\"><div class=\"flex items-center h-8 padding-horiz--md\"><div class=\"ide_button\"></div><div class=\"ide_button\"></div><div class=\"ide_button\"></div><div class=\"service-name padding-horiz--sm\">CartService</div><div id=\"cart_title_suspended\" class=\"service-name color-red padding-horiz--sm\"> suspended...</div><div id=\"cart_title_invoked\" class=\"service-name color-green padding-horiz--sm display-none\"> invoked...</div></div></div><pre class=\"margin--none padding--sm suspended\" id=\"cart_service\"><span class=\"hljs-keyword\">async</span> addTicket = <span class=\"hljs-keyword\">async</span> (ctx, userId, ticketId)=&gt;{\n" +
+    "  <span class=\"hljs-keyword\">const</span> success = <span class=\"hljs-keyword\">await</span> ctx.<span class=\"hljs-title function_\">rpc</span>(ticketApi).<span class=\"hljs-title function_\">reserve</span>(ticketId);\n" +
+    "  <span class=\"hljs-keyword\">if</span> (success) {\n" +
+    "    <span class=\"hljs-keyword\">const</span> cart = <span class=\"hljs-keyword\">await</span> ctx.<span class=\"hljs-title function_\">get</span>(<span class=\"hljs-string\">\"cart\"</span>);\n" +
+    "    ctx.<span class=\"hljs-title function_\">set</span>(<span class=\"hljs-string\">\"cart\"</span>, cart.<span class=\"hljs-title function_\">push</span>(ticketId));\n" +
+    "  }\n" +
+    "  <span class=\"hljs-keyword\">return</span> success;\n" +
+    "}</pre></div><div id=\"journal_cart\" class=\"smallest_font display-none padding--sm bg-light\"><a class=\"smaller_font text--center\">Journal: <br></a><div id=\"journal_cart_0\" class=\"text--center display-inline-block color-1 set-bg set-color padding-horiz--xs\">(Joe, seat2B) <br> state(cart=[])</div><div id=\"journal_cart_1\" class=\"text--center display-inline-block display-none color-2 set-bg set-color padding-horiz--xs\">RPC reserve <br>{ seat2B }</div><div id=\"journal_cart_2\" class=\"text--center display-inline-block display-none color-3 set-bg set-color padding-horiz--xs\">RPC resp <br>{ success }</div><div id=\"journal_cart_3\" class=\"text--center display-inline-block display-none color-4 set-bg set-color padding-horiz--xs\">getState <br>cart=[]</div><div id=\"journal_cart_4\" class=\"text--center display-inline-block display-none color-5 set-bg set-color padding-horiz--xs\">setState <br>cart=[seat2B]</div><div id=\"journal_cart_6\" class=\"text--center display-inline-block display-none color-7 set-bg set-color padding-horiz--xs\">response <br>{ success }</div></div></div></div><div id=\"ticket_service_div\" class=\"row margin-vert--none margin-horiz--none display-none\"><div class=\"col col--1 padding-horiz--none margin-bottom--md\"><div id=\"ticket_request_arrow\" class=\"horizontal_rpc_arrow text--center color-2 set-color display-none\">→</div><div id=\"ticket_response_arrow\" class=\"horizontal_rpc_arrow text--center color-3 set-color display-none\">←</div></div><div class=\"col col--11 padding-horiz--none bg-light section_animation\"><div id=\"ticket_service_box\"><div class=\"flex-none border-b\"><div class=\"flex items-center h-8 padding-horiz--md\"><div class=\"ide_button\"></div><div class=\"ide_button\"></div><div class=\"ide_button\"></div><div class=\"service-name padding-horiz--sm\">TicketService:</div><div id=\"ticket_title_suspended\" class=\"service-name color-red padding-horiz--sm\"> suspended...</div><div id=\"ticket_title_invoked\" class=\"service-name color-green padding-horiz--sm display-none\"> invoked...</div></div></div><pre class=\"margin--none padding--sm suspended\" id=\"ticket_service\"><span class=\"hljs-keyword\">async</span> reserve = <span class=\"hljs-keyword\">async</span> (ctx, ticketId)=&gt; {\n" +
+    "  ...\n" +
+    "}</pre></div><div id=\"journal_ticket\" class=\"smallest_font display-none padding--sm bg-light\"><a class=\"text--center smaller_font\">Journal: <br></a><div id=\"journal_ticket_0\" class=\"text--center display-inline-block color-2 set-bg set-color padding-horiz--xs\">(seat2B) <br> state()</div><div id=\"journal_ticket_1\" class=\"text--center display-inline-block display-none color-3 set-bg set-color padding-horiz--xs\">response: <br> { success }</div></div></div></div></div>";
+
+
 class Animation extends React.Component {
     render() {
         return <div className="container">
@@ -382,18 +394,21 @@ class Animation extends React.Component {
 export default function DurableExecutionAnimation() {
     console.info("Called DurableExecutionAnimation");
 
-    const [defaultAnimation, setDefaultAnimation] = useState(null);
     const [animationIndex, setAnimationIndex] = useState(0);
-    const [cartSvcCode, setCartSvcCode] = useState(null);
     const [cartSvcCodeLine, setCartSvcCodeLine] = useState(0);
-    const [ticketSvcCode, setTicketSvcCode] = useState(null);
     const [ticketSvcCodeLine, setTicketSvcCodeLine] = useState(0);
 
+    const [timer, setTimer] = useState(null);
+
     useEffect(() => {
-        // save what the animation looks like on the first step so we can reset it later
-        setDefaultAnimation(document.getElementById("animation").innerHTML);
-        setCartSvcCode(document.getElementById("cart_service").innerHTML);
-        setTicketSvcCode(document.getElementById("ticket_service").innerHTML);
+        console.info("Called useEffect");
+        if(timer !== null) {
+            clearInterval(timer);
+            setTimer(null);
+        }
+        setTimer(setInterval(animate, 2000));
+        const animationElement = document.getElementById("animation");
+        console.info(animationElement.innerHTML);
     }, []);
 
     function highlightNextCartSvcCodeLine() {
@@ -401,7 +416,8 @@ export default function DurableExecutionAnimation() {
         // Update cart service code highlighting
         // Update state for journal element visibility
         setCartSvcCodeLine(prevLine => {
-            document.getElementById("cart_service").innerHTML = cartSvcCode.split("\n")
+            document.getElementById("cart_service").innerHTML = document.getElementById("cart_service")
+                .innerHTML.split("\n")
                 .map((line, index) =>
                     index === prevLine
                         ? `<mark className="code-highlight color-${prevLine + 1} set-bg">${line}</mark>`
@@ -421,7 +437,8 @@ export default function DurableExecutionAnimation() {
         // Update ticket service code highlighting
         // Update state for journal element visibility
         setTicketSvcCodeLine(prevLine => {
-            document.getElementById("ticket_service").innerHTML = ticketSvcCode.split("\n")
+            document.getElementById("ticket_service").innerHTML = document.getElementById("ticket_service")
+                .innerHTML.split("\n")
                 .map((line, index) =>
                     index === prevLine
                         ? `<mark className="code-highlight color-${prevLine + 1} set-bg">${line}</mark>`
@@ -441,7 +458,8 @@ export default function DurableExecutionAnimation() {
         setAnimationIndex(0)
         setCartSvcCodeLine(0)
         setTicketSvcCodeLine(0)
-        document.getElementById("animation").innerHTML = defaultAnimation;
+        const animationElement = document.getElementById("animation");
+        animationElement.innerHTML = defaultAnimation;
     }
 
     function animate(fastForwarding = false) {
@@ -449,6 +467,8 @@ export default function DurableExecutionAnimation() {
             console.info("Called animate for animation index ", prevState);
             switch (prevState) {
                 case 0: {
+                    // Store default animation
+
                     // Show the ingress call
                     console.info("Animation step 0 Show the ingress call")
                     document
@@ -679,9 +699,6 @@ export default function DurableExecutionAnimation() {
         });
     }
 
-
-
-    setTimeout(animate, 2000)
 
     return (
         <div>
