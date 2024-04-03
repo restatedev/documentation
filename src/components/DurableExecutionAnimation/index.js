@@ -458,6 +458,7 @@ export default function DurableExecutionAnimation() {
             case needToExecute(0): {
                 // Show the ingress call
                 console.info("Animation step 0 Show the ingress call")
+                document.getElementById("animation_explanation").innerHTML = "An HTTP request arrives at Restate.";
                 document
                     .getElementById("ingress_call")
                     .classList.remove("display-none");
@@ -466,6 +467,8 @@ export default function DurableExecutionAnimation() {
             case needToExecute(1): {
                 // Create journal in Restate
                 console.info("Animation step 1 Create journal in Restate")
+                document.getElementById("animation_explanation").innerHTML = "Each incoming request gets persisted by the Restate Server.</br>" +
+                    "The server creates a new journal and adds the request details to it.";
                 document
                     .getElementById("restate_journal_cart")
                     .classList.remove("display-none");
@@ -474,6 +477,9 @@ export default function DurableExecutionAnimation() {
             case needToExecute(2): {
                 // Invoke the service
                 console.info("Animation step 2 Invoke the service")
+                document.getElementById("animation_explanation").innerHTML = "Then the server invokes the handler that was specified in the request: the reserve handler of the CartService.</br>" +
+                    "The server knows on which endpoint the handler is served because the handlers on that endpoint were registered in Restate earlier on.</br></br>" +
+                    "The K/V state of the virtual object is supplied together with the request.";
                 document
                     .getElementById("cart_service_div")
                     .classList.remove("display-none");
@@ -496,6 +502,10 @@ export default function DurableExecutionAnimation() {
             case needToExecute(3): {
                 // Execute first line
                 console.info("Animation step 3 Execute first line")
+                document.getElementById("animation_explanation").innerHTML = "The handler starts executing. Every time the code uses the Restate context `ctx`, the SDK notifies the Restate server of the execution of this action.</br>" +
+                    "The Restate server then adds this action as a new entry to the journal.</br>" +
+                    "Once an action has made it into the journal, it will never get re-executed on retries but just resolved with the journaled result.</br></br>" +
+                    "The first action of the handler is an RPC call to reserve handler of the TicketService.";
                 highlightNextCartSvcCodeLine()
                 document
                     .getElementById("cart_request_arrow")
@@ -504,6 +514,7 @@ export default function DurableExecutionAnimation() {
             }
             case needToExecute(4): {
                 console.info("Animation step 4")
+                document.getElementById("animation_explanation").innerHTML = "The RPC call gets proxied via Restate.";
                 document
                     .getElementById("cart_suspend_arrow")
                     .classList.remove("display-none");
@@ -512,6 +523,8 @@ export default function DurableExecutionAnimation() {
             case needToExecute(5): {
                 // suspension
                 console.info("Animation step 5 suspension")
+                document.getElementById("animation_explanation").innerHTML = "Restate creates a new journal for the RPC call and adds the request data to it. </br></br>" +
+                    "In the meantime, the CartService has suspended its execution. Restate lets handlers suspend whenever they are waiting for something that gets managed by Restate (e.g. RPC, timers, awakeables). This is especially useful when running handlers on FaaS platforms such as AWS Lambda, because you don't pay for the wait time. "
                 document.getElementById("journal_cart").classList.add("display-none");
                 document.getElementById("cart_service").classList.add("suspended");
                 document
@@ -536,6 +549,7 @@ export default function DurableExecutionAnimation() {
             case needToExecute(6): {
                 // start executing ticket service
                 console.log("Animation step 6 start executing ticket service")
+                document.getElementById("animation_explanation").innerHTML = "Restate invokes the reserve handler of the TicketService and supplies the request data and the state of that virtual object.";
                 document
                     .getElementById("ticket_service_div")
                     .classList.remove("display-none");
@@ -558,6 +572,7 @@ export default function DurableExecutionAnimation() {
             case needToExecute(7): {
                 // get response ticket service
                 console.log("Animation step 7 get response ticket service")
+                document.getElementById("animation_explanation").innerHTML = "Once the reserve handler has executed successfully, the response is logged in the journal of the CartService.";
                 highlightNextTicketSvcCodeLine();
                 document
                     .getElementById("ticket_request_arrow")
@@ -569,6 +584,7 @@ export default function DurableExecutionAnimation() {
             }
             case needToExecute(8): {
                 console.log("Animation step 8")
+                document.getElementById("animation_explanation").innerHTML = "The response of the reserve handler is then also logged in the journal of the addTicket handler. Restate now re-invokes the addTicket handler with its new journal, including the RPC response.";
                 highlightNextCartSvcCodeLine()
                 document
                     .getElementById("rpc_arrow_request")
@@ -597,6 +613,7 @@ export default function DurableExecutionAnimation() {
             }
             case needToExecute(9): {
                 console.log("Animation step 9")
+                document.getElementById("animation_explanation").innerHTML = "The addTicket handler continues its execution.";
                 document
                     .getElementById("restate_journal_ticket")
                     .classList.add("display-none");
@@ -623,11 +640,13 @@ export default function DurableExecutionAnimation() {
             }
             case needToExecute(10): {
                 console.log("Animation step 10");
+                document.getElementById("animation_explanation").innerHTML = "The addTicket handler accesses the K/V state for the specific cart. This state is locally available since Restate transferred it together with the request. </br> </br> Every action that is done on the Restate context ctx, gets added to the journal of the invocation.";
                 highlightNextCartSvcCodeLine();
                 if(requestedAnimationIndex === 10) break;
             }
             case needToExecute(11): {
                 console.log("Animation step 11")
+                document.getElementById("animation_explanation").innerHTML = "The handler stores a new state entry in the K/V store. The state changes are committed together with the rest of the execution progress in the journal. This makes sure that the state is always consistent with the progress.";
                 highlightNextCartSvcCodeLine()
                 // Set the state
                 document.getElementById("restate_user_state").innerHTML =
@@ -636,6 +655,7 @@ export default function DurableExecutionAnimation() {
             }
             case needToExecute(12): {
                 console.log("Animation step 12")
+                document.getElementById("animation_explanation").innerHTML = "Finally, the handler finishes the execution. The journal with the response is transferred to Restate.";
                 highlightNextCartSvcCodeLine();
                 highlightNextCartSvcCodeLine();
                 document
@@ -648,6 +668,7 @@ export default function DurableExecutionAnimation() {
             }
             case needToExecute(13): {
                 console.log("Animation step 13")
+                document.getElementById("animation_explanation").innerHTML = "Finally, the handler finishes the execution. The journal with the response is transferred to Restate.";
                 document.getElementById("journal_cart").classList.add("display-none");
                 document
                     .getElementById("cart_response_arrow")
@@ -666,6 +687,7 @@ export default function DurableExecutionAnimation() {
             }
             case needToExecute(14): {
                 console.log("Animation step 14")
+                document.getElementById("animation_explanation").innerHTML = "Once Restate has persisted the response in the journal, it responds to the caller, and the invocation has finished successfully.";
                 document.getElementById("ingress_call").classList.add("display-none");
                 document
                     .getElementById("response_ingress_call")
@@ -674,6 +696,7 @@ export default function DurableExecutionAnimation() {
             }
             case needToExecute(15): {
                 console.log("Animation step 15 RESET")
+                document.getElementById("animation_explanation").innerHTML = "Restate.";
                 resetAnimation();
                 break;
             }
@@ -700,6 +723,7 @@ export default function DurableExecutionAnimation() {
                     <Services/>
                 </div>
             </div>
+            <p id="animation_explanation">Move the slider to see how an invocation get executed with Durable Execution.</p>
             <div className="row justify-content-center">
                 <div className="col col--8 text--center">
                     <input

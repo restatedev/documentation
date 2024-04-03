@@ -22,30 +22,7 @@ When the Restate server triggers a retry, it sends the progress log to the SDK, 
 
 <DurableExecutionAnimation/>
 
-<details>
-<summary>How does Restate implement Durable Execution?</summary>
-
-The animation above shows Durable Execution during a failure-free scenario.
-Each incoming request gets persisted by the Restate Server.
-The server creates a new journal and adds the request details to it.
-
-Then the server invokes the handler that was specified in the request.
-The server knows on which endpoint the handler is served because the handlers on that endpoint were registered in Restate earlier on (see [Registration](/operate/registration)).
-
-The handler starts executing. Every time the code uses the Restate context `ctx`, the SDK notifies the Restate server of the execution of this action.
-The Restate server then adds this action as a new entry to the journal.
-Once an action has made it into the journal, it will never get re-executed on retries but just resolved with the journaled result.
-
-RPC calls to other services also go via Restate. You can see that when the CartService invokes the TicketService to reserve the ticket, the request gets proxied by Restate.
-This request again gets persisted and leads to the creation of a new journal in the Restate server.
-Restate executes the TicketService reserve handler and then proxies the response again back to the CartService.
-The CartService receives the response and continues execution until it has finally succeeded.
 
 In case of a failure (e.g. timeout,  infrastructure crash, network glitch), Restate will retry the execution by invoking the handler again and sending over the latest version of the journal.
 The handler then starts executing again and whenever it encounters an action on the Restate context, it will skip execution and will inject the response it finds in the journal.
 This way the handler can recover up to the point where it crashed.
-
-This mechanism is also used for efficiency gains when running on function-as-a-service (FaaS) platform such as AWS Lambda.
-If the cart service would be deployed on a FaaS platform, then Restate would let the function suspend whenever it is waiting for something that gets managed by Restate (e.g. RPC, timers, awakeables).
-Once Restate has received the response or once the timer has fired, Restate reinvokes the function, sends over the partial journal and lets the code execution continue where it left off.
-</details>
