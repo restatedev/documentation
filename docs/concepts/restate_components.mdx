@@ -1,7 +1,10 @@
 ---
-sidebar_position: 2
+sidebar_position: 4
 description: ""
 ---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # Components
 
@@ -9,14 +12,68 @@ Handlers are bundled into components. There are two types of components in Resta
 
 Components run like regular RPC services (e.g. a NodeJS app in a Docker container).
 Components can be written in any language for which there is an SDK available (currently [TypeScript](/category/typescript-sdk) and [Java](/category/java-sdk)).
-There are two types of components: services and virtual objects.
 
 ## Services
 Services expose a collection of handlers. The handlers of services are independent, stateless, and can be invoked concurrently.
 
-**TODO: Add basic example for each language:**
-- Code example: handler + service + endpoint
-- Example of calling the service: curl request / typed client
+These handlers use the regular code and control flow, no custom DSLs.
+
+The handlers in services are durable functions that take part in durable execution.
+They run to the end, even in the presence of failures.
+Restate takes care of retries and recovers the handler to the point where it failed.
+
+You can use services for example for code that updates different systems and needs to make sure all updates are applied.
+During retries, the service will not reapply the same update twice:
+
+<Tabs groupId="sdk" queryString>
+    <TabItem value="ts" label="TypeScript">
+
+        ```typescript role_update.ts
+        CODE_LOAD::ts/src/concepts/services.ts#<start_service>-<end_service>
+        ```
+
+    </TabItem>
+    <TabItem value="java" label="Java">
+
+        ```java
+        ```
+
+    </TabItem>
+</Tabs>
+
+You can then call this service:
+
+<Tabs groupId="sdk" queryString>
+    <TabItem value="ts" label="TypeScript">
+
+        ```typescript
+        CODE_LOAD::ts/src/concepts/services.ts#<start_call_service>-<end_call_service>
+        ```
+
+    </TabItem>
+    <TabItem value="java" label="Java">
+
+        ```java
+        GreeterRestateClient client = GreeterRestate.newClient(ctx);
+        GreetResponse response = client.greet(request).await();
+        ```
+
+    </TabItem>
+    <TabItem value="bash" label="Bash">
+
+        ```bash
+        curl localhost:8080/roleUpdate/applyRoleUpdate -H 'content-type: application/json' -d \
+        '{
+            "request": {
+                "userId": "Sam Beckett",
+                "role": { "roleKey": "content-manager", "roleDescription": "Add/remove documents" },
+                "permissions" : [{ "permissionKey": "add", "setting": "allow" }]
+            }
+        }'
+        ```
+
+    </TabItem>
+</Tabs>
 
 
 ## Virtual objects
@@ -28,13 +85,66 @@ The handlers of a virtual object can read and write to the state of the object.
 To ensure consistent writes to the state, Restate provides concurrency guarantees per key.
 At most one handler can execute at a time for a given key.
 
-**TODO: Add basic example for each language:**
-- Code example that uses state: handler + object + endpoint
-- Example of calling the object: curl request / typed client
+Virtual Objects have their state locally accessible without requiring any database connection or lookup.
+Restate delivers the state together with the request to the virtual object.
+State is exclusive, and atomically committed with the method execution.
+
+<Tabs groupId="sdk" queryString>
+    <TabItem value="ts" label="TypeScript">
+
+        ```typescript greeter.ts
+        CODE_LOAD::ts/src/concepts/virtual_objects.ts#<start_virtual_object>-<end_virtual_object>
+        ```
+
+    </TabItem>
+    <TabItem value="java" label="Java">
+
+        ```java
+        ```
+
+    </TabItem>
+</Tabs>
+
+You can then call this virtual object:
+
+<Tabs groupId="sdk" queryString>
+    <TabItem value="ts" label="TypeScript">
+
+        ```typescript
+        CODE_LOAD::ts/src/concepts/virtual_objects.ts#<start_call_virtual_object>-<end_call_virtual_object>
+        ```
+
+    </TabItem>
+    <TabItem value="java" label="Java">
+
+        ```java
+        GreeterRestateClient client = GreeterRestate.newClient(ctx);
+        GreetResponse response = client.greet(request).await();
+        ```
+
+    </TabItem>
+    <TabItem value="bash" label="Bash">
+
+        ```bash
+        curl localhost:8080/greeter/greet   -H 'content-type: application/json' -d '{ "key": "Mary" }'
+        curl localhost:8080/greeter/greet   -H 'content-type: application/json' -d '{ "key": "Barack" }'
+        curl localhost:8080/greeter/ungreet -H 'content-type: application/json' -d '{ "key": "Mary" }'
+        ```
+
+    </TabItem>
+</Tabs>
 
 
 ## When to use what?
 
 Use **services** when you don't need state or concurrency limits, but just have a function that you want to execute durably.
+For example:
+- Keeping multiple systems in sync
+- To benefit from idempotency
+- ...
 
 Use **virtual objects** when you need keyed concurrency guarantees, and if you want to store application state in Restate.
+For example:
+- Atomic state machines
+- Digital twin
+- ...

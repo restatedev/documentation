@@ -408,7 +408,6 @@ export default function DurableExecutionAnimation() {
         }
         setTimer(setInterval(animate, 2000));
         const animationElement = document.getElementById("animation");
-        console.info(animationElement.innerHTML);
     }, []);
 
     function highlightNextCartSvcCodeLine() {
