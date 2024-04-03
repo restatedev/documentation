@@ -4,7 +4,7 @@ import { MiniTerminalTransitions } from "@code-hike/mini-terminal";
 export default function TerminalAnimation({listOfSteps}) {
     const [progress, setProgress] = React.useState(0);
     return (
-        <div style={{ width: 500, margin: "50px auto" }}>
+        <div className="terminal" style={{ width: 500, margin: "50px auto" }}>
             <MiniTerminalTransitions
                 title="terminal"
                 height={300}

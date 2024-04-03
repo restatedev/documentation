@@ -16,7 +16,7 @@ function Feature({title, iconPath, description}: FeatureItem) {
           <img className={styles.featureSvg} src={iconPath} />
       </div>
       <div className="text--center padding-horiz--md">
-        <h4>{title}</h4>
+        <h6>{title}</h6>
         <p>{description}</p>
       </div>
     </div>

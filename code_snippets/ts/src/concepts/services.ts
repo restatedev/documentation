@@ -1,24 +1,21 @@
 // <start_service>
 import * as restate from "@restatedev/restate-sdk";
 
-const roleUpdateService = restate.service({
+export const roleUpdateService = restate.service({
     name: "roleUpdate",
     handlers: {
         applyRoleUpdate: async (ctx: restate.Context, update: UpdateRequest) => {
             // parameters are durable across retries
             const { userId, role, permissions } = update;
 
-            // Apply a change to one system (e.g., DB upsert, API call, ...).
-            // The side effect persists the result with a consensus method,
-            // so any later code relies on a deterministic result.
+            // Apply a change to one system (e.g., DB upsert, API call, ...) and persist the result in Restate.
             const success = await ctx.sideEffect(() => applyUserRole(userId, role));
             if (!success) {
                 return;
             }
 
-            // Simply loop over the array or permission settings.
-            // Each operation through the Restate context is journaled,
-            // and recovery restores results of previous operations from the journal without re-executing them.
+            // Loop over the permission settings and
+            // journal each operation in Restate to avoid re-execution during retries.
             for (const permission of permissions) {
                 await ctx.sideEffect(() => applyPermission(userId, permission));
             }
@@ -41,15 +38,7 @@ const someHandler = async (ctx: restate.ObjectContext, input: { greeting?: strin
     // One-way call:
     ctx.serviceSendClient(roleUpdateService).applyRoleUpdate(request);
 // <end_call_service>
-}
-
-
-
-// When invoking this function (see below for sample request), it will apply all
-// role and permission changes, regardless of crashes.
-// You will see all lines of the type "Applied permission remove:allow for user Sam Beckett"
-// in the log, across all retries. You will also see that re-tries will not re-execute
-// previously completed actions again, so each line occurs only once.
+};
 
 export type UserRole = {
     roleKey: string;

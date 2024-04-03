@@ -1,7 +1,7 @@
 // <start_virtual_object>
 import * as restate from "@restatedev/restate-sdk";
 
-const greeterObject = restate.object({
+export const greeterObject = restate.object({
     name: "greeter",
     handlers: {
         greet: async (ctx: restate.ObjectContext, request: { greeting?: string }) => {

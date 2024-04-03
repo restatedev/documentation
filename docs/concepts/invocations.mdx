@@ -5,12 +5,13 @@ description: ""
 
 import TerminalAnimation from "../../src/components/TerminalAnimation";
 import FeatureWidget from "../../src/components/FeatureWidget";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # Invocations
 
 An invocation is a request to execute a handler that is part of either a service, or a virtual object.
 
-## Invoking a handler
 There are three ways to invoke a handler:
 
 
@@ -19,27 +20,27 @@ There are three ways to invoke a handler:
         title: 'HTTP requests',
         iconPath: '/img/http-icon.svg',
         description: (
-            <>
+            <p class="font-size-90">
                 Send an HTTP request to the Restate Server (ingress port <code>8080</code>), with the handler name in the path, and the payload in the body.
-            </>
+            </p>
         ),
     },
     {
         title: 'Programmatically',
         iconPath: '/img/code-icon.svg',
         description: (
-            <>
+            <p class="font-size-90">
                 From within a Restate handler, by using the SDK. Or via embedded typed clients.
-            </>
+            </p>
         ),
     },
     {
         title: 'Kafka events',
         iconPath: '/img/kafka-icon.svg',
         description: (
-            <>
+            <p class="font-size-90">
                 Restate subscribes to a Kafka topic, and invokes a handler should for each message that arrives.
-            </>
+            </p>
         ),
     },
 ]}/>
@@ -58,81 +59,112 @@ Invocations get a unique identifier. This identifier is used to track the progre
 
 [//]: # ([<img class="sdkicon" src="/img/kafka-icon.svg" width="26" height="26" alt="Kafka Documentation"></img>]&#40;/concepts/invocations&#41;)
 
+<Tabs groupId="sdk" queryString>
+    <TabItem value="ts" label="TypeScript">
 
-<CH.Spotlight className="durable-promises">
+        <CH.Spotlight className="durable-promises">
 
-    <CH.Code rows={2}>
+            ```typescript
+            CODE_LOAD::ts/src/concepts/invocations.ts#<start_rpc>-<end_rpc>
+            ```
 
-        ```typescript TypeScript
-        await ctx.rpc(myGreeterApi).greet("Restate");
-        ```
+            ---
 
-        ```java Java
-        GreeterRestateClient client = GreeterRestate.newClient(ctx);
-        GreetResponse response = client.greet(request).await();
-        ```
+            **<mark class="accent">Request-response</mark> invocations** allow you to wait on a response from the handler.
 
-        ```bash Bash
-        curl localhost:8080/myservice/hello \
+            ---
+
+            ```typescript
+            CODE_LOAD::ts/src/concepts/invocations.ts#<start_one_way_call>-<end_one_way_call>
+            ```
+
+            **<mark class="accent">One-way</mark> invocations** allow you to trigger an asynchronous action.
+            This returns an invocation ID with which you can retrieve the result of the invocation later, if desired.
+
+            ---
+
+            ```typescript
+            CODE_LOAD::ts/src/concepts/invocations.ts#<start_delayed_call>-<end_delayed_call>
+            ```
+
+            **<mark class="accent">Delayed</mark> invocations** allow you to schedule an invocation for a later point in time.
+
+        </CH.Spotlight>
+
+    </TabItem>
+    <TabItem value="java" label="Java">
+
+        <CH.Spotlight className="durable-promises">
+
+            ```java
+            GreeterRestateClient client = GreeterRestate.newClient(ctx);
+            GreetResponse response = client.greet(request).await();
+            ```
+
+            ---
+
+            **<mark class="accent">Request-response</mark> invocations** are used when you want to wait on a response from the handler.
+
+            ---
+
+            ```java
+            GreeterRestateClient client = GreeterRestate.newClient(ctx);
+            client.oneWay().greet(request);
+            ```
+
+            **<mark class="accent">One-way</mark> invocations** are used when you don't want to wait on a response from the handler, but just want to trigger an asynchronous action.
+            This returns an invocation ID with which you can retrieve the result of the invocation later, if desired.
+
+            ---
+
+            ```java
+            GreeterRestateClient client = GreeterRestate.newClient(ctx);
+            client.oneWay().delay(1000).greet(request);
+            ```
+
+            **<mark class="accent">Delayed</mark> invocations** are used when you want to schedule a handler to be invoked at a later time.
+
+        </CH.Spotlight>
+
+    </TabItem>
+    <TabItem value="bash" label="Bash">
+
+        <CH.Spotlight className="durable-promises">
+
+            ```bash
+            curl localhost:8080/myservice/hello \
             -H 'content-type: application/json' \
             -d '{"request": "Restate"}'
-        ```
+            ```
 
-    </CH.Code>
+            ---
 
-    ---
+            **<mark class="accent">Request-response</mark> invocations** are used when you want to wait on a response from the handler.
 
-    **<mark class="accent">Request-response</mark> invocations** are used when you want to wait on a response from the handler.
+            ---
 
-    ---
-
-    <CH.Code rows={2}>
-
-        ```typescript TypeScript
-        ctx.send(myGreeterApi).greet("Restate");
-        ```
-
-        ```java Java
-        GreeterRestateClient client = GreeterRestate.newClient(ctx);
-        GreetResponse response = client.oneWay().greet(request);
-        ```
-
-        ```bash Bash
-        curl localhost:8080/myservice/hello \
+            ```bash
+            curl localhost:8080/myservice/hello \
             -H 'content-type: application/json' \
             -d '{"request": "Restate"}'
-        ```
+            ```
 
-    </CH.Code>
+            **<mark class="accent">One-way</mark> invocations** are used when you don't want to wait on a response from the handler, but just want to trigger an asynchronous action.
+            This returns an invocation ID with which you can retrieve the result of the invocation later, if desired.
 
-    **<mark class="accent">One-way</mark> invocations** are used when you don't want to wait on a response from the handler, but just want to trigger an asynchronous action.
-    This returns an invocation ID with which you can retrieve the result of the invocation later, if desired.
+            ---
 
-
-    ---
-
-    <CH.Code rows={2}>
-
-        ```typescript TypeScript
-        ctx.sendDelayed(myGreeterApi, 10000).greet("Restate");
-        ```
-
-        ```java Java
-        GreeterRestateClient client = GreeterRestate.newClient(ctx);
-        GreetResponse response = client.oneWay().delay(1000).greet(request);
-        ```
-
-        ```bash Bash
-        curl localhost:8080/myservice/hello \
+            ```bash
+            curl localhost:8080/myservice/hello \
             -H 'content-type: application/json' \
             -d '{"request": "Restate"}'
-        ```
+            ```
 
-    </CH.Code>
+            **<mark class="accent">Delayed</mark> invocations** are used when you want to schedule a handler to be invoked at a later time.
 
-    **<mark class="accent">Delayed</mark> invocations** are used when you want to schedule a handler to be invoked at a later time.
-
-</CH.Spotlight>
+        </CH.Spotlight>
+    </TabItem>
+</Tabs>
 
 ## Idempotent invocations
 You can add an idempotency key in the header of the request to make an inbound invocation idempotent.
