@@ -714,7 +714,7 @@ export default function DurableExecutionAnimation() {
 
     return (
         <div>
-            <div className="container">
+            <div id="animation_container" className="container justify-content-center">
                 <div id="animation"
                      className="row justify-content-center color-primary padding--md"
                 >
@@ -722,14 +722,11 @@ export default function DurableExecutionAnimation() {
                     <Runtime/>
                     <Services/>
                 </div>
-            </div>
-            <p id="animation_explanation">Move the slider to see how an invocation get executed with Durable Execution.</p>
-            <div className="row justify-content-center">
-                <div className="col col--8 text--center">
+                <p id="animation_explanation" className="padding--md"><mark className="red"> ⏩ Move the slider to see how an invocation get executed with Durable Execution. </mark></p>
+                <div id="progressBarContainer">
                     <input
                         type="range"
                         id="progressBar"
-                        className="padding--none display-inline-block margin--sm align-middle"
                         min={0}
                         max={14}
                         step={1}
