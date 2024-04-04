@@ -13,10 +13,10 @@ type FeatureItem = {
 function NavigationCard({title, category, stepLabel, description}: FeatureItem) {
     return (
         <div className={clsx('col col--4')}>
-            <div className={styles.feature}>
+            <div className={(category === "first_time") ? styles.featureFirstTime : styles.featureFamiliar}>
                 <div className={(category === "first_time") ? styles.circleFirstTime : styles.circleFamiliar}>{stepLabel}</div>
                 <h4 className="margin--xs">{title}</h4>
-                <p className={styles.description}><i>{description}</i></p>
+                <p className={styles.description}>{description}</p>
             </div>
         </div>
     );
@@ -24,7 +24,7 @@ function NavigationCard({title, category, stepLabel, description}: FeatureItem) 
 
 export default function NavigationCards({ features }): JSX.Element {
     return (
-        <section className={styles.features}>
+        <section>
             <div className="container">
                 <div className="row">
                     {features.map((props, idx) => (
