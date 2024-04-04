@@ -388,15 +388,6 @@ export default function DurableExecutionAnimation() {
 
     const [timer, setTimer] = useState(null);
 
-    // useEffect(() => {
-    //     console.info("Called useEffect");
-    //     if(timer !== null) {
-    //         clearInterval(timer);
-    //         setTimer(null);
-    //     }
-    //     setTimer(setInterval(animate, 2000));
-    // }, []);
-
     function highlightNextCartSvcCodeLine() {
         console.info("Called highlightNextCartSvcCodeLine");
         // Update cart service code highlighting
@@ -722,7 +713,6 @@ export default function DurableExecutionAnimation() {
                     <Runtime/>
                     <Services/>
                 </div>
-                <p id="animation_explanation" className="padding--md"><mark className="red"> ⏩ Move the slider to see how an invocation get executed with Durable Execution. </mark></p>
                 <div id="progressBarContainer">
                     <input
                         type="range"
@@ -742,6 +732,7 @@ export default function DurableExecutionAnimation() {
                         }}
                     />
                 </div>
+                <p id="animation_explanation" className="padding--sm padding-left--md smaller_font"><mark className="purple"> ⏩ Move the slider to see how an invocation get executed with Durable Execution. </mark></p>
             </div>
         </div>
     )
