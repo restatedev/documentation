@@ -15,7 +15,7 @@ function NavigationCard({title, category, stepLabel, description}: FeatureItem) 
         <div className={clsx('col col--4')}>
             <div className={(category === "first_time") ? styles.featureFirstTime : styles.featureFamiliar}>
                 <div className={(category === "first_time") ? styles.circleFirstTime : styles.circleFamiliar}>{stepLabel}</div>
-                <h4 className="margin--xs">{title}</h4>
+                <h4 className={(category === "first_time") ? styles.h4FirstTime : styles.h4Familiar}>{title}</h4>
                 <p className={styles.description}>{description}</p>
             </div>
         </div>
