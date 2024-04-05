@@ -97,32 +97,33 @@ Invocations get a unique identifier. This identifier is used to track the progre
         <CH.Spotlight className="durable-promises">
 
             ```java
-            GreeterRestateClient client = GreeterRestate.newClient(ctx);
-            GreetResponse response = client.greet(request).await();
+            CODE_LOAD::java/src/main/java/concepts/components/Invocations.java#<start_rpc>-<end_rpc>
             ```
-
-            ---
-
-            **<mark class="accent">Request-response</mark> invocations** are used when you want to wait on a response from the handler.
 
             ---
 
             ```java
-            GreeterRestateClient client = GreeterRestate.newClient(ctx);
-            client.oneWay().greet(request);
+            CODE_LOAD::java/src/main/java/concepts/components/Invocations.java#<start_rpc>-<end_rpc>
             ```
 
-            **<mark class="accent">One-way</mark> invocations** are used when you don't want to wait on a response from the handler, but just want to trigger an asynchronous action.
+            **<mark class="accent">Request-response</mark> invocations** allow you to wait on a response from the handler.
+
+            ---
+
+            ```java
+            CODE_LOAD::java/src/main/java/concepts/components/Invocations.java#<start_one_way_call>-<end_one_way_call>
+            ```
+
+            **<mark class="accent">One-way</mark> invocations** allow you to trigger an asynchronous action.
             This returns an invocation ID with which you can retrieve the result of the invocation later, if desired.
 
             ---
 
             ```java
-            GreeterRestateClient client = GreeterRestate.newClient(ctx);
-            client.oneWay().delay(1000).greet(request);
+            CODE_LOAD::java/src/main/java/concepts/components/Invocations.java#<start_delayed_call>-<end_delayed_call>
             ```
 
-            **<mark class="accent">Delayed</mark> invocations** are used when you want to schedule a handler to be invoked at a later time.
+            **<mark class="accent">Delayed</mark> invocations** allow you to schedule an invocation for a later point in time.
 
         </CH.Spotlight>
 
@@ -149,7 +150,7 @@ Invocations get a unique identifier. This identifier is used to track the progre
             -d '{"request": "Restate"}'
             ```
 
-            **<mark class="accent">One-way</mark> invocations** are used when you don't want to wait on a response from the handler, but just want to trigger an asynchronous action.
+            **<mark class="accent">One-way</mark> invocations** allow you to trigger an asynchronous action.
             This returns an invocation ID with which you can retrieve the result of the invocation later, if desired.
 
             ---
@@ -160,7 +161,8 @@ Invocations get a unique identifier. This identifier is used to track the progre
             -d '{"request": "Restate"}'
             ```
 
-            **<mark class="accent">Delayed</mark> invocations** are used when you want to schedule a handler to be invoked at a later time.
+            **<mark class="accent">Delayed</mark> invocations** allow you to schedule an invocation for a later point in time.
+
 
         </CH.Spotlight>
     </TabItem>

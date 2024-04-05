@@ -1,6 +1,6 @@
 import * as restate from "@restatedev/restate-sdk";
 import {ObjectContext} from "@restatedev/restate-sdk";
-
+import {deliveryManager, Order, paymentClnt, restaurant, Status} from "./utils";
 
 // <start_here>
 // focus
@@ -41,23 +41,3 @@ async function process(ctx: ObjectContext, order: Order) {
 // focus
 }
 // <end_here>
-
-
-export enum Status {
-    NEW = "NEW",
-    CREATED = "CREATED",
-    SCHEDULED = "SCHEDULED",
-    IN_PREPARATION = "IN_PREPARATION",
-    SCHEDULING_DELIVERY = "SCHEDULING_DELIVERY",
-    WAITING_FOR_DRIVER = "WAITING_FOR_DRIVER",
-    IN_DELIVERY = "IN_DELIVERY",
-    DELIVERED = "DELIVERED",
-    REJECTED = "REJECTED",
-    CANCELLED = "CANCELLED",
-}
-
-type Order = {
-    id: string;
-    totalCost: number;
-    deliveryDelay: number;
-}
