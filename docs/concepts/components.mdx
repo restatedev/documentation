@@ -5,11 +5,22 @@ description: ""
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import FeatureWidget from "../../src/components/FeatureWidget";
 
 # Components
 
-Handlers are bundled into components.
 
+This is what a Restate application looks like from a helicopter view:
+
+<center>
+    <img src="/img/restate-app.svg" alt="Application overview" width="50%"/>
+</center>
+
+1. **Restate Server**: The server intercepts incoming requests and drives their execution till the end.
+2. **Components**: Contain the handlers which process incoming requests.
+3. **Invocation**: A request to execute a handler that is part of either a service, or a virtual object.
+
+As you can see, handlers are bundled into components.
 Components run like regular RPC services (e.g. a NodeJS app in a Docker container).
 Components can be written in any language for which there is an SDK available (currently [TypeScript](/category/typescript-sdk) and [Java](/category/java-sdk)).
 
@@ -151,3 +162,17 @@ You can then call this virtual object:
 </Tabs>
 
 </details>
+
+## Restate Server
+In between the components, sits the Restate Server. It proxies invocations to the components and manages their lifecycle.
+
+The Restate Server is written in Rust, to be self-contained and resource-efficient.
+It has an event-driven foundation. You can put it in the hot, latency-sensitive paths of your applications.
+
+The main feature the Restate Server provides is Durable Execution. We dive into this in a [later section](/concepts/durable_execution).
+
+The Restate Server runs as a single binary with zero dependencies. It runs with low operational overhead on any platform, also locally.
+To deploy the Restate Server, have a look at these deployment guides:
+- [Kubernetes](/deploy/kubernetes)
+- [EC2](/deploy/lambda/self-hosted)
+- [Restate Cloud](/deploy/restate_cloud) (Managed service)
