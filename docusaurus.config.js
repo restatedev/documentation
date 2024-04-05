@@ -61,17 +61,15 @@ const config = {
             [codeLoaderPlugin, {
               codeSnippets: {},
             }],
-            [remarkCodeHike, { theme: "github-light" }],
-          ],
-          remarkPlugins: [
             [
               variableInjector, // replaces eg VAR::RESTATE_VERSION with config strings
               {
                 replacements: variablesReplacements,
               },
             ],
-
+            [remarkCodeHike, { theme: "github-light" }],
           ],
+          remarkPlugins: [],
           routeBasePath: "/", // Set this value to '/'.
           sidebarPath: require.resolve("./sidebars.js"),
           // Please change this to your repo.
