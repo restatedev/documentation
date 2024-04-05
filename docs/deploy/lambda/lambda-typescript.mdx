@@ -206,9 +206,6 @@ The body is the base64 encoded string of the response, and stands for `{"value":
 You don't necessarily need to run the Restate runtime on AWS, but it does need to be able to obtain credentials to invoke your Lambda.
 You can run the Restate runtime locally in a Docker container to test your Lambda function, using your local AWS creds (defined in ~/.aws).
 
-If you use SSO, the AWS Rust SDK currently requires a minor change to your ~/.aws/config to support this;
-see https://github.com/awslabs/aws-sdk-rust/issues/703#issuecomment-1811480196.
-
 ```shell
 docker run -e AWS_PROFILE -v ~/.aws/:/root/.aws --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
 ```
