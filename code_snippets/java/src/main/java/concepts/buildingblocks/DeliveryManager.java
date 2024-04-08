@@ -5,7 +5,7 @@ import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
 
-@VirtualObject(name = "DeliveryManager")
+@VirtualObject
 public class DeliveryManager {
 
     @Handler

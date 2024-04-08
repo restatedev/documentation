@@ -8,7 +8,8 @@ export const roleUpdateService = restate.service({
             // parameters are durable across retries
             const { userId, role, permissions } = update;
 
-            // Apply a change to one system (e.g., DB upsert, API call, ...) and persist the result in Restate.
+            // Apply a change to one system (e.g., DB upsert, API call, ...)
+            // and persist the result in Restate.
             const success = await ctx.sideEffect(() => applyUserRole(userId, role));
             if (!success) {
                 return;

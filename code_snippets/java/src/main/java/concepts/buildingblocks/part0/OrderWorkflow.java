@@ -15,7 +15,7 @@ import dev.restate.sdk.serde.jackson.JacksonSerdes;
 import java.time.Duration;
 
 // <start_here>
-@VirtualObject(name = "OrderWorkflow")
+@VirtualObject
 public class OrderWorkflow {
     public final static StateKey<StatusEnum> STATUS =
         StateKey.of("status", JacksonSerdes.of(StatusEnum.class));

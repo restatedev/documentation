@@ -7,12 +7,13 @@ import dev.restate.sdk.common.CoreSerdes;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 
 // <start_here>
-@Service(name = "RoleUpdateService")
+@Service
 public class RoleUpdateService {
 
     @Handler
     public void applyRoleUpdate(Context ctx, UpdateRequest update) {
-        // Apply a change to one system (e.g., DB upsert, API call, ...) and persist the result in Restate.
+        // Apply a change to one system (e.g., DB upsert, API call, ...)
+        // and persist the result in Restate.
         boolean success = ctx.sideEffect(CoreSerdes.JSON_BOOLEAN, () ->
             SystemA.applyUserRole(update.getUserId(), update.getRole()));
         if (!success) {
@@ -28,7 +29,9 @@ public class RoleUpdateService {
     }
 
     public static void main(String[] args) {
-        RestateHttpEndpointBuilder.builder().bind(new RoleUpdateService()).buildAndListen();
+        RestateHttpEndpointBuilder.builder()
+            .bind(new RoleUpdateService())
+            .buildAndListen();
     }
 }
 // <end_here>

@@ -8,7 +8,7 @@ import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 
 // <start_here>
-@VirtualObject(name = "Greeter")
+@VirtualObject
 public class Greeter {
 
     public final static StateKey<Integer> COUNT =
@@ -35,7 +35,9 @@ public class Greeter {
     }
 
     public static void main(String[] args) {
-        RestateHttpEndpointBuilder.builder().bind(new Greeter()).buildAndListen();
+        RestateHttpEndpointBuilder.builder()
+            .bind(new Greeter())
+            .buildAndListen();
     }
 }
 // <end_here>

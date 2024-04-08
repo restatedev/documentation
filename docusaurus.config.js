@@ -67,7 +67,15 @@ const config = {
                 replacements: variablesReplacements,
               },
             ],
-            [remarkCodeHike, { theme: "github-light" }],
+            [remarkCodeHike, {
+              lineNumbers: false,
+              showCopyButton: true,
+              theme: "github-light",
+              skipLanguages: ["mermaid"],
+              staticMediaQuery: "not screen, (max-width: 768px)",
+              autoImport: true,
+              autoLink: false,
+            }],
           ],
           remarkPlugins: [],
           routeBasePath: "/", // Set this value to '/'.
