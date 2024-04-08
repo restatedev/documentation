@@ -3,6 +3,8 @@ sidebar_position: 1
 description: "Learn how to deploy Restate services."
 ---
 
+import Admonition from '@theme/Admonition';
+
 # Overview
 
 Restate applications exist of two parts: the Restate server and the services it hosts: 
@@ -46,6 +48,7 @@ The URL (including path prefix) MUST be **unique**, meaning that no two deployme
 Moreover, service deployments are **immutable**, and are assumed to be reachable throughout the entire lifecycle of an invocation. To deploy any change to a service, either in the Protobuf definition or in the business logic, you should deploy a new deployment with a new URL. See the [versioning documentation](/operate/versioning) for more details on how to update services.
 
 
-:::info Running services locally
+<Admonition type="info" title="Running services locally">
 Have a look at the [Quickstart](/get_started/quickstart) to set up your local development environment.
-:::
+</Admonition>
+

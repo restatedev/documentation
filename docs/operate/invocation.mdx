@@ -5,6 +5,7 @@ description: "Explore the different ways to invoke Restate services."
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import Admonition from '@theme/Admonition';
 
 # Invocation
 
@@ -74,15 +75,16 @@ curl <RESTATE_INGRESS_URL>/org.example.Greeter/Greet \
 </TabItem>
 </Tabs>
 
-:::note Protobuf-encoded request bodies
+
+<Admonition type="note" title="Protobuf-encoded request bodies">
 If the request body is encoded with Protobuf, use `Content-Type: application/proto` as the header.
 The response body will have the same content type as the request.
-:::
+</Admonition>
 
-:::note
+<Admonition type="note">
 This follows the [Connect Protocol](https://connect.build/docs/protocol/), allowing you to send gRPC-like requests as regular HTTP requests.
 For more details, check out the [Connect documentation](https://connect.build/).
-:::
+</Admonition>
 
 ### Over gRPC and gRPC-web
 
@@ -141,9 +143,9 @@ You can use this identifier to cancel or kill the invocation as described in [th
 
 For the complete documentation of the `dev.restate.Ingress` built-in service, check out the [Restate protobuf definitions](https://github.com/restatedev/proto/blob/main/dev/restate/services.proto).
 
-:::tip
+<Admonition type="tip">
 This feature can be especially useful when you need to invoke a service method implementing a long-running workflow.
-:::
+</Admonition>
 
 ## Private services
 
@@ -182,11 +184,9 @@ You can find this identifier in the runtime logs and OpenTelemetry traces by loo
     restate.invocation.id: T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE
 ```
 
-:::note
-
+<Admonition type="note">
 The Invocation identifier is opaque and its current format should not be relied on, as it might change in future Restate versions.
-
-:::
+</Admonition>
 
 ## Cancel an invocation
 
@@ -201,9 +201,9 @@ Once the leaves are canceled, a terminal error is thrown in the service handler 
 This allows the handler to run its specific compensation logic.
 The response of the handler will then be propagated back to its caller where it will continue with the cancellation process.
 
-:::note
+<Admonition type="note">
 Canceling an invocation is a non-blocking operation. This means that the cancellation is not guaranteed to have completed when the API call returns. In some rare cases, cancellations will not have an effect. In these cases, users need to retry the operation.
-:::
+</Admonition>
 
 <Tabs groupId="interface" queryString>
 <TabItem value="cli" label="CLI">
@@ -249,13 +249,13 @@ For these cases, Restate provides the ability to kill an invocation.
 Killing an invocation means that every call in the call tree of the invocation will be stopped immediately without giving the service handler a chance to react and execute compensation logic.
 This entails that killing the invocation **will not** roll back its progress.
 
-:::warning
+<Admonition type="warning">
 One-way calls and delayed calls will not be killed because they are considered detached from the originating call tree.
-:::
+</Admonition>
 
-:::danger
+<Admonition type="warning">
 Killing an invocation might leave the service instance in an inconsistent state, just like how killing a process in your operating system may cause the open files to become corrupted. Use it with caution and try to fix the invocation in other ways before resorting to killing it.
-:::
+</Admonition>
 
 <Tabs groupId="interface" queryString>
 <TabItem value="cli" label="CLI">
