@@ -8,7 +8,8 @@ export const roleUpdateService = restate.service({
             // parameters are durable across retries
             const { userId, role, permissions } = update;
 
-            // Apply a change to one system (e.g., DB upsert, API call, ...) and persist the result in Restate.
+            // Apply a change to one system (e.g., DB upsert, API call, ...)
+            // and persist the result in Restate.
             const success = await ctx.sideEffect(() => applyUserRole(userId, role));
             if (!success) {
                 return;
@@ -25,20 +26,6 @@ export const roleUpdateService = restate.service({
 
 restate.endpoint().bind(roleUpdateService).listen();
 // <end_service>
-
-const someHandler = async (ctx: restate.ObjectContext, input: { greeting?: string }) => {
-// <start_call_service>
-    const request = {
-        userId: "Sam Beckett",
-        role: { roleKey: "content-manager", roleDescription: "Add/remove documents" },
-        permissions : [{ permissionKey: "add", setting: "allow" }]
-    };
-    // Request-response call:
-    await ctx.serviceClient(roleUpdateService).applyRoleUpdate(request);
-    // One-way call:
-    ctx.serviceSendClient(roleUpdateService).applyRoleUpdate(request);
-// <end_call_service>
-};
 
 export type UserRole = {
     roleKey: string;

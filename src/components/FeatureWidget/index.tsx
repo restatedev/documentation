@@ -12,13 +12,15 @@ type FeatureItem = {
 function Feature({title, iconPath, description}: FeatureItem) {
   return (
     <div className={clsx('col col--4')}>
-      <div className="text--center">
-          <img className={styles.featureSvg} src={iconPath} />
-      </div>
-      <div className="text--center padding-horiz--md">
-        <h6>{title}</h6>
-        <p>{description}</p>
-      </div>
+        <div className={styles.featureDiv}>
+          <div className="text--center">
+              <img className={styles.featureSvg} src={iconPath} />
+          </div>
+          <div className="text--center padding-horiz--md">
+            <h6>{title}</h6>
+            <p>{description}</p>
+          </div>
+        </div>
     </div>
   );
 }

@@ -5,6 +5,7 @@ description: "Find out how to register new deployments with Restate."
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import Admonition from '@theme/Admonition';
 
 # Registration
 
@@ -84,8 +85,8 @@ curl <RESTATE_ADMIN_URL>/deployments -H 'content-type: application/json' -d '{"u
 
 This will forcefully overwrite the existing service deployment with the same uri, forcing the discovery process again. It will also remove services that were served by that deployment and are not available anymore.
 
-:::warning
+<Admonition type="warning">
 Forcing a deployment registration is a feature designed to simplify local Restate service development, and should never be used in a production Restate deployment, as it potentially breaks all the in-flight invocations to that deployment.
-:::
+</Admonition>
 
 For more details on the API, refer to the [admin API docs](/references/admin-api#tag/deployment/operation/create_deployment).

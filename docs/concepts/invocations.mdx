@@ -21,7 +21,7 @@ There are three ways to invoke a handler:
         iconPath: '/img/http-icon.svg',
         description: (
             <p class="font-size-90">
-                Send an HTTP request to the Restate Server (ingress port <code>8080</code>), with the handler name in the path, and the payload in the body.
+                Send a request to the Restate Server (port <code>8080</code>), with the handler name in the path, and the payload body.
             </p>
         ),
     },
@@ -30,7 +30,7 @@ There are three ways to invoke a handler:
         iconPath: '/img/code-icon.svg',
         description: (
             <p class="font-size-90">
-                From within a Restate handler, by using the SDK. Or via embedded typed clients.
+                Use the SDK to send requests within Restate handlers. Or use generated HTTP clients anywhere else.
             </p>
         ),
     },
@@ -51,21 +51,128 @@ Invocations get a unique identifier. This identifier is used to track the progre
 
 ## Invocation types
 
-[//]: # ([<img class="sdkicon" src="/img/java.svg" width="28" alt="Java SDK Documentation"></img>]&#40;/concepts/invocations&#41;)
-
-[//]: # ([<img class="sdkicon" src="/img/typescript.svg" width="26" alt="TypeScript Documentation"></img>]&#40;/concepts/invocations&#41;)
-
-[//]: # ([<img class="sdkicon" src="/img/http-icon.svg" width="26" alt="HTTP Documentation"></img>]&#40;/concepts/invocations&#41;)
-
-[//]: # ([<img class="sdkicon" src="/img/kafka-icon.svg" width="26" height="26" alt="Kafka Documentation"></img>]&#40;/concepts/invocations&#41;)
-
 <Tabs groupId="sdk" queryString>
     <TabItem value="ts" label="TypeScript">
 
         <CH.Spotlight className="durable-promises">
 
-            ```typescript
-            CODE_LOAD::ts/src/concepts/invocations.ts#<start_rpc>-<end_rpc>
+            <CH.Code>
+
+                ```typescript restate_service.ts
+                CODE_LOAD::ts/src/concepts/invocations/rpc.ts#<start_rpc_call>-<end_rpc_call>
+                ```
+
+                ```typescript plain_node_app.ts
+                CODE_LOAD::ts/src/concepts/invocations/rpc.ts#<start_rpc_call_node>-<end_rpc_call_node>
+                ```
+
+            </CH.Code>
+
+            ---
+
+            **<mark class="accent">Request-response</mark> invocations** allow you to wait on a response from the handler.
+
+            ---
+
+            <CH.Code>
+
+                ```typescript restate_service.ts
+                CODE_LOAD::ts/src/concepts/invocations/one_way.ts#<start_one_way_call>-<end_one_way_call>
+                ```
+
+                ```typescript plain_node_app.ts
+                CODE_LOAD::ts/src/concepts/invocations/one_way.ts#<start_one_way_call_node>-<end_one_way_call_node>
+                ```
+
+            </CH.Code>
+
+            **<mark class="accent">One-way</mark> invocations** allow you to trigger an asynchronous action.
+            This returns an invocation ID with which you can retrieve the result of the invocation later, if desired.
+
+            ---
+
+            <CH.Code>
+
+                ```typescript restate_service.ts
+                CODE_LOAD::ts/src/concepts/invocations/delayed.ts#<start_delayed_call>-<end_delayed_call>
+                ```
+
+                ```typescript plain_node_app.ts
+                CODE_LOAD::ts/src/concepts/invocations/delayed.ts#<start_delayed_call_node>-<end_delayed_call_node>
+                ```
+
+            </CH.Code>
+
+            **<mark class="accent">Delayed</mark> invocations** allow you to schedule an invocation for a later point in time.
+
+        </CH.Spotlight>
+    </TabItem>
+    <TabItem value="java" label="Java">
+
+        <CH.Spotlight className="durable-promises">
+
+            <CH.Code>
+
+                ```java RestateService.java
+                CODE_LOAD::java/src/main/java/concepts/components/invocations/RpcCalls.java#<start_rpc>-<end_rpc>
+                ```
+
+                ```java PlainJavaService.java
+                CODE_LOAD::java/src/main/java/concepts/components/invocations/RpcCalls.java#<start_rpc_java>-<end_rpc_java>
+                ```
+
+            </CH.Code>
+
+            ---
+
+
+            **<mark class="accent">Request-response</mark> invocations** allow you to wait on a response from the handler.
+
+            ---
+
+            <CH.Code>
+
+                ```java RestateService.java
+                CODE_LOAD::java/src/main/java/concepts/components/invocations/OneWayCalls.java#<start_one_way_call>-<end_one_way_call>
+                ```
+
+                ```java PlainJavaService.java
+                CODE_LOAD::java/src/main/java/concepts/components/invocations/OneWayCalls.java#<start_one_way_call_java>-<end_one_way_call_java>
+                ```
+
+
+            </CH.Code>
+
+            **<mark class="accent">One-way</mark> invocations** allow you to trigger an asynchronous action.
+            This returns an invocation ID with which you can retrieve the result of the invocation later, if desired.
+
+            ---
+
+            <CH.Code>
+
+                ```java RestateService.java
+                CODE_LOAD::java/src/main/java/concepts/components/invocations/DelayedCalls.java#<start_delayed_call>-<end_delayed_call>
+                ```
+
+                ```java PlainJavaService.java
+                CODE_LOAD::java/src/main/java/concepts/components/invocations/DelayedCalls.java#<start_delayed_call_java>-<end_delayed_call_java>
+                ```
+
+            </CH.Code>
+
+            **<mark class="accent">Delayed</mark> invocations** allow you to schedule an invocation for a later point in time.
+
+        </CH.Spotlight>
+
+    </TabItem>
+    <TabItem value="shell" label="Shell">
+
+        <CH.Spotlight className="durable-promises">
+
+            ```bash
+            curl localhost:8080/myservice/hello \
+                -H 'content-type: application/json' \
+                -d '{"request": "Restate"}'
             ```
 
             ---
@@ -74,8 +181,10 @@ Invocations get a unique identifier. This identifier is used to track the progre
 
             ---
 
-            ```typescript
-            CODE_LOAD::ts/src/concepts/invocations.ts#<start_one_way_call>-<end_one_way_call>
+            ```bash
+            curl localhost:8080/myservice/hello \
+                -H 'content-type: application/json' \
+                -d '{"request": "Restate"}'
             ```
 
             **<mark class="accent">One-way</mark> invocations** allow you to trigger an asynchronous action.
@@ -83,91 +192,21 @@ Invocations get a unique identifier. This identifier is used to track the progre
 
             ---
 
-            ```typescript
-            CODE_LOAD::ts/src/concepts/invocations.ts#<start_delayed_call>-<end_delayed_call>
+            ```bash
+            curl localhost:8080/myservice/hello \
+                -H 'content-type: application/json' \
+                -d '{"request": "Restate"}'
             ```
 
             **<mark class="accent">Delayed</mark> invocations** allow you to schedule an invocation for a later point in time.
 
-        </CH.Spotlight>
-
-    </TabItem>
-    <TabItem value="java" label="Java">
-
-        <CH.Spotlight className="durable-promises">
-
-            ```java
-            GreeterRestateClient client = GreeterRestate.newClient(ctx);
-            GreetResponse response = client.greet(request).await();
-            ```
-
-            ---
-
-            **<mark class="accent">Request-response</mark> invocations** are used when you want to wait on a response from the handler.
-
-            ---
-
-            ```java
-            GreeterRestateClient client = GreeterRestate.newClient(ctx);
-            client.oneWay().greet(request);
-            ```
-
-            **<mark class="accent">One-way</mark> invocations** are used when you don't want to wait on a response from the handler, but just want to trigger an asynchronous action.
-            This returns an invocation ID with which you can retrieve the result of the invocation later, if desired.
-
-            ---
-
-            ```java
-            GreeterRestateClient client = GreeterRestate.newClient(ctx);
-            client.oneWay().delay(1000).greet(request);
-            ```
-
-            **<mark class="accent">Delayed</mark> invocations** are used when you want to schedule a handler to be invoked at a later time.
-
-        </CH.Spotlight>
-
-    </TabItem>
-    <TabItem value="bash" label="Bash">
-
-        <CH.Spotlight className="durable-promises">
-
-            ```bash
-            curl localhost:8080/myservice/hello \
-            -H 'content-type: application/json' \
-            -d '{"request": "Restate"}'
-            ```
-
-            ---
-
-            **<mark class="accent">Request-response</mark> invocations** are used when you want to wait on a response from the handler.
-
-            ---
-
-            ```bash
-            curl localhost:8080/myservice/hello \
-            -H 'content-type: application/json' \
-            -d '{"request": "Restate"}'
-            ```
-
-            **<mark class="accent">One-way</mark> invocations** are used when you don't want to wait on a response from the handler, but just want to trigger an asynchronous action.
-            This returns an invocation ID with which you can retrieve the result of the invocation later, if desired.
-
-            ---
-
-            ```bash
-            curl localhost:8080/myservice/hello \
-            -H 'content-type: application/json' \
-            -d '{"request": "Restate"}'
-            ```
-
-            **<mark class="accent">Delayed</mark> invocations** are used when you want to schedule a handler to be invoked at a later time.
 
         </CH.Spotlight>
     </TabItem>
 </Tabs>
 
 ## Idempotent invocations
-You can add an idempotency key in the header of the request to make an inbound invocation idempotent.
+For HTTP requests, you can add an idempotency key to the header to make the invocation idempotent.
 Restate will then deduplicate requests with the same idempotency key, and will only execute the handler once.
 Duplicate requests will get the same response as the first request, or will latch on to the first invocation if it's still running.
 
@@ -187,7 +226,7 @@ This makes it a great source of observability data for your application.
 You can inspect invocations via the CLI.
 
 <TerminalAnimation listOfSteps={[
-    `$ restate invocations list
+    `$ restate services list
  Ingress base URL  http://localhost:8080/
  Admin base URL    http://localhost:9070/
 
@@ -195,9 +234,9 @@ You can inspect invocations via the CLI.
      Config Dir        /home/giselle/.config/restate
      Config File       /home/giselle/.config/restate/conf
      Loaded .env file  /home/giselle/.env`,
-    `$ eiusmod tempor incididunt
+    `$ restate inv list
 ut labore et dolore`,
-    `$ magna aliqua
+    `$ restate inv describe <INVOCATION_ID>
 ut enim ad minim veniam
 quis nostrud
 exercitation ullamco laboris nisi ut aliquip
@@ -215,89 +254,16 @@ $ mollit anim id est laborum`
 ]}/>
 
 
-[//]: # (<CH.Slideshow>)
 
-[//]: # ()
-[//]: # (    ```shell terminal)
-
-[//]: # (    git push origin v0.8.2)
-
-[//]: # (    Total 0 &#40;delta 0&#41;, reused 0 &#40;delta 0&#41;, pack-reused 0)
-
-[//]: # (    To github.com:restatedev/examples.git)
-
-[//]: # (    * [new tag]         v0.8.2 -> v0.8.2)
-
-[//]: # (    ```)
-
-[//]: # ()
-[//]: # (    ---)
-
-[//]: # ()
-[//]: # (    ```shell terminal)
-
-[//]: # (    git push origin v0.8.2)
-
-[//]: # (    Total 0 &#40;delta 0&#41;, reused 0 &#40;delta 0&#41;, pack-reused 0)
-
-[//]: # (    To github.com:restatedev/examples.git)
-
-[//]: # (    * [new tag]         v0.8.2 -> v0.8.2)
-
-[//]: # (    ```)
-
-[//]: # ()
-[//]: # (    ---)
-
-[//]: # ()
-[//]: # (    ```shell terminal)
-
-[//]: # (    git push origin v0.8.2)
-
-[//]: # (    Total 0 &#40;delta 0&#41;, reused 0 &#40;delta 0&#41;, pack-reused 0)
-
-[//]: # (    To github.com:restatedev/examples.git)
-
-[//]: # (    * [new tag]         v0.8.2 -> v0.8.2)
-
-[//]: # (    ```)
-
-[//]: # ()
-[//]: # (    ---)
-
-[//]: # ()
-[//]: # (    ```shell terminal)
-
-[//]: # (    git push origin v0.8.2)
-
-[//]: # (    Total 0 &#40;delta 0&#41;, reused 0 &#40;delta 0&#41;, pack-reused 0)
-
-[//]: # (    To github.com:restatedev/examples.git)
-
-[//]: # (    * [new tag]         v0.8.2 -> v0.8.2)
-
-[//]: # (    ```)
-
-[//]: # ()
-[//]: # (    ---)
-
-[//]: # ()
-[//]: # (    ```shell terminal)
-
-[//]: # (    git push origin v0.8.2)
-
-[//]: # (    Total 0 &#40;delta 0&#41;, reused 0 &#40;delta 0&#41;, pack-reused 0)
-
-[//]: # (    To github.com:restatedev/examples.git)
-
-[//]: # (    * [new tag]         v0.8.2 -> v0.8.2)
-
-[//]: # (    ```)
-
-[//]: # ()
-[//]: # (</CH.Slideshow>)
 
 Restate also exposes traces via OpenTelemetry, which can be sent to your observability platform of choice (e.g. Jaeger).
+Have a look at the [tracing documentation](/operate/monitoring/tracing) for more information.
+
+<div className="text--center">
+<img src="/img/Jaeger.svg" alt="Jaeger" class="bordered" width="20%"/>
+<img src="/img/OpenTelemetry.svg" alt="Jaeger" class="bordered" width="20%"/>
+</div>
+
 
 ## Cancelling and killing invocations
 

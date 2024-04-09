@@ -3,15 +3,18 @@ sidebar_position: 4
 description: "Try out Restate without any servers."
 ---
 
+import Admonition from '@theme/Admonition';
+
 # Restate Cloud
 
 If you're using Restate with a function as a service platform, it can be challenging to 
 continuously run the runtime in your infrastructure. To make Restate easier to test out,
 we offer a managed cluster to users by request. 
 
-:::info Join the waitlist
+<Admonition type="info" title="Join the waitlist">
 If you'd like to try out Restate Cloud, join the waitlist by filling out the [request form](https://restate.dev/get-restate-cloud/).
-:::
+</Admonition>
+
 
 ## SLA
 Restate Cloud is intended to help people try out Restate, and **should never be used in

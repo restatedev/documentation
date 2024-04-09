@@ -28,16 +28,3 @@ export const greeterObject = restate.object({
 
 restate.endpoint().bind(greeterObject).listen(9080);
 // <end_virtual_object>
-
-
-
-const someHandler = async (ctx: restate.ObjectContext, request: { greeting?: string }) => {
-    // <start_call_virtual_object>
-    // Request-response call:
-    await ctx.objectClient(greeterObject, "Mary").greet({ greeting: "Hi" });
-    // One-way call:
-    ctx.objectSendClient(greeterObject, "Mary").greet({ greeting: "Hi" });
-    // <end_call_virtual_object>
-}
-
-

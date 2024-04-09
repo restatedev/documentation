@@ -5,6 +5,7 @@ description: "Receive events from Kafka."
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import Admonition from '@theme/Admonition';
 
 # Kafka
 
@@ -14,9 +15,9 @@ Restate can consume events directly from Kafka. To do that, you need to:
 * Deploy Restate with the configuration to connect to a Kafka cluster
 * Wire up an event handler with a Kafka topic through a subscription
 
-:::caution
+<Admonition type="caution">
 Kafka support is in development, and it isn't ready for production usage. Next releases might break the current API.
-:::
+</Admonition>
 
 ## Event handler
 
@@ -62,10 +63,10 @@ CODE_LOAD::ts-grpc/proto/example-kafka.proto
 CODE_LOAD::ts-grpc/src/develop/kafka.ts
 ```
 
-:::tip Combining RPC and Kafka within a service
+<Admonition type="tip" title="Combining RPC and Kafka within a service">
 You can mix methods receiving events with regular RPC methods. For example, assume you're implementing a `Profile` service to handle and store user profiles in Restate, where the key is the profile's unique identifier.
 In the same service, you can implement an RPC  `Get` method to retrieve the profile, and you can attach an `UpdateProfile` event handler to consume events from Kafka to update the profile.
-:::
+</Admonition>
 
 For each event key (= Kafka record key), the events are delivered in the order in which they arrived on the topic partition.
 
@@ -119,9 +120,9 @@ worker:
 
 Check the [configuration documentation](/operate/configuration) for more details.
 
-:::caution 
+<Admonition type="caution">
 Configuring the Kafka clusters through [environment variables](/operate/configuration#overriding-configuration-entries-with-environment-variables) is not supported.
-:::
+</Admonition>
 
 ## Connect an event handler with a topic
 
@@ -200,6 +201,6 @@ curl -X DELETE localhost:9070/subscriptions/018cd978aa9f77b5a80454bc060c2a77
 
 When you delete a subscription, Restate stops the consumer group associated to it.
 
-:::info
+<Admonition type="info">
 Due to the current implementation, once you delete the subscription, there might still be messages enqueued in Restate to be processed by the subscriber service. This behaviour might change in next releases.
-:::
+</Admonition>

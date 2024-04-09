@@ -3,17 +3,11 @@ sidebar_position: 5
 description: "Learn how to store the results of non-deterministic operations."
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+import Admonition from '@theme/Admonition';
 
 # Determinism & side effects
 
-:::danger
-Restate uses an execution log for replay after failures and suspensions.
-For this to work, the user code needs to be deterministic.
-:::
-
-To help you with keeping code execution deterministic, the SDK has a few built-in functions:
+Restate uses an execution log for replay after failures and suspensions. For this to work, the user code needs to be deterministic. To help you with keeping code execution deterministic, the SDK has a few built-in functions:
 1. **Side effects**: For all other non-deterministic code, you need to use side effects, as explained [below](/develop/ts/side-effects#side-effects).
 2. **Promise/awaitable combinators**: Check the built-in helper functions [listed below](/develop/ts/side-effects#promise-awaitable-combinators).
 3. **Random generators:** For example UUIDs and random numbers. Check the built-in helper functions [listed below](/develop/ts/side-effects#built-in-helper-functions).
@@ -31,21 +25,19 @@ Here is an example of a database request for which the string return value is st
 CODE_LOAD::ts/src/develop/side_effects.ts#<start_side_effect>-<end_side_effect>
 ```
 
-:::danger
+<Admonition type="info">
 Always immediately await side effects, before doing any other context calls.
 If not, you might bump into non-determinism errors during replay,
 because the side effect can get interleaved with the other context calls in the journal in a non-deterministic way.
-:::
+</Admonition>
 
 
 Once stored, the request to the database will not get re-executed upon replay, but the first result will be used instead.
 
-:::caution
+<Admonition type="info">
 You cannot invoke any methods on the Restate context within a side effect!
 This includes actions such as getting state, calling another service, and nesting side effects.
-:::
-
-
+</Admonition>
 
 ### Retrying on failure
 
@@ -157,17 +149,17 @@ CODE_LOAD::ts/src/develop/side_effects.ts#<start_uuid>-<end_uuid>
 
 ```
 
-:::danger
+<Admonition type="caution">
 Do not use this in cryptographic contexts.
-:::
+</Admonition>
 
-:::tip
+<Admonition type="tip" icon="💡" title="Stable idempotency keys with one line of code.">
 You can use this to generate stable idempotency keys with one line of code.
 For example, imagine a payment service where you want to avoid having duplicate payments during retries.
 You could use this utility to generate a UUID and then use that UUID as identifier of the payment.
 You only allow the payment to go through if no payment with that UUID was done yet.
 Restate guarantees that once the UUID is stored, it is retained during retries.
-:::
+</Admonition>
 
 ### Generating random numbers
 
@@ -177,7 +169,7 @@ CODE_LOAD::ts/src/develop/side_effects.ts#<start_random_nb>-<end_random_nb>
 
 This returns a new pseudorandom float within the range [0,1].Calls to `ctx.rand.random()`
 
-:::note
+<Admonition type="note">
 This is the equivalent of JS `Math.random()` but deterministic, because it gets seeded by the invocation ID of the current invocation.
 Since retries use the same invocation ID, they will get the same random number.
-:::
+</Admonition>

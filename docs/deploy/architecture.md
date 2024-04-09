@@ -3,6 +3,8 @@ sidebar_position: 5
 description: "A deep-dive into the internals of Restate."
 ---
 
+import Admonition from '@theme/Admonition';
+
 # Architecture
 
 In order to provide the building blocks of consistent state, reliable messaging and durable execution for applications, Restate itself needs to be highly scalable, consistent and fault-tolerant with high availability.
@@ -67,18 +69,18 @@ In order to react to changing workloads, the partitions can be merged and split 
 
 ![Sharding of service invocation space](/img/sharding.png)
 
-:::note
+<Admonition type="note">
 Dynamic partitioning is still under development.
-:::
+</Admonition>
 
 ### Consistency and fault-tolerance
 
 Consistency and fault-tolerance is achieved by replicating the *shared log*.
 All commands for a partition go through the shared log, which ensures that all partition processor replicas stay consistent and can be recovered in case of failures.
 
-:::note
+<Admonition type="note">
 Currently, Restate runs as a single process. The distributed implementation is still under development.
-:::
+</Admonition>
 
 ### State storage
 
