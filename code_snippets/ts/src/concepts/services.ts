@@ -27,20 +27,6 @@ export const roleUpdateService = restate.service({
 restate.endpoint().bind(roleUpdateService).listen();
 // <end_service>
 
-const someHandler = async (ctx: restate.ObjectContext, input: { greeting?: string }) => {
-// <start_call_service>
-    const request = {
-        userId: "Sam Beckett",
-        role: { roleKey: "content-manager", roleDescription: "Add/remove documents" },
-        permissions : [{ permissionKey: "add", setting: "allow" }]
-    };
-    // Request-response call:
-    await ctx.serviceClient(roleUpdateService).applyRoleUpdate(request);
-    // One-way call:
-    ctx.serviceSendClient(roleUpdateService).applyRoleUpdate(request);
-// <end_call_service>
-};
-
 export type UserRole = {
     roleKey: string;
     roleDescription: string;

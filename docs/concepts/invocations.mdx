@@ -7,7 +7,6 @@ import TerminalAnimation from "../../src/components/TerminalAnimation";
 import FeatureWidget from "../../src/components/FeatureWidget";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-import Admonition from '@theme/Admonition';
 
 # Invocations
 
@@ -57,9 +56,17 @@ Invocations get a unique identifier. This identifier is used to track the progre
 
         <CH.Spotlight className="durable-promises">
 
-            ```typescript
-            CODE_LOAD::ts/src/concepts/invocations.ts#<start_rpc>-<end_rpc>
-            ```
+            <CH.Code>
+
+                ```typescript restate_service.ts
+                CODE_LOAD::ts/src/concepts/invocations/rpc.ts#<start_rpc_call>-<end_rpc_call>
+                ```
+
+                ```typescript plain_node_app.ts
+                CODE_LOAD::ts/src/concepts/invocations/rpc.ts#<start_rpc_call_node>-<end_rpc_call_node>
+                ```
+
+            </CH.Code>
 
             ---
 
@@ -67,54 +74,91 @@ Invocations get a unique identifier. This identifier is used to track the progre
 
             ---
 
-            ```typescript
-            CODE_LOAD::ts/src/concepts/invocations.ts#<start_one_way_call>-<end_one_way_call>
-            ```
+            <CH.Code>
+
+                ```typescript restate_service.ts
+                CODE_LOAD::ts/src/concepts/invocations/one_way.ts#<start_one_way_call>-<end_one_way_call>
+                ```
+
+                ```typescript plain_node_app.ts
+                CODE_LOAD::ts/src/concepts/invocations/one_way.ts#<start_one_way_call_node>-<end_one_way_call_node>
+                ```
+
+            </CH.Code>
 
             **<mark class="accent">One-way</mark> invocations** allow you to trigger an asynchronous action.
             This returns an invocation ID with which you can retrieve the result of the invocation later, if desired.
 
             ---
 
-            ```typescript
-            CODE_LOAD::ts/src/concepts/invocations.ts#<start_delayed_call>-<end_delayed_call>
-            ```
+            <CH.Code>
+
+                ```typescript restate_service.ts
+                CODE_LOAD::ts/src/concepts/invocations/delayed.ts#<start_delayed_call>-<end_delayed_call>
+                ```
+
+                ```typescript plain_node_app.ts
+                CODE_LOAD::ts/src/concepts/invocations/delayed.ts#<start_delayed_call_node>-<end_delayed_call_node>
+                ```
+
+            </CH.Code>
 
             **<mark class="accent">Delayed</mark> invocations** allow you to schedule an invocation for a later point in time.
 
         </CH.Spotlight>
-
     </TabItem>
     <TabItem value="java" label="Java">
 
         <CH.Spotlight className="durable-promises">
 
-            ```java
-            CODE_LOAD::java/src/main/java/concepts/components/Invocations.java#<start_rpc>-<end_rpc>
-            ```
+            <CH.Code>
+
+                ```java RestateService.java
+                CODE_LOAD::java/src/main/java/concepts/components/invocations/RpcCalls.java#<start_rpc>-<end_rpc>
+                ```
+
+                ```java PlainJavaService.java
+                CODE_LOAD::java/src/main/java/concepts/components/invocations/RpcCalls.java#<start_rpc_java>-<end_rpc_java>
+                ```
+
+            </CH.Code>
 
             ---
 
-            ```java
-            CODE_LOAD::java/src/main/java/concepts/components/Invocations.java#<start_rpc>-<end_rpc>
-            ```
 
             **<mark class="accent">Request-response</mark> invocations** allow you to wait on a response from the handler.
 
             ---
 
-            ```java
-            CODE_LOAD::java/src/main/java/concepts/components/Invocations.java#<start_one_way_call>-<end_one_way_call>
-            ```
+            <CH.Code>
+
+                ```java RestateService.java
+                CODE_LOAD::java/src/main/java/concepts/components/invocations/OneWayCalls.java#<start_one_way_call>-<end_one_way_call>
+                ```
+
+                ```java PlainJavaService.java
+                CODE_LOAD::java/src/main/java/concepts/components/invocations/OneWayCalls.java#<start_one_way_call_java>-<end_one_way_call_java>
+                ```
+
+
+            </CH.Code>
 
             **<mark class="accent">One-way</mark> invocations** allow you to trigger an asynchronous action.
             This returns an invocation ID with which you can retrieve the result of the invocation later, if desired.
 
             ---
 
-            ```java
-            CODE_LOAD::java/src/main/java/concepts/components/Invocations.java#<start_delayed_call>-<end_delayed_call>
-            ```
+            <CH.Code>
+
+                ```java RestateService.java
+                CODE_LOAD::java/src/main/java/concepts/components/invocations/DelayedCalls.java#<start_delayed_call>-<end_delayed_call>
+                ```
+
+                ```java PlainJavaService.java
+                CODE_LOAD::java/src/main/java/concepts/components/invocations/DelayedCalls.java#<start_delayed_call_java>-<end_delayed_call_java>
+                ```
+
+            </CH.Code>
 
             **<mark class="accent">Delayed</mark> invocations** allow you to schedule an invocation for a later point in time.
 
@@ -133,7 +177,7 @@ Invocations get a unique identifier. This identifier is used to track the progre
 
             ---
 
-            **<mark class="accent">Request-response</mark> invocations** are used when you want to wait on a response from the handler.
+            **<mark class="accent">Request-response</mark> invocations** allow you to wait on a response from the handler.
 
             ---
 
@@ -162,7 +206,7 @@ Invocations get a unique identifier. This identifier is used to track the progre
 </Tabs>
 
 ## Idempotent invocations
-You can add an idempotency key in the header of the request to make an inbound invocation idempotent.
+For HTTP requests, you can add an idempotency key to the header to make the invocation idempotent.
 Restate will then deduplicate requests with the same idempotency key, and will only execute the handler once.
 Duplicate requests will get the same response as the first request, or will latch on to the first invocation if it's still running.
 
