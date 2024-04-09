@@ -3,8 +3,7 @@ sidebar_position: 8
 description: "Restate's retry strategy and how to manage it from the SDK."
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+import Admonition from '@theme/Admonition';
 
 # Error handling
 
@@ -26,8 +25,7 @@ Restate will propagate the error code and message back to the caller and will co
 If a terminal error is returned to an HTTP client of the ingress, it will be converted into an appropriate HTTP status code, which
 is documented in the TSDoc of the ErrorCodes enum.
 
-:::note Errors during side effect execution
-
+<Admonition type="note" title="Errors during side effect execution">
 Throwing errors inside a side effect has the same semantics as anywhere else in your handler code.
 By default, Restate infinitely retries the invocation, and therefore the side effect.
 Errors that should not be retried, should be thrown as terminal errors, as described earlier.
@@ -37,7 +35,7 @@ For some use cases, you may want to do the side effect retries from within the i
 because this is faster and more efficient in certain scenarios (e.g. you have a connection set up to an external system or database).
 Have a look at the [side effect documentation](/develop/ts/side-effects#retrying-on-failure)
 on how to set this up.
-:::
+</Admonition>
 
 You can throw a terminal error anywhere in your handler.
 Restate will propagate the error code and message back to the caller and will consider this invocation to be finished. 

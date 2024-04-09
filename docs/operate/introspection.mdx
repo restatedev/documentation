@@ -7,6 +7,7 @@ draft: false
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import Admonition from '@theme/Admonition';
 
 # Introspection
 
@@ -65,9 +66,9 @@ To get an overview of invocation inspection with the CLI, do:
 restate inv --help
 ```
 
-:::info
+<Admonition type="info">
 The CLI only allows you to interact with active invocations. Active invocations are invocations that haven't completed yet and are either invoked or suspended.
-:::
+</Admonition>
 
 </TabItem>
 <TabItem value="psql" label="psql">
@@ -87,9 +88,9 @@ describe sys_status;
 
 An exhaustive description of the schema can be found in [the references](/references/sql-introspection).
 
-:::info
+<Admonition type="info">
 The `sys_status` table only contains entries for active invocations. Active invocations are invocations that haven't completed yet and are either invoked or suspended.
-:::
+</Admonition>
 
 </TabItem>
 </Tabs>
@@ -359,10 +360,10 @@ KEY   VAL
 seen  8
 ```
 
-:::info
+<Admonition type="info">
 If the values are not JSON-encoded UTF-8 strings, then it is also possible to use the `--binary` flag,
 and get the value as base64 encoded string.
-:::
+</Admonition>
 
 </TabItem>
 <TabItem value="psql" label="psql">
@@ -373,9 +374,9 @@ You can query the application state via the `state` table.
 select * from state where service = 'test.MyServiceName' and service_key = 'myKey';
 ```
 
-:::info Take into account the data types of the included columns.
+<Admonition type="info" title="Take into account the data types of the included columns">
 If your state value is a regular string, then you can access its content in the column `value_utf8`.
-:::
+</Admonition>
 
 
 To retrieve the state of a specific service, service key and state key, do:
@@ -386,13 +387,12 @@ select * from state where service = 'MyServiceName' and service_key = 'myKey' an
 
 The state key is the name you used to store the state with the SDK. For example, the code snippet `ctx.set("count", 1)` stores `1` under the key `count`.
 
-
-:::tip Joining the tables
+<Admonition type="tip" title="Joining the tables">
 To join the `sys_status` and `state` table, you can use the `service` and `service_key` columns:
 ```sql
 select * from sys_status JOIN state on sys_status.service = state.service and sys_status.service_key = state.service_key;
 ```
-:::
+</Admonition>
 </TabItem>
 </Tabs>
 
@@ -410,23 +410,23 @@ restate state edit <SERVICE_NAME> <SERVICE_KEY>
 This command opens your default editor (as configured in the `cli env`).
 It sends the new state values back to the runtime to be applied.
 
-:::info `--binary` flag
+<Admonition type="info" title="`--binary` flag">
 Use `--binary` if the values are not JSON-encoded UTF-8 strings.
 In this case, you need to decode the base64-encoded string, and encode it back to base64 after editing.
-:::
+</Admonition>
 
-:::info `--plain` flag
+<Admonition type="info" title="`--plain` flag">
 Use `--plain` to retrieve the state as a JSON object.
 This can be useful in combination with tools like `jq` for example:
 ```shell
 restate kv get counter bob --plain | jq '.seen'
 ```
-:::
+</Admonition>
 
-:::danger Editing state during ongoing invocations
+<Admonition type="caution" title="Editing state during ongoing invocations">
 If during the editing of the state with the CLI, an invocation changed the state as well, then the edit of the CLI will not take affect.
 If you want the CLI state edit to be applied even if the state has changed in the meantime, then use the `--force` flag.
-:::
+</Admonition>
 
 An example on how to edit the K/V state of the service `counter` for the key `bob`:
 

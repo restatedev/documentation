@@ -5,6 +5,7 @@ description: "All you need to know on upgrading deployments."
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import Admonition from '@theme/Admonition';
 
 # Versioning
 
@@ -100,9 +101,9 @@ Restate adopts the same rules as [Protobuf for schema evolution](https://protobu
 
 In all the aforementioned cases, you should define a new service instead.
 
-:::info
+<Admonition type="info">
 Currently Restate doesn't implement all the "schema incompatibility" checks, so you must make sure the applied changes are backward compatible.
-:::
+</Admonition>
 
 ## State compatibility
 
@@ -162,10 +163,9 @@ If the deployment isn't drained yet but you still want to remove it, use the `--
 curl -X DELETE <RESTATE_ADMIN_URL>/deployments/<DEPLOYMENT_ID>?force=true
 ```
 
-
 </TabItem>
 </Tabs>
 
-:::info
+<Admonition type="info">
 Currently Restate doesn't implement all the checks to safely remove a service deployment, so you have to force the removal through the `force` query parameter.
-:::
+</Admonition>

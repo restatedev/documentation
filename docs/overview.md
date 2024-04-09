@@ -1,5 +1,5 @@
 ---
-id: Overview
+id: OVERVIEW
 [//]: # (sidebar_position: 1 --> this is now set by sidebars.js)
 slug: /
 description: "Documentation overview"

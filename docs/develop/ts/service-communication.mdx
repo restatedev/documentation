@@ -5,6 +5,7 @@ description: "Find out how Restate services can send requests to each other."
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import Admonition from '@theme/Admonition';
 
 # Service communication
 A Restate service can call another service without waiting for the response (one-way call) or with waiting for the response (request-response).
@@ -77,10 +78,10 @@ CODE_LOAD::ts-grpc/src/develop/service_communication.ts#<start_one_way>-<end_one
 You need to await the Promise that is returned from `oneWayCall()`, otherwise a failure in sending the message does not get propagated back to your user code.
 Note that the Promise gets resolved as soon as the message gets send to the runtime, so awaiting the promise does not mean it is a request-response call.
 
-:::caution
+<Admonition type="note">
 You can only use `oneWayCall()` to do one-way calls to other services via the proto-ts clients that are generated.
 You cannot wrap any other types of operations with `oneWayCall()`! This is invalid code and will fail.
-:::
+</Admonition>
 
 
 </TabItem>

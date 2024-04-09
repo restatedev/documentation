@@ -3,8 +3,7 @@ sidebar_position: 6
 description: "Find out how to export traces of your invocations."
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+import Admonition from '@theme/Admonition';
 
 # Tracing
 
@@ -24,15 +23,15 @@ The exporter sends OTLP trace data via gRPC.
 
 Jaeger accepts OTLP trace data via gRPC on port `4317`.
 
-:::note
+<Admonition type="note">
 Start Jaeger with the environment variable `COLLECTOR_OTLP_ENABLED=true` to enable OTLP.
-:::
+</Admonition>
 
 Refer to the [Jaeger documentation](https://www.jaegertracing.io/docs/1.46/deployment/) for more details on how to deploy Jaeger.
 
-:::note
+<Admonition type="note">
 Configure the tracing endpoint in Restate as a fully specified URL: `http://<jaeger-collector>:4317`.
-:::
+</Admonition>
 
 You can configure a span/event filter in a similar fashion to the [log filter](/operate/monitoring/restate_logging#log-filter) setting the `observability.tracing.filter` configuration entry.
 
