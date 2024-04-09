@@ -3,8 +3,7 @@ sidebar_position: 6
 description: "Pause invocations while waiting for an external task completion."
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+import Admonition from '@theme/Admonition';
 
 # Awakeables
 
@@ -21,10 +20,10 @@ While waiting for the ID to be returned, Restate suspends the invocation to free
 This feature is particularly beneficial for AWS Lambda deployments.
 When the invocation is suspended, its costs are reduced to zero.
 
-:::caution
+<Admonition type="caution">
 While waiting for an awakeable ID to be returned, singleton services and keyed services (for that single key) will not process other incoming invocations.
-They block until the invocation is finished, so until the awakeable ID is returned and the rest of the code has been executed. 
-:::
+They block until the invocation is finished, so until the awakeable ID is returned and the rest of the code has been executed.
+</Admonition>
 
 ## Using awakeables
 

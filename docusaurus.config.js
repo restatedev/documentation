@@ -7,6 +7,10 @@ const variableInjector = require("./src/plugins/variable-injector");
 const variablesReplacements = require("./restate.config.json");
 const codeLoaderPlugin = require("./src/plugins/code-loader");
 
+const {
+  remarkCodeHike,
+} = require("@code-hike/mdx")
+
 const redocusaurus = [
   "redocusaurus",
   {
@@ -53,25 +57,37 @@ const config = {
       "classic",
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({docs: {
-          remarkPlugins: [
+          beforeDefaultRemarkPlugins: [
+            [codeLoaderPlugin, {
+              codeSnippets: {},
+            }],
             [
               variableInjector, // replaces eg VAR::RESTATE_VERSION with config strings
               {
                 replacements: variablesReplacements,
               },
             ],
-            [codeLoaderPlugin, {
-                codeSnippets: {},
-            }]
+            [remarkCodeHike, {
+              lineNumbers: false,
+              showCopyButton: true,
+              theme: "github-light",
+              skipLanguages: ["mermaid"],
+              staticMediaQuery: "not screen, (max-width: 768px)",
+              autoImport: true,
+              autoLink: false,
+            }],
           ],
+          remarkPlugins: [],
           routeBasePath: "/", // Set this value to '/'.
           sidebarPath: require.resolve("./sidebars.js"),
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
         },
         theme: {
-          customCss: require.resolve("./src/css/custom.css"),
-        },
+          customCss: [
+            require.resolve("@code-hike/mdx/styles.css"),
+            require.resolve("./src/css/custom.css"),
+          ]},
       }),
 
     ],
@@ -206,7 +222,8 @@ const config = {
       },
     },
   themes: [
-    "docusaurus-json-schema-plugin"
+    "docusaurus-json-schema-plugin",
+    "mdx-v2"
   ],
   scripts: ["/js/store-query-parameter.js"],
 };

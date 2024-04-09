@@ -1,20 +1,22 @@
-import com.google.protobuf.gradle.id
+//import com.google.protobuf.gradle.id
 
 plugins {
   java
   application
-  id("com.google.protobuf") version "0.9.1"
+//  id("com.google.protobuf") version "0.9.1"
 }
 
 repositories {
   mavenCentral()
+  mavenLocal()
 }
 
-val restateVersion = "0.8.0"
+val restateVersion = "0.9.0-SNAPSHOT"
 
 dependencies {
   // Restate SDK
   implementation("dev.restate:sdk-api:$restateVersion")
+  annotationProcessor("dev.restate:sdk-api-gen:$restateVersion")
   implementation("dev.restate:sdk-http-vertx:$restateVersion")
   implementation("dev.restate:sdk-lambda:$restateVersion")
   // To use Jackson to read/write state entries (optional)
@@ -37,24 +39,24 @@ dependencies {
 }
 
 // Configure protoc plugin
-protobuf {
-  protoc { artifact = "com.google.protobuf:protoc:3.24.3" }
-
-  // We need both grpc and restate codegen(s) because the restate codegen depends on the grpc one
-  plugins {
-    id("grpc") { artifact = "io.grpc:protoc-gen-grpc-java:1.58.0" }
-    id("restate") { artifact = "dev.restate:protoc-gen-restate:$restateVersion:all@jar" }
-  }
-
-  generateProtoTasks {
-    all().forEach {
-      it.plugins {
-        id("grpc")
-        id("restate")
-      }
-    }
-  }
-}
+//protobuf {
+//  protoc { artifact = "com.google.protobuf:protoc:3.24.3" }
+//
+//  // We need both grpc and restate codegen(s) because the restate codegen depends on the grpc one
+//  plugins {
+//    id("grpc") { artifact = "io.grpc:protoc-gen-grpc-java:1.58.0" }
+//    id("restate") { artifact = "dev.restate:protoc-gen-restate:$restateVersion:all@jar" }
+//  }
+//
+//  generateProtoTasks {
+//    all().forEach {
+//      it.plugins {
+//        id("grpc")
+//        id("restate")
+//      }
+//    }
+//  }
+//}
 
 // Configure test platform
 tasks.withType<Test> {
@@ -63,5 +65,5 @@ tasks.withType<Test> {
 
 // Set main class
 application {
-  mainClass.set("develop.Greeter")
+  mainClass.set("concepts.buildingblocks.AppMain")
 }

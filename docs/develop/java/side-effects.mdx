@@ -3,16 +3,12 @@ sidebar_position: 5
 description: "Learn how to store the results of non-deterministic operations."
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+import Admonition from '@theme/Admonition';
 
 # Determinism & side effects
 
-:::danger
 Restate uses an execution log for replay after failures and suspensions.
 For this to work, the user code needs to be deterministic.
-:::
-
 To help you with keeping code execution deterministic, the SDK has a few built-in functions:
 1. **Side effects**: For all other non-deterministic code, you need to use side effects, as explained [below](/develop/java/side-effects#side-effects).
 2. **Promise/awaitable combinators**: Check the built-in helper functions [listed below](/develop/java/side-effects#promise-awaitable-combinators).
@@ -37,10 +33,10 @@ For more information, have a look at the documentation on [serialization](/devel
 
 Once stored, the request to the database will not get re-executed upon replay, but the first result will be used instead.
 
-:::caution
+<Admonition type="note">
 You cannot invoke any methods on the Restate context within a side effect!
 This includes actions such as getting state, calling another service, and nesting side effects.
-:::
+</Admonition>
 
 ### Retrying on failure
 
@@ -97,21 +93,21 @@ The SDK provides helper functions for those.
 CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_uuid>-<end_uuid>
 ```
 
-:::note
+<Admonition type="note">
 `ctx.random()` returns a `RestateRandom` instance. This is a subclass of `java.util.Random` that seeds it on the invocation ID, to always return the same value on retries.
-:::
+</Admonition>
 
-:::danger
+<Admonition type="caution">
 Do not use this in cryptographic contexts.
-:::
+</Admonition>
 
-:::tip
+<Admonition type="tip">
 You can use this to generate stable idempotency keys with one line of code.
 For example, imagine a payment service where you want to avoid having duplicate payments during retries.
 You could use this utility to generate a UUID and then use that UUID as identifier of the payment.
 You only allow the payment to go through if no payment with that UUID was done yet.
 Restate guarantees that once the UUID is stored, it is retained during retries.
-:::
+</Admonition>
 
 ### Generating random numbers
 
@@ -121,6 +117,6 @@ CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_random_nb>-<end_ra
 
 You can use any of the methods of [`java.util.Random`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Random.html) to generate random numbers: for example, `nextBoolean()`, `nextLong()`, `nextFloat()`, etc.
 
-:::note
+<Admonition type="note">
 `ctx.random()` returns a `RestateRandom` instance. This is a subclass of `java.util.Random` that seeds it on the invocation ID, to always return the same value on retries.
-:::
+</Admonition>

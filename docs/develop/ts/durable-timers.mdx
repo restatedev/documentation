@@ -3,8 +3,7 @@ sidebar_position: 7
 description: "Let your service sleep for a specified time, guaranteed by Restate."
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+import Admonition from '@theme/Admonition';
 
 # Durable timers
 
@@ -21,15 +20,15 @@ To sleep in a Restate application for ten seconds, do the following:
 CODE_LOAD::ts/src/develop/durable_timers.ts
 ```
 
-:::note
+<Admonition type="note">
 For sleep to work properly, make sure that the system clock of the runtime is synchronized with the clock of the service deployment and that they use the same time zone. When you do a timer-based action with the SDK (e.g. sleep, delayed calls), the duration gets calculated based on the system clock of the service. But subsequently, Restate registers this timer on its own system clock. So the system clock of the service and of Restate need to be synchronized.
-:::
+</Admonition>
 
-:::caution
+<Admonition type="caution">
 While sleeping, singleton services and keyed services (for that single key) will not process other incoming invocations.
 They block until the invocation is finished, so until the sleep has finished and the rest of the code has been executed.
-:::
+</Admonition>
 
-:::caution
+<Admonition type="caution">
 Don't use the language's own timer implementations or sleep functions in combination with Restate. Otherwise, you do not benefit from suspensions.
-:::
+</Admonition>
