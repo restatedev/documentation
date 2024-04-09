@@ -7,6 +7,7 @@ import TerminalAnimation from "../../src/components/TerminalAnimation";
 import FeatureWidget from "../../src/components/FeatureWidget";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import Admonition from '@theme/Admonition';
 
 # Invocations
 
@@ -30,7 +31,7 @@ There are three ways to invoke a handler:
         iconPath: '/img/code-icon.svg',
         description: (
             <p class="font-size-90">
-                Use the SDK to send requests within Restate handlers. Or via embedded typed clients.
+                Use the SDK to send requests within Restate handlers. Or use generated HTTP clients anywhere else.
             </p>
         ),
     },
@@ -50,14 +51,6 @@ All invocations are proxied through the Restate Server, which registers the requ
 Invocations get a unique identifier. This identifier is used to track the progress of the invocation, and lets you correlate logs and metrics.
 
 ## Invocation types
-
-[//]: # ([<img class="sdkicon" src="/img/java.svg" width="28" alt="Java SDK Documentation"></img>]&#40;/concepts/invocations&#41;)
-
-[//]: # ([<img class="sdkicon" src="/img/typescript.svg" width="26" alt="TypeScript Documentation"></img>]&#40;/concepts/invocations&#41;)
-
-[//]: # ([<img class="sdkicon" src="/img/http-icon.svg" width="26" alt="HTTP Documentation"></img>]&#40;/concepts/invocations&#41;)
-
-[//]: # ([<img class="sdkicon" src="/img/kafka-icon.svg" width="26" height="26" alt="Kafka Documentation"></img>]&#40;/concepts/invocations&#41;)
 
 <Tabs groupId="sdk" queryString>
     <TabItem value="ts" label="TypeScript">
@@ -128,14 +121,14 @@ Invocations get a unique identifier. This identifier is used to track the progre
         </CH.Spotlight>
 
     </TabItem>
-    <TabItem value="bash" label="Bash">
+    <TabItem value="shell" label="Shell">
 
         <CH.Spotlight className="durable-promises">
 
             ```bash
             curl localhost:8080/myservice/hello \
-            -H 'content-type: application/json' \
-            -d '{"request": "Restate"}'
+                -H 'content-type: application/json' \
+                -d '{"request": "Restate"}'
             ```
 
             ---
@@ -146,8 +139,8 @@ Invocations get a unique identifier. This identifier is used to track the progre
 
             ```bash
             curl localhost:8080/myservice/hello \
-            -H 'content-type: application/json' \
-            -d '{"request": "Restate"}'
+                -H 'content-type: application/json' \
+                -d '{"request": "Restate"}'
             ```
 
             **<mark class="accent">One-way</mark> invocations** allow you to trigger an asynchronous action.
@@ -157,8 +150,8 @@ Invocations get a unique identifier. This identifier is used to track the progre
 
             ```bash
             curl localhost:8080/myservice/hello \
-            -H 'content-type: application/json' \
-            -d '{"request": "Restate"}'
+                -H 'content-type: application/json' \
+                -d '{"request": "Restate"}'
             ```
 
             **<mark class="accent">Delayed</mark> invocations** allow you to schedule an invocation for a later point in time.
@@ -217,89 +210,15 @@ $ mollit anim id est laborum`
 ]}/>
 
 
-[//]: # (<CH.Slideshow>)
 
-[//]: # ()
-[//]: # (    ```shell terminal)
-
-[//]: # (    git push origin v0.8.2)
-
-[//]: # (    Total 0 &#40;delta 0&#41;, reused 0 &#40;delta 0&#41;, pack-reused 0)
-
-[//]: # (    To github.com:restatedev/examples.git)
-
-[//]: # (    * [new tag]         v0.8.2 -> v0.8.2)
-
-[//]: # (    ```)
-
-[//]: # ()
-[//]: # (    ---)
-
-[//]: # ()
-[//]: # (    ```shell terminal)
-
-[//]: # (    git push origin v0.8.2)
-
-[//]: # (    Total 0 &#40;delta 0&#41;, reused 0 &#40;delta 0&#41;, pack-reused 0)
-
-[//]: # (    To github.com:restatedev/examples.git)
-
-[//]: # (    * [new tag]         v0.8.2 -> v0.8.2)
-
-[//]: # (    ```)
-
-[//]: # ()
-[//]: # (    ---)
-
-[//]: # ()
-[//]: # (    ```shell terminal)
-
-[//]: # (    git push origin v0.8.2)
-
-[//]: # (    Total 0 &#40;delta 0&#41;, reused 0 &#40;delta 0&#41;, pack-reused 0)
-
-[//]: # (    To github.com:restatedev/examples.git)
-
-[//]: # (    * [new tag]         v0.8.2 -> v0.8.2)
-
-[//]: # (    ```)
-
-[//]: # ()
-[//]: # (    ---)
-
-[//]: # ()
-[//]: # (    ```shell terminal)
-
-[//]: # (    git push origin v0.8.2)
-
-[//]: # (    Total 0 &#40;delta 0&#41;, reused 0 &#40;delta 0&#41;, pack-reused 0)
-
-[//]: # (    To github.com:restatedev/examples.git)
-
-[//]: # (    * [new tag]         v0.8.2 -> v0.8.2)
-
-[//]: # (    ```)
-
-[//]: # ()
-[//]: # (    ---)
-
-[//]: # ()
-[//]: # (    ```shell terminal)
-
-[//]: # (    git push origin v0.8.2)
-
-[//]: # (    Total 0 &#40;delta 0&#41;, reused 0 &#40;delta 0&#41;, pack-reused 0)
-
-[//]: # (    To github.com:restatedev/examples.git)
-
-[//]: # (    * [new tag]         v0.8.2 -> v0.8.2)
-
-[//]: # (    ```)
-
-[//]: # ()
-[//]: # (</CH.Slideshow>)
 
 Restate also exposes traces via OpenTelemetry, which can be sent to your observability platform of choice (e.g. Jaeger).
+Have a look at the [tracing documentation](/operate/monitoring/tracing) for more information.
+
+<img src="/img/Jaeger.svg" alt="Jaeger" class="bordered" width="20%"/>
+<img src="/img/OpenTelemetry.svg" alt="Jaeger" class="bordered" width="20%"/>
+
+
 
 ## Cancelling and killing invocations
 

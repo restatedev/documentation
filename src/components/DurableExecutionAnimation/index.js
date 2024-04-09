@@ -53,7 +53,7 @@ class Runtime extends React.Component {
         return <div className="col col--4 padding-horiz--md">
             <div
                 id="restate-runtime"
-                className="section_animation color-primary set-border bg-light justify-content-center margin-vert--sm padding--md"
+                className="section_animation color-primary set-border justify-content-center margin-vert--sm padding--md"
             >
                 <div className="text--center">
                     <img
@@ -159,6 +159,7 @@ class Runtime extends React.Component {
 class Services extends React.Component {
     render() {
         return <div className="col col--7 padding-horiz--md">
+            <p id="animation_explanation" className="padding--sm padding-left--md text--center"></p>
             <div id="cart_service_div" className="row margin-vert--none margin-horiz--none display-none">
                 <div className="col col--1 padding-horiz--none margin-bottom--md">
                     <div
@@ -244,9 +245,9 @@ class Services extends React.Component {
                         id="journal_cart"
                         className="smallest_font display-none padding--sm bg-light"
                     >
-                        <a className="smaller_font text--center">
+                        <p className="smaller_font margin-bottom--none">
                             Journal: <br/>
-                        </a>
+                        </p>
                         <div
                             id="journal_cart_0"
                             className="text--center display-inline-block color-1 set-bg set-color padding-horiz--xs"
@@ -291,7 +292,7 @@ class Services extends React.Component {
                     </div>
                 </div>
             </div>
-            <div id="ticket_service_div" className="row margin-vert--none margin-horiz--none display-none">
+            <div id="ticket_service_div" className="row margin-top--md margin-horiz--none display-none">
                 <div className="col col--1 padding-horiz--none margin-bottom--md">
                     <div
                         id="ticket_request_arrow"
@@ -343,9 +344,9 @@ class Services extends React.Component {
                         id="journal_ticket"
                         className="smallest_font display-none padding--sm bg-light"
                     >
-                        <a className="text--center smaller_font">
+                        <p className="smaller_font margin-bottom--none">
                             Journal: <br/>
-                        </a>
+                        </p>
                         <div
                             id="journal_ticket_0"
                             className="text--center display-inline-block color-2 set-bg set-color padding-horiz--xs"
@@ -372,9 +373,9 @@ const defaultAnimation = "<div class=\"col col--1 padding-horiz--sm\"><div id=\"
     "    ctx.<span class=\"hljs-title function_\">set</span>(<span class=\"hljs-string\">\"cart\"</span>, cart.<span class=\"hljs-title function_\">push</span>(ticketId));\n" +
     "  }\n" +
     "  <span class=\"hljs-keyword\">return</span> success;\n" +
-    "}</pre></div><div id=\"journal_cart\" class=\"smallest_font display-none padding--sm bg-light\"><a class=\"smaller_font text--center\">Journal: <br></a><div id=\"journal_cart_0\" class=\"text--center display-inline-block color-1 set-bg set-color padding-horiz--xs\">(Joe, seat2B) <br> state(cart=[])</div><div id=\"journal_cart_1\" class=\"text--center display-inline-block display-none color-2 set-bg set-color padding-horiz--xs\">RPC reserve <br>{ seat2B }</div><div id=\"journal_cart_2\" class=\"text--center display-inline-block display-none color-3 set-bg set-color padding-horiz--xs\">RPC resp <br>{ success }</div><div id=\"journal_cart_3\" class=\"text--center display-inline-block display-none color-4 set-bg set-color padding-horiz--xs\">getState <br>cart=[]</div><div id=\"journal_cart_4\" class=\"text--center display-inline-block display-none color-5 set-bg set-color padding-horiz--xs\">setState <br>cart=[seat2B]</div><div id=\"journal_cart_6\" class=\"text--center display-inline-block display-none color-7 set-bg set-color padding-horiz--xs\">response <br>{ success }</div></div></div></div><div id=\"ticket_service_div\" class=\"row margin-vert--none margin-horiz--none display-none\"><div class=\"col col--1 padding-horiz--none margin-bottom--md\"><div id=\"ticket_request_arrow\" class=\"horizontal_rpc_arrow text--center color-2 set-color display-none\">→</div><div id=\"ticket_response_arrow\" class=\"horizontal_rpc_arrow text--center color-3 set-color display-none\">←</div></div><div class=\"col col--11 padding-horiz--none bg-light section_animation\"><div id=\"ticket_service_box\"><div class=\"flex-none border-b\"><div class=\"flex items-center h-8 padding-horiz--md\"><div class=\"ide_button\"></div><div class=\"ide_button\"></div><div class=\"ide_button\"></div><div class=\"service-name padding-horiz--sm\">TicketService:</div><div id=\"ticket_title_suspended\" class=\"service-name color-red padding-horiz--sm\"> suspended...</div><div id=\"ticket_title_invoked\" class=\"service-name color-green padding-horiz--sm display-none\"> invoked...</div></div></div><pre class=\"margin--none padding--sm suspended\" id=\"ticket_service\"><span class=\"hljs-keyword\">async</span> reserve = <span class=\"hljs-keyword\">async</span> (ctx, ticketId)=&gt; {\n" +
+    "}</pre></div><div id=\"journal_cart\" class=\"smallest_font display-none padding--sm bg-light\"><p class=\"smaller_font margin-bottom--none\">Journal: <br></p><div id=\"journal_cart_0\" class=\"text--center display-inline-block color-1 set-bg set-color padding-horiz--xs\">(Joe, seat2B) <br> state(cart=[])</div><div id=\"journal_cart_1\" class=\"text--center display-inline-block display-none color-2 set-bg set-color padding-horiz--xs\">RPC reserve <br>{ seat2B }</div><div id=\"journal_cart_2\" class=\"text--center display-inline-block display-none color-3 set-bg set-color padding-horiz--xs\">RPC resp <br>{ success }</div><div id=\"journal_cart_3\" class=\"text--center display-inline-block display-none color-4 set-bg set-color padding-horiz--xs\">getState <br>cart=[]</div><div id=\"journal_cart_4\" class=\"text--center display-inline-block display-none color-5 set-bg set-color padding-horiz--xs\">setState <br>cart=[seat2B]</div><div id=\"journal_cart_6\" class=\"text--center display-inline-block display-none color-7 set-bg set-color padding-horiz--xs\">response <br>{ success }</div></div></div></div><div id=\"ticket_service_div\" class=\"row margin-top--md margin-horiz--none display-none\"><div class=\"col col--1 padding-horiz--none margin-bottom--md\"><div id=\"ticket_request_arrow\" class=\"horizontal_rpc_arrow text--center color-2 set-color display-none\">→</div><div id=\"ticket_response_arrow\" class=\"horizontal_rpc_arrow text--center color-3 set-color display-none\">←</div></div><div class=\"col col--11 padding-horiz--none bg-light section_animation\"><div id=\"ticket_service_box\"><div class=\"flex-none border-b\"><div class=\"flex items-center h-8 padding-horiz--md\"><div class=\"ide_button\"></div><div class=\"ide_button\"></div><div class=\"ide_button\"></div><div class=\"service-name padding-horiz--sm\">TicketService:</div><div id=\"ticket_title_suspended\" class=\"service-name color-red padding-horiz--sm\"> suspended...</div><div id=\"ticket_title_invoked\" class=\"service-name color-green padding-horiz--sm display-none\"> invoked...</div></div></div><pre class=\"margin--none padding--sm suspended\" id=\"ticket_service\"><span class=\"hljs-keyword\">async</span> reserve = <span class=\"hljs-keyword\">async</span> (ctx, ticketId)=&gt; {\n" +
     "  ...\n" +
-    "}</pre></div><div id=\"journal_ticket\" class=\"smallest_font display-none padding--sm bg-light\"><a class=\"text--center smaller_font\">Journal: <br></a><div id=\"journal_ticket_0\" class=\"text--center display-inline-block color-2 set-bg set-color padding-horiz--xs\">(seat2B) <br> state()</div><div id=\"journal_ticket_1\" class=\"text--center display-inline-block display-none color-3 set-bg set-color padding-horiz--xs\">response: <br> { success }</div></div></div></div></div>";
+    "}</pre></div><div id=\"journal_ticket\" class=\"smallest_font display-none padding--sm bg-light\"><p class=\"smaller_font margin-bottom--none\">Journal: <br></p><div id=\"journal_ticket_0\" class=\"text--center display-inline-block color-2 set-bg set-color padding-horiz--xs\">(seat2B) <br> state()</div><div id=\"journal_ticket_1\" class=\"text--center display-inline-block display-none color-3 set-bg set-color padding-horiz--xs\">response: <br> { success }</div></div></div></div></div>";
 
 
 
@@ -382,7 +383,7 @@ export default function DurableExecutionAnimation() {
     console.info("Called DurableExecutionAnimation");
 
     const [animationIndex, setAnimationIndex] = useState(0);
-    const [requestedAnimationIndex, setRequestedAnimationIndex] = useState(0);
+    const [requestedIndex, setRequestedIndex] = useState(0);
     const [cartSvcCodeLine, setCartSvcCodeLine] = useState(0);
     const [ticketSvcCodeLine, setTicketSvcCodeLine] = useState(0);
 
@@ -431,31 +432,20 @@ export default function DurableExecutionAnimation() {
     }
 
     function animate() {
+        setAnimationIndex(prevState => prevState + 1);
+        console.info("Called animate, will animate to " + animationIndex);
 
-        console.info("Called animate, will animate from " + animationIndex + " to " + requestedAnimationIndex);
-        function needToExecute(index) {
-            console.info("Called needToExecute with index: " + index + " and prevValue: " +  animationIndex + " and endValue: " + requestedAnimationIndex);
-            if(animationIndex === 0 && index === 0) {
-                return true;
-            } else if(animationIndex > requestedAnimationIndex){
-                resetAnimation();
-                return true;
-            } else if(animationIndex < requestedAnimationIndex) {
-                return animationIndex < index && requestedAnimationIndex >= index;
-            }
-        }
-
-        switch (true) {
-            case needToExecute(0): {
+        switch (animationIndex) {
+            case 0: {
                 // Show the ingress call
                 console.info("Animation step 0 Show the ingress call")
                 document.getElementById("animation_explanation").innerHTML = "An HTTP request arrives at Restate.";
                 document
                     .getElementById("ingress_call")
                     .classList.remove("display-none");
-                if(requestedAnimationIndex === 0) break;
+                break;
             }
-            case needToExecute(1): {
+            case 1: {
                 // Create journal in Restate
                 console.info("Animation step 1 Create journal in Restate")
                 document.getElementById("animation_explanation").innerHTML = "Each incoming request gets persisted by the Restate Server.</br>" +
@@ -463,9 +453,9 @@ export default function DurableExecutionAnimation() {
                 document
                     .getElementById("restate_journal_cart")
                     .classList.remove("display-none");
-                if(requestedAnimationIndex === 1) break;
+                break;
             }
-            case needToExecute(2): {
+            case 2: {
                 // Invoke the service
                 console.info("Animation step 2 Invoke the service")
                 document.getElementById("animation_explanation").innerHTML = "Then the server invokes the handler that was specified in the request: the reserve handler of the CartService.</br>" +
@@ -488,9 +478,9 @@ export default function DurableExecutionAnimation() {
                 document
                     .getElementById("cart_request_arrow")
                     .classList.remove("display-none");
-                if(requestedAnimationIndex === 2) break;
+                break;
             }
-            case needToExecute(3): {
+            case 3: {
                 // Execute first line
                 console.info("Animation step 3 Execute first line")
                 document.getElementById("animation_explanation").innerHTML = "The handler starts executing. Every time the code uses the Restate context `ctx`, the SDK notifies the Restate server of the execution of this action.</br>" +
@@ -501,17 +491,17 @@ export default function DurableExecutionAnimation() {
                 document
                     .getElementById("cart_request_arrow")
                     .classList.add("display-none");
-                if(requestedAnimationIndex === 3) break;
+                break;
             }
-            case needToExecute(4): {
+            case 4: {
                 console.info("Animation step 4")
                 document.getElementById("animation_explanation").innerHTML = "The RPC call gets proxied via Restate.";
                 document
                     .getElementById("cart_suspend_arrow")
                     .classList.remove("display-none");
-                if(requestedAnimationIndex === 4) break;
+                break;
             }
-            case needToExecute(5): {
+            case 5: {
                 // suspension
                 console.info("Animation step 5 suspension")
                 document.getElementById("animation_explanation").innerHTML = "Restate creates a new journal for the RPC call and adds the request data to it. </br></br>" +
@@ -535,9 +525,9 @@ export default function DurableExecutionAnimation() {
                 document
                     .getElementById("restate_journal_ticket")
                     .classList.remove("display-none");
-                if(requestedAnimationIndex === 5) break;
+                break;
             }
-            case needToExecute(6): {
+            case 6: {
                 // start executing ticket service
                 console.log("Animation step 6 start executing ticket service")
                 document.getElementById("animation_explanation").innerHTML = "Restate invokes the reserve handler of the TicketService and supplies the request data and the state of that virtual object.";
@@ -558,9 +548,9 @@ export default function DurableExecutionAnimation() {
                 document
                     .getElementById("ticket_request_arrow")
                     .classList.remove("display-none");
-                if(requestedAnimationIndex === 6) break;
+                break;
             }
-            case needToExecute(7): {
+            case 7: {
                 // get response ticket service
                 console.log("Animation step 7 get response ticket service")
                 document.getElementById("animation_explanation").innerHTML = "Once the reserve handler has executed successfully, the response is logged in the journal of the CartService.";
@@ -571,9 +561,9 @@ export default function DurableExecutionAnimation() {
                 document
                     .getElementById("ticket_response_arrow")
                     .classList.remove("display-none");
-                if(requestedAnimationIndex === 7) break;
+                break;
             }
-            case needToExecute(8): {
+            case 8: {
                 console.log("Animation step 8")
                 document.getElementById("animation_explanation").innerHTML = "The response of the reserve handler is then also logged in the journal of the addTicket handler. Restate now re-invokes the addTicket handler with its new journal, including the RPC response.";
                 highlightNextCartSvcCodeLine()
@@ -600,9 +590,9 @@ export default function DurableExecutionAnimation() {
                 document
                     .getElementById("ticket_response_arrow")
                     .classList.add("display-none");
-                if(requestedAnimationIndex === 8) break;
+                break;
             }
-            case needToExecute(9): {
+            case 9: {
                 console.log("Animation step 9")
                 document.getElementById("animation_explanation").innerHTML = "The addTicket handler continues its execution.";
                 document
@@ -627,24 +617,24 @@ export default function DurableExecutionAnimation() {
                 document
                     .getElementById("cart_title_invoked")
                     .classList.remove("display-none");
-                if(requestedAnimationIndex === 9) break;
+                break;
             }
-            case needToExecute(10): {
+            case 10: {
                 console.log("Animation step 10");
-                document.getElementById("animation_explanation").innerHTML = "The addTicket handler accesses the K/V state for the specific cart. This state is locally available since Restate transferred it together with the request. </br> </br> Every action that is done on the Restate context ctx, gets added to the journal of the invocation.";
+                document.getElementById("animation_explanation").innerHTML = "The addTicket handler accesses the K/V state for the specific cart. This state is locally available since Restate transferred it together with the request.";
                 highlightNextCartSvcCodeLine();
-                if(requestedAnimationIndex === 10) break;
+                break;
             }
-            case needToExecute(11): {
+            case 11: {
                 console.log("Animation step 11")
                 document.getElementById("animation_explanation").innerHTML = "The handler stores a new state entry in the K/V store. The state changes are committed together with the rest of the execution progress in the journal. This makes sure that the state is always consistent with the progress.";
                 highlightNextCartSvcCodeLine()
                 // Set the state
                 document.getElementById("restate_user_state").innerHTML =
                     "cartService: Joe - cart=<mark className='code-highlight color-5 set-bg set-color'>[seat2B]</mark>";
-                if(requestedAnimationIndex === 11) break;
+                break;
             }
-            case needToExecute(12): {
+            case 12: {
                 console.log("Animation step 12")
                 document.getElementById("animation_explanation").innerHTML = "Finally, the handler finishes the execution. The journal with the response is transferred to Restate.";
                 highlightNextCartSvcCodeLine();
@@ -655,9 +645,9 @@ export default function DurableExecutionAnimation() {
                 document
                     .getElementById("cart_response_arrow")
                     .classList.remove("display-none");
-                if(requestedAnimationIndex === 12) break;
+                break;
             }
-            case needToExecute(13): {
+            case 13: {
                 console.log("Animation step 13")
                 document.getElementById("animation_explanation").innerHTML = "Finally, the handler finishes the execution. The journal with the response is transferred to Restate.";
                 document.getElementById("journal_cart").classList.add("display-none");
@@ -674,25 +664,24 @@ export default function DurableExecutionAnimation() {
                 document
                     .getElementById("cart_title_invoked")
                     .classList.add("display-none");
-                if(requestedAnimationIndex === 13) break;
+                break;
             }
-            case needToExecute(14): {
+            case 14: {
                 console.log("Animation step 14")
                 document.getElementById("animation_explanation").innerHTML = "Once Restate has persisted the response in the journal, it responds to the caller, and the invocation has finished successfully.";
                 document.getElementById("ingress_call").classList.add("display-none");
                 document
                     .getElementById("response_ingress_call")
                     .classList.remove("display-none");
-                if(requestedAnimationIndex === 14) break;
+                break;
             }
-            case needToExecute(15): {
+            case 15: {
                 console.log("Animation step 15 RESET")
                 document.getElementById("animation_explanation").innerHTML = "Restate.";
                 resetAnimation();
                 break;
             }
         }
-        setAnimationIndex(prevValue => {return requestedAnimationIndex;});
     }
 
     function resetAnimation() {
@@ -701,7 +690,16 @@ export default function DurableExecutionAnimation() {
         setTicketSvcCodeLine(0)
         const animationElement = document.getElementById("animation");
         animationElement.innerHTML = defaultAnimation;
+        setAnimationIndex(0);
     }
+
+    const handleReset = () => {
+        resetAnimation();
+    };
+
+    const handleNext = () => {
+        animate()
+    };
 
     return (
         <div>
@@ -714,25 +712,19 @@ export default function DurableExecutionAnimation() {
                     <Services/>
                 </div>
                 <div id="progressBarContainer">
+                    <button onClick={handleReset}>Reset</button>
                     <input
                         type="range"
                         id="progressBar"
                         min={0}
                         max={14}
                         step={1}
+                        readOnly
                         value={animationIndex}
-                        onChange={(e) => {
-                            setRequestedAnimationIndex(+e.target.value);
-                            console.info("Called onChange with animationIndex: " + animationIndex + " and value: " + requestedAnimationIndex);
-                            if(timer !== null) {
-                                clearTimeout(timer);
-                                setTimer(null);
-                            }
-                            setTimer(setTimeout(animate, 10));
-                        }}
+                        onKeyDown={() => {}}
                     />
+                    <button onClick={handleNext}>Next</button>
                 </div>
-                <p id="animation_explanation" className="padding--sm padding-left--md smaller_font"><mark className="purple"> ⏩ Move the slider to see how an invocation get executed with Durable Execution. </mark></p>
             </div>
         </div>
     )
