@@ -110,7 +110,7 @@ const config = {
         title: "",
         logo: {
           alt: "Restate Logo",
-          src: "img/restate.png",
+          src: "img/restate-logo.svg",
           href: "https://restate.dev",
           target: "_self",
         },
