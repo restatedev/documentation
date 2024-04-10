@@ -13,26 +13,55 @@ You can use the CLI to interact with Restate, and manage your services, deployme
 
 ## Installation
 
+### Option 1: Using a package manager
 Install the Restate CLI via:
 
-<Tabs groupId="operating-systems">
-<TabItem value="lin" label="npx">
+<CH.Code>
 
-```shell
+```shell npm
 npm install --global @restatedev/restate
 ```
 
-</TabItem>
-<TabItem value="mac" label="Homebrew">
-
-```shell
+```shell Homebrew
 brew install restatedev/tap/restate
 ```
 
-</TabItem>
-</Tabs>
+</CH.Code>
 
+### Option 2: Download the binary
+Use `curl` to download the binaries from the [releases page](https://github.com/restatedev/restate/releases/latest), and make them executable:
 
+<CH.Code rows={"5"}>
+
+```shell MacOS-x64
+curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.x86_64-apple-darwin.tar.gz && \
+tar -xvf restate.x86_64-apple-darwin.tar.gz && \
+chmod +x restate && \
+sudo mv restate /usr/local/bin/
+```
+
+```shell MacOS-arm64
+curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.aarch64-apple-darwin.tar.gz && \
+tar -xvf restate.aarch64-apple-darwin.tar.gz && \
+chmod +x restate && \
+sudo mv restate /usr/local/bin/
+```
+
+```shell Linux-x64
+curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.x86_64-unknown-linux-musl.tar.gz && \
+tar -xvf restate.x86_64-unknown-linux-musl.tar.gz && \
+chmod +x restate && \
+sudo mv restate /usr/local/bin/
+```
+
+```shell Linux-arm64
+curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.aarch64-unknown-linux-musl.tar.gz && \
+tar -xvf restate.aarch64-unknown-linux-musl.tar.gz && \
+chmod +x restate && \
+sudo mv restate /usr/local/bin/
+```
+
+</CH.Code>
 ## Configuration
 
 There are two ways to configure the CLI: via environment variables or via a configuration file.
