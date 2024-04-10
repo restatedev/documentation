@@ -224,6 +224,110 @@ You should now see printed: `Hi Mary, for the 1 time!`
 
 </Step>
 </TabItem>
+
+<TabItem value="kotlin" label="Kotlin" default>
+
+<Step stepLabel="1" title="Get the project template">
+
+    Download Kotlin Hello world example:
+
+    <CH.Code>
+
+        ```shell CLI
+        restate example kotlin-hello-world-gradle &&
+            cd kotlin-hello-world-gradle
+        ```
+
+        ```shell wget
+        wget https://github.com/restatedev/examples/releases/latest/download/kotlin-hello-world-gradle.zip &&
+            unzip kotlin-hello-world-gradle.zip -d kotlin-hello-world-gradle &&
+            rm kotlin-hello-world-gradle.zip && cd kotlin-hello-world-gradle
+        ```
+
+    </CH.Code>
+
+</Step>
+<Step stepLabel="2" title="Build and run the service">
+
+    You are all set to start developing your service.
+
+    ```shell
+    ./gradlew build
+    ```
+
+    Open the project in an IDE and configure it to build with Gradle.
+    Run your service via:
+
+    ```shell
+    ./gradlew run
+    ```
+
+</Step>
+
+<Step stepLabel="3" title="Launch Restate">
+
+    <CH.Code rows={"2"}>
+
+        ```shell npx
+        npx @restatedev/restate-server
+        ```
+
+        ``` shell Homebrew
+        brew install restatedev/tap/restate-server && restate-server
+        ```
+
+        ```shell Docker
+        docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 \
+        --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
+        ```
+
+    </CH.Code>
+
+    <Admonition type="tip" icon="💡" title="Single binary">
+        Restate is a single self-contained binary. No external dependencies needed. Check out our [download page](https://restate.dev/get-restate/) for other ways to run Restate.
+    </Admonition>
+
+</Step>
+
+<Step stepLabel="4" title="Register the service">
+
+    Now, we need to tell Restate where the service is running.
+    You can use the Restate CLI via `npx` or via a global `npm` install.
+    Alternatively, you can use `curl`:
+
+    <CH.Code rows={"2"}>
+
+        ```shell CLI
+        restate dp add http://localhost:9080
+        ```
+
+        ```shell curl
+        curl localhost:9070/deployments -H 'content-type: application/json' \
+            -d '{"uri": "http://localhost:9080"}'
+        ```
+
+    </CH.Code>
+
+    If run Restate with Docker, you need to use `http://host.docker.internal:9080` instead of `http://localhost:9080` to reach the service deployment.
+
+    Restate then sends a request to the service deployment to ask which services and handlers
+    are running behind this endpoint and will remember these.
+    After executing this curl request, you should see the registered services and handlers printed to your terminal.
+
+</Step>
+
+<Step stepLabel="5" title="Send requests to the service">
+
+    Invoke the function via:
+
+    ```shell
+    curl localhost:8080/Greeter/Mary/greet -H 'content-type: application/json' -d '"Hi"'
+    ```
+
+    You should now see printed: `Hi Mary, for the 1 time!`
+
+</Step>
+</TabItem>
 </Tabs>
 Congratulations, you managed to run your first Restate service!
 
