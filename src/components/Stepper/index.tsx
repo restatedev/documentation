@@ -2,13 +2,6 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.css';
 
-type StepProps = {
-    title: string;
-    stepLabel: string;
-    // children: string;
-};
-
-
 export default function Step({title, stepLabel, children}): JSX.Element {
     return (
         <div className="container">
