@@ -1,0 +1,95 @@
+---
+sidebar_position: 2
+description: "Learn how to define services and virtual objects."
+---
+
+import Admonition from '@theme/Admonition';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Service definition
+
+Java/Kotlin SDK lets you define services/virtual objects using annotations, in a similar fashion to other JVM libraries like Spring and Jax-RS.
+
+## Annotations
+
+For services, use the annotation `@Service` on top of the class and the annotation `@Handler` on each handler:
+
+<Tabs groupId="languages">
+<TabItem value="java" label="Java">
+
+```java
+CODE_LOAD::java/src/main/java/develop/MyService.java#<start_service>-<end_service>
+```
+
+The first argument of the handler must be the `Context` parameter.
+Input parameter and return type can be any type serializable/deserializable using [Jackson Databind](https://github.com/FasterXML/jackson). For more details on serializers/deserializers, look at the [serialization documentation](/develop/java/serialization).
+In case the handler doesn't have any input, you can omit the input argument. In case the handler doesn't have any output, you can omit the output type.
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+CODE_LOAD::kotlin/src/main/kotlin/develop/MyService.kt#<start_service>-<end_service>
+```
+
+The first argument of the handler must be the `Context` parameter.
+Input parameter and return type can be any type serializable/deserializable using [Kotlin serialization](https://kotlinlang.org/docs/serialization.html). For more details on serializers/deserializers, look at the [serialization documentation](/develop/java/serialization).
+In case the handler doesn't have any input, you can omit the input argument. In case the handler doesn't have any output, you can omit the output type.
+
+</TabItem>
+</Tabs>
+
+The service name will be the simple class name, in this case `MyService`. You can override it by using the annotation field `name`.
+
+For Virtual objects, use the annotation `@VirtualObject`:
+
+<Tabs groupId="languages">
+<TabItem value="java" label="Java">
+
+```java
+CODE_LOAD::java/src/main/java/develop/MyVirtualObject.java#<start_virtual_object>-<end_virtual_object>
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+CODE_LOAD::kotlin/src/main/kotlin/develop/MyVirtualObject.kt#<start_virtual_object>-<end_virtual_object>
+```
+
+</TabItem>
+</Tabs>
+
+For Virtual objects the first argument of the handler must be the `ObjectContext` parameter
+
+<Admonition type="info">
+Annotations can be placed either on classes or interfaces. This is especially useful if you want to split your service in two packages, one containing the interface and the generated clients, and one containing the implementation.
+</Admonition>
+
+<Admonition type="tip" icon="💡">
+We suggest turning on the IntelliJ IDEA annotation processing support, as described in [their docs](https://www.jetbrains.com/help/idea/annotation-processors-support.html), so that to re-run code generation you need to simply press `CTRL + F9`.
+</Admonition>
+
+## `Context`
+
+In Restate services, all interaction with the runtime occurs through the Restate context.
+This context provides a set of methods that allow you to perform actions such as getting or setting state, or calling other services.
+Depending on whether you're building a service or a virtual object, you use respectively `Context` or `ObjectContext`.
+
+All method calls made through the Restate context are durably stored in the execution log
+and can be replayed in case of failure, ensuring that your service is always reliable and fault-tolerant.
+This means that if you do actions (e.g. calling other services, sleep) without making use of the Restate SDK,
+you do not have these benefits.
+
+<Admonition type="note">
+Have a look at the [Context JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api/latest/dev/restate/sdk/Context.html) and [ObjectContext JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api/latest/dev/restate/sdk/ObjectContext.html) for an overview of what you can do with the Restate context.
+</Admonition>
+
+<Admonition type="info">
+The code blocks in the documentation refer to the Restate Context via the variable named `ctx`.
+</Admonition>
+
+## Manual service definition without annotation processing
+
+In case you don't want to use annotation processing, you can manually define your service by using the class `dev.restate.sdk.Component` for Java, or `dev.restate.sdk.kotlin.Component`. Check the respective JavaDocs/KTDocs for more details.

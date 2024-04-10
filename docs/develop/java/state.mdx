@@ -4,6 +4,8 @@ description: "Explore interacting with Restate's state store."
 ---
 
 import Admonition from '@theme/Admonition';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # State
 Restate offers durable storage of application state, with support for key-value state that can be retrieved, set, and cleared via its key.
@@ -18,31 +20,68 @@ Have a look at the [introspection docs](/operate/introspection#inspecting-applic
 ## Listing state keys
 To list all the keys that have entries in the state store for that invocation (and its keyed service instance), do:
 
+
+<Tabs groupId="languages">
+<TabItem value="java" label="Java">
+
 ```java
 CODE_LOAD::java/src/main/java/develop/State.java#<start_statekeys>-<end_statekeys>
 ```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+CODE_LOAD::kotlin/src/main/kotlin/develop/State.kt#<start_statekeys>-<end_statekeys>
+```
+
+</TabItem>
+</Tabs>
 
 ## Retrieving state
 To retrieve state in Restate, you can do the following:
 
 First, you need to define the state key: a combination of a key name and (de)serializer.
-You can use Restate's built-in `CoreSerdes` for serialization of primitive types.
-For the serialization of custom types, have a look at the [serialization documentation](/develop/java/serialization).
+For more details on serializers/deserializers, look at the [serialization documentation](/develop/java/serialization).
 
 Once you have defined the `STATE_KEY`, you can retrieve the state in your methods as follows:
+
+<Tabs groupId="languages">
+<TabItem value="java" label="Java">
 
 ```java
 CODE_LOAD::java/src/main/java/develop/State.java#<start_get>-<end_get>
 ```
 
-This will return either the value that was stored or `null` if no value was stored.
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+CODE_LOAD::kotlin/src/main/kotlin/develop/State.kt#<start_get>-<end_get>
+```
+
+</TabItem>
+</Tabs>
 
 ## Setting state
 To set a key-value pair in Restate, do:
 
+<Tabs groupId="languages">
+<TabItem value="java" label="Java">
+
 ```java
 CODE_LOAD::java/src/main/java/develop/State.java#<start_set>-<end_set>
 ```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+CODE_LOAD::kotlin/src/main/kotlin/develop/State.kt#<start_set>-<end_set>
+```
+
+</TabItem>
+</Tabs>
 
 Have a look at [the docs on retrieving state](/develop/java/state#retrieving-state) to understand how to create the state key.
 
@@ -53,14 +92,40 @@ Replace `my-new-value` with the value that you want to set.
 ## Clearing state
 To delete the value of a key in Restate, do:
 
+<Tabs groupId="languages">
+<TabItem value="java" label="Java">
+
 ```java
 CODE_LOAD::java/src/main/java/develop/State.java#<start_clear>-<end_clear>
 ```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+CODE_LOAD::kotlin/src/main/kotlin/develop/State.kt#<start_clear>-<end_clear>
+```
+
+</TabItem>
+</Tabs>
 
 Have a look at [the docs on retrieving state](/develop/java/state#retrieving-state) to understand how to create the state key.
 
 To delete all K/V state entries for the invocation (and its keyed service instance), do:
 
+<Tabs groupId="languages">
+<TabItem value="java" label="Java">
+
 ```java
 CODE_LOAD::java/src/main/java/develop/State.java#<start_clear_all>-<end_clear_all>
 ```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+CODE_LOAD::kotlin/src/main/kotlin/develop/State.kt#<start_clear_all>-<end_clear_all>
+```
+
+</TabItem>
+</Tabs>

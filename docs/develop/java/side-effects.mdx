@@ -3,6 +3,8 @@ sidebar_position: 5
 description: "Learn how to store the results of non-deterministic operations."
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
 
 # Determinism & side effects
@@ -23,13 +25,30 @@ and that the value is retained during replays.
 
 Here is an example of a database request for which the string return value is stored as a side effect in Restate:
 
+<Tabs groupId="languages">
+<TabItem value="java" label="Java">
+
 ```java
 CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_side_effect>-<end_side_effect>
 ```
 
-You need to define the return value type of the side effect, so that the Restate SDK knows how to serialize and deserialize it.
+In order for `run` to work, the Restate SDK needs to know how to serialize and deserialize it.
 For the primitive types, you can use Restate's built-in `dev.restate.sdk.core.CoreSerdes`, for example `CoreSerdes.STRING_UTF8` or `CoreSerdes.BOOLEAN`.
 For more information, have a look at the documentation on [serialization](/develop/java/serialization).
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+CODE_LOAD::kotlin/src/main/kotlin/develop/SideEffects.kt#<start_side_effect>-<end_side_effect>
+```
+
+In order for `runBlock` to work, the Restate SDK needs to know how to serialize and deserialize it.
+By default, Kotlin serialization is used, but you can override it with your own (de)serialization tools.
+For more information, have a look at the documentation on [serialization](/develop/java/serialization).
+
+</TabItem>
+</Tabs>
 
 Once stored, the request to the database will not get re-executed upon replay, but the first result will be used instead.
 
@@ -42,9 +61,22 @@ This includes actions such as getting state, calling another service, and nestin
 
 If the side effect closure throws an error, then it is retried infinitely using an exponential backoff strategy until it succeeds.
 
+<Tabs groupId="languages">
+<TabItem value="java" label="Java">
+
 ```java
 CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_retry_settings>-<end_retry_settings>
 ```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+CODE_LOAD::kotlin/src/main/kotlin/develop/SideEffects.kt#<start_retry_settings>-<end_retry_settings>
+```
+
+</TabItem>
+</Tabs>
 
 ### Terminal failures of side effects
 
@@ -55,33 +87,72 @@ The terminal error will also be recorded in the journal so that it will be deter
 
 You can throw a terminal exception via `TerminalException` and supply it with a `TerminalException.Code` and a message:
 
+<Tabs groupId="languages">
+<TabItem value="java" label="Java">
+
 ```java
 CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_terminal>-<end_terminal>
 ```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+CODE_LOAD::kotlin/src/main/kotlin/develop/SideEffects.kt#<start_terminal>-<end_terminal>
+```
+
+</TabItem>
+</Tabs>
 
 ## Promise/Awaitable combinators
 
 The SDK provides combinators for working with `Awaitable`.
 
-**Awaitable.all():**
+**Await all**
+
+<Tabs groupId="languages">
+<TabItem value="java" label="Java">
 
 ```java
 CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_combine_all>-<end_combine_all>
 ```
 
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+CODE_LOAD::kotlin/src/main/kotlin/develop/SideEffects.kt#<start_combine_all>-<end_combine_all>
+```
+
+</TabItem>
+</Tabs>
+
 Creates an `Awaitable` that awaits all of the provided Awaitables to resolve.
 
-Similar to [`CompleteableFuture.allOf()`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/CompletableFuture.html#allOf(java.util.concurrent.CompletableFuture...)), but the outcome is stored in the Restate journal to be deterministically replayable.
+The semantics are similar to [`CompleteableFuture.allOf()`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/CompletableFuture.html#allOf(java.util.concurrent.CompletableFuture...)), but the outcome is stored in the Restate journal to be deterministically replayable.
 
-**Awaitable.any():**
+**Await any**
+
+<Tabs groupId="languages">
+<TabItem value="java" label="Java">
 
 ```java
 CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_combine_any>-<end_combine_any>
 ```
 
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+CODE_LOAD::kotlin/src/main/kotlin/develop/SideEffects.kt#<start_combine_any>-<end_combine_any>
+```
+
+</TabItem>
+</Tabs>
+
 Creates an `Awaitable` that awaits any of the provided Awaitables to resolve.
 
-Similar to [`CompleteableFuture.anyOf()`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/CompletableFuture.html#anyOf(java.util.concurrent.CompletableFuture...)), but the outcome is stored in the Restate journal to be deterministically replayable.
+The semantics are similar to [`CompleteableFuture.anyOf()`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/CompletableFuture.html#anyOf(java.util.concurrent.CompletableFuture...)), but the outcome is stored in the Restate journal to be deterministically replayable.
 
 ## Built-in helper functions
 Two common non-deterministic actions are the generation of UUIDs and random numbers.
@@ -89,12 +160,25 @@ The SDK provides helper functions for those.
 
 ### Generating UUIDs
 
+<Tabs groupId="languages">
+<TabItem value="java" label="Java">
+
 ```java
 CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_uuid>-<end_uuid>
 ```
 
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+CODE_LOAD::kotlin/src/main/kotlin/develop/SideEffects.kt#<start_uuid>-<end_uuid>
+```
+
+</TabItem>
+</Tabs>
+
 <Admonition type="note">
-`ctx.random()` returns a `RestateRandom` instance. This is a subclass of `java.util.Random` that seeds it on the invocation ID, to always return the same value on retries.
+`ctx.random()` returns a `RestateRandom` instance. This is a subclass of built-in's `Random` that seeds it on the invocation ID, to always return the same value on retries.
 </Admonition>
 
 <Admonition type="caution">
@@ -111,12 +195,25 @@ Restate guarantees that once the UUID is stored, it is retained during retries.
 
 ### Generating random numbers
 
+<Tabs groupId="languages">
+<TabItem value="java" label="Java">
+
 ```java
 CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_random_nb>-<end_random_nb>
 ```
 
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+CODE_LOAD::kotlin/src/main/kotlin/develop/SideEffects.kt#<start_random_nb>-<end_random_nb>
+```
+
+</TabItem>
+</Tabs>
+
 You can use any of the methods of [`java.util.Random`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Random.html) to generate random numbers: for example, `nextBoolean()`, `nextLong()`, `nextFloat()`, etc.
 
 <Admonition type="note">
-`ctx.random()` returns a `RestateRandom` instance. This is a subclass of `java.util.Random` that seeds it on the invocation ID, to always return the same value on retries.
+`ctx.random()` returns a `RestateRandom` instance. This is a subclass of built-in's `Random` that seeds it on the invocation ID, to always return the same value on retries.
 </Admonition>
