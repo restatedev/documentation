@@ -11,19 +11,19 @@ public class Greeter {
   private static final StateKey<Integer> COUNT = StateKey.of("count", CoreSerdes.JSON_INT);
 
   @Handler
-  public String greet(ObjectContext context, String name) {
+  public String greet(ObjectContext ctx, String greeting) {
     // Get the count and increment it
-    int count = context.get(COUNT).orElse(1);
-    context.set(COUNT, count + 1);
+    int count = ctx.get(COUNT).orElse(1);
+    ctx.set(COUNT, count + 1);
 
     // Send the response back
-    return "Hello " + name + " for the " + count + " time!";
+    return greeting + " " + ctx.key() + ", for the " + count + " time!";
   }
 
   public static void main(String[] args) {
     RestateHttpEndpointBuilder.builder()
-            .bind(new Greeter())
-            // Start the Restate Endpoint HTTP Server
-            .buildAndListen();
+      .bind(new Greeter())
+      // Start the Restate Endpoint HTTP Server
+      .buildAndListen();
   }
 }
