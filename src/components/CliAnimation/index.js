@@ -2,17 +2,10 @@ import React from "react";
 import { MiniTerminalTransitions } from "@code-hike/mini-terminal";
 import styles from "./styles.module.css";
 
-export default function TerminalAnimation({listOfSteps}) {
+export default function CliAnimation({listOfSteps}) {
     const [progress, setProgress] = React.useState(0);
     return (
         <div className={styles.terminal}>
-            <MiniTerminalTransitions
-                title="terminal"
-                height={300}
-                progress={progress}
-                steps={listOfSteps}
-                className="terminal"
-            />
             <div className={styles.progressBar}>
                 <input
                     type="range"
@@ -24,7 +17,13 @@ export default function TerminalAnimation({listOfSteps}) {
                 />
                 <div style={{ width: 60, paddingLeft: 20 }}>{progress}</div>
             </div>
-
+            <MiniTerminalTransitions
+                title="terminal"
+                height={"auto"}
+                progress={progress}
+                steps={listOfSteps}
+                className="terminal"
+            />
         </div>
     );
 }

@@ -38,25 +38,11 @@ dependencies {
   testImplementation("dev.restate:sdk-testing:$restateVersion")
 }
 
-// Configure protoc plugin
-//protobuf {
-//  protoc { artifact = "com.google.protobuf:protoc:3.24.3" }
-//
-//  // We need both grpc and restate codegen(s) because the restate codegen depends on the grpc one
-//  plugins {
-//    id("grpc") { artifact = "io.grpc:protoc-gen-grpc-java:1.58.0" }
-//    id("restate") { artifact = "dev.restate:protoc-gen-restate:$restateVersion:all@jar" }
-//  }
-//
-//  generateProtoTasks {
-//    all().forEach {
-//      it.plugins {
-//        id("grpc")
-//        id("restate")
-//      }
-//    }
-//  }
-//}
+tasks.withType<JavaCompile> {
+  // Using -parameters allows to use Jackson ParameterName feature
+  // https://github.com/FasterXML/jackson-modules-java8/tree/2.14/parameter-names
+  options.compilerArgs.add("-parameters")
+}
 
 // Configure test platform
 tasks.withType<Test> {

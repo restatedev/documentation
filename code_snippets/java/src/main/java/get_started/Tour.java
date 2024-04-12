@@ -18,7 +18,7 @@ public class Tour {
 
        // <start_sleep_and_send>
        ctx.sleep(Duration.ofMinutes(15));
-       TicketObjectClient.fromContext(ctx, ticketId).send().unreserve();
+       TicketObjectClient.fromContext(ctx).send().unreserve();
        // <end_sleep_and_send>
 
        // <start_idempotency_key_retry>
