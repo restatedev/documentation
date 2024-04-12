@@ -13,7 +13,7 @@ import java.time.Duration;
 public class Tour {
 
    @Handler
-   public void handle(ObjectContext ctx) {
+   public void handle(Context ctx) {
        String ticketId = "123";
 
        // <start_sleep_and_send>
