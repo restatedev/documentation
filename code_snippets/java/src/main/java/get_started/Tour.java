@@ -24,7 +24,7 @@ public class Tour {
        // <start_idempotency_key_retry>
        String idempotencyKey = ctx.random().nextUUID().toString();
        System.out.println("My idempotency key: " + idempotencyKey);
-       throw new IllegalStateException("Something went wrong.");
+       TourUtils.fail();
        // <end_idempotency_key_retry>
    }
 
@@ -33,3 +33,7 @@ public class Tour {
     }
 }
 
+class TourUtils {
+    public static fail() {}
+    }
+}

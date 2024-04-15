@@ -7,7 +7,7 @@ description: ""
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
-import Step from "../../src/components/Stepper";
+import {Step, SubtleStep} from "../../src/components/Stepper";
 import TourAnimation from "../../src/components/TourAnimation";
 import CliAnimation from "../../src/components/CliAnimation";
 
@@ -68,7 +68,7 @@ This guide is written for:
 
 ## Getting started
 
-<Step stepLabel="1" title="Set up the tutorial">
+<SubtleStep stepLabel="1" title="Set up the tutorial">
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
 
@@ -123,9 +123,9 @@ This [GitHub repository](https://github.com/restatedev/examples/tree/main/tutori
 
 </TabItem>
 </Tabs>
-</Step>
+</SubtleStep>
 
-<Step stepLabel="2" title="Run the services">
+<SubtleStep stepLabel="2" title="Run the services">
 
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
@@ -144,9 +144,9 @@ npm run app
 </TabItem>
 </Tabs>
 
-</Step>
+</SubtleStep>
 
-<Step stepLabel="3" title="Launch Restate">
+<SubtleStep stepLabel="3" title="Launch Restate">
 
 <CH.Code rows={"2"}>
 
@@ -170,9 +170,9 @@ npm run app
 </Admonition>
 
 When you stop the container, any persisted state is dropped because we start the container with the `--rm` flag.
-</Step>
+</SubtleStep>
 
-<Step stepLabel="4" title="Register the services with Restate">
+<SubtleStep stepLabel="4" title="Register the services with Restate">
 
 Now, we need to tell Restate where our services are running.
 You can register services by calling the Restate Admin API (default port `9070`) and supplying it the service endpoint URI:
@@ -250,9 +250,9 @@ You can register services by calling the Restate Admin API (default port `9070`)
 </details>
 
 If you run Restate with Docker, replace `http://host.docker.internal:9080` by `http://localhost:9080`.
-</Step>
+</SubtleStep>
 
-<Step stepLabel="🚀" title="All set up!">
+<SubtleStep stepLabel="🚀" title="All set up!">
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
 In `src/app` you will find the skeletons of the various services to help you start implementing the app.
@@ -270,7 +270,7 @@ Services are annotated by `@Service`. A service consists of a set of handlers, a
 The `AppMain.java` file contains the definition of the endpoint that hosts the services.
 </TabItem>
 </Tabs>
-</Step>
+</SubtleStep>
 
 ## Invoking handlers
 <Admonition type="note" title="Implement it yourself or follow along by looking at the code under part1"/>
@@ -856,86 +856,86 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tu
 </TabItem>
 </Tabs>
 
+<details className={"grey-details"}>
+    <summary>Service logs</summary>
+    <Tabs groupId="sdk" queryString className={"display-none"}>
+        <TabItem value="ts" label="TypeScript">
+
+            ```log
+            restate] [CartObject/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:18.538Z] DEBUG: Invoking function.
+            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:18.539Z] DEBUG: Adding message to journal and sending to Restate ; InvokeEntryMessage
+            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:18.539Z] DEBUG: Scheduling suspension in 30000 ms
+            [restate] [TicketObject/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:18.543Z] DEBUG: Invoking function.
+            [restate] [TicketObject/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:18.543Z] DEBUG: Adding message to journal and sending to Restate ; SleepEntryMessage
+            [restate] [TicketObject/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:18.543Z] DEBUG: Scheduling suspension in 30000 ms
+            // highlight-start
+            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:48.568Z] DEBUG: Writing suspension message to journal. ; SuspensionMessage
+            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:48.568Z] DEBUG: Suspending function.
+            [restate] [TicketObject/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:48.569Z] DEBUG: Writing suspension message to journal. ; SuspensionMessage
+            [restate] [TicketObject/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:48.569Z] DEBUG: Suspending function.
+            [restate] [TicketObject/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:53.554Z] DEBUG: Resuming (replaying) function.
+            // highlight-end
+            [restate] [TicketObject/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:53.554Z] DEBUG: Matched and replayed message from journal ; SleepEntryMessage
+            [restate] [TicketObject/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:53.554Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
+            [restate] [TicketObject/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:53.554Z] DEBUG: Function completed successfully.
+            // highlight-next-line
+            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:53.598Z] DEBUG: Resuming (replaying) function.
+            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:53.598Z] DEBUG: Matched and replayed message from journal ; InvokeEntryMessage
+            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:53.598Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
+            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:53.598Z] DEBUG: Function completed successfully.
+            ```
+
+        </TabItem>
+        <TabItem value="java" label="Java">
+
+            ```log
+            // withClass highlight-line
+            2024-03-19 13:17:31 DEBUG [example.CartObject/AddTicket] dev.restate.sdk.http.vertx.RequestHttpServerHandler - Handling request to example.CartObject/AddTicket
+            2024-03-19 13:17:31 INFO  [example.CartObject/AddTicket] dev.restate.sdk.core.RestateEndpoint - Start processing invocation
+            2024-03-19 13:17:31 DEBUG [example.CartObject/AddTicket] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CartObject', invocationState=WAITING_START, id=inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz} to REPLAYING
+            2024-03-19 13:17:31 DEBUG [example.CartObject/AddTicket][inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CartObject', invocationState=REPLAYING, id=inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz} to PROCESSING
+            // withClass highlight-line
+            2024-03-19 13:17:31 DEBUG [example.TicketObject/Reserve] dev.restate.sdk.http.vertx.RequestHttpServerHandler - Handling request to example.TicketObject/Reserve
+            2024-03-19 13:17:31 INFO  [example.TicketObject/Reserve] dev.restate.sdk.core.RestateEndpoint - Start processing invocation
+            2024-03-19 13:17:31 DEBUG [example.TicketObject/Reserve] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.TicketObject', invocationState=WAITING_START, id=inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp} to REPLAYING
+            2024-03-19 13:17:31 DEBUG [example.TicketObject/Reserve][inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.TicketObject', invocationState=REPLAYING, id=inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp} to PROCESSING
+            // withClass highlight-line
+            2024-03-19 13:18:31 INFO  [example.CartObject/AddTicket][inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz] dev.restate.sdk.core.InvocationStateMachine - Suspend invocation
+            2024-03-19 13:18:31 DEBUG [example.CartObject/AddTicket][inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CartObject', invocationState=PROCESSING, id=inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz} to CLOSED
+            2024-03-19 13:18:31 INFO  [example.CartObject/AddTicket][inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz] dev.restate.sdk.core.InvocationStateMachine - End invocation
+            2024-03-19 13:18:31 INFO  [example.CartObject/AddTicket][inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz] dev.restate.sdk.core.InvocationStateMachine - End invocation
+            // withClass highlight-line
+            2024-03-19 13:18:31 INFO  [example.TicketObject/Reserve][inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp] dev.restate.sdk.core.InvocationStateMachine - Suspend invocation
+            2024-03-19 13:18:31 DEBUG [example.TicketObject/Reserve][inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.TicketObject', invocationState=PROCESSING, id=inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp} to CLOSED
+            2024-03-19 13:18:31 INFO  [example.TicketObject/Reserve][inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp] dev.restate.sdk.core.InvocationStateMachine - End invocation
+            2024-03-19 13:18:31 INFO  [example.TicketObject/Reserve][inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp] dev.restate.sdk.core.InvocationStateMachine - End invocation
+            // withClass highlight-line
+            2024-03-19 13:18:36 DEBUG [example.TicketObject/Reserve] dev.restate.sdk.http.vertx.RequestHttpServerHandler - Handling request to example.TicketObject/Reserve
+            2024-03-19 13:18:36 INFO  [example.TicketObject/Reserve] dev.restate.sdk.core.RestateEndpoint - Start processing invocation
+            2024-03-19 13:18:36 DEBUG [example.TicketObject/Reserve] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.TicketObject', invocationState=WAITING_START, id=inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp} to REPLAYING
+            2024-03-19 13:18:36 DEBUG [example.TicketObject/Reserve][inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.TicketObject', invocationState=REPLAYING, id=inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp} to PROCESSING
+            2024-03-19 13:18:36 INFO  [example.TicketObject/Reserve][inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp] dev.restate.sdk.core.InvocationStateMachine - End invocation
+            2024-03-19 13:18:36 DEBUG [example.TicketObject/Reserve][inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.TicketObject', invocationState=PROCESSING, id=inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp} to CLOSED
+            2024-03-19 13:18:36 INFO  [example.TicketObject/Reserve][inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp] dev.restate.sdk.core.InvocationStateMachine - End invocation
+            // withClass highlight-line
+            2024-03-19 13:18:36 DEBUG [example.CartObject/AddTicket] dev.restate.sdk.http.vertx.RequestHttpServerHandler - Handling request to example.CartObject/AddTicket
+            2024-03-19 13:18:36 INFO  [example.CartObject/AddTicket] dev.restate.sdk.core.RestateEndpoint - Start processing invocation
+            2024-03-19 13:18:36 DEBUG [example.CartObject/AddTicket] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CartObject', invocationState=WAITING_START, id=inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz} to REPLAYING
+            2024-03-19 13:18:36 DEBUG [example.CartObject/AddTicket][inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CartObject', invocationState=REPLAYING, id=inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz} to PROCESSING
+            2024-03-19 13:18:36 INFO  [example.CartObject/AddTicket][inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz] dev.restate.sdk.core.InvocationStateMachine - End invocation
+            2024-03-19 13:18:36 DEBUG [example.CartObject/AddTicket][inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CartObject', invocationState=PROCESSING, id=inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz} to CLOSED
+            2024-03-19 13:18:36 INFO  [example.CartObject/AddTicket][inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz] dev.restate.sdk.core.InvocationStateMachine - End invocation
+            ```
+
+        </TabItem>
+    </Tabs>
+</details>
+
 Send an `addTicket` request, as [you did earlier](#running-the-services-and-runtime).
-Now you see in the logs that both services get suspended.
+You see in the logs that both services get suspended.
 The `CartObject` gets suspended because it waits for a response from the `reserve` function and the `TicketObject` gets suspended because it waits for the sleep to be completed.
 Restate keeps track of how long the service should sleep and then triggers it to resume the invocation.
 Finally, you see the responses of both functions coming in.
-
-<details>
-<summary>Show the logs</summary>
-<Tabs groupId="sdk" queryString className={"display-none"}>
-<TabItem value="ts" label="TypeScript">
-
-```log
-restate] [CartObject/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:18.538Z] DEBUG: Invoking function.
-[restate] [CartObject/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:18.539Z] DEBUG: Adding message to journal and sending to Restate ; InvokeEntryMessage
-[restate] [CartObject/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:18.539Z] DEBUG: Scheduling suspension in 30000 ms
-[restate] [TicketObject/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:18.543Z] DEBUG: Invoking function.
-[restate] [TicketObject/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:18.543Z] DEBUG: Adding message to journal and sending to Restate ; SleepEntryMessage
-[restate] [TicketObject/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:18.543Z] DEBUG: Scheduling suspension in 30000 ms
-// highlight-start
-[restate] [CartObject/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:48.568Z] DEBUG: Writing suspension message to journal. ; SuspensionMessage
-[restate] [CartObject/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:48.568Z] DEBUG: Suspending function.
-[restate] [TicketObject/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:48.569Z] DEBUG: Writing suspension message to journal. ; SuspensionMessage
-[restate] [TicketObject/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:48.569Z] DEBUG: Suspending function.
-[restate] [TicketObject/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:53.554Z] DEBUG: Resuming (replaying) function.
-// highlight-end
-[restate] [TicketObject/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:53.554Z] DEBUG: Matched and replayed message from journal ; SleepEntryMessage
-[restate] [TicketObject/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:53.554Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
-[restate] [TicketObject/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:53.554Z] DEBUG: Function completed successfully.
-// highlight-next-line
-[restate] [CartObject/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:53.598Z] DEBUG: Resuming (replaying) function.
-[restate] [CartObject/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:53.598Z] DEBUG: Matched and replayed message from journal ; InvokeEntryMessage
-[restate] [CartObject/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:53.598Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
-[restate] [CartObject/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:53.598Z] DEBUG: Function completed successfully.
-```
-
-</TabItem>
-<TabItem value="java" label="Java">
-
-```log
-// withClass highlight-line
-2024-03-19 13:17:31 DEBUG [example.CartObject/AddTicket] dev.restate.sdk.http.vertx.RequestHttpServerHandler - Handling request to example.CartObject/AddTicket
-2024-03-19 13:17:31 INFO  [example.CartObject/AddTicket] dev.restate.sdk.core.RestateEndpoint - Start processing invocation
-2024-03-19 13:17:31 DEBUG [example.CartObject/AddTicket] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CartObject', invocationState=WAITING_START, id=inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz} to REPLAYING
-2024-03-19 13:17:31 DEBUG [example.CartObject/AddTicket][inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CartObject', invocationState=REPLAYING, id=inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz} to PROCESSING
-// withClass highlight-line
-2024-03-19 13:17:31 DEBUG [example.TicketObject/Reserve] dev.restate.sdk.http.vertx.RequestHttpServerHandler - Handling request to example.TicketObject/Reserve
-2024-03-19 13:17:31 INFO  [example.TicketObject/Reserve] dev.restate.sdk.core.RestateEndpoint - Start processing invocation
-2024-03-19 13:17:31 DEBUG [example.TicketObject/Reserve] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.TicketObject', invocationState=WAITING_START, id=inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp} to REPLAYING
-2024-03-19 13:17:31 DEBUG [example.TicketObject/Reserve][inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.TicketObject', invocationState=REPLAYING, id=inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp} to PROCESSING
-// withClass highlight-line
-2024-03-19 13:18:31 INFO  [example.CartObject/AddTicket][inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz] dev.restate.sdk.core.InvocationStateMachine - Suspend invocation
-2024-03-19 13:18:31 DEBUG [example.CartObject/AddTicket][inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CartObject', invocationState=PROCESSING, id=inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz} to CLOSED
-2024-03-19 13:18:31 INFO  [example.CartObject/AddTicket][inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-03-19 13:18:31 INFO  [example.CartObject/AddTicket][inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz] dev.restate.sdk.core.InvocationStateMachine - End invocation
-// withClass highlight-line
-2024-03-19 13:18:31 INFO  [example.TicketObject/Reserve][inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp] dev.restate.sdk.core.InvocationStateMachine - Suspend invocation
-2024-03-19 13:18:31 DEBUG [example.TicketObject/Reserve][inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.TicketObject', invocationState=PROCESSING, id=inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp} to CLOSED
-2024-03-19 13:18:31 INFO  [example.TicketObject/Reserve][inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-03-19 13:18:31 INFO  [example.TicketObject/Reserve][inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp] dev.restate.sdk.core.InvocationStateMachine - End invocation
-// withClass highlight-line
-2024-03-19 13:18:36 DEBUG [example.TicketObject/Reserve] dev.restate.sdk.http.vertx.RequestHttpServerHandler - Handling request to example.TicketObject/Reserve
-2024-03-19 13:18:36 INFO  [example.TicketObject/Reserve] dev.restate.sdk.core.RestateEndpoint - Start processing invocation
-2024-03-19 13:18:36 DEBUG [example.TicketObject/Reserve] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.TicketObject', invocationState=WAITING_START, id=inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp} to REPLAYING
-2024-03-19 13:18:36 DEBUG [example.TicketObject/Reserve][inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.TicketObject', invocationState=REPLAYING, id=inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp} to PROCESSING
-2024-03-19 13:18:36 INFO  [example.TicketObject/Reserve][inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-03-19 13:18:36 DEBUG [example.TicketObject/Reserve][inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.TicketObject', invocationState=PROCESSING, id=inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp} to CLOSED
-2024-03-19 13:18:36 INFO  [example.TicketObject/Reserve][inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp] dev.restate.sdk.core.InvocationStateMachine - End invocation
-// withClass highlight-line
-2024-03-19 13:18:36 DEBUG [example.CartObject/AddTicket] dev.restate.sdk.http.vertx.RequestHttpServerHandler - Handling request to example.CartObject/AddTicket
-2024-03-19 13:18:36 INFO  [example.CartObject/AddTicket] dev.restate.sdk.core.RestateEndpoint - Start processing invocation
-2024-03-19 13:18:36 DEBUG [example.CartObject/AddTicket] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CartObject', invocationState=WAITING_START, id=inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz} to REPLAYING
-2024-03-19 13:18:36 DEBUG [example.CartObject/AddTicket][inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CartObject', invocationState=REPLAYING, id=inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz} to PROCESSING
-2024-03-19 13:18:36 INFO  [example.CartObject/AddTicket][inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-03-19 13:18:36 DEBUG [example.CartObject/AddTicket][inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CartObject', invocationState=PROCESSING, id=inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz} to CLOSED
-2024-03-19 13:18:36 INFO  [example.CartObject/AddTicket][inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz] dev.restate.sdk.core.InvocationStateMachine - End invocation
-```
-
-</TabItem>
-</Tabs>
-</details>
 
 Reduce the time the `TicketObject/reserve` function sleeps to a second, so you won't see the suspensions anymore.
 
@@ -946,7 +946,7 @@ In the application, a ticket gets reserved for 15 minutes.
 If the user doesn't pay within that time interval, then it becomes available again to other users.
 
 To do this, you can use a delayed call.
-This is a one-way call that gets delayed by a specified duration.
+This is similar to sending a message that gets delayed by a specified duration.
 This would make the `CartObject/addTicket` function look as follows:
 
 <Tabs groupId="sdk" queryString className={"display-none"}>
@@ -959,97 +959,75 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/
 </TabItem>
 <TabItem value="java" label="Java">
 
-```java
+```java CartObject.java
 CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part2/CartObject.java#<start_add_ticket>-<end_add_ticket>
 ```
 
 </TabItem>
 </Tabs>
 
+<details className="grey-details">
+    <summary>Service logs</summary>
+    <Tabs groupId="sdk" queryString className={"display-none"}>
+        <TabItem value="ts" label="TypeScript">
+
+            ```log
+            ... logs from reserve call ...
+            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM90xbqbDEnOzNgilf2WmjZTP][2024-03-19T08:49:43.081Z] DEBUG: Received completion message from Restate, adding to journal. ; CompletionMessage
+            // highlight-next-line
+            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM90xbqbDEnOzNgilf2WmjZTP][2024-03-19T08:49:43.081Z] DEBUG: Adding message to journal and sending to Restate ; BackgroundInvokeEntryMessage
+            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM90xbqbDEnOzNgilf2WmjZTP][2024-03-19T08:49:43.081Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
+            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM90xbqbDEnOzNgilf2WmjZTP][2024-03-19T08:49:43.081Z] DEBUG: Function completed successfully.
+            [restate] [CartObject/expireTicket][inv_1gdJBtdVEcM93r8tce9IfwnbiAsk8lCevD][2024-03-19T08:49:48.092Z] DEBUG: Invoking function.
+            [restate] [CartObject/expireTicket][inv_1gdJBtdVEcM93r8tce9IfwnbiAsk8lCevD][2024-03-19T08:49:48.093Z] DEBUG: Adding message to journal and sending to Restate ; BackgroundInvokeEntryMessage
+            [restate] [CartObject/expireTicket][inv_1gdJBtdVEcM93r8tce9IfwnbiAsk8lCevD][2024-03-19T08:49:48.093Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
+            [restate] [CartObject/expireTicket][inv_1gdJBtdVEcM93r8tce9IfwnbiAsk8lCevD][2024-03-19T08:49:48.093Z] DEBUG: Function completed successfully.
+            // highlight-next-line
+            [restate] [TicketObject/unreserve][inv_1k78Krj3GqrK529L4BRmz8ntFtiw2DkahH][2024-03-19T08:49:48.141Z] DEBUG: Invoking function.
+            [restate] [TicketObject/unreserve][inv_1k78Krj3GqrK529L4BRmz8ntFtiw2DkahH][2024-03-19T08:49:48.141Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
+            [restate] [TicketObject/unreserve][inv_1k78Krj3GqrK529L4BRmz8ntFtiw2DkahH][2024-03-19T08:49:48.141Z] DEBUG: Function completed successfully.
+            ```
+
+        </TabItem>
+        <TabItem value="java" label="Java">
+
+            ```log
+            ... logs from reserve call ...
+            2024-03-19 13:27:20 INFO  [example.CartObject/AddTicket][inv_1gdJBtdVEcM93WNxL0oqwxYDXEgzGZ9Lhv] dev.restate.sdk.core.InvocationStateMachine - End invocation
+            2024-03-19 13:27:20 DEBUG [example.CartObject/AddTicket][inv_1gdJBtdVEcM93WNxL0oqwxYDXEgzGZ9Lhv] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CartObject', invocationState=PROCESSING, id=inv_1gdJBtdVEcM93WNxL0oqwxYDXEgzGZ9Lhv} to CLOSED
+            // highlight-next-line
+            2024-03-19 13:27:20 INFO  [example.CartObject/AddTicket][inv_1gdJBtdVEcM93WNxL0oqwxYDXEgzGZ9Lhv] dev.restate.sdk.core.InvocationStateMachine - End invocation
+            // highlight-next-line
+            2024-03-19 13:27:25 DEBUG [example.CartObject/ExpireTicket] dev.restate.sdk.http.vertx.RequestHttpServerHandler - Handling request to example.CartObject/ExpireTicket
+            2024-03-19 13:27:25 INFO  [example.CartObject/ExpireTicket] dev.restate.sdk.core.RestateEndpoint - Start processing invocation
+            2024-03-19 13:27:25 DEBUG [example.CartObject/ExpireTicket] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CartObject', invocationState=WAITING_START, id=inv_1gdJBtdVEcM95LH9l9vt78qcw9W15wcwy5} to REPLAYING
+            2024-03-19 13:27:25 DEBUG [example.CartObject/ExpireTicket][inv_1gdJBtdVEcM95LH9l9vt78qcw9W15wcwy5] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CartObject', invocationState=REPLAYING, id=inv_1gdJBtdVEcM95LH9l9vt78qcw9W15wcwy5} to PROCESSING
+            2024-03-19 13:27:25 INFO  [example.CartObject/ExpireTicket][inv_1gdJBtdVEcM95LH9l9vt78qcw9W15wcwy5] dev.restate.sdk.core.InvocationStateMachine - End invocation
+            2024-03-19 13:27:25 DEBUG [example.CartObject/ExpireTicket][inv_1gdJBtdVEcM95LH9l9vt78qcw9W15wcwy5] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CartObject', invocationState=PROCESSING, id=inv_1gdJBtdVEcM95LH9l9vt78qcw9W15wcwy5} to CLOSED
+            2024-03-19 13:27:25 INFO  [example.CartObject/ExpireTicket][inv_1gdJBtdVEcM95LH9l9vt78qcw9W15wcwy5] dev.restate.sdk.core.InvocationStateMachine - End invocation
+            2024-03-19 13:27:25 DEBUG [example.TicketObject/Unreserve] dev.restate.sdk.http.vertx.RequestHttpServerHandler - Handling request to example.TicketObject/Unreserve
+            2024-03-19 13:27:25 INFO  [example.TicketObject/Unreserve] dev.restate.sdk.core.RestateEndpoint - Start processing invocation
+            2024-03-19 13:27:25 DEBUG [example.TicketObject/Unreserve] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.TicketObject', invocationState=WAITING_START, id=inv_1k78Krj3GqrK5NDYjHLWSD3Ass0GaOzeet} to REPLAYING
+            2024-03-19 13:27:25 DEBUG [example.TicketObject/Unreserve][inv_1k78Krj3GqrK5NDYjHLWSD3Ass0GaOzeet] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.TicketObject', invocationState=REPLAYING, id=inv_1k78Krj3GqrK5NDYjHLWSD3Ass0GaOzeet} to PROCESSING
+            2024-03-19 13:27:25 INFO  [example.TicketObject/Unreserve][inv_1k78Krj3GqrK5NDYjHLWSD3Ass0GaOzeet] dev.restate.sdk.core.InvocationStateMachine - End invocation
+            2024-03-19 13:27:25 DEBUG [example.TicketObject/Unreserve][inv_1k78Krj3GqrK5NDYjHLWSD3Ass0GaOzeet] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.TicketObject', invocationState=PROCESSING, id=inv_1k78Krj3GqrK5NDYjHLWSD3Ass0GaOzeet} to CLOSED
+            2024-03-19 13:27:25 INFO  [example.TicketObject/Unreserve][inv_1k78Krj3GqrK5NDYjHLWSD3Ass0GaOzeet] dev.restate.sdk.core.InvocationStateMachine - End invocation
+            ```
+
+        </TabItem>
+    </Tabs>
+</details>
 To test it out, put the delay to a lower value, for example 5 seconds, call the `addTicket` function, and see in the logs how the call to `CartObject/expireTicket` is executed 5 seconds later.
 
-<details>
-<summary>Show the logs</summary>
-<Tabs groupId="sdk" queryString className={"display-none"}>
-<TabItem value="ts" label="TypeScript">
 
-```log
-... logs from reserve call ...
-[restate] [CartObject/addTicket][inv_1gdJBtdVEcM90xbqbDEnOzNgilf2WmjZTP][2024-03-19T08:49:43.081Z] DEBUG: Received completion message from Restate, adding to journal. ; CompletionMessage
-// highlight-next-line
-[restate] [CartObject/addTicket][inv_1gdJBtdVEcM90xbqbDEnOzNgilf2WmjZTP][2024-03-19T08:49:43.081Z] DEBUG: Adding message to journal and sending to Restate ; BackgroundInvokeEntryMessage
-[restate] [CartObject/addTicket][inv_1gdJBtdVEcM90xbqbDEnOzNgilf2WmjZTP][2024-03-19T08:49:43.081Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
-[restate] [CartObject/addTicket][inv_1gdJBtdVEcM90xbqbDEnOzNgilf2WmjZTP][2024-03-19T08:49:43.081Z] DEBUG: Function completed successfully.
-[restate] [CartObject/expireTicket][inv_1gdJBtdVEcM93r8tce9IfwnbiAsk8lCevD][2024-03-19T08:49:48.092Z] DEBUG: Invoking function.
-[restate] [CartObject/expireTicket][inv_1gdJBtdVEcM93r8tce9IfwnbiAsk8lCevD][2024-03-19T08:49:48.093Z] DEBUG: Adding message to journal and sending to Restate ; BackgroundInvokeEntryMessage
-[restate] [CartObject/expireTicket][inv_1gdJBtdVEcM93r8tce9IfwnbiAsk8lCevD][2024-03-19T08:49:48.093Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
-[restate] [CartObject/expireTicket][inv_1gdJBtdVEcM93r8tce9IfwnbiAsk8lCevD][2024-03-19T08:49:48.093Z] DEBUG: Function completed successfully.
-// highlight-next-line
-[restate] [TicketObject/unreserve][inv_1k78Krj3GqrK529L4BRmz8ntFtiw2DkahH][2024-03-19T08:49:48.141Z] DEBUG: Invoking function.
-[restate] [TicketObject/unreserve][inv_1k78Krj3GqrK529L4BRmz8ntFtiw2DkahH][2024-03-19T08:49:48.141Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
-[restate] [TicketObject/unreserve][inv_1k78Krj3GqrK529L4BRmz8ntFtiw2DkahH][2024-03-19T08:49:48.141Z] DEBUG: Function completed successfully.
-```
+<Admonition type="tip" title={"No workflow orchestrator or cron jobs needed!"}>
+Durable timers are a powerful feature that can be used to implement workflows, schedule async tasks, or plan background jobs.
+Restate makes them resilient to failures and ensures that they get executed. No extra infrastructure needed!
+</Admonition>
 
-</TabItem>
-<TabItem value="java" label="Java">
-
-```log
-... logs from reserve call ...
-2024-03-19 13:27:20 INFO  [example.CartObject/AddTicket][inv_1gdJBtdVEcM93WNxL0oqwxYDXEgzGZ9Lhv] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-03-19 13:27:20 DEBUG [example.CartObject/AddTicket][inv_1gdJBtdVEcM93WNxL0oqwxYDXEgzGZ9Lhv] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CartObject', invocationState=PROCESSING, id=inv_1gdJBtdVEcM93WNxL0oqwxYDXEgzGZ9Lhv} to CLOSED
-// highlight-next-line
-2024-03-19 13:27:20 INFO  [example.CartObject/AddTicket][inv_1gdJBtdVEcM93WNxL0oqwxYDXEgzGZ9Lhv] dev.restate.sdk.core.InvocationStateMachine - End invocation
-// highlight-next-line
-2024-03-19 13:27:25 DEBUG [example.CartObject/ExpireTicket] dev.restate.sdk.http.vertx.RequestHttpServerHandler - Handling request to example.CartObject/ExpireTicket
-2024-03-19 13:27:25 INFO  [example.CartObject/ExpireTicket] dev.restate.sdk.core.RestateEndpoint - Start processing invocation
-2024-03-19 13:27:25 DEBUG [example.CartObject/ExpireTicket] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CartObject', invocationState=WAITING_START, id=inv_1gdJBtdVEcM95LH9l9vt78qcw9W15wcwy5} to REPLAYING
-2024-03-19 13:27:25 DEBUG [example.CartObject/ExpireTicket][inv_1gdJBtdVEcM95LH9l9vt78qcw9W15wcwy5] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CartObject', invocationState=REPLAYING, id=inv_1gdJBtdVEcM95LH9l9vt78qcw9W15wcwy5} to PROCESSING
-2024-03-19 13:27:25 INFO  [example.CartObject/ExpireTicket][inv_1gdJBtdVEcM95LH9l9vt78qcw9W15wcwy5] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-03-19 13:27:25 DEBUG [example.CartObject/ExpireTicket][inv_1gdJBtdVEcM95LH9l9vt78qcw9W15wcwy5] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CartObject', invocationState=PROCESSING, id=inv_1gdJBtdVEcM95LH9l9vt78qcw9W15wcwy5} to CLOSED
-2024-03-19 13:27:25 INFO  [example.CartObject/ExpireTicket][inv_1gdJBtdVEcM95LH9l9vt78qcw9W15wcwy5] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-03-19 13:27:25 DEBUG [example.TicketObject/Unreserve] dev.restate.sdk.http.vertx.RequestHttpServerHandler - Handling request to example.TicketObject/Unreserve
-2024-03-19 13:27:25 INFO  [example.TicketObject/Unreserve] dev.restate.sdk.core.RestateEndpoint - Start processing invocation
-2024-03-19 13:27:25 DEBUG [example.TicketObject/Unreserve] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.TicketObject', invocationState=WAITING_START, id=inv_1k78Krj3GqrK5NDYjHLWSD3Ass0GaOzeet} to REPLAYING
-2024-03-19 13:27:25 DEBUG [example.TicketObject/Unreserve][inv_1k78Krj3GqrK5NDYjHLWSD3Ass0GaOzeet] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.TicketObject', invocationState=REPLAYING, id=inv_1k78Krj3GqrK5NDYjHLWSD3Ass0GaOzeet} to PROCESSING
-2024-03-19 13:27:25 INFO  [example.TicketObject/Unreserve][inv_1k78Krj3GqrK5NDYjHLWSD3Ass0GaOzeet] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-03-19 13:27:25 DEBUG [example.TicketObject/Unreserve][inv_1k78Krj3GqrK5NDYjHLWSD3Ass0GaOzeet] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.TicketObject', invocationState=PROCESSING, id=inv_1k78Krj3GqrK5NDYjHLWSD3Ass0GaOzeet} to CLOSED
-2024-03-19 13:27:25 INFO  [example.TicketObject/Unreserve][inv_1k78Krj3GqrK5NDYjHLWSD3Ass0GaOzeet] dev.restate.sdk.core.InvocationStateMachine - End invocation
-```
-
-</TabItem>
-</Tabs>
-</details>
 
 Don't forget to set the delay back to 15 minutes.
 
-<Admonition type="caution">
-You can implement this pattern in different ways.
-You could also sleep for 15 minutes at the end of the `addTicket` function and then call the `TicketObject/unreserve` function:
-
-<Tabs groupId="sdk" queryString className={"display-none"}>
-<TabItem value="ts" label="TypeScript">
-
-```typescript
-CODE_LOAD::ts/src/get_started/tour.ts#<start_sleep_and_send>-<end_sleep_and_send>
-```
-
-</TabItem>
-<TabItem value="java" label="Java">
-
-```java
-CODE_LOAD::java/src/main/java/get_started/Tour.java#<start_sleep_and_send>-<end_sleep_and_send>
-```
-
-</TabItem>
-</Tabs>
-
-Be aware that sleeping in a keyed service blocks any invocations for that key.
-In this case, the user would not be able to add any other tickets, nor buy the tickets.
-
-If you do a sleep operation, the invocation is ongoing.
-If you do a delayed call, the invocation isn't ongoing until the delay has passed, so no key is locked.
-
-</Admonition>
 
 <Admonition type="info">
 🚩 Explore the intermediate solution in `part2`, and run it with:
@@ -1075,34 +1053,32 @@ npm run part2
 ## Virtual Objects
 <Admonition type="note" title="Implement it yourself or follow along by looking at the code under part3"/>
 
+In the previous sections, you implemented parts of the `TicketObject` and `CartObject`.
+But until now, we did not yet mention how we will keep track of the tickets in the user's cart.
+Or how we will make sure that several users can add tickets simulatenously without interfering with each other, and without selling a single ticket multiple times.
 
-TODO:
-- remove extra ticketId arguments
-- change to ObjectContext
-- change to @VirtualObject
+That's where **Virtual Objects** come into play.
+Virtual Objects are a special type of service that allows you to group handlers together, share state between them, and control the number of ongoing invocations.
+Each Virtual Object has a unique key.
+Invocations are sequenced per Virtual Object, so at most one handler can run at a time for a given Virtual Object.
 
+The issues with our current implementation, can easily be solved by using Virtual Objects.
+We will convert the `TicketObject` and `CartObject` services to Virtual Objects.
 
-<Admonition type="caution">
-    In keyed services, sleeping blocks all further processing (for the specific single key / all invocations, respectively).
+The `TicketObject` will be keyed by the ticket ID, and we will store the current status of the ticket in the state (`AVAILABLE`/`RESERVED`).
+Because it's a Virtual Object, we can be sure that only one invocation can run at a time for the same ticket ID.
+So if user reserves a ticket, we can be sure that no concurrent other requests reserved the same ticket at the same time.
+
+<Admonition type={"tip"} title={"Virtual Objects simplify many use cases"}>
+With access to consistent K/V state and strong concurrency guarantees, implementing the `CartObject` service in a resilient and consistent way becomes straightforward.
 </Admonition>
 
-In Restate, you implement your business logic in handlers that can be called by other services or external clients.
-Handlers are bundled into Services or Virtual Objects.
-
-- **Service**:
-A collection of independent handlers. Just like the RPC services you know, but with Durable Execution on top.
-- **Virtual Objects**:
-A Virtual Object is a collection of handlers that share K/V state.
-Each Virtual Object has a unique key.
-Invocations are sequenced per Virtual Object: at most one handler can run at a time for a given Virtual Object.
-
-In this example app, the `CheckoutService` is a plain Service, while the `TicketObject` and `CartObject` services are Virtual Objects.
-The `TicketObject` is keyed by the ticket ID, while the `CartObject` service is keyed by the user ID.
-So at most one invocation can run at a time for the same ticket ID or user ID respectively.
+We also need to convert the `CartObject` service to a Virtual Object, keyed by the user ID.
+This way, we can store the user's cart in the state.
+With only one ongoing invocation, we are guarded against many concurrency issues when updating the cart.
 
 <Admonition type="tip">
-    The concurrency guarantees of Virtual Objects can be useful to simplify reasoning about interaction with external systems.
-    You can be sure that there is only a single ongoing invocation for a single key.
+The concurrency guarantees of Virtual Objects can be useful to simplify reasoning about interaction with external systems.
 </Admonition>
 
 <Tabs groupId="sdk" queryString className={"display-none"}>
@@ -1160,42 +1136,49 @@ So at most one invocation can run at a time for the same ticket ID or user ID re
     </TabItem>
     <TabItem value="java" label="Java">
 
-        You define a service by creating a class with the `@Service` annotation, as you can see in the `CheckoutService`.
-        The handlers have the `@Handler` annotation:
-
-        ```java
-        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/CheckoutService.java#<start_service>-<end_service>
-        ```
-
-        Handlers have the Restate Context as the first argument and the request as the second argument.
-        The actions you do on the Restate Context are durable tracked by Restate.
-        Once an action has been logged in Restate, it will not get re-executed on retries.
-
-        For Virtual Objects, you add the `@VirtualObject` annotation instead.
-        Virtual Object handlers have the Restate `ObjectContext` as the first parameter, which gives some additional capabilities compared to the regular `Context` (e.g. K/V state access).
-
+        To convert the `TicketObject` and `CartObject` services to Virtual Objects, you need to:
+        1. Replace the `@Service` annotation by `@VirtualObject`
+        2. Replace the `Context` parameter by `ObjectContext` in the handler functions. The `ObjectContext` provides additional capabilities compared to the regular `Context` (e.g. K/V state access).
+        3. You call a Virtual Object by specifying its key.
 
     </TabItem>
 </Tabs>
 
+
+
+<Admonition type="caution">
+    Since only a single invocation can run at a time for a given virtual object, you need to be careful with long-running operations, such as sleeps.
+    For example, if you would implement the expiration of the ticket in the `CartObject` service by sleeping for 15 minutes:
+
+    <Tabs groupId="sdk" queryString className={"display-none"}>
+        <TabItem value="ts" label="TypeScript">
+
+            ```typescript
+            CODE_LOAD::ts/src/get_started/tour.ts#<start_sleep_and_send>-<end_sleep_and_send>
+            ```
+
+        </TabItem>
+        <TabItem value="java" label="Java">
+
+            ```java
+            CODE_LOAD::java/src/main/java/get_started/Tour.java#<start_sleep_and_send>-<end_sleep_and_send>
+            ```
+
+        </TabItem>
+    </Tabs>
+    This would block any other invocations for the same cart ID for 15 minutes.
+    So the user wouldn't be able to add any other tickets, nor buy the tickets.
+    If you do a delayed call, the invocation isn't ongoing until the delay has passed, so the Virtual Object is not locked.
+</Admonition>
+
 ## Persistent application state
 
-Applications often need to keep state. For example, the `CartObject`
-needs to track the shopping cart items.
+Restate offers a key-value store to persistently store application state for Virtual Objects.
 
-Restate offers a key-value store to persistently store application state.
-
-<Admonition type="tip" title="Good news!">
+<Admonition type="tip" title="No need for session databases!">
 Restate's state is guaranteed to be consistent across retries and invocations.
 This eliminates the need for a session database.
 </Admonition>
-
-The isolation level of the application state depends on the service type:
-1. **Keyed service**: Application state is isolated per key.
-All the invocations for the same key have access to the same application state.
-Restate's state feature is most useful for this service type.
-2. **Unkeyed service**: State is isolated per invocation. Using state isn't useful
-for this service type.
 
 ### Getting and setting K/V state
 
@@ -1221,22 +1204,21 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tu
 ```
 
 To retrieve the cart, you use `ctx.get` with a state key that describes the name and the (de)serializers to be used.
-Have a look at the documentation on serialization to learn more about the different serializers.
-
-`ctx.get` returns an Optional, only containing a value if one was set before.
+    `ctx.get` returns an Optional, only containing a value if one was set before.
 
 </TabItem>
 </Tabs>
 
+After you added the ticket to the cart array, you set the state to the new value with `ctx.set`.
+
 You can store multiple key-value pairs, by using different state keys.
 Here, you get the value under the key `"tickets"`.
-Restate ensures that you get the cart belonging to the current user ID (key of the service).
-After you added the ticket to the cart array, you set the state to the new value with `ctx.set`.
+Restate ensures that you get the cart belonging to the current Virtual Object (user).
 
 Run the services and call the `addTicket` function, to see the interaction with state.
 
-<details>
-<summary>Show the logs</summary>
+<details className="grey-details">
+<summary>Service logs</summary>
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
 
@@ -1276,44 +1258,33 @@ value: "[\"seat2B\"]"
 value: "[\"seat2B\"]
 ```
 
-
 </TabItem>
 </Tabs>
 
 </details>
 
-<Admonition type="info" title="Serialization">
-<Tabs>
-<TabItem value="ts" label="TypeScript">
-You can store any object in the state as long as the value can be serialized with `Buffer.from(JSON.stringify(yourObject))`.
-</TabItem>
-<TabItem value="java" label="Java">
-To enable the Restate SDK to serialize arbitrary objects, add the `dev.restate:sdk-serde-jackson:VAR::JAVA_SDK_VERSION` dependency.
-</TabItem>
-</Tabs>
-</Admonition>
-
+<Admonition type="tip" title="Local state access">
 When starting the invocation, Restate attaches the application state to the request.
 So when you operate on the state in your function with `ctx.get` and `ctx.set`, you get access to a local copy of the state for fast access.
+</Admonition>
 
 ### Inspecting K/V state
 
-Restate exposes information on invocations and application state via its Introspection SQL API. You can use this to gain insight into the status of invocations and the service state that is stored.
-You can inspect the application state of the `CartObject` service by using psql, as follows:
+Restate exposes information on invocations and application state.
+You can watch the state of the `CartObject` service, via the CLI or via `psql` as follows:
 
-```shell
-psql -h localhost -p 9071 -c "SELECT * FROM state WHERE service like '%CartObject%';"
-```
+<CH.Code>
 
-Or watch how the state changes with:
+    ```shell CLI
+    restate kv get -w -n 1 CartObject Mary
+    ```
 
-```shell
-watch -n 1 'psql -h localhost -p 9071 -c "SELECT * FROM state WHERE service like '\''%CartObject%'\''";'
-```
+    ```shell psql
+    watch -n 1 'psql -h localhost -p 9071 -c "SELECT * FROM state WHERE component like '\''%CartObject%'\''";'
+    ```
+</CH.Code>
 
 Add several tickets to the state to see how the query result gets updated.
-
-You can also stop and relaunch the service, to see that this has no influence on the tickets.
 
 Now, adapt the `CartObject/checkout` function, to use the tickets:
 
@@ -1335,19 +1306,15 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tu
 </Tabs>
 
 After the tickets are checked out, you clear the state with `ctx.clear`.
-Send a checkout request as [earlier](#request-response-http-requests), and check via psql that the state is empty.
-
-
-<Admonition type="tip">
-Have a look at the documentation on [introspection](/operate/introspection) to learn more about inspecting the invocation status and application state.
-</Admonition>
+Send a checkout request as [earlier](#request-response-http-requests), and notice that the state is now empty.
 
 
 ### 📝 Try it out
 
 #### Finishing `CartObject/expireTicket`
 
-You have almost fully implemented the `CartObject`. After checkout, let's finish `CartObject/expireTicket`.
+You have almost fully implemented the `CartObject`. Let's finish `CartObject/expireTicket`.
+
 Before you call `unreserve`, you first need to check if the ticket is still held by the user.
 Retrieve the state and check if the ticket ID is in there.
 If this is the case, then you call `TicketObject/unreserve` and remove it from the state.
@@ -1378,9 +1345,7 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tu
 
 Call the `expireTicket` function with:
 ```shell
-curl localhost:8080/example.CartObject/ExpireTicket \
--H 'content-type: application/json' \
--d '{"user_id": "Mary", "ticket_id": "seat2B"}'
+curl localhost:8080/CartObject/Mary/expireTicket -d '"seat2B"'
 ```
 
 </TabItem>
@@ -1390,23 +1355,28 @@ curl localhost:8080/example.CartObject/ExpireTicket \
 
 #### Implementing the `TicketObject`
 
-You can track the status of the tickets in the `TicketObject` by storing it in the state.
-Implement the `TicketObject/reserve`, `TicketObject/unreserve`, and `TicketObject/markAsSold` functions to do this.
+Track the status of the tickets in the `TicketObject` by storing it in the state.
+Implement the handlers in the `TicketObject` to reserve, unreserve, and mark a ticket as sold.
 
 While you are developing them, you can use psql to monitor the state of the `TicketObject`:
 
-```shell
-watch -n 1 'psql -h localhost -p 9071 -c "select service, service_key, key, value_utf8 from state where service like '\''%TicketObject%'\''";'
-```
+<CH.Code>
 
-1. Implement the `TicketObject/reserve` function.
-The function first retrieves the value for the `"status"` state key.
-If the value is set to `TicketStatus.Available`, then change it to `TicketStatus.Reserved` and
+    ```shell CLI
+    restate kv get -w -n 1 TicketObject seat2B
+    ```
+
+    ```shell psql
+    watch -n 1 'psql -h localhost -p 9071 -c "select * from state where component like '\''%TicketObject%'\''";'
+    ```
+</CH.Code>
+
+<SubtleStep title="TicketObject/reserve" stepLabel="1">
+1. Retrieve the value for the `"status"` state key.
+2. If the value is set to `TicketStatus.Available`, then change it to `TicketStatus.Reserved` and
 return `true` (reservation successful).
-If the status isn't set to `TicketStatus.Available`, then return `false`.
-Remove the sleep that you added before.
+3. If the status isn't set to `TicketStatus.Available`, then return `false`.
 
-<>
 <details>
 <summary>Solution</summary>
 
@@ -1430,12 +1400,11 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tu
 Now, you can't reserve the same ticket multiple times anymore.
 Call `addTicket` multiple times for the same ID. The first time it returns `true`, afterwards `false`.
 </details>
-</>
 
-2. Implement the `TicketObject/unreserve` function.
-The function should clear the value of the `"status"` key if it's not on status `TicketStatus.Sold`.
+</SubtleStep>
 
-<>
+<SubtleStep stepLabel="2" title="TicketObject/unreserve">
+Clear the `"status"`, if it's not equal to `TicketStatus.Sold`.
 <details>
 <summary>Solution</summary>
 
@@ -1460,12 +1429,10 @@ Play around with reducing the delay of the `expireTicket` call in the `addTicket
 Try to reserve the same ticket ID multiple times, and see how you are able to reserve it again after the `unreserve` function executed.
 
 </details>
-</>
+</SubtleStep>
+<SubtleStep stepLabel="3" title="TicketObject/markAsSold">
+Set the `"status"` to `TicketStatus.Sold` if it's reserved.
 
-3. Implement the `TicketObject/markAsSold` function.
-The function should set the value of the `"status"` key to `TicketStatus.Sold` if it's reserved.
-
-<>
 <details>
 <summary>Solution</summary>
 
@@ -1488,7 +1455,7 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tu
 In the next section, you implement the `CheckoutService/handle` function that calls `markAsSold`.
 This ties the final parts together.
 </details>
-</>
+</SubtleStep>
 
 <Admonition type="info">
 🚩 Explore the intermediate solution in `part3`, and run it with:
@@ -1512,27 +1479,30 @@ npm run part3
 </Admonition>
 
 
-## Determinism & side effects
+## Storing results in the journal
 
 <Admonition type="note" title="Implement it yourself or follow along by looking at the code under part4"/>
 
-Restate's replay mechanism makes applications resilient to failures.
-For the replay to work, code needs to be deterministic, otherwise the replayed entries do not line up with the code execution on retries.
-For non-deterministic code, the SDK offers side effects, for example, to log the result of communication with external systems.
+Restate's Durable Execution mechanism tracks the progress of the code execution in a journal.
+Once a result has made it to the journal, it will not be re-executed on retries.
+
+The SDK offers `ctx.run` to store the return value of any function in the journal.
+This lets you capture potentially non-deterministic computation and interaction with external systems in a safe way.
 The SDK also offers helper functions for creating UUIDs and generating random numbers.
 
+<Admonition type="info" title="Handler logic needs to be deterministic">
+For the replay to work, code needs to be deterministic, otherwise the replayed entries do not line up with the code execution on retries.
+So use `ctx.run` to store the result of non-deterministic operations!
+</Admonition>
+
 In `CheckoutService/handle`, we first want to trigger the payment. This happens in two steps:
+
 1. First, we use the SDK helper functions to generate an idempotency token for the payment.
 This token will be supplied in the payment request to ensure that a customer never pays multiple times.
 2. Then, we use a side effect to trigger the payment via an external payment provider (`PaymentClient`).
-You can find a payment client stub in `auxiliary/PaymentClient`. Do the following:
-    1. Create a new payment client in `CheckoutService/handle`.
-    2. From within a side effect, execute the payment via `paymentClient.call(idempotencyKey, amount)`.
-    Assume every ticket costs 40 dollars.
-    Store the boolean result of the call as the return value of the side effect.
-
-The side effect executes the supplied function and stores the return value in Restate.
-Upon replay, the stored value gets inserted and the function doesn't get re-executed.
+Use the `auxiliary/PaymentClient` stub to execute the payment via `PaymentClient.get().call(idempotencyKey, amount)`.
+Assume every ticket costs 40 dollars.
+Store the boolean result of the call as the return value of the side effect.
 
 Add the following code snippet to the `CheckoutService/handle` function:
 
@@ -1570,77 +1540,66 @@ CODE_LOAD::ts/src/get_started/tour.ts#<start_idempotency_key_retry>-<end_idempot
 CODE_LOAD::java/src/main/java/get_started/Tour.java#<start_idempotency_key_retry>-<end_idempotency_key_retry>
 ```
 
-Comment out the return statement to make this compile, otherwise it fails with `error: unreachable statement`.
-
 </TabItem>
 </Tabs>
+<details className="grey-details">
+    <summary>Service logs</summary>
+
+    <Tabs groupId="sdk" queryString className={"display-none"}>
+        <TabItem value="ts" label="TypeScript">
+
+            ```log
+            ... logs of `CartObjectService/CheckoutService` ...
+            [restate] [CheckoutService/handle][inv_1jhuapyO2Bpg3prqzrAJOFs99mt7jv5x3r][2024-03-19T09:15:30.498Z] DEBUG: Invoking function.
+            // withClass highlight-line
+            My idempotency key: e25b747f-ecfb-443b-8939-1935392aab6b
+            Trace: [restate] [CheckoutService/handle][inv_1jhuapyO2Bpg3prqzrAJOFs99mt7jv5x3r][2024-03-19T09:15:30.499Z] TRACE: Function completed with an error: Something happened! Error: Something happened!
+            ... rest of trace  ...
+            [restate] [CheckoutService/handle][inv_1jhuapyO2Bpg3prqzrAJOFs99mt7jv5x3r][2024-03-19T09:15:30.512Z] DEBUG: Invocation ended with retryable error. ; ErrorMessage
+            [restate] [CheckoutService/handle][inv_1jhuapyO2Bpg3prqzrAJOFs99mt7jv5x3r][2024-03-19T09:15:30.568Z] DEBUG: Invoking function.
+            // withClass highlight-line
+            My idempotency key: e25b747f-ecfb-443b-8939-1935392aab6b
+            Trace: [restate] [CheckoutService/handle][inv_1jhuapyO2Bpg3prqzrAJOFs99mt7jv5x3r][2024-03-19T09:15:30.568Z] TRACE: Function completed with an error: Something happened! Error: Something happened!
+            ... rest of trace  ...
+            [restate] [CheckoutService/handle][inv_1jhuapyO2Bpg3prqzrAJOFs99mt7jv5x3r][2024-03-19T09:15:30.568Z] DEBUG: Invocation ended with retryable error. ; ErrorMessage
+            ... retries continue ...
+            ```
+
+        </TabItem>
+        <TabItem value="java" label="Java">
+
+            ```log
+            2024-03-19 13:48:31 DEBUG [example.CheckoutService/Handle] dev.restate.sdk.http.vertx.RequestHttpServerHandler - Handling request to example.CheckoutService/Handle
+            2024-03-19 13:48:31 INFO  [example.CheckoutService/Handle] dev.restate.sdk.core.RestateEndpoint - Start processing invocation
+            2024-03-19 13:48:31 DEBUG [example.CheckoutService/Handle] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CheckoutService', invocationState=WAITING_START, id=inv_1gzPpb62mftx5SkM372RRab9OLi3kREi5P} to REPLAYING
+            // withClass highlight-line
+            My idempotency key: cca5efdf-c06f-987e-c717-2cf0490aa5f5
+            2024-03-19 13:48:31 WARN  [example.CheckoutService/Handle][inv_1gzPpb62mftx5SkM372RRab9OLi3kREi5P] dev.restate.sdk.core.GrpcUnaryRpcHandler - Error when processing the invocation
+            java.lang.IllegalStateException: Something went wrong.
+            ... rest of trace ...
+            2024-03-19 13:48:31 DEBUG [example.CheckoutService/Handle][inv_1gzPpb62mftx5SkM372RRab9OLi3kREi5P] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CheckoutService', invocationState=REPLAYING, id=inv_1gzPpb62mftx5SkM372RRab9OLi3kREi5P} to CLOSED
+            2024-03-19 13:48:31 INFO  [example.CheckoutService/Handle][inv_1gzPpb62mftx5SkM372RRab9OLi3kREi5P] dev.restate.sdk.core.InvocationStateMachine - End invocation
+            2024-03-19 13:48:41 DEBUG [example.CheckoutService/Handle] dev.restate.sdk.http.vertx.RequestHttpServerHandler - Handling request to example.CheckoutService/Handle
+            2024-03-19 13:48:41 INFO  [example.CheckoutService/Handle] dev.restate.sdk.core.RestateEndpoint - Start processing invocation
+            2024-03-19 13:48:41 DEBUG [example.CheckoutService/Handle] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CheckoutService', invocationState=WAITING_START, id=inv_1gzPpb62mftx5SkM372RRab9OLi3kREi5P} to REPLAYING
+            // withClass highlight-line
+            My idempotency key: cca5efdf-c06f-987e-c717-2cf0490aa5f5
+            2024-03-19 13:48:41 WARN  [example.CheckoutService/Handle][inv_1gzPpb62mftx5SkM372RRab9OLi3kREi5P] dev.restate.sdk.core.GrpcUnaryRpcHandler - Error when processing the invocation
+            java.lang.IllegalStateException: Something went wrong.
+            ... rest of trace ...
+            2024-03-19 13:48:41 DEBUG [example.CheckoutService/Handle][inv_1gzPpb62mftx5SkM372RRab9OLi3kREi5P] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CheckoutService', invocationState=REPLAYING, id=inv_1gzPpb62mftx5SkM372RRab9OLi3kREi5P} to CLOSED
+            2024-03-19 13:48:41 INFO  [example.CheckoutService/Handle][inv_1gzPpb62mftx5SkM372RRab9OLi3kREi5P] dev.restate.sdk.core.InvocationStateMachine - End invocation
+            ```
+
+        </TabItem>
+    </Tabs>
+
+</details>
 
 Call `CartObject/checkout` and have a look at the logs to see what happens.
 Don't forget to remove the throwing of the error again before you continue.
 
-<details>
-<summary>Show the logs</summary>
 
-<Tabs groupId="sdk" queryString className={"display-none"}>
-<TabItem value="ts" label="TypeScript">
-
-```log
-... logs of `CartObjectService/CheckoutService` ...
-[restate] [CheckoutService/handle][inv_1jhuapyO2Bpg3prqzrAJOFs99mt7jv5x3r][2024-03-19T09:15:30.498Z] DEBUG: Invoking function.
-// withClass highlight-line
-My idempotency key: e25b747f-ecfb-443b-8939-1935392aab6b
-Trace: [restate] [CheckoutService/handle][inv_1jhuapyO2Bpg3prqzrAJOFs99mt7jv5x3r][2024-03-19T09:15:30.499Z] TRACE: Function completed with an error: Something happened! Error: Something happened!
-... rest of trace  ...
-[restate] [CheckoutService/handle][inv_1jhuapyO2Bpg3prqzrAJOFs99mt7jv5x3r][2024-03-19T09:15:30.512Z] DEBUG: Invocation ended with retryable error. ; ErrorMessage
-[restate] [CheckoutService/handle][inv_1jhuapyO2Bpg3prqzrAJOFs99mt7jv5x3r][2024-03-19T09:15:30.568Z] DEBUG: Invoking function.
-// withClass highlight-line
-My idempotency key: e25b747f-ecfb-443b-8939-1935392aab6b
-Trace: [restate] [CheckoutService/handle][inv_1jhuapyO2Bpg3prqzrAJOFs99mt7jv5x3r][2024-03-19T09:15:30.568Z] TRACE: Function completed with an error: Something happened! Error: Something happened!
-... rest of trace  ...
-[restate] [CheckoutService/handle][inv_1jhuapyO2Bpg3prqzrAJOFs99mt7jv5x3r][2024-03-19T09:15:30.568Z] DEBUG: Invocation ended with retryable error. ; ErrorMessage
-... retries continue ...
-```
-
-</TabItem>
-<TabItem value="java" label="Java">
-
-```log
-2024-03-19 13:48:31 DEBUG [example.CheckoutService/Handle] dev.restate.sdk.http.vertx.RequestHttpServerHandler - Handling request to example.CheckoutService/Handle
-2024-03-19 13:48:31 INFO  [example.CheckoutService/Handle] dev.restate.sdk.core.RestateEndpoint - Start processing invocation
-2024-03-19 13:48:31 DEBUG [example.CheckoutService/Handle] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CheckoutService', invocationState=WAITING_START, id=inv_1gzPpb62mftx5SkM372RRab9OLi3kREi5P} to REPLAYING
-// withClass highlight-line
-My idempotency key: cca5efdf-c06f-987e-c717-2cf0490aa5f5
-2024-03-19 13:48:31 WARN  [example.CheckoutService/Handle][inv_1gzPpb62mftx5SkM372RRab9OLi3kREi5P] dev.restate.sdk.core.GrpcUnaryRpcHandler - Error when processing the invocation
-java.lang.IllegalStateException: Something went wrong.
-... rest of trace ...
-2024-03-19 13:48:31 DEBUG [example.CheckoutService/Handle][inv_1gzPpb62mftx5SkM372RRab9OLi3kREi5P] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CheckoutService', invocationState=REPLAYING, id=inv_1gzPpb62mftx5SkM372RRab9OLi3kREi5P} to CLOSED
-2024-03-19 13:48:31 INFO  [example.CheckoutService/Handle][inv_1gzPpb62mftx5SkM372RRab9OLi3kREi5P] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-03-19 13:48:41 DEBUG [example.CheckoutService/Handle] dev.restate.sdk.http.vertx.RequestHttpServerHandler - Handling request to example.CheckoutService/Handle
-2024-03-19 13:48:41 INFO  [example.CheckoutService/Handle] dev.restate.sdk.core.RestateEndpoint - Start processing invocation
-2024-03-19 13:48:41 DEBUG [example.CheckoutService/Handle] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CheckoutService', invocationState=WAITING_START, id=inv_1gzPpb62mftx5SkM372RRab9OLi3kREi5P} to REPLAYING
-// withClass highlight-line
-My idempotency key: cca5efdf-c06f-987e-c717-2cf0490aa5f5
-2024-03-19 13:48:41 WARN  [example.CheckoutService/Handle][inv_1gzPpb62mftx5SkM372RRab9OLi3kREi5P] dev.restate.sdk.core.GrpcUnaryRpcHandler - Error when processing the invocation
-java.lang.IllegalStateException: Something went wrong.
-... rest of trace ...
-2024-03-19 13:48:41 DEBUG [example.CheckoutService/Handle][inv_1gzPpb62mftx5SkM372RRab9OLi3kREi5P] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CheckoutService', invocationState=REPLAYING, id=inv_1gzPpb62mftx5SkM372RRab9OLi3kREi5P} to CLOSED
-2024-03-19 13:48:41 INFO  [example.CheckoutService/Handle][inv_1gzPpb62mftx5SkM372RRab9OLi3kREi5P] dev.restate.sdk.core.InvocationStateMachine - End invocation
-```
-
-</TabItem>
-</Tabs>
-
-</details>
-
-<Admonition type="tip">
-You can use a side effect to avoid re-execution during replay for any arbitrary piece of user code.
-This includes pieces of time-consuming, deterministic user code.
-</Admonition>
-
-<Admonition type="caution">
-You can't execute any context calls from within a side effect.
-This is invalid code.
-</Admonition>
 
 ### 📝 Try it out
 Once this works, you implement the rest of the checkout workflow:
@@ -1696,7 +1655,7 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tu
 </details>
 
 
-🥳 Except for a few resiliency tweaks, you have now fully implemented the ticket reservation system!
+🥳 You have now fully implemented the ticket reservation system!
 Try it out by reserving some new tickets and buying them by checking out the cart.
 
 <Admonition type="info">
@@ -1721,143 +1680,6 @@ npm run part4
 </Admonition>
 
 
-## Resiliency
-
-<Admonition type="note" title="Implement it yourself or follow along by looking at the code under part5"/>
-
-As you have discovered throughout this tutorial, Restate makes your applications resilient out-of-the-box by:
-
-- Making sure messages can't get lost by durably storing all calls in the log.
-No more queues needed for asynchronous calls.
-- Retrying failed invocations.
-No more retry logic required for inter-service communication.
-- Restoring partial progress of invocations, via its durable execution mechanism.
-For example, if a service goes down due to an infrastructure failure, the ongoing invocations resume at the point in the user code where they left off.
-- Ensuring consistent application state with its key-value store.
-- Providing end-to-end exactly-once guarantees for incoming invocations.
-
-<Admonition type="tip" title="Good news!">
-These features are switched on by default. No need to do anything.
-</Admonition>
-
-### Side effect retries
-
-Also side effects are retried until they succeed.
-You can observe this behavior by using the `paymentClient.failingCall` in `CheckoutService/handle`:
-
-<Tabs groupId="sdk" queryString className={"display-none"}>
-<TabItem value="ts" label="TypeScript">
-
-```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part5/checkout.ts#<start_failing_client>-<end_failing_client>
-```
-
-</TabItem>
-<TabItem value="java" label="Java">
-
-```java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part5/CheckoutService.java#<start_failing_client>-<end_failing_client>
-```
-</TabItem>
-</Tabs>
-
-You now call `paymentClient.failingCall` which fails two times before succeeding.
-A failing side effect is retried until it succeeds.
-Have a look at the logs to see the retries.
-
-<details>
-<summary>Show the logs</summary>
-
-<Tabs groupId="sdk" queryString className={"display-none"}>
-<TabItem value="ts" label="TypeScript">
-
-```log
-[restate] [CheckoutService/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.676Z] DEBUG: Invoking function.
-// highlight-next-line
-Payment call failed for idempotency key 608e3977-7c91-4fc2-bf56-3c9c0c2cbabd and amount 40. Retrying...
-[restate] [CheckoutService/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.678Z] DEBUG: Adding message to journal and sending to Restate ; SideEffectEntryMessage
-[restate] [CheckoutService/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.678Z] DEBUG: Scheduling suspension in 30000 ms
-[restate] [CheckoutService/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.679Z] DEBUG: Received entry ack message from Restate, adding to journal. ; EntryAckMessage
-[restate] [CheckoutService/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.680Z] DEBUG: Error while executing side effect 'side-effect': Error - Payment call failed
-[restate] [CheckoutService/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.692Z] DEBUG: Error: Payment call failed
-... rest of trace ...
-[restate] [CheckoutService/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.692Z] DEBUG: Retrying in 10 ms
-[restate] [CheckoutService/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.692Z] DEBUG: Adding message to journal and sending to Restate ; SleepEntryMessage
-[restate] [CheckoutService/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.692Z] DEBUG: Scheduling suspension in 30000 ms
-[restate] [CheckoutService/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.705Z] DEBUG: Received completion message from Restate, adding to journal. ; CompletionMessage
-// highlight-next-line
-Payment call failed for idempotency key 608e3977-7c91-4fc2-bf56-3c9c0c2cbabd and amount 40. Retrying...
-[restate] [CheckoutService/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.705Z] DEBUG: Adding message to journal and sending to Restate ; SideEffectEntryMessage
-[restate] [CheckoutService/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.705Z] DEBUG: Scheduling suspension in 30000 ms
-[restate] [CheckoutService/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.706Z] DEBUG: Received entry ack message from Restate, adding to journal. ; EntryAckMessage
-[restate] [CheckoutService/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.706Z] DEBUG: Error while executing side effect 'side-effect': Error - Payment call failed
-[restate] [CheckoutService/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.707Z] DEBUG: Error: Payment call failed
-... rest of trace ...
-[restate] [CheckoutService/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.707Z] DEBUG: Retrying in 20 ms
-[restate] [CheckoutService/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.707Z] DEBUG: Adding message to journal and sending to Restate ; SleepEntryMessage
-[restate] [CheckoutService/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.707Z] DEBUG: Scheduling suspension in 30000 ms
-[restate] [CheckoutService/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.730Z] DEBUG: Received completion message from Restate, adding to journal. ; CompletionMessage
-Payment call succeeded for idempotency key 608e3977-7c91-4fc2-bf56-3c9c0c2cbabd and amount 40
-[restate] [CheckoutService/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.730Z] DEBUG: Adding message to journal and sending to Restate ; SideEffectEntryMessage
-[restate] [CheckoutService/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.730Z] DEBUG: Scheduling suspension in 30000 ms
-[restate] [CheckoutService/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.731Z] DEBUG: Received entry ack message from Restate, adding to journal. ; EntryAckMessage
-// highlight-next-line
-Notifying user Mary of payment success
-[restate] [CheckoutService/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.731Z] DEBUG: Adding message to journal and sending to Restate ; SideEffectEntryMessage
-[restate] [CheckoutService/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.732Z] DEBUG: Scheduling suspension in 30000 ms
-[restate] [CheckoutService/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.732Z] DEBUG: Received entry ack message from Restate, adding to journal. ; EntryAckMessage
-[restate] [CheckoutService/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.733Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
-[restate] [CheckoutService/handle][inv_1eVZwghxruIa0YY4RtWg1viemwoyZ7Q6Ot][2024-03-19T10:19:02.733Z] DEBUG: Function completed successfully.
-```
-
-
-</TabItem>
-<TabItem value="java" label="Java">
-
-```log
-2024-03-19 13:51:48 DEBUG [example.CheckoutService/Handle] dev.restate.sdk.http.vertx.RequestHttpServerHandler - Handling request to example.CheckoutService/Handle
-2024-03-19 13:51:48 INFO  [example.CheckoutService/Handle] dev.restate.sdk.core.RestateEndpoint - Start processing invocation
-2024-03-19 13:51:48 DEBUG [example.CheckoutService/Handle] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CheckoutService', invocationState=WAITING_START, id=inv_1bTsZIo2tGFY7McwmD7UYoIhrhvfQm23Rf} to REPLAYING
-2024-03-19 13:51:48 DEBUG [example.CheckoutService/Handle][inv_1bTsZIo2tGFY7McwmD7UYoIhrhvfQm23Rf] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CheckoutService', invocationState=REPLAYING, id=inv_1bTsZIo2tGFY7McwmD7UYoIhrhvfQm23Rf} to PROCESSING
-// withClass highlight-line
-Payment call failed for idempotency key f205fbd1-dd6b-e864-ce50-2ec2e196b50e and amount 40.0. Retrying...
-2024-03-19 13:51:48 WARN  [example.CheckoutService/Handle][inv_1bTsZIo2tGFY7McwmD7UYoIhrhvfQm23Rf] dev.restate.sdk.core.InvocationStateMachine - Invocation failed
-java.lang.IllegalStateException: Payment call failed
-... rest of trace ...
-2024-03-19 13:51:48 DEBUG [example.CheckoutService/Handle][inv_1bTsZIo2tGFY7McwmD7UYoIhrhvfQm23Rf] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CheckoutService', invocationState=PROCESSING, id=inv_1bTsZIo2tGFY7McwmD7UYoIhrhvfQm23Rf} to CLOSED
-2024-03-19 13:51:48 INFO  [example.CheckoutService/Handle][inv_1bTsZIo2tGFY7McwmD7UYoIhrhvfQm23Rf] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-03-19 13:51:48 INFO  [example.CheckoutService/Handle][inv_1bTsZIo2tGFY7McwmD7UYoIhrhvfQm23Rf] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-03-19 13:51:48 DEBUG [example.CheckoutService/Handle] dev.restate.sdk.http.vertx.RequestHttpServerHandler - Handling request to example.CheckoutService/Handle
-2024-03-19 13:51:48 INFO  [example.CheckoutService/Handle] dev.restate.sdk.core.RestateEndpoint - Start processing invocation
-2024-03-19 13:51:48 DEBUG [example.CheckoutService/Handle] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CheckoutService', invocationState=WAITING_START, id=inv_1bTsZIo2tGFY7McwmD7UYoIhrhvfQm23Rf} to REPLAYING
-2024-03-19 13:51:48 DEBUG [example.CheckoutService/Handle][inv_1bTsZIo2tGFY7McwmD7UYoIhrhvfQm23Rf] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CheckoutService', invocationState=REPLAYING, id=inv_1bTsZIo2tGFY7McwmD7UYoIhrhvfQm23Rf} to PROCESSING
-// withClass highlight-line
-Payment call failed for idempotency key f205fbd1-dd6b-e864-ce50-2ec2e196b50e and amount 40.0. Retrying...
-2024-03-19 13:51:48 WARN  [example.CheckoutService/Handle][inv_1bTsZIo2tGFY7McwmD7UYoIhrhvfQm23Rf] dev.restate.sdk.core.InvocationStateMachine - Invocation failed
-java.lang.IllegalStateException: Payment call failed
-... rest of trace ...
-2024-03-19 13:51:48 DEBUG [example.CheckoutService/Handle][inv_1bTsZIo2tGFY7McwmD7UYoIhrhvfQm23Rf] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CheckoutService', invocationState=PROCESSING, id=inv_1bTsZIo2tGFY7McwmD7UYoIhrhvfQm23Rf} to CLOSED
-2024-03-19 13:51:48 INFO  [example.CheckoutService/Handle][inv_1bTsZIo2tGFY7McwmD7UYoIhrhvfQm23Rf] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-03-19 13:51:48 INFO  [example.CheckoutService/Handle][inv_1bTsZIo2tGFY7McwmD7UYoIhrhvfQm23Rf] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-03-19 13:51:48 DEBUG [example.CheckoutService/Handle] dev.restate.sdk.http.vertx.RequestHttpServerHandler - Handling request to example.CheckoutService/Handle
-2024-03-19 13:51:48 INFO  [example.CheckoutService/Handle] dev.restate.sdk.core.RestateEndpoint - Start processing invocation
-2024-03-19 13:51:48 DEBUG [example.CheckoutService/Handle] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CheckoutService', invocationState=WAITING_START, id=inv_1bTsZIo2tGFY7McwmD7UYoIhrhvfQm23Rf} to REPLAYING
-2024-03-19 13:51:48 DEBUG [example.CheckoutService/Handle][inv_1bTsZIo2tGFY7McwmD7UYoIhrhvfQm23Rf] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CheckoutService', invocationState=REPLAYING, id=inv_1bTsZIo2tGFY7McwmD7UYoIhrhvfQm23Rf} to PROCESSING
-// withClass highlight-line
-Payment call succeeded for idempotency key f205fbd1-dd6b-e864-ce50-2ec2e196b50e and amount 40.0
-// withClass highlight-line
-Notifying user Mary of payment success
-2024-03-19 13:51:48 INFO  [example.CheckoutService/Handle][inv_1bTsZIo2tGFY7McwmD7UYoIhrhvfQm23Rf] dev.restate.sdk.core.InvocationStateMachine - End invocation
-```
-
-</TabItem>
-</Tabs>
-
-</details>
-
-<Admonition type="tip">
-Have a look at the error handling documentation(for [TypeScript](/develop/ts/error-handling) or [Java](/develop/java/error-handling))  to learn how to make a call fail terminally (without retries).
-</Admonition>
 
 ## Tracing
 Restate exposes OpenTelemetry traces of your invocations.
@@ -1930,15 +1752,15 @@ npm run part5
 
 
 Let's recap what you've covered:
-- reliable, suspendable request-response calls
-- one-way calls without the need for queues
-- suspensions for external communication
-- durable timers for sleep or for calling other services
-- concurrency guarantees for keyed/unkeyed services
-- persistent application state
-- storing the results of non-deterministic operations or external calls as side effects
-- resiliency and retries
-- tracing with Jaeger
+- Invoking handlers: over HTTP and programmatically with the SDK
+- Request-response invocations
+- Sending messages
+- Durable Execution: retries, partial progress recovery, and suspensions
+- Durable timers: sleeping and scheduling async tasks
+- Virtual Objects: concurrency guarantees and shared state
+- K/V state: storing and inspecting
+- Storing computation results in the journal
+- Tracing 
 
 ## Next steps
 - [Have a look at the examples](https://github.com/restatedev/examples)
