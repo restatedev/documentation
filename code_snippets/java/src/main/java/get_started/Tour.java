@@ -16,6 +16,10 @@ public class Tour {
    public void handle(Context ctx) {
        String ticketId = "123";
 
+       // <start_sleep>
+       ctx.sleep(Duration.ofMinutes(15));
+       // <end_sleep>
+
        // <start_sleep_and_send>
        ctx.sleep(Duration.ofMinutes(15));
        TicketObjectClient.fromContext(ctx).send().unreserve();

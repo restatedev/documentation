@@ -1,18 +1,22 @@
 ---
 id: tour
-[//]: # (sidebar_position: 2 --> this is now set by sidebars.js)
+title: "Tour of Restate"
 description: ""
+hide_table_of_contents: true
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
-import {Step, SubtleStep} from "../../src/components/Stepper";
+import {SubtleStep} from "../../src/components/Stepper";
 import TourAnimation from "../../src/components/TourAnimation";
 import CliAnimation from "../../src/components/CliAnimation";
 
-# Tour of Restate
+<section>
+<div className="container">
+<div className="row">
 
+<div className="col col--8 scrollable-column">
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 </TabItem>
@@ -28,15 +32,13 @@ It allows users to add tickets for specific seats to their shopping cart.
 After the user adds a ticket, the seat gets reserved for 15 minutes.
 If the user doesn't pay for the ticket within that time interval, the reservation is released and the ticket becomes available to other users.
 
-Restate applications are made up of services that expose handlers to each other and the outside world.
+Restate applications are made up of services that expose handlers.
+Handlers are functions that implement business logic.
+Restate manages their invocation and execution.
 Services communicate with one another using Remote Procedure Calls (RPC).
-Our ticket example consists of three services having the following responsibilities:
+Our ticket example consists of three services:
 
-1. **CartObject**: tracks the tickets in the shopping cart.
-2. **TicketObject**: manages the ticket allocation.
-3. **CheckoutService**: handles the checkout process of the ticket sale.
-
-![Tour of Restate diagram](/img/tour.svg)
+<img src="/img/tour-overview.svg" width="70%"/>
 
 As we go, you will discover how Restate can help you with some intricacies in this application.
 
@@ -45,8 +47,8 @@ As we go, you will discover how Restate can help you with some intricacies in th
 <TabItem value="ts" label="TypeScript">
 
 - Latest stable version of [NodeJS](https://nodejs.org/en/) >= v18.17.1 and [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 9.6.7 installed.
-- [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation) to launch the Restate runtime (not needed for the app implementation itself).
 - Restate CLI: [Installation instructions](/operate/cli#installation)
+- Optional: [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation), if you want to run the Restate Server with Docker. And to run Jaeger.
 
 This guide is written for:
 - TypeScript SDK version: `@restatedev/restate-sdk:VAR::TYPESCRIPT_SDK_VERSION`
@@ -56,7 +58,7 @@ This guide is written for:
 <TabItem value="java" label="Java">
 - JDK >= 11
 - Restate CLI: [Installation instructions](/operate/cli#installation)
-- Optional: [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation), if you want to run the Restate Server with Docker.
+- Optional: [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation), if you want to run the Restate Server with Docker. And to run Jaeger.
 
 This guide is written for:
 - Java SDK version: `dev.restate:sdk-api:VAR::JAVA_SDK_VERSION`
@@ -66,42 +68,35 @@ This guide is written for:
 </Tabs>
 </Admonition>
 
-## Getting started
+## Getting Started
 
-<SubtleStep stepLabel="1" title="Set up the tutorial">
+
+
+<SubtleStep stepLabel="1" title="Run the services">
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
+- Or download the example and run locally with an IDE:
+<CH.Code>
+    ```shell CLI
+    restate example typescript-tour-of-restate && cd typescript-tour-of-restate
+    ```
 
-<Tabs groupId="download">
-<TabItem value="cli" label="CLI">
+    ```shell wget
+    wget https://github.com/restatedev/examples/releases/latest/download/typescript-tour-of-restate.zip &&
+        unzip typescript-tour-of-restate.zip -d typescript-tour-of-restate &&
+        rm typescript-tour-of-restate.zip
+    ```
+</CH.Code>
 
-```shell
-restate example typescript-tour-of-restate && cd typescript-tour-of-restate
-```
-
-</TabItem>
-<TabItem value="git" label="git clone">
-
-```shell
-git clone git@github.com:restatedev/examples.git
-cd examples/tutorials/tour-of-restate-typescript
-```
-
-</TabItem>
-<TabItem value="wget" label="wget">
-
-```shell
-wget https://github.com/restatedev/examples/releases/latest/download/typescript-tour-of-restate.zip && unzip typescript-tour-of-restate.zip -d typescript-tour-of-restate && rm typescript-tour-of-restate.zip
-```
-
-</TabItem>
-</Tabs>
-
-This [GitHub repository](https://github.com/restatedev/examples/tree/main/tutorials/tour-of-restate-typescript) contains the basic skeleton of the NodeJS/TypeScript services that you develop in this tutorial.
-
-First, get all dependencies and build tools. Then build the app:
+Install the dependencies and build the app:
 ```shell
 npm install && npm run build
+```
+
+Run the services
+
+```shell
+npm run app-dev
 ```
 
 </TabItem>
@@ -118,24 +113,7 @@ wget https://github.com/restatedev/examples/releases/latest/download/java-tour-o
     rm java-tour-of-restate.zip && cd java-tour-of-restate
 ```
 </CH.Code>
-
-This [GitHub repository](https://github.com/restatedev/examples/tree/main/tutorials/tour-of-restate-java) contains the basic skeleton of the Java services that you develop in this tutorial.
-
-</TabItem>
-</Tabs>
-</SubtleStep>
-
-<SubtleStep stepLabel="2" title="Run the services">
-
-<Tabs groupId="sdk" queryString className={"display-none"}>
-<TabItem value="ts" label="TypeScript">
-
-```shell
-npm run app
-```
-
-</TabItem>
-<TabItem value="java" label="Java">
+Run the services
 
 ```shell
 ./gradlew run
@@ -144,9 +122,11 @@ npm run app
 </TabItem>
 </Tabs>
 
+This [GitHub repository](https://github.com/restatedev/examples/tree/main/tutorials/tour-of-restate-java) contains the basic skeleton of the Java services that you develop in this tutorial.
+
 </SubtleStep>
 
-<SubtleStep stepLabel="3" title="Launch Restate">
+<SubtleStep stepLabel="2" title="Launch Restate">
 
 <CH.Code rows={"2"}>
 
@@ -159,7 +139,7 @@ npm run app
     ```
 
     ```shell Docker
-    docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 \
+    docker run --name restate_dev -p 8080:8080 -p 9070:9070 -p 9071:9071 \
         --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
     ```
 
@@ -172,7 +152,7 @@ npm run app
 When you stop the container, any persisted state is dropped because we start the container with the `--rm` flag.
 </SubtleStep>
 
-<SubtleStep stepLabel="4" title="Register the services with Restate">
+<SubtleStep stepLabel="3" title="Register the services with Restate">
 
 Now, we need to tell Restate where our services are running.
 You can register services by calling the Restate Admin API (default port `9070`) and supplying it the service endpoint URI:
@@ -256,7 +236,17 @@ If you run Restate with Docker, replace `http://host.docker.internal:9080` by `h
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
 In `src/app` you will find the skeletons of the various services to help you start implementing the app.
+    For example:
+    ```typescript checkout_service.ts
+    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part1/checkout_service.ts#<start_checkout>-<end_checkout>
+    ```
+
+    Restate handlers have the Restate Context supplied as the first argument.
+    This is the entrypoint to the SDK.
+
     The `app.ts` file contains the definition of the endpoint that hosts the services.
+
+
 </TabItem>
 <TabItem value="java" label="Java">
 In `src/main/java/dev/restate/tour/app` you will find the skeletons of the various services to help you start implementing the app.
@@ -267,99 +257,53 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tu
 
 Services are annotated by `@Service`. A service consists of a set of handlers, and each handler is annotated by `@Handler`.
 
+Restate handlers have the Restate Context supplied as the first argument.
+This is the entrypoint to the SDK.
+
 The `AppMain.java` file contains the definition of the endpoint that hosts the services.
 </TabItem>
 </Tabs>
 </SubtleStep>
 
-## Invoking handlers
+
+## Invoking Handlers
 <Admonition type="note" title="Implement it yourself or follow along by looking at the code under part1"/>
 
 Handlers can be invoked in several ways: via HTTP requests, programmatically with the SDK, or via Kafka events.
 
-### Request-response HTTP requests
+### Request-response calls over HTTP
 Let's start with invoking our handler over HTTP using `curl`.
-For example, add a ticket `456` to the cart by calling the `addTicket` handler of the `CartObject`:
 
-<Tabs groupId="sdk" queryString className={"display-none"}>
-<TabItem value="ts" label="TypeScript">
+For example, add a ticket `seat2B` to the cart of Mary by calling the `addTicket` handler of the `CartObject`:
 
 ```shell
-curl localhost:8080/CartObject/addTicket \
-    -H 'content-type: application/json' \
-    -d '{"key": "Mary", "request": "seat2B"}'
+curl localhost:8080/CartObject/Mary/addTicket -d '"seat2B"'
 ```
-
-</TabItem>
-<TabItem value="java" label="Java">
-
-```shell
-curl localhost:8080/CartObject/addTicket -d '"seat2B"'
-```
-
-</TabItem>
-</Tabs>
 
 If this prints out `true`, then you have a working setup.
 
-As you see, the request is sent to Restate and not directly to the service.
-This is because Restate will first make sure that the request is persisted and will then forward it to the service.
-Once the request has been persisted, it will never get lost and Restate will drive the execution of the handler to completion.
-
-To proceed with the purchase, call the `checkout` handler of the `CartObject`:
-
-<Tabs groupId="sdk" queryString className={"display-none"}>
-<TabItem value="ts" label="TypeScript">
+When Mary wants to proceed with the purchase, call the `checkout` handler of the `CartObject`:
 
 ```shell
-curl localhost:8080/CartObject/checkout \
-    -H 'content-type: application/json' \
-    -d '{"key": "Mary"}'
+curl localhost:8080/CartObject/Mary/checkout
 ```
-
-</TabItem>
-<TabItem value="java" label="Java">
-
-```shell
-curl localhost:8080/CartObject/checkout
-```
-
-</TabItem>
-</Tabs>
 
 We will use these two `curl` commands often when developing the code, so keep them handy.
 
+<Admonition type="note" title="Restate as proxy">
+    Restate acts as a proxy for your services. It forwards the request to the correct service and handler.
+    Therefore, the request is sent to Restate and not directly to the service.
+</Admonition>
 
-As you noticed, the `curl` command returned the response of the handler.
-The request we did was a request-response call, where we waited for the response.
-
-### One-way HTTP requests
-
-You can also call without waiting for the response, similar to sending a message to a queue:
-
-<Tabs groupId="sdk" queryString className={"display-none"}>
-    <TabItem value="ts" label="TypeScript">
-
-        ```shell
-        curl localhost:8080/CartObject/addTicket \
-        -H 'content-type: application/json' \
-        -d '{"key": "Mary", "request": "seat2B"}'
-        ```
-
-    </TabItem>
-    <TabItem value="java" label="Java">
-
-        <CH.Code>
-            ```shell
-            curl localhost:8080/CartObject/addTicket/send -d '"seat2B"'
-            ```
-        </CH.Code>
-
-    </TabItem>
-</Tabs>
-
-As you see, this returns an invocation ID.  This is a unique identifier for the invocation.
-You can use it to track the progress of the invocation, and to correlate logs and metrics.
+<Admonition type="note" title={<>Why does the path contain <code>Mary</code>?</>}>
+    Handlers are either a part of plain services or Virtual Objects.
+    Virtual Objects are a special type of service that allows you to group handlers together, share state between them, and control concurrency.
+    Each Virtual Object has a unique key.
+    We will cover the difference in more detail later.
+    For now, it's important to note that when invoking a handler within a Virtual Object, you need to specify its key.
+    In our example, the `CartObject` and `TicketObject` are Virtual Objects, while the `CheckoutService` is a plain service.
+    To add the ticket to Mary's cart, we need to specify the key `Mary` in the path to reach her Virtual Object.
+</Admonition>
 
 We can do the same programmatically within a handler by using the SDK. Let's try this out!
 
@@ -369,27 +313,16 @@ You can also call other handlers programmatically by using the clients generated
 Let's try this out!
 
 When we add a ticket to the cart, the `CartObject/addTicket` handler first needs to reserve the ticket for the user.
-It does that by calling the `TicketObject/reserve` handler.
-It does this as follows:
+It does that by calling the `TicketObject/reserve` handler:
 
 <Tabs groupId="sdk" queryString className={"display-none"}>
     <TabItem value="ts" label="TypeScript">
 
-        ```typescript
-        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part1/user_session.ts#<start_add_ticket>-<end_add_ticket>
+        ```typescript cart_object.ts
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part1/cart_object.ts#<start_add_ticket>-<end_add_ticket>
         ```
-
-        You do the call via `ctx.rpc` and supply the exported `ticketObjectApi` to specify which service to invoke.
-        Then you call the `reserve` function, which returns a Promise that will get resolved with the `boolean` response.
-
-        Run the services via `npm run app` and send a request to `CartObject/addTicket`, as we did [previously](#request-response-http-requests).
-
-        In the service logs, you see that the `addTicket` function gets executed,
-        after which the `reserve` function gets executed.
-        The call to `addTicket` finishes earlier than the `reserve` function because it didn't wait for the response of the `reserve` function.
-
         <details className="grey-details">
-            <summary>Show the logs</summary>
+            <summary>Service logs</summary>
 
             ```log
             // withClass highlight-line
@@ -409,13 +342,18 @@ It does this as follows:
 
         </details>
 
+        1. **Create the client** via `ctx.serviceClient` or `ctx.objectClient` (for Virtual Objects). Specify the service definition (`TicketObject`) and optionally the Virtual Object key (`ticketId`).
+        2. **Specify the handler** you want to call and supply the request. Here `reserve()`.
+        3. **Await the response** of the call.
+
+        Send a request to `CartObject/addTicket` as we did [previously](#request-response-http-requests), and have a look at the service logs.
+
     </TabItem>
     <TabItem value="java" label="Java">
 
         ```java CartObject.java
         CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/CartObject.java#<start_add_ticket>-<end_add_ticket>
         ```
-
 
         <details className="grey-details">
             <summary>Service logs</summary>
@@ -440,16 +378,13 @@ It does this as follows:
             ```
         </details>
 
-        To do a call with the SDK from within a Restate handler:
-        - **Use the pre-generated client** (`TicketObject`): This gets generated when you compile the code for the first time.
+        1. **Use the pre-generated client** (`TicketObject`): This gets generated when you compile the code for the first time.
         So if you haven't done that yet, run `./gradlew build` to generate the client.
-        - **Supply the context** via `fromContext(ctx)`. Restate handlers have the Restate Context supplied as the first argument.
-        This context is the entrypoint to the SDK.
-        Everytime you use the context, the action gets logged by Restate to make sure it can be recovered in case of a failure.
-        - **Specify the handler** you want to call and supply the request. Here `reserve()`.
-        - **Await the response** to wait for the response of the handler.
+        2. **Supply the context** (and specify the Virtual Object) key via `fromContext(ctx, ticketId)`.
+        3. **Specify the handler** you want to call and supply the request. Here `reserve()`.
+        4. **Await the response** of the call.
 
-        Once you have added this to the code, restart the service and try it out by calling the `CartObject/addTicket` method as [explained earlier](#request-response-http-requests) and have a look at the service logs.
+        Once you have added this to the code, restart the service, call the `CartObject/addTicket` method as we did [previously](#request-response-http-requests), and have a look at the service logs.
 
     </TabItem>
 </Tabs>
@@ -466,41 +401,34 @@ Let the `expireTicket` handler call the `TicketObject/unreserve` handler.
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
 
-```typescript ticket_service.ts
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part1/user_session.ts#<start_expire_ticket>-<end_expire_ticket>
+```typescript cart_object.ts
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part1/cart_object.ts#<start_expire_ticket>-<end_expire_ticket>
 ```
 
 Specify that you want to call the `TicketObject` by supplying `ticketObjectApi` to the `send` function.
-Then call the `unreserve` function on the `TicketObject`.
+Then call the `unreserve` handler on the `TicketObject`.
 
-Once you have added this to the code, try it out by calling the `CartObject/expireTicket` function:
+Once you have added this to the code, call the `CartObject/expireTicket` handler:
 
 ```shell
-curl localhost:8080/CartObject/expireTicket -d '"seat2B"'
+curl localhost:8080/CartObject/Mary/expireTicket -d '"seat2B"'
 ```
-
-In the service logs, you see that the `expireTicket` function gets executed,
-after which the `unreserve` function gets executed.
-The call to `expireTicket` finishes earlier than the `unreserve` function because it didn't wait for the response of the `unreserve` function.
-
 <details className="grey-details">
-<summary>Show the logs</summary>
+    <summary>Service logs</summary>
 
-```log
-[restate] [CartObject/expireTicket][inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz][2024-03-18T16:14:24.671Z] DEBUG: Invoking function.
-[restate] [CartObject/expireTicket][inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz][2024-03-18T16:14:24.672Z] DEBUG: Adding message to journal and sending to Restate ; BackgroundInvokeEntryMessage
-[restate] [CartObject/expireTicket][inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz][2024-03-18T16:14:24.673Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
-// withClass highlight-line
-[restate] [CartObject/expireTicket][inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz][2024-03-18T16:14:24.673Z] DEBUG: Function completed successfully.
-[restate] [TicketObject/unreserve][inv_1k78Krj3GqrK3GuJXkgaXBbg69R47TCeAN][2024-03-18T16:14:24.677Z] DEBUG: Invoking function.
-[restate] [TicketObject/unreserve][inv_1k78Krj3GqrK3GuJXkgaXBbg69R47TCeAN][2024-03-18T16:14:24.677Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
-// withClass highlight-line
-[restate] [TicketObject/unreserve][inv_1k78Krj3GqrK3GuJXkgaXBbg69R47TCeAN][2024-03-18T16:14:24.677Z] DEBUG: Function completed successfully.
-```
+    ```log
+    [restate] [CartObject/expireTicket][inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz][2024-03-18T16:14:24.671Z] DEBUG: Invoking function.
+    [restate] [CartObject/expireTicket][inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz][2024-03-18T16:14:24.672Z] DEBUG: Adding message to journal and sending to Restate ; BackgroundInvokeEntryMessage
+    [restate] [CartObject/expireTicket][inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz][2024-03-18T16:14:24.673Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
+    // withClass highlight-line
+    [restate] [CartObject/expireTicket][inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz][2024-03-18T16:14:24.673Z] DEBUG: Function completed successfully.
+    [restate] [TicketObject/unreserve][inv_1k78Krj3GqrK3GuJXkgaXBbg69R47TCeAN][2024-03-18T16:14:24.677Z] DEBUG: Invoking function.
+    [restate] [TicketObject/unreserve][inv_1k78Krj3GqrK3GuJXkgaXBbg69R47TCeAN][2024-03-18T16:14:24.677Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
+    // withClass highlight-line
+    [restate] [TicketObject/unreserve][inv_1k78Krj3GqrK3GuJXkgaXBbg69R47TCeAN][2024-03-18T16:14:24.677Z] DEBUG: Function completed successfully.
+    ```
 
 </details>
-
-
 </TabItem>
 <TabItem value="java" label="Java">
 
@@ -510,7 +438,7 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tu
 You now call `send()` on the generated client to send a message instead of doing a request-response call.
 You also don't need to await the response, as you don't expect one.
 
-Try it out by running the services via `./gradlew run` and send a request to `CartObject/expireTicket` via:
+Call the handler via:
 ```shell
 curl localhost:8080/CartObject/Mary/expireTicket -d '"seat2B"'
 ```
@@ -538,26 +466,32 @@ curl localhost:8080/CartObject/Mary/expireTicket -d '"seat2B"'
     ```
 
 </details>
-
-In the service logs, you see that the `expireTicket` function gets executed, after which the `unreserve` function gets executed.
-The call to `expireTicket` finishes earlier than the `unreserve` function because `expireTicket` didn't wait for the response of the `unreserve` function.
-
-
-
 </TabItem>
 </Tabs>
 
-<Admonition type="tip" title="Restate as your message queue">
+The service logs show how the `expireTicket` handler gets executed and then the `unreserve` handler.
+The call to `expireTicket` finishes earlier than the `unreserve` handler because `expireTicket` didn't wait for the response of the `unreserve` handler.
+
+<Admonition type="tip" title="Restate as message queue">
 Restate persists and retries failed one-way invocations. There is no need to set up message queues to ensure delivery!
 </Admonition>
 
+<Admonition type="info" title="HTTP">
+You can also do one-way calls via `curl`. Just add `/send` to the handler path:
+```shell
+curl localhost:8080/CartObject/Mary/addTicket/send -d '"seat2B"'
+```
+
+As you see, this returns an invocation ID.  This is a unique identifier for the invocation.
+    You can use it to track the progress of the invocation, and to correlate logs and metrics.
+</Admonition>
 
 ### 📝 Try it out
 
 Make the `CartObject/checkout` handler call the `CheckoutService/handle` handler.
 
 For the request field, you can use a hard-coded string array for now: `["seat2B"]`.
-You will fix this later on.
+You will fix this later on. Note that the `CheckoutService` is not a Virtual Object, so you don't need to specify a key.
 
 <details>
     <summary>Solution</summary>
@@ -567,17 +501,11 @@ You will fix this later on.
     <Tabs groupId="sdk" queryString className={"display-none"}>
         <TabItem value="ts" label="TypeScript">
 
-            Import the checkout API:
-            ```typescript
-            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part1/user_session.ts#<start_checkout_api_import>-<end_checkout_api_import>
+            ```typescript cart_object.ts
+            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part1/cart_object.ts#<start_checkout>-<end_checkout>
             ```
 
-            Then call the `CheckoutService/handle` function:
-            ```typescript
-            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part1/user_session.ts#<start_checkout>-<end_checkout>
-            ```
-
-            Call the `CartObject/checkout` function as you did [earlier](#request-response-http-requests) and have a look at the logs again to see what happened:
+            Call `CartObject/checkout` as you did [earlier](#request-response-http-requests) and have a look at the logs again to see what happened:
 
             ```log
             [restate] [CartObject/checkout][inv_1gdJBtdVEcM919dOBhoVBm3fUMlaIHnANr][2024-03-19T07:57:24.018Z] DEBUG: Invoking function.
@@ -591,12 +519,10 @@ You will fix this later on.
             [restate] [CartObject/checkout][inv_1gdJBtdVEcM919dOBhoVBm3fUMlaIHnANr][2024-03-19T07:57:24.027Z] DEBUG: Function completed successfully.
             ```
 
-            Notice that the `CartObject` didn't get suspended because the response came before the suspension timeout hit.
-
         </TabItem>
         <TabItem value="java" label="Java">
 
-            ```java
+            ```java CartObject.java
             CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/CartObject.java#<start_checkout>-<end_checkout>
             ```
 
@@ -640,21 +566,22 @@ Have a look at the animation to understand what happened under-the-hood:
 Whenever a failure would happen, Restate would be able to recover the latest state of the handler by sending over the journal.
 The code would fast-forward to the point where it crashed, and continue executing from there on.
 
-To see the recovery of partial progress in practice, let's make the `CartObject/checkout` handler crash right after the call.
+To see the recovery of partial progress in practice, let's make the `CartObject/addTicket` handler crash right after the call.
 
 <Tabs groupId="sdk" queryString className={"display-none"}>
     <TabItem value="ts" label="TypeScript">
-        Add the import:
-        REDOOOOOO
 
+        <CH.Code lineNumbers={true}>
+        ```typescript cart_object.ts
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part1/cart_object.ts#<start_add_ticket>-<end_add_ticket>
+        ```
+        </CH.Code>
+
+        Add the following code to line 4 of the snippet, to let the code throw an error after the call:
         ```typescript
-        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part1/ticket_service.ts#<start_import_sleep>-<end_import_sleep>
+        throw new Error("Failing");
         ```
 
-        Add the sleep:
-        ```typescript
-        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part1/ticket_service.ts#<start_reserve>-<end_reserve>
-        ```
 
         <details className={"grey-details"}>
             <summary>Service logs</summary>
@@ -680,20 +607,16 @@ To see the recovery of partial progress in practice, let's make the `CartObject/
         </details>
 
 
-        Call `CartObject/addTicket` again and have a look at the SDK logs.
-        Now that the `TicketObject` responds after 35 seconds, you see that the `addTicket` function suspends after 30 seconds.
-        Once the runtime has received the response, it invokes the `addTicket` function again and the original call finishes.
-
     </TabItem>
     <TabItem value="java" label="Java">
 
         <CH.Code lineNumbers={true}>
             ```java CartObject.java
-            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/CartObject.java#<start_checkout>-<end_checkout>
+            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/CartObject.java#<start_add_ticket>-<end_add_ticket>
             ```
         </CH.Code>
 
-        Add the following code to line 6 of the snippet, to let the code throw an exception after the call:
+        Add the following code to line 4 of the snippet, to let the code throw an exception after the call:
 
         ```java
         TourUtils.fail();
@@ -706,15 +629,12 @@ To see the recovery of partial progress in practice, let's make the `CartObject/
             ```
 
         </details>
-
-
-        Call `CartObject/addTicket` again and have a look at the service logs.
-        You see the retries taking place. And you see that only the first time the call to the `CheckoutService` was made.
-        The other times, the call was skipped and the journaled response was replayed.
-
     </TabItem>
 </Tabs>
 
+Call `CartObject/addTicket` again and have a look at the service logs.
+You see the retries taking place. And you see that only the first time the call to the `CheckoutService` was made.
+The other times, the call was skipped and the journaled response was replayed.
 
 [By default](/operate/configuration/#default-configuration), Restate will keep retrying failed invocations until they succeed.
 If you want to cancel an invocation in a retry loop, you can use the CLI to do this. Let's have a look at that next.
@@ -800,7 +720,7 @@ Error:       [2024-04-12 15:54:45.257 +02:00]
 />
 
 <Admonition type="note">
-Remove `TourUtils.fail();` from your code, before you continue.
+Remove the throwing of the exception from your code before you continue.
 </Admonition>
 
 <Admonition type="info">
@@ -824,136 +744,23 @@ npm run part1
 </Tabs>
 </Admonition>
 
-## Durable timers
+## Scheduling Async Tasks
 
 <Admonition type="note" title="Implement it yourself or follow along by looking at the code under part2"/>
 
-We mentioned earlier that Restate suspends an invocation when it waits on external input.
-The partial progress of the service invocation is durably stored in the log and can be resumed once the external input has arrived.
-Restate offers the same mechanism for timers.
+When a handler calls another handler, Restate registers the call and makes sure it happens.
+You can also ask Restate to execute the call at a later point in the future, by adding a delay parameter to the call.
+Restate then registers the call and triggers it after the delay has passed.
 
-### Suspendable sleep
-
-In some scenarios, you might want to intentionally suspend the handler execution for a period of time.
-For example, to sleep in between two steps of a workflow.
-In those situations, you can explicitly suspend execution for arbitrarily long periods of time using the SDK's `sleep` function.
-Adapt the `TicketObject/reserve` function to use `ctx.sleep`:
-
-<Tabs groupId="sdk" queryString className={"display-none"}>
-<TabItem value="ts" label="TypeScript">
-
-```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part2/ticket_service.ts#<start_reserve>-<end_reserve>
-```
-
-</TabItem>
-<TabItem value="java" label="Java">
-
-```java TicketObject.java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part2/TicketObject.java#<start_reserve>-<end_reserve>
-```
-
-</TabItem>
-</Tabs>
-
-<details className={"grey-details"}>
-    <summary>Service logs</summary>
-    <Tabs groupId="sdk" queryString className={"display-none"}>
-        <TabItem value="ts" label="TypeScript">
-
-            ```log
-            restate] [CartObject/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:18.538Z] DEBUG: Invoking function.
-            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:18.539Z] DEBUG: Adding message to journal and sending to Restate ; InvokeEntryMessage
-            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:18.539Z] DEBUG: Scheduling suspension in 30000 ms
-            [restate] [TicketObject/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:18.543Z] DEBUG: Invoking function.
-            [restate] [TicketObject/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:18.543Z] DEBUG: Adding message to journal and sending to Restate ; SleepEntryMessage
-            [restate] [TicketObject/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:18.543Z] DEBUG: Scheduling suspension in 30000 ms
-            // highlight-start
-            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:48.568Z] DEBUG: Writing suspension message to journal. ; SuspensionMessage
-            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:48.568Z] DEBUG: Suspending function.
-            [restate] [TicketObject/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:48.569Z] DEBUG: Writing suspension message to journal. ; SuspensionMessage
-            [restate] [TicketObject/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:48.569Z] DEBUG: Suspending function.
-            [restate] [TicketObject/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:53.554Z] DEBUG: Resuming (replaying) function.
-            // highlight-end
-            [restate] [TicketObject/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:53.554Z] DEBUG: Matched and replayed message from journal ; SleepEntryMessage
-            [restate] [TicketObject/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:53.554Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
-            [restate] [TicketObject/reserve][inv_1k78Krj3GqrK5VGOBoinuc1fiN1eIwKGWZ][2024-03-19T08:01:53.554Z] DEBUG: Function completed successfully.
-            // highlight-next-line
-            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:53.598Z] DEBUG: Resuming (replaying) function.
-            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:53.598Z] DEBUG: Matched and replayed message from journal ; InvokeEntryMessage
-            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:53.598Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
-            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM914R2BTwQ8Ioyfjy4ap9PxL][2024-03-19T08:01:53.598Z] DEBUG: Function completed successfully.
-            ```
-
-        </TabItem>
-        <TabItem value="java" label="Java">
-
-            ```log
-            // withClass highlight-line
-            2024-03-19 13:17:31 DEBUG [example.CartObject/AddTicket] dev.restate.sdk.http.vertx.RequestHttpServerHandler - Handling request to example.CartObject/AddTicket
-            2024-03-19 13:17:31 INFO  [example.CartObject/AddTicket] dev.restate.sdk.core.RestateEndpoint - Start processing invocation
-            2024-03-19 13:17:31 DEBUG [example.CartObject/AddTicket] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CartObject', invocationState=WAITING_START, id=inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz} to REPLAYING
-            2024-03-19 13:17:31 DEBUG [example.CartObject/AddTicket][inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CartObject', invocationState=REPLAYING, id=inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz} to PROCESSING
-            // withClass highlight-line
-            2024-03-19 13:17:31 DEBUG [example.TicketObject/Reserve] dev.restate.sdk.http.vertx.RequestHttpServerHandler - Handling request to example.TicketObject/Reserve
-            2024-03-19 13:17:31 INFO  [example.TicketObject/Reserve] dev.restate.sdk.core.RestateEndpoint - Start processing invocation
-            2024-03-19 13:17:31 DEBUG [example.TicketObject/Reserve] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.TicketObject', invocationState=WAITING_START, id=inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp} to REPLAYING
-            2024-03-19 13:17:31 DEBUG [example.TicketObject/Reserve][inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.TicketObject', invocationState=REPLAYING, id=inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp} to PROCESSING
-            // withClass highlight-line
-            2024-03-19 13:18:31 INFO  [example.CartObject/AddTicket][inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz] dev.restate.sdk.core.InvocationStateMachine - Suspend invocation
-            2024-03-19 13:18:31 DEBUG [example.CartObject/AddTicket][inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CartObject', invocationState=PROCESSING, id=inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz} to CLOSED
-            2024-03-19 13:18:31 INFO  [example.CartObject/AddTicket][inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz] dev.restate.sdk.core.InvocationStateMachine - End invocation
-            2024-03-19 13:18:31 INFO  [example.CartObject/AddTicket][inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz] dev.restate.sdk.core.InvocationStateMachine - End invocation
-            // withClass highlight-line
-            2024-03-19 13:18:31 INFO  [example.TicketObject/Reserve][inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp] dev.restate.sdk.core.InvocationStateMachine - Suspend invocation
-            2024-03-19 13:18:31 DEBUG [example.TicketObject/Reserve][inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.TicketObject', invocationState=PROCESSING, id=inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp} to CLOSED
-            2024-03-19 13:18:31 INFO  [example.TicketObject/Reserve][inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp] dev.restate.sdk.core.InvocationStateMachine - End invocation
-            2024-03-19 13:18:31 INFO  [example.TicketObject/Reserve][inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp] dev.restate.sdk.core.InvocationStateMachine - End invocation
-            // withClass highlight-line
-            2024-03-19 13:18:36 DEBUG [example.TicketObject/Reserve] dev.restate.sdk.http.vertx.RequestHttpServerHandler - Handling request to example.TicketObject/Reserve
-            2024-03-19 13:18:36 INFO  [example.TicketObject/Reserve] dev.restate.sdk.core.RestateEndpoint - Start processing invocation
-            2024-03-19 13:18:36 DEBUG [example.TicketObject/Reserve] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.TicketObject', invocationState=WAITING_START, id=inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp} to REPLAYING
-            2024-03-19 13:18:36 DEBUG [example.TicketObject/Reserve][inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.TicketObject', invocationState=REPLAYING, id=inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp} to PROCESSING
-            2024-03-19 13:18:36 INFO  [example.TicketObject/Reserve][inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp] dev.restate.sdk.core.InvocationStateMachine - End invocation
-            2024-03-19 13:18:36 DEBUG [example.TicketObject/Reserve][inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.TicketObject', invocationState=PROCESSING, id=inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp} to CLOSED
-            2024-03-19 13:18:36 INFO  [example.TicketObject/Reserve][inv_1kZ9CQR8abEw0sEs2Kgzztf2USUT1dzWIp] dev.restate.sdk.core.InvocationStateMachine - End invocation
-            // withClass highlight-line
-            2024-03-19 13:18:36 DEBUG [example.CartObject/AddTicket] dev.restate.sdk.http.vertx.RequestHttpServerHandler - Handling request to example.CartObject/AddTicket
-            2024-03-19 13:18:36 INFO  [example.CartObject/AddTicket] dev.restate.sdk.core.RestateEndpoint - Start processing invocation
-            2024-03-19 13:18:36 DEBUG [example.CartObject/AddTicket] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CartObject', invocationState=WAITING_START, id=inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz} to REPLAYING
-            2024-03-19 13:18:36 DEBUG [example.CartObject/AddTicket][inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CartObject', invocationState=REPLAYING, id=inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz} to PROCESSING
-            2024-03-19 13:18:36 INFO  [example.CartObject/AddTicket][inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz] dev.restate.sdk.core.InvocationStateMachine - End invocation
-            2024-03-19 13:18:36 DEBUG [example.CartObject/AddTicket][inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CartObject', invocationState=PROCESSING, id=inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz} to CLOSED
-            2024-03-19 13:18:36 INFO  [example.CartObject/AddTicket][inv_1gdJBtdVEcM958Np3tO3cffyYuVBbOtgtz] dev.restate.sdk.core.InvocationStateMachine - End invocation
-            ```
-
-        </TabItem>
-    </Tabs>
-</details>
-
-Send an `addTicket` request, as [you did earlier](#running-the-services-and-runtime).
-You see in the logs that both services get suspended.
-The `CartObject` gets suspended because it waits for a response from the `reserve` function and the `TicketObject` gets suspended because it waits for the sleep to be completed.
-Restate keeps track of how long the service should sleep and then triggers it to resume the invocation.
-Finally, you see the responses of both functions coming in.
-
-Reduce the time the `TicketObject/reserve` function sleeps to a second, so you won't see the suspensions anymore.
-
-### Delayed calls
-
-Take a look at a slightly different usage of timers.
 In the application, a ticket gets reserved for 15 minutes.
 If the user doesn't pay within that time interval, then it becomes available again to other users.
-
-To do this, you can use a delayed call.
-This is similar to sending a message that gets delayed by a specified duration.
-This would make the `CartObject/addTicket` function look as follows:
+Let the `CartObject/addTicket` handler call the `CartObject/expireTicket` handler with a delay of 15 minutes:
 
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
 
-```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part2/user_session.ts#<start_add_ticket>-<end_add_ticket>
+```typescript cart_object.ts
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part2/cart_object.ts#<start_add_ticket>-<end_add_ticket>
 ```
 
 </TabItem>
@@ -1019,14 +826,35 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tu
 </details>
 To test it out, put the delay to a lower value, for example 5 seconds, call the `addTicket` function, and see in the logs how the call to `CartObject/expireTicket` is executed 5 seconds later.
 
+Don't forget to set the delay back to 15 minutes.
 
 <Admonition type="tip" title={"No workflow orchestrator or cron jobs needed!"}>
 Durable timers are a powerful feature that can be used to implement workflows, schedule async tasks, or plan background jobs.
 Restate makes them resilient to failures and ensures that they get executed. No extra infrastructure needed!
 </Admonition>
 
+<Admonition type="info" title="Suspendable sleep">
+Another timer-like feature of the SDK is suspendable sleep.
+Restate will make sure that the function gets resumed after the specified duration has passed.
+When running on function-as-a-service platforms, your function can suspend in the meantime, so you don't pay for the wait time.
+<Tabs groupId="sdk" queryString className={"display-none"}>
+    <TabItem value="ts" label="TypeScript">
 
-Don't forget to set the delay back to 15 minutes.
+        ```ts
+        CODE_LOAD::ts/src/get_started/tour.ts#<start_sleep>-<end_sleep>
+        ```
+
+    </TabItem>
+    <TabItem value="java" label="Java">
+
+        ```java
+        CODE_LOAD::java/src/main/java/get_started/Tour.java#<start_sleep>-<end_sleep>
+        ```
+
+    </TabItem>
+</Tabs>
+
+</Admonition>
 
 
 <Admonition type="info">
@@ -1050,104 +878,25 @@ npm run part2
 </Tabs>
 </Admonition>
 
-## Virtual Objects
+
+## Virtual Objects vs. Services
 <Admonition type="note" title="Implement it yourself or follow along by looking at the code under part3"/>
 
-In the previous sections, you implemented parts of the `TicketObject` and `CartObject`.
-But until now, we did not yet mention how we will keep track of the tickets in the user's cart.
-Or how we will make sure that several users can add tickets simulatenously without interfering with each other, and without selling a single ticket multiple times.
+At the beginning of this tutorial, we mentioned that the `TicketObject` and `CartObject` services are Virtual Objects.
 
-That's where **Virtual Objects** come into play.
-Virtual Objects are a special type of service that allows you to group handlers together, share state between them, and control the number of ongoing invocations.
-Each Virtual Object has a unique key.
-Invocations are sequenced per Virtual Object, so at most one handler can run at a time for a given Virtual Object.
+**Virtual Objects** are identified by a key and allow you to store K/V state in Restate.
+For each Virtual Object, only one invocation can run at a time (across all the handlers of that Virtual Object).
 
-The issues with our current implementation, can easily be solved by using Virtual Objects.
-We will convert the `TicketObject` and `CartObject` services to Virtual Objects.
-
-The `TicketObject` will be keyed by the ticket ID, and we will store the current status of the ticket in the state (`AVAILABLE`/`RESERVED`).
-Because it's a Virtual Object, we can be sure that only one invocation can run at a time for the same ticket ID.
-So if user reserves a ticket, we can be sure that no concurrent other requests reserved the same ticket at the same time.
+**Services**, on the other hand, do not have access to K/V state, and handlers can run concurrently.
 
 <Admonition type={"tip"} title={"Virtual Objects simplify many use cases"}>
-With access to consistent K/V state and strong concurrency guarantees, implementing the `CartObject` service in a resilient and consistent way becomes straightforward.
+With access to consistent K/V state and strong concurrency guarantees, implementing the `TicketObject` in a resilient and consistent way becomes straightforward.
+When a user reserves a ticket, we want to be sure that no concurrent other requests are reserving the same ticket at the same time.
+To get this behaviour, we key the `TicketObject` on ticket ID. We now have a single Virtual Object per ticket.
 </Admonition>
 
-We also need to convert the `CartObject` service to a Virtual Object, keyed by the user ID.
-This way, we can store the user's cart in the state.
-With only one ongoing invocation, we are guarded against many concurrency issues when updating the cart.
-
-<Admonition type="tip">
-The concurrency guarantees of Virtual Objects can be useful to simplify reasoning about interaction with external systems.
-</Admonition>
-
-<Tabs groupId="sdk" queryString className={"display-none"}>
-    <TabItem value="ts" label="TypeScript">
-
-        **Specifying unkeyed services**
-
-        You specify an unkeyed service by creating a router with its set of functions.
-        For example, for the `CheckoutService`, you create a router with the `handle` function:
-
-        ```typescript
-        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part1/checkout.ts#<start_checkout>-<end_checkout>
-        ```
-
-        The functions of an unkeyed router have two parameters:
-
-        * A `ctx` of type `restate.Context` which allows to interact with Restate.
-        * A `request` of type JSON object which represents additional invocation data.
-
-        The `CheckoutService` only has a single function, but you can add more functions to the router if you want.
-
-        **Specifying keyed services**
-
-        You specify a keyed service by creating a keyed router with its set of functions.
-        For example, the `CartObject` service has the following keyed router:
-
-        ```typescript
-        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/app/user_session.ts#<start_user_session>-<end_user_session>
-        ```
-
-        The functions of a keyed router have three parameters
-
-        * A `ctx` of type `restate.KeyedContext` which allows to interact with Restate.
-        * A `key` parameter of type string which represents the key of the invoked service.
-        * A `request` parameter of type JSON object which represents additional invocation data.
-
-        You can choose the parameter names differently.
-
-        As mentioned, for keyed services there can be at most one concurrent invocation to any method of the service.
-        This means that for the same value of `key`, an unfinished call to `addTicket()` will block subsequent calls to `expireTicket()` or `checkout()` until `addTicket()` has finished.
-
-        **Exporting the service API**
-
-        You export the `service` API by creating a service API instance which specifies under which path the service is reachable.
-
-        For example, for the `CartObject` service, you export the following service API:
-
-        ```typescript
-        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part1/user_session.ts#<start_user_session_api>-<end_user_session_api>
-        ```
-
-        You can now call the service at the endpoint `http://localhost:8080/<servicePath>/<functionName>`.
-        For example, you call the `addTicket` function of the `CartObject` service at `http://localhost:8080/CartObject/addTicket`, as you did earlier.
-
-    </TabItem>
-    <TabItem value="java" label="Java">
-
-        To convert the `TicketObject` and `CartObject` services to Virtual Objects, you need to:
-        1. Replace the `@Service` annotation by `@VirtualObject`
-        2. Replace the `Context` parameter by `ObjectContext` in the handler functions. The `ObjectContext` provides additional capabilities compared to the regular `Context` (e.g. K/V state access).
-        3. You call a Virtual Object by specifying its key.
-
-    </TabItem>
-</Tabs>
-
-
-
-<Admonition type="caution">
-    Since only a single invocation can run at a time for a given virtual object, you need to be careful with long-running operations, such as sleeps.
+<Admonition type="caution" title={"Long-running operations in Virtual Objects"}>
+    If you do long-running operations in a Virtual Object, no other invocations are processed the meantime.
     For example, if you would implement the expiration of the ticket in the `CartObject` service by sleeping for 15 minutes:
 
     <Tabs groupId="sdk" queryString className={"display-none"}>
@@ -1166,12 +915,11 @@ The concurrency guarantees of Virtual Objects can be useful to simplify reasonin
 
         </TabItem>
     </Tabs>
-    This would block any other invocations for the same cart ID for 15 minutes.
-    So the user wouldn't be able to add any other tickets, nor buy the tickets.
+    The user wouldn't be able to add any other tickets, nor buy the tickets.
     If you do a delayed call, the invocation isn't ongoing until the delay has passed, so the Virtual Object is not locked.
 </Admonition>
 
-## Persistent application state
+## Persistent K/V state
 
 Restate offers a key-value store to persistently store application state for Virtual Objects.
 
@@ -1189,8 +937,8 @@ Have a look at the highlighted code:
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
 
-```ts
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part3/user_session.ts#<start_add_ticket>-<end_add_ticket>
+```ts cart_object.ts
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part3/cart_object.ts#<start_add_ticket>-<end_add_ticket>
 ```
 
 To retrieve the cart, you use `ctx.get`.
@@ -1199,7 +947,7 @@ This returns `null` if the value has never been set.
 </TabItem>
 <TabItem value="java" label="Java">
 
-```java
+```java CartObject.java
 CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/CartObject.java#<start_add_ticket>-<end_add_ticket>
 ```
 
@@ -1213,7 +961,7 @@ After you added the ticket to the cart array, you set the state to the new value
 
 You can store multiple key-value pairs, by using different state keys.
 Here, you get the value under the key `"tickets"`.
-Restate ensures that you get the cart belonging to the current Virtual Object (user).
+Restate returns the cart belonging to the current Virtual Object (for example, user `Mary`).
 
 Run the services and call the `addTicket` function, to see the interaction with state.
 
@@ -1271,7 +1019,7 @@ So when you operate on the state in your function with `ctx.get` and `ctx.set`, 
 ### Inspecting K/V state
 
 Restate exposes information on invocations and application state.
-You can watch the state of the `CartObject` service, via the CLI or via `psql` as follows:
+You can watch the state of the `CartObject` service, via:
 
 <CH.Code>
 
@@ -1291,14 +1039,14 @@ Now, adapt the `CartObject/checkout` function, to use the tickets:
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
 
-```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part3/user_session.ts#<start_checkout>-<end_checkout>
+```typescript cart_object.ts
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part3/cart_object.ts#<start_checkout>-<end_checkout>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
-```java
+```java CartObject.java
 CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/CartObject.java#<start_checkout>-<end_checkout>
 ```
 
@@ -1325,31 +1073,24 @@ If this is the case, then you call `TicketObject/unreserve` and remove it from t
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
 
-```ts
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part3/user_session.ts#<start_expire_ticket>-<end_expire_ticket>
-```
-
-Call the `expireTicket` function with:
-```shell
-curl localhost:8080/CartObject/expireTicket \
--H 'content-type: application/json' \
--d '{"key": "Mary", "request": "seat2B"}'
+```ts cart_object.ts
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part3/cart_object.ts#<start_expire_ticket>-<end_expire_ticket>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
-```java
+```java CartObject.java
 CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/CartObject.java#<start_expire_ticket>-<end_expire_ticket>
-```
-
-Call the `expireTicket` function with:
-```shell
-curl localhost:8080/CartObject/Mary/expireTicket -d '"seat2B"'
 ```
 
 </TabItem>
 </Tabs>
+
+Call the `expireTicket` handler with:
+```shell
+curl localhost:8080/CartObject/Mary/expireTicket -d '"seat2B"'
+```
 
 </details>
 
@@ -1383,14 +1124,14 @@ return `true` (reservation successful).
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
 
-```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part3/ticket_service.ts#<start_reserve>-<end_reserve>
+```typescript ticket_object.ts
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part3/ticket_object.ts#<start_reserve>-<end_reserve>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
-```java
+```java TicketObject.java
 CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/TicketObject.java#<start_reserve>-<end_reserve>
 ```
 
@@ -1411,22 +1152,22 @@ Clear the `"status"`, if it's not equal to `TicketStatus.Sold`.
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
 
-```ts
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part3/ticket_service.ts#<start_unreserve>-<end_unreserve>
+```ts ticket_object.ts
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part3/ticket_object.ts#<start_unreserve>-<end_unreserve>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
-```java
+```java TicketObject.java
 CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/TicketObject.java#<start_unreserve>-<end_unreserve>
 ```
 </TabItem>
 </Tabs>
 
 Now, the ticket reservation status is cleared when the delayed `expireTicket` call triggers.
-Play around with reducing the delay of the `expireTicket` call in the `addTicket` function.
-Try to reserve the same ticket ID multiple times, and see how you are able to reserve it again after the `unreserve` function executed.
+Play around with reducing the delay of the `expireTicket` call in the `addTicket` handler.
+Try to reserve the same ticket ID multiple times, and see how you are able to reserve it again after the `unreserve` handler executed.
 
 </details>
 </SubtleStep>
@@ -1439,14 +1180,14 @@ Set the `"status"` to `TicketStatus.Sold` if it's reserved.
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
 
-```ts
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part3/ticket_service.ts#<start_mark_as_sold>-<end_mark_as_sold>
+```ts ticket_object.ts
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part3/ticket_object.ts#<start_mark_as_sold>-<end_mark_as_sold>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
-```java
+```java TicketObject.java
 CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/TicketObject.java#<start_mark_as_sold>-<end_mark_as_sold>
 ```
 </TabItem>
@@ -1486,7 +1227,7 @@ npm run part3
 Restate's Durable Execution mechanism tracks the progress of the code execution in a journal.
 Once a result has made it to the journal, it will not be re-executed on retries.
 
-The SDK offers `ctx.run` to store the return value of any function in the journal.
+You can store the return value of any function in the journal, by using `ctx.run`.
 This lets you capture potentially non-deterministic computation and interaction with external systems in a safe way.
 The SDK also offers helper functions for creating UUIDs and generating random numbers.
 
@@ -1495,28 +1236,25 @@ For the replay to work, code needs to be deterministic, otherwise the replayed e
 So use `ctx.run` to store the result of non-deterministic operations!
 </Admonition>
 
-In `CheckoutService/handle`, we first want to trigger the payment. This happens in two steps:
-
-1. First, we use the SDK helper functions to generate an idempotency token for the payment.
-This token will be supplied in the payment request to ensure that a customer never pays multiple times.
-2. Then, we use a side effect to trigger the payment via an external payment provider (`PaymentClient`).
-Use the `auxiliary/PaymentClient` stub to execute the payment via `PaymentClient.get().call(idempotencyKey, amount)`.
-Assume every ticket costs 40 dollars.
-Store the boolean result of the call as the return value of the side effect.
-
-Add the following code snippet to the `CheckoutService/handle` function:
+We can use this feature to do exactly-once payments in `CheckoutService/handle`:
+1. **Generate an idempotency token** (payment identifier) and store it in Restate.
+Once the token is stored, it will be the same on retries.
+2. **Trigger the payment** via an external payment provider.
+Execute the payment via `PaymentClient.get().call(idempotencyKey, amount)`.
+The payment provider will deduplicate payments based on the idempotency token.
+We assume every ticket costs 40 dollars.
 
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
 
-```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part4/checkout.ts#<start_side_effects>-<end_side_effects>
+```typescript checkout_service.ts
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part4/checkout_service.ts#<start_side_effects>-<end_side_effects>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
-```java
+```java CheckoutService.java
 CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part4/CheckoutService.java#<start_side_effects>-<end_side_effects>
 ```
 
@@ -1524,7 +1262,7 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tu
 </Tabs>
 
 
-The idempotency token will be the same during retries. To experiment with this, you can print the idempotency key to the console and then throw an error to see how it gets replayed:
+You can print the idempotency key to the console and then throw an error to see how the idempotency key remains the same during retries:
 
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
@@ -1597,55 +1335,49 @@ CODE_LOAD::java/src/main/java/get_started/Tour.java#<start_idempotency_key_retry
 </details>
 
 Call `CartObject/checkout` and have a look at the logs to see what happens.
-Don't forget to remove the throwing of the error again before you continue.
 
+Remove the throwing of the error again before you continue.
 
 
 ### 📝 Try it out
 Once this works, you implement the rest of the checkout workflow:
 - If the payment call was successful, then:
-    - use the EmailClient to notify the users of the payment success.
+    - Use the EmailClient to notify the users of the payment success.
     Prevent duplicate emails during retries by using a side effect.
-    - let the calling `CartObject` mark all tickets as sold via `TicketObject/markAsSold`.
-- If the payment call was unsuccessful, then:
-    - use the EmailClient to notify the users of the payment failure.
-    Prevent duplicate emails during retries by using a side effect.
+    - Mark all tickets as sold by calling `TicketObject/markAsSold` for each ticket.
+- If the payment call was unsuccessful, then use the EmailClient to notify the users of the payment failure.
 
 <details>
 <summary>Solution</summary>
 
-The `CheckoutService/handle` function now looks like the following:
-
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
 
-```ts
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part4/checkout.ts#<start_checkout>-<end_checkout>
+```ts checkout_service.ts
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part4/checkout_service.ts#<start_checkout>-<end_checkout>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
-```java
+```java CheckoutService.java
 CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part4/CheckoutService.java#<start_checkout>-<end_checkout>
 ```
 
 </TabItem>
 </Tabs>
 
-The `CartObject/checkout` function now looks like the following:
-
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
 
-```typescript
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part4/user_session.ts#<start_checkout>-<end_checkout>
+```typescript cart_object.ts
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part4/cart_object.ts#<start_checkout>-<end_checkout>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
-```java
+```java CartObject.java
 CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part4/CartObject.java#<start_checkout>-<end_checkout>
 ```
 
@@ -1684,7 +1416,7 @@ npm run part4
 ## Tracing
 Restate exposes OpenTelemetry traces of your invocations.
 
-Run the Jaeger container with:
+<SubtleStep stepLabel="1" title="Run Jaeger">
 
 ```shell
 docker run -d --name jaeger \
@@ -1693,38 +1425,35 @@ docker run -d --name jaeger \
     -p 16686:16686 \
     jaegertracing/all-in-one:1.46
 ```
-
-Then stop the Restate container and start it again with the tracing endpoint defined as an environment variable:
-
+</SubtleStep>
+<SubtleStep stepLabel="2" title="Relaunch Restate with tracing enabled">
 ```shell
-docker run --name restate_dev --rm \
+docker run --name restate_dev -p 8080:8080 -p 9070:9070 -p 9071:9071 \
     -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://host.docker.internal:4317 \
-    -p 8080:8080 -p 9070:9070 -p 9071:9071 \
-    --add-host=host.docker.internal:host-gateway \
-    docker.io/restatedev/restate:VAR::RESTATE_VERSION
+    --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
 ```
+</SubtleStep>
+<SubtleStep stepLabel="3" title="Send requests">
 
-Register the services again (required because the state got wiped when the runtime was restarted with the `--rm` flag):
 ```shell
-curl localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
+curl localhost:8080/CartObject/Mary/addTicket -d '"seat2B"'
+curl localhost:8080/CartObject/Mary/checkout
 ```
+</SubtleStep>
+<SubtleStep stepLabel="4" title="Go to the Jaeger UI">
+http://localhost:16686
+</SubtleStep>
+<SubtleStep stepLabel="5" title="Inspect the traces">
 
-Send requests to the runtime by adding tickets and checking out.
-
-Go to the Jaeger UI at http://localhost:16686.
-
-In the Jaeger UI, select the `CartObject` service from the service dropdown.
-You should see the `addTicket` and `checkout` requests listed:
-
-![Jaeger traces tour](/img/jaeger_traces_tour_handler.png)
-
+Select the `CartObject` service from the service dropdown.
+You should see the `addTicket` and `checkout` requests listed.
 Have a look at the traces of the `checkout` call:
 
 ![CheckoutService call traces](/img/jaeger_checkout_traces_tour_handler.png)
 
 You can see the calls that were done to Restate, for example invoke, sleep, one way call, get state, etc., and their timings.
-If you expand one of the traces, you can see tags describing some metadata of the context call, for example invocation id and call arguments.
-
+If you expand one of the traces, you can see tags describing some metadata of the context call, for example invocation ID and the request.
+</SubtleStep>
 For more information, have a look at the [tracing docs](/operate/monitoring/tracing).
 
 ## 🏁 The end
@@ -1750,7 +1479,6 @@ npm run part5
 </Tabs>
 </Admonition>
 
-
 Let's recap what you've covered:
 - Invoking handlers: over HTTP and programmatically with the SDK
 - Request-response invocations
@@ -1760,9 +1488,29 @@ Let's recap what you've covered:
 - Virtual Objects: concurrency guarantees and shared state
 - K/V state: storing and inspecting
 - Storing computation results in the journal
-- Tracing 
+- Tracing
 
 ## Next steps
 - [Have a look at the examples](https://github.com/restatedev/examples)
 - [Check out the Java SDK documentation](/category/java-sdk)
 - [Check out the TypeScript SDK documentation](/category/typescript-sdk)
+
+
+
+</div>
+
+<div className="col col--6 fixed-column">
+    <iframe
+        style={{
+            outline: "1px solid #252525",
+            border: 0,
+            borderRadius: 8,
+            marginBottom: 16,
+            zIndex: 100
+        }}
+        src="https://stackblitz.com/github/restatedev/examples/tree/tour_new_api/tutorials/tour-of-restate-typescript?startScript=app-dev&ctl=1&embed=1&file=src%2Fapp%2Fcheckout_service.ts,src%2Fapp%2Fticket_object.ts,src%2Fapp%2Fcart_object.ts,src%2Fapp%2Fapp.ts&hideExplorer=1&theme=dark&view=editor"
+    ></iframe>
+</div>
+</div>
+</div>
+</section>
