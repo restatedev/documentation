@@ -14,17 +14,43 @@ const router = restate.service({
             await ctx.sleep(15 * 60 * 1000);
             ctx.objectSendClient(TicketObject, ticketId).unreserve();
             // <end_sleep_and_send>
-
-            // <start_idempotency_key_retry>
-            const idempotencyKey = ctx.rand.uuidv4();
-            console.info("My idempotency key: " + idempotencyKey);
-            throw new Error("Something happened!");
-            // <end_idempotency_key_retry>
-
-        }
+        },
     }
 })
 
+const checkoutService = restate.service({
+    name: "MyService",
+    handlers: {
+        // <start_uuid>
+        async handle(ctx: restate.Context, request: { userId: string; tickets: string[] }) {
+            // withClass(1:3) highlight-line
+            const idempotencyKey = ctx.rand.uuidv4();
+            console.info("My idempotency key: " + idempotencyKey);
+            throw new Error("Something happened!");
+
+            return true;
+        },
+        // <end_uuid>
+    }
+})
+
+const secondCheckoutService = restate.service({
+    name: "MyService",
+    handlers: {
+        // <start_checkout>
+        async handle(ctx: restate.Context, request: { userId: string; tickets: string[] }) {
+            // withClass highlight-line
+            const totalPrice = request.tickets.length * 40;
+
+            const idempotencyKey = ctx.rand.uuidv4();
+            // withClass highlight-line
+            const success = await ctx.run(() => PaymentClient.get().call(idempotencyKey, totalPrice));
+
+            return success;
+        },
+        // <end_checkout>
+    }
+})
 export const ticketObject = restate.object({
     name: "TicketObject",
     handlers: {
@@ -35,3 +61,14 @@ export const ticketObject = restate.object({
 });
 
 const TicketObject: typeof ticketObject = { name: "TicketObject" };
+
+
+class PaymentClient {
+    static get() {
+        return new PaymentClient();
+    }
+
+    async call(idempotencyKey: string, totalPrice: number) {
+        return true;
+    }
+}

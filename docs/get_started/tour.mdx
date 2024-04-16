@@ -2,7 +2,6 @@
 id: tour
 title: "Tour of Restate"
 description: ""
-hide_table_of_contents: true
 ---
 
 import Tabs from '@theme/Tabs';
@@ -12,11 +11,6 @@ import {SubtleStep} from "../../src/components/Stepper";
 import TourAnimation from "../../src/components/TourAnimation";
 import CliAnimation from "../../src/components/CliAnimation";
 
-<section>
-<div className="container">
-<div className="row">
-
-<div className="col col--8 scrollable-column">
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 </TabItem>
@@ -70,11 +64,16 @@ This guide is written for:
 
 ## Getting Started
 
-
-
-<SubtleStep stepLabel="1" title="Run the services">
+<SubtleStep stepLabel="1" title="Set up the services">
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
+- Run the services in the browser:
+
+    <a className="btn btn-primary btn-lg"
+       href="https://stackblitz.com/github/restatedev/examples/tree/tour_new_api/tutorials/tour-of-restate-typescript?startScript=app-dev&embed=1&file=src%2Fapp%2Fapp.ts,src%2Fapp%2Fcheckout_service.ts,src%2Fapp%2Fticket_object.ts,src%2Fapp%2Fcart_object.ts&theme=dark&view=editor"
+       target="_blank"
+       role="button"><img className="buttonIcon" src="/img/open_in_stackblitz.svg"
+                          alt="TypeScript Quickstart"></img></a>
 - Or download the example and run locally with an IDE:
 <CH.Code>
     ```shell CLI
@@ -172,64 +171,29 @@ You can register services by calling the Restate Admin API (default port `9070`)
 <details className="grey-details">
     <summary>Output</summary>
 
-    <Tabs groupId="sdk" queryString className={"display-none"}>
-        <TabItem value="ts" label="TypeScript">
-
-            ```json
-            {
-                "id": "bG9jYWxob3N0OjgwODAv",
-                "services": [
-            {
-                "name": "TicketObject",
-                "revision": 1
-                /* ... Additional information on registered methods ...*/
-            },
-            {
-                "name": "CartObject",
-                "revision": 1
-                /* ... Additional information on registered methods ...*/
-            },
-            {
-                "name": "CheckoutService",
-                "revision": 1
-                /* ... Additional information on registered methods ...*/
-            }
-                ]
-            }
-            ```
-
-        </TabItem>
-        <TabItem value="java" label="Java">
-
-            ```json
-            {
-                "id": "bG9jYWxob3N0OjgwODAv",
-                "services": [
-            {
-                "name": "TicketObject",
-                "revision": 1
-                /* ... Additional information on registered methods ...*/
-            },
-            {
-                "name": "CartObject",
-                "revision": 1
-                /* ... Additional information on registered methods ...*/
-            },
-            {
-                "name": "CheckoutService",
-                "revision": 1
-                /* ... Additional information on registered methods ...*/
-            }
-                ]
-            }
-            ```
-
-        </TabItem>
-    </Tabs>
+    ```json
+    {
+        "id": "bG9jYWxob3N0OjgwODAv",
+        "services": [
+    {
+        "name": "TicketObject",
+        /* ... Additional information on registered methods ...*/
+    },
+    {
+        "name": "CartObject",
+        /* ... Additional information on registered methods ...*/
+    },
+    {
+        "name": "CheckoutService",
+        /* ... Additional information on registered methods ...*/
+    }
+        ]
+    }
+    ```
 
 </details>
 
-If you run Restate with Docker, replace `http://host.docker.internal:9080` by `http://localhost:9080`.
+If you run Restate with Docker, replace `http://localhost:9080` by `http://host.docker.internal:9080`.
 </SubtleStep>
 
 <SubtleStep stepLabel="🚀" title="All set up!">
@@ -476,14 +440,20 @@ The call to `expireTicket` finishes earlier than the `unreserve` handler because
 Restate persists and retries failed one-way invocations. There is no need to set up message queues to ensure delivery!
 </Admonition>
 
-<Admonition type="info" title="HTTP">
-You can also do one-way calls via `curl`. Just add `/send` to the handler path:
+<Admonition type="info" title="Sending messages via `curl`">
+To send messages via `curl`, add `/send` to the handler path:
 ```shell
 curl localhost:8080/CartObject/Mary/addTicket/send -d '"seat2B"'
 ```
+    <details className="grey-details">
+        <summary>Output</summary>
+    ```json
+        {"invocationId":"inv_1aiqX0vFEFNH1Umgre58JiCLgHfTtztYK5"}
+        ```
+    </details>
 
-As you see, this returns an invocation ID.  This is a unique identifier for the invocation.
-    You can use it to track the progress of the invocation, and to correlate logs and metrics.
+This returns the invocation ID. This is a unique identifier for the invocation.
+You can use it to track the progress of the invocation via the CLI, and to correlate logs and metrics.
 </Admonition>
 
 ### 📝 Try it out
@@ -587,21 +557,26 @@ To see the recovery of partial progress in practice, let's make the `CartObject/
             <summary>Service logs</summary>
 
             ```log
-            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM968NomaJHFQH9MgVlD4B5AZ][2024-03-19T07:49:43.849Z] DEBUG: Invoking function.
-            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM968NomaJHFQH9MgVlD4B5AZ][2024-03-19T07:49:43.850Z] DEBUG: Adding message to journal and sending to Restate ; InvokeEntryMessage
+            [restate] [CartObject/addTicket][inv_1aiqX0vFEFNH0TF1pLRFBDFosQCCTAN1M5][2024-04-16T13:28:20.245Z] DEBUG:  Invoking function.
             // withClass highlight-line
-            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM968NomaJHFQH9MgVlD4B5AZ][2024-03-19T07:49:43.851Z] DEBUG: Scheduling suspension in 30000 ms
-            [restate] [TicketObject/reserve][inv_1k78Krj3GqrK4tGbnNcKlrKTRsIDu7R6xz][2024-03-19T07:49:43.855Z] DEBUG: Invoking function.
-            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM968NomaJHFQH9MgVlD4B5AZ][2024-03-19T07:50:13.853Z] DEBUG: Writing suspension message to journal. ; SuspensionMessage
+            [restate] [CartObject/addTicket][inv_1aiqX0vFEFNH0TF1pLRFBDFosQCCTAN1M5][2024-04-16T13:28:20.245Z] DEBUG:  Adding message to journal and sending to Restate ; InvokeEntryMessage
+            [restate] [CartObject/addTicket][inv_1aiqX0vFEFNH0TF1pLRFBDFosQCCTAN1M5][2024-04-16T13:28:20.246Z] DEBUG:  Scheduling suspension in 30000 ms
+            [restate] [TicketObject/reserve][inv_1iGFK6hGrtOf3jcD8PupmCOJz1SDzvfPi1][2024-04-16T13:28:20.296Z] DEBUG:  Invoking function.
+            [restate] [TicketObject/reserve][inv_1iGFK6hGrtOf3jcD8PupmCOJz1SDzvfPi1][2024-04-16T13:28:20.296Z] DEBUG:  Journaled and sent output message ; OutputEntryMessage
             // withClass highlight-line
-            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM968NomaJHFQH9MgVlD4B5AZ][2024-03-19T07:50:13.853Z] DEBUG: Suspending function.
-            [restate] [TicketObject/reserve][inv_1k78Krj3GqrK4tGbnNcKlrKTRsIDu7R6xz][2024-03-19T07:50:18.860Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
-            [restate] [TicketObject/reserve][inv_1k78Krj3GqrK4tGbnNcKlrKTRsIDu7R6xz][2024-03-19T07:50:18.861Z] DEBUG: Function completed successfully.
+            [restate] [TicketObject/reserve][inv_1iGFK6hGrtOf3jcD8PupmCOJz1SDzvfPi1][2024-04-16T13:28:20.296Z] DEBUG:  Function completed successfully.
+            [restate] [CartObject/addTicket][inv_1aiqX0vFEFNH0TF1pLRFBDFosQCCTAN1M5][2024-04-16T13:28:20.362Z] DEBUG:  Received completion message from Restate, adding to journal.
+            // withClass highlight-line ; CompletionMessage
+            Trace: [restate] [CartObject/addTicket][inv_1aiqX0vFEFNH0TF1pLRFBDFosQCCTAN1M5][2024-04-16T13:28:20.363Z] TRACE:  Function completed with an error: Failing Error: Failing
+            ... rest of trace ...
+            [restate] [CartObject/addTicket][inv_1aiqX0vFEFNH0TF1pLRFBDFosQCCTAN1M5][2024-04-16T13:28:20.372Z] DEBUG:  Invocation ended with retryable error. ; ErrorMessage
             // withClass highlight-line
-            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM968NomaJHFQH9MgVlD4B5AZ][2024-03-19T07:50:18.906Z] DEBUG: Resuming (replaying) function.
-            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM968NomaJHFQH9MgVlD4B5AZ][2024-03-19T07:50:18.906Z] DEBUG: Matched and replayed message from journal ; InvokeEntryMessage
-            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM968NomaJHFQH9MgVlD4B5AZ][2024-03-19T07:50:18.906Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
-            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM968NomaJHFQH9MgVlD4B5AZ][2024-03-19T07:50:18.906Z] DEBUG: Function completed successfully.
+            [restate] [CartObject/addTicket][inv_1aiqX0vFEFNH0TF1pLRFBDFosQCCTAN1M5][2024-04-16T13:28:20.437Z] DEBUG:  Resuming (replaying) function.
+            // withClass highlight-line
+            [restate] [CartObject/addTicket][inv_1aiqX0vFEFNH0TF1pLRFBDFosQCCTAN1M5][2024-04-16T13:28:20.437Z] DEBUG:  Matched and replayed message from journal ; InvokeEntryMessage
+            // withClass highlight-line
+            Trace: [restate] [CartObject/addTicket][inv_1aiqX0vFEFNH0TF1pLRFBDFosQCCTAN1M5][2024-04-16T13:28:20.437Z] TRACE:  Function completed with an error: Failing Error: Failing
+            ... rest of trace ...
             ```
 
         </details>
@@ -616,7 +591,7 @@ To see the recovery of partial progress in practice, let's make the `CartObject/
             ```
         </CH.Code>
 
-        Add the following code to line 4 of the snippet, to let the code throw an exception after the call:
+        Add the following code to line 3 of the snippet, to let the code throw an exception after the call:
 
         ```java
         TourUtils.fail();
@@ -626,6 +601,7 @@ To see the recovery of partial progress in practice, let's make the `CartObject/
             <summary>Service logs</summary>
 
             ```log
+
             ```
 
         </details>
@@ -649,9 +625,9 @@ Have a look at some useful commands and try them out yourself:
 
 <CliAnimation listOfSteps={[`$ restate services list
 NAME             REVISION  FLAVOR  DEPLOYMENT TYPE  DEPLOYMENT ID
-🌎  TicketObject     1                 HTTP 2           dp_13oMLdvYNLkmvPOoraef4Jz
-🌎  CartObject       1                 HTTP 2           dp_13oMLdvYNLkmvPOoraef4Jz
-🌎  CheckoutService  1                 HTTP 2           dp_13oMLdvYNLkmvPOoraef4Jz`,
+🌎  TicketObject     1                 HTTP 2           dp_14LsPzGz9HBxXIeBoH5wYUh
+🌎  CartObject       1                 HTTP 2           dp_14LsPzGz9HBxXIeBoH5wYUh
+🌎  CheckoutService  1                 HTTP 2           dp_14LsPzGz9HBxXIeBoH5wYUh`,
 `$ restate services describe CartObject
 📜 Component Information:
 ―――――――――――――――――――――――――
@@ -659,7 +635,7 @@ Name:                    CartObject
 Flavor (Instance Type):  Service
 Revision:                1
 Public:                  true
-Deployment ID:           dp_13oMLdvYNLkmvPOoraef4Jz
+Deployment ID:           dp_14LsPzGz9HBxXIeBoH5wYUh
 Deployment Type:         HTTP 2
 Protocol Style:          Streaming
 Endpoint:                http://host.docker.internal:9080/
@@ -673,50 +649,49 @@ expireTicket  one of "empty or value of content-type */*"  value with content-ty
 checkout      one of "empty or value of content-type */*"  value with content-type "application/json"
 addTicket     one of "empty or value of content-type */*"  value with content-type "application/json"`,
 `$ restate invocations list
-❯ [2024-04-12 15:00:07.503 +02:00] inv_14RxvjXhwLAX4wqjC7kgiOLPPXC3ybIxzP CartObject::checkout
-Status:      backing-off  (26 minutes, 49 seconds and 489 ms.
-Retried 140 time(s). Next retry in in 8 seconds and 276 ms))
-Deployment:  dp_13oMLdvYNLkmvPOoraef4Jz [required]
-Error:       [2024-04-12 15:26:53.985 +02:00]
-[500] java.lang.IllegalStateException: The handler failed
+  ❯ [2024-04-16 15:28:20.237 +02:00] inv_1aiqX0vFEFNH0TF1pLRFBDFosQCCTAN1M5 [CartObject @ Mary]::addTicket
+     Status:      backing-off  (4 minutes, 42 seconds and 653 ms. Retried 32 time(s). Next
+                  retry in in 9 seconds and 469 ms))
+     Deployment:  dp_14LsPzGz9HBxXIeBoH5wYUh [required]
+     Error:       [2024-04-16 15:33:01.930 +02:00]
+                  [500] Failing
 
-Showing 1/1 invocations. Query took 9.770307ms`,
-`$ restate invocations describe inv_14RxvjXhwLAX4wqjC7kgiOLPPXC3ybIxzP
+Showing 1/1 invocations. Query took 86.295361ms
+`,
+`$ restate invocations describe inv_1iGFK6hGrtOf3jcD8PupmCOJz1SDzvfPi1
 📜 Invocation Information:
 ――――――――――――――――――――――――――
-Created at:   2024-04-12 15:00:07.503 +02:00 (29 minutes ago)
-Component:    CartObject
-Method:       checkout
-Status:       backing-off  (29 minutes, 35 seconds and 9 ms. Retried 154 time(s).
-Next retry in in 5 seconds and 382 ms)
-Deployment:   dp_13oMLdvYNLkmvPOoraef4Jz [required]
-Error:        [2024-04-12 15:29:37.207 +02:00]
-[500] java.lang.IllegalStateException: The handler failed
-Modified at:  2024-04-12 15:00:07.656 +02:00
+ Created at:   2024-04-16 15:28:20.237 +02:00 (5 minutes ago)
+ Component:    CartObject @ Mary
+ Method:       addTicket
+ Status:       backing-off  (5 minutes, 49 seconds and 253 ms. Retried 37 time(s). Next retry in in 508 ms))
+ Deployment:   dp_14LsPzGz9HBxXIeBoH5wYUh [required]
+ Error:        [2024-04-16 15:33:58.918 +02:00]
+               [500] Failing
+ Modified at:  2024-04-16 15:28:20.278 +02:00
 
-💡   This invocation is bound to run on deployment 'dp_13oMLdvYNLkmvPOoraef4Jz'. To guarantee
-safety and correctness, invocations that made progress on a deployment
-cannot move to newer deployments automatically.
+  💡   This invocation is bound to run on deployment 'dp_14LsPzGz9HBxXIeBoH5wYUh'. To guarantee
+       safety and correctness, invocations that made progress on a deployment
+       cannot move to newer deployments automatically.
 
 🚂 Invocation Progress:
 ―――――――――――――――――――――――
 [Ingress]
-└──(this)─> CartObject::checkout
-▸
-├──── ☑️  #1 Invoke CheckoutService::handle inv_13mqcSlAkw3d2QsVdpIb2URcBtAHDMl6vL
-└────>> backing-off`,
-`$ restate invocations cancel inv_14RxvjXhwLAX4wqjC7kgiOLPPXC3ybIxzP
-❯ [2024-04-12 15:00:07.503 +02:00] inv_14RxvjXhwLAX4wqjC7kgiOLPPXC3ybIxzP CartObject::checkout
-Status:      backing-off  (54 minutes, 48 seconds and 263 ms. Retried 286 time(s).
-Next retry in in 1 second and 971 ms))
-Deployment:  dp_13oMLdvYNLkmvPOoraef4Jz [required]
-Error:       [2024-04-12 15:54:45.257 +02:00]
-[500] java.lang.IllegalStateException: The handler failed
+ └──(this)─> [CartObject @ Mary]::addTicket
+     ▸
+     ├──── ☑️  #1 Invoke TicketObject::reserve inv_1iGFK6hGrtOf3jcD8PupmCOJz1SDzvfPi1
+     └────>> backing-off`,
+`$ restate invocations cancel inv_1iGFK6hGrtOf3jcD8PupmCOJz1SDzvfPi1
+  ❯ [2024-04-16 15:28:20.237 +02:00] inv_1aiqX0vFEFNH0TF1pLRFBDFosQCCTAN1M5 [CartObject @ Mary]::addTicket
+     Status:      backing-off  (7 minutes, 9 seconds and 590 ms. Retried 44 time(s). Next retry in in 3 seconds
+                  and 673 ms))
+     Deployment:  dp_14LsPzGz9HBxXIeBoH5wYUh [required]
+     Error:       [2024-04-16 15:35:21.462 +02:00]
+                  [500] Failing
 
 ✔ Are you sure you want to cancel this invocation · yes
 
-✅ Request was sent successfully
-`]}
+✅ Request was sent successfully`]}
 />
 
 <Admonition type="note">
@@ -781,7 +756,7 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tu
             ```log
             ... logs from reserve call ...
             [restate] [CartObject/addTicket][inv_1gdJBtdVEcM90xbqbDEnOzNgilf2WmjZTP][2024-03-19T08:49:43.081Z] DEBUG: Received completion message from Restate, adding to journal. ; CompletionMessage
-            // highlight-next-line
+            // withClass highlight-line
             [restate] [CartObject/addTicket][inv_1gdJBtdVEcM90xbqbDEnOzNgilf2WmjZTP][2024-03-19T08:49:43.081Z] DEBUG: Adding message to journal and sending to Restate ; BackgroundInvokeEntryMessage
             [restate] [CartObject/addTicket][inv_1gdJBtdVEcM90xbqbDEnOzNgilf2WmjZTP][2024-03-19T08:49:43.081Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
             [restate] [CartObject/addTicket][inv_1gdJBtdVEcM90xbqbDEnOzNgilf2WmjZTP][2024-03-19T08:49:43.081Z] DEBUG: Function completed successfully.
@@ -789,7 +764,7 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tu
             [restate] [CartObject/expireTicket][inv_1gdJBtdVEcM93r8tce9IfwnbiAsk8lCevD][2024-03-19T08:49:48.093Z] DEBUG: Adding message to journal and sending to Restate ; BackgroundInvokeEntryMessage
             [restate] [CartObject/expireTicket][inv_1gdJBtdVEcM93r8tce9IfwnbiAsk8lCevD][2024-03-19T08:49:48.093Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
             [restate] [CartObject/expireTicket][inv_1gdJBtdVEcM93r8tce9IfwnbiAsk8lCevD][2024-03-19T08:49:48.093Z] DEBUG: Function completed successfully.
-            // highlight-next-line
+            // withClass highlight-line
             [restate] [TicketObject/unreserve][inv_1k78Krj3GqrK529L4BRmz8ntFtiw2DkahH][2024-03-19T08:49:48.141Z] DEBUG: Invoking function.
             [restate] [TicketObject/unreserve][inv_1k78Krj3GqrK529L4BRmz8ntFtiw2DkahH][2024-03-19T08:49:48.141Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
             [restate] [TicketObject/unreserve][inv_1k78Krj3GqrK529L4BRmz8ntFtiw2DkahH][2024-03-19T08:49:48.141Z] DEBUG: Function completed successfully.
@@ -802,9 +777,9 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tu
             ... logs from reserve call ...
             2024-03-19 13:27:20 INFO  [example.CartObject/AddTicket][inv_1gdJBtdVEcM93WNxL0oqwxYDXEgzGZ9Lhv] dev.restate.sdk.core.InvocationStateMachine - End invocation
             2024-03-19 13:27:20 DEBUG [example.CartObject/AddTicket][inv_1gdJBtdVEcM93WNxL0oqwxYDXEgzGZ9Lhv] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CartObject', invocationState=PROCESSING, id=inv_1gdJBtdVEcM93WNxL0oqwxYDXEgzGZ9Lhv} to CLOSED
-            // highlight-next-line
+            // withClass highlight-line
             2024-03-19 13:27:20 INFO  [example.CartObject/AddTicket][inv_1gdJBtdVEcM93WNxL0oqwxYDXEgzGZ9Lhv] dev.restate.sdk.core.InvocationStateMachine - End invocation
-            // highlight-next-line
+            // withClass highlight-line
             2024-03-19 13:27:25 DEBUG [example.CartObject/ExpireTicket] dev.restate.sdk.http.vertx.RequestHttpServerHandler - Handling request to example.CartObject/ExpireTicket
             2024-03-19 13:27:25 INFO  [example.CartObject/ExpireTicket] dev.restate.sdk.core.RestateEndpoint - Start processing invocation
             2024-03-19 13:27:25 DEBUG [example.CartObject/ExpireTicket] dev.restate.sdk.core.InvocationStateMachine - Transitioning InvocationStateMachine{serviceName='example.CartObject', invocationState=WAITING_START, id=inv_1gdJBtdVEcM95LH9l9vt78qcw9W15wcwy5} to REPLAYING
@@ -972,14 +947,12 @@ Run the services and call the `addTicket` function, to see the interaction with 
 
 ```log
 ... logs from reserve call ...
-// highlight-start
+// withClass highlight-line
 [restate] [CartObject/addTicket][inv_1gdJBtdVEcM97yGYEG5NWYtbMlnSAGHGY9][2024-03-19T08:55:20.941Z] DEBUG: Adding message to journal and sending to Restate ; GetStateEntryMessage
+// withClass highlight-line
 [restate] [CartObject/addTicket][inv_1gdJBtdVEcM97yGYEG5NWYtbMlnSAGHGY9][2024-03-19T08:55:20.941Z] DEBUG: Adding message to journal and sending to Restate ; SetStateEntryMessage
-// highlight-end
 ... logs from expireTicket call ...
 ```
-
-You see that when you request the state, it gets logged in the journal.
 
 </TabItem>
 <TabItem value="java" label="Java">
@@ -1016,6 +989,27 @@ When starting the invocation, Restate attaches the application state to the requ
 So when you operate on the state in your function with `ctx.get` and `ctx.set`, you get access to a local copy of the state for fast access.
 </Admonition>
 
+Also adapt the `CartObject/checkout` function, to use the tickets:
+
+<Tabs groupId="sdk" queryString className={"display-none"}>
+    <TabItem value="ts" label="TypeScript">
+
+        ```typescript cart_object.ts
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part3/cart_object.ts#<start_checkout>-<end_checkout>
+        ```
+
+    </TabItem>
+    <TabItem value="java" label="Java">
+
+        ```java CartObject.java
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/CartObject.java#<start_checkout>-<end_checkout>
+        ```
+
+    </TabItem>
+</Tabs>
+
+After the tickets are checked out, you clear the state with `ctx.clear`.
+
 ### Inspecting K/V state
 
 Restate exposes information on invocations and application state.
@@ -1032,29 +1026,27 @@ You can watch the state of the `CartObject` service, via:
     ```
 </CH.Code>
 
-Add several tickets to the state to see how the query result gets updated.
+<details className="grey-details">
+    <summary>Output</summary>
 
-Now, adapt the `CartObject/checkout` function, to use the tickets:
+    ```json
+    🤖 State:
+    ―――――――――
 
-<Tabs groupId="sdk" queryString className={"display-none"}>
-<TabItem value="ts" label="TypeScript">
+    Component  CartObject
+    Key        Mary
 
-```typescript cart_object.ts
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part3/cart_object.ts#<start_checkout>-<end_checkout>
-```
+    KEY      VALUE
+    tickets  [
+        "seat2B"
+    ]
+    ```
 
-</TabItem>
-<TabItem value="java" label="Java">
+</details>
 
-```java CartObject.java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/CartObject.java#<start_checkout>-<end_checkout>
-```
+Add some tickets to the state to see how the query result gets updated.
 
-</TabItem>
-</Tabs>
-
-After the tickets are checked out, you clear the state with `ctx.clear`.
-Send a checkout request as [earlier](#request-response-http-requests), and notice that the state is now empty.
+Then, send a checkout request as [earlier](#request-response-http-requests), and notice that the state is now empty.
 
 
 ### 📝 Try it out
@@ -1237,48 +1229,27 @@ So use `ctx.run` to store the result of non-deterministic operations!
 </Admonition>
 
 We can use this feature to do exactly-once payments in `CheckoutService/handle`:
-1. **Generate an idempotency token** (payment identifier) and store it in Restate.
+
+<SubtleStep stepLabel="1" title="Generate an idempotency token">
+Let's use the SDK helper functions to generate a unique payment identifier and store it in Restate.
 Once the token is stored, it will be the same on retries.
-2. **Trigger the payment** via an external payment provider.
-Execute the payment via `PaymentClient.get().call(idempotencyKey, amount)`.
-The payment provider will deduplicate payments based on the idempotency token.
-We assume every ticket costs 40 dollars.
+Try it out by printing the idempotency key and then throwing an error:
 
 <Tabs groupId="sdk" queryString className={"display-none"}>
-<TabItem value="ts" label="TypeScript">
+    <TabItem value="ts" label="TypeScript">
 
-```typescript checkout_service.ts
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part4/checkout_service.ts#<start_side_effects>-<end_side_effects>
-```
+        ```ts checkout_service.ts
+        CODE_LOAD::ts/src/get_started/tour.ts#<start_uuid>-<end_uuid>
+        ```
 
-</TabItem>
-<TabItem value="java" label="Java">
+    </TabItem>
+    <TabItem value="java" label="Java">
 
-```java CheckoutService.java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part4/CheckoutService.java#<start_side_effects>-<end_side_effects>
-```
+        ```java
+        CODE_LOAD::java/src/main/java/get_started/Tour.java#<start_idempotency_key_retry>-<end_idempotency_key_retry>
+        ```
 
-</TabItem>
-</Tabs>
-
-
-You can print the idempotency key to the console and then throw an error to see how the idempotency key remains the same during retries:
-
-<Tabs groupId="sdk" queryString className={"display-none"}>
-<TabItem value="ts" label="TypeScript">
-
-```ts
-CODE_LOAD::ts/src/get_started/tour.ts#<start_idempotency_key_retry>-<end_idempotency_key_retry>
-```
-
-</TabItem>
-<TabItem value="java" label="Java">
-
-```java
-CODE_LOAD::java/src/main/java/get_started/Tour.java#<start_idempotency_key_retry>-<end_idempotency_key_retry>
-```
-
-</TabItem>
+    </TabItem>
 </Tabs>
 <details className="grey-details">
     <summary>Service logs</summary>
@@ -1335,14 +1306,37 @@ CODE_LOAD::java/src/main/java/get_started/Tour.java#<start_idempotency_key_retry
 </details>
 
 Call `CartObject/checkout` and have a look at the logs to see what happens.
+</SubtleStep>
 
-Remove the throwing of the error again before you continue.
+<SubtleStep stepLabel="2" title="Trigger the payment">
+Execute the payment via an external payment provider via `PaymentClient.get().call(idempotencyKey, amount)`.
+The payment provider will deduplicate payments based on the idempotency token.
+We assume every ticket costs 40 dollars.
+
+<Tabs groupId="sdk" queryString className={"display-none"}>
+<TabItem value="ts" label="TypeScript">
+
+```typescript checkout_service.ts
+CODE_LOAD::ts/src/get_started/tour.ts#<start_checkout>-<end_checkout>
+```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java CheckoutService.java
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part4/CheckoutService.java#<start_side_effects>-<end_side_effects>
+```
+
+</TabItem>
+</Tabs>
+
+</SubtleStep>
 
 
 ### 📝 Try it out
-Once this works, you implement the rest of the checkout workflow:
+Once this works, you implement the rest of `CheckoutService/handle`:
 - If the payment call was successful, then:
-    - Use the EmailClient to notify the users of the payment success.
+    - Use the `EmailClient` to notify the users of the payment success.
     Prevent duplicate emails during retries by using a side effect.
     - Mark all tickets as sold by calling `TicketObject/markAsSold` for each ticket.
 - If the payment call was unsuccessful, then use the EmailClient to notify the users of the payment failure.
@@ -1419,11 +1413,8 @@ Restate exposes OpenTelemetry traces of your invocations.
 <SubtleStep stepLabel="1" title="Run Jaeger">
 
 ```shell
-docker run -d --name jaeger \
-    -e COLLECTOR_OTLP_ENABLED=true \
-    -p 4317:4317 \
-    -p 16686:16686 \
-    jaegertracing/all-in-one:1.46
+docker run -d --name jaeger -e COLLECTOR_OTLP_ENABLED=true \
+    -p 4317:4317 -p 16686:16686 jaegertracing/all-in-one:1.46
 ```
 </SubtleStep>
 <SubtleStep stepLabel="2" title="Relaunch Restate with tracing enabled">
@@ -1433,12 +1424,24 @@ docker run --name restate_dev -p 8080:8080 -p 9070:9070 -p 9071:9071 \
     --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
 ```
 </SubtleStep>
-<SubtleStep stepLabel="3" title="Send requests">
+<SubtleStep stepLabel="3" title="Register the service and send a few requests">
+    <CH.Code rows={"4"}>
 
-```shell
-curl localhost:8080/CartObject/Mary/addTicket -d '"seat2B"'
-curl localhost:8080/CartObject/Mary/checkout
-```
+        ```shell CLI
+        restate deployments register http://localhost:9080
+        curl localhost:8080/CartObject/Mary/addTicket -d '"seat2B"'
+        curl localhost:8080/CartObject/Mary/checkout
+        ```
+
+        ```shell curl
+        curl localhost:9070/deployments -H 'content-type: application/json' \
+            -d '{"uri": "http://localhost:9080"}'
+        curl localhost:8080/CartObject/Mary/addTicket -d '"seat2B"'
+        curl localhost:8080/CartObject/Mary/checkout
+        ```
+
+    </CH.Code>
+
 </SubtleStep>
 <SubtleStep stepLabel="4" title="Go to the Jaeger UI">
 http://localhost:16686
@@ -1459,58 +1462,28 @@ For more information, have a look at the [tracing docs](/operate/monitoring/trac
 ## 🏁 The end
 You reached the end of this tutorial!
 
-<Admonition type="info" title="Done!">
-🚩 Have a look at the fully implemented app in `part5`, and run it with:
-<Tabs groupId="sdk" queryString className={"display-none"}>
-<TabItem value="ts" label="TypeScript">
+Let's recap what you did! You have built a ticket reservation system that is resilient, consistent, and scalable.
+We used Restate to provide us with durable, distributed building blocks to simplify the implementation of the system.
+Let's list a few of them:
 
-```shell
-npm run part5
-```
+| What you implemented                                        | What you didn't implement, as Restate handles it for you                                       |
+|--------------------------------------------------------------|------------------------------------------------------------------------------------------------|
+| ✅ Request-response invocations                               | ❌ Handling retries, timeouts, etc.                                                            |
+| ✅ Sending messages                                           | ❌ Message queues for async tasks                                                               |
+| ✅ Durable Execution: retries, partial progress recovery, and suspensions | ❌ Manual retry logic and partial progress recovery                                             |
+| ✅ Durable timers: sleeping and scheduling async tasks         | ❌ Workflow orchestrators or cron jobs for scheduling tasks                                     |
+| ✅ Virtual Objects: concurrency guarantees and shared state    | ❌ Guards for keeping state consistent across retries, concurrent requests, and scaling out.    |
+| ✅ K/V state: storing and inspecting                          | ❌ Session databases for state. State consistency guards.                                       |
+| ✅ Storing computation results in the journal                 | ❌ Logic to make operations idempotent (e.g. generate idempotency keys)                         |
 
-</TabItem>
-<TabItem value="java" label="Java">
-
-```shell
-./gradlew -PmainClass=dev.restate.tour.part5.AppMain run
-```
-
-</TabItem>
-</Tabs>
-</Admonition>
-
-Let's recap what you've covered:
-- Invoking handlers: over HTTP and programmatically with the SDK
-- Request-response invocations
-- Sending messages
-- Durable Execution: retries, partial progress recovery, and suspensions
-- Durable timers: sleeping and scheduling async tasks
-- Virtual Objects: concurrency guarantees and shared state
-- K/V state: storing and inspecting
-- Storing computation results in the journal
-- Tracing
+You now know the essentials to start developing Restate services.
 
 ## Next steps
 - [Have a look at the examples](https://github.com/restatedev/examples)
+- [Read the Concepts](/concepts/durable_building_blocks): most of this has been covered in this tutorial
 - [Check out the Java SDK documentation](/category/java-sdk)
 - [Check out the TypeScript SDK documentation](/category/typescript-sdk)
 
 
 
-</div>
 
-<div className="col col--6 fixed-column">
-    <iframe
-        style={{
-            outline: "1px solid #252525",
-            border: 0,
-            borderRadius: 8,
-            marginBottom: 16,
-            zIndex: 100
-        }}
-        src="https://stackblitz.com/github/restatedev/examples/tree/tour_new_api/tutorials/tour-of-restate-typescript?startScript=app-dev&ctl=1&embed=1&file=src%2Fapp%2Fcheckout_service.ts,src%2Fapp%2Fticket_object.ts,src%2Fapp%2Fcart_object.ts,src%2Fapp%2Fapp.ts&hideExplorer=1&theme=dark&view=editor"
-    ></iframe>
-</div>
-</div>
-</div>
-</section>
