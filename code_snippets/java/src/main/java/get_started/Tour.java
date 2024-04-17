@@ -4,7 +4,8 @@ import dev.restate.sdk.Context;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.common.TerminalException;
+import dev.restate.sdk.annotation.VirtualObject;
+import dev.restate.sdk.common.CoreSerdes;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 
 import java.time.Duration;
@@ -13,7 +14,7 @@ import java.time.Duration;
 public class Tour {
 
    @Handler
-   public void handle(Context ctx) {
+   public void myFn(ObjectContext ctx) {
        String ticketId = "123";
 
        // <start_sleep>
@@ -22,22 +23,59 @@ public class Tour {
 
        // <start_sleep_and_send>
        ctx.sleep(Duration.ofMinutes(15));
-       TicketObjectClient.fromContext(ctx).send().unreserve();
+       TicketObjectClient.fromContext(ctx, ticketId).send().unreserve();
        // <end_sleep_and_send>
+   }
 
-       // <start_idempotency_key_retry>
+   // <start_uuid>
+   @Handler
+    public boolean handle(Context ctx, CheckoutRequest request) {
+       // withClass(1,2,4) highlight-line
        String idempotencyKey = ctx.random().nextUUID().toString();
        System.out.println("My idempotency key: " + idempotencyKey);
+
        TourUtils.fail();
-       // <end_idempotency_key_retry>
-   }
+
+       return true;
+    }
+    // <end_uuid>
 
     public static void main(String[] args) {
         RestateHttpEndpointBuilder.builder().bind(new Tour()).bind(new TicketObject()).buildAndListen();
     }
+
+    static class TourUtils {
+        public static void fail() {
+        }
+    }
 }
 
-class TourUtils {
-    public static fail() {}
+@Service
+class CheckoutService {
+    // <start_checkout>
+    @Handler
+    public boolean handle(Context ctx, CheckoutRequest request) {
+        // withClass highlight-line
+        double totalPrice = request.getTickets().size() * 40.0;
+
+        String idempotencyKey = ctx.random().nextUUID().toString();
+
+        // withClass highlight-line
+        boolean success = ctx.sideEffect(CoreSerdes.JSON_BOOLEAN, () -> PaymentClient.get().call(idempotencyKey, totalPrice));
+
+        return success;
+    }
+    // <end_checkout>
+
+
+}
+
+class PaymentClient {
+
+    public static PaymentClient get() {
+        return new PaymentClient();
+    }
+    public boolean call(String idempotencyKey, double totalPrice) {
+        return true;
     }
 }
