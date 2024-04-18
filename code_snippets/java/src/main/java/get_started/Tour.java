@@ -34,19 +34,12 @@ public class Tour {
        String idempotencyKey = ctx.random().nextUUID().toString();
        System.out.println("My idempotency key: " + idempotencyKey);
 
-       TourUtils.fail();
-
-       return true;
+       throw new IllegalStateException("The handler failed");
     }
     // <end_uuid>
 
     public static void main(String[] args) {
         RestateHttpEndpointBuilder.builder().bind(new Tour()).bind(new TicketObject()).buildAndListen();
-    }
-
-    static class TourUtils {
-        public static void fail() {
-        }
     }
 }
 
@@ -61,7 +54,8 @@ class CheckoutService {
         String idempotencyKey = ctx.random().nextUUID().toString();
 
         // withClass highlight-line
-        boolean success = ctx.sideEffect(CoreSerdes.JSON_BOOLEAN, () -> PaymentClient.get().call(idempotencyKey, totalPrice));
+        boolean success = ctx.sideEffect(CoreSerdes.JSON_BOOLEAN, () ->
+                PaymentClient.get().call(idempotencyKey, totalPrice));
 
         return success;
     }

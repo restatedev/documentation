@@ -15,7 +15,6 @@ export default function CliAnimation({listOfSteps}) {
                     onChange={(e) => setProgress(+e.target.value)}
                     value={progress}
                 />
-                <div style={{ width: 60, paddingLeft: 20 }}>{progress}</div>
             </div>
             <MiniTerminalTransitions
                 title="terminal"

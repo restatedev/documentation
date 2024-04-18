@@ -45,7 +45,7 @@ As we go, you will discover how Restate can help you with some intricacies in th
 - Optional: [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation), if you want to run the Restate Server with Docker. And to run Jaeger.
 
 This guide is written for:
-- TypeScript SDK version: `@restatedev/restate-sdk:VAR::TYPESCRIPT_SDK_VERSION`
+- TypeScript SDK version: `VAR::TYPESCRIPT_SDK_VERSION`
 - Restate runtime Docker image: `docker.io/restatedev/restate:VAR::RESTATE_VERSION`
 
 </TabItem>
@@ -55,7 +55,7 @@ This guide is written for:
 - Optional: [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation), if you want to run the Restate Server with Docker. And to run Jaeger.
 
 This guide is written for:
-- Java SDK version: `dev.restate:sdk-api:VAR::JAVA_SDK_VERSION`
+- Java SDK version: `VAR::JAVA_SDK_VERSION`
 - Restate runtime Docker image: `docker.io/restatedev/restate:VAR::RESTATE_VERSION`
 
 </TabItem>
@@ -70,7 +70,7 @@ This guide is written for:
 - Run the services in the browser:
 
     <a className="btn btn-primary btn-lg"
-       href="https://stackblitz.com/github/restatedev/examples/tree/tour_new_api/tutorials/tour-of-restate-typescript?startScript=app-dev&embed=1&file=src%2Fapp%2Fapp.ts,src%2Fapp%2Fcheckout_service.ts,src%2Fapp%2Fticket_object.ts,src%2Fapp%2Fcart_object.ts&theme=dark&view=editor"
+       href="https://stackblitz.com/github/restatedev/examples/tree/dev_0.9/tutorials/tour-of-restate-typescript?startScript=app-dev&embed=1&file=src%2Fapp%2Fapp.ts,src%2Fapp%2Fcheckout_service.ts,src%2Fapp%2Fticket_object.ts,src%2Fapp%2Fcart_object.ts&theme=dark&view=editor"
        target="_blank"
        role="button"><img className="buttonIcon" src="/img/open_in_stackblitz.svg"
                           alt="TypeScript Quickstart"></img></a>
@@ -148,7 +148,6 @@ This [GitHub repository](https://github.com/restatedev/examples/tree/main/tutori
     Restate is a single self-contained binary. No external dependencies needed. Check out our [download page](https://restate.dev/get-restate/) for other ways to run Restate.
 </Admonition>
 
-When you stop the container, any persisted state is dropped because we start the container with the `--rm` flag.
 </SubtleStep>
 
 <SubtleStep stepLabel="3" title="Register the services with Restate">
@@ -202,7 +201,7 @@ If you run Restate with Docker, replace `http://localhost:9080` by `http://host.
 In `src/app` you will find the skeletons of the various services to help you start implementing the app.
     For example:
     ```typescript checkout_service.ts
-    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part1/checkout_service.ts#<start_checkout>-<end_checkout>
+    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-typescript/src/part1/checkout_service.ts#<start_checkout>-<end_checkout>
     ```
 
     Restate handlers have the Restate Context supplied as the first argument.
@@ -216,7 +215,7 @@ In `src/app` you will find the skeletons of the various services to help you sta
 In `src/main/java/dev/restate/tour/app` you will find the skeletons of the various services to help you start implementing the app.
 For example:
 ```java CheckoutService.java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/CheckoutService.java#<start_service>-<end_service>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/CheckoutService.java#<start_service>-<end_service>
 ```
 
 Services are annotated by `@Service`. A service consists of a set of handlers, and each handler is annotated by `@Handler`.
@@ -241,7 +240,7 @@ Let's start with invoking our handler over HTTP using `curl`.
 For example, add a ticket `seat2B` to the cart of Mary by calling the `addTicket` handler of the `CartObject`:
 
 ```shell
-curl localhost:8080/CartObject/Mary/addTicket -d '"seat2B"'
+curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2B"'
 ```
 
 If this prints out `true`, then you have a working setup.
@@ -249,7 +248,7 @@ If this prints out `true`, then you have a working setup.
 When Mary wants to proceed with the purchase, call the `checkout` handler of the `CartObject`:
 
 ```shell
-curl localhost:8080/CartObject/Mary/checkout
+curl -X POST localhost:8080/CartObject/Mary/checkout
 ```
 
 We will use these two `curl` commands often when developing the code, so keep them handy.
@@ -283,7 +282,7 @@ It does that by calling the `TicketObject/reserve` handler:
     <TabItem value="ts" label="TypeScript">
 
         ```typescript cart_object.ts
-        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part1/cart_object.ts#<start_add_ticket>-<end_add_ticket>
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-typescript/src/part1/cart_object.ts#<start_add_ticket>-<end_add_ticket>
         ```
         <details className="grey-details">
             <summary>Service logs</summary>
@@ -316,7 +315,7 @@ It does that by calling the `TicketObject/reserve` handler:
     <TabItem value="java" label="Java">
 
         ```java CartObject.java
-        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/CartObject.java#<start_add_ticket>-<end_add_ticket>
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/CartObject.java#<start_add_ticket>-<end_add_ticket>
         ```
 
         <details className="grey-details">
@@ -367,7 +366,7 @@ Let the `expireTicket` handler call the `TicketObject/unreserve` handler.
 <TabItem value="ts" label="TypeScript">
 
 ```typescript cart_object.ts
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part1/cart_object.ts#<start_expire_ticket>-<end_expire_ticket>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-typescript/src/part1/cart_object.ts#<start_expire_ticket>-<end_expire_ticket>
 ```
 
 Specify that you want to call the `TicketObject` by supplying `ticketObjectApi` to the `send` function.
@@ -376,7 +375,7 @@ Then call the `unreserve` handler on the `TicketObject`.
 Once you have added this to the code, call the `CartObject/expireTicket` handler:
 
 ```shell
-curl localhost:8080/CartObject/Mary/expireTicket -d '"seat2B"'
+curl localhost:8080/CartObject/Mary/expireTicket-H 'content-type: application/json' -d '"seat2B"'
 ```
 <details className="grey-details">
     <summary>Service logs</summary>
@@ -398,14 +397,14 @@ curl localhost:8080/CartObject/Mary/expireTicket -d '"seat2B"'
 <TabItem value="java" label="Java">
 
 ```java CartObject.java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/CartObject.java#<start_expire_ticket>-<end_expire_ticket>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/CartObject.java#<start_expire_ticket>-<end_expire_ticket>
 ```
 You now call `send()` on the generated client to send a message instead of doing a request-response call.
 You also don't need to await the response, as you don't expect one.
 
 Call the handler via:
 ```shell
-curl localhost:8080/CartObject/Mary/expireTicket -d '"seat2B"'
+curl localhost:8080/CartObject/Mary/expireTicket-H 'content-type: application/json' -d '"seat2B"'
 ```
 <details className="grey-details">
     <summary>Service logs</summary>
@@ -445,7 +444,7 @@ Restate persists and retries failed one-way invocations. There is no need to set
 <Admonition type="info" title="Sending messages via `curl`">
 To send messages via `curl`, add `/send` to the handler path:
 ```shell
-curl localhost:8080/CartObject/Mary/addTicket/send -d '"seat2B"'
+curl localhost:8080/CartObject/Mary/addTicket/send -H 'content-type: application/json' -d '"seat2B"'
 ```
 
 <details className="grey-details">
@@ -475,7 +474,7 @@ You will fix this later on. Note that the `CheckoutService` is not a Virtual Obj
         <TabItem value="ts" label="TypeScript">
 
             ```typescript cart_object.ts
-            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part1/cart_object.ts#<start_checkout>-<end_checkout>
+            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-typescript/src/part1/cart_object.ts#<start_checkout>-<end_checkout>
             ```
 
             Call `CartObject/checkout` as you did [earlier](#request-response-http-requests) and have a look at the logs again to see what happened:
@@ -496,7 +495,7 @@ You will fix this later on. Note that the `CheckoutService` is not a Virtual Obj
         <TabItem value="java" label="Java">
 
             ```java CartObject.java
-            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/CartObject.java#<start_checkout>-<end_checkout>
+            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/CartObject.java#<start_checkout>-<end_checkout>
             ```
 
             Restart the service and call the `CartObject/checkout` handler as you did earlier and have a look at the logs again to see what happened.
@@ -549,7 +548,7 @@ To see the recovery of partial progress in practice, let's make the `CartObject/
 
         <CH.Code lineNumbers={true}>
         ```typescript cart_object.ts
-        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part1/cart_object.ts#<start_add_ticket>-<end_add_ticket>
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-typescript/src/part1/cart_object.ts#<start_add_ticket>-<end_add_ticket>
         ```
         </CH.Code>
 
@@ -592,14 +591,14 @@ To see the recovery of partial progress in practice, let's make the `CartObject/
 
         <CH.Code lineNumbers={true}>
             ```java CartObject.java
-            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/CartObject.java#<start_add_ticket>-<end_add_ticket>
+            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/CartObject.java#<start_add_ticket>-<end_add_ticket>
             ```
         </CH.Code>
 
-        Add the following code to line 3 of the snippet, to let the code throw an exception after the call:
+        Instead of returning true, let the code fail after the call:
 
         ```java
-        TourUtils.fail();
+        throw new IllegalStateException("The handler failed");
         ```
 
         <details className={"grey-details"}>
@@ -772,14 +771,14 @@ Let the `CartObject/addTicket` handler call the `CartObject/expireTicket` handle
 <TabItem value="ts" label="TypeScript">
 
 ```typescript cart_object.ts
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part2/cart_object.ts#<start_add_ticket>-<end_add_ticket>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-typescript/src/part2/cart_object.ts#<start_add_ticket>-<end_add_ticket>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java CartObject.java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part2/CartObject.java#<start_add_ticket>-<end_add_ticket>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part2/CartObject.java#<start_add_ticket>-<end_add_ticket>
 ```
 
 </TabItem>
@@ -931,9 +930,9 @@ To get this behaviour, we key the `TicketObject` on ticket ID. We now have a sin
     If you do a delayed call, the invocation isn't ongoing until the delay has passed, so the Virtual Object is not locked.
 </Admonition>
 
-## Persistent K/V state
+## Consistent K/V state
 
-Restate offers a key-value store to persistently store application state for Virtual Objects.
+Restate offers a key-value store to store application state for Virtual Objects.
 
 <Admonition type="tip" title="No need for session databases!">
 Restate's state is guaranteed to be consistent across retries and invocations.
@@ -950,7 +949,7 @@ Have a look at the highlighted code:
 <TabItem value="ts" label="TypeScript">
 
 ```ts cart_object.ts
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part3/cart_object.ts#<start_add_ticket>-<end_add_ticket>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-typescript/src/part3/cart_object.ts#<start_add_ticket>-<end_add_ticket>
 ```
 
 To retrieve the cart, you use `ctx.get`.
@@ -960,10 +959,10 @@ This returns `null` if the value has never been set.
 <TabItem value="java" label="Java">
 
 ```java CartObject.java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/CartObject.java#<start_add_ticket>-<end_add_ticket>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/CartObject.java#<start_add_ticket>-<end_add_ticket>
 ```
 
-To retrieve the cart, you use `ctx.get` with a state key that describes the name and the (de)serializers to be used.
+To retrieve the cart, you use `ctx.get` with a state key that describes the name and the [(de)serializers](/develop/java/serialization) to be used.
     `ctx.get` returns an Optional, only containing a value if one was set before.
 
 </TabItem>
@@ -1028,14 +1027,14 @@ Also adapt the `CartObject/checkout` function, to use the tickets:
     <TabItem value="ts" label="TypeScript">
 
         ```typescript cart_object.ts
-        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part3/cart_object.ts#<start_checkout>-<end_checkout>
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-typescript/src/part3/cart_object.ts#<start_checkout>-<end_checkout>
         ```
 
     </TabItem>
     <TabItem value="java" label="Java">
 
         ```java CartObject.java
-        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/CartObject.java#<start_checkout>-<end_checkout>
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/CartObject.java#<start_checkout>-<end_checkout>
         ```
 
     </TabItem>
@@ -1099,14 +1098,14 @@ If this is the case, then you call `TicketObject/unreserve` and remove it from t
 <TabItem value="ts" label="TypeScript">
 
 ```ts cart_object.ts
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part3/cart_object.ts#<start_expire_ticket>-<end_expire_ticket>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-typescript/src/part3/cart_object.ts#<start_expire_ticket>-<end_expire_ticket>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java CartObject.java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/CartObject.java#<start_expire_ticket>-<end_expire_ticket>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/CartObject.java#<start_expire_ticket>-<end_expire_ticket>
 ```
 
 </TabItem>
@@ -1114,7 +1113,7 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tu
 
 Call the `expireTicket` handler with:
 ```shell
-curl localhost:8080/CartObject/Mary/expireTicket -d '"seat2B"'
+curl localhost:8080/CartObject/Mary/expireTicket -H 'content-type: application/json' -d '"seat2B"'
 ```
 
 </details>
@@ -1150,14 +1149,14 @@ return `true` (reservation successful).
 <TabItem value="ts" label="TypeScript">
 
 ```typescript ticket_object.ts
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part3/ticket_object.ts#<start_reserve>-<end_reserve>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-typescript/src/part3/ticket_object.ts#<start_reserve>-<end_reserve>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java TicketObject.java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/TicketObject.java#<start_reserve>-<end_reserve>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/TicketObject.java#<start_reserve>-<end_reserve>
 ```
 
 </TabItem>
@@ -1178,14 +1177,14 @@ Clear the `"status"`, if it's not equal to `TicketStatus.Sold`.
 <TabItem value="ts" label="TypeScript">
 
 ```ts ticket_object.ts
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part3/ticket_object.ts#<start_unreserve>-<end_unreserve>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-typescript/src/part3/ticket_object.ts#<start_unreserve>-<end_unreserve>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java TicketObject.java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/TicketObject.java#<start_unreserve>-<end_unreserve>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/TicketObject.java#<start_unreserve>-<end_unreserve>
 ```
 </TabItem>
 </Tabs>
@@ -1206,14 +1205,14 @@ Set the `"status"` to `TicketStatus.Sold` if it's reserved.
 <TabItem value="ts" label="TypeScript">
 
 ```ts ticket_object.ts
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part3/ticket_object.ts#<start_mark_as_sold>-<end_mark_as_sold>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-typescript/src/part3/ticket_object.ts#<start_mark_as_sold>-<end_mark_as_sold>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java TicketObject.java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/TicketObject.java#<start_mark_as_sold>-<end_mark_as_sold>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/TicketObject.java#<start_mark_as_sold>-<end_mark_as_sold>
 ```
 </TabItem>
 </Tabs>
@@ -1380,14 +1379,14 @@ After the `CheckoutService/handle` handler has handled the payment, you need to 
 <TabItem value="ts" label="TypeScript">
 
 ```ts checkout_service.ts
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part4/checkout_service.ts#<start_checkout>-<end_checkout>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-typescript/src/part4/checkout_service.ts#<start_checkout>-<end_checkout>
 ```
 
 </TabItem>
 <TabItem value="java" label="Java">
 
 ```java CheckoutService.java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part4/CheckoutService.java#<start_checkout>-<end_checkout>
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part4/CheckoutService.java#<start_checkout>-<end_checkout>
 ```
 
 </TabItem>
@@ -1405,14 +1404,14 @@ Let the `CartObject/checkout` handler mark all tickets as sold by calling `Ticke
     <TabItem value="ts" label="TypeScript">
 
         ```typescript cart_object.ts
-        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-typescript/src/part4/cart_object.ts#<start_checkout>-<end_checkout>
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-typescript/src/part4/cart_object.ts#<start_checkout>-<end_checkout>
         ```
 
     </TabItem>
     <TabItem value="java" label="Java">
 
         ```java CartObject.java
-        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_new_api/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part4/CartObject.java#<start_checkout>-<end_checkout>
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part4/CartObject.java#<start_checkout>-<end_checkout>
         ```
 
     </TabItem>
@@ -1469,15 +1468,15 @@ docker run --name restate_dev -p 8080:8080 -p 9070:9070 -p 9071:9071 \
 
         ```shell CLI
         restate deployments register http://localhost:9080
-        curl localhost:8080/CartObject/Mary/addTicket -d '"seat2B"'
-        curl localhost:8080/CartObject/Mary/checkout
+        curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2B"'
+        curl -X POST localhost:8080/CartObject/Mary/checkout
         ```
 
         ```shell curl
         curl localhost:9070/deployments -H 'content-type: application/json' \
             -d '{"uri": "http://localhost:9080"}'
-        curl localhost:8080/CartObject/Mary/addTicket -d '"seat2B"'
-        curl localhost:8080/CartObject/Mary/checkout
+        curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2B"'
+        curl -X POST localhost:8080/CartObject/Mary/checkout
         ```
 
     </CH.Code>

@@ -22,7 +22,6 @@ export default function TerminalAnimation({listOfSteps}) {
                     onChange={(e) => setProgress(+e.target.value)}
                     value={progress}
                 />
-                <div style={{ width: 60, paddingLeft: 20 }}>{progress}</div>
             </div>
 
         </div>
