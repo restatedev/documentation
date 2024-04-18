@@ -1,18 +1,26 @@
 import * as restate from "@restatedev/restate-sdk";
 
-const router = restate.keyedRouter({
-    greet: async (ctx: restate.KeyedContext, name: string) => {
+const greeterService = restate.object({
+    name: "Greeter",
+    handlers: {
+        greet: async (ctx: restate.ObjectContext, name: string) => {
 
-        // <start_ordering>
-        ctx.send(greeterApi).greet("Restate", 1);
-        ctx.send(greeterApi).greet("Restate", 2);
-        // <end_ordering>
+            // <start_ordering>
+            ctx.objectSendClient(Greeter, "Mary").greet( 1);
+            ctx.objectSendClient(Greeter, "Mary").greet(2);
+            // <end_ordering>
 
-    },
+        },
+    }
 })
 
-const greeterRouter = restate.keyedRouter({
-    greet: async(ctx: restate.Context, name: string, count: number) => { /*...*/ }
+const greeterObject = restate.object({
+    name: "Greeter",
+    handlers: {
+        greet: async (ctx: restate.ObjectContext, count: number) => {
+            return `Hello ${ctx.key}! ${count}`;
+        }
+    }
 });
 
-export const greeterApi: restate.ServiceApi<typeof greeterRouter> = { path : "greeter" };
+export const Greeter: typeof greeterObject = { name : "Greeter" };

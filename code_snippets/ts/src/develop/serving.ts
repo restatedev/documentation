@@ -2,32 +2,34 @@ import * as restate from "@restatedev/restate-sdk";
 import * as http2 from "http2";
 
 // <start_unkeyed>
-const serviceRouter = restate.router({
-    hello: async () => { /* ... */ },
-    callMe: async (ctx: restate.Context) => { /* ... */ },
-    maybe: async (ctx: restate.Context, request: Request) => { /* ... */ }
+const myService = restate.service({
+    name: "MyService",
+    handlers: {
+        hello: async () => { /* ... */ },
+        callMe: async (ctx: restate.Context) => { /* ... */ },
+        maybe: async (ctx: restate.Context, request: Request) => { /* ... */ }
+    }
 });
 // <end_unkeyed>
 
 // <start_keyed>
-const keyedServiceRouter = restate.keyedRouter({
-    hello: async () => { /* ... */ },
-    callMe: async (ctx: restate.KeyedContext) => { /* ... */ },
-    maybe: async (ctx: restate.KeyedContext, key: string) => { /* ... */ },
-    withSomething: async (ctx: restate.KeyedContext, key: string, request: Request) => { /* ... */ }
+const myVirtualObject = restate.object({
+    name: "MyVirtualObject",
+    handlers: {
+        hello: async () => { /* ... */ },
+        callMe: async (ctx: restate.ObjectContext) => { /* ... */ },
+        maybe: async (ctx: restate.ObjectContext, request: Request) => { /* ... */ },
+    }
+
 });
 // <end_keyed>
 
 // <start_unkeyed_api>
-export const myServiceApi: restate.ServiceApi<typeof serviceRouter> = {
-    path: "myServicePath",
-};
+export const MyService: typeof myService = { name: "MyService" };
 // <end_unkeyed_api>
 
 // <start_keyed_api>
-export const myKeyedServiceApi: restate.ServiceApi<typeof keyedServiceRouter> = {
-    path: "myServicePath",
-};
+export const MyVirtualObject: typeof myVirtualObject = { name: "MyVirtualObject" };
 // <end_keyed_api>
 
 
@@ -35,9 +37,9 @@ export const myKeyedServiceApi: restate.ServiceApi<typeof keyedServiceRouter> = 
 restate
     .endpoint()
     // bind the keyed services to the Restate server
-    .bindRouter(myServiceApi.path, serviceRouter)
+    .bind(myService)
     // bind the unkeyed services to the Restate server
-    .bindKeyedRouter(myKeyedServiceApi.path, keyedServiceRouter)
+    .bind(myVirtualObject)
     .listen(9080);
 // <end_endpoint>
 
@@ -45,7 +47,7 @@ restate
 // <start_custom_endpoint>
 const http2Handler = restate
     .endpoint()
-    .bindRouter(myServiceApi.path, serviceRouter)
+    .bind(myService)
     .http2Handler()
 const httpServer = http2.createServer(http2Handler);
 httpServer.listen(9080);
@@ -54,8 +56,8 @@ httpServer.listen(9080);
 // <start_lambda>
 export const handler = restate
     .endpoint()
-    .bindRouter(myServiceApi.path, serviceRouter)
-    .bindKeyedRouter(myKeyedServiceApi.path, keyedServiceRouter)
+    .bind(myService)
+    .bind(myVirtualObject)
     //highlight-next-line
     .lambdaHandler();
 // <end_lambda>
