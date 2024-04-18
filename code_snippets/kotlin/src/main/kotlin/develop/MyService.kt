@@ -5,15 +5,11 @@ import dev.restate.sdk.annotation.Service
 import dev.restate.sdk.kotlin.Context
 
 // <start_service>
-// highlight-start
 @Service
-// highlight-end
 class MyService {
 
-    // highlight-start
     @Handler
-    // highlight-end
-    suspend fun myHandler(context: Context, input: String): String {
+    suspend fun myHandler(ctx: Context, input: String): String {
         return "my-output"
     }
 

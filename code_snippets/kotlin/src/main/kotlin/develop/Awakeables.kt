@@ -1,15 +1,17 @@
 package develop
 
+import dev.restate.sdk.common.CoreSerdes
 import dev.restate.sdk.kotlin.*
 
 class Awakeables {
     suspend fun awakeables(ctx: ObjectContext) {
         // <start_create>
-        // 1. Generate the ID
+        // 1. Generate the awakeable
         val awakeable = ctx.awakeable<String>()
 
-        // 2. Send the ID to some external system
+        // 2. Deliver the ID to the process that will resolve the awakeable
         val awakeableId: String = awakeable.id
+        ctx.runBlock{ deliverId() }
 
         // ... send a request to another system and include the awakeableId as callback url...
 
@@ -25,5 +27,9 @@ class Awakeables {
         // <start_reject>
         ctx.awakeableHandle(awakeableId).reject("my error reason")
         // <end_reject>
+    }
+
+    private fun deliverId(): Unit {
+        return ""
     }
 }

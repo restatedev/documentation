@@ -2,71 +2,30 @@
 sidebar_position: 10
 description: "Receive events from Kafka."
 ---
-
 import Admonition from '@theme/Admonition';
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+
+import Step from "../../../src/components/Stepper";
 
 # Kafka
+You can invoke handlers via Kafka events, by doing the following:
 
-Restate can consume events directly from Kafka. To do that, you need to:
+<Step stepLabel="1" title="Develop an event handler">
 
-* Develop an event handler, to consume events within your Restate service
-* Deploy Restate with the configuration to connect to a Kafka cluster
-* Wire up an event handler with a Kafka topic through a subscription
+You can invoke any handler via Kafka events.
+The event payload will be (de)serialized as JSON.
 
-## Event handler
+- When invoking **Virtual Object** handlers via Kafka, the key of the Kafka record will be used to determine the Virtual Object key.
+For each Virtual Object, the events are delivered in the order in which they arrived on the topic partition.
+- When invoking **Service** handlers over Kafka, events are delivered in parallel without ordering guarantees.
 
-An event handlers is alike any other handler in your services/virtual objects, and profit from the same features, including durable execution, [service communication](/develop/java/service-communication) and [side effects](/develop/java/side-effects).
-
-**Handling keyed events within virtual objects**
-
-You can handle events within virtual objects, where the key of the Kafka record matches the object key.
-
-Event handlers are no different from regular handlers, and the event payload will be (de)serialized as JSON:
-
-<Tabs groupId="sdk" queryString>
-<TabItem value="java" label="Java">
-
-```java
-CODE_LOAD::java/src/main/java/develop/MyKafkaVirtualObject.java
-```
-
-</TabItem>
-<TabItem value="kotlin" label="Kotlin">
-
-```kotlin
-CODE_LOAD::kotlin/src/main/kotlin/develop/MyKafkaVirtualObject.kt
-```
-
-</TabItem>
-</Tabs>
-
-<Admonition type="tip" title="Combining RPC and Kafka within a service">
-You can mix methods receiving events with regular RPC methods. For example, assume you're implementing a `Profile` service to handle and store user profiles in Restate, where the key is the profile's unique identifier.
-In the same service, you can implement an RPC `get` method to retrieve the profile, and you can attach an `updateProfile` event handler to consume events from Kafka to update the profile.
+<Admonition type="tip" title="Combining RPC and Kafka within a service/handler">
+    Since you can invoke any handler via Kafka events, a single handler can be invoked both by RPC and via Kafka.
 </Admonition>
 
-For each event key (= Kafka record key), the events are delivered in the order in which they arrived on the topic partition.
+</Step>
 
-**Handling events within services**
-
-You can also handle events within services. In this case, events are delivered in parallel without ordering guarantees.
-
-## Event metadata
-
-Each event carries within the `ctx.request().headers()` map the following entries:
-
-* `restate.subscription.id`: The subscription identifier, as shown by the [Admin API](../../references/admin-api).
-* `kafka.offset`: The record offset.
-* `kafka.partition`: The record partition.
-* `kafka.timestamp`: The record timestamp.
-
-## Configure Kafka clusters when deploying Restate
-
-To connect to a Kafka topic, you must configure the Kafka cluster to connect to.
-
-You can define Kafka clusters in the [Restate configuration file](/operate/configuration#configuration-file):
+<Step stepLabel="2" title="Configure Restate to connect to a Kafka cluster">
+Define the Kafka cluster that Restate needs to connect to in the [Restate configuration file](/operate/configuration#configuration-file):
 
 ```toml
 [[ingress.kafka-clusters]]
@@ -75,69 +34,43 @@ brokers = ["PLAINTEXT://broker:9092"]
 ```
 
 Check the [configuration documentation](/operate/configuration) for more details.
+</Step>
 
-## Connect an event handler with a topic
-
-To connect event handlers to a Kafka topic, you need to create a subscription using the [Admin API](/references/admin-api):
-
-```bash
-curl <RESTATE_ADMIN_URL>/subscriptions \
-  -H 'content-type: application/json' \
-  -d '{"source": "kafka://<CLUSTER_NAME>/<TOPIC_NAME>", "sink": "component://<COMPONENT_NAME>/<METHOD_NAME>"}'
-```
-
-For example:
+<Step stepLabel="3" title="Subscribe the event handler to the Kafka topic">
+Let Restate forward events from the Kafka topic to the event handler by creating a subscription using the [Admin API](/references/admin-api):
 
 ```bash
-curl localhost:9070/subscriptions \
-    -H 'content-type: application/json' \
-    -d '{"source": "kafka://my-cluster/my-topic", "sink": "component://MyService/Handle"}'
+# withClass tooltip kafka-subscription
+curl localhost:9070/subscriptions -H 'content-type: application/json' \
+    -d '{
+    # withClass tooltip kafka-subscription-source
+           "source": "kafka://my-cluster/my-topic",
+    # withClass tooltip kafka-subscription-sink
+           "sink": "component://MyService/Handle",
+           "options": {"auto.offset.reset": "earliest"}
+        }'
 ```
 
 Once you've created a subscription, Restate immediately starts consuming events from Kafka.
+The handler will be invoked for each event received from Kafka.
 
-### Additional subscription configuration
+The `options` field is optional and accepts any configuration parameter from [librdkafka configuration](https://github.com/confluentinc/librdkafka/blob/master/CONFIGURATION.md).
 
-You can add additional configuration parameters to the subscription through the `options` field, for example to start consuming the topic from the beginning:
+</Step>
 
-```bash
-curl <RESTATE_ADMIN_URL>/subscriptions \
-  -H 'content-type: application/json' \
-  -d '{"source": "kafka://<CLUSTER_NAME>/<TOPIC_NAME>", "sink": "component://<COMPONENT_NAME>/<METHOD_NAME>", "options": {"auto.offset.reset": "earliest"}}'
-```
+## Managing subscriptions
+- **List** the current subscriptions via:
+    ```bash
+    # withClass tooltip kafka-subscription-list
+    curl localhost:9070/subscriptions
+    ```
+    The creation and listing of subscriptions returns an identifier.
+- **Delete** a subscription with its identifier via:
+    ```bash
+    # withClass tooltip kafka-subscription-delete
+    curl -X DELETE localhost:9070/subscriptions/018cd978aa9f77b5a80454bc060c2a77
+    ```
 
-The `options` field accepts any configuration parameter from [librdkafka configuration](https://github.com/confluentinc/librdkafka/blob/master/CONFIGURATION.md).
-
-### Listing subscriptions
-
-List the current subscriptions via:
-
-```bash
-curl <RESTATE_ADMIN_URL>/subscriptions
-```
-
-For example:
-
-```bash
-curl localhost:9070/subscriptions
-```
-
-### Deleting a subscription
-
-The creation and listing of subscriptions returns an identifier. You can use this identifier to delete a subscription:
-
-```bash
-curl -X DELETE <RESTATE_ADMIN_URL>/subscriptions/<SUBSCRIPTION_IDENTIFIER>
-```
-
-For example:
-
-```bash
-curl -X DELETE localhost:9070/subscriptions/018cd978aa9f77b5a80454bc060c2a77
-```
-
-When you delete a subscription, Restate stops the consumer group associated to it.
-
-<Admonition type="info">
-Once you delete the subscription, there might still be messages enqueued in Restate to be processed by the subscriber service. This behaviour might change in next releases.
-</Admonition>
+    <Admonition type="note">
+    When you delete a subscription, Restate stops the consumer group associated to it. Any messages that were already enqueued by Restate will still be processed.
+    </Admonition>

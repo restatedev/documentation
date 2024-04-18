@@ -7,11 +7,12 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
 
-# Determinism & side effects
+# Journaling Results
 
 Restate uses an execution log for replay after failures and suspensions.
-For this to work, the user code needs to be deterministic.
-To help you with keeping code execution deterministic, the SDK has a few built-in functions:
+
+This means that non-deterministic code (e.g. database responses, UUID generation), needs to be stored in the execution log.
+The SDK offers some functionalities to help you with this:
 1. **Side effects**: For all other non-deterministic code, you need to use side effects, as explained [below](/develop/java/side-effects#side-effects).
 2. **Promise/awaitable combinators**: Check the built-in helper functions [listed below](/develop/java/side-effects#promise-awaitable-combinators).
 3. **Random generators:** For example UUIDs and random numbers. Check the built-in helper functions [listed below](/develop/java/side-effects#built-in-helper-functions).
@@ -52,57 +53,15 @@ For more information, have a look at the documentation on [serialization](/devel
 
 Once stored, the request to the database will not get re-executed upon replay, but the first result will be used instead.
 
-<Admonition type="note">
+<Admonition type="info">
 You cannot invoke any methods on the Restate context within a side effect!
 This includes actions such as getting state, calling another service, and nesting side effects.
 </Admonition>
 
-### Retrying on failure
-
-If the side effect closure throws an error, then it is retried infinitely using an exponential backoff strategy until it succeeds.
-
-<Tabs groupId="sdk" queryString>
-<TabItem value="java" label="Java">
-
-```java
-CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_retry_settings>-<end_retry_settings>
-```
-
-</TabItem>
-<TabItem value="kotlin" label="Kotlin">
-
-```kotlin
-CODE_LOAD::kotlin/src/main/kotlin/develop/SideEffects.kt#<start_retry_settings>-<end_retry_settings>
-```
-
-</TabItem>
-</Tabs>
-
-### Terminal failures of side effects
-
-By default, a side effect function is retried infinitely on failure.
-If you want to let the side effect fail terminally, then you have to throw a terminal error.
-A terminal error will stop the infinite retry strategy and lets the SDK propagate the error to the user code where it can be handled.
-The terminal error will also be recorded in the journal so that it will be deterministically thrown on replay.
-
-You can throw a terminal exception via `TerminalException` and supply it with a `TerminalException.Code` and a message:
-
-<Tabs groupId="sdk" queryString>
-<TabItem value="java" label="Java">
-
-```java
-CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_terminal>-<end_terminal>
-```
-
-</TabItem>
-<TabItem value="kotlin" label="Kotlin">
-
-```kotlin
-CODE_LOAD::kotlin/src/main/kotlin/develop/SideEffects.kt#<start_terminal>-<end_terminal>
-```
-
-</TabItem>
-</Tabs>
+<Admonition type="info" title="Side effect failure semantics">
+Failures in side effects have the same semantics as failures in the main code.
+By default, a side effect function is retried infinitely on failure, unless you throw a [terminal error](/develop/java/error-handling).
+</Admonition>
 
 ## Promise/Awaitable combinators
 
@@ -185,12 +144,9 @@ CODE_LOAD::kotlin/src/main/kotlin/develop/SideEffects.kt#<start_uuid>-<end_uuid>
 Do not use this in cryptographic contexts.
 </Admonition>
 
-<Admonition type="tip">
-You can use this to generate stable idempotency keys with one line of code.
-For example, imagine a payment service where you want to avoid having duplicate payments during retries.
-You could use this utility to generate a UUID and then use that UUID as identifier of the payment.
-You only allow the payment to go through if no payment with that UUID was done yet.
-Restate guarantees that once the UUID is stored, it is retained during retries.
+<Admonition type="tip" title="Generate stable idempotency tokens in a single line of code">
+You can use this to generate stable idempotency keys, to deduplicate operations.
+For example, you can use this to let a payment service avoid duplicate payments during retries.
 </Admonition>
 
 ### Generating random numbers

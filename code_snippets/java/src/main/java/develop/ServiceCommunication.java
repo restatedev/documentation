@@ -9,8 +9,7 @@ public class ServiceCommunication {
         String request = "";
 
         // <start_request_response_service>
-        MyServiceClient.ContextClient client = MyServiceClient.fromContext(ctx);
-        String response = client.myHandler(request).await();
+        MyServiceClient.fromContext(ctx).myHandler(request).await();
         // <end_request_response_service>
     }
 
@@ -19,8 +18,7 @@ public class ServiceCommunication {
         String request = "";
 
         // <start_request_response_virtual_object>
-        MyVirtualObjectClient.ContextClient client = MyVirtualObjectClient.fromContext(ctx, objectKey);
-        String response = client.myHandler(request).await();
+        MyVirtualObjectClient.fromContext(ctx, objectKey).myHandler(request).await();
         // <end_request_response_virtual_object>
     }
 
@@ -28,9 +26,8 @@ public class ServiceCommunication {
         String request = "";
 
         // <start_one_way>
-        MyServiceClient.ContextClient client = MyServiceClient.fromContext(ctx);
-        client
-            //highlight-next-line
+        MyServiceClient.fromContext(ctx)
+            // withClass highlight-line
             .send()
             .myHandler(request);
         // <end_one_way>
@@ -40,9 +37,8 @@ public class ServiceCommunication {
         String request = "";
 
         // <start_delayed>
-        MyServiceClient.ContextClient client = MyServiceClient.fromContext(ctx);
-        client
-            //highlight-next-line
+        MyServiceClient.fromContext(ctx)
+            // withClass highlight-line
             .send(Duration.ofSeconds(1))
             .myHandler(request);
         // <end_delayed>

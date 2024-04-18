@@ -8,14 +8,14 @@ public class Awakeables {
 
     public void awakeables(ObjectContext ctx) {
         // <start_create>
-        // 1. Generate the ID
+        // 1. Generate the awakeable
         Awakeable<String> awakeable = ctx.awakeable(CoreSerdes.JSON_STRING);
 
-        // 2. Send the ID to some external system
+        // 2. Deliver the ID to the process that will resolve the awakeable
         String awakeableId = awakeable.id();
-        // ... send a request to another system and include the awakeableId as callback url...
+        ctx.run(() -> { /** deliver the ID **/ });
 
-        // 3. Wait for the ID to returned and retrieve the payload
+        // 3. Wait for the awakeable to be resolved, and get the payload
         String payload = awakeable.await();
         // <end_create>
 

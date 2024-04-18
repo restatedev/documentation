@@ -87,6 +87,7 @@ const config = {
           customCss: [
             require.resolve("@code-hike/mdx/styles.css"),
             require.resolve("./src/css/custom.css"),
+            require.resolve("./src/css/tooltips.css"),
           ]},
       }),
 

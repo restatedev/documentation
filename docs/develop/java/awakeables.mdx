@@ -9,27 +9,32 @@ import TabItem from '@theme/TabItem';
 
 # Awakeables
 
-Awakeables pause an invocation while waiting for an external process to complete a task. 
+Awakeables pause an invocation while waiting for another process to complete a task.
 This works as follows:
-- You generate an ID with the Restate SDK. This is a simple string object.
-- You send the ID to the external process, in any preferred way (e.g. over Kafka, via HTTP,...).
-- The external process executes the task and then returns the ID to Restate, optionally together with a payload. 
-- Once the ID has been returned to the service, the invocation resumes.
+- **Create an awakeable** with the Restate SDK. This contains a String identifier and a Promise/Awaitable.
+- **Trigger a task/process** and attach the awakeable ID  (e.g. over Kafka, via HTTP,...).
+For example, send an HTTP request to a service that executes the task, and attach the ID to the payload
+- **Wait** until the other process has executed the task.
+- Once the process has finished, it **completes the awakeable**. It does this by calling into Restate and returning the ID. It either:
+    - **Resolves** the awakeable with an optional payload: success
+    - **Rejects** the awakeable with a reason: failure. This will cause the waiting service to throw [a terminal error](/develop/java/error-handling).
+- Once the ID has been returned to the service, the **invocation resumes**.
 
-You can use this pattern to execute tasks in non-Restate services, and retrieve the result. This design pattern is also referred to as the callback (task token) pattern.
+You can use this pattern to let a handler execute a task somewhere else and retrieve the result.
+This pattern is also known as the callback (task token) pattern.
 
-While waiting for the ID to be returned, Restate suspends the invocation to free up resources for other invocations.
-This feature is particularly beneficial for AWS Lambda deployments.
-When the invocation is suspended, its costs are reduced to zero.
-
-<Admonition type="caution">
-While waiting for an awakeable ID to be returned, singleton services and keyed services (for that single key) will not process other incoming invocations.
-They block until the invocation is finished, so until the awakeable ID is returned and the rest of the code has been executed.
+<Admonition type="tip" icon={"💡"} title="Cost savings on FaaS">
+When running on Function-as-a-Service platforms, such as AWS Lambda, Restate suspends the handler while waiting for the awakeable to be resolved.
+Since you only pay for the time that the handler is actually running, your don't pay while waiting for the external process to complete.
 </Admonition>
 
-## Using awakeables
+<Admonition type="info" title="Awaiting awakeables in Virtual Objects">
+    Virtual Objects only process a single invocation at a time, so the Virtual Object will be blocked while sleeping.
+</Admonition>
 
-You can use awakeables in the SDK by doing the following:
+## Creating awakeables
+
+Create an awakeable as follows:
 
 <Tabs groupId="sdk" queryString>
 <TabItem value="java" label="Java">
@@ -38,9 +43,10 @@ You can use awakeables in the SDK by doing the following:
 CODE_LOAD::java/src/main/java/develop/Awakeables.java#<start_create>-<end_create>
 ```
 
-You need to define the deserializer for the payload.
-For primitive types, you can do this by using Restate's built-in `dev.restate.sdk.common.CoreSerdes`.
-For other types, have a look at the [serialization documentation](/develop/java/serialization).
+<Admonition type="note" title="Specifying the serializer">
+    For primitive types, you can use the Restate SDK's `CoreSerdes`.
+    For other types, have a look at the [serialization docs](/develop/java/serialization).
+</Admonition>
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
@@ -49,94 +55,98 @@ For other types, have a look at the [serialization documentation](/develop/java/
 CODE_LOAD::kotlin/src/main/kotlin/develop/Awakeables.kt#<start_create>-<end_create>
 ```
 
-By default JSON is used to deserialize payloads, using Kotlin serialization.
-For other types, have a look at the [serialization documentation](/develop/java/serialization).
+<Admonition type="note" title="Specifying the serializer">
+    By default JSON is used to serialize payloads, using Kotlin serialization.
+    For other types, have a look at the [serialization documentation](/develop/java/serialization).
+</Admonition>
 
 </TabItem>
 </Tabs>
 
-## Completing awakeables from another Restate service
+## Completing awakeables
 
-The external process that received the ID, needs to deliver it back to Restate when the task is done.
-
-If the external process is another Restate service, then you can use the SDK to resolve the awakeable (= to send the ID back).
-Use the awakeable ID that you received from the other service, and do the following:
+### Via the SDK
 
 <Tabs groupId="sdk" queryString>
 <TabItem value="java" label="Java">
+    <CH.Spotlight className="spotlight-long-code">
 
-```java
-CODE_LOAD::java/src/main/java/develop/Awakeables.java#<start_resolve>-<end_resolve>
-```
+        ```java Resolve
+        CODE_LOAD::java/src/main/java/develop/Awakeables.java#<start_resolve>-<end_resolve>
+        ```
 
-You need to define the serializer for the payload.
-For primitive types, you can do this by using Restate's built-in `dev.restate.sdk.common.CoreSerdes`.
-For other types, have a look at the [serialization documentation](/develop/java/serialization).
+        ---
+
+        Resolve with JSON payload
+
+        ---
+
+        ```java Reject
+        CODE_LOAD::java/src/main/java/develop/Awakeables.java#<start_reject>-<end_reject>
+        ```
+
+        Reject with failure reason
+
+    </CH.Spotlight>
+
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
+    <CH.Spotlight className="spotlight-long-code">
 
-```kotlin
-CODE_LOAD::kotlin/src/main/kotlin/develop/Awakeables.kt#<start_resolve>-<end_resolve>
-```
+        ```kotlin
+        CODE_LOAD::kotlin/src/main/kotlin/develop/Awakeables.kt#<start_resolve>-<end_resolve>
+        ```
 
-By default JSON is used to serialize payloads, using Kotlin serialization.
-For other types, have a look at the [serialization documentation](/develop/java/serialization).
+        ---
+
+        Resolve with JSON payload
+
+        ---
+
+        ```kotlin
+        CODE_LOAD::kotlin/src/main/kotlin/develop/Awakeables.kt#<start_reject>-<end_reject>
+        ```
+
+        Reject with failure reason.
+
+    </CH.Spotlight>
+
+
 
 </TabItem>
 </Tabs>
 
-You can also reject an awakeable, that is completing it with a failure. This will cause the waiting service to throw [a terminal error](/develop/java/error-handling):
 
-<Tabs groupId="sdk" queryString>
-<TabItem value="java" label="Java">
 
-```java
-CODE_LOAD::java/src/main/java/develop/Awakeables.java#<start_reject>-<end_reject>
-```
 
-</TabItem>
-<TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-CODE_LOAD::kotlin/src/main/kotlin/develop/Awakeables.kt#<start_reject>-<end_reject>
-```
+### Via HTTP
 
-</TabItem>
-</Tabs>
+<CH.Spotlight className="spotlight-long-code">
 
-## Completing awakeables from outside Restate
+    ```shell
+    # withClass tooltip awakeable-http-resolve
+    curl localhost:8080/restate/awakeables/prom_1PePOqp/resolve \
+        -H 'content-type: application/json'
+        # withClass tooltip awakeable-http-resolve-payload
+        -d '{"hello": "world"}'
+    ```
 
-You can resolve awakeables from outside Restate by sending requests to Restate's ingress `/restate/awakeables` endpoint.
+    ---
 
-To resolve an awakeable with a JSON payload:
+    Resolve with JSON payload
 
-```shell
-curl <RESTATE_INGRESS_URL>/restate/awakeables/<AWAKEABLE_ID>/resolve \
-  -H 'content-type: application/json' \
-  -d '<JSON_VALUE_RESULT>'
-```
+    ---
 
-For example:
+    ```shell
+    # withClass tooltip awakeable-http-reject
+    curl localhost:8080/restate/awakeables/prom_1PePOqp/reject \
+        -H 'content-type: text/plain' \
+        # withClass tooltip awakeable-http-reject-failure
+        -d 'Very bad error!'
+    ```
 
-```shell
-curl localhost:8080/restate/awakeables/prom_1PePOqpIRxZEBjq6h6SI0vkBmwhFskpdbAAAAAQ/resolve \
-  -H 'content-type: application/json'
-  -d '{"hello": "world"}'
-```
+    Reject with failure reason
 
-To reject an awakeable:
-
-```shell
-curl <RESTATE_INGRESS_URL>/restate/awakeables/<AWAKEABLE_ID>/reject \
-  -H 'content-type: text/plain' \
-  -d '<FAILURE_REASON>'
-```
-
-For example:
-
-```shell
-curl localhost:8080/restate/awakeables/prom_1PePOqpIRxZEBjq6h6SI0vkBmwhFskpdbAAAAAQ/reject \
-  -H 'content-type: text/plain' \
-  -d 'Very bad error!'
-```
+</CH.Spotlight>

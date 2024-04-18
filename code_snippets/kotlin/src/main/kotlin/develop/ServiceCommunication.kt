@@ -30,7 +30,7 @@ class ServiceCommunication {
         // <start_one_way>
         val client = MyServiceClient.fromContext(ctx)
         client
-            //highlight-next-line
+            // withClass highlight-line
             .send()
             .myHandler(request)
         // <end_one_way>
@@ -42,7 +42,7 @@ class ServiceCommunication {
         // <start_delayed>
         val client = MyServiceClient.fromContext(ctx)
         client
-            //highlight-next-line
+            // withClass highlight-line
             .send(1.seconds)
             .myHandler(request)
         // <end_delayed>

@@ -7,14 +7,18 @@ import Admonition from '@theme/Admonition';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Durable timers
+# Scheduling & Timers
 
-Restate services can sleep for a specified amount of time.
-Restate stores and keeps track of your timers so that the invocation sleeps the right duration, even across failures and restarts.
+The Restate SDK includes durable timers.
+You can use these to let handlers sleep for a specified time, or to schedule a handler to be called at a later time.
+These timers are resilient to failures and restarts.
+Restate stores and keeps track of the timers and triggers them on time, even across failures and restarts.
 
-During a sleep, Restate suspends the invocation to free up resources for other service invocations.
-This feature is particularly beneficial for AWS Lambda deployments.
-When the service sleeps, costs are reduced to zero.
+## Scheduling Async Tasks
+
+To schedule a handler to be called at a later time, have a look at the documentation on [delayed calls](/develop/java/service-communication#delayed-calls).
+
+## Durable sleep
 
 To sleep in a Restate application for ten seconds, do the following:
 
@@ -35,15 +39,21 @@ CODE_LOAD::kotlin/src/main/kotlin/develop/DurableTimers.kt#<start_sleep>-<end_sl
 </TabItem>
 </Tabs>
 
-<Admonition type="note">
-For sleep to work properly, make sure that the system clock of the runtime is synchronized with the clock of the service deployment and that they use the same time zone. When you do a timer-based action with the SDK (e.g. sleep, delayed calls), the duration gets calculated based on the system clock of the service. But subsequently, Restate registers this timer on its own system clock. So the system clock of the service and of Restate need to be synchronized.
+<Admonition type="tip" icon={"💡"} title="Cost savings on FaaS">
+    Restate suspends the handler while it is sleeping, to free up resources.
+    This is beneficial for AWS Lambda deployments, since you don't pay for the time the handler is sleeping.
 </Admonition>
 
-<Admonition type="caution">
-While sleeping, singleton services and keyed services (for that single key) will not process other incoming invocations.
-They block until the invocation is finished, so until the sleep has finished and the rest of the code has been executed.
+<Admonition type="info" title="Sleeping in Virtual Objects">
+Virtual Objects only process a single invocation at a time, so the Virtual Object will be blocked while sleeping.
 </Admonition>
 
-<Admonition type="caution">
-Don't use the language's own timer implementations or sleep functions in combination with Restate. Otherwise, you do not benefit from resilience or suspensions.
-</Admonition>
+
+<details className="grey-details">
+    <summary>Clock synchronization Restate Server vs. SDK</summary>
+
+    The Restate SDK calculates the wake-up time based on the delay you specify.
+    The Restate Server then uses this calculated time to wake up the handler.
+    If the Restate Server and the SDK have different system clocks, the sleep duration might not be accurate.
+    So make sure that the system clock of the Restate Server and the SDK have the same timezone and are synchronized.
+</details>
