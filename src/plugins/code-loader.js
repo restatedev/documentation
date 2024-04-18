@@ -19,7 +19,7 @@ const plugin = (options) => {
         }
 
         const fileContent = await readFileOrFetch(fileData.filePath);
-        const data = extractAndClean(fileContent, fileData.customStartTag, fileData.customEndTag);
+        const data = extractAndClean(fileContent, fileData.customStartTag, fileData.customEndTag, fileData.filePath);
         return str.replace(codeLoadRegex, () => data);
     }
 
@@ -27,7 +27,7 @@ const plugin = (options) => {
         if (filepath.startsWith('https://raw.githubusercontent.com/')) {
             const response = await fetch(filepath);
             if (!response.ok) {
-                throw new Error('Failed to fetch file from GitHub');
+                throw new Error('Failed to fetch file from GitHub for ' + filepath);
             }
             return await response.text();
         } else {
@@ -35,7 +35,7 @@ const plugin = (options) => {
         }
     }
 
-    function extractAndClean(fileContent, customStartTag, customEndTag){
+    function extractAndClean(fileContent, customStartTag, customEndTag, filePath){
         // If custom start and end tags are provided, check if they are present in the file, otherwise fail
         if (customStartTag && !fileContent.includes(customStartTag)) {
             throw new Error(`Custom start tag "${customStartTag}" not found in file ${filePath}`);
