@@ -4,12 +4,12 @@ description: "Receive events from Kafka."
 ---
 import Admonition from '@theme/Admonition';
 
-import Step from "../../../src/components/Stepper";
+import {SubtleStep} from "../../../src/components/Stepper";
 
 # Kafka
 You can invoke handlers via Kafka events, by doing the following:
 
-<Step stepLabel="1" title="Develop an event handler">
+<SubtleStep stepLabel="1" title="Develop an event handler">
 
 You can invoke any handler via Kafka events.
 The event payload will be (de)serialized as JSON.
@@ -22,9 +22,9 @@ For each Virtual Object, the events are delivered in the order in which they arr
     Since you can invoke any handler via Kafka events, a single handler can be invoked both by RPC and via Kafka.
 </Admonition>
 
-</Step>
+</SubtleStep>
 
-<Step stepLabel="2" title="Configure Restate to connect to a Kafka cluster">
+<SubtleStep stepLabel="2" title="Configure Restate to connect to a Kafka cluster">
 Define the Kafka cluster that Restate needs to connect to in the [Restate configuration file](/operate/configuration#configuration-file):
 
 ```toml
@@ -34,9 +34,9 @@ brokers = ["PLAINTEXT://broker:9092"]
 ```
 
 Check the [configuration documentation](/operate/configuration) for more details.
-</Step>
+</SubtleStep>
 
-<Step stepLabel="3" title="Subscribe the event handler to the Kafka topic">
+<SubtleStep stepLabel="3" title="Subscribe the event handler to the Kafka topic">
 Let Restate forward events from the Kafka topic to the event handler by creating a subscription using the [Admin API](/references/admin-api):
 
 ```bash
@@ -56,7 +56,7 @@ The handler will be invoked for each event received from Kafka.
 
 The `options` field is optional and accepts any configuration parameter from [librdkafka configuration](https://github.com/confluentinc/librdkafka/blob/master/CONFIGURATION.md).
 
-</Step>
+</SubtleStep>
 
 ## Managing subscriptions
 - **List** the current subscriptions via:
