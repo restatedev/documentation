@@ -31,6 +31,17 @@ java {
   }
 }
 
+tasks.withType<JavaCompile> {
+  // Using -parameters allows to use Jackson ParameterName feature
+  // https://github.com/FasterXML/jackson-modules-java8/tree/2.14/parameter-names
+  options.compilerArgs.add("-parameters")
+}
+
+// Configure test platform
+tasks.withType<Test> {
+  useJUnitPlatform()
+}
+
 // Set main class
 application {
   mainClass.set("develop.Greeter")
