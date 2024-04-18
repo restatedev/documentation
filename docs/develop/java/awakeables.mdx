@@ -22,11 +22,11 @@ This pattern is also known as the callback (task token) pattern.
         ```
         ---
 
-        ```java ResolveWithSDK.java
+        ```java ExternalProcessResolve.java
         CODE_LOAD::java/src/main/java/develop/Awakeables.java#<start_resolve>-<end_resolve>
         ```
 
-        ```java RejectWithSDK.java
+        ```java ExternalProcessReject.java
         CODE_LOAD::java/src/main/java/develop/Awakeables.java#<start_reject>-<end_reject>
         ```
 
@@ -49,10 +49,10 @@ This pattern is also known as the callback (task token) pattern.
         3. [**Wait** until the other process has executed the task.](focus://MyHandler.java#6)
         4. Once the process has finished, it **completes the awakeable**. It does this by calling into Restate and returning the ID. It either:
             - **Resolves** the awakeable (success) with its ID and an optional payload
-                - [Via the SDK](focus://ResolveWithSDK.java#1:2)
+                - [Via the SDK](focus://ExternalProcessResolve.java#1:2)
                 - [Over HTTP](focus://resolve_with_curl.sh#1:2)
             - **Rejects** the awakeable (failure) with its ID and a reason. This will throw [a terminal error](/develop/java/error-handling) in the waiting handler.
-                - [Via the SDK](focus://RejectWithSDK.java#1:2)
+                - [Via the SDK](focus://ExternalProcessReject.java#1:2)
                 - [Over HTTP](focus://reject_with_curl.sh#1:2)
         5. Once the ID has been returned to the service, the **invocation resumes**.
 
@@ -68,11 +68,11 @@ This pattern is also known as the callback (task token) pattern.
 
         ---
 
-        ```kotlin ResolveWithSDK.kt
+        ```kotlin ExternalProcessResolve.kt
         CODE_LOAD::kotlin/src/main/kotlin/develop/Awakeables.kt#<start_resolve>-<end_resolve>
         ```
 
-        ```kotlin RejectWithSDK.kt
+        ```kotlin ExternalProcessReject.kt
         CODE_LOAD::kotlin/src/main/kotlin/develop/Awakeables.kt#<start_reject>-<end_reject>
         ```
 
@@ -99,10 +99,10 @@ This pattern is also known as the callback (task token) pattern.
         4. Once the process has finished, it **completes the awakeable**. It does this by calling into Restate and returning the ID. It either:
             - **Resolves** the awakeable with its ID and an optional payload: success
                 - [Over HTTP](focus://resolve_curl.sh#1:2)
-                - [Via the SDK](focus://ResolveWithSDK.kt#1:2)
+                - [Via the SDK](focus://ExternalProcessResolve.kt#1:2)
             - **Rejects** the awakeable with its ID and a reason: failure. This will throw [a terminal error](/develop/java/error-handling) in the waiting handler.
                 - [Over HTTP](focus://reject_curl.sh#1:2)
-                - [Via the SDK](focus://RejectWithSDK.kt#1:2)
+                - [Via the SDK](focus://ExternalProcessReject.kt#1:2)
         5. Once the ID has been returned to the service, the **invocation resumes**.
 
 </CH.Section>
