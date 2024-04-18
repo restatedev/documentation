@@ -7,7 +7,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import FeatureWidget from "../../src/components/FeatureWidget";
 
-# Components
+# Services
 
 
 This is what a Restate application looks like from a helicopter view:
@@ -17,20 +17,20 @@ This is what a Restate application looks like from a helicopter view:
 </center>
 
 1. **Restate Server**: The server intercepts incoming requests and drives their execution till the end.
-2. **Components**: Contain the handlers which process incoming requests.
+2. **Services**: Contain the handlers which process incoming requests.
 3. **Invocation**: A request to execute a handler that is part of either a service, or a virtual object.
 
-As you can see, handlers are bundled into components.
-Components run like regular RPC services (e.g. a NodeJS app in a Docker container).
-Components can be written in any language for which there is an SDK available (currently [TypeScript](/category/typescript-sdk) and [Java/Kotlin](/category/javakotlin-sdk)).
+As you can see, handlers are bundled into services.
+Services run like regular RPC services (e.g. a NodeJS app in a Docker container).
+Services can be written in any language for which there is an SDK available (currently [TypeScript](/category/typescript-sdk) and [Java/Kotlin](/category/javakotlin-sdk)).
 
-There are two types of components in Restate:
+There are two types of services in Restate:
 
-| Services | Virtual objects                                                                                                                                       |
-|-----|-------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Set of handlers durably executed | Set of handlers durably executed                                                                                                                      |
-| No associated K/V store | Handlers share K/V state; isolated per virtual object                                                                              |
-| No concurrency limits | Single concurrent invocation per virtual object                                                                                                       |
+| Services (plain)                                                                                                                                          | Virtual objects                                                                                                                                       |
+|----------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Set of handlers durably executed                                                                                                                   | Set of handlers durably executed                                                                                                                      |
+| No associated K/V store                                                                                                                            | Handlers share K/V state; isolated per virtual object                                                                              |
+| No concurrency limits                                                                                                                              | Single concurrent invocation per virtual object                                                                                                       |
 | Example use cases: <ul><li>Microservice orchestration</li><li>To benefit from idempotency</li><li>Transformation functions</li><li>Sagas</li></ul> | Example use cases: <ul><li>Atomic state machines</li><li>Digital twin</li><li>Locking mechanisms</li><li>Sequencing or ordering invocations</li></ul> |
 
 ## Services
@@ -56,7 +56,7 @@ During retries, the service will not reapply the same update twice:
     <TabItem value="java" label="Java">
 
         ```java
-        CODE_LOAD::java/src/main/java/concepts/components/RoleUpdateService.java
+        CODE_LOAD::java/src/main/java/concepts/services/RoleUpdateService.java
         ```
 
     </TabItem>
@@ -86,14 +86,14 @@ This can also be used for example to implement a locking mechanism or to ensure 
     <TabItem value="java" label="Java">
 
         ```java
-        CODE_LOAD::java/src/main/java/concepts/components/Greeter.java
+        CODE_LOAD::java/src/main/java/concepts/services/Greeter.java
         ```
 
     </TabItem>
 </Tabs>
 
 ## Restate Server
-In between the components, sits the Restate Server. It proxies invocations to the components and manages their lifecycle.
+In between the services, sits the Restate Server. It proxies invocations to the services and manages their lifecycle.
 
 The Restate Server is written in Rust, to be self-contained and resource-efficient.
 It has an event-driven foundation. You can put it in the hot, latency-sensitive paths of your applications.
