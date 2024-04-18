@@ -40,12 +40,9 @@ Check the [configuration documentation](/operate/configuration) for more details
 Let Restate forward events from the Kafka topic to the event handler by creating a subscription using the [Admin API](/references/admin-api):
 
 ```bash
-# withClass tooltip kafka-subscription
 curl localhost:9070/subscriptions -H 'content-type: application/json' \
     -d '{
-    # withClass tooltip kafka-subscription-source
            "source": "kafka://my-cluster/my-topic",
-    # withClass tooltip kafka-subscription-sink
            "sink": "component://MyService/Handle",
            "options": {"auto.offset.reset": "earliest"}
         }'
@@ -61,16 +58,16 @@ The `options` field is optional and accepts any configuration parameter from [li
 ## Managing subscriptions
 - **List** the current subscriptions via:
     ```bash
-    # withClass tooltip kafka-subscription-list
     curl localhost:9070/subscriptions
     ```
     The creation and listing of subscriptions returns an identifier.
-- **Delete** a subscription with its identifier via:
+<CH.Section>
+- **Delete** a subscription with [its identifier](focus://1[45:78]) via:
     ```bash
-    # withClass tooltip kafka-subscription-delete
     curl -X DELETE localhost:9070/subscriptions/018cd978aa9f77b5a80454bc060c2a77
     ```
 
     <Admonition type="note">
     When you delete a subscription, Restate stops the consumer group associated to it. Any messages that were already enqueued by Restate will still be processed.
     </Admonition>
+</CH.Section>
