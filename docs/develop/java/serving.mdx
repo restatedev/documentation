@@ -4,6 +4,8 @@ description: "Set up long-running services or Lambda handlers."
 ---
 
 import Admonition from '@theme/Admonition';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # Serving
 Restate services can run in two ways: as an HTTP endpoint or as AWS Lambda functions.
@@ -12,9 +14,22 @@ Restate services can run in two ways: as an HTTP endpoint or as AWS Lambda funct
 
 To create the HTTP endpoint for your services, do the following:
 
+<Tabs groupId="sdk" queryString>
+<TabItem value="java" label="Java">
+
 ```java
 CODE_LOAD::java/src/main/java/develop/ServingHttp.java
 ```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+CODE_LOAD::kotlin/src/main/kotlin/develop/ServingHttp.kt
+```
+
+</TabItem>
+</Tabs>
 
 First, create a `RestateHttpEndpointBuilder`, then bind one or multiple services to the server.
 
@@ -33,9 +48,22 @@ implementation("dev.restate:sdk-lambda:VAR::JAVA_SDK_VERSION")
 
 Register your Lambda services as follows:
 
+<Tabs groupId="sdk" queryString>
+<TabItem value="java" label="Java">
+
 ```java
 CODE_LOAD::java/src/main/java/develop/ServingLambda.java
 ```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+CODE_LOAD::kotlin/src/main/kotlin/develop/MyLambdaHandler.kt
+```
+
+</TabItem>
+</Tabs>
 
 Create a class that extends `BaseRestateLambdaHandler` with your services binded to it.
 
@@ -47,4 +75,23 @@ That's all you need to do to enable running on AWS Lambda.
 The implementation of your service methods remains the same for both deployment options.
 </Admonition>
 
+## Using Java 21 Virtual Threads
 
+If you use a JVM >= 21, you can easily use virtual threads to run your components:
+
+<Tabs groupId="sdk" queryString>
+<TabItem value="java" label="Java">
+
+```java
+CODE_LOAD::java/src/main/java/develop/ServingVirtualThreads.java
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+CODE_LOAD::kotlin/src/main/kotlin/develop/ServingVirtualThreads.kt
+```
+
+</TabItem>
+</Tabs>
