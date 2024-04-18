@@ -23,7 +23,7 @@ class Ingress extends React.Component {
                         <div
                             className="smallest_font display-inline-block text--center color-1 set-bg set-color align-middle margin-bottom--md">
                             HTTP request <br/> addTicket <br/>
-                            (Joe, seat2B)
+                            (Mary, seat2B)
                         </div>
                         →
                     </div>
@@ -62,19 +62,13 @@ class Runtime extends React.Component {
                         src="/img/durable_execution_animation/restate.png"
                     />
                 </div>
-                <h6>State</h6>
-                <div id="restate-state">
-                    <p id="restate_user_state" className="text--center smaller_font">
-                        cartService: Joe - cart=[]
-                    </p>
-                </div>
                 <h6>Journals</h6>
                 <div
                     id="restate_journal_cart"
                     className="bg-primary-line padding--sm display-none"
                 >
                     <p className="color-1 set-color set-bg text--center smaller_font">
-                        addTicket ( Joe, seat2B )
+                        addTicket ( Mary, seat2B )
                     </p>
                     <div
                         id="restate_journal_cart_0"
@@ -97,18 +91,6 @@ class Runtime extends React.Component {
                     </div>
                     <div
                         id="restate_journal_cart_3"
-                        className="box color-4 set-bg-dark display-none"
-                    >
-                        |||||
-                    </div>
-                    <div
-                        id="restate_journal_cart_4"
-                        className="box color-5 set-bg-dark display-none"
-                    >
-                        |||||
-                    </div>
-                    <div
-                        id="restate_journal_cart_6"
                         className="box color-7 set-bg-dark display-none"
                     >
                         |||||
@@ -161,10 +143,8 @@ class Services extends React.Component {
     render() {
         return <div className="col col--7 padding-horiz--md">
             <p id="animation_explanation" className="padding--sm padding-left--md text--center">
-                This animation shows you how durable execution takes place in Restate.
-                The animation shows a ticket reservation platform for a theatre, where users can add tickets to their cart.
-                Tickets can only be reserved by a single user.
-                The application consists of two components: the CartObject and the TicketObject.
+                This animation shows you what happened under the hood when we did the reserve call from the `CartObject` to the `TicketObject`.
+                The animation uses the TypeScript SDK.
             </p>
             <div id="cart_service_div" className="row margin-vert--none margin-horiz--none">
                 <div className="col col--1 padding-horiz--none margin-bottom--md">
@@ -194,7 +174,7 @@ class Services extends React.Component {
                                 <div className="ide_button"/>
                                 <div className="ide_button"/>
                                 <div className="ide_button"/>
-                                <div className="service-name padding-horiz--sm">CartObject</div>
+                                <div className="service-name padding-horiz--sm">CartObject[Mary]</div>
                                 <div
                                     id="cart_title_suspended"
                                     className="service-name color-red padding-horiz--sm"
@@ -220,29 +200,12 @@ class Services extends React.Component {
                             {"\n"}
                             {"    "}
                     .<span className="hljs-title function_">objectClient</span>
-                    (ticketManager, ticketId)
+                    (ticketObject)
                             {"\n"}
                             {"    "}
                     .<span className="hljs-title function_">reserve</span>
-                    ();
+                    (ticketId);
                             {"\n"}
-                            {"\n"}
-                            {"  "}
-                            <span className="hljs-keyword">if</span> (success) {"{"}
-                            {"\n"}
-                            {"    "}
-                            <span className="hljs-keyword">const</span> cart ={" "}
-                            <span className="hljs-keyword">await</span> ctx.
-                    <span className="hljs-title function_">get</span>(
-                    <span className="hljs-string">"cart"</span>);{"\n"}
-                            {"    "}ctx.
-                    <span className="hljs-title function_"s>set</span>(
-                    <span className="hljs-string">"cart"</span>, cart.
-                    <span className="hljs-title function_">push</span>
-                    (ticketId));
-                            {"\n"}
-                            {"  "}
-                            {"}"}
                             {"\n"}
                             {"  "}
                             <span className="hljs-keyword">return</span> success;{"\n"}
@@ -260,7 +223,7 @@ class Services extends React.Component {
                             id="journal_cart_0"
                             className="text--center display-inline-block color-1 set-bg set-color padding-horiz--xs"
                         >
-                            (Joe, seat2B) <br/> state(cart=[])
+                            (Mary, seat2B)
                         </div>
                         <div
                             id="journal_cart_1"
@@ -278,20 +241,6 @@ class Services extends React.Component {
                         </div>
                         <div
                             id="journal_cart_3"
-                            className="text--center display-inline-block display-none color-4 set-bg set-color padding-horiz--xs"
-                        >
-                            getState <br/>
-                            cart=[]
-                        </div>
-                        <div
-                            id="journal_cart_4"
-                            className="text--center display-inline-block display-none color-5 set-bg set-color padding-horiz--xs"
-                        >
-                            setState <br/>
-                            cart=[seat2B]
-                        </div>
-                        <div
-                            id="journal_cart_6"
                             className="text--center display-inline-block display-none color-7 set-bg set-color padding-horiz--xs"
                         >
                             response <br/>
@@ -322,7 +271,7 @@ class Services extends React.Component {
                                 <div className="ide_button"/>
                                 <div className="ide_button"/>
                                 <div className="ide_button"/>
-                                <div className="service-name padding-horiz--sm">TicketObject:</div>
+                                <div className="service-name padding-horiz--sm">TicketObject[seat2B]</div>
                                 <div
                                     id="ticket_title_suspended"
                                     className="service-name color-red padding-horiz--sm"
@@ -359,7 +308,7 @@ class Services extends React.Component {
                             id="journal_ticket_0"
                             className="text--center display-inline-block color-2 set-bg set-color padding-horiz--xs"
                         >
-                            (seat2B) <br/> state()
+                            (seat2B)
                         </div>
                         <div
                             id="journal_ticket_1"
@@ -374,22 +323,19 @@ class Services extends React.Component {
     }
 }
 
-const defaultAnimation = "<div class=\"col col--1 padding-horiz--sm\"><div id=\"ingress\" class=\"h-100\"><div id=\"placeholder\"><h6><a class=\"rpc_arrow text--center color-1 set-color smallest_font\"></a></h6></div><div id=\"ingress_call\" class=\"color-1 set-color display-none padding--sm\"><div class=\"horizontal_rpc_arrow display-inline-block text--center\"><img src=\"/img/durable_execution_animation/click.png\" class=\"text--center display-inline-block padding--sm\"><div class=\"smallest_font display-inline-block text--center color-1 set-bg set-color align-middle margin-bottom--md\">HTTP request <br> addTicket <br>(Joe, seat2B)</div>→</div></div><div id=\"response_ingress_call\" class=\"color-7 set-color display-none padding--sm\"><div class=\"horizontal_rpc_arrow display-inline-block text--center\"><img src=\"/img/durable_execution_animation/add-cart.png\" class=\"text--center display-inline-block padding--sm\"><div class=\"smaller_font display-inline-block text--center color-7 set-bg set-color align-middle\">HTTP response <br> addTicket <br> { success }</div>←</div></div></div></div><div class=\"col col--4 padding-horiz--md\"><div id=\"restate-runtime\" class=\"section_animation color-primary set-border justify-content-center margin-vert--sm padding--md\"><div class=\"text--center\"><img class=\"logo-animation img-fluid\" src=\"/img/durable_execution_animation/restate.png\"></div><h6>State</h6><div id=\"restate-state\"><p id=\"restate_user_state\" class=\"text--center smaller_font\">cartService: Joe - cart=[]</p></div><h6>Journals</h6><div id=\"restate_journal_cart\" class=\"bg-primary-line padding--sm display-none\"><p class=\"color-1 set-color set-bg text--center smaller_font\">addTicket ( Joe, seat2B )</p><div id=\"restate_journal_cart_0\" class=\"box color-1 set-bg-dark\"> ||||| </div><div id=\"restate_journal_cart_1\" class=\"box color-2 set-bg-dark display-none\">|||||</div><div id=\"restate_journal_cart_2\" class=\"box color-3 set-bg-dark display-none\">|||||</div><div id=\"restate_journal_cart_3\" class=\"box color-4 set-bg-dark display-none\">|||||</div><div id=\"restate_journal_cart_4\" class=\"box color-5 set-bg-dark display-none\">|||||</div><div id=\"restate_journal_cart_6\" class=\"box color-7 set-bg-dark display-none\">|||||</div></div><div id=\"rpc_arrow_request\" class=\"margin--sm display-none\"><div class=\"smaller_font color-2 set-color set-bg text--center smaller_font\">RPC: reserve { seat2B }</div><div class=\"vertical_rpc_arrow color-2 set-color text--center\">↓</div></div><div id=\"rpc_arrow_response\" class=\"margin--sm display-none\"><div class=\"vertical_rpc_arrow color-3 set-color text--center\">↑</div><div class=\"smaller_font color-3 set-color set-bg text--center smaller_font\">RPC: response { success }</div></div><div id=\"restate_journal_ticket\" class=\"bg-primary-line padding--sm display-none\"><p class=\"color-2 set-color set-bg text--center smaller_font\">reserve ( seat2B )</p><div id=\"restate_journal_ticket_0\" class=\"box color-2 set-bg-dark\"> ||||| </div><div id=\"restate_journal_ticket_1\" class=\"box color-3 set-bg-dark display-none\"> ||||| </div></div></div></div><div class=\"col col--7 padding-horiz--md\"><p id=\"animation_explanation\" class=\"padding--sm padding-left--md text--center\">This animation shows you how durable execution takes place in Restate. The animation shows a ticket reservation platform for a theatre, where users can add tickets to their cart. Tickets can only be reserved by a single user. The application consists of two components: the CartObject and the TicketObject.</p><div id=\"cart_service_div\" class=\"row margin-vert--none margin-horiz--none\"><div class=\"col col--1 padding-horiz--none margin-bottom--md\"><div id=\"cart_request_arrow\" class=\"horizontal_rpc_arrow text--center color-1 set-color display-none padding-horiz--none\">→</div><div id=\"cart_suspend_arrow\" class=\"horizontal_rpc_arrow text--center color-2 set-color display-none padding-horiz--none\">←</div><div id=\"cart_response_arrow\" class=\"horizontal_rpc_arrow text--center color-7 set-color display-none padding-horiz--none\">←</div></div><div class=\"col col--11 padding-horiz--none bg-light section_animation smaller_font\"><div id=\"cart_service_box\"><div class=\"flex-none border-b\"><div class=\"flex items-center h-8 padding-horiz--md\"><div class=\"ide_button\"></div><div class=\"ide_button\"></div><div class=\"ide_button\"></div><div class=\"service-name padding-horiz--sm\">CartObject</div><div id=\"cart_title_suspended\" class=\"service-name color-red padding-horiz--sm\"> suspended...</div><div id=\"cart_title_invoked\" class=\"service-name color-green padding-horiz--sm display-none\"> invoked...</div></div></div><pre class=\"margin--none padding--sm suspended\" id=\"cart_service\"><span class=\"hljs-keyword\">async function</span> addTicket(ctx, order){\n" +
+const defaultAnimation = "<div class=\"col col--1 padding-horiz--sm\"><div id=\"ingress\" class=\"h-100\"><div id=\"placeholder\"><h6><a class=\"rpc_arrow text--center color-1 set-color smallest_font\"></a></h6></div><div id=\"ingress_call\" class=\"color-1 set-color display-none padding--sm\"><div class=\"horizontal_rpc_arrow display-inline-block text--center\"><img src=\"/img/durable_execution_animation/click.png\" class=\"text--center display-inline-block padding--sm\"><div class=\"smallest_font display-inline-block text--center color-1 set-bg set-color align-middle margin-bottom--md\">HTTP request <br> addTicket <br>(Mary, seat2B)</div>→</div></div><div id=\"response_ingress_call\" class=\"color-7 set-color display-none padding--sm\"><div class=\"horizontal_rpc_arrow display-inline-block text--center\"><img src=\"/img/durable_execution_animation/add-cart.png\" class=\"text--center display-inline-block padding--sm\"><div class=\"smaller_font display-inline-block text--center color-7 set-bg set-color align-middle\">HTTP response <br> addTicket <br> { success }</div>←</div></div></div></div><div class=\"col col--4 padding-horiz--md\"><div id=\"restate-runtime\" class=\"section_animation color-primary set-border justify-content-center margin-vert--sm padding--md\"><div class=\"text--center\"><img class=\"logo-animation img-fluid\" src=\"/img/durable_execution_animation/restate.png\"></div><h6>Journals</h6><div id=\"restate_journal_cart\" class=\"bg-primary-line padding--sm display-none\"><p class=\"color-1 set-color set-bg text--center smaller_font\">addTicket ( Mary, seat2B )</p><div id=\"restate_journal_cart_0\" class=\"box color-1 set-bg-dark\"> ||||| </div><div id=\"restate_journal_cart_1\" class=\"box color-2 set-bg-dark display-none\">|||||</div><div id=\"restate_journal_cart_2\" class=\"box color-3 set-bg-dark display-none\">|||||</div><div id=\"restate_journal_cart_3\" class=\"box color-7 set-bg-dark display-none\">|||||</div></div><div id=\"rpc_arrow_request\" class=\"margin--sm display-none\"><div class=\"smaller_font color-2 set-color set-bg text--center smaller_font\">RPC: reserve { seat2B }</div><div class=\"vertical_rpc_arrow color-2 set-color text--center\">↓</div></div><div id=\"rpc_arrow_response\" class=\"margin--sm display-none\"><div class=\"vertical_rpc_arrow color-3 set-color text--center\">↑</div><div class=\"smaller_font color-3 set-color set-bg text--center smaller_font\">RPC: response { success }</div></div><div id=\"restate_journal_ticket\" class=\"bg-primary-line padding--sm display-none\"><p class=\"color-2 set-color set-bg text--center smaller_font\">reserve ( seat2B )</p><div id=\"restate_journal_ticket_0\" class=\"box color-2 set-bg-dark\"> ||||| </div><div id=\"restate_journal_ticket_1\" class=\"box color-3 set-bg-dark display-none\"> ||||| </div></div></div></div><div class=\"col col--7 padding-horiz--md\"><p id=\"animation_explanation\" class=\"padding--sm padding-left--md text--center\">This animation shows you what happened under the hood when we did the reserve call from the `CartObject` to the `TicketObject`. The animation uses the TypeScript SDK.</p><div id=\"cart_service_div\" class=\"row margin-vert--none margin-horiz--none\"><div class=\"col col--1 padding-horiz--none margin-bottom--md\"><div id=\"cart_request_arrow\" class=\"horizontal_rpc_arrow text--center color-1 set-color display-none padding-horiz--none\">→</div><div id=\"cart_suspend_arrow\" class=\"horizontal_rpc_arrow text--center color-2 set-color display-none padding-horiz--none\">←</div><div id=\"cart_response_arrow\" class=\"horizontal_rpc_arrow text--center color-7 set-color display-none padding-horiz--none\">←</div></div><div class=\"col col--11 padding-horiz--none bg-light section_animation smaller_font\"><div id=\"cart_service_box\"><div class=\"flex-none border-b\"><div class=\"flex items-center h-8 padding-horiz--md\"><div class=\"ide_button\"></div><div class=\"ide_button\"></div><div class=\"ide_button\"></div><div class=\"service-name padding-horiz--sm\">CartObject[Mary]</div><div id=\"cart_title_suspended\" class=\"service-name color-red padding-horiz--sm\"> suspended...</div><div id=\"cart_title_invoked\" class=\"service-name color-green padding-horiz--sm display-none\"> invoked...</div></div></div><pre class=\"margin--none padding--sm suspended\" id=\"cart_service\"><span class=\"hljs-keyword\">async function</span> addTicket(ctx, ticketId){\n" +
     "  <span class=\"hljs-keyword\">const</span> success = <span class=\"hljs-keyword\">await</span> ctx\n" +
-    "    .<span class=\"hljs-title function_\">objectClient</span>(ticketManager, ticketId)\n" +
-    "    .<span class=\"hljs-title function_\">reserve</span>();\n" +
+    "    .<span class=\"hljs-title function_\">objectClient</span>(ticketObject)\n" +
+    "    .<span class=\"hljs-title function_\">reserve</span>(ticketId);\n" +
     "\n" +
-    "  <span class=\"hljs-keyword\">if</span> (success) {\n" +
-    "    <span class=\"hljs-keyword\">const</span> cart = <span class=\"hljs-keyword\">await</span> ctx.<span class=\"hljs-title function_\">get</span>(<span class=\"hljs-string\">\"cart\"</span>);\n" +
-    "    ctx.<span class=\"hljs-title function_\">set</span>(<span class=\"hljs-string\">\"cart\"</span>, cart.<span class=\"hljs-title function_\">push</span>(ticketId));\n" +
-    "  }\n" +
     "  <span class=\"hljs-keyword\">return</span> success;\n" +
-    "}</pre></div><div id=\"journal_cart\" class=\"smallest_font display-none padding--sm bg-light\"><p class=\"smaller_font margin-bottom--none\">Journal: <br></p><div id=\"journal_cart_0\" class=\"text--center display-inline-block color-1 set-bg set-color padding-horiz--xs\">(Joe, seat2B) <br> state(cart=[])</div><div id=\"journal_cart_1\" class=\"text--center display-inline-block display-none color-2 set-bg set-color padding-horiz--xs\">RPC reserve <br>{ seat2B }</div><div id=\"journal_cart_2\" class=\"text--center display-inline-block display-none color-3 set-bg set-color padding-horiz--xs\">RPC resp <br>{ success }</div><div id=\"journal_cart_3\" class=\"text--center display-inline-block display-none color-4 set-bg set-color padding-horiz--xs\">getState <br>cart=[]</div><div id=\"journal_cart_4\" class=\"text--center display-inline-block display-none color-5 set-bg set-color padding-horiz--xs\">setState <br>cart=[seat2B]</div><div id=\"journal_cart_6\" class=\"text--center display-inline-block display-none color-7 set-bg set-color padding-horiz--xs\">response <br>{ success }</div></div></div></div><div id=\"ticket_service_div\" class=\"row margin-top--md margin-horiz--none\"><div class=\"col col--1 padding-horiz--none margin-bottom--md\"><div id=\"ticket_request_arrow\" class=\"horizontal_rpc_arrow text--center color-2 set-color display-none\">→</div><div id=\"ticket_response_arrow\" class=\"horizontal_rpc_arrow text--center color-3 set-color display-none\">←</div></div><div class=\"col col--11 padding-horiz--none bg-light section_animation smaller_font\"><div id=\"ticket_service_box\"><div class=\"flex-none border-b\"><div class=\"flex items-center h-8 padding-horiz--md\"><div class=\"ide_button\"></div><div class=\"ide_button\"></div><div class=\"ide_button\"></div><div class=\"service-name padding-horiz--sm\">TicketObject:</div><div id=\"ticket_title_suspended\" class=\"service-name color-red padding-horiz--sm\"> suspended...</div><div id=\"ticket_title_invoked\" class=\"service-name color-green padding-horiz--sm display-none\"> invoked...</div></div></div><pre class=\"margin--none padding--sm suspended\" id=\"ticket_service\"><span class=\"hljs-keyword\">async function</span> reserve(ctx, ticketId){\n" +
+    "}</pre></div><div id=\"journal_cart\" class=\"smallest_font display-none padding--sm bg-light\"><p class=\"smaller_font margin-bottom--none\">Journal: <br></p><div id=\"journal_cart_0\" class=\"text--center display-inline-block color-1 set-bg set-color padding-horiz--xs\">(Mary, seat2B)</div><div id=\"journal_cart_1\" class=\"text--center display-inline-block display-none color-2 set-bg set-color padding-horiz--xs\">RPC reserve <br>{ seat2B }</div><div id=\"journal_cart_2\" class=\"text--center display-inline-block display-none color-3 set-bg set-color padding-horiz--xs\">RPC resp <br>{ success }</div><div id=\"journal_cart_3\" class=\"text--center display-inline-block display-none color-7 set-bg set-color padding-horiz--xs\">response <br>{ success }</div></div></div></div><div id=\"ticket_service_div\" class=\"row margin-top--md margin-horiz--none\"><div class=\"col col--1 padding-horiz--none margin-bottom--md\"><div id=\"ticket_request_arrow\" class=\"horizontal_rpc_arrow text--center color-2 set-color display-none\">→</div><div id=\"ticket_response_arrow\" class=\"horizontal_rpc_arrow text--center color-3 set-color display-none\">←</div></div><div class=\"col col--11 padding-horiz--none bg-light section_animation smaller_font\"><div id=\"ticket_service_box\"><div class=\"flex-none border-b\"><div class=\"flex items-center h-8 padding-horiz--md\"><div class=\"ide_button\"></div><div class=\"ide_button\"></div><div class=\"ide_button\"></div><div class=\"service-name padding-horiz--sm\">TicketObject[seat2B]</div><div id=\"ticket_title_suspended\" class=\"service-name color-red padding-horiz--sm\"> suspended...</div><div id=\"ticket_title_invoked\" class=\"service-name color-green padding-horiz--sm display-none\"> invoked...</div></div></div><pre class=\"margin--none padding--sm suspended\" id=\"ticket_service\"><span class=\"hljs-keyword\">async function</span> reserve(ctx, ticketId){\n" +
     "  ...\n" +
     "  <span class=\"hljs-keyword\">return</span> success;\n" +
-    "}</pre></div><div id=\"journal_ticket\" class=\"smallest_font display-none padding--sm bg-light\"><p class=\"smaller_font margin-bottom--none\">Journal: <br></p><div id=\"journal_ticket_0\" class=\"text--center display-inline-block color-2 set-bg set-color padding-horiz--xs\">(seat2B) <br> state()</div><div id=\"journal_ticket_1\" class=\"text--center display-inline-block display-none color-3 set-bg set-color padding-horiz--xs\">response: <br> { success }</div></div></div></div></div>";
+    "}</pre></div><div id=\"journal_ticket\" class=\"smallest_font display-none padding--sm bg-light\"><p class=\"smaller_font margin-bottom--none\">Journal: <br></p><div id=\"journal_ticket_0\" class=\"text--center display-inline-block color-2 set-bg set-color padding-horiz--xs\">(seat2B)</div><div id=\"journal_ticket_1\" class=\"text--center display-inline-block display-none color-3 set-bg set-color padding-horiz--xs\">response: <br> { success }</div></div></div></div></div>";
 
-export default function DurableExecutionAnimation() {
+
+export default function TourAnimation() {
     console.info("Called DurableExecutionAnimation");
 
     const [animationIndex, setAnimationIndex] = useState(0);
@@ -463,7 +409,7 @@ export default function DurableExecutionAnimation() {
             case 0: {
                 // Show the ingress call
                 console.info("Animation step 0 Show the ingress call")
-                document.getElementById("animation_explanation").innerHTML = "An HTTP request arrives at Restate. The request specifies that Joe wants to add a ticket with seat2B to his cart.";
+                document.getElementById("animation_explanation").innerHTML = "An HTTP request arrives at Restate. The request specifies that Mary wants to add a ticket with seat2B to her cart.";
                 document
                     .getElementById("ingress_call")
                     .classList.remove("display-none");
@@ -483,8 +429,7 @@ export default function DurableExecutionAnimation() {
                 // Invoke the service
                 console.info("Animation step 2 Invoke the service")
                 document.getElementById("animation_explanation").innerHTML = "After persisting the request, Restate invokes the addTicket handler, as specified by the request. " +
-                    "Restate sends over the journal which contains the request data. The addTicket handler is part of the `Cart` virtual object." +
-                    "Virtual objects have access to K/V state, so Restate also attaches the K/V state of the virtual object to the request, here the current cart content of Joe. "
+                    "Restate sends over the journal which contains the request data."
                 document.getElementById("cart_service").classList.remove("suspended");
                 document
                     .getElementById("cart_title_suspended")
@@ -516,8 +461,7 @@ export default function DurableExecutionAnimation() {
             }
             case 4: {
                 console.info("Animation step 4")
-                document.getElementById("animation_explanation").innerHTML = "When adding a ticket to a cart, we first need to check if the ticket has not been reserved by someone else. " +
-                    "To do that the addTicket handler does a call to the reserve handler of the TicketObject." +
+                document.getElementById("animation_explanation").innerHTML = "Then, the addTicket handler does a call to the reserve handler of the TicketObject. " +
                     "The RPC call gets proxied via Restate.";
                 document
                     .getElementById("cart_suspend_arrow")
@@ -616,7 +560,7 @@ export default function DurableExecutionAnimation() {
             }
             case 9: {
                 console.log("Animation step 9")
-                document.getElementById("animation_explanation").innerHTML = "The addTicket handler continues its execution.";
+                document.getElementById("animation_explanation").innerHTML = "The addTicket handler now continues executing.";
                 document
                     .getElementById("restate_journal_ticket")
                     .classList.add("display-none");
@@ -642,28 +586,8 @@ export default function DurableExecutionAnimation() {
                 break;
             }
             case 10: {
-                console.log("Animation step 10");
-                document.getElementById("animation_explanation").innerHTML = "Now that the ticket has been reserved successfully, the addTicket handler will add the ticket to the cart." +
-                    "The addTicket handler retrieves the cart state for the Virtual Object of Joe. " +
-                    "This state is locally available since Restate transferred it together with the request.";
-                highlightNextCartSvcCodeLine();
-                break;
-            }
-            case 11: {
-                console.log("Animation step 11")
-                document.getElementById("animation_explanation").innerHTML = "The handler adds the ticket to the state and stores it in Restate." +
-                    "The state changes are committed together with the rest of the execution progress in the journal. " +
-                    "This makes sure that the state is always consistent with the progress. " +
-                    "Any subsequent calls to the CartObject will see the updated state.";
-                highlightNextCartSvcCodeLine()
-                // Set the state
-                document.getElementById("restate_user_state").innerHTML =
-                    "cartService: Joe - cart=<mark class='code-highlight color-5 set-bg set-color'>[seat2B]</mark>";
-                break;
-            }
-            case 12: {
-                console.log("Animation step 12")
-                document.getElementById("animation_explanation").innerHTML = "Finally, the handler finishes the execution. The journal with the response is transferred to Restate.";
+                console.log("Animation step 10")
+                document.getElementById("animation_explanation").innerHTML = "The handler finishes the execution by returning the success boolean. The journal with the response is transferred to Restate.";
                 highlightNextCartSvcCodeLine();
                 highlightNextCartSvcCodeLine();
                 document
@@ -674,9 +598,9 @@ export default function DurableExecutionAnimation() {
                     .classList.remove("display-none");
                 break;
             }
-            case 13: {
-                console.log("Animation step 13")
-                document.getElementById("animation_explanation").innerHTML = "Finally, the handler finishes the execution. The journal with the response is transferred to Restate.";
+            case 11: {
+                console.log("Animation step 11")
+                document.getElementById("animation_explanation").innerHTML = "The handler finishes the execution by returning the success boolean. The journal with the response is transferred to Restate.";
                 document.getElementById("journal_cart").classList.add("display-none");
                 document
                     .getElementById("cart_response_arrow")
@@ -690,8 +614,8 @@ export default function DurableExecutionAnimation() {
                     .classList.add("display-none");
                 break;
             }
-            case 14: {
-                console.log("Animation step 14")
+            case 12: {
+                console.log("Animation step 12")
                 document.getElementById("animation_explanation").innerHTML = "Once Restate has persisted the response in the journal, it responds to the caller, and the invocation has completed successfully!";
                 document.getElementById("ingress_call").classList.add("display-none");
                 document
@@ -699,8 +623,8 @@ export default function DurableExecutionAnimation() {
                     .classList.remove("display-none");
                 break;
             }
-            case 15: {
-                console.log("Animation step 15 RESET")
+            case 13: {
+                console.log("Animation step 13 RESET")
                 document.getElementById("animation_explanation").innerHTML = "Restate.";
                 resetAnimation();
                 break;
@@ -741,7 +665,7 @@ export default function DurableExecutionAnimation() {
                         type="range"
                         id="progressBar"
                         min={0}
-                        max={14}
+                        max={13}
                         step={1}
                         readOnly
                         value={animationIndex}

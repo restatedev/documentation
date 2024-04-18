@@ -1,4 +1,4 @@
-package concepts.components;
+package concepts.services;
 
 public class SystemA {
     public static boolean applyUserRole(String userId, String role) {

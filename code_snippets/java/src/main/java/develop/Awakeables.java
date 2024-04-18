@@ -29,8 +29,5 @@ public class Awakeables {
     }
 
     public void triggerTaskAndDeliverId(String awakeableId) {
-        // <start_deliver>
-        // Deliver the ID to the other side
-        // <end_deliver>
     }
 }
