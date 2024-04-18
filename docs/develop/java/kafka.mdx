@@ -4,6 +4,8 @@ description: "Receive events from Kafka."
 ---
 
 import Admonition from '@theme/Admonition';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # Kafka
 
@@ -15,65 +17,45 @@ Restate can consume events directly from Kafka. To do that, you need to:
 
 ## Event handler
 
-Depending on your use case you can build different types of event handlers. We distinguish between the following scenarios:
+An event handlers is alike any other handler in your services/virtual objects, and profit from the same features, including durable execution, [service communication](/develop/java/service-communication) and [side effects](/develop/java/side-effects).
 
-* Handle events with a string key from Kafka in Restate services keyed with a `string` key.
-* Process generic events from Kafka in order
+**Handling keyed events within virtual objects**
 
-An event handlers can profit from the same features as other Restate handlers, including durable execution, [service communication](/develop/java/service-communication) and [side effects](/develop/java/side-effects).
+You can handle events within virtual objects, where the key of the Kafka record matches the object key.
 
-**Handling keyed events within keyed services**
+Event handlers are no different from regular handlers, and the event payload will be (de)serialized as JSON:
 
-You can handle events within keyed services, where the key of the Kafka record matches the key used by the service.
-
-To do so, define the event handler as any other method and use the `EVENT_PAYLOAD` annotation to receive the event payload:
-
-```protobuf
-CODE_LOAD::java/src/main/proto/example-kafka.proto
-```
+<Tabs groupId="sdk" queryString>
+<TabItem value="java" label="Java">
 
 ```java
-CODE_LOAD::java/src/main/java/develop/KafkaService.java
+CODE_LOAD::java/src/main/java/develop/MyKafkaVirtualObject.java
 ```
 
-<details>
-<summary>Alternative: vanilla gRPC</summary>
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
 
-```java
-CODE_LOAD::java/src/main/java/develop/KafkaVanillaGRPCService.java
+```kotlin
+CODE_LOAD::kotlin/src/main/kotlin/develop/MyKafkaVirtualObject.kt
 ```
-</details>
+
+</TabItem>
+</Tabs>
 
 <Admonition type="tip" title="Combining RPC and Kafka within a service">
 You can mix methods receiving events with regular RPC methods. For example, assume you're implementing a `Profile` service to handle and store user profiles in Restate, where the key is the profile's unique identifier.
-In the same service, you can implement an RPC  `Get` method to retrieve the profile, and you can attach an `UpdateProfile` event handler to consume events from Kafka to update the profile.
+In the same service, you can implement an RPC `get` method to retrieve the profile, and you can attach an `updateProfile` event handler to consume events from Kafka to update the profile.
 </Admonition>
 
 For each event key (= Kafka record key), the events are delivered in the order in which they arrived on the topic partition.
 
-There are some constraints for the annotated fields:
+**Handling events within services**
 
-* The event handler's key input type must be `string`.
-* The Kafka record key must contain a valid UTF-8 string, otherwise Restate won't be able to deliver the event to the service.
-* You can use only `string` or `bytes` types with fields annotated as `EVENT_PAYLOAD`.
-* You can also get the event metadata defining a field as `map<string, string>` and annotating it with `EVENT_METADATA`.
-
-**Handling generic events from Kafka**
-
-You can handle generic events from Kafka by defining ad-hoc services that process `dev.restate.Event`:
-
-```protobuf
-CODE_LOAD::java/src/main/proto/example-kafka-generic.proto
-```
-
-If the service is keyed, events with the same key are delivered in the order in which they arrived on the topic partition.
-If the service is unkeyed, events are delivered in parallel without ordering guarantees.
-
-Event handlers can be useful when you need to pre-process an event before sending it to one or more Restate services, such as when the key is serialized using a custom format, or when the destination of the event is encoded in the payload.
+You can also handle events within services. In this case, events are delivered in parallel without ordering guarantees.
 
 ## Event metadata
 
-Each event carries a `metadata` map that contains the following entries:
+Each event carries within the `ctx.request().headers()` map the following entries:
 
 * `restate.subscription.id`: The subscription identifier, as shown by the [Admin API](../../references/admin-api).
 * `kafka.offset`: The record offset.
@@ -86,21 +68,13 @@ To connect to a Kafka topic, you must configure the Kafka cluster to connect to.
 
 You can define Kafka clusters in the [Restate configuration file](/operate/configuration#configuration-file):
 
-```yaml
-worker:
-  kafka:
-    clusters:
-      my-cluster: # Cluster name
-        bootstrap.servers: localhost:9092
-        # You can add here any config param from
-        # https://github.com/confluentinc/librdkafka/blob/master/CONFIGURATION.md
+```toml
+[[ingress.kafka-clusters]]
+name = "my-cluster"
+brokers = ["PLAINTEXT://broker:9092"]
 ```
 
 Check the [configuration documentation](/operate/configuration) for more details.
-
-<Admonition type="info">
-Configuring the Kafka clusters through [environment variables](/operate/configuration#overriding-configuration-entries-with-environment-variables) is not supported.
-</Admonition>
 
 ## Connect an event handler with a topic
 
@@ -109,7 +83,7 @@ To connect event handlers to a Kafka topic, you need to create a subscription us
 ```bash
 curl <RESTATE_ADMIN_URL>/subscriptions \
   -H 'content-type: application/json' \
-  -d '{"source": "kafka://<CLUSTER_NAME>/<TOPIC_NAME>", "sink": "service://<SERVICE_NAME>/<METHOD_NAME>"}'
+  -d '{"source": "kafka://<CLUSTER_NAME>/<TOPIC_NAME>", "sink": "component://<COMPONENT_NAME>/<METHOD_NAME>"}'
 ```
 
 For example:
@@ -117,7 +91,7 @@ For example:
 ```bash
 curl localhost:9070/subscriptions \
     -H 'content-type: application/json' \
-    -d '{"source": "kafka://my-cluster/my-topic", "sink": "service://MyService/Handle"}'
+    -d '{"source": "kafka://my-cluster/my-topic", "sink": "component://MyService/Handle"}'
 ```
 
 Once you've created a subscription, Restate immediately starts consuming events from Kafka.
@@ -129,7 +103,7 @@ You can add additional configuration parameters to the subscription through the 
 ```bash
 curl <RESTATE_ADMIN_URL>/subscriptions \
   -H 'content-type: application/json' \
-  -d '{"source": "kafka://<CLUSTER_NAME>/<TOPIC_NAME>", "sink": "service://<SERVICE_NAME>/<METHOD_NAME>", "options": {"auto.offset.reset": "earliest"}}'
+  -d '{"source": "kafka://<CLUSTER_NAME>/<TOPIC_NAME>", "sink": "component://<COMPONENT_NAME>/<METHOD_NAME>", "options": {"auto.offset.reset": "earliest"}}'
 ```
 
 The `options` field accepts any configuration parameter from [librdkafka configuration](https://github.com/confluentinc/librdkafka/blob/master/CONFIGURATION.md).

@@ -4,6 +4,8 @@ description: "Let your service sleep for a specified time, guaranteed by Restate
 ---
 
 import Admonition from '@theme/Admonition';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # Durable timers
 
@@ -16,9 +18,22 @@ When the service sleeps, costs are reduced to zero.
 
 To sleep in a Restate application for ten seconds, do the following:
 
+<Tabs groupId="sdk" queryString>
+<TabItem value="java" label="Java">
+
 ```java
-CODE_LOAD::java/src/main/java/develop/DurableTimers.java
+CODE_LOAD::java/src/main/java/develop/DurableTimers.java#<start_sleep>-<end_sleep>
 ```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+CODE_LOAD::kotlin/src/main/kotlin/develop/DurableTimers.kt#<start_sleep>-<end_sleep>
+```
+
+</TabItem>
+</Tabs>
 
 <Admonition type="note">
 For sleep to work properly, make sure that the system clock of the runtime is synchronized with the clock of the service deployment and that they use the same time zone. When you do a timer-based action with the SDK (e.g. sleep, delayed calls), the duration gets calculated based on the system clock of the service. But subsequently, Restate registers this timer on its own system clock. So the system clock of the service and of Restate need to be synchronized.

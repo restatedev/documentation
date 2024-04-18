@@ -4,6 +4,8 @@ description: "Restate's retry strategy and how to manage it from the SDK."
 ---
 
 import Admonition from '@theme/Admonition';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # Error handling
 
@@ -14,11 +16,24 @@ By default, Restate does infinite retries with an exponential backoff strategy.
 For situations where you do not want the invocation to be retried, but instead you want the error message
 to be propagated back to the caller, you can use a terminal error.
 
-You can throw a terminal exception with a `TerminalException.Code` and a message, as follows:
+You can throw a terminal exception with any HTTP status code you want and a message, as follows:
+
+<Tabs groupId="sdk" queryString>
+<TabItem value="java" label="Java">
 
 ```java
 CODE_LOAD::java/src/main/java/develop/ErrorHandling.java
 ```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+CODE_LOAD::kotlin/src/main/kotlin/develop/ErrorHandling.kt
+```
+
+</TabItem>
+</Tabs>
 
 <Admonition type="note" title="Errors during side effect execution">
 Throwing errors inside a side effect has the same semantics as anywhere else in your handler code.
