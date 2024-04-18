@@ -132,7 +132,7 @@ This GitHub repository contains the basic skeleton of the Java services that you
 </TabItem>
 </Tabs>
 
-### Starting the components
+### Starting the services
 
 Let's run the services that we will be implementing. For now, most functions are empty placeholders.
 
@@ -619,7 +619,7 @@ Once you have added this to the code, restart the service and try it out by call
 
 The call you just added seems like a regular RPC call as you might know them from other service frameworks. This similarity is superficial; under the hood the Restate runtime and SDK cooperate to deliver resiliency and efficiency.
 
-When an incoming request is sent to Restate, the runtime first persists it. It establishes a connection to the user session service, and sends the request over to begin a new invocation. All communications between the service and other Restate components goes over this connection.
+When an incoming request is sent to Restate, the runtime first persists it. It establishes a connection to the user session service, and sends the request over to begin a new invocation. All communications between the service and other Restate services goes over this connection.
 
 When the user session service makes an RPC to the ticket service, this request goes over the open connection to the runtime. Once again, this is durably persisted in the Restate journal, before it is passed on (by Restate) to the ticket service. In case of failures, Restate takes care of retries. When the ticket service responds, its response is then sent back to the runtime, which persists it and forwards it to the user session service to continue execution.
 
