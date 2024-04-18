@@ -1,69 +1,37 @@
-//import com.google.protobuf.gradle.id
+import java.net.URI
 
 plugins {
   java
   application
-//  id("com.google.protobuf") version "0.9.1"
 }
 
 repositories {
+  maven {
+    url = URI.create("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+  }
   mavenCentral()
-  mavenLocal()
 }
 
 val restateVersion = "0.9.0-SNAPSHOT"
 
 dependencies {
   // Restate SDK
-  implementation("dev.restate:sdk-api:$restateVersion")
   annotationProcessor("dev.restate:sdk-api-gen:$restateVersion")
+  implementation("dev.restate:sdk-api:$restateVersion")
   implementation("dev.restate:sdk-http-vertx:$restateVersion")
   implementation("dev.restate:sdk-lambda:$restateVersion")
-  // To use Jackson to read/write state entries (optional)
   implementation("dev.restate:sdk-serde-jackson:$restateVersion")
-
-  // Protobuf and grpc dependencies
-  implementation("com.google.protobuf:protobuf-java:3.24.3")
-  implementation("io.grpc:grpc-stub:1.58.0")
-  implementation("io.grpc:grpc-protobuf:1.58.0")
-  // This is needed to compile the @Generated annotation forced by the grpc compiler
-  // See https://github.com/grpc/grpc-java/issues/9153
-  compileOnly("org.apache.tomcat:annotations-api:6.0.53")
-
-  // Logging (optional)
+  implementation("dev.restate:sdk-serde-protobuf:$restateVersion")
   implementation("org.apache.logging.log4j:log4j-core:2.20.0")
-
-  // Testing (optional)
-  testImplementation("org.junit.jupiter:junit-jupiter:5.9.1")
-  testImplementation("dev.restate:sdk-testing:$restateVersion")
 }
 
-// Configure protoc plugin
-//protobuf {
-//  protoc { artifact = "com.google.protobuf:protoc:3.24.3" }
-//
-//  // We need both grpc and restate codegen(s) because the restate codegen depends on the grpc one
-//  plugins {
-//    id("grpc") { artifact = "io.grpc:protoc-gen-grpc-java:1.58.0" }
-//    id("restate") { artifact = "dev.restate:protoc-gen-restate:$restateVersion:all@jar" }
-//  }
-//
-//  generateProtoTasks {
-//    all().forEach {
-//      it.plugins {
-//        id("grpc")
-//        id("restate")
-//      }
-//    }
-//  }
-//}
-
-// Configure test platform
-tasks.withType<Test> {
-  useJUnitPlatform()
+java {
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(21))
+  }
 }
 
 // Set main class
 application {
-  mainClass.set("concepts.buildingblocks.AppMain")
+  mainClass.set("develop.Greeter")
 }

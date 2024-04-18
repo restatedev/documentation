@@ -12,77 +12,91 @@ A Restate service can call another service without waiting for the response (one
 ## Request-response calls
 Request-response calls are requests where the client waits for the response.
 
-Let's assume we have a `Greeter` service running next to the service we are currently developing.
-This `Greeter` service has a method called `Greet` that takes an input request containing a `name` as a `string`.
-To make request-response calls to the `Greeter` service, do the following:
+To make request-response calls to services, you can use the generated clients:
 
-Use Restate's generated clients to do the call.
-For example, if you have a `Greeter` service with a method `greet`:
+<Tabs groupId="sdk" queryString>
+<TabItem value="java" label="Java">
 
 ```java
-CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_request_response>-<end_request_response>
+CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_request_response_service>-<end_request_response_service>
 ```
 
-<details>
-<summary>Alternative: vanilla gRPC</summary>
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
 
-You can do request-response calls via `ctx.call` by supplying it with the gRPC method descriptor and request, by using the generated Protobuf code.
-In this example, the `Greet` function requires a `Request` Protobuf message as input with a single `name` parameter.
+```kotlin
+CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#<start_request_response_service>-<end_request_response_service>
+```
+
+</TabItem>
+</Tabs>
+
+To make request-response calls to virtual objects, you also need to pass the object key to the client factory method:
+
+<Tabs groupId="sdk" queryString>
+<TabItem value="java" label="Java">
 
 ```java
-CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_grpc_request_response>-<end_grpc_request_response>
+CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_request_response_virtual_object>-<end_request_response_virtual_object>
 ```
 
-</details>
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#<start_request_response_virtual_object>-<end_request_response_virtual_object>
+```
+
+</TabItem>
+</Tabs>
 
 The Restate SDK sends these requests to Restate, that logs them in the Restate journal.
 And in case of failures, Restate takes care of retries.
 
-
 ## One-way calls
 A one-way call is a call from one service to another service where the client does not wait for a response, sometimes also called fire-and-forget.
-Without Restate, this is usually implemented by adding a message queue in between the two services. 
+Without Restate, this is usually implemented by adding a message queue in between the two services.
 Restate eliminates the need for a message queue because Restate durably logs the request and makes sure it gets executed.
 
-Use Restate's generated clients to do the call.
-For example, if you have a `Greeter` service with a method `greet`:
+Use Restate's generated clients `.send()` method to create a client variant for send requests:
+
+<Tabs groupId="sdk" queryString>
+<TabItem value="java" label="Java">
 
 ```java
 CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_one_way>-<end_one_way>
 ```
 
-<details>
-<summary>Alternative: vanilla gRPC</summary>
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
 
-You can do one-way calls via `ctx.oneWayCall` by supplying it with the gRPC method descriptor and request, by using the generated Protobuf code.
-In this example, the `Greet` function requires a `Request` Protobuf message as input with a single `name` parameter.
-
-```java
-CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_grpc_one_way>-<end_grpc_one_way>
+```kotlin
+CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#<start_one_way>-<end_one_way>
 ```
 
-</details>
-
+</TabItem>
+</Tabs>
 
 ## Delayed calls
 A delayed call is a one-way call that gets executed after a specified delay.
-Use Restate's generated clients to do the call.
-For example, if you have a `Greeter` service with a method `greet`:
+
+Use Restate's generated clients `.send(Duration)` method to create a client variant for delayed send requests:
+
+<Tabs groupId="sdk" queryString>
+<TabItem value="java" label="Java">
 
 ```java
 CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_delayed>-<end_delayed>
 ```
 
-<details>
-<summary>Alternative: vanilla gRPC</summary>
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
 
-You can do delayed calls via `ctx.delayedCall` by supplying it with the gRPC method descriptor and request, by using the generated Protobuf code.
-In this example, the `Greet` function requires a `Request` Protobuf message as input with a single `name` parameter.
-
-```java
-CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_grpc_delayed>-<end_grpc_delayed>
+```kotlin
+CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#<start_delayed>-<end_delayed>
 ```
 
-</details>
+</TabItem>
+</Tabs>
 
 Restate takes care of the scheduling and the durability of the delayed call.
