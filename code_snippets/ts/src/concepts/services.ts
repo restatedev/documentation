@@ -10,7 +10,7 @@ export const roleUpdateService = restate.service({
 
             // Apply a change to one system (e.g., DB upsert, API call, ...)
             // and persist the result in Restate.
-            const success = await ctx.sideEffect(() => applyUserRole(userId, role));
+            const success = await ctx.run(() => applyUserRole(userId, role));
             if (!success) {
                 return;
             }
@@ -18,7 +18,7 @@ export const roleUpdateService = restate.service({
             // Loop over the permission settings and
             // journal each operation in Restate to avoid re-execution during retries.
             for (const permission of permissions) {
-                await ctx.sideEffect(() => applyPermission(userId, permission));
+                await ctx.run(() => applyPermission(userId, permission));
             }
         }
     }
