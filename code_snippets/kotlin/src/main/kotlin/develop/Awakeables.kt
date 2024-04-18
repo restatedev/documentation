@@ -1,6 +1,5 @@
 package develop
 
-import dev.restate.sdk.common.CoreSerdes
 import dev.restate.sdk.kotlin.*
 
 class Awakeables {
@@ -9,7 +8,7 @@ class Awakeables {
         val awakeable = ctx.awakeable<String>()
         val awakeableId: String = awakeable.id
 
-        ctx.runBlock{ deliverId() }
+        ctx.runBlock{ triggerTaskAndDeliverId(awakeableId) }
 
         val payload: String = awakeable.await()
         // <end_create>
@@ -26,7 +25,6 @@ class Awakeables {
         // <end_reject>
     }
 
-    private fun deliverId(): Unit {
-        return ""
+    private fun triggerTaskAndDeliverId(awakeableId: String): Unit {
     }
 }

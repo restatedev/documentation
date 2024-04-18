@@ -13,7 +13,6 @@ Awakeables pause an invocation while waiting for another process to complete a t
 You can use this pattern to let a handler execute a task somewhere else and retrieve the result.
 This pattern is also known as the callback (task token) pattern.
 
-
 <Tabs groupId="sdk" queryString>
     <TabItem value="java" label="Java">
         <CH.Section>
@@ -45,7 +44,8 @@ This pattern is also known as the callback (task token) pattern.
 
         1. [**Create an awakeable**](focus://MyHandler.java#1,2). This contains a [String identifier](focus://2) and a Promise/Awaitable.
         2. [**Trigger a task/process** and attach the awakeable ID](focus://MyHandler.java#4)  (e.g. over Kafka, via HTTP,...).
-        For example, send an HTTP request to a service that executes the task, and attach the ID to the payload
+        For example, send an HTTP request to a service that executes the task, and attach the ID to the payload.
+            You use `ctx.run` to avoid retriggering the task this on retries.
         3. [**Wait** until the other process has executed the task.](focus://MyHandler.java#6)
         4. Once the process has finished, it **completes the awakeable**. It does this by calling into Restate and returning the ID. It either:
             - **Resolves** the awakeable (success) with its ID and an optional payload
@@ -91,10 +91,10 @@ This pattern is also known as the callback (task token) pattern.
         ```
         </CH.Code>
 
-
         1. [**Create an awakeable**](focus://1,2). This contains a [String identifier](focus://2) and a Promise/Awaitable.
         2. [**Trigger a task/process** and attach the awakeable ID](focus://4)  (e.g. over Kafka, via HTTP,...).
-        For example, send an HTTP request to a service that executes the task, and attach the ID to the payload
+        For example, send an HTTP request to a service that executes the task, and attach the ID to the payload.
+        You use `ctx.run` to avoid retriggering the task this on retries.
         3. [**Wait** until the other process has executed the task.](focus://6)
         4. Once the process has finished, it **completes the awakeable**. It does this by calling into Restate and returning the ID. It either:
             - **Resolves** the awakeable with its ID and an optional payload: success
@@ -123,7 +123,7 @@ This pattern is also known as the callback (task token) pattern.
 <TabItem value="kotlin" label="Kotlin">
     <Admonition type="note" title="Specifying the serializer">
         By default JSON is used to serialize payloads, using Kotlin serialization.
-        For other types, have a look at the [serialization documentation](/develop/java/serialization).
+        For other types, have a look at the [serialization docs](/develop/java/serialization).
     </Admonition>
 
 </TabItem>

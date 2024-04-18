@@ -11,7 +11,7 @@ public class Awakeables {
         Awakeable<String> awakeable = ctx.awakeable(CoreSerdes.JSON_STRING);
         String awakeableId = awakeable.id();
 
-        ctx.run(() -> { /** deliver the ID **/ });
+        ctx.run(() -> triggerTaskAndDeliverId(awakeableId));
 
         String payload = awakeable.await();
         // <end_create>
@@ -26,5 +26,11 @@ public class Awakeables {
         ctx.awakeableHandle(awakeableId)
                 .reject("my error reason");
         // <end_reject>
+    }
+
+    public void triggerTaskAndDeliverId(String awakeableId) {
+        // <start_deliver>
+        // Deliver the ID to the other side
+        // <end_deliver>
     }
 }
