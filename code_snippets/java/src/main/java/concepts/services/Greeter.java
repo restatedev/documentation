@@ -1,4 +1,4 @@
-package concepts.components;
+package concepts.services;
 
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;

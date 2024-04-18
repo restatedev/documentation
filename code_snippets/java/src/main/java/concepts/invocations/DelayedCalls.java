@@ -1,5 +1,7 @@
-package concepts.components.invocations;
+package concepts.invocations;
 
+import concepts.components.invocations.GreetCounterObjectClient;
+import concepts.components.invocations.GreeterServiceClient;
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;

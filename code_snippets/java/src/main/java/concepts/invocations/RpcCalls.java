@@ -1,46 +1,49 @@
-package concepts.components.invocations;
+package concepts.invocations;
 
+import concepts.components.invocations.GreetCounterObjectClient;
+import concepts.components.invocations.GreeterServiceClient;
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
 
 @Service
-public class OneWayCalls {
+public class RpcCalls {
 
-    // <start_one_way_call>
+    // <start_rpc>
     @Handler
     public void myRestateHandler(Context ctx){
         // focus
-        GreeterServiceClient.fromContext(ctx).send()
+        String greet = GreeterServiceClient.fromContext(ctx)
                 // focus
-                .greet("Hi");
+                .greet("Hi")
+                // focus
+                .await();
 
         // focus
-        GreetCounterObjectClient.fromContext(ctx, "Mary").send()
+        int count = GreetCounterObjectClient.fromContext(ctx, "Mary")
                 // focus
-                .greet("Hi");
+                .greet("Hi")
+                // focus
+                .await();
     }
-    // <end_one_way_call>
+    // <end_rpc>
 
-    // <start_one_way_call_java>
+    // <start_rpc_java>
     public void myJavaHandler(Context ctx){
         // focus
-        GreeterServiceClient
+        String greet = GreeterServiceClient
                 // focus
                 .fromIngress("http://localhost:8080")
                 // focus
-                .send()
-                // focus
                 .greet("Hi");
 
         // focus
-        GreetCounterObjectClient
+        int count = GreetCounterObjectClient
                 // focus
                 .fromIngress("http://localhost:8080", "Mary")
                 // focus
-                .send()
-                // focus
                 .greet("Hi");
     }
-    // <end_one_way_call_java>
+    // <end_rpc_java>
+
 }
