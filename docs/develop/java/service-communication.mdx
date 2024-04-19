@@ -66,6 +66,14 @@ CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#<start_request
     In case of failures, Restate takes care of retries.
 </Admonition>
 
+<Admonition type={"caution"} title={"Deadlocks with Virtual Objects"}>
+Request-response calls to Virtual Object can lead to deadlocks.
+When this happens, the Virtual Object remains locked and the system can't process any more requests.
+In this situation you'll have to unblock the Virtual Object manually by [cancelling invocations](/operate/invocation#cancel-an-invocation). Some example cases:
+- Cross deadlock between Virtual Object A and B: A calls B, and B calls A, both using same keys.
+- Cyclical deadlock: A calls B, and B calls C, and C calls A again.
+</Admonition>
+
 ## Sending messages
 Handlers can send messages (a.k.a. one-way calls, or fire-and-forget calls).
 Use the client's `.send()` method to do this as follows:
