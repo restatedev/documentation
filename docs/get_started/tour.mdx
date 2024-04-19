@@ -309,7 +309,7 @@ It does that by calling the `TicketObject/reserve` handler:
         2. **Specify the handler** you want to call and supply the request. Here `reserve()`.
         3. **Await the response** of the call.
 
-        Send a request to `CartObject/addTicket` as we did [previously](#request-response-http-requests), and have a look at the service logs.
+        Send a request to `CartObject/addTicket` as we did [previously](#request-response-calls-over-http), and have a look at the service logs.
 
     </TabItem>
     <TabItem value="java" label="Java">
@@ -348,7 +348,7 @@ It does that by calling the `TicketObject/reserve` handler:
         3. **Specify the handler** you want to call and supply the request. Here `reserve()`.
         4. **Await the response** of the call.
 
-        Once you have added this to the code, restart the service, call the `CartObject/addTicket` method as we did [previously](#request-response-http-requests), and have a look at the service logs.
+        Once you have added this to the code, restart the service, call the `CartObject/addTicket` method as we did [previously](#request-response-calls-over-http), and have a look at the service logs.
 
     </TabItem>
 </Tabs>
@@ -477,7 +477,7 @@ You will fix this later on. Note that the `CheckoutService` is not a Virtual Obj
             CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/dev_0.9/tutorials/tour-of-restate-typescript/src/part1/cart_object.ts#<start_checkout>-<end_checkout>
             ```
 
-            Call `CartObject/checkout` as you did [earlier](#request-response-http-requests) and have a look at the logs again to see what happened:
+            Call `CartObject/checkout` as you did [earlier](#request-response-calls-over-http) and have a look at the logs again to see what happened:
 
             ```log
             [restate] [CartObject/checkout][inv_1gdJBtdVEcM919dOBhoVBm3fUMlaIHnANr][2024-03-19T07:57:24.018Z] DEBUG: Invoking function.
@@ -648,7 +648,7 @@ Call `CartObject/addTicket` again and have a look at the service logs.
 You see the retries taking place. And you see that only the first time the call to the `CheckoutService` was made.
 The other times, the call was skipped and the journaled response was replayed.
 
-[By default](/operate/configuration/#default-configuration), Restate will keep retrying failed invocations until they succeed.
+[By default](/operate/configuration#default-configuration), Restate will keep retrying failed invocations until they succeed.
 If you want to cancel an invocation in a retry loop, you can use the CLI to do this. Let's have a look at that next.
 
 ## Debugging with the CLI
@@ -1078,7 +1078,7 @@ You can watch the state of the `CartObject` service, via:
 
 Add some tickets to the state to see how the query result gets updated.
 
-Then, send a checkout request as [earlier](#request-response-http-requests), and notice that the state is now empty.
+Then, send a checkout request as [earlier](#request-response-calls-over-http), and notice that the state is now empty.
 
 
 ### 📝 Try it out

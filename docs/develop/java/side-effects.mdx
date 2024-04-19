@@ -7,23 +7,21 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
 
-# Determinism & side effects
+# Journaling Results
 
 Restate uses an execution log for replay after failures and suspensions.
-For this to work, the user code needs to be deterministic.
-To help you with keeping code execution deterministic, the SDK has a few built-in functions:
-1. **Side effects**: For all other non-deterministic code, you need to use side effects, as explained [below](/develop/java/side-effects#side-effects).
-2. **Promise/awaitable combinators**: Check the built-in helper functions [listed below](/develop/java/side-effects#promise-awaitable-combinators).
-3. **Random generators:** For example UUIDs and random numbers. Check the built-in helper functions [listed below](/develop/java/side-effects#built-in-helper-functions).
+This means that non-deterministic results (e.g. database responses, UUID generation) need to be stored in the execution log.
+The SDK offers some functionalities to help you with this:
+1. **[Side effects](/develop/java/side-effects#side-effects)**: Run any block of code and store the result in Restate. Restate replays the result instead of re-executing the block on retries.
+2. **[Promise/awaitable combinators](/develop/java/side-effects#promiseawaitable-combinators)**: Log the order in which promises were resolved/rejected, to ensure deterministic replay.
+3. **[Random generators](/develop/java/side-effects#generating-randoms)**: Built-in helpers for generating stable UUIDs and random numbers.
 
 
 ## Side effects
-Side effects help relaxing the constraints on determinism.
-If your code does something that is non-deterministic, then you have to wrap it in a side effect.
-By doing this, Restate makes sure that the result is persistently stored in the execution log
-and that the value is retained during replays.
+Side effects are a way to store the result of a non-deterministic operation in the Restate execution log (e.g. database requests, HTTP calls, etc).
+Restate replays the result instead of re-executing the operation on retries.
 
-Here is an example of a database request for which the string return value is stored as a side effect in Restate:
+Here is an example of a database request for which the string response is stored in Restate:
 
 <Tabs groupId="sdk" queryString>
 <TabItem value="java" label="Java">
@@ -32,9 +30,8 @@ Here is an example of a database request for which the string return value is st
 CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_side_effect>-<end_side_effect>
 ```
 
-In order for `run` to work, the Restate SDK needs to know how to serialize and deserialize it.
-For the primitive types, you can use Restate's built-in `dev.restate.sdk.core.CoreSerdes`, for example `CoreSerdes.STRING_UTF8` or `CoreSerdes.BOOLEAN`.
-For more information, have a look at the documentation on [serialization](/develop/java/serialization).
+You can use Restate's built-in `CoreSerdes` to serialize primitive types.
+Have a look at the [serialization docs](/develop/java/serialization) for other options.
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
@@ -43,66 +40,21 @@ For more information, have a look at the documentation on [serialization](/devel
 CODE_LOAD::kotlin/src/main/kotlin/develop/SideEffects.kt#<start_side_effect>-<end_side_effect>
 ```
 
-In order for `runBlock` to work, the Restate SDK needs to know how to serialize and deserialize it.
-By default, Kotlin serialization is used, but you can override it with your own (de)serialization tools.
-For more information, have a look at the documentation on [serialization](/develop/java/serialization).
+By default, Kotlin serialization is used to serialize the result.
+Have a look at [serialization docs](/develop/java/serialization), for other options.
 
 </TabItem>
 </Tabs>
 
-Once stored, the request to the database will not get re-executed upon replay, but the first result will be used instead.
-
-<Admonition type="note">
+<Admonition type="info">
 You cannot invoke any methods on the Restate context within a side effect!
 This includes actions such as getting state, calling another service, and nesting side effects.
 </Admonition>
 
-### Retrying on failure
-
-If the side effect closure throws an error, then it is retried infinitely using an exponential backoff strategy until it succeeds.
-
-<Tabs groupId="sdk" queryString>
-<TabItem value="java" label="Java">
-
-```java
-CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_retry_settings>-<end_retry_settings>
-```
-
-</TabItem>
-<TabItem value="kotlin" label="Kotlin">
-
-```kotlin
-CODE_LOAD::kotlin/src/main/kotlin/develop/SideEffects.kt#<start_retry_settings>-<end_retry_settings>
-```
-
-</TabItem>
-</Tabs>
-
-### Terminal failures of side effects
-
-By default, a side effect function is retried infinitely on failure.
-If you want to let the side effect fail terminally, then you have to throw a terminal error.
-A terminal error will stop the infinite retry strategy and lets the SDK propagate the error to the user code where it can be handled.
-The terminal error will also be recorded in the journal so that it will be deterministically thrown on replay.
-
-You can throw a terminal exception via `TerminalException` and supply it with a `TerminalException.Code` and a message:
-
-<Tabs groupId="sdk" queryString>
-<TabItem value="java" label="Java">
-
-```java
-CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_terminal>-<end_terminal>
-```
-
-</TabItem>
-<TabItem value="kotlin" label="Kotlin">
-
-```kotlin
-CODE_LOAD::kotlin/src/main/kotlin/develop/SideEffects.kt#<start_terminal>-<end_terminal>
-```
-
-</TabItem>
-</Tabs>
+<Admonition type="info" title="Side effect failure semantics">
+Failures in side effects have the same semantics as failures in the main code.
+By default, a side effect function is retried infinitely on failure, unless you throw a [terminal error](/develop/java/error-handling).
+</Admonition>
 
 ## Promise/Awaitable combinators
 
@@ -154,66 +106,53 @@ Creates an `Awaitable` that awaits any of the provided Awaitables to resolve.
 
 The semantics are similar to [`CompleteableFuture.anyOf()`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/CompletableFuture.html#anyOf(java.util.concurrent.CompletableFuture...)), but the outcome is stored in the Restate journal to be deterministically replayable.
 
-## Built-in helper functions
-Two common non-deterministic actions are the generation of UUIDs and random numbers.
-The SDK provides helper functions for those.
+## Generating randoms
+The SDK provides helper functions for the deterministic generation of UUIDs and random numbers.
+Restate seeds the random number generator with the invocation ID, so it always returns the same value on retries.
 
-### Generating UUIDs
+- **Generating UUIDs**
 
-<Tabs groupId="sdk" queryString>
-<TabItem value="java" label="Java">
+    <Tabs groupId="sdk" queryString>
+    <TabItem value="java" label="Java">
 
-```java
-CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_uuid>-<end_uuid>
-```
+    ```java
+    CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_uuid>-<end_uuid>
+    ```
 
-</TabItem>
-<TabItem value="kotlin" label="Kotlin">
+    </TabItem>
+    <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
-CODE_LOAD::kotlin/src/main/kotlin/develop/SideEffects.kt#<start_uuid>-<end_uuid>
-```
+    ```kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/develop/SideEffects.kt#<start_uuid>-<end_uuid>
+    ```
 
-</TabItem>
-</Tabs>
+    </TabItem>
+    </Tabs>
 
-<Admonition type="note">
-`ctx.random()` returns a `RestateRandom` instance. This is a subclass of built-in's `Random` that seeds it on the invocation ID, to always return the same value on retries.
-</Admonition>
+    Do not use this in cryptographic contexts.
 
-<Admonition type="caution">
-Do not use this in cryptographic contexts.
-</Admonition>
+- **Generating random numbers**
 
-<Admonition type="tip">
-You can use this to generate stable idempotency keys with one line of code.
-For example, imagine a payment service where you want to avoid having duplicate payments during retries.
-You could use this utility to generate a UUID and then use that UUID as identifier of the payment.
-You only allow the payment to go through if no payment with that UUID was done yet.
-Restate guarantees that once the UUID is stored, it is retained during retries.
-</Admonition>
+    <Tabs groupId="sdk" queryString>
+    <TabItem value="java" label="Java">
 
-### Generating random numbers
+    ```java
+    CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_random_nb>-<end_random_nb>
+    ```
 
-<Tabs groupId="sdk" queryString>
-<TabItem value="java" label="Java">
+    </TabItem>
+    <TabItem value="kotlin" label="Kotlin">
 
-```java
-CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_random_nb>-<end_random_nb>
-```
+    ```kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/develop/SideEffects.kt#<start_random_nb>-<end_random_nb>
+    ```
 
-</TabItem>
-<TabItem value="kotlin" label="Kotlin">
+    </TabItem>
+    </Tabs>
 
-```kotlin
-CODE_LOAD::kotlin/src/main/kotlin/develop/SideEffects.kt#<start_random_nb>-<end_random_nb>
-```
+    You can use any of the methods of [`java.util.Random`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Random.html) to generate random numbers: for example, `nextBoolean()`, `nextLong()`, `nextFloat()`, etc.
 
-</TabItem>
-</Tabs>
-
-You can use any of the methods of [`java.util.Random`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Random.html) to generate random numbers: for example, `nextBoolean()`, `nextLong()`, `nextFloat()`, etc.
-
-<Admonition type="note">
-`ctx.random()` returns a `RestateRandom` instance. This is a subclass of built-in's `Random` that seeds it on the invocation ID, to always return the same value on retries.
+<Admonition type="tip" title="Generate stable idempotency tokens in a single line of code">
+    You can use these UUIDs to generate stable idempotency keys, to deduplicate operations.
+    For example, you can use this to let a payment service avoid duplicate payments during retries.
 </Admonition>

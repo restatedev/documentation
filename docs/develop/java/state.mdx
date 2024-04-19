@@ -8,20 +8,28 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 # State
-Restate offers durable storage of application state, with support for key-value state that can be retrieved, set, and cleared via its key.
-Using this feature requires no additional setup.
+You can store key-value state in Restate.
+Restate makes sure the state is consistent with the processing of the code execution.
 
+**This feature is only available for Virtual Objects.
+State is isolated per Virtual Object.**
 
 <Admonition type="info" title="Command-line introspection">
 You can inspect and edit the K/V state stored in Restate via `psql` and the CLI.
 Have a look at the [introspection docs](/operate/introspection#inspecting-application-state) for more information.
 </Admonition>
 
-## Listing state keys
-To list all the keys that have entries in the state store for that invocation (and its keyed service instance), do:
-
+You can do the following operations on the state:
 
 <Tabs groupId="sdk" queryString>
+    <TabItem value="java" label="Java">
+    </TabItem>
+    <TabItem value="kotlin" label="Kotlin">
+    </TabItem>
+</Tabs>
+
+### Listing state keys
+<Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="java" label="Java">
 
 ```java
@@ -38,82 +46,86 @@ CODE_LOAD::kotlin/src/main/kotlin/develop/State.kt#<start_statekeys>-<end_statek
 </TabItem>
 </Tabs>
 
-## Retrieving state
-To retrieve state in Restate, you can do the following:
+### Retrieving state
 
-First, you need to define the state key: a combination of a key name and (de)serializer.
-For more details on serializers/deserializers, look at the [serialization documentation](/develop/java/serialization).
 
-Once you have defined the `STATE_KEY`, you can retrieve the state in your methods as follows:
-
-<Tabs groupId="sdk" queryString>
+<Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="java" label="Java">
+    <CH.Section>
+        ```java
+        CODE_LOAD::java/src/main/java/develop/State.java#<start_get>-<end_get>
+        ```
 
-```java
-CODE_LOAD::java/src/main/java/develop/State.java#<start_get>-<end_get>
-```
-
+        1. [Define the state key](focus://2,6) (key name and [(de)serializer](/develop/java/serialization)) at the top of the Virtual Object class.
+        2. [Use `ctx.get` to retrieve the state for a specific key.](focus://3,7)
+    </CH.Section>
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
+    <CH.Section>
 
-```kotlin
-CODE_LOAD::kotlin/src/main/kotlin/develop/State.kt#<start_get>-<end_get>
-```
-
+        ```kotlin
+        CODE_LOAD::kotlin/src/main/kotlin/develop/State.kt#<start_get>-<end_get>
+        ```
+        1. [Define the state key](focus://2,6) (key name and [(de)serializer](/develop/java/serialization)) at the top of the Virtual Object class.
+        2. [Use `ctx.get` to retrieve the state for a specific key.](focus://3,7)
+    </CH.Section>
 </TabItem>
 </Tabs>
 
-## Setting state
-To set a key-value pair in Restate, do:
 
-<Tabs groupId="sdk" queryString>
+### Setting state
+
+<Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="java" label="Java">
-
+    <CH.Section>
 ```java
 CODE_LOAD::java/src/main/java/develop/State.java#<start_set>-<end_set>
 ```
+        1. [Define the state key](focus://1) (key name and [(de)serializer](/develop/java/serialization)) at the top of the Virtual Object class.
+        2. [Use `ctx.set` to set the state for a specific key.](focus://2) The type of value needs to line up with the type that was defined in the StateKey.
 
+    </CH.Section>
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
-
+    <CH.Section>
 ```kotlin
 CODE_LOAD::kotlin/src/main/kotlin/develop/State.kt#<start_set>-<end_set>
 ```
+        1. [Define the state key](focus://1) (key name and [(de)serializer](/develop/java/serialization)) at the top of the Virtual Object class.
+        2. [Use `ctx.set` to set the state for a specific key.](focus://2) The type of value needs to line up with the type that was defined in the StateKey.
 
+    </CH.Section>
 </TabItem>
 </Tabs>
 
-Have a look at [the docs on retrieving state](/develop/java/state#retrieving-state) to understand how to create the state key.
 
-The type of value needs to line up with the type that was defined in the StateKey.
+### Clearing state
 
-Replace `my-new-value` with the value that you want to set.
-
-## Clearing state
-To delete the value of a key in Restate, do:
-
-<Tabs groupId="sdk" queryString>
+<Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="java" label="Java">
-
+    <CH.Section>
 ```java
 CODE_LOAD::java/src/main/java/develop/State.java#<start_clear>-<end_clear>
 ```
+    1. [Define the state key](focus://1) (key name and [(de)serializer](/develop/java/serialization)) at the top of the Virtual Object class.
+    2. [Use `ctx.clear` to delete the state for a specific key.](focus://2)
 
+</CH.Section>
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
-
+    <CH.Section>
 ```kotlin
 CODE_LOAD::kotlin/src/main/kotlin/develop/State.kt#<start_clear>-<end_clear>
 ```
+    1. [Define the state key](focus://1) (key name and [(de)serializer](/develop/java/serialization)) at the top of the Virtual Object class.
+    2. [Use `ctx.clear` to delete the state for a specific key.](focus://2)
 
+</CH.Section>
 </TabItem>
 </Tabs>
 
-Have a look at [the docs on retrieving state](/develop/java/state#retrieving-state) to understand how to create the state key.
-
-To delete all K/V state entries for the invocation (and its keyed service instance), do:
-
-<Tabs groupId="sdk" queryString>
+### Clearing all state
+<Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="java" label="Java">
 
 ```java
@@ -129,3 +141,4 @@ CODE_LOAD::kotlin/src/main/kotlin/develop/State.kt#<start_clear_all>-<end_clear_
 
 </TabItem>
 </Tabs>
+This will delete all the state stored in Restate for the Virtual Object.

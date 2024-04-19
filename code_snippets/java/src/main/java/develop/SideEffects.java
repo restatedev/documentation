@@ -25,7 +25,7 @@ class SideEffects {
         ctx.run(CoreSerdes.JSON_BOOLEAN, () -> {
             boolean result = paymentClient.call(txId, amount);
             if(result){
-                // highlight-next-line
+                // withClass highlight-line
                 throw new IllegalStateException("Payment failed");
             } else {
                 return result;
@@ -39,7 +39,7 @@ class SideEffects {
             ctx.run(CoreSerdes.JSON_BOOLEAN, () -> {
                 boolean result = paymentClient.call(txId, amount);
                 if(result){
-                    //highlight-next-line
+                    // withClass highlight-line
                     throw new TerminalException(TerminalException.INTERNAL_SERVER_ERROR_CODE, "Payment failed");
                 } else {
                     return result;

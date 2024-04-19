@@ -18,7 +18,7 @@ internal class SideEffects {
         ctx.runBlock {
             val result = paymentClient.call(txId, amount)
             if (result) {
-                // highlight-next-line
+                // withClass highlight-line
                 throw IllegalStateException("Payment failed")
             } else {
                 result
@@ -32,7 +32,7 @@ internal class SideEffects {
             ctx.runBlock {
                 val result = paymentClient.call(txId, amount)
                 if (result) {
-                    //highlight-next-line
+                    // withClass highlight-line
                     throw TerminalException(TerminalException.INTERNAL_SERVER_ERROR_CODE, "Payment failed")
                 } else {
                     result

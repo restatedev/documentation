@@ -5,17 +5,24 @@ description: "Find out how Restate services can send requests to each other."
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import Admonition from '@theme/Admonition';
 
-# Service communication
-A Restate service can call another service without waiting for the response (one-way call) or with waiting for the response (request-response).
-
-## Request-response calls
-Request-response calls are requests where the client waits for the response.
-
-To make request-response calls to services, you can use the generated clients:
+# Service Communication
+A handler can call another handler and wait for the response (request-response), or it can send a message without waiting for the response.
 
 <Tabs groupId="sdk" queryString>
-<TabItem value="java" label="Java">
+    <TabItem value="java" label="Java">
+
+    </TabItem>
+    <TabItem value="kotlin" label="Kotlin">
+
+    </TabItem>
+</Tabs>
+
+## Request-response calls
+- To call **services**, use the generated clients:
+<Tabs groupId="sdk" queryString className={"display-none"}>
+ <TabItem value="java" label="Java">
 
 ```java
 CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_request_response_service>-<end_request_response_service>
@@ -31,9 +38,9 @@ CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#<start_request
 </TabItem>
 </Tabs>
 
-To make request-response calls to virtual objects, you also need to pass the object key to the client factory method:
+- To call **virtual objects**, you need to pass the object key to the client factory method:
 
-<Tabs groupId="sdk" queryString>
+<Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="java" label="Java">
 
 ```java
@@ -50,17 +57,28 @@ CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#<start_request
 </TabItem>
 </Tabs>
 
-The Restate SDK sends these requests to Restate, that logs them in the Restate journal.
-And in case of failures, Restate takes care of retries.
+<Admonition type="info">
+    The clients are generated when you build the project. If you don't see the generated clients, make sure you have built the project with `./gradlew build`.
+</Admonition>
 
-## One-way calls
-A one-way call is a call from one service to another service where the client does not wait for a response, sometimes also called fire-and-forget.
-Without Restate, this is usually implemented by adding a message queue in between the two services.
-Restate eliminates the need for a message queue because Restate durably logs the request and makes sure it gets executed.
+<Admonition type="tip" title="No need for manual retry logic">
+    These calls are proxied by Restate, and get logged in the journal.
+    In case of failures, Restate takes care of retries.
+</Admonition>
 
-Use Restate's generated clients `.send()` method to create a client variant for send requests:
+<Admonition type={"caution"} title={"Deadlocks with Virtual Objects"}>
+Request-response calls to Virtual Object can lead to deadlocks.
+When this happens, the Virtual Object remains locked and the system can't process any more requests.
+In this situation you'll have to unblock the Virtual Object manually by [cancelling invocations](/operate/invocation#cancel-an-invocation). Some example cases:
+- Cross deadlock between Virtual Object A and B: A calls B, and B calls A, both using same keys.
+- Cyclical deadlock: A calls B, and B calls C, and C calls A again.
+</Admonition>
 
-<Tabs groupId="sdk" queryString>
+## Sending messages
+Handlers can send messages (a.k.a. one-way calls, or fire-and-forget calls).
+Use the client's `.send()` method to do this as follows:
+
+<Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="java" label="Java">
 
 ```java
@@ -77,12 +95,17 @@ CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#<start_one_way
 </TabItem>
 </Tabs>
 
+<Admonition type="tip" title="No need for message queues">
+    Without Restate, you would usually put a message queue in between the two services, to guarantee the message delivery.
+    Restate eliminates the need for a message queue because Restate durably logs the request and makes sure it gets executed.
+</Admonition>
+
 ## Delayed calls
 A delayed call is a one-way call that gets executed after a specified delay.
 
-Use Restate's generated clients `.send(Duration)` method to create a client variant for delayed send requests:
+Use Restate's generated clients `.send(Duration)` method to send a delayed requests:
 
-<Tabs groupId="sdk" queryString>
+<Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="java" label="Java">
 
 ```java
@@ -99,4 +122,25 @@ CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#<start_delayed
 </TabItem>
 </Tabs>
 
-Restate takes care of the scheduling and the durability of the delayed call.
+<Admonition type="tip" title="Scheduling async tasks">
+You can also use this functionality to schedule async tasks.
+Restate will make sure the task gets executed at the desired time.
+</Admonition>
+
+<Admonition type="info" title="Ordering guarantees in Virtual Objects">
+<CH.Section>
+
+    Invocations to a Virtual Object are executed serially.
+    Invocations will execute in the same order in which they arrive at Restate.
+    For example, assume the following code in `ServiceA`:
+
+    <CH.Code lineNumbers={"true"}>
+        ```java
+        CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_ordering>-<end_ordering>
+        ```
+    </CH.Code>
+
+    It is guaranteed that [the invocation on line `1`](focus://1) will execute before [the invocation on line `2`](focus://2).
+    It is not guaranteed though that [invocation `2`](focus://2) will be executed immediately after [invocation `1`](focus://1), as invocations coming from other handlers/sources, could interleave these two calls.
+</CH.Section>
+</Admonition>
