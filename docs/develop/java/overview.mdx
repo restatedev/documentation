@@ -11,93 +11,171 @@ import TabItem from '@theme/TabItem';
 
 The Restate Java/Kotlin SDK is open source and can be found on GitHub: ([sdk-java repo](https://github.com/restatedev/sdk-java)).
 
-## Installation
-
-<Admonition type="tip">
-Have a look at the [Java Quickstart](/get_started/quickstart?sdk=jvm)!
+<Admonition type="tip" icon="🚀" title="Set up your project in seconds">
+Have a look at the quickstart for [Java](/get_started/quickstart?sdk=java) or [Kotlin](/get_started/quickstart?sdk=kotlin)!
 </Admonition>
 
-You can use the build tool of your choice with the Java/Kotlin SDK. The following instructions use Gradle (Kotlin script).
+The Restate SDK lets you implement handlers.
+Handlers can either be part of a [Service](/concepts/services#services-1) or of a [Virtual Object](/concepts/services#virtual-objects). Let's have a look at how to define them.
+
+## Services
+Services and their handlers are defined as follows:
 
 <Tabs groupId="sdk" queryString>
-<TabItem value="java" label="Java">
+    <TabItem value="java" label="Java">
 
-Run:
+        <CH.Section>
 
-```shell
-gradle init --type java-application
-```
+            <CH.Code>
+            ```java
+            CODE_LOAD::java/src/main/java/develop/MyService.java#<start_service>-<end_service>
+            ```
+            </CH.Code>
 
 
-Add the runtime dependency `sdk-api` and the annotation processor dependency `sdk-api-gen`:
+        - [Use the `@Service` and `@Handler` annotations](focus://1,4)
+        - [Handlers have the `Context` parameter](focus://5[22:32]) ([JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api/latest/dev/restate/sdk/Context.html)) as the first parameter.
+        Within the handler, you use the `Context` to interact with Restate.
+        The SDK stores the actions you do on the context in the Restate journal to make them durable.
+        - The input parameter and return type are optional and can be of any type, as long as they are serializable/deserializable using [Jackson Databind](https://github.com/FasterXML/jackson) ([see serialization docs](/develop/java/serialization)).
+        - The service will be reachable under the simple class name `MyService`. You can override it by using the annotation field `name`.
 
-```kotlin
-annotationProcessor("dev.restate:sdk-api-gen:VAR::JAVA_SDK_VERSION")
-implementation("dev.restate:sdk-api:VAR::JAVA_SDK_VERSION")
-```
+        </CH.Section>
 
-When using composite types/POJOs for input/output and state, [Jackson Databind](https://github.com/FasterXML/jackson) will be used by default.
-The Jackson dependency is not automatically included, you must add it with `sdk-serde-jackson`:
+    </TabItem>
+    <TabItem value="kotlin" label="Kotlin">
+        <CH.Section>
+        <CH.Code>
+            ```kotlin
+            CODE_LOAD::kotlin/src/main/kotlin/develop/MyService.kt#<start_service>-<end_service>
+            ```
+        </CH.Code>
 
-```kotlin
-implementation("dev.restate:sdk-serde-jackson:VAR::JAVA_SDK_VERSION")
-```
+        - [Use the `@Service` and `@Handler` annotations](focus://1,4)
+        - [Handlers have the `Context` parameter](focus://5[27:38]) ([JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api/latest/dev/restate/sdk/Context.html)) as the first parameter.
+        Within the handler, you use the `Context` to interact with Restate.
+        The SDK stores the actions you do on the context in the Restate journal to make them durable.
+        - The input parameter and return type are optional and can be of any type, as long as they are serializable/deserializable using [Kotlin serialization](https://kotlinlang.org/docs/serialization.html) ([see serialization docs](/develop/java/serialization)).
+        - The service will be reachable under the simple class name `MyService`. You can override it by using the annotation field `name`.
 
-</TabItem>
-<TabItem value="kotlin" label="Kotlin">
-
-Run:
-
-```shell
-gradle init --type kotlin-application
-```
-
-Add the [Kotlin symbol processing](https://kotlinlang.org/docs/ksp-quickstart.html#use-your-own-processor-in-a-project) and the [Kotlin serialization](https://kotlinlang.org/docs/serialization.html) plugin:
-
-```kotlin
-plugins {
-    kotlin("plugin.serialization") version "1.9.22"
-    id("com.google.devtools.ksp") version "1.9.22-1.0.18"
-}
-```
-
-Add the runtime dependency `sdk-api-kotlin` and the `ksp` dependency `sdk-api-kotlin-gen`:
-
-```kotlin
-ksp("dev.restate:sdk-api-kotlin-gen:VAR::JAVA_SDK_VERSION")
-implementation("dev.restate:sdk-api-kotlin:VAR::JAVA_SDK_VERSION")
-```
-
-</TabItem>
+        </CH.Section>
+    </TabItem>
 </Tabs>
 
-Depending on the deployment target, add one of the following dependencies:
 
-- To run as long-running app: `dev.restate:sdk-http-vertx:VAR::JAVA_SDK_VERSION`
-- To run on AWS Lambda: `dev.restate:sdk-lambda:VAR::JAVA_SDK_VERSION`
-
-## API Examples
-
-Below is an example of a virtual object.
-
-The Java/Kotlin SDK uses annotations to define the component and its handlers.
-The example shows a greeter service with a single handler `greet`, that maintains a record of the number of times it has received a request for a given name, and prints a greeting.
+## Virtual Objects
+Virtual objects and their handlers are defined similarly to services, with the following differences:
 
 <Tabs groupId="sdk" queryString>
-<TabItem value="java" label="Java">
+    <TabItem value="java" label="Java">
+        <CH.Section>
+            <CH.Code>
+                ```java
+                CODE_LOAD::java/src/main/java/develop/MyVirtualObject.java#<start_virtual_object>-<end_virtual_object>
+                ```
+            </CH.Code>
 
-```java
-CODE_LOAD::java/src/main/java/develop/Greeter.java
-```
+        - [Use the `@VirtualObject` annotation.](focus://1)
+        - [The first argument of the handler must be the `ObjectContext` parameter](focus://5[22:38]) ([JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api/latest/dev/restate/sdk/ObjectContext.html)).
 
-</TabItem>
-<TabItem value="kotlin" label="Kotlin">
+        </CH.Section>
+    </TabItem>
+    <TabItem value="kotlin" label="Kotlin">
+        <CH.Section>
+            <CH.Code>
+                ```kotlin
+                CODE_LOAD::kotlin/src/main/kotlin/develop/MyVirtualObject.kt#<start_virtual_object>-<end_virtual_object>
+                ```
+            </CH.Code>
 
-```kotlin
-CODE_LOAD::kotlin/src/main/kotlin/develop/Greeter.kt
-```
+        - [Use the `@VirtualObject` annotation.](focus://1)
+        - [The first argument of the handler must be the `ObjectContext` parameter](focus://5[27:44]) ([JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api/latest/dev/restate/sdk/ObjectContext.html)).
 
-</TabItem>
+        </CH.Section>
+    </TabItem>
 </Tabs>
 
-Now that you have a high-level idea of what a Restate service might look like, let's dive into the details!
+
+
+<Admonition type="tip" icon="💡">
+    Turn on [IntelliJ IDEA annotation processing support](https://www.jetbrains.com/help/idea/annotation-processors-support.html), to be able to re-run code generation by pressing `CTRL + F9`.
+</Admonition>
+
+
+<details>
+<summary>Advanced / further details</summary>
+
+<details className="grey-details">
+    <summary>Annotating interfaces</summary>
+
+    Annotations can also be placed on interfaces. This is useful, for example, if you want to split your service in two packages, one containing the interface and the generated clients, and one containing the implementation.
+</details>
+
+<details className="grey-details">
+    <summary>Manual project setup</summary>
+
+    You can use the build tool of your choice with the Java/Kotlin SDK. The following instructions use Gradle (Kotlin script).
+
+    <Tabs groupId="sdk" queryString>
+        <TabItem value="java" label="Java">
+
+            To set up your Java project, run:
+
+            ```shell
+            gradle init --type java-application
+            ```
+
+            Add the following dependencies:
+
+            ```kotlin
+            annotationProcessor("dev.restate:sdk-api-gen:VAR::JAVA_SDK_VERSION")
+            implementation("dev.restate:sdk-api:VAR::JAVA_SDK_VERSION")
+            ```
+
+            When serializing composite types/POJOs with [Jackson Databind](https://github.com/FasterXML/jackson) (default), add the following dependency:
+
+            ```kotlin
+            implementation("dev.restate:sdk-serde-jackson:VAR::JAVA_SDK_VERSION")
+            ```
+
+        </TabItem>
+        <TabItem value="kotlin" label="Kotlin">
+
+            To set up your Kotlin project, run:
+
+            ```shell
+            gradle init --type kotlin-application
+            ```
+
+            Add the [Kotlin symbol processing](https://kotlinlang.org/docs/ksp-quickstart.html#use-your-own-processor-in-a-project) and the [Kotlin serialization](https://kotlinlang.org/docs/serialization.html) plugin:
+
+            ```kotlin
+            plugins {
+            kotlin("plugin.serialization") version "1.9.22"
+            id("com.google.devtools.ksp") version "1.9.22-1.0.18"
+        }
+            ```
+
+            Add the runtime dependency `sdk-api-kotlin` and the `ksp` dependency `sdk-api-kotlin-gen`:
+
+            ```kotlin
+            ksp("dev.restate:sdk-api-kotlin-gen:VAR::JAVA_SDK_VERSION")
+            implementation("dev.restate:sdk-api-kotlin:VAR::JAVA_SDK_VERSION")
+            ```
+
+        </TabItem>
+    </Tabs>
+
+    Depending on the deployment target, add one of the following dependencies:
+
+    - To run as HTTP endpoint: `dev.restate:sdk-http-vertx:VAR::JAVA_SDK_VERSION`
+    - To run on AWS Lambda: `dev.restate:sdk-lambda:VAR::JAVA_SDK_VERSION`
+</details>
+
+<details className="grey-details">
+    <summary>Manual service definition without annotation processing</summary>
+
+    In case you don't want to use annotation processing, you can manually define your service by using the class `dev.restate.sdk.Service` for Java, or `dev.restate.sdk.kotlin.Service`. Check the respective JavaDocs/KTDocs for more details.
+</details>
+
+</details>

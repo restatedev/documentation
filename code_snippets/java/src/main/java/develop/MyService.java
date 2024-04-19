@@ -5,15 +5,11 @@ import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
 
 // <start_service>
-// highlight-start
 @Service
-// highlight-end
 public class MyService {
 
-    // highlight-start
     @Handler
-    // highlight-end
-    String myHandler(Context context, String input) {
+    String myHandler(Context ctx, String input) {
         return "my-output";
     }
 
