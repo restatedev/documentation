@@ -23,19 +23,6 @@ For each Virtual Object, the events are delivered in the order in which they arr
     Since you can invoke any handler via Kafka events, a single handler can be invoked both by RPC and via Kafka.
 </Admonition>
 
-    <details className="grey-details">
-        <summary>Event metadata</summary>
-
-        Each event carries within the `ctx.request().headers()` map the following entries:
-
-        * `restate.subscription.id`: The subscription identifier, as shown by the [Admin API](../../references/admin-api).
-        * `kafka.offset`: The record offset.
-        * `kafka.partition`: The record partition.
-        * `kafka.timestamp`: The record timestamp.
-
-    </details>
-
-
 </SubtleStep>
 
 <SubtleStep stepLabel="2" title="Configure Restate to connect to a Kafka cluster">
@@ -47,7 +34,7 @@ name = "my-cluster"
 brokers = ["PLAINTEXT://broker:9092"]
 ```
 
-Check the [configuration documentation](/operate/configuration) for more details.
+Check the [configuration docs](/operate/configuration) for more details.
 </SubtleStep>
 
 <SubtleStep stepLabel="3" title="Subscribe the event handler to the Kafka topic">
@@ -69,19 +56,25 @@ The `options` field is optional and accepts any configuration parameter from [li
 
 </SubtleStep>
 
-## Managing subscriptions
-- **List** the current subscriptions via:
-    ```bash
-    curl localhost:9070/subscriptions
-    ```
-    The creation and listing of subscriptions returns an identifier.
-<CH.Section>
-- **Delete** a subscription with [its identifier](focus://1[45:78]) via:
-    ```bash
-    curl -X DELETE localhost:9070/subscriptions/018cd978aa9f77b5a80454bc060c2a77
-    ```
+<Admonition type="info" title="Managing subscriptions">
+Have a look at the [registration docs](/operate/registration#kafka-subscriptions) for more commands to manage subscriptions.
+</Admonition>
 
-    <Admonition type="note">
-    When you delete a subscription, Restate stops the consumer group associated to it. Any messages that were already enqueued by Restate will still be processed.
-    </Admonition>
-</CH.Section>
+<details className="grey-details">
+    <summary>Raw payload support</summary>
+
+    If you use annotations for your services and handlers, the event payload will be (de)serialized as JSON.
+    If you need to access the raw Kafka payload, you can do this by doing manual service definition.
+</details>
+
+<details className="grey-details">
+    <summary>Event metadata</summary>
+
+    Each event carries within the `ctx.request().headers()` map the following entries:
+
+    * `restate.subscription.id`: The subscription identifier, as shown by the [Admin API](../../references/admin-api).
+    * `kafka.offset`: The record offset.
+    * `kafka.partition`: The record partition.
+    * `kafka.timestamp`: The record timestamp.
+
+</details>
