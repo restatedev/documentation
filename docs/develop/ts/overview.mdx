@@ -11,34 +11,29 @@ import Admonition from '@theme/Admonition';
 
 The Restate TypeScript SDK is open source and can be found on GitHub: ([sdk-typescript repo](https://github.com/restatedev/sdk-typescript)).
 
-<Admonition type="info" title="TS Handler API vs. gRPC API">
-Restate currently supports two TypeScript APIs for implementing services: the Handler API and the gRPC API.
-The gRPC API requires you to specify the services, methods and data types via a Protobuf definition, as explained in the service contract docs.
-The Handler API does not require this.
-</Admonition>
-
-## Installation
-
-<Admonition type="tip">
+<Admonition type="tip" icon="🚀" title="Set up your project in seconds">
 Have a look at the [TypeScript Quickstart](/get_started/quickstart?sdk=ts)!
 </Admonition>
 
 Add the `@restatedev/restate-sdk` dependency to your NodeJS project to start developing Restate services.
 
-## API Examples
+The Restate SDK lets you implement handlers.
+Handlers can either be part of a [Service](/concepts/services#services-1) or of a [Virtual Object](/concepts/services#virtual-objects). Let's have a look at how to define them.
 
-<Tabs groupId="sdk" queryString>
-<TabItem value="ts" label="TypeScript" default>
+## Services
 
-Below is an example of a TypeScript service with the Handler API.
+Services and their handlers are defined as follows:
 
-This example shows a greeter service comprising two methods:
-- `greet`: returns a greeting as a response without performing any additional operations.
-- `countGreetings`: maintains a record of the number of times it has received a request for a given name.
+
+## Virtual Objects
 
 ```typescript
 CODE_LOAD::ts/src/develop/overview_handler.ts
 ```
+
+This example shows a greeter service comprising two handlers:
+- `greet`: returns a greeting as a response without performing any additional operations.
+- `countGreetings`: maintains a record of the number of times it has received a request for a given name.
 
 The app logic is implemented inside the `greet` and `countGreetings` functions.
 The `restate.KeyedContext` is supplied as the first argument.
@@ -51,36 +46,5 @@ The service is registered as a keyed service under the path `greeter`, and the `
 The `greet` function can now be called by sending a request to `<RESTATE_INGRESS_URL>/greeter/greet` or `<RESTATE_INGRESS_URL>/greeter/countGreetings`.
 
 For more information on how to set up the routers and the Restate server, have a look at the [serving docs](/develop/ts/serving).
-
-</TabItem>
-<TabItem value="ts-grpc" label="TypeScript-gRPC">
-
-Below is an example of a TypeScript gRPC service.
-
-The [gRPC](https://grpc.io/) API uses the `protobufjs` and `ts-proto` dependencies to work with the [Protobuf](https://protobuf.dev/)-generated TypeScript code. So add these as well to your `package.json`.
-
-This example shows a greeter service comprising two methods:
-- `greet`: returns a greeting as a response without performing any additional operations.
-- `countGreetings`: maintains a record of the number of times it has received a request for a given name.
-
-```typescript
-CODE_LOAD::ts-grpc/src/develop/overview.ts
-```
-
-The interface of the gRPC service is defined in the [Protobuf](https://protobuf.dev/) service contracts, that are shown below.
-Within the method, the Restate context is retrieved, enabling interaction with Restate (e.g. calling other services).
-For keyed services, you use the `restate.KeyedContext`. For unkeyed services, instead, you use the `restate.Context`.
-Finally, the endpoint is set up to serve both methods of the greeter service.
-
-This is what corresponding Protobuf definition would look like for this service:
-
-```protobuf
-CODE_LOAD::ts-grpc/proto/greeter.proto
-```
-
-To understand the Restate-specific parts of this Protobuf definition, have a look at the documentation here.
-
-</TabItem>
-</Tabs>
 
 Now that you have a high-level idea of what a Restate service might look like, let's dive into the details!

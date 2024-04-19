@@ -54,14 +54,14 @@ For each event key (= Kafka record key), the events are delivered in the order i
 You can handle events within keyed services, where the key of the Kafka record matches the key used by the service.
 
 To do so, define the event handler as any other method and use the `EVENT_PAYLOAD` annotation to receive the event payload:
-
+{/*
 ```protobuf
 CODE_LOAD::ts-grpc/proto/example-kafka.proto
 ```
 
 ```typescript
 CODE_LOAD::ts-grpc/src/develop/kafka.ts
-```
+```*/}
 
 <Admonition type="tip" title="Combining RPC and Kafka within a service">
 You can mix methods receiving events with regular RPC methods. For example, assume you're implementing a `Profile` service to handle and store user profiles in Restate, where the key is the profile's unique identifier.
@@ -81,9 +81,11 @@ There are some constraints for the annotated fields:
 
 You can handle generic events from Kafka by defining ad-hoc services that process `dev.restate.Event`:
 
-```protobuf
-CODE_LOAD::ts-grpc/proto/example-kafka-generic.proto
-```
+[//]: # (```protobuf)
+
+[//]: # (CODE_LOAD::ts-grpc/proto/example-kafka-generic.proto)
+
+[//]: # (```)
 
 If the service is keyed, events with the same key are delivered in the order in which they arrived on the topic partition.
 If the service is unkeyed, events will be delivered in parallel without ordering guarantees.

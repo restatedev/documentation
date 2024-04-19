@@ -4,8 +4,8 @@ import * as restate from "@restatedev/restate-sdk";
 const greeter = restate.service({
     name: "Greeter",
     handlers: {
-        greet: async (ctx: restate.Context, name: string) => {
-            return `Hello ${name}!`;
+        greet: async (ctx: restate.Context, greeting: string) => {
+            return `${greeting}!`;
         }
     }
 });
@@ -15,8 +15,8 @@ export const Greeter: typeof greeter = { name: "Greeter" };
 const greeterObject = restate.object({
     name: "Greeter",
     handlers: {
-        greet: async (ctx: restate.Context, name: string) => {
-            return `Hello ${name}!`;
+        greet: async (ctx: restate.ObjectContext, greeting: string) => {
+            return `${greeting} ${ctx.key}!`;
         }
     }
 });
@@ -34,21 +34,26 @@ const router = restate.service({
     handlers: {
         greet: async (ctx: restate.Context, name: string) => {
             // <start_request_response>
-            const responseService = await ctx.serviceClient(Greeter).greet("Restate");
-            const responseGreeter = await ctx.objectClient(GreeterObject, "Mary").greet("Restate");
+            const responseService = await ctx.serviceClient(Greeter).greet("Hi");
+            const responseGreeter = await ctx.objectClient(GreeterObject, "Mary").greet("Hi");
             // <end_request_response>
 
             // <start_one_way>
-            ctx.serviceSendClient(Greeter).greet("Restate");
+            ctx.serviceSendClient(Greeter).greet("Hi");
 
-            ctx.objectSendClient(GreeterObject, "Mary").greet("Restate");
+            ctx.objectSendClient(GreeterObject, "Mary").greet("Hi");
             // <end_one_way>
 
             // <start_delayed>
-            ctx.serviceSendClient(Greeter, { delay: 5000 }).greet("Restate");
+            ctx.serviceSendClient(Greeter, { delay: 5000 }).greet("Hi");
 
-            ctx.objectSendClient(GreeterObject, "Mary", { delay: 5000 }).greet("Restate");
+            ctx.objectSendClient(GreeterObject, "Mary", { delay: 5000 }).greet("Hi");
             // <end_delayed>
+
+            // <start_ordering>
+            ctx.objectSendClient(GreeterObject, "Mary").greet("Hi!");
+            ctx.objectSendClient(GreeterObject, "Mary").greet("Hi again!");
+            // <end_ordering>
         },
     }
 })

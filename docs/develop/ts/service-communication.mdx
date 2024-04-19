@@ -39,9 +39,11 @@ CODE_LOAD::ts/src/develop/service_communication.ts#<start_request_response>-<end
 To do request-response calls, use the gRPC client implementation supplied via the generated Protobuf code.
 In this example, the `Greet` function requires a `Request` Protobuf message as input with a single `name` parameter.
 
-```typescript
-CODE_LOAD::ts-grpc/src/develop/service_communication.ts#<start_request_response>-<end_request_response>
-```
+[//]: # (```typescript)
+
+[//]: # (CODE_LOAD::ts-grpc/src/develop/service_communication.ts#<start_request_response>-<end_request_response>)
+
+[//]: # (```)
 
 </TabItem>
 </Tabs>
@@ -71,9 +73,12 @@ CODE_LOAD::ts/src/develop/service_communication.ts#<start_one_way>-<end_one_way>
 
 Use the gRPC client implementation supplied via the generated Protobuf code to do the call, but wrap the call with `ctx.oneWayCall` as shown below:
 
-```typescript
-CODE_LOAD::ts-grpc/src/develop/service_communication.ts#<start_one_way>-<end_one_way>
-```
+[//]: # ()
+[//]: # (```typescript)
+
+[//]: # (CODE_LOAD::ts-grpc/src/develop/service_communication.ts#<start_one_way>-<end_one_way>)
+
+[//]: # (```)
 
 You need to await the Promise that is returned from `oneWayCall()`, otherwise a failure in sending the message does not get propagated back to your user code.
 Note that the Promise gets resolved as soon as the message gets send to the runtime, so awaiting the promise does not mean it is a request-response call.
@@ -106,11 +111,30 @@ CODE_LOAD::ts/src/develop/service_communication.ts#<start_delayed>-<end_delayed>
 </TabItem>
 <TabItem value="ts-grpc" label="TypeScript-gRPC">
 
-```typescript
-CODE_LOAD::ts-grpc/src/develop/service_communication.ts#<start_delayed>-<end_delayed>
-```
+[//]: # (```typescript)
+
+[//]: # (CODE_LOAD::ts-grpc/src/develop/service_communication.ts#<start_delayed>-<end_delayed>)
+
+[//]: # (```)
 
 </TabItem>
 </Tabs>
 
 Restate takes care of the scheduling and the durability of the delayed call.
+
+<Admonition type="info" title="Ordering guarantees in Virtual Objects">
+    <CH.Section>
+    Invocations to a Virtual Object are executed serially.
+    Invocations will execute in the same order in which they arrive at Restate.
+    For example, assume a handler calls the same Virtual Object twice:
+
+        <CH.Code lineNumbers={"true"}>
+            ```typescript
+            CODE_LOAD::ts/src/develop/service_communication.ts#<start_ordering>-<end_ordering>
+            ```
+        </CH.Code>
+
+    It is guaranteed that [the invocation on line `1`](focus://1) will execute before [the invocation on line `2`](focus://2).
+    It is not guaranteed though that [invocation `2`](focus://2) will be executed immediately after [invocation `1`](focus://1), as invocations coming from other handlers/sources, could interleave these two calls.
+    </CH.Section>
+</Admonition>
