@@ -42,18 +42,18 @@ This pattern is also known as the callback (task token) pattern.
 
         </CH.Code>
 
-        1. [**Create an awakeable**](focus://MyHandler.java#1,2). This contains a [String identifier](focus://2) and a Promise/Awaitable.
-        2. [**Trigger a task/process** and attach the awakeable ID](focus://MyHandler.java#4)  (e.g. over Kafka, via HTTP,...).
-        For example, send an HTTP request to a service that executes the task, and attach the ID to the payload.
+        1. [**Create an awakeable**](focus://1,2). This contains a [String identifier](focus://2) and a Promise/Awaitable.
+        2. [**Trigger a task/process** and attach the awakeable ID](focus://4)  (e.g. over Kafka, via HTTP,...).
+            For example, send an HTTP request to a service that executes the task, and attach the ID to the payload.
             You use `ctx.run` to avoid retriggering the task this on retries.
-        3. [**Wait** until the other process has executed the task.](focus://MyHandler.java#6)
-        4. Once the external process has finished, it **completes the awakeable**. It does this by calling into Restate and returning the ID. It either:
-            - **Resolves** the awakeable (success) with its ID and an optional payload
-                - [Via the SDK](focus://ExternalProcessResolve.java#1:2)
-                - [Over HTTP](focus://resolve_with_curl.sh#1:2)
-            - **Rejects** the awakeable (failure) with its ID and a reason. This will throw [a terminal error](/develop/java/error-handling) in the waiting handler.
-                - [Via the SDK](focus://ExternalProcessReject.java#1:2)
-                - [Over HTTP](focus://reject_with_curl.sh#1:2)
+        3. [**Wait** until the other process has executed the task.](focus://6)
+        4. Once the process has finished, it **completes the awakeable**. It does this by calling into Restate and supplying the ID. It either:
+            - **Resolves** the awakeable
+                - [Over HTTP](focus://resolve_with_curl.sh#1:2) with [its ID](focus://resolve_with_curl.sh#1[40:52]) and [an optional payload](focus://resolve_with_curl.sh#2)
+                - [Via the SDK with its ID and an optional payload](focus://ExternalProcessResolve.kt#1:2)
+            - **Rejects** the awakeable with its ID and a reason: failure. This will throw [a terminal error](/develop/java/error-handling) in the waiting handler.
+                - [Over HTTP](focus://reject_with_curl.sh#1:2) with [its ID](focus://reject_with_curl.sh#1[40:52]) and [an optional payload](focus://reject_with_curl.sh#2)
+                - [Via the SDK with its ID and an optional payload](focus://ExternalProcessReject.kt#1:2)
         5. Once the ID has been returned to the service, the **invocation resumes**.
 
 </CH.Section>
