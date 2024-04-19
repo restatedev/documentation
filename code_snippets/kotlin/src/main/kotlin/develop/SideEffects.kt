@@ -3,6 +3,7 @@ package develop
 import dev.restate.sdk.common.TerminalException
 import dev.restate.sdk.kotlin.*
 import java.util.*
+import kotlin.time.Duration.Companion.seconds
 
 internal class SideEffects {
     suspend fun sideEffect(ctx: Context) {

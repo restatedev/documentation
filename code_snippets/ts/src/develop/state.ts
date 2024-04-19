@@ -9,12 +9,9 @@ const router = restate.object({
             // <end_statekeys>
 
             // <start_get>
-            const myStringValue = await ctx.get<string>("my-key") ?? "my-default";
+            const myString = await ctx.get<string>("my-string-key") ?? "my-default";
+            const myNumber = await ctx.get<number>("my-number-key") ?? 0;
             // <end_get>
-
-            // <start_get_nb>
-            const myNbValue = await ctx.get<number>("my-key") ?? 0;
-            // <end_get_nb>
 
             // <start_set>
             ctx.set("my-key", "my-new-value");

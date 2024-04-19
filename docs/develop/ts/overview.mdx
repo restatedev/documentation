@@ -23,28 +23,37 @@ Handlers can either be part of a [Service](/concepts/services#services-1) or of 
 ## Services
 
 Services and their handlers are defined as follows:
+<CH.Section>
+<CH.Code lineNumbers={"true"}>
+```typescript
+CODE_LOAD::ts/src/develop/my_service.ts
+```
+</CH.Code>
 
+- [Create the service](focus://3,10)
+- Specify [the service name.](focus://4) The service can then be called at `<RESTATE_INGRESS_URL>/MyService/greet`.
+- [List the handlers.](focus://5:8)
+    [Each handler has a name (`greet`) and a function that implements the handler logic.](focus://6)
+    The function has the Restate Context as its first argument.
+    Within the handler, you use the `Context` to interact with Restate.
+    The SDK stores the actions you do on the context in the Restate journal to make them durable.
+- The handler input parameters and return type are optional and can be of any type, as long as they can be [JSON serialized](/develop/ts/serialization).
+- [Export the service definition](focus://12) so that it can be used by other handlers to call the service. (See [Service Communication docs](/develop/ts/service-communication).)
+- [Create an endpoint](focus://14,15) and [bind the service(s)](focus://16) to the Restate endpoint. [Listen](focus://17) on the specified port (default `9080`) for connections and requests.
+</CH.Section>
 
 ## Virtual Objects
+Virtual objects and their handlers are defined similarly to services, with the following differences:
 
+<CH.Section>
+<CH.Code lineNumbers={"true"}>
 ```typescript
-CODE_LOAD::ts/src/develop/overview_handler.ts
+CODE_LOAD::ts/src/develop/my_virtual_object.ts
 ```
+</CH.Code>
 
-This example shows a greeter service comprising two handlers:
-- `greet`: returns a greeting as a response without performing any additional operations.
-- `countGreetings`: maintains a record of the number of times it has received a request for a given name.
+- [Create the virtual object](focus://3,10)
+- [The handlers use the `ObjectContext` instead of the `Context`.](focus://6)
+</CH.Section>
 
-The app logic is implemented inside the `greet` and `countGreetings` functions.
-The `restate.KeyedContext` is supplied as the first argument.
-The [Restate context](/develop/ts/restate-context) enables interaction with Restate (call other methods, retrieve state, etc.).
-The `countGreetings` function uses the `restate.KeyedContext` because it belongs to a keyed service.
-For unkeyed services, you would use `restate.Context`.
-
-Finally, the endpoint is set up to serve both functions.
-The service is registered as a keyed service under the path `greeter`, and the `greet` and `countGreetings` routes are added.
-The `greet` function can now be called by sending a request to `<RESTATE_INGRESS_URL>/greeter/greet` or `<RESTATE_INGRESS_URL>/greeter/countGreetings`.
-
-For more information on how to set up the routers and the Restate server, have a look at the [serving docs](/develop/ts/serving).
-
-Now that you have a high-level idea of what a Restate service might look like, let's dive into the details!
+Now that you have a high-level idea of what a Restate service might look like, let's have a look at what the Restate Context allows you to do.

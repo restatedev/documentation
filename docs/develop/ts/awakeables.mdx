@@ -8,92 +8,66 @@ import Admonition from '@theme/Admonition';
 
 # Awakeables
 
-Awakeables pause an invocation while waiting for an external process to complete a task. 
-This works as follows:
-- You generate an ID with the Restate SDK. This is a simple string object.
-- You send the ID to the external process, in any preferred way (e.g. over Kafka, via HTTP,...).
-- The external process executes the task and then returns the ID to Restate, optionally together with a payload. 
-- Once the ID has been returned to the service, the invocation resumes.
+Awakeables pause an invocation while waiting for another process to complete a task.
+You can use this pattern to let a handler execute a task somewhere else and retrieve the result.
+This pattern is also known as the callback (task token) pattern.
 
-You can use this pattern to execute tasks in non-Restate services, and retrieve the result. This design pattern is also referred to as the callback (task token) pattern.
+<CH.Section>
+    <CH.Code>
+        ```typescript my_handler.ts
+        CODE_LOAD::ts/src/develop/awakeable.ts#<start_create>-<end_create>
+        ```
+    </CH.Code>
 
-While waiting for the ID to be returned, Restate suspends the invocation to free up resources for other invocations.
-This feature is particularly beneficial for AWS Lambda deployments.
-When the invocation is suspended, its costs are reduced to zero.
+    1. [The handler **creates an awakeable**](focus://1,2). This contains a [String identifier](focus://2) and a Promise/Awaitable.
+    2. [The handler **triggers a task/process** and attaches the awakeable ID](focus://4)  (e.g. over Kafka, via HTTP,...).
+    For example, send an HTTP request to a service that executes the task, and attach the ID to the payload.
+    You use `ctx.run` to avoid retriggering the task this on retries.
+    3. [The handler **waits** until the other process has executed the task.](focus://6)
+</CH.Section>
+<CH.Section>
+    4. **The external process completes the awakeable** when the task is finished by:
 
-<Admonition type="caution">
-While waiting for an awakeable ID to be returned, singleton services and keyed services (for that single key) will not process other incoming invocations.
-They block until the invocation is finished, so until the awakeable ID is returned and the rest of the code has been executed.
+        <CH.Code>
+            ```shell resolve_curl.sh
+            curl localhost:8080/restate/awakeables/prom_1PePOqp/resolve -H 'content-type: application/json'
+                -d '{"hello": "world"}'
+            ```
+
+            ```shell reject_curl.sh
+            curl localhost:8080/restate/awakeables/prom_1PePOqp/reject -H 'content-type: text/plain' \
+                -d 'Very bad error!'
+            ```
+
+            ```typescript external_process_resolve.ts
+            CODE_LOAD::ts/src/develop/awakeable.ts#<start_resolve>-<end_resolve>
+            ```
+
+            ```typescript external_proces_reject.ts
+            CODE_LOAD::ts/src/develop/awakeable.ts#<start_reject>-<end_reject>
+            ```
+
+        </CH.Code>
+        - **Resolving** the awakeable
+            - [Over HTTP](focus://resolve_curl.sh#1:2) with [its ID](focus://resolve_curl.sh#1[40:52]) and [an optional payload](focus://resolve_curl.sh#2)
+            - [Via the SDK with its ID and an optional payload](focus://external_process_resolve.ts#1)
+        - **Rejecting** the awakeable. This throws [a terminal error](/develop/java/error-handling) in the waiting handler.
+            - [Over HTTP](focus://reject_curl.sh#1:2) with [its ID](focus://reject_curl.sh#1[40:52]) and [a failure reason](focus://reject_curl.sh#2)
+            - [Via the SDK with its ID and a failure reason](focus://external_proces_reject.ts#1)
+</CH.Section>
+    5. The handler **receives the payload and resumes**.
+
+
+
+<Admonition type="info" title={"Payload serialization"}>
+    You can return any payload that can be serialized as a Buffer with _`Buffer.from(JSON.stringify(yourObject))`_ and deserialized with _`JSON.parse(result.toString()) as T`_.
 </Admonition>
 
-## Using awakeables
+<Admonition type="tip" title="Cost savings on FaaS">
+    When running on Function-as-a-Service platforms, such as AWS Lambda, Restate suspends the handler while waiting for the awakeable to be completed.
+    Since you only pay for the time that the handler is actually running, your don't pay while waiting for the external process to return.
+</Admonition>
 
-You can use awakeables in the SDK by doing the following:
-
-```typescript
-CODE_LOAD::ts/src/develop/awakeable.ts#<start_create>-<end_create>
-```
-
-The SDK deserializes the payload with `JSON.parse(result.toString()) as T`.
-
-
-
-## Completing awakeables from another Restate service
-
-The external process that received the ID, needs to deliver it back to Restate when the task is done.
-
-If the external process is another Restate service, then you can use the SDK to resolve the awakeable (= to send the ID back).
-Use the awakeable ID that you received from the other service, and do the following:
-
-```typescript
-CODE_LOAD::ts/src/develop/awakeable.ts#<start_resolve>-<end_resolve>
-```
-
-The SDK serializes the payload with `Buffer.from(JSON.stringify(payload))` and deserializes it in the receiving service with `JSON.parse(result.toString()) as T`.
-Make sure that the payload you send, has the type that is expected on the receiving side.
-
-You can also reject an awakeable, that is completing it with a failure. This will cause the waiting service to throw [a terminal error](/develop/ts/error-handling):
-
-```typescript
-CODE_LOAD::ts/src/develop/awakeable.ts#<start_reject>-<end_reject>
-```
-
-## Completing awakeables from outside Restate
-
-You can resolve awakeables from outside Restate by sending requests to Restate's `dev.restate.Awakeables` endpoint.
-
-To resolve an awakeable with a JSON payload:
-
-```shell
-curl <RESTATE_INGRESS_URL>/dev.restate.Awakeables/Resolve \
-  -H 'content-type: application/json' \
-  -d '{"id": "<AWAKEABLE_ID>", "json_result": <JSON_VALUE_RESULT>}'
-```
-
-For example:
-
-```shell
-curl localhost:8080/dev.restate.Awakeables/Resolve \
-  -H 'content-type: application/json'
-  -d '{"id": "T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE", "json_result": {"hello": "world"}}'
-```
-
-To reject an awakeable:
-
-```shell
-curl <RESTATE_INGRESS_URL>/dev.restate.Awakeables/Reject \
-  -H 'content-type: application/json' \
-  -d '{"id": "<AWAKEABLE_ID>", "reason": "<FAILURE_REASON>"}'
-```
-
-For example:
-
-```shell
-curl localhost:8080/dev.restate.Awakeables/Reject \
-  -H 'content-type: application/json' \
-  -d '{"id": "T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE", "reason": "Very bad error!"}'
-```
-
-Look at the [Protobuf definitions](https://github.com/restatedev/proto/blob/main/dev/restate/services.proto)
-for more information on how to structure the resolve and reject requests.
-Additionally, you can have a look at the documentation on [how to invoke a service](/operate/invocation).
+<Admonition type="info" title="Awaiting awakeables in Virtual Objects">
+    Virtual Objects only process a single invocation at a time, so the Virtual Object will be blocked while waiting on the awakeable to be resolved.
+</Admonition>

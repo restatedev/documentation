@@ -5,8 +5,7 @@ const service = restate.service({
     handlers: {
         greet: async (ctx: restate.Context, name: string) => {
             // <start_here>
-            const duration = 10_000;
-            await ctx.sleep(duration);
+            await ctx.sleep(10_000);
             // <end_here>
         },
     }
