@@ -9,8 +9,9 @@ class ServiceCommunication {
         val request = ""
 
         // <start_request_response_service>
-        val client = MyServiceClient.fromContext(ctx)
-        val response: String = client.myHandler(request).await()
+        val response: String = MyServiceClient.fromContext(ctx)
+            .myHandler(request)
+            .await()
         // <end_request_response_service>
     }
 
@@ -19,8 +20,9 @@ class ServiceCommunication {
         val request = ""
 
         // <start_request_response_virtual_object>
-        val client = MyVirtualObjectClient.fromContext(ctx, objectKey)
-        val response: String = client.myHandler(request).await()
+        val response: String = MyVirtualObjectClient.fromContext(ctx, objectKey)
+            .myHandler(request)
+            .await()
         // <end_request_response_virtual_object>
     }
 
@@ -28,8 +30,7 @@ class ServiceCommunication {
         val request = ""
 
         // <start_one_way>
-        val client = MyServiceClient.fromContext(ctx)
-        client
+        MyServiceClient.fromContext(ctx)
             // withClass highlight-line
             .send()
             .myHandler(request)
@@ -40,8 +41,7 @@ class ServiceCommunication {
         val request = ""
 
         // <start_delayed>
-        val client = MyServiceClient.fromContext(ctx)
-        client
+        MyServiceClient.fromContext(ctx)
             // withClass highlight-line
             .send(1.seconds)
             .myHandler(request)

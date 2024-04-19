@@ -9,7 +9,9 @@ public class ServiceCommunication {
         String request = "";
 
         // <start_request_response_service>
-        MyServiceClient.fromContext(ctx).myHandler(request).await();
+        String response = MyServiceClient.fromContext(ctx)
+            .myHandler(request)
+            .await();
         // <end_request_response_service>
     }
 
@@ -18,7 +20,9 @@ public class ServiceCommunication {
         String request = "";
 
         // <start_request_response_virtual_object>
-        MyVirtualObjectClient.fromContext(ctx, objectKey).myHandler(request).await();
+        String response = MyVirtualObjectClient.fromContext(ctx, objectKey)
+            .myHandler(request)
+            .await();
         // <end_request_response_virtual_object>
     }
 
@@ -42,5 +46,12 @@ public class ServiceCommunication {
             .send(Duration.ofSeconds(1))
             .myHandler(request);
         // <end_delayed>
+    }
+
+    private void orderingGuarantees(Context ctx){
+           // <start_ordering>
+           MyVirtualObjectClient.fromContext(ctx, objectKey).send().myHandler("Hi!");
+           MyVirtualObjectClient.fromContext(ctx, objectKey).send().myHandler("Hi again!");
+           // <end_ordering>
     }
 }

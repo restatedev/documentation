@@ -15,12 +15,26 @@ You can invoke any handler via Kafka events.
 The event payload will be (de)serialized as JSON.
 
 - When invoking **Virtual Object** handlers via Kafka, the key of the Kafka record will be used to determine the Virtual Object key.
+The key needs to be a valid UTF-8 string.
 For each Virtual Object, the events are delivered in the order in which they arrived on the topic partition.
 - When invoking **Service** handlers over Kafka, events are delivered in parallel without ordering guarantees.
 
 <Admonition type="tip" title="Combining RPC and Kafka within a service/handler">
     Since you can invoke any handler via Kafka events, a single handler can be invoked both by RPC and via Kafka.
 </Admonition>
+
+    <details className="grey-details">
+        <summary>Event metadata</summary>
+
+        Each event carries within the `ctx.request().headers()` map the following entries:
+
+        * `restate.subscription.id`: The subscription identifier, as shown by the [Admin API](../../references/admin-api).
+        * `kafka.offset`: The record offset.
+        * `kafka.partition`: The record partition.
+        * `kafka.timestamp`: The record timestamp.
+
+    </details>
+
 
 </SubtleStep>
 
