@@ -16,7 +16,6 @@ public class Awakeables {
         String payload = awakeable.await();
         // <end_create>
 
-
         // <start_resolve>
         ctx.awakeableHandle(awakeableId)
                 .resolve(CoreSerdes.JSON_STRING, "hello");
