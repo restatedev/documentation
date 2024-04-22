@@ -11,10 +11,10 @@ import TabItem from '@theme/TabItem';
 Restate handles retries for failed invocations.
 By default, Restate does infinite retries with an exponential backoff strategy.
 
-For situations where you do not want the invocation to be retried, but instead want the error message
-to be propagated back to the caller, you can use a **terminal error**.
+For failures for which you do not want retries, but instead want the invocation to end and the error message
+to be propagated back to the caller, you can throw a **terminal error**.
 
-From within a handler, you can throw a terminal exception with an HTTP status code and a message, as follows:
+You can throw a terminal exception with an HTTP status code and a message anywhere in your handler, as follows:
 
 <Tabs groupId="sdk" queryString>
 <TabItem value="java" label="Java">
@@ -34,7 +34,3 @@ CODE_LOAD::kotlin/src/main/kotlin/develop/ErrorHandling.kt
 </Tabs>
 
 You can catch terminal exceptions. For example, you can catch the terminal exception that comes out of a [call to another service](/develop/java/service-communication#request-response-calls), and build your control flow around it.
-
-You can throw a terminal error anywhere in your handler.
-Restate will propagate the error code and message back to the caller and will consider this invocation to be finished. 
-

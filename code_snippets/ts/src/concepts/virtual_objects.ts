@@ -12,7 +12,7 @@ export const greeterObject = restate.object({
             let count = (await ctx.get<number>("count")) ?? 0;
             count++;
             ctx.set("count", count);
-            return `${greeting} ${ctx.key()} for the ${count}-th time.`;
+            return `${greeting} ${ctx.key} for the ${count}-th time.`;
         },
 
         ungreet: async (ctx: restate.ObjectContext) => {
@@ -21,7 +21,7 @@ export const greeterObject = restate.object({
                 count--;
             }
             ctx.set("count", count);
-            return `Dear ${ctx.key()}, taking one greeting back: ${count}.`;
+            return `Dear ${ctx.key}, taking one greeting back: ${count}.`;
         },
     }
 });
