@@ -28,7 +28,7 @@ The server process exposes four services by default, available on different port
 | Name      | Port | Description                                                                                                                   | Protocol                                          |
 | --------- | ---- | ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
 | Node-ctrl | 5122 | control port for restate server nodes                                                                                         | gRPC + HTTP for prometheus metrics `/metrics`     |
-| Ingress   | 8080 | Acts as an API gateway for all services registered with Restate                                                               | gRPC + [Connect Protocol](https://connect.build/) |
+| Ingress   | 8080 | Acts as an API gateway for all services registered with Restate                                                               |  |
 | Admin     | 9070 | Allows for CRUD operations on service/service deployment metadata, eg for service registration                                | REST                                              |
 | Postgres  | 9071 | Exposes Restate RocksDB read-only storage operations using the Postgres protocol. See [Introspection](/operate/introspection) | Postgres                                          |
 
