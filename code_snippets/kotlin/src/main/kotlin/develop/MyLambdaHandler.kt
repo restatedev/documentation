@@ -6,7 +6,9 @@ import dev.restate.sdk.lambda.RestateLambdaEndpointBuilder
 
 class MyLambdaHandler : BaseRestateLambdaHandler() {
     override fun register(builder: RestateLambdaEndpointBuilder) {
-        builder.bind(Greeter())
+        builder
+            .bind(MyService())
+            .bind(MyVirtualObject())
     }
 }
 // <end_here>

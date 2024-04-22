@@ -13,7 +13,7 @@ Restate uses an execution log for replay after failures and suspensions.
 This means that non-deterministic results (e.g. database responses, UUID generation) need to be stored in the execution log.
 The SDK offers some functionalities to help you with this:
 1. **[Side effects](/develop/java/side-effects#side-effects)**: Run any block of code and store the result in Restate. Restate replays the result instead of re-executing the block on retries.
-2. **[Promise/awaitable combinators](/develop/java/side-effects#promiseawaitable-combinators)**: Log the order in which promises were resolved/rejected, to ensure deterministic replay.
+2. **[`Awaitable` combinators](/develop/java/side-effects#awaitable-combinators)**: Log the order in which Awaitables were resolved/rejected, to ensure deterministic replay.
 3. **[Random generators](/develop/java/side-effects#generating-randoms)**: Built-in helpers for generating stable UUIDs and random numbers.
 
 
@@ -47,7 +47,7 @@ Have a look at [serialization docs](/develop/java/serialization), for other opti
 </Tabs>
 
 <Admonition type="info">
-You cannot invoke any methods on the Restate context within a side effect!
+You cannot invoke any methods on the Restate context within a side effect.
 This includes actions such as getting state, calling another service, and nesting side effects.
 </Admonition>
 
@@ -56,11 +56,12 @@ Failures in side effects have the same semantics as failures in the main code.
 By default, a side effect function is retried infinitely on failure, unless you throw a [terminal error](/develop/java/error-handling).
 </Admonition>
 
-## Promise/Awaitable combinators
-
+## `Awaitable` combinators
+Operations such as calls, awakeables, and sleep return a `Awaitable`.
 The SDK provides combinators for working with `Awaitable`.
+Restate then logs the order in which they are resolved or rejected, to make them deterministic on replay.
 
-**Await all**
+### Await all
 
 <Tabs groupId="sdk" queryString>
 <TabItem value="java" label="Java">
@@ -83,7 +84,7 @@ Creates an `Awaitable` that awaits all of the provided Awaitables to resolve.
 
 The semantics are similar to [`CompleteableFuture.allOf()`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/CompletableFuture.html#allOf(java.util.concurrent.CompletableFuture...)), but the outcome is stored in the Restate journal to be deterministically replayable.
 
-**Await any**
+### Await any
 
 <Tabs groupId="sdk" queryString>
 <TabItem value="java" label="Java">
@@ -110,49 +111,50 @@ The semantics are similar to [`CompleteableFuture.anyOf()`](https://docs.oracle.
 The SDK provides helper functions for the deterministic generation of UUIDs and random numbers.
 Restate seeds the random number generator with the invocation ID, so it always returns the same value on retries.
 
-- **Generating UUIDs**
+### Generating UUIDs
 
-    <Tabs groupId="sdk" queryString>
-    <TabItem value="java" label="Java">
+<Tabs groupId="sdk" queryString>
+<TabItem value="java" label="Java">
 
-    ```java
-    CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_uuid>-<end_uuid>
-    ```
+```java
+CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_uuid>-<end_uuid>
+```
 
-    </TabItem>
-    <TabItem value="kotlin" label="Kotlin">
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
 
-    ```kotlin
-    CODE_LOAD::kotlin/src/main/kotlin/develop/SideEffects.kt#<start_uuid>-<end_uuid>
-    ```
+```kotlin
+CODE_LOAD::kotlin/src/main/kotlin/develop/SideEffects.kt#<start_uuid>-<end_uuid>
+```
 
-    </TabItem>
-    </Tabs>
+</TabItem>
+</Tabs>
 
-    Do not use this in cryptographic contexts.
+Do not use this in cryptographic contexts.
 
-- **Generating random numbers**
-
-    <Tabs groupId="sdk" queryString>
-    <TabItem value="java" label="Java">
-
-    ```java
-    CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_random_nb>-<end_random_nb>
-    ```
-
-    </TabItem>
-    <TabItem value="kotlin" label="Kotlin">
-
-    ```kotlin
-    CODE_LOAD::kotlin/src/main/kotlin/develop/SideEffects.kt#<start_random_nb>-<end_random_nb>
-    ```
-
-    </TabItem>
-    </Tabs>
-
-    You can use any of the methods of [`java.util.Random`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Random.html) to generate random numbers: for example, `nextBoolean()`, `nextLong()`, `nextFloat()`, etc.
-
-<Admonition type="tip" title="Generate stable idempotency tokens in a single line of code">
+<Admonition type="tip" title="Generate stable idempotency tokens in one line of code">
     You can use these UUIDs to generate stable idempotency keys, to deduplicate operations.
     For example, you can use this to let a payment service avoid duplicate payments during retries.
 </Admonition>
+
+### Generating random numbers
+
+<Tabs groupId="sdk" queryString>
+<TabItem value="java" label="Java">
+
+```java
+CODE_LOAD::java/src/main/java/develop/SideEffects.java#<start_random_nb>-<end_random_nb>
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+CODE_LOAD::kotlin/src/main/kotlin/develop/SideEffects.kt#<start_random_nb>-<end_random_nb>
+```
+
+</TabItem>
+</Tabs>
+
+You can use any of the methods of [`java.util.Random`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Random.html) to generate random numbers: for example, `nextBoolean()`, `nextLong()`, `nextFloat()`, etc.
+

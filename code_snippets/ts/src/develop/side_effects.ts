@@ -1,104 +1,46 @@
 import * as restate from "@restatedev/restate-sdk";
-import {EXPONENTIAL_BACKOFF} from "@restatedev/restate-sdk/dist/utils/public_utils";
 import {CombineablePromise} from "@restatedev/restate-sdk";
+import {MyService} from "./my_service";
 
-const router = restate.router({
-    greet: async (ctx: restate.Context, name: string) => {
-        // <start_side_effect>
-        const result = await ctx.sideEffect<string>(async () => doDbRequest());
-        // <end_side_effect>
+const service = restate.service({
+    name: "SideEffects",
+    handlers: {
+        greet: async (ctx: restate.Context, name: string) => {
+            // <start_side_effect>
+            const result = await ctx.run<string>(async () => doDbRequest());
+            // <end_side_effect>
+        },
 
-        const txId = ""
-        const amount = 1;
-        // <start_retry>
-        const success: boolean = await ctx.sideEffect(async () => {
-            const result = await paymentClient.call(txId, amount);
-            if (result.error) {
-                //highlight-next-line
-                throw result.error;
-            } else {
-                return result.isSuccess;
-            }
-        });
-        // <end_retry>
+        promiseCombinators: async (ctx: restate.Context, name: string) => {
+            // <start_promises>
+            const sleepPromise = ctx.sleep(100);
+            const callPromise = ctx.serviceClient(MyService).myHandler("Hi");
+            // <end_promises>
 
+            // <start_combine_all>
+            const resultArray = await CombineablePromise.all([sleepPromise, callPromise]);
+            // <end_combine_all>
 
-        // <start_manual>
-        //highlight-next-line
-        const retrySettings = { initialDelayMs: 1000, maxDelayMs: 60000, maxRetries: 10 }
-        try {
-            await ctx.sideEffect(async () => {
-                    const result = await paymentClient.call(txId, amount);
-                    if (result.error) {
-                        throw result.error;
-                    } else {
-                        return result.isSuccess;
-                    }
-                },
-                //highlight-next-line
-                retrySettings
-            );
-        } catch (error) {
-            // handle terminal error
+            // <start_combine_any>
+            const anyResult = await CombineablePromise.any([sleepPromise, callPromise]);
+            // <end_combine_any>
+
+            // <start_combine_race>
+            const raceResult = await CombineablePromise.race([sleepPromise, callPromise]);
+            // <end_combine_race>
+
+            // <start_combine_allsettled>
+            const allSettledResult = await CombineablePromise.allSettled([sleepPromise, callPromise]);
+            // <end_combine_allsettled>
+
+            // <start_uuid>
+            const uuid = ctx.rand.uuidv4();
+            // <end_uuid>
+
+            // <start_random_nb>
+            const randomNumber = ctx.rand.random();
+            // <end_random_nb>
         }
-        // <end_manual>
-    },
-    greet2: async (ctx: restate.Context, name: string) => {
-        // <start_retry_settings>
-        const retrySettings = {
-            initialDelayMs: 1000,
-            maxDelayMs: 60000,
-            maxRetries: 10,
-            policy: EXPONENTIAL_BACKOFF,
-            name: "my-side-effect"
-        }
-        // <end_retry_settings>
-
-        const txId = ""
-        const amount = 1;
-        // <start_terminal>
-        try {
-            await ctx.sideEffect(async () => {
-                const result = await paymentClient.call(txId, amount);
-                if (result.error) {
-                    //highlight-next-line
-                    throw new restate.TerminalError(result.error);
-                } else {
-                    return result.isSuccess;
-                }
-            });
-        } catch (error) {
-            // handle terminal error
-        }
-        // <end_terminal>
-    },
-    promiseCombinators: async (ctx: restate.Context, name: string) => {
-        const promise1 = ctx.sleep(100);
-        const promise2 = ctx.sleep(200);
-
-        // <start_combine_all>
-        const resultArray = await CombineablePromise.all([promise1, promise2]);
-        // <end_combine_all>
-
-        // <start_combine_any>
-        const anyResult = await CombineablePromise.any([promise1, promise2]);
-        // <end_combine_any>
-
-        // <start_combine_race>
-        const raceResult = await CombineablePromise.race([promise1, promise2]);
-        // <end_combine_race>
-
-        // <start_combine_allsettled>
-        const allSettledResult = await CombineablePromise.allSettled([promise1, promise2]);
-        // <end_combine_allsettled>
-
-        // <start_uuid>
-        const uuid = ctx.rand.uuidv4();
-        // <end_uuid>
-
-        // <start_random_nb>
-        const randomNumber = ctx.rand.random();
-        // <end_random_nb>
     }
 })
 

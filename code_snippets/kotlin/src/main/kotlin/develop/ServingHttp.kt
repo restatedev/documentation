@@ -1,11 +1,12 @@
 package develop
 
+// <start_here>
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
 
-// <start_here>
 fun main() {
     RestateHttpEndpointBuilder.builder()
-        .bind(Greeter())
+        .bind(MyService())
+        .bind(MyVirtualObject())
         .buildAndListen()
 }
 // <end_here>

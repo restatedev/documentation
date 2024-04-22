@@ -2,8 +2,8 @@
 sidebar_position: 10
 description: "Receive events from Kafka."
 ---
-import Admonition from '@theme/Admonition';
 
+import Admonition from '@theme/Admonition';
 import {SubtleStep} from "../../../src/components/Stepper";
 
 # Kafka
@@ -61,7 +61,7 @@ Have a look at the [registration docs](/operate/registration#kafka-subscriptions
 </Admonition>
 
 <details className="grey-details">
-    <summary>Raw payload support</summary>
+    <summary>Raw event support</summary>
 
     If you use annotations for your services and handlers, the event payload will be (de)serialized as JSON.
     If you need to access the raw Kafka payload, you can do this by doing manual service definition.
@@ -70,7 +70,7 @@ Have a look at the [registration docs](/operate/registration#kafka-subscriptions
 <details className="grey-details">
     <summary>Event metadata</summary>
 
-    Each event carries within the `ctx.request().headers()` map the following entries:
+    Each event carries within the _`CODE_LOAD::java/src/main/java/develop/MyKafkaVirtualObject.java#<start_headers>-<end_headers>`_ map the following entries:
 
     * `restate.subscription.id`: The subscription identifier, as shown by the [Admin API](../../references/admin-api).
     * `kafka.offset`: The record offset.
