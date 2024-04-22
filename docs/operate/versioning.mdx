@@ -26,7 +26,6 @@ To check which deployments are currently serving your services, do the following
         <details className={"grey-details"}>
             <summary>Output</summary>
 
-            ```json
             ```shell
             NAME             REVISION  FLAVOR  DEPLOYMENT TYPE  DEPLOYMENT ID
             # mark[57:82]
@@ -40,7 +39,7 @@ To check which deployments are currently serving your services, do the following
         </details>
 
         To list only the deployments, you can do `restate deployments list`.
-        
+
         Note that deployment IDs start with `dp_`. You can use it to describe the deployment:
 
         ```bash
@@ -161,15 +160,17 @@ When updating Virtual Objects, the new revisions will continue to use the same s
 
 ## Removing services
 
-It is not possible to remove a single service directly, but it is possible to remove the deployment containing it.
-To remove a deployment, the suggested procedure is the following:
+You cannot remove a single service, but you can remove the deployment containing it.
 
-1. Get the deployment ID that is serving the latest revision of the service.
-2. Make sure that removing this deployment won't affect other services you don't want to remove.
-3. Make sure no other Restate service is using this service anymore.
+**Before you remove a deployment, you need to ensure the following:**
+
+1. Make sure that there are no other handlers with business logic that calls this service.
+2. If several services are bundled in the same deployment, you can't remove only one of them. You have to remove the whole deployment.
+So make sure that you first deploy the services you want to keep in a separate new deployment.
 4. [Make the service private](/operate/invocation#private-services) to avoid accepting new HTTP requests.
-5. Check whether the service has pending requests, and wait until they are resolved.
-6. Remove the deployment containing the service with:
+5. Check whether the service has pending invocations via _`restate svc status`_, and wait until the service is drained (i.e. no ongoing invocations).
+
+**When all prerequisites are fulfilled**, you can remove the deployment containing the service via:
 
 <Tabs groupId="interface" queryString>
 <TabItem value="cli" label="CLI">
@@ -189,7 +190,3 @@ curl -X DELETE localhost:9070/deployments/dp_14LsPzGz9HBxXIeBoH5wYUh?force=true
 
 </TabItem>
 </Tabs>
-
-<Admonition type="info">
-Currently Restate doesn't implement all the checks to safely remove a service deployment, so you have to force the removal through the `force` query parameter.
-</Admonition>

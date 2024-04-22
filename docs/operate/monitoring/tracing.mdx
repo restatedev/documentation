@@ -11,84 +11,71 @@ Restate supports the following tracing features:
 
 * Runtime execution tracing per invocation
 * Exporting traces to OTLP-compatible systems (e.g. Jaeger)
-* Correlating parent traces of incoming gRPC/Connect HTTP requests, using the [W3C TraceContext](https://github.com/w3c/trace-context) specification.
+* Correlating parent traces of incoming HTTP requests, using the [W3C TraceContext](https://github.com/w3c/trace-context) specification.
 
 ## Setting up OTLP exporter
 
 Set up the [OTLP exporter](https://github.com/open-telemetry/opentelemetry-collector/blob/main/exporter/otlpexporter/README.md) by pointing the configuration entry `observability.tracing.endpoint` to your trace collector.
-The exporter sends OTLP trace data via gRPC.
 
+### Exporting traces to Jaeger
 
-## Exporting OTLP traces to Jaeger
+[Jaeger](https://www.jaegertracing.io/docs/1.46/deployment/) accepts OTLP trace data on port `4317`.
+Start Jaeger with OTLP enabled. For example, locally with Docker:
 
-Jaeger accepts OTLP trace data via gRPC on port `4317`.
-
-<Admonition type="note">
-Start Jaeger with the environment variable `COLLECTOR_OTLP_ENABLED=true` to enable OTLP.
-</Admonition>
-
-Refer to the [Jaeger documentation](https://www.jaegertracing.io/docs/1.46/deployment/) for more details on how to deploy Jaeger.
-
-<Admonition type="note">
-Configure the tracing endpoint in Restate as a fully specified URL: `http://<jaeger-collector>:4317`.
-</Admonition>
-
-You can configure a span/event filter in a similar fashion to the [log filter](/operate/monitoring/restate_logging#log-filter) setting the `observability.tracing.filter` configuration entry.
-
-#### Try it out locally
-To experiment with this feature locally, run the Jaeger container via:
 ```shell
 docker run -d --name jaeger \
+# withClass highlight-line
     -e COLLECTOR_OTLP_ENABLED=true \
-    -p 4317:4317 \
-    -p 16686:16686 \
+    -p 4317:4317 -p 16686:16686 \
     jaegertracing/all-in-one:1.46
 ```
 
-Then launch Restate with the tracing endpoint defined as an environment variable:
+Configure the tracing endpoint in Restate as a fully specified URL.
+For example, locally with Docker:
 
 ```shell
-docker run --name restate_dev --rm \
+docker run -p 8080:8080 -p 9070:9070 -p 9071:9071 \
+# withClass highlight-line
   -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://host.docker.internal:4317 \
-  -p 8080:8080 -p 9070:9070 -p 9071:9071 \
   --add-host=host.docker.internal:host-gateway \
   docker.io/restatedev/restate:VAR::RESTATE_VERSION
 ```
 
-Go to the Jaeger UI at http://localhost:16686.
+If you now spin up your services and send requests to them, you will see the traces appear in the Jaeger UI at http://localhost:16686:
 
-If you now spin up your Restate services and send requests to them, you will see the traces appear in the Jaeger UI.
+<img src="/img/observability.jpeg" width={"60%"}/>
 
-An example from the [shopping cart example](https://github.com/restatedev/examples/tree/main/end-to-end-applications/typescript/ecommerce-store):
-![Observability](/img/observability.jpeg)
+<Admonition type="info" title={"Filtering traces"}>
+    You can configure a span/event filter in a similar fashion to the [log filter](/operate/monitoring/restate_logging#log-filter) setting the `observability.tracing.filter` configuration entry.
+</Admonition>
 
-## Setting up Jaeger file exporter
+<details className={"grey-details"}>
+    <summary>Setting up Jaeger file exporter</summary>
 
-If you can't configure a Jaeger agent, you can export traces by writing them to files, using the Jaeger JSON format. To do so, set up the configuration entry `observability.tracing.json_file_export_path` pointing towards the path where trace files should be written.
+    If you can't configure a Jaeger agent, you can export traces by writing them to files, using the Jaeger JSON format. To do so, set up the configuration entry `observability.tracing.json_file_export_path` pointing towards the path where trace files should be written.
 
-You can import the trace files using the Jaeger UI:
+    You can import the trace files using the Jaeger UI:
 
-![Jaeger UI File import](/img/jaeger-import-file.png)
-
+    <img src="/img/jaeger-import-file.png" width={"35%"}/>
+</details>
 
 ## Understanding traces
 The traces contain detailed information about the context calls that were done during the invocation (e.g. sleep, one-way calls, interaction with state):
 
-![Understanding traces](/img/jaeger_tour_background_call_handler.png)
+<img src="/img/jaeger_tour_background_call_handler.png" width={"85%"}/>
 
-The initial `ingress_invoke` spans show when the gRPC/Connect HTTP request was received by Restate. The `invoke` span beneath it shows when Restate invoked the service deployment to process the request.
+The initial `ingress_invoke` spans show when the HTTP request was received by Restate. The `invoke` span beneath it shows when Restate invoked the service deployment to process the request.
 
 The tags of the spans contain the metadata of the context calls (e.g. call arguments, invocation id).
 
+<Admonition type="info" title={"One-way call traces are detached from the parent"}>
 When a service invokes another service, the child invocation is linked automatically to the parent invocation, as you can see in the image.
 Note that the spans of one-way calls are shown as separate traces. The parent invocation only shows that the one-way call was scheduled, not its entire tracing span.
-To see this information, search for the trace of the one-way call by filtering on the invocation id tag:
-```
-restate.invocation.id="T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE"
-```
+To see this information, search for the trace of the one-way call by filtering on the invocation id tag `restate.invocation.id="T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE"`.
+</Admonition>
 
 ## Searching traces
 
 Traces export attributes and tags that correlate the trace with the service and/or invocation. For example, in the Jaeger UI, you can filter on the invocation id (`restate.invocation.id`) or any other tag:
 
-![Jaeger invocation id search](/img/jaeger_invocationid_search_handler.png)
+<img src="/img/jaeger_invocationid_search_handler.png" width={"80%"}/>
