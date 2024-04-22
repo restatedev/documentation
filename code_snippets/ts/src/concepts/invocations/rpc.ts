@@ -14,24 +14,3 @@ async function myRestateHandler(ctx: restate.Context) {
         .greet({greeting: "Hi"});
 }
 // <end_rpc_call>
-
-// <start_rpc_call_node>
-const myNodeHandler = async () => {
-    // focus
-    // From any NodeJS code:
-    // focus
-    const ingress = restate.ingress
-        // focus
-        .connect({ url: "http://localhost:8080" });
-
-    // focus
-    const greet = await ingress.serviceClient(greeterService)
-        // focus
-        .greet({ greeting: "Hi" });
-
-    // focus
-    const count = await ingress.objectClient(greetCounterObject, "Mary")
-        // focus
-        .greet({ greeting: "Hi" });
-}
-// <end_rpc_call_node>

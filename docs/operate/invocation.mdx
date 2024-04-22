@@ -47,7 +47,7 @@ Note that all invocations go first via the Restate Server. The server then forwa
 Therefore, `localhost:8080` refers to ingress port of the Restate Server, not the service instance.
 </Admonition>
 
-### Sending a message over HTTP
+### Sending a (delayed) message over HTTP
 If you do not want to wait for the response, you can also send a message by adding `/send` to the URL path:
 
 ```shell
@@ -57,12 +57,40 @@ curl localhost:8080/MyService/myHandler/send \
     -d '{"name": "Mary", "age": 25}'
 ```
 
-The response contains the [Invocation identifier](#invocation-identifier).
+<details className={"grey-details"}>
+    <summary>Output</summary>
+
+    ```json
+    {"invocationId":"inv_1aiqX0vFEFNH1Umgre58JiCLgHfTtztYK5"}
+    ```
+</details>
+
+    The response contains the [Invocation identifier](#invocation-identifier).
 You can use this identifier [to cancel](/operate/invocation#cancel-an-invocation) or [kill the invocation](/operate/invocation#kill-an-invocation).
 
 <Admonition type="tip">
     Use this to invoke long-running workflows.
 </Admonition>
+
+You can **delay the message** by adding a delay request parameter in ISO8601 notation or in seconds:
+
+<CH.Code>
+    ```shell ISO8601_duration
+    # focus[40:56]
+    curl localhost:8080/MyService/myHandler/send?delay=PT10S \
+    -H 'content-type: application/json' \
+    -d '{"name": "Mary", "age": 25}'
+    ```
+    ```shell seconds
+    # focus[40:56]
+    curl localhost:8080/MyService/myHandler/send?delaySec=10 \
+    -H 'content-type: application/json' \
+    -d '{"name": "Mary", "age": 25}'
+    ```
+
+</CH.Code>
+
+
 
 ### Invoke a handler idempotently
 

@@ -69,7 +69,7 @@ Invocations get a unique identifier. This identifier is used to track the progre
                 ```
 
                 ```typescript plain_node_app.ts
-                CODE_LOAD::ts/src/concepts/invocations/rpc.ts#<start_rpc_call_node>-<end_rpc_call_node>
+                CODE_LOAD::ts/src/concepts/invocations/ingress/rpc.ts#<start_rpc_call_node>-<end_rpc_call_node>
                 ```
 
             </CH.Code>
@@ -87,7 +87,7 @@ Invocations get a unique identifier. This identifier is used to track the progre
                 ```
 
                 ```typescript plain_node_app.ts
-                CODE_LOAD::ts/src/concepts/invocations/one_way.ts#<start_one_way_call_node>-<end_one_way_call_node>
+                CODE_LOAD::ts/src/concepts/invocations/ingress/one_way.ts#<start_one_way_call_node>-<end_one_way_call_node>
                 ```
 
             </CH.Code>
@@ -104,7 +104,7 @@ Invocations get a unique identifier. This identifier is used to track the progre
                 ```
 
                 ```typescript plain_node_app.ts
-                CODE_LOAD::ts/src/concepts/invocations/delayed.ts#<start_delayed_call_node>-<end_delayed_call_node>
+                CODE_LOAD::ts/src/concepts/invocations/ingress/delayed.ts#<start_delayed_call_node>-<end_delayed_call_node>
                 ```
 
             </CH.Code>
@@ -207,9 +207,13 @@ Invocations get a unique identifier. This identifier is used to track the progre
             ---
 
             ```bash
-            curl localhost:8080/myservice/hello \
+            curl localhost:8080/GreeterService/greet/send?delaySec=10 \
                 -H 'content-type: application/json' \
-                -d '{"request": "Restate"}'
+                -d '"Hi"'
+
+            curl localhost:8080/GreetCounter/Mary/greet/send?delaySec=10 \
+                -H 'content-type: application/json' \
+                -d '"Hi"'
             ```
 
             **<mark class="accent">Delayed</mark> invocations** allow you to schedule an invocation for a later point in time.
