@@ -41,19 +41,6 @@ jobs:
           exit 1
           fi
 
-      # Test TypeScript gRPC code snippets
-      - name: Compile TypeScript gRPC code snippets
-        run: npm install --prefix code_snippets/ts-grpc && npm run proto --prefix code_snippets/ts-grpc && npm run build --prefix code_snippets/ts-grpc
-
-      - name: Check if TypeScript gRPC code snippets build is successful
-        run: |
-          if [ -d "code_snippets/ts-grpc/dist" ]; then
-          echo "TypeScript gRPC code snippets compilation successful"
-          else
-          echo "TypeScript gRPC code snippets compilation failed"
-          exit 1
-          fi
-
       # Setup Java
       - uses: actions/setup-java@v3
         with:

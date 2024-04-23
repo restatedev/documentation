@@ -96,15 +96,6 @@ jobs:
       - name: Compile TypeScript code snippets
         run: npm install --prefix code_snippets/ts && npm run build --prefix code_snippets/ts
 
-      # Upgrade TS gRPC code snippets if new version is provided
-      - name: Upgrade TS Restate SDK for gRPC code snippets
-        if: github.event.inputs.sdkTypescriptVersion != ''
-        run: npm --prefix code_snippets/ts-grpc install @restatedev/restate-sdk@^${{ inputs.sdkTypescriptVersion }}
-
-      # Test if TS gRPC code snippets compile and build
-      - name: Compile TypeScript gRPC code snippets
-        run: npm install --prefix code_snippets/ts-grpc && npm run proto --prefix code_snippets/ts-grpc && npm run build --prefix code_snippets/ts-grpc
-
       # Setup Java
       - uses: actions/setup-java@v3
         with:
