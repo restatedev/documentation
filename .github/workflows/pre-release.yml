@@ -114,6 +114,18 @@ jobs:
           arguments: check
           build-root-directory: code_snippets/java
 
+      # Upgrade Kotlin code snippets if new version is provided
+      - name: Find and replace restateVersion in build.gradle.kts for Kotlin code snippets
+        if: github.event.inputs.sdkJavaVersion != ''
+        run: sed -i 's/val restateVersion = "[0-9A-Z.-]*"/val restateVersion = "${{ inputs.sdkJavaVersion }}"/' code_snippets/kotlin/build.gradle.kts
+
+      # Check Kotlin code snippets
+      - name: Test Kotlin code snippets
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: check
+          build-root-directory: code_snippets/kotlin
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
