@@ -8,5 +8,4 @@ const service = restate.object({
             ctx.request().headers
             // <end_headers>
     }
-    }
 });
