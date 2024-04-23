@@ -176,9 +176,13 @@ Invocations get a unique identifier. This identifier is used to track the progre
         <CH.Spotlight className="durable-promises">
 
             ```bash
-            curl localhost:8080/myservice/hello \
+            curl localhost:8080/GreeterService/greet \
                 -H 'content-type: application/json' \
-                -d '{"request": "Restate"}'
+                -d '"Hi"'
+
+            curl localhost:8080/GreetCounter/Mary/greet \
+                -H 'content-type: application/json' \
+                -d '"Hi"'
             ```
 
             ---
@@ -188,9 +192,13 @@ Invocations get a unique identifier. This identifier is used to track the progre
             ---
 
             ```bash
-            curl localhost:8080/myservice/hello \
+            curl localhost:8080/GreeterService/greet/send \
                 -H 'content-type: application/json' \
-                -d '{"request": "Restate"}'
+                -d '"Hi"'
+
+            curl localhost:8080/GreetCounter/Mary/greet/send \
+                -H 'content-type: application/json' \
+                -d '"Hi"'
             ```
 
             **<mark class="accent">One-way</mark> invocations** allow you to trigger an asynchronous action.
@@ -199,9 +207,13 @@ Invocations get a unique identifier. This identifier is used to track the progre
             ---
 
             ```bash
-            curl localhost:8080/myservice/hello \
+            curl localhost:8080/GreeterService/greet/send?delaySec=10 \
                 -H 'content-type: application/json' \
-                -d '{"request": "Restate"}'
+                -d '"Hi"'
+
+            curl localhost:8080/GreetCounter/Mary/greet/send?delaySec=10 \
+                -H 'content-type: application/json' \
+                -d '"Hi"'
             ```
 
             **<mark class="accent">Delayed</mark> invocations** allow you to schedule an invocation for a later point in time.
@@ -217,11 +229,11 @@ Restate will then deduplicate requests with the same idempotency key, and will o
 Duplicate requests will get the same response as the first request, or will latch on to the first invocation if it's still running.
 
 ```bash
-curl localhost:8080/org.example.Greeter/Greet \
-  # focus
+curl localhost:8080/GreeterService/greet \
+# focus
   -H 'idempotency-key: ad5472esg4dsg525dssdfa5loi' \
   -H 'content-type: application/json' \
-  -d '{"name": "Restate"}'
+  -d '"Hi"'
 ```
 
 Note that, you don't need idempotency tokens for invocations that are invoked programmatically or via Kafka, as Restate will make sure that they are executed only once.

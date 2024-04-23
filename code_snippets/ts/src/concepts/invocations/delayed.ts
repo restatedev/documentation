@@ -9,7 +9,7 @@ async function myRestateHandler(ctx: restate.Context) {
         .greet({greeting: "Hi"});
 
     // focus
-    ctx.objectSendClient(greetCounterObject, "Mary", { delay: 1000} )
+    ctx.objectSendClient(greetCounterObject, "Mary", { delay: 1000 })
         // focus
         .greet({greeting: "Hi"});
 }

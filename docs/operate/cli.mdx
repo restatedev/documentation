@@ -3,8 +3,6 @@ sidebar_position: 1
 description: "Use the CLI to interact with Restate."
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
 
 # CLI
@@ -62,6 +60,25 @@ sudo mv restate /usr/local/bin/
 ```
 
 </CH.Code>
+
+Check if the CLI is configured correctly:
+
+```shell
+restate whoami
+```
+
+Print help to see all available commands:
+
+```shell
+restate --help
+```
+
+<Admonition type="tip">
+    The CLI can be a useful tool for debugging and troubleshooting.
+    Have a look at the [introspection page](/operate/introspection) for a list of useful commands .
+</Admonition>
+
+
 ## Configuration
 
 There are two ways to configure the CLI: via environment variables or via a configuration file.
@@ -81,104 +98,17 @@ For example, to specify the hostname `myhost` and the host scheme `https`, pass 
 RESTATE_HOST=myhost RESTATE_HOST_SCHEME=https restate <command>
 ```
 
+<Admonition type="info" title="All CLI configuration variables">
+You can find the full list of configuration variables in the [CLI GitHub repo](https://github.com/restatedev/restate/blob/main/cli/src/cli_env.rs).
+</Admonition>
+
 ### Using a configuration file
 
 You can also specify the configuration in a `.env` file. The CLI will look for a `.env` file in its current directory.
 
 For example, to connect to a Restate admin server running at `http://myhost:9070`, save the following in a `.env` file:
 
-```
+```shell .env
 RESTATE_ADMIN_URL=http://myhost:9070
 ```
 
-## Usage
-
-Here are a few useful commands:
-
-**Check if the CLI is configured correctly**
-
-```shell
-restate whoami
-```
-
-
-**Printing help**
-
-```shell
-restate --help
-```
-
-**Downloading an example or template**
-
-```shell
-restate example
-```
-
-Follow the prompts to select which template you want to download.
-
-**Listing your services**
-
-```shell
-restate services list
-```
-
-Or use the shorthand:
-
-```shell
-restate svc ls
-```
-
-**Show the status of the service(s)**
-
-```shell
-restate svc status
-```
-
-Shows a summary of the services and their methods.
-It shows counters for the invocations in the various states (pending, running, suspended, etc.)
-It also lists a sample of active service keys.
-
-To print the status of a specific service:
-
-```shell
-restate svc status <SERVICE_NAME>
-```
-
-**Listing ongoing invocations**
-
-```shell
-restate invocations list -w
-```
-
-Or use the shorthand:
-
-```shell
-restate inv list -w
-```
-This starts a watch-mode listing of ongoing invocations. Many of the CLI commands support `-w`, check `--help` to learn more.
-
-**Describing the status of an invocation**
-
-```shell
-restate inv describe <INVOCATION_ID>
-```
-
-You can also use `get` as a shorthand for `describe`.
-
-Use this command to understand the progress of the invocation: the status, any errors and retries that occurred, the current journal, etc.
-
-**Cancel an ongoing invocation**
-
-```shell
-restate inv cancel <INVOCATION_ID>
-```
-
-You can also use `rm` as a shorthand for `cancel`.
-
-Use this command to cancel an invocation and its children.
-Use the `--kill` flag to ungracefully kill the invocation and its children.
-
-<Admonition type="tip">
-The CLI can be a useful tool for debugging and troubleshooting.
-Have a look at the [introspection page](/operate/introspection) for a list of useful commands .
-</Admonition>
