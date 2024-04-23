@@ -27,7 +27,7 @@ public class OrderWorkflow {
 
         // 2. Handle payment
         String token = ctx.random().nextUUID().toString();
-        boolean paid = ctx.sideEffect(CoreSerdes.JSON_BOOLEAN, () ->
+        boolean paid = ctx.run(CoreSerdes.JSON_BOOLEAN, () ->
             PaymentClient.charge(id, token, order.getTotalCost()));
 
         if (!paid) {
@@ -41,7 +41,7 @@ public class OrderWorkflow {
 
         // 4. Trigger preparation
         var awakeable = ctx.awakeable(CoreSerdes.VOID);
-        ctx.sideEffect(() ->
+        ctx.run(() ->
             RestaurantClient.prepare(id, awakeable.id()));
         ctx.set(STATUS, StatusEnum.IN_PREPARATION);
 

@@ -14,7 +14,7 @@ public class RoleUpdateService {
     public void applyRoleUpdate(Context ctx, UpdateRequest update) {
         // Apply a change to one system (e.g., DB upsert, API call, ...)
         // and persist the result in Restate.
-        boolean success = ctx.sideEffect(CoreSerdes.JSON_BOOLEAN, () ->
+        boolean success = ctx.run(CoreSerdes.JSON_BOOLEAN, () ->
             SystemA.applyUserRole(update.getUserId(), update.getRole()));
         if (!success) {
             return;
@@ -23,7 +23,7 @@ public class RoleUpdateService {
         // Loop over the permission settings and
         // journal each operation in Restate to avoid re-execution during retries.
         for(String permission: update.getPermissions()) {
-            ctx.sideEffect(CoreSerdes.JSON_BOOLEAN, () ->
+            ctx.run(CoreSerdes.JSON_BOOLEAN, () ->
                 SystemB.applyPermission(update.getUserId(), permission));
         }
     }
