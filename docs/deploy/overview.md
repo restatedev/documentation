@@ -30,12 +30,13 @@ The server requires outbound connectivity to the services you deploy in order to
 
 The server process exposes four services by default, available on different ports:
 
-| Name      | Port | Description                                                                                                                    | Protocol                                      |
-| --------- | ---- | ------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------- |
-| Node-ctrl | 5122 | control port for restate server nodes                                                                                          | gRPC + HTTP for prometheus metrics `/metrics` |
-| Ingress   | 8080 | Acts as an API gateway for all services registered with Restate                                                                |                                               |
-| Admin     | 9070 | Allows for CRUD operations on service/service deployment metadata, eg for service registration                                 | REST                                          |
-| Postgres  | 9071 | Exposes Restate RocksDB read-only storage operations using the Postgres protocol. See [Introspection](/operate/introspection). | Postgres                                      |
+| Name           | Port | Description                                                                                                                    | Protocol                                      |
+| -------------- | ---- | ------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------- |
+| Node-ctrl      | 5122 | Control port for Restate Server nodes                                                                                          | gRPC + HTTP for Prometheus metrics `/metrics` |
+| Metadata store | 5123 | Service used for storing metadata used by the Restate Server                                                                   | gRPC                                          |
+| Ingress        | 8080 | Acts as an API gateway for all services registered with Restate                                                                |                                               |
+| Admin          | 9070 | Allows for CRUD operations on service/service deployment metadata, eg for service registration                                 | REST                                          |
+| Postgres       | 9071 | Exposes Restate RocksDB read-only storage operations using the Postgres protocol. See [Introspection](/operate/introspection). | Postgres                                      |
 
 ## Restate services
 
