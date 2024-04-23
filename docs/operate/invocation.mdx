@@ -75,15 +75,17 @@ You can use this identifier [to cancel](/operate/invocation#cancel-an-invocation
 You can **delay the message** by adding a delay request parameter in ISO8601 notation or in seconds:
 
 <CH.Code>
-    ```shell ISO8601_duration
-    # focus[40:56]
-    curl localhost:8080/MyService/myHandler/send?delay=PT10S \
-    -H 'content-type: application/json' \
-    -d '{"name": "Mary", "age": 25}'
-    ```
+
     ```shell seconds
     # focus[40:56]
     curl localhost:8080/MyService/myHandler/send?delaySec=10 \
+    -H 'content-type: application/json' \
+    -d '{"name": "Mary", "age": 25}'
+    ```
+
+    ```shell ISO8601
+    # focus[40:56]
+    curl localhost:8080/MyService/myHandler/send?delay=PT10S \
     -H 'content-type: application/json' \
     -d '{"name": "Mary", "age": 25}'
     ```
@@ -158,7 +160,7 @@ Have a look at the [Java](/develop/java/kafka) and [TypeScript](/develop/ts/kafk
         curl localhost:9070/subscriptions -H 'content-type: application/json' \
             -d '{
                 "source": "kafka://my-cluster/my-topic",
-                "sink": "component://MyService/Handle",
+                "sink": "service://MyService/Handle",
                 "options": {"auto.offset.reset": "earliest"}
             }'
         ```

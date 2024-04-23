@@ -36,7 +36,7 @@ For example, locally with Docker:
 ```shell
 docker run -p 8080:8080 -p 9070:9070 -p 9071:9071 \
 # withClass highlight-line
-  -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://host.docker.internal:4317 \
+  -e RESTATE_TRACING_ENDPOINT=http://host.docker.internal:4317 \
   --add-host=host.docker.internal:host-gateway \
   docker.io/restatedev/restate:VAR::RESTATE_VERSION
 ```
@@ -52,7 +52,8 @@ If you now spin up your services and send requests to them, you will see the tra
 <details className={"grey-details"}>
     <summary>Setting up Jaeger file exporter</summary>
 
-    If you can't configure a Jaeger agent, you can export traces by writing them to files, using the Jaeger JSON format. To do so, set up the configuration entry `observability.tracing.json_file_export_path` pointing towards the path where trace files should be written.
+    If you can't configure a Jaeger agent, you can export traces by writing them to files, using the Jaeger JSON format.
+    To do so, set up the configuration entry `tracing-json-path` pointing towards the path where trace files should be written.
 
     You can import the trace files using the Jaeger UI:
 

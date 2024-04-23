@@ -27,27 +27,26 @@ Or you can use the shorthand _`restate dp add`_.
 
 </CH.Section>
 
-When running Restate in a Docker, replace `localhost` with `host.docker.internal`.
-
 </TabItem>
 <TabItem value="curl" label="curl">
 
 <CH.Section>
-Register [a service endpoint URI](focus://1[72:99]) with [the Restate Admin API](focus://1[5:19]) as follows:
+Register [a service endpoint URI](focus://1[72:99]) with [the Restate Admin API](focus://1[5:19]) ([docs](/references/admin-api#tag/deployment/operation/create_deployment)) as follows:
 
 ```bash
 curl localhost:9070/deployments -H 'content-type: application/json'
     -d '{"uri": "localhost:9080"}'
 ```
 
-When running Restate in a Docker, replace `localhost` with `host.docker.internal`.
-
 </CH.Section>
 </TabItem>
 </Tabs>
 
+<Admonition type={"info"} title={"Running locally Restate with Docker"}>
+When running Restate in a Docker, replace `localhost` with `host.docker.internal`.
+</Admonition>
 <Admonition type="info" title="Updating services">
-A service can be registered only once. Subsequent registration requests to the same deployment will fail. For more details on how to update services, check the [versioning documentation](/operate/versioning).
+A service can be registered only once. Subsequent registration requests to the same deployment will fail. For more details on how to update services, check the [versioning docs](/operate/versioning).
 </Admonition>
 
 When developing locally, you can forcefully overwrite an existing deployment:
@@ -71,11 +70,10 @@ curl localhost:9070/deployments -H 'content-type: application/json' \
 </Tabs>
 
 
-This will forcefully overwrite the existing service deployment with the same uri, forcing the discovery process again. It will also remove services that were served by that deployment and are not available anymore.
+This will forcefully overwrite the existing service deployment with the same URI, forcing the discovery process again. It will also remove services that were served by that deployment and are not available anymore.
 
 <Admonition type="warning">
 Forcing a deployment registration is a feature designed to simplify local Restate service development, and should never be used in a production Restate deployment, as it potentially breaks all the in-flight invocations to that deployment.
 </Admonition>
 
-For more details on the API, refer to the [admin API docs](/references/admin-api#tag/deployment/operation/create_deployment).
 

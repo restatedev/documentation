@@ -410,12 +410,12 @@ restate state edit <SERVICE_NAME> <SERVICE_KEY>
 This command opens your default editor (as configured in the `cli env`).
 It sends the new state values back to the runtime to be applied.
 
-<Admonition type="info" title="`--binary` flag">
+<Admonition type="info" title="State as binary">
 Use `--binary` if the values are not JSON-encoded UTF-8 strings.
 In this case, you need to decode the base64-encoded string, and encode it back to base64 after editing.
 </Admonition>
 
-<Admonition type="info" title="`--plain` flag">
+<Admonition type="info" title="State as JSON objects">
 Use `--plain` to retrieve the state as a JSON object.
 This can be useful in combination with tools like `jq` for example:
 ```shell
@@ -433,6 +433,7 @@ An example on how to edit the K/V state of the service `counter` for the key `bo
 ```shell
 restate state edit counter bob
 ```
+
 
 After changing the state in our editor, we get:
 
