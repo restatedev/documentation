@@ -7,7 +7,8 @@ import Schema from "@site/static/schemas/config_schema.json";
 import JSONSchemaViewer from "@theme/JSONSchemaViewer";
 import ReactMarkdown from 'react-markdown'
 import CodeBlock from '@theme/CodeBlock'
-import DefaultConfig from '!!raw-loader!/static/schemas/restate.yaml';
+import Admonition from '@theme/Admonition';
+import DefaultConfig from '!!raw-loader!/static/schemas/restate.toml';
 
 # Configuration
 
@@ -15,21 +16,69 @@ Restate has a wide range of configuration options to tune it according to your n
 
 ## Configuration file
 
-Restate accepts a YAML configuration file that can be specified either providing the command line option `--config-file <PATH>` or setting the environment variable `RESTATE_CONFIG=<PATH>`. If not set, Restate will try to read `restate.yaml` in your current working directory and, if not found, the [default configuration](#default-configuration) will be applied.
+Restate accepts a [TOML](https://toml.io/en/) configuration file that can be specified either providing the command-line option `--config-file=<PATH>` or setting the environment variable `RESTATE_CONFIG=<PATH>`. If not set, the [default configuration](#default-configuration) will be applied.
 
-## Overriding configuration entries with environment variables
+## Overrides
 
-Restate supports overriding every configuration entry with an environment variable, to quickly override specific configuration entries without touching the provided configuration file. To do that, the following rule applies:
+Restate server accepts a sub-set of the configuration through command-line arguments, you can see all available options by adding `--help` to `restate-server`.
+
+The order of applying configuration layers follows the following order:
+1. Built-in defaults 
+2. Configuration file (`--config-file` or via `RESTATE_CONFIG`)
+3. Environment variables
+4. Command line arguments (`--cluster-name=<VALUE>`)
+
+<Admonition type="info" title="Note">
+Every layer overrides the previous. For instance, command-line arguments will override a configuration key supplied through environment variable (if set).
+</Admonition>
+
+### Environment variables
+You can override any configuration entry with an environment variable, this overrides values loaded from the configuration file. To do that, the following rule applies:
 
 * Prefix the configuration entry key with `RESTATE_` 
-* Separate every nested struct with `__` (double underscore).
+* Separate every nested struct with `__` (double underscore) and all hyphens `-` with a `_` (single underscore).
 
-For example, to override the `admin.bind_address`, the corresponding environment variable is `RESTATE_ADMIN__BIND_ADDRESS`.
+For example, to override the `admin.bind-address`, the corresponding environment variable is `RESTATE_ADMIN__BIND_ADDRESS`.
+
+## Configuration introspection
+
+If you want to generate a configuration file that includes values loaded from your environment variables or overrides applied to `restate-server` command-line, you can add `--dump-config` to dump the default TOML config with overrides applied:
+```console
+restate-binary --cluster-name=mycluster --dump-config
+```
+Example output:
+```toml
+roles = [
+    "worker",
+    "admin",
+    "metadata-store",
+]
+cluster-name = "mycluster"
+...
+```
+
+At any time, you ask restate daemon to print the loaded configuration to the log by sending a `SIGUSR1` to the server process. This prints a dump of the live configuration to `INFO` level.
+
+For instance on Mac/Linux, you can find the PID of restate-server by running:
+```console
+pgrep restate-server
+994921
+```
+Then send the signal to the process ID returned from `pgrep`'s output:
+```shell
+kill -USR1 994921
+```
+Observe the log output of the server for a dump of the configuration file contents.
+
 
 ## Default configuration
 
-<CodeBlock language="yaml">{DefaultConfig}</CodeBlock>
+<Admonition type="tip" icon="💡" title="Tip">
+Note that configuration defaults might change across server releases, if you want to make sure you use stable values, use an explicit configuration file an pass the path via `--config-path=<PATH>` as described above.
+</Admonition>
 
-## Configuration schema
+<CodeBlock language="toml">{DefaultConfig}</CodeBlock>
+
+## Configuration reference
 
 <JSONSchemaViewer schema={ Schema } viewerOptions={{DescriptionComponent: ({description}) => <ReactMarkdown children={description}/>}} />

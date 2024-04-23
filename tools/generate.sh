@@ -23,7 +23,7 @@ echo "Generate config schema"
 cargo xtask generate-config-schema > $DOCS_DIR/static/schemas/config_schema.json
 
 echo "Generate default config"
-cargo xtask generate-default-config > $DOCS_DIR/static/schemas/restate.yaml
+cargo xtask generate-default-config > $DOCS_DIR/static/schemas/restate.toml
 
 
 popd

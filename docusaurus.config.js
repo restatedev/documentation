@@ -181,7 +181,7 @@ const config = {
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
-        additionalLanguages: ["protobuf", "log", "java", "kotlin", "scala", "bash", "json"], // adding scala to fix redoc from breaking (https://github.com/PrismJS/prism/issues/3458)
+        additionalLanguages: ["protobuf", "log", "java", "kotlin", "scala", "bash", "json", "toml"], // adding scala to fix redoc from breaking (https://github.com/PrismJS/prism/issues/3458)
         magicComments: [
           // Remember to extend the default highlight class name as well!
           {
