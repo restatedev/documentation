@@ -29,6 +29,5 @@ fun main() {
   RestateHttpEndpointBuilder
       .builder()
       .bind(Greeter())
-      // Start the Restate Endpoint HTTP Server
       .buildAndListen()
 }
