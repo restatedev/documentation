@@ -25,8 +25,8 @@ You can modify the log format by setting the configuration entry `observability.
 
 The following components are producing relevant logs:
 
-* `restate_ingress_grpc`: The component ingesting gRPC/Connect HTTP requests inside Restate
-* `restate_meta`: The component responsible for holding the metadata informations and executing service discovery
+* `restate_ingress_http`: The Restate component ingesting HTTP requests
+* `restate_admin`: The component responsible for holding the metadata information and executing service discovery
 * `restate_invoker`: The component interacting with deployed service deployments
 * `restate_worker::partition::state_machine`: The state machine effects
 * `restate_storage`: Restate storage layer
@@ -46,6 +46,6 @@ When deploying in production, we recommend setting the log level to `info` and e
 
 We recommend to set up logging to a more verbose filter, and use the `Pretty` format. Some example filters:
 
-* `info,restate_ingress_grpc=trace,restate_invoker=trace,restate=debug,hyper=debug` for network related issues
+* `info,restate_ingress_http=trace,restate_invoker=trace,restate=debug,hyper=debug` for network related issues
 * `info,restate_worker::partition::effects=debug` to get insights on the state machine effects
 * `info,restate_meta=trace` to check service discovery and registration

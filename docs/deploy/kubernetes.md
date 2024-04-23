@@ -26,11 +26,11 @@ of how to install it and deploy a cluster can be found in the README.
 </Admonition>
 
 ## Deploying Restate services on K8S
-Service deployments can be deployed like any gRPC service; a Deployment of more than one replica is generally appropriate. However,
-like gRPC services, they must be appropriately load balanced at L7 if you want multiple service deployment pods. Native Kubernetes
+Service deployments can be deployed like any Kubernetes service; a Deployment of more than one replica is generally appropriate. However,
+they must be appropriately load balanced at L7 if you want multiple service deployment pods. Native Kubernetes
 ClusterIP load balancing will lead to the Restate binary sending all requests to a single pod, as HTTP2 connections
 are aggressively reused. This is fine for local testing, but in production an approach must be found. If your
-infrastructure already has an approach for L7 load balancing gRPC services, you can use the same approach here.
+infrastructure already has an approach for L7 load balancing services, you can use the same approach here.
 Otherwise, some recommended approaches are detailed below:
 
 | Infrastructure  | Approach                                                                                                                          |

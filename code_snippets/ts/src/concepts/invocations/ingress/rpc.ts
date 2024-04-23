@@ -2,9 +2,9 @@ import * as restate from "@restatedev/restate-sdk-ingress";
 import {greetCounterObject, greeterService} from "../utils";
 
 // <start_rpc_call_node>
-const myNodeHandler = async () => {
+const myPlainTSFunction = async () => {
     // focus
-    // From any NodeJS code:
+    // From any TS code:
     // focus
     const ingress = restate.connect({ url: "http://localhost:8080" });
 
