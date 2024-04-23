@@ -19,7 +19,6 @@ The Restate Server is a single binary that contains everything you need to host 
 
 There are a few options for hosting the Restate Server:
 
-- [Use Restate Cloud](/deploy/restate_cloud): A managed Restate service
 - [Self-host on AWS](/deploy/lambda/self-hosted)
 - [Self-host on Kubernetes](/deploy/kubernetes).
 

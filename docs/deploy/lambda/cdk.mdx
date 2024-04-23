@@ -79,7 +79,7 @@ const service: lambda.Function = new lambda.Function(scope, "RestateService", {
 </TabItem>
 </Tabs>
 
-### Optional: Deploy a self-hosted Restate server 
+### Optional: Deploy a self-hosted Restate server
 
 Restate is [very easy to deploy](/deploy/overview), and we provide a CDK construct to make it super simple to deploy
 a self-hosted development server on Amazon EC2. Once you have a Restate service, you can optionally deploy your own
@@ -94,37 +94,9 @@ The `LambdaServiceRegistry` construct represents a collection of Lambda-backed R
 care of creating/updating Restate Deployments backed by the specified Lambda functions any time you deploy a change
 to your stack. Restate uses Lambda versioning to consistently target the same function configuration from a given
 deployment revision. Note that this is a quiescent component: it deploys a custom CloudFormation resource provider which
-is only activated during changes to the referenced Lambda functions, typically while you deploy your CDK stack. 
+is only activated during changes to the referenced Lambda functions, typically while you deploy your CDK stack.
 
 <Tabs>
-<TabItem value="cloud" label="Restate Cloud" default>
-
-When using Restate Cloud managed service, you model it with the `RestateCloudEnvironment` construct. As well as holding
-the specific configuration properties, this construct creates an IAM role that can be assumed by the Restate Managed
-Service AWS account, with permission to invoke any version of all the listed service handlers Lambda functions.
-
-<Admonition type="caution">
-The `RestateCloudEnvironment` construct creates an IAM role that can be assumed by the Restate Cloud AWS service account
-in order to be able to invoke your services.
-</Admonition>
-
-```typescript
-import * as restate from "@restatedev/restate-cdk";
-
-const environment = new restate.RestateCloudEnvironment(scope, "RestateCloud", {
-  clusterId: "restate-cluster-id",
-  authTokenSecretArn: restateAuthToken.secretFullArn,
-});
-
-const handlers = new restate.LambdaServiceRegistry(scope, "ServiceRegistry", {
-  environment,
-  handlers: {
-    "namespace.Service": service,
-    // ...additional handlers as needed
-  },
-});
-```
-</TabItem>
 <TabItem value="self-hosted" label="Self-hosted" default>
 
 ```typescript
@@ -145,6 +117,7 @@ const handlers = new restate.LambdaServiceRegistry(scope, "ServiceRegistry", {
   },
 });
 ```
+
 </TabItem>
 </Tabs>
 
