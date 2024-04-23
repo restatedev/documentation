@@ -1,61 +1,42 @@
 import * as restate from "@restatedev/restate-sdk";
 import * as http2 from "http2";
 
-// <start_unkeyed>
-const serviceRouter = restate.router({
-    hello: async () => { /* ... */ },
-    callMe: async (ctx: restate.Context) => { /* ... */ },
-    maybe: async (ctx: restate.Context, request: Request) => { /* ... */ }
+const myService = restate.service({
+    name: "MyService",
+    handlers: {}
 });
-// <end_unkeyed>
 
-// <start_keyed>
-const keyedServiceRouter = restate.keyedRouter({
-    hello: async () => { /* ... */ },
-    callMe: async (ctx: restate.KeyedContext) => { /* ... */ },
-    maybe: async (ctx: restate.KeyedContext, key: string) => { /* ... */ },
-    withSomething: async (ctx: restate.KeyedContext, key: string, request: Request) => { /* ... */ }
+const myVirtualObject = restate.object({
+    name: "MyVirtualObject",
+    handlers: {}
 });
-// <end_keyed>
-
-// <start_unkeyed_api>
-export const myServiceApi: restate.ServiceApi<typeof serviceRouter> = {
-    path: "myServicePath",
-};
-// <end_unkeyed_api>
-
-// <start_keyed_api>
-export const myKeyedServiceApi: restate.ServiceApi<typeof keyedServiceRouter> = {
-    path: "myServicePath",
-};
-// <end_keyed_api>
-
 
 // <start_endpoint>
 restate
     .endpoint()
-    // bind the keyed services to the Restate server
-    .bindRouter(myServiceApi.path, serviceRouter)
-    // bind the unkeyed services to the Restate server
-    .bindKeyedRouter(myKeyedServiceApi.path, keyedServiceRouter)
-    .listen(9080);
+    .bind(myService)
+    .bind(myVirtualObject)
+    .listen();
 // <end_endpoint>
 
 
 // <start_custom_endpoint>
 const http2Handler = restate
     .endpoint()
-    .bindRouter(myServiceApi.path, serviceRouter)
+    .bind(myService)
+    .bind(myVirtualObject)
+    // withClass highlight-line
     .http2Handler()
+    // withClass highlight-line
 const httpServer = http2.createServer(http2Handler);
-httpServer.listen(9080);
+httpServer.listen();
 // <end_custom_endpoint>
 
 // <start_lambda>
 export const handler = restate
     .endpoint()
-    .bindRouter(myServiceApi.path, serviceRouter)
-    .bindKeyedRouter(myKeyedServiceApi.path, keyedServiceRouter)
-    //highlight-next-line
+    .bind(myService)
+    .bind(myVirtualObject)
+    // withClass highlight-line
     .lambdaHandler();
 // <end_lambda>

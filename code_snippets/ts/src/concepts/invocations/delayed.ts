@@ -4,7 +4,7 @@ import {greetCounterObject, greeterService} from "./utils";
 // <start_delayed_call>
 async function myRestateHandler(ctx: restate.Context) {
     // focus
-    ctx.serviceSendClient(greeterService, { delay:1000 })
+    ctx.serviceSendClient(greeterService, { delay: 1000 })
         // focus
         .greet({greeting: "Hi"});
 
