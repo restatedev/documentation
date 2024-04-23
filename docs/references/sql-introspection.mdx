@@ -13,87 +13,98 @@ The schema of these tables is described in the following.
 | Column name     | Type     | Description                                                                                                                                                         | Example                                                                 |
 |-----------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------|
 | `partition_key` | `UInt64` | Internal column that is used for partitioning the services invocations. Can be ignored.                                                                             |                                                                         |
-| `service`       | `Utf8`   | The name of the invoked service.                                                                                                                                    | `foo.bar.Greeter`                                                       |
-| `service_key`   | `Utf8`   | The service key.                                                                                                                                                    | `bob`                                                                   |
-| `key`           | `Utf8`   | The `utf8` user-supplied state key.                                                                                                                                 | A snippet like  `ctx.set(“seen”, 1);` Will produce a value like: `seen` |
+| `service_name`  | `Utf8`   | The name of the invoked service.                                                                                                                                    | `Greeter`                                                               |
+| `service_key`   | `Utf8`   | The key of the Virtual Object.                                                                                                                                      | `bob`                                                                   |
+| `key`           | `Utf8`   | The `utf8` state key.                                                                                                                                               | A snippet like  `ctx.set(“seen”, 1);` Will produce a value like: `seen` |
 | `value`         | `Binary` | A binary, uninterpreted representation of the value. You can use the more specific column `value_utf8` if the value is a string.                                    |                                                                         |
 | `value_utf8`    | `Utf8`   | Only contains meaningful values when a service stores state as `utf8`. This is the case for TypeScript services since the TypeScript SDK serializes values as JSON. | `1`                                                                     |
 
-## Table: `sys_status`
+## Table: `sys_invocation`
 
-| Column name            | Type     | Description                                                                                                                                                                     | Example               |
-|------------------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------|
-| `partition_key`        | `UInt64` | Internal column that is used for partitioning the services invocations. Can be ignored.                                                                                         |                       |
-| `service`              | `Utf8`   | The name for the invoked service.                                                                                                                                               | `foo.bar.Greeter`     |
-| `method`               | `Utf8`   | The invoked RPC method.                                                                                                                                                         | `greet`               |
-| `service_key`          | `Utf8`   | The service key.                                                                                                                                                                | `bob`                 |
-| `status`               | `Utf8`   | Enum value: `invoked` or `suspended`.                                                                                                                                           |                       |
-| `id`                   | `Utf8`   | [Invocation ID](/operate/invocation#invocation-identifier), an opaque token that can be used to cancel an invocation of a service with the [admin API](/references/admin-api). |                       |
-| `invoked_by`           | `Utf8`   | Enum describing the invoker of this service: `ingress` = invoked externally / `service` = invoked by a service.                                                                 |                       |
-| `invoked_by_service`   | `Utf8`   | The name of the invoking service. Or `null` if invoked via the ingress.                                                                                                         | `com.example.Greeter` |
-| `invoked_by_id`        | `Utf8`   | The Invocation ID of the service that triggered this invocation. Or `null` if invoked externally.                                                                               |                       |
-| `pinned_deployment_id` | `Utf8`   | The opaque service deployment ID that has been committed for this invocation; this is set after the first journal entry is stored for this invocation.                          |                       |
-| `trace_id`             | `Utf8`   | The ID of the trace that is assigned to this invocation. Only relevant when tracing is enabled.                                                                                 |                       |
-| `journal_size`         | `UInt32` | The number of journal entries durably logged for this invocation.                                                                                                               |                       |
-| `created_at`           | `Date64` | Timestamp indicating the start of this invocation.                                                                                                                              |                       |
-| `modified_at`          | `Date64` | Timestamp indicating the last state transition. For example, last time the status changed from `invoked` to `suspended`.                                                        |                       |
-
-## Table: `sys_invocation_state`
-
-| Column name                  | Type      | Description                                                                                                                                                                     | Example           |
-|------------------------------|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
-| `partition_key`              | `UInt64`  | Internal column that is used for partitioning the services invocations. Can be ignored.                                                                                         |                   |
-| `service`                    | `Utf8`    | The name for the invoked service.                                                                                                                                               | `foo.bar.Greeter` |
-| `service_key`                | `Utf8`    | The service key.                                                                                                                                                                | `bob`             |
-| `id`                         | `Utf8`    | [Invocation ID](/operate/invocation#invocation-identifier), an opaque token that can be used to cancel an invocation of a service with the [admin API](/references/admin-api). |                   |
-| `in_flight`                  | `Boolean` | Indicates whether there is currently an attempt running for this invocation.                                                                                                    |                   |
-| `retry_count`                | `UInt64`  | The number of attempts since the last successful attempt of this invocation. Increments on start, so 2 or more means a failure occurred.                                        |                   |
-| `last_start_at`              | `Date64`  | Timestamp indicating the start of the most recent attempt of this invocation.                                                                                                   |                   |
-| `last_attempt_deployment_id` | `Utf8`    | The opaque service deployment ID that was used in the most recent attempt of this invocation; this will be set before a journal entry is stored, but can change later.          |                   |
-| `next_retry_at`              | `Date64`  | Timestamp indicating the start of the next attempt of this invocation.                                                                                                          |                   |
-| `last_failure`               | `Utf8`    | An error message describing the most recent failed attempt of this invocation, if any.                                                                                          |                   |
-| `last_error_code`            | `Utf8`    | The error code of the most recent failed attempt of this invocation, if any.                                                                                        |                   |
+| Column name                        | Type     | Description                                                                                                                                                            | Example                                      |
+|------------------------------------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------|
+| `partition_key`                    | `UInt64` | Internal column that is used for partitioning the services invocations. Can be ignored.                                                                                |                                              |
+| `id`                               | `Utf8`   | [Invocation ID](/operate/invocation#invocation-identifier).                                                                                                            |                                              |
+| `target`                           | `Utf8`   | Invocation Target. Format for plain services: `ServiceName/HandlerName`. Format for Virtual Objects: `VirtualObjectName/Key/HandlerName`.                              | `Greeter/greet` or `Greeter/Francesco/greet` |
+| `target_service_name`              | `Utf8`   | The name for the invoked service.                                                                                                                                      | `Greeter`                                    |
+| `target_handler_name`              | `Utf8`   | The invoked handler.                                                                                                                                                   | `greet`                                      |
+| `target_service_key`               | `Utf8`   | The key of the Virtual Object. Null for regular services.                                                                                                              | `bob`                                        |
+| `status`                           | `Utf8`   | Enum value: `pending` or `ready` or `running` or `backing-off` or `suspended` or `completed`.                                                                          |                                              |
+| `invoked_by`                       | `Utf8`   | Enum describing the invoker of this service: `ingress` = invoked externally / `service` = invoked by a service.                                                        |                                              |
+| `invoked_by_service_name`          | `Utf8`   | The name of the invoking service. Or `null` if invoked via the ingress.                                                                                                | `Greeter`                                    |
+| `invoked_by_id`                    | `Utf8`   | The Invocation ID of the service that triggered this invocation. Or `null` if invoked externally.                                                                      |                                              |
+| `pinned_deployment_id`             | `Utf8`   | The opaque service deployment ID that has been committed for this invocation; this is set after the first journal entry is stored for this invocation.                 |                                              |
+| `trace_id`                         | `Utf8`   | The ID of the trace that is assigned to this invocation. Only relevant when tracing is enabled.                                                                        |                                              |
+| `journal_size`                     | `UInt32` | The number of journal entries durably logged for this invocation.                                                                                                      |                                              |
+| `created_at`                       | `Date64` | Timestamp indicating the start of this invocation.                                                                                                                     |                                              |
+| `modified_at`                      | `Date64` | Timestamp indicating the last state transition. For example, last time the status changed from `invoked` to `suspended`.                                               |                                              |
+| `retry_count`                      | `UInt64` | The number of attempts since the last successful attempt of this invocation. Increments on start, so 2 or more means a failure occurred.                               |                                              |
+| `last_start_at`                    | `Date64` | Timestamp indicating the start of the most recent attempt of this invocation.                                                                                          |                                              |
+| `next_retry_at`                    | `Date64` | Timestamp indicating the start of the next attempt of this invocation.                                                                                                 |                                              |
+| `last_attempt_deployment_id`       | `Utf8`   | The opaque service deployment ID that was used in the most recent attempt of this invocation; this will be set before a journal entry is stored, but can change later. |                                              |
+| `last_attempt_server`              | `Utf8`   | Server/SDK version.                                                                                                                                                    | `restate-sdk-java/0.8.0`                     |
+| `last_failure`                     | `Utf8`   | An error message describing the most recent failed attempt of this invocation, if any.                                                                                 |                                              |
+| `last_failure_error_code`          | `Utf8`   | The error code of the most recent failed attempt of this invocation, if any.                                                                                           |                                              |
+| `last_failure_related_entry_index` | `UInt64` | The index of the journal entry that caused the failure, if any. It may be out-of-bound of the currently stored entries in `sys_journal`.                               | `3`                                          |
+| `last_failure_related_entry_name`  | `Utf8`   | The name of the journal entry that caused the failure, if any.                                                                                                         | `my-side-effect`                             |
+| `last_failure_related_entry_type`  | `Utf8`   | The type of the journal entry that caused the failure, if any.                                                                                                         | `SideEffect`                                 |
 
 ## Table: `sys_journal`
 
-| Column name           | Type      | Description                                                                                                                                                                    | Example               |
-|-----------------------|-----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------|
-| `partition_key`       | `UInt64`  | Internal column that is used for partitioning the services invocations. Can be ignored.                                                                                        |                       |
-| `service`             | `Utf8`    | The name for the invoked service.                                                                                                                                              | `foo.bar.Greeter`     |
-| `service_key`         | `Utf8`    | The service key.                                                                                                                                                               | `bob`                 |
-| `index`               | `UInt32`  | The index of this journal entry, where `PollInputStream` will be index 0                                                                                                       |                       |
-| `entry_type`          | `Utf8`    | Enum value: one of `PollInputStream`, `OutputStream`, `GetState`, `SetState`, `ClearState`, `Sleep`, `Invoke`, `BackgroundInvoke`, `Awakeable`, `CompleteAwakeable`, `Custom`. |                       |
-| `completed`           | `Boolean` | Indicates whether this journal entry has been completed; this is only valid for some entry types.                                                                              |                       |
-| `invoked_id`          | `Utf8`    | If this entry represents an outbound invocation, indicates the ID of that invocation.                                                                                          |                       |
-| `invoked_service`     | `Utf8`    | If this entry represents an outbound invocation, indicates the name of the invoked service.                                                                                    | `com.example.Greeter` |
-| `invoked_method`      | `Utf8`    | If this entry represents an outbound invocation, indicates the name of the invoked method.                                                                                     | `Greet`               |
-| `invoked_service_key` | `Binary`  | If this entry represents an outbound invocation, indicates the key of that invocation.                                                                                         | `bob`                 |
+| Column name       | Type      | Description                                                                                                                                                                                              | Example                                      |
+|-------------------|-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------|
+| `partition_key`   | `UInt64`  | Internal column that is used for partitioning the services invocations. Can be ignored.                                                                                                                  |                                              |
+| `id`              | `Utf8`    | [Invocation ID](/operate/invocation#invocation-identifier)                                                                                                                                               |                                              |
+| `index`           | `UInt32`  | The index of this journal entry, where `PollInputStream` will be index 0                                                                                                                                 |                                              |
+| `entry_type`      | `Utf8`    | Enum value: one of `PollInputStream`, `OutputStream`, `GetState`, `SetState`, `ClearState`, `Sleep`, `Invoke`, `BackgroundInvoke`, `Awakeable`, `CompleteAwakeable`, `Custom`.                           |                                              |
+| `completed`       | `Boolean` | Indicates whether this journal entry has been completed; this is only valid for some entry types.                                                                                                        |                                              |
+| `name`            | `Utf8`    | The name of the entry supplied by the user, if any.                                                                                                                                                      | `my-journaled-action`                        |
+| `invoked_id`      | `Utf8`    | If this entry represents an outbound invocation, indicates the ID of that invocation.                                                                                                                    |                                              |
+| `invoked_target`  | `Utf8`    | If this entry represents an outbound invocation, indicates the invocation Target. Format for plain services: `ServiceName/HandlerName`. Format for Virtual Objects: `VirtualObjectName/Key/HandlerName`. | `Greeter/greet` or `Greeter/Francesco/greet` |
+| `sleep_wakeup_at` | `Date64`  | If this entry represents a sleep, indicates wakeup time.                                                                                                                                                 |                                              |
+| `raw`             | `Binary`  | Raw binary representation of the entry. Check the [service protocol](https://github.com/restatedev/service-protocol) for more details to decode it.                                                      |                                              |
+
+## Table: `sys_keyed_service_status`
+
+| Column name     | Type     | Description                                                                             | Example   |
+|-----------------|----------|-----------------------------------------------------------------------------------------|-----------|
+| `partition_key` | `UInt64` | Internal column that is used for partitioning the services invocations. Can be ignored. |           |
+| `service_name`  | `Utf8`   | The name for the invoked service.                                                       | `Greeter` |
+| `service_key`   | `Utf8`   | The key of the Virtual Object.                                                          | `bob`     |
+| `invocation_id` | `Utf8`   | [Invocation ID](/operate/invocation#invocation-identifier)                              |           |
 
 ## Table: `sys_inbox`
 
-|  Column name        | Type        | Description                                                                                                                                                                     | Example                |
-|---------------------|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------|
-| `id`                 | `Utf8`     | [Invocation ID](/operate/invocation#invocation-identifier), an opaque token that can be used to cancel an invocation of a service with the [admin API](/references/admin-api). |                        |
-| `partition_key`      | `UInt64`   | Internal column that is used for partitioning the services invocations. Can be ignored.                                                                                         |                        |
-| `service`            | `Utf8`     | The name for the invoked service.                                                                                                                                               | `foo.bar.Greeter`      |
-| `method`             | `Utf8`     | The invoked RPC method.                                                                                                                                                         | `greet`                |
-| `service_key`        | `Utf8`     | The service key.                                                                                                                                                                | `bob`                  |
-| `sequence_number`    | `UInt64`   | Internal identified. Can be ignored.                                                                                                                                            |                        |
-| `invoked_by`         | `Utf8`     | Enum describing the invoker of this service: `ingress` = invoked externally / `service` = invoked by a service.                                                                 |                        |
-| `invoked_by_service` | `Utf8`     | The name of the invoking service. Or `null` if invoked via the ingress.                                                                                                         | `com.example.Greeter`  |
-| `invoked_by_id`      | `Utf8`     | The Invocation ID of the service that triggered this invocation. Or `null` if invoked externally.                                                                               |                        |
-| `trace_id`           | `Utf8`     | The ID of the trace that is assigned to this invocation. Only relevant when tracing is enabled.                                                                                 |                        |
-| `created_at`         | `Date64`   | Timestamp indicating the start of this invocation.                                                                                                                              |                        |
+| Column name       | Type     | Description                                                                             | Example   |
+|-------------------|----------|-----------------------------------------------------------------------------------------|-----------|
+| `partition_key`   | `UInt64` | Internal column that is used for partitioning the services invocations. Can be ignored. |           |
+| `service_name`    | `Utf8`   | The name for the invoked service.                                                       | `Greeter` |
+| `service_key`     | `Utf8`   | The key of the Virtual Object.                                                          | `bob`     |
+| `id`              | `Utf8`   | [Invocation ID](/operate/invocation#invocation-identifier).                             |           |
+| `sequence_number` | `UInt64` | Internal identified. Can be ignored.                                                    |           |
+| `created_at`      | `Date64` | Timestamp indicating the start of this invocation.                                      |           |
+
+## Table: `sys_idempotency`
+
+| Column name       | Type     | Description                                                                             | Example             |
+|-------------------|----------|-----------------------------------------------------------------------------------------|---------------------|
+| `partition_key`   | `UInt64` | Internal column that is used for partitioning the services invocations. Can be ignored. |                     |
+| `service_name`    | `Utf8`   | The name for the invoked service.                                                       | `Greeter`           |
+| `service_key`     | `Utf8`   | The key of the Virtual Object. Null for regular services.                               | `bob`               |
+| `service_handler` | `Utf8`   | The invoked handler.                                                                    | `greet`             |
+| `idempotency_key` | `Utf8`   | The user provided idempotency key.                                                      | `my-idemptency-key` |
+| `invocation_id`   | `Utf8`   | [Invocation ID](/operate/invocation#invocation-identifier)                              |                     |
+
 
 ## Table: `sys_service`
 
-|  Column name    | Type        | Description                                                           | Example                |
-|-----------------|-------------|-----------------------------------------------------------------------|------------------------|
-| `name`          | `Utf8`      | The name of the registered user service                               | `com.example.Greeter`  |
-| `revision`      | `UInt64`    | The latest deployed revision                                          | `5`                    |
-| `public`        | `Boolean`   | Whether the service is accessible through the ingress endpoint or not |                        |
-| `instance_type` | `Utf8`      | Identifies if this is a Keyed, Unkeyed, or Singleton service          | `Keyed`                |
-| `deployment_id` | `Utf8`      | The ID of the latest deployment                                       |                        |
+| Column name     | Type      | Description                                                           | Example   |
+|-----------------|-----------|-----------------------------------------------------------------------|-----------|
+| `name`          | `Utf8`    | The name of the registered user service                               | `Greeter` |
+| `revision`      | `UInt64`  | The latest deployed revision                                          | `5`       |
+| `public`        | `Boolean` | Whether the service is accessible through the ingress endpoint or not |           |
+| `ty`            | `Utf8`    | Identifies if this is a `Service` or a `VirtualObject`                | `Service` |
+| `deployment_id` | `Utf8`    | The ID of the latest deployment                                       |           |
 
 ## Table: `sys_deployment`
 
