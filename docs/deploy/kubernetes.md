@@ -135,7 +135,7 @@ spec:
           # ...
           env:
             - name: HTTP_PROXY
-              value: 127.0.0.1:10001
+              value: http://127.0.0.1:10001
           # ...
         - name: envoy
           image: envoyproxy/envoy:distroless-v1.27-latest
