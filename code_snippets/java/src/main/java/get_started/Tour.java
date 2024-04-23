@@ -1,10 +1,8 @@
 package get_started;
 
 import dev.restate.sdk.Context;
-import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.common.CoreSerdes;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 
@@ -14,7 +12,7 @@ import java.time.Duration;
 public class Tour {
 
    @Handler
-   public void myFn(ObjectContext ctx) {
+   public void myFn(Context ctx) {
        String ticketId = "123";
 
        // <start_sleep>
@@ -54,7 +52,7 @@ class CheckoutService {
         String idempotencyKey = ctx.random().nextUUID().toString();
 
         // withClass highlight-line
-        boolean success = ctx.sideEffect(CoreSerdes.JSON_BOOLEAN, () ->
+        boolean success = ctx.run(CoreSerdes.JSON_BOOLEAN, () ->
                 PaymentClient.get().call(idempotencyKey, totalPrice));
 
         return success;

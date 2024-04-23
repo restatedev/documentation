@@ -37,11 +37,6 @@ tasks.withType<JavaCompile> {
   options.compilerArgs.add("-parameters")
 }
 
-// Configure test platform
-tasks.withType<Test> {
-  useJUnitPlatform()
-}
-
 // Set main class
 application {
   mainClass.set("develop.Greeter")
