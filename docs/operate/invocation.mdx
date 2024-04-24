@@ -129,26 +129,6 @@ If you re-invoke the service with the same idempotency key within 24 hours, Rest
 
 </details>
 
-### Private services
-<CH.Section>
-    When registering an endpoint, every service is by default reachable via HTTP requests.
-
-    You can configure a service as `private`, such that you can't invoke it over HTTP, through the [Admin API](focus://1[15:28]) ([docs](/references/admin-api#tag/service/operation/modify_service)):
-
-    ```shell
-    curl -X PATCH localhost:9070/services/MyService \
-        -H 'content-type: application/json' \
-        -d '{"public": false}'
-    ```
-
-    You can revert it back to public with [`{"public": true}`](focus://3).
-
-    <Admonition type="info">
-        Private services can still be invoked by other handlers via the SDK.
-    </Admonition>
-
-</CH.Section>
-
 ## Kafka subscriptions
 
 Restate can trigger handlers via Kafka events.
