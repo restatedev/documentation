@@ -10,36 +10,28 @@ public class RpcCalls {
     // <start_rpc>
     @Handler
     public void myRestateHandler(Context ctx){
-        // focus
+        // focus(1:3)
         String greet = GreeterServiceClient.fromContext(ctx)
-                // focus
                 .greet("Hi")
-                // focus
                 .await();
 
-        // focus
+        // focus(1:3)
         int count = GreetCounterObjectClient.fromContext(ctx, "Mary")
-                // focus
                 .greet("Hi")
-                // focus
                 .await();
     }
     // <end_rpc>
 
     // <start_rpc_java>
     public void myJavaHandler(Context ctx){
-        // focus
+        // focus(1:3)
         String greet = GreeterServiceClient
-                // focus
                 .fromIngress("http://localhost:8080")
-                // focus
                 .greet("Hi");
 
-        // focus
+        // focus(1:3)
         int count = GreetCounterObjectClient
-                // focus
                 .fromIngress("http://localhost:8080", "Mary")
-                // focus
                 .greet("Hi");
     }
     // <end_rpc_java>

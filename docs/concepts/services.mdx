@@ -34,30 +34,43 @@ There are two types of services in Restate:
 | Example use cases: <ul><li>Microservice orchestration</li><li>To benefit from idempotency</li><li>Transformation functions</li><li>Sagas</li></ul> | Example use cases: <ul><li>Atomic state machines</li><li>Digital twin</li><li>Locking mechanisms</li><li>Sequencing or ordering invocations</li></ul> |
 
 ## Services
-Services expose a collection of handlers.
-- The handlers of services are **independent** and can be **invoked concurrently**.
-- Handlers use the regular code and control flow, no custom DSLs.
-- Handlers in services **take part in durable execution**.
-They run to the end, even in the presence of failures.
-Restate takes care of retries and recovers the handler to the point where it failed.
-- Service handlers **don't have access to Restate's K/V store**.
 
-**Example**: You can use services for code that updates different systems and needs to make sure all updates are applied.
-During retries, the service will not reapply the same update twice:
+Services expose a collection of handlers:
 
 <Tabs groupId="sdk" queryString>
     <TabItem value="ts" label="TypeScript">
 
+        - Restate makes sure that **handlers run to completion**, even in the presence of failures.
+        Restate logs the **results of actions** in the system.
+        Restate takes care of retries and recovers the handler to the point where it failed.
+        - The handlers of services are **independent** and can be **invoked concurrently**.
+        - Handlers use the regular code and control flow, no custom DSLs.
+        - Service handlers **don't have access to Restate's K/V store**.
+
+        In the example, we use a Restate service to update different systems and to make sure all updates are applied.
+        During retries, the service will not reapply the same update twice.
+
+
         ```typescript
         CODE_LOAD::ts/src/concepts/services.ts#<start_service>-<end_service>
         ```
-
     </TabItem>
     <TabItem value="java" label="Java">
+
+        - Restate makes sure that **handlers run to completion**, even in the presence of failures.
+        Restate logs the **results of actions** in the system.
+        Restate takes care of retries and recovers the handler to the point where it failed.
+        - The handlers of services are **independent** and can be **invoked concurrently**.
+        - Handlers use the regular code and control flow, no custom DSLs.
+        - Service handlers **don't have access to Restate's K/V store**.
 
         ```java
         CODE_LOAD::java/src/main/java/concepts/services/RoleUpdateService.java
         ```
+
+
+        In the example, we use a Restate service to update different systems and to make sure all updates are applied.
+        During retries, the service will not reapply the same update twice.
 
     </TabItem>
 </Tabs>

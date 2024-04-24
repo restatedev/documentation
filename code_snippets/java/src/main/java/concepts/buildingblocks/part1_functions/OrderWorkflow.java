@@ -20,9 +20,8 @@ public class OrderWorkflow {
     public final static StateKey<StatusEnum> STATUS =
         StateKey.of("status", JacksonSerdes.of(StatusEnum.class));
 
-    // focus
+    // focus(1:2)
     @Handler
-    // focus
     public void process(ObjectContext ctx, OrderRequest order) {
         String id = order.getOrderId();
         ctx.set(STATUS, StatusEnum.CREATED);
