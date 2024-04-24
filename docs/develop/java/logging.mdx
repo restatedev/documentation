@@ -1,0 +1,54 @@
+---
+sidebar_position: 12
+description: "Configure the log level of your services."
+---
+
+# Logging
+
+The Java SDK uses [log4j2](https://logging.apache.org/log4j/2.x/manual/configuration.html) as logging facade. To enable logging, add `log4j2-core` to the dependencies. For example, for Gradle:
+
+```kotlin
+implementation("org.apache.logging.log4j:log4j-core:2.20.0")
+```
+
+And configure the logging adding the file `resources/log4j2.properties`:
+
+```properties
+# Set to debug or trace if log4j initialization is failing
+status = warn
+
+# Console appender configuration
+appender.console.type = Console
+appender.console.name = consoleLogger
+appender.console.layout.type = PatternLayout
+appender.console.layout.pattern = %d{yyyy-MM-dd HH:mm:ss} %-5p %notEmpty{[%X{restateInvocationTarget}]}%notEmpty{[%X{restateInvocationId}]} %c - %m%n
+
+# Filter out logging during replay
+appender.console.filter.replay.type = ContextMapFilter
+appender.console.filter.replay.onMatch = DENY
+appender.console.filter.replay.onMismatch = NEUTRAL
+appender.console.filter.replay.0.type = KeyValuePair
+appender.console.filter.replay.0.key = restateInvocationStatus
+appender.console.filter.replay.0.value = REPLAYING
+
+# Restate logs to debug level
+logger.app.name = dev.restate
+logger.app.level = info
+logger.app.additivity = false
+logger.app.appenderRef.console.ref = consoleLogger
+
+# Root logger
+rootLogger.level = info
+rootLogger.appenderRef.stdout.ref = consoleLogger
+```
+
+If you want to do filtering of the logs, you can use `log4j2` filters.
+
+Logging on the `INFO` level is enough for most use cases, but you can set the log level of
+the `dev.restate` classes to `DEBUG` and `TRACE` if you want more info about the internal SDK operations.
+
+The SDK injects the following additional metadata to the logging context that can be used for filtering as well:
+
+* `restateInvocationTarget`: Invocation Target, e.g. `counter.Counter/Add`.
+* `restateInvocationId`: [Invocation ID](/operate/invocation#invocation-identifier).
+* `restateInvocationStatus`: Invocation status, can be `WAITING_START`, `REPLAYING`, `PROCESSING`, `CLOSED`.
