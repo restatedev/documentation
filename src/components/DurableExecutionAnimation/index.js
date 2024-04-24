@@ -1,5 +1,6 @@
-import "./animation-stylesheet.css"
-import React, { useState, useRef, useEffect } from "react"
+import "./animation-stylesheet.css";
+import React, { useState, useRef, useEffect } from "react";
+import clsx from 'clsx';
 
 class Ingress extends React.Component {
     render() {
@@ -394,7 +395,7 @@ const defaultAnimation = "<div class=\"col col--1 padding-horiz--sm\"><div id=\"
 export default function DurableExecutionAnimation() {
     console.info("Called DurableExecutionAnimation");
 
-    const [animationState, setAnimationState] = useState({ animationIndex: 0, cartSvcCodeLine: 0, ticketSvcCodeLine: 0 });
+    const [animationState, setAnimationState] = useState({ animationIndex: -1, cartSvcCodeLine: 0, ticketSvcCodeLine: 0 });
     const progressBarRef = useRef(null);
 
     useEffect(() => {
@@ -459,15 +460,15 @@ export default function DurableExecutionAnimation() {
             if(rewind){
                 console.info("Rewinding animation")
                 requestedIndex = prevState.animationIndex - 1;
-                prevState = { animationIndex: 0, cartSvcCodeLine: 0, ticketSvcCodeLine: 0 };
+                prevState = { animationIndex: -1, cartSvcCodeLine: 0, ticketSvcCodeLine: 0 };
                 const animationElement = document.getElementById("animation");
                 animationElement.innerHTML = defaultAnimation;
             } else {
-                requestedIndex = (prevState.animationIndex < 14) ? prevState.animationIndex + 1 : 0;
+                requestedIndex = (prevState.animationIndex < 14) ? prevState.animationIndex + 1 : -1;
             }
 
-            if(requestedIndex === 0){
-                prevState = { animationIndex: 0, cartSvcCodeLine: 0, ticketSvcCodeLine: 0 };
+            if(requestedIndex === -1){
+                prevState = { animationIndex: -1, cartSvcCodeLine: 0, ticketSvcCodeLine: 0 };
                 const animationElement = document.getElementById("animation");
                 animationElement.innerHTML = defaultAnimation;
             } else {
@@ -754,6 +755,21 @@ export default function DurableExecutionAnimation() {
         animate()
     };
 
+    const handleProgressBarChange = (event) => {
+        const currentValue = parseInt(event.target.value);
+        if (currentValue > animationState.animationIndex) {
+            // Moved to the right, call handleNext
+            for (let i = animationState.animationIndex; i < currentValue; i++) {
+                handleNext();
+            }
+        } else if (currentValue < animationState.animationIndex) {
+            // Moved to the left, call handlePrev
+            for (let i = animationState.animationIndex; i > currentValue; i--) {
+                handlePrev();
+            }
+        }
+    };
+
     return (
         <div>
             <div id="animation_container" className="container justify-content-center">
@@ -765,19 +781,17 @@ export default function DurableExecutionAnimation() {
                     <Services/>
                 </div>
                 <div id="progressBarContainer">
-                    <button onClick={handlePrev}>Prev</button>
+                    <button className={clsx("btn-animation")} onClick={handlePrev}>Prev</button>
                     <input
                         type="range"
                         id="progressBar"
                         min={0}
                         max={14}
                         step={1}
-                        readOnly
-                        value={0}
                         ref={progressBarRef}
-                        onKeyDown={() => {}}
+                        onChange={handleProgressBarChange}
                     />
-                    <button onClick={handleNext}>Next</button>
+                    <button className={clsx("btn-animation")} onClick={handleNext}>Next</button>
                 </div>
             </div>
         </div>
