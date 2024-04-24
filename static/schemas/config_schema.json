@@ -24,7 +24,10 @@
           "tmp-dir": null
         },
         "num-timers-in-memory-limit": null,
-        "rocksdb-disable-wal": true
+        "storage": {
+          "rocksdb-disable-wal": true,
+          "sync-wal-on-flush": false
+        }
       },
       "$ref": "#/definitions/WorkerOptions"
     },
@@ -53,6 +56,7 @@
       "default": {
         "default-provider": "local",
         "local": {
+          "batch-wal-flushes": true,
           "rocksdb-disable-wal": false,
           "sync-wal-before-ack": true,
           "writer-batch-commit-count": 500,
@@ -65,7 +69,9 @@
       "default": {
         "bind-address": "0.0.0.0:5123",
         "request-queue-length": 32,
-        "rocksdb": {}
+        "rocksdb": {
+          "rocksdb-disable-wal": false
+        }
       },
       "$ref": "#/definitions/LocalMetadataStoreOptions"
     },
@@ -332,14 +338,6 @@
         "null"
       ]
     },
-    "rocksdb-batch-wal-flushes": {
-      "title": "Flush WAL in batches",
-      "description": "when WAL is enabled, this allows Restate server to control WAL flushes in batches. This trades off latency for IO throughput.",
-      "type": [
-        "boolean",
-        "null"
-      ]
-    },
     "rocksdb-disable-statistics": {
       "description": "Disable rocksdb statistics collection\n\nDefault: False (statistics enabled)",
       "type": [
@@ -405,6 +403,13 @@
           "format": "uint",
           "minimum": 1.0
         },
+        "storage": {
+          "default": {
+            "rocksdb-disable-wal": true,
+            "sync-wal-on-flush": false
+          },
+          "$ref": "#/definitions/StorageOptions"
+        },
         "invoker": {
           "default": {
             "abort-timeout": "1m",
@@ -430,6 +435,18 @@
           "type": "integer",
           "format": "uint64",
           "minimum": 1.0
+        }
+      }
+    },
+    "StorageOptions": {
+      "title": "Storage options",
+      "type": "object",
+      "properties": {
+        "sync-wal-on-flush": {
+          "title": "Sync WAL on flushes",
+          "description": "If WAL is enabled, this option defines whether the WAL will also be synced on flushes.",
+          "default": false,
+          "type": "boolean"
         },
         "rocksdb-write-buffer-size": {
           "title": "Write Buffer size",
@@ -458,14 +475,6 @@
         "rocksdb-disable-wal": {
           "title": "Disable WAL",
           "description": "The default depends on the different rocksdb use-cases at Restate.\n\nSupports hot-reloading (Partial / Bifrost only)",
-          "type": [
-            "boolean",
-            "null"
-          ]
-        },
-        "rocksdb-batch-wal-flushes": {
-          "title": "Flush WAL in batches",
-          "description": "when WAL is enabled, this allows Restate server to control WAL flushes in batches. This trades off latency for IO throughput.",
           "type": [
             "boolean",
             "null"
@@ -513,6 +522,61 @@
           ]
         }
       }
+    },
+    "NonZeroHumanBytes": {
+      "title": "Non-zero human-readable bytes",
+      "description": "Non-zero human-readable bytes",
+      "type": "string",
+      "format": "non-zero human-bytes",
+      "minimum": 1.0,
+      "minLength": 1,
+      "pattern": "^\\d+(\\.\\d+)? ?[KMG]B$"
+    },
+    "RocksbStatistics": {
+      "oneOf": [
+        {
+          "description": "Disable all metrics",
+          "type": "string",
+          "enum": [
+            "disable-all"
+          ]
+        },
+        {
+          "description": "Disable timer stats, and skip histogram stats",
+          "type": "string",
+          "enum": [
+            "except-histogram-or-timers"
+          ]
+        },
+        {
+          "description": "Skip timer stats",
+          "type": "string",
+          "enum": [
+            "except-timers"
+          ]
+        },
+        {
+          "description": "Collect all stats except time inside mutex lock AND time spent on compression.",
+          "type": "string",
+          "enum": [
+            "except-detailed-timers"
+          ]
+        },
+        {
+          "description": "Collect all stats except the counters requiring to get time inside the mutex lock.",
+          "type": "string",
+          "enum": [
+            "except-time-for-mutex"
+          ]
+        },
+        {
+          "description": "Collect all stats, including measuring duration of mutex operations. If getting time is expensive on the platform to run, it can reduce scalability to more threads, especially for writes.",
+          "type": "string",
+          "enum": [
+            "all"
+          ]
+        }
+      ]
     },
     "InvokerOptions": {
       "title": "Invoker options",
@@ -684,61 +748,6 @@
         }
       ]
     },
-    "NonZeroHumanBytes": {
-      "title": "Non-zero human-readable bytes",
-      "description": "Non-zero human-readable bytes",
-      "type": "string",
-      "format": "non-zero human-bytes",
-      "minimum": 1.0,
-      "minLength": 1,
-      "pattern": "^\\d+(\\.\\d+)? ?[KMG]B$"
-    },
-    "RocksbStatistics": {
-      "oneOf": [
-        {
-          "description": "Disable all metrics",
-          "type": "string",
-          "enum": [
-            "disable-all"
-          ]
-        },
-        {
-          "description": "Disable timer stats, and skip histogram stats",
-          "type": "string",
-          "enum": [
-            "except-histogram-or-timers"
-          ]
-        },
-        {
-          "description": "Skip timer stats",
-          "type": "string",
-          "enum": [
-            "except-timers"
-          ]
-        },
-        {
-          "description": "Collect all stats except time inside mutex lock AND time spent on compression.",
-          "type": "string",
-          "enum": [
-            "except-detailed-timers"
-          ]
-        },
-        {
-          "description": "Collect all stats except the counters requiring to get time inside the mutex lock.",
-          "type": "string",
-          "enum": [
-            "except-time-for-mutex"
-          ]
-        },
-        {
-          "description": "Collect all stats, including measuring duration of mutex operations. If getting time is expensive on the platform to run, it can reduce scalability to more threads, especially for writes.",
-          "type": "string",
-          "enum": [
-            "all"
-          ]
-        }
-      ]
-    },
     "AdminOptions": {
       "title": "Admin server options",
       "type": "object",
@@ -881,6 +890,7 @@
         "local": {
           "description": "Configuration of local loglet provider",
           "default": {
+            "batch-wal-flushes": true,
             "rocksdb-disable-wal": false,
             "sync-wal-before-ack": true,
             "writer-batch-commit-count": 500,
@@ -910,14 +920,17 @@
       ]
     },
     "LocalMetadataStoreOptions": {
+      "title": "Metadata store options",
       "type": "object",
       "properties": {
         "bind-address": {
+          "title": "Bind address of the metadata store",
           "description": "Address to which the metadata store will bind to.",
           "default": "0.0.0.0:5123",
           "type": "string"
         },
         "request-queue-length": {
+          "title": "Limit number of in-flight requests",
           "description": "Number of in-flight metadata store requests.",
           "default": 32,
           "type": "integer",
@@ -925,7 +938,11 @@
           "minimum": 1.0
         },
         "rocksdb": {
-          "default": {},
+          "title": "RocksDB options for metadata store's RocksDB instance",
+          "description": "The RocksDB options which will be used to configure the metadata store's RocksDB instance.",
+          "default": {
+            "rocksdb-disable-wal": false
+          },
           "$ref": "#/definitions/RocksDbOptions"
         }
       }
@@ -960,14 +977,6 @@
         "rocksdb-disable-wal": {
           "title": "Disable WAL",
           "description": "The default depends on the different rocksdb use-cases at Restate.\n\nSupports hot-reloading (Partial / Bifrost only)",
-          "type": [
-            "boolean",
-            "null"
-          ]
-        },
-        "rocksdb-batch-wal-flushes": {
-          "title": "Flush WAL in batches",
-          "description": "when WAL is enabled, this allows Restate server to control WAL flushes in batches. This trades off latency for IO throughput.",
           "type": [
             "boolean",
             "null"
