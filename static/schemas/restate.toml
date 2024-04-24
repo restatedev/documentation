@@ -1,0 +1,65 @@
+roles = [
+    "worker",
+    "admin",
+    "metadata-store",
+]
+cluster-name = "localcluster"
+allow-bootstrap = true
+metadata-store-address = "http://127.0.0.1:5123/"
+bind-address = "0.0.0.0:5122"
+advertised-address = "http://127.0.0.1:5122/"
+shutdown-timeout = "1m"
+tracing-filter = "info"
+log-filter = "warn,restate=info"
+log-format = "pretty"
+log-disable-ansi-codes = false
+disable-prometheus = false
+rocksdb-total-memory-size = "4.0 GB"
+rocksdb-total-memtables-size = "0 B"
+rocksdb-high-priority-bg-threads = 2
+
+[http-keep-alive-options]
+interval = "40s"
+timeout = "20s"
+
+[worker]
+internal-queue-length = 64
+rocksdb-disable-wal = true
+bootstrap-num-partitions = 64
+
+[worker.invoker]
+inactivity-timeout = "1m"
+abort-timeout = "1m"
+message-size-warning = "10.0 MB"
+
+[worker.invoker.retry-policy]
+type = "exponential"
+initial-interval = "50ms"
+factor = 2.0
+max-interval = "10s"
+
+[admin]
+bind-address = "0.0.0.0:9070"
+
+[admin.query-engine]
+pgsql-bind-address = "0.0.0.0:9071"
+
+[ingress]
+bind-address = "0.0.0.0:8080"
+kafka-clusters = []
+
+[bifrost]
+default-provider = "local"
+
+[bifrost.local]
+rocksdb-disable-wal = false
+writer-batch-commit-count = 500
+writer-batch-commit-duration = "5ns"
+sync-wal-before-ack = true
+
+[metadata-store]
+bind-address = "0.0.0.0:5123"
+request-queue-length = 32
+
+[metadata-store.rocksdb]
+
