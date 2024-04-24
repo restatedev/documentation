@@ -5,17 +5,13 @@ import {greetCounterObject, greeterService} from "../utils";
 const myPlainTSFunction = async () => {
     // focus
     // From any TS code:
-    // focus
+    // focus(1:7)
     const ingress = restate.connect({ url: "http://localhost:8080" });
 
-    // focus
     const greet = await ingress.serviceClient(greeterService)
-        // focus
         .greet({ greeting: "Hi" });
 
-    // focus
     const count = await ingress.objectClient(greetCounterObject, "Mary")
-        // focus
         .greet({ greeting: "Hi" });
 }
 // <end_rpc_call_node>

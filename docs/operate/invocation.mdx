@@ -14,7 +14,7 @@ An invocation is a request to execute a handler that is part of either a service
 There are different ways to invoke a handler:
 
 * From within another handler, see the SDK docs for [TypeScript](/develop/ts/service-communication) or [Java/Kotlin](/develop/java/service-communication)
-* By sending a request to Restate [over HTTP](/operate/invocation#over-http)
+* By sending a request to Restate [over HTTP](/operate/invocation#invoking-handlers-over-http)
 * [Via Kafka events](/operate/invocation#kafka-subscriptions)
 
 ## Invoking handlers over HTTP
@@ -66,7 +66,7 @@ curl localhost:8080/MyService/myHandler/send \
 </details>
 
     The response contains the [Invocation identifier](#invocation-identifier).
-You can use this identifier [to cancel](/operate/invocation#cancel-an-invocation) or [kill the invocation](/operate/invocation#kill-an-invocation).
+You can use this identifier [to cancel](/operate/invocation#cancelling-invocations) or [kill the invocation](/operate/invocation#killing-invocations).
 
 <Admonition type="tip">
     Use this to invoke long-running workflows.
@@ -155,31 +155,54 @@ Restate can trigger handlers via Kafka events.
 Have a look at the [Java](/develop/java/kafka) and [TypeScript](/develop/ts/kafka) docs to learn how to set up your handler to receive Kafka events.
 
 <CH.Section>
-    - **Create subscriptions** for [a handler](focus://4) on [a topic](focus://3) via:
-        ```bash
-        curl localhost:9070/subscriptions -H 'content-type: application/json' \
-            -d '{
-                "source": "kafka://my-cluster/my-topic",
-                "sink": "service://MyService/Handle",
-                "options": {"auto.offset.reset": "earliest"}
-            }'
-        ```
-    The [options field](focus://5) is optional and accepts any configuration parameter from [librdkafka configuration](https://github.com/confluentinc/librdkafka/blob/master/CONFIGURATION.md).
+- **Create subscriptions** for [a handler](focus://4) on [a topic](focus://3) via:
+```bash
+curl localhost:9070/subscriptions -H 'content-type: application/json' \
+    -d '{
+        "source": "kafka://my-cluster/my-topic",
+        "sink": "service://MyService/Handle",
+        "options": {"auto.offset.reset": "earliest"}
+    }'
+```
+The [options field](focus://5) is optional and accepts any configuration parameter from [librdkafka configuration](https://github.com/confluentinc/librdkafka/blob/master/CONFIGURATION.md).
 </CH.Section>
 - **List** the current subscriptions via:
-  ```bash
-  curl localhost:9070/subscriptions
+```bash
+curl localhost:9070/subscriptions
+```
+
+<details className="grey-details">
+    <summary>Output</summary>
+
+    ```json
+    {
+        "subscriptions": [
+            {
+                "id": "sub_11XHoawrCiWtv8kzhEyGtsR",
+                "source": "kafka://my-cluster/my-topic",
+                "sink": "service://Greeter/greet",
+                "options": {
+                    "auto.offset.reset": "earliest",
+                    "client.id": "restate",
+                    "group.id": "sub_11XHoawrCiWtv8kzhEyGtsR"
+                }
+            }
+        ]
+    }
     ```
+
+</details>
+
     The creation and listing of subscriptions returns an identifier.
 <CH.Section>
-    - **Delete** a subscription with [its identifier](focus://1[45:78]) via:
-        ```bash
-        curl -X DELETE localhost:9070/subscriptions/018cd978aa9f77b5a80454bc060c2a77
-        ```
+    - **Delete** a subscription with [its identifier (starting with `sub_`)](focus://1[45:78]) via:
+    ```bash
+    curl -X DELETE localhost:9070/subscriptions/sub_11XHoawrCiWtv8kzhEyGtsR
+    ```
 
-        <Admonition type="info">
-            When you delete a subscription, Restate stops the consumer group associated to it. Any messages that were already enqueued by Restate will still be processed.
-        </Admonition>
+    <Admonition type="info">
+        When you delete a subscription, Restate stops the consumer group associated to it. Any messages that were already enqueued by Restate will still be processed.
+    </Admonition>
 </CH.Section>
 
 

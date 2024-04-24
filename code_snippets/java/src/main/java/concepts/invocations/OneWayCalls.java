@@ -10,36 +10,30 @@ public class OneWayCalls {
     // <start_one_way_call>
     @Handler
     public void myRestateHandler(Context ctx){
-        // focus
-        GreeterServiceClient.fromContext(ctx).send()
-                // focus
+        // focus(1:3)
+        GreeterServiceClient.fromContext(ctx)
+                .send()
                 .greet("Hi");
 
-        // focus
-        GreetCounterObjectClient.fromContext(ctx, "Mary").send()
-                // focus
+        // focus(1:3)
+        GreetCounterObjectClient.fromContext(ctx, "Mary")
+                .send()
                 .greet("Hi");
     }
     // <end_one_way_call>
 
     // <start_one_way_call_java>
     public void myJavaHandler(Context ctx){
-        // focus
-        GreeterServiceClient
-                // focus
+        // focus(1:4)
+        String invocationId = GreeterServiceClient
                 .fromIngress("http://localhost:8080")
-                // focus
                 .send()
-                // focus
                 .greet("Hi");
 
-        // focus
+        // focus(1:4)
         GreetCounterObjectClient
-                // focus
                 .fromIngress("http://localhost:8080", "Mary")
-                // focus
                 .send()
-                // focus
                 .greet("Hi");
     }
     // <end_one_way_call_java>

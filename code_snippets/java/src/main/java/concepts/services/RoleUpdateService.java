@@ -10,28 +10,24 @@ import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 @Service
 public class RoleUpdateService {
 
-    @Handler
-    public void applyRoleUpdate(Context ctx, UpdateRequest update) {
-        // Apply a change to one system (e.g., DB upsert, API call, ...)
-        // and persist the result in Restate.
-        boolean success = ctx.run(CoreSerdes.JSON_BOOLEAN, () ->
-            SystemA.applyUserRole(update.getUserId(), update.getRole()));
-        if (!success) {
-            return;
-        }
-
-        // Loop over the permission settings and
-        // journal each operation in Restate to avoid re-execution during retries.
-        for(String permission: update.getPermissions()) {
-            ctx.run(CoreSerdes.JSON_BOOLEAN, () ->
-                SystemB.applyPermission(update.getUserId(), permission));
-        }
+  @Handler
+  public void applyRoleUpdate(Context ctx, UpdateRequest req) {
+    boolean success = ctx.run(CoreSerdes.JSON_BOOLEAN, () ->
+        SystemA.applyUserRole(req.getUserId(), req.getRole()));
+    if (!success) {
+        return;
     }
 
-    public static void main(String[] args) {
-        RestateHttpEndpointBuilder.builder()
-            .bind(new RoleUpdateService())
-            .buildAndListen();
+    for(String permission: req.getPermissions()) {
+        ctx.run(CoreSerdes.JSON_BOOLEAN, () ->
+          SystemB.applyPermission(req.getUserId(), permission));
     }
+  }
+
+  public static void main(String[] args) {
+    RestateHttpEndpointBuilder.builder()
+        .bind(new RoleUpdateService())
+        .buildAndListen();
+  }
 }
 // <end_here>

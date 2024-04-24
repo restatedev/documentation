@@ -10,12 +10,13 @@ import Admonition from '@theme/Admonition';
 Restate uses an execution log for replay after failures and suspensions.
 This means that non-deterministic results (e.g. database responses, UUID generation) need to be stored in the execution log.
 The SDK offers some functionalities to help you with this:
-1. **[Side effects](/develop/ts/side-effects#side-effects)**: Run any block of code and store the result in Restate. Restate replays the result instead of re-executing the block on retries.
-2. **[`CombineablePromise` combinators](/develop/ts/side-effects#combineablepromise-combinators)**: Log the order in which CombineablePromises are resolved/rejected, to ensure deterministic replay.
-3. **[Random generators](/develop/ts/side-effects#generating-randoms)**: Built-in helpers for generating stable UUIDs and random numbers.
+1. **[Journaled actions](/develop/ts/journaling-results#journaled-actions)**: Run any block of code and store the result in Restate. Restate replays the result instead of re-executing the block on retries.
+2. **[`CombineablePromise` combinators](/develop/ts/journaling-results#combineablepromise-combinators)**: Log the order in which CombineablePromises are resolved/rejected, to ensure deterministic replay.
+3. **[Random generators](/develop/ts/journaling-results#generating-randoms)**: Built-in helpers for generating stable UUIDs and random numbers.
 
-## Side effects
-Side effects are a way to store the result of a non-deterministic operation in the Restate execution log (e.g. database requests, HTTP calls, etc). Restate replays the result instead of re-executing the operation on retries.
+## Journaled actions
+You can store the result of a (non-deterministic) operation in the Restate execution log (e.g. database requests, HTTP calls, etc).
+Restate replays the result instead of re-executing the operation on retries.
 
 Here is an example of a database request for which the string response is stored in Restate:
 ```typescript
@@ -26,16 +27,16 @@ CODE_LOAD::ts/src/develop/side_effects.ts#<start_side_effect>-<end_side_effect>
     You can store any result value that can be serialized as a Buffer with _`Buffer.from(JSON.stringify(yourObject))`_ and deserialized with _`JSON.parse(result.toString()) as T`_.
 </Admonition>
 
-<Admonition type="caution" title={"Immediately await side effects"}>
-Always immediately await side effects, before doing any other context calls.
+<Admonition type="caution" title={"Immediately await journaled actions"}>
+Always immediately await `ctx.run`, before doing any other context calls.
 If not, you might bump into non-determinism errors during replay,
-because the side effect can get interleaved with the other context calls in the journal in a non-deterministic way.
+because the journaled result can get interleaved with the other context calls in the journal in a non-deterministic way.
 </Admonition>
 
 
 <Admonition type="info">
 You cannot invoke any methods on the Restate context within a side effect.
-This includes actions such as getting state, calling another service, and nesting side effects.
+This includes actions such as getting state, calling another service, and nesting other journaled actions.
 </Admonition>
 
 ## `CombineablePromise` combinators
