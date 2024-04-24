@@ -24,8 +24,11 @@ timeout = "20s"
 
 [worker]
 internal-queue-length = 64
-rocksdb-disable-wal = true
 bootstrap-num-partitions = 64
+
+[worker.storage]
+rocksdb-disable-wal = true
+sync-wal-on-flush = false
 
 [worker.invoker]
 inactivity-timeout = "1m"
@@ -56,10 +59,12 @@ rocksdb-disable-wal = false
 writer-batch-commit-count = 500
 writer-batch-commit-duration = "5ns"
 sync-wal-before-ack = true
+batch-wal-flushes = true
 
 [metadata-store]
 bind-address = "0.0.0.0:5123"
 request-queue-length = 32
 
 [metadata-store.rocksdb]
+rocksdb-disable-wal = false
 
