@@ -9,7 +9,7 @@ import Admonition from '@theme/Admonition';
 
 This page describes how to deploy Restate and Restate services on [Kubernetes](https://kubernetes.io/).
 
-## Deploying Restate on K8S
+## Deploying Restate Server on K8S
 
 The recommended Kubernetes deployment strategy is a one-replica StatefulSet. We recommend installing Restate in its own
 namespace. The easiest way to do this is with
@@ -22,19 +22,20 @@ helm install restate oci://ghcr.io/restatedev/restate-helm --namespace restate -
 <Admonition type="tip" title="Restate Kubernetes Operator">
 If you want to run multiple Restate clusters in Kubernetes, or want advanced functionality like online volume expansion
 and network policies, you can also use the [Restate Operator](https://github.com/restatedev/restate-operator). Details
-of how to install it and deploy a cluster can be found in the README.
+of how to install it and deploy a cluster can be found in the [README](https://github.com/restatedev/restate-operator/blob/main/README.md).
 </Admonition>
 
 ## Deploying Restate services on K8S
-Service deployments can be deployed like any Kubernetes service; a Deployment of more than one replica is generally appropriate. However,
-they must be appropriately load balanced at L7 if you want multiple service deployment pods. Native Kubernetes
-ClusterIP load balancing will lead to the Restate binary sending all requests to a single pod, as HTTP2 connections
-are aggressively reused. This is fine for local testing, but in production an approach must be found. If your
-infrastructure already has an approach for L7 load balancing services, you can use the same approach here.
+
+Service deployments can be deployed like any Kubernetes service; a Deployment of more than one replica is generally appropriate.
+The deployment should be load balanced at L7 if you want multiple service deployment pods.
+Native Kubernetes ClusterIP load balancing will lead to the Restate binary sending all requests to a single pod, as HTTP2 connections are aggressively reused.
+This is fine for local testing, but in production an approach must be found.
+If your infrastructure already has an approach for L7 load balancing services, you can use the same approach here.
 Otherwise, some recommended approaches are detailed below:
 
 | Infrastructure  | Approach                                                                                                                          |
-|-----------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | Knative         | Use Knative for autoscaling, scale to zero and the integrated L7 load balancing                                                   |
 | Istio / LinkerD | Ensure sidecar is injected into Restate pod and all service pods                                                                  |
 | Cilium          | Ensure Cilium is installed with `loadBalancer.l7.backend=envoy`, and annotate service pods with `service.cilium.io/lb-l7=enabled` |
@@ -116,9 +117,8 @@ By default Knative exposes the service through the Ingress. This is not required
 
 ### Simple L7 load balancing with an Envoy sidecar
 
-A simple approach to L7 load balancing is to set up an Envoy sidecar in the Restate pod which acts as a transparent HTTP proxy
-which will resolve and L7 load balance to Kubernetes Services based on their DNS name. For this to work, Services must be
-deployed as Headless, ie without a ClusterIP. This is achieved by specifying `clusterIP: None` in a `type: ClusterIP` Service.
+A simple approach to L7 load balancing is to set up an Envoy sidecar in the Restate pod which acts as a transparent HTTP proxy which will resolve and L7 load balance to Kubernetes Services based on their DNS name.
+For this to work, Services must be deployed as Headless, ie without a ClusterIP. This is achieved by specifying `clusterIP: None` in a `type: ClusterIP` Service.
 
 ```yaml
 apiVersion: apps/v1

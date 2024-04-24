@@ -14,8 +14,8 @@ log-filter = "warn,restate=info"
 log-format = "pretty"
 log-disable-ansi-codes = false
 disable-prometheus = false
-rocksdb-total-memory-limit = 4000000000
-rocksdb-total-memtables-size-limit = 0
+rocksdb-total-memory-size = "4.0 GB"
+rocksdb-total-memtables-size = "0 B"
 rocksdb-high-priority-bg-threads = 2
 
 [http-keep-alive-options]
@@ -30,26 +30,22 @@ bootstrap-num-partitions = 64
 [worker.invoker]
 inactivity-timeout = "1m"
 abort-timeout = "1m"
-message-size-warning = 10485760
-disable-eager-state = false
+message-size-warning = "10.0 MB"
 
 [worker.invoker.retry-policy]
 type = "exponential"
 initial-interval = "50ms"
 factor = 2.0
-max-attempts = 9223372036854775807
 max-interval = "10s"
 
 [admin]
 bind-address = "0.0.0.0:9070"
-concurrent-api-requests-limit = 2305843009213693950
 
 [admin.query-engine]
 pgsql-bind-address = "0.0.0.0:9071"
 
 [ingress]
 bind-address = "0.0.0.0:8080"
-concurrent-api-requests-limit = 2305843009213693950
 kafka-clusters = []
 
 [bifrost]

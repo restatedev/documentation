@@ -28,12 +28,6 @@ npm run bundle
 AWS Lambda assumes that the handler can be found under `index.handler` in the uploaded code.
 By default, this is also the case for the Lambda functions developed with the Restate SDK.
 
-## Managed service
-
-If you'd prefer not to manage a runtime instance, we are trialing a managed service that lets you work
-with Lambda services without running any infrastructure.
-See [the documentation](/deploy/restate_cloud) for more details.
-
 ## Discovery of services
 
 To let Restate discover the services, execute the following curl command,
@@ -207,9 +201,6 @@ The body is the base64 encoded string of the response, and stands for `{"value":
 You don't necessarily need to run the Restate runtime on AWS, but it does need to be able to obtain credentials to invoke your Lambda.
 You can run the Restate runtime locally in a Docker container to test your Lambda function, using your local AWS creds (defined in ~/.aws).
 
-If you use SSO, the AWS Rust SDK currently requires a minor change to your ~/.aws/config to support this;
-see https://github.com/awslabs/aws-sdk-rust/issues/703#issuecomment-1811480196.
-
 ```shell
 docker run -e AWS_PROFILE -v ~/.aws/:/root/.aws --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
 ```
@@ -263,7 +254,6 @@ You should see the response:
 ```
 
 This method increases a counter that is keyed by the name in the request. Send some subsequent requests for different names and watch the counters incrementing.
-
 
 <Admonition type="tip">
 The counters are stored in Restate. Restate supplies the state together with the request when it invokes the Lambda function.

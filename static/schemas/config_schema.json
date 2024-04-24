@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2019-09/schema",
   "title": "Restate configuration file",
-  "description": "Configuration for the Restate single binary deployment.\n\nYou can specify the configuration file to use through the `--config-file <PATH>` argument or with `RESTATE_CONFIG=<PATH>` environment variable.\n\nEach configuration entry can be overridden using environment variables, prefixing them with `RESTATE_` and separating nested structs with `__` (double underscore).\n\nFor example, to configure `admin.bind_address`, the corresponding environment variable is `RESTATE_ADMIN__BIND_ADDRESS`.",
+  "description": "Configuration for Restate server.",
   "type": "object",
   "properties": {
     "worker": {
@@ -11,14 +11,13 @@
         "invoker": {
           "abort-timeout": "1m",
           "concurrent-invocations-limit": null,
-          "disable-eager-state": false,
           "inactivity-timeout": "1m",
           "message-size-limit": null,
-          "message-size-warning": 10485760,
+          "message-size-warning": "10.0 MB",
           "retry-policy": {
             "factor": 2.0,
             "initial-interval": "50ms",
-            "max-attempts": 9223372036854775807,
+            "max-attempts": null,
             "max-interval": "10s",
             "type": "exponential"
           },
@@ -32,9 +31,9 @@
     "admin": {
       "default": {
         "bind-address": "0.0.0.0:9070",
-        "concurrent-api-requests-limit": 2305843009213693950,
+        "concurrent-api-requests-limit": null,
         "query-engine": {
-          "memory-limit": null,
+          "memory-size": null,
           "pgsql-bind-address": "0.0.0.0:9071",
           "query-parallelism": null,
           "tmp-dir": null
@@ -45,7 +44,7 @@
     "ingress": {
       "default": {
         "bind-address": "0.0.0.0:8080",
-        "concurrent-api-requests-limit": 2305843009213693950,
+        "concurrent-api-requests-limit": null,
         "kafka-clusters": []
       },
       "$ref": "#/definitions/IngressOptions"
@@ -79,8 +78,9 @@
       ],
       "type": "array",
       "items": {
-        "type": "string"
-      }
+        "$ref": "#/definitions/Role"
+      },
+      "uniqueItems": true
     },
     "node-name": {
       "title": "Node Name",
@@ -94,14 +94,12 @@
     "force-node-id": {
       "description": "If set, the node insists on acquiring this node ID.",
       "default": null,
-      "anyOf": [
-        {
-          "$ref": "#/definitions/PlainNodeId"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": [
+        "integer",
+        "null"
+      ],
+      "format": "uint32",
+      "minimum": 0.0
     },
     "cluster-name": {
       "title": "Cluster Name",
@@ -227,21 +225,17 @@
       "format": "uint",
       "minimum": 1.0
     },
-    "rocksdb-total-memory-limit": {
-      "title": "Total memory limit for rocksdb caches and memtables. This includes memory",
-      "description": "for uncompressed block cache and all memtables by all open databases.\n\nThe memory size used for rocksdb caches. Default is 4GB.",
-      "default": 4000000000,
-      "type": "integer",
-      "format": "uint64",
-      "minimum": 0.0
+    "rocksdb-total-memory-size": {
+      "title": "Total memory limit for rocksdb caches and memtables.",
+      "description": "This includes memory for uncompressed block cache and all memtables by all open databases. The memory size used for rocksdb caches.",
+      "default": "4.0 GB",
+      "$ref": "#/definitions/NonZeroHumanBytes"
     },
-    "rocksdb-total-memtables-size-limit": {
+    "rocksdb-total-memtables-size": {
       "title": "Rocksdb total memtable size limit",
-      "description": "The memory size used across all memtables. This limits how much memory memtables can eat up from the value in rocksdb_total_memory_limit. When set to 0, memtables can take all available memory up to the value specified in rocksdb_total_memory_limit.\n\nDefault is 0",
-      "default": 0,
-      "type": "integer",
-      "format": "uint64",
-      "minimum": 0.0
+      "description": "The memory size used across all memtables. This limits how much memory memtables can eat up from the value in rocksdb_total_memory_limit. When set to 0, memtables can take all available memory up to the value specified in rocksdb_total_memory_limit.",
+      "default": "0 B",
+      "$ref": "#/definitions/HumanBytes"
     },
     "rocksdb-bg-threads": {
       "title": "Rocksdb Background Threads",
@@ -255,7 +249,7 @@
     },
     "rocksdb-high-priority-bg-threads": {
       "title": "Rocksdb High Priority Background Threads",
-      "description": "The number of threads to reserve to high priority Rocksdb background tasks. Defaults to 2.",
+      "description": "The number of threads to reserve to high priority Rocksdb background tasks.",
       "default": 2,
       "type": "integer",
       "format": "uint32",
@@ -309,22 +303,26 @@
     "rocksdb-write-buffer-size": {
       "title": "Write Buffer size",
       "description": "The size of a single memtable. Once memtable exceeds this size, it is marked immutable and a new one is created. Default is 256MB per memtable.",
-      "type": [
-        "integer",
-        "null"
-      ],
-      "format": "uint",
-      "minimum": 0.0
+      "anyOf": [
+        {
+          "$ref": "#/definitions/NonZeroHumanBytes"
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "rocksdb-max-total-wal-size": {
       "title": "Maximum total WAL size",
-      "description": "Max WAL size, that after this Rocksdb start flushing mem tables to disk. Default is 2GB.",
-      "type": [
-        "integer",
-        "null"
-      ],
-      "format": "uint64",
-      "minimum": 0.0
+      "description": "Max WAL size, that after this Rocksdb start flushing mem tables to disk.",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/NonZeroHumanBytes"
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "rocksdb-disable-wal": {
       "title": "Disable WAL",
@@ -336,7 +334,7 @@
     },
     "rocksdb-batch-wal-flushes": {
       "title": "Flush WAL in batches",
-      "description": "when WAL is enabled, this allows Restate server to control WAL flushes in batches. This trades off latency for IO throughput.\n\nDefault: True.",
+      "description": "when WAL is enabled, this allows Restate server to control WAL flushes in batches. This trades off latency for IO throughput.",
       "type": [
         "boolean",
         "null"
@@ -361,13 +359,15 @@
     },
     "rocksdb-compaction-readahead-size": {
       "title": "RocksDB compaction readahead size in bytes",
-      "description": "If non-zero, we perform bigger reads when doing compaction. If you're running RocksDB on spinning disks, you should set this to at least 2MB. That way RocksDB's compaction is doing sequential instead of random reads.\n\nDefault: 2MB (2 * 1024 * 1024)",
-      "type": [
-        "integer",
-        "null"
-      ],
-      "format": "uint",
-      "minimum": 0.0
+      "description": "If non-zero, we perform bigger reads when doing compaction. If you're running RocksDB on spinning disks, you should set this to at least 2MB. That way RocksDB's compaction is doing sequential instead of random reads.",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/HumanBytes"
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "rocksdb-statistics-level": {
       "title": "RocksDB statistics level",
@@ -392,7 +392,7 @@
           "default": 64,
           "type": "integer",
           "format": "uint",
-          "minimum": 0.0
+          "minimum": 1.0
         },
         "num-timers-in-memory-limit": {
           "title": "Num timers in memory limit",
@@ -403,20 +403,19 @@
             "null"
           ],
           "format": "uint",
-          "minimum": 0.0
+          "minimum": 1.0
         },
         "invoker": {
           "default": {
             "abort-timeout": "1m",
             "concurrent-invocations-limit": null,
-            "disable-eager-state": false,
             "inactivity-timeout": "1m",
             "message-size-limit": null,
-            "message-size-warning": 10485760,
+            "message-size-warning": "10.0 MB",
             "retry-policy": {
               "factor": 2.0,
               "initial-interval": "50ms",
-              "max-attempts": 9223372036854775807,
+              "max-attempts": null,
               "max-interval": "10s",
               "type": "exponential"
             },
@@ -430,27 +429,31 @@
           "default": 64,
           "type": "integer",
           "format": "uint64",
-          "minimum": 0.0
+          "minimum": 1.0
         },
         "rocksdb-write-buffer-size": {
           "title": "Write Buffer size",
           "description": "The size of a single memtable. Once memtable exceeds this size, it is marked immutable and a new one is created. Default is 256MB per memtable.",
-          "type": [
-            "integer",
-            "null"
-          ],
-          "format": "uint",
-          "minimum": 0.0
+          "anyOf": [
+            {
+              "$ref": "#/definitions/NonZeroHumanBytes"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "rocksdb-max-total-wal-size": {
           "title": "Maximum total WAL size",
-          "description": "Max WAL size, that after this Rocksdb start flushing mem tables to disk. Default is 2GB.",
-          "type": [
-            "integer",
-            "null"
-          ],
-          "format": "uint64",
-          "minimum": 0.0
+          "description": "Max WAL size, that after this Rocksdb start flushing mem tables to disk.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/NonZeroHumanBytes"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "rocksdb-disable-wal": {
           "title": "Disable WAL",
@@ -462,7 +465,7 @@
         },
         "rocksdb-batch-wal-flushes": {
           "title": "Flush WAL in batches",
-          "description": "when WAL is enabled, this allows Restate server to control WAL flushes in batches. This trades off latency for IO throughput.\n\nDefault: True.",
+          "description": "when WAL is enabled, this allows Restate server to control WAL flushes in batches. This trades off latency for IO throughput.",
           "type": [
             "boolean",
             "null"
@@ -487,13 +490,15 @@
         },
         "rocksdb-compaction-readahead-size": {
           "title": "RocksDB compaction readahead size in bytes",
-          "description": "If non-zero, we perform bigger reads when doing compaction. If you're running RocksDB on spinning disks, you should set this to at least 2MB. That way RocksDB's compaction is doing sequential instead of random reads.\n\nDefault: 2MB (2 * 1024 * 1024)",
-          "type": [
-            "integer",
-            "null"
-          ],
-          "format": "uint",
-          "minimum": 0.0
+          "description": "If non-zero, we perform bigger reads when doing compaction. If you're running RocksDB on spinning disks, you should set this to at least 2MB. That way RocksDB's compaction is doing sequential instead of random reads.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/HumanBytes"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "rocksdb-statistics-level": {
           "title": "RocksDB statistics level",
@@ -519,7 +524,7 @@
           "default": {
             "factor": 2.0,
             "initial-interval": "50ms",
-            "max-attempts": 9223372036854775807,
+            "max-attempts": null,
             "max-interval": "10s",
             "type": "exponential"
           },
@@ -540,21 +545,21 @@
         "message-size-warning": {
           "title": "Message size warning",
           "description": "Threshold to log a warning in case protocol messages coming from a service are larger than the specified amount.",
-          "default": 10485760,
-          "type": "integer",
-          "format": "uint",
-          "minimum": 0.0
+          "default": "10.0 MB",
+          "$ref": "#/definitions/NonZeroHumanBytes"
         },
         "message-size-limit": {
           "title": "Message size limit",
           "description": "Threshold to fail the invocation in case protocol messages coming from a service are larger than the specified amount.",
           "default": null,
-          "type": [
-            "integer",
-            "null"
-          ],
-          "format": "uint",
-          "minimum": 0.0
+          "anyOf": [
+            {
+              "$ref": "#/definitions/NonZeroHumanBytes"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "tmp-dir": {
           "title": "Temporary directory",
@@ -574,7 +579,7 @@
             "null"
           ],
           "format": "uint",
-          "minimum": 0.0
+          "minimum": 1.0
         }
       }
     },
@@ -604,7 +609,6 @@
           "type": "object",
           "required": [
             "interval",
-            "max_attempts",
             "type"
           ],
           "properties": {
@@ -621,10 +625,13 @@
             },
             "max_attempts": {
               "title": "Max attempts",
-              "description": "Number of maximum attempts before giving up.",
-              "type": "integer",
+              "description": "Number of maximum attempts before giving up. Infinite retries if unset.",
+              "type": [
+                "integer",
+                "null"
+              ],
               "format": "uint",
-              "minimum": 0.0
+              "minimum": 1.0
             }
           }
         },
@@ -635,7 +642,6 @@
           "required": [
             "factor",
             "initial_interval",
-            "max_attempts",
             "type"
           ],
           "properties": {
@@ -658,10 +664,13 @@
             },
             "max_attempts": {
               "title": "Max attempts",
-              "description": "Number of maximum attempts before giving up.",
-              "type": "integer",
+              "description": "Number of maximum attempts before giving up. Infinite retries if unset.",
+              "type": [
+                "integer",
+                "null"
+              ],
               "format": "uint",
-              "minimum": 0.0
+              "minimum": 1.0
             },
             "max_interval": {
               "title": "Max interval",
@@ -674,6 +683,24 @@
           }
         }
       ]
+    },
+    "NonZeroHumanBytes": {
+      "title": "Non-zero human-readable bytes",
+      "description": "Non-zero human-readable bytes",
+      "type": "string",
+      "format": "non-zero human-bytes",
+      "minimum": 1.0,
+      "minLength": 1,
+      "pattern": "^\\d+(\\.\\d+)? ?[KMG]B$"
+    },
+    "HumanBytes": {
+      "title": "Human-readable bytes",
+      "description": "Human-readable bytes",
+      "type": "string",
+      "format": "human-bytes",
+      "minimum": 1.0,
+      "minLength": 1,
+      "pattern": "^\\d+(\\.\\d+)? ?[KMG]B$"
     },
     "RocksbStatistics": {
       "oneOf": [
@@ -733,15 +760,18 @@
         },
         "concurrent-api-requests-limit": {
           "title": "Concurrency limit",
-          "description": "Concurrency limit for the Admin APIs. Max allowed value is 2305843009213693950",
-          "default": 2305843009213693950,
-          "type": "integer",
+          "description": "Concurrency limit for the Admin APIs. Default is unlimited.",
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
           "format": "uint",
-          "minimum": 0.0
+          "minimum": 1.0
         },
         "query-engine": {
           "default": {
-            "memory-limit": null,
+            "memory-size": null,
             "pgsql-bind-address": "0.0.0.0:9071",
             "query-parallelism": null,
             "tmp-dir": null
@@ -754,16 +784,18 @@
       "title": "Storage query engine options",
       "type": "object",
       "properties": {
-        "memory-limit": {
-          "title": "Memory limit",
+        "memory-size": {
+          "title": "Memory size limit",
           "description": "The total memory in bytes that can be used to preform sql queries",
           "default": null,
-          "type": [
-            "integer",
-            "null"
-          ],
-          "format": "uint",
-          "minimum": 0.0
+          "anyOf": [
+            {
+              "$ref": "#/definitions/NonZeroHumanBytes"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "tmp-dir": {
           "title": "Temp folder to use for spill",
@@ -783,7 +815,7 @@
             "null"
           ],
           "format": "uint",
-          "minimum": 0.0
+          "minimum": 1.0
         },
         "pgsql-bind-address": {
           "title": "Pgsql Bind address",
@@ -805,11 +837,14 @@
         },
         "concurrent-api-requests-limit": {
           "title": "Concurrency limit",
-          "description": "Local concurrency limit to use to limit the amount of concurrent requests. If exceeded, the ingress will reply immediately with an appropriate status code. Max allowed value is 2305843009213693950",
-          "default": 2305843009213693950,
-          "type": "integer",
+          "description": "Local concurrency limit to use to limit the amount of concurrent requests. If exceeded, the ingress will reply immediately with an appropriate status code. Default is unlimited.",
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
           "format": "uint",
-          "minimum": 0.0
+          "minimum": 1.0
         },
         "kafka-clusters": {
           "default": [],
@@ -850,7 +885,7 @@
         "default-provider": {
           "title": "The default kind of loglet to be used",
           "default": "local",
-          "type": "string"
+          "$ref": "#/definitions/ProviderKind"
         },
         "local": {
           "description": "Configuration of local loglet provider",
@@ -863,6 +898,25 @@
           "type": "string"
         }
       }
+    },
+    "ProviderKind": {
+      "description": "An enum with the list of supported loglet providers.",
+      "oneOf": [
+        {
+          "description": "A local rocksdb-backed loglet.",
+          "type": "string",
+          "enum": [
+            "local"
+          ]
+        },
+        {
+          "description": "An in-memory loglet, primarily for testing.",
+          "type": "string",
+          "enum": [
+            "in-memory"
+          ]
+        }
+      ]
     },
     "LocalMetadataStoreOptions": {
       "type": "object",
@@ -877,7 +931,7 @@
           "default": 32,
           "type": "integer",
           "format": "uint",
-          "minimum": 0.0
+          "minimum": 1.0
         },
         "rocksdb": {
           "default": {},
@@ -891,22 +945,26 @@
         "rocksdb-write-buffer-size": {
           "title": "Write Buffer size",
           "description": "The size of a single memtable. Once memtable exceeds this size, it is marked immutable and a new one is created. Default is 256MB per memtable.",
-          "type": [
-            "integer",
-            "null"
-          ],
-          "format": "uint",
-          "minimum": 0.0
+          "anyOf": [
+            {
+              "$ref": "#/definitions/NonZeroHumanBytes"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "rocksdb-max-total-wal-size": {
           "title": "Maximum total WAL size",
-          "description": "Max WAL size, that after this Rocksdb start flushing mem tables to disk. Default is 2GB.",
-          "type": [
-            "integer",
-            "null"
-          ],
-          "format": "uint64",
-          "minimum": 0.0
+          "description": "Max WAL size, that after this Rocksdb start flushing mem tables to disk.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/NonZeroHumanBytes"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "rocksdb-disable-wal": {
           "title": "Disable WAL",
@@ -918,7 +976,7 @@
         },
         "rocksdb-batch-wal-flushes": {
           "title": "Flush WAL in batches",
-          "description": "when WAL is enabled, this allows Restate server to control WAL flushes in batches. This trades off latency for IO throughput.\n\nDefault: True.",
+          "description": "when WAL is enabled, this allows Restate server to control WAL flushes in batches. This trades off latency for IO throughput.",
           "type": [
             "boolean",
             "null"
@@ -943,13 +1001,15 @@
         },
         "rocksdb-compaction-readahead-size": {
           "title": "RocksDB compaction readahead size in bytes",
-          "description": "If non-zero, we perform bigger reads when doing compaction. If you're running RocksDB on spinning disks, you should set this to at least 2MB. That way RocksDB's compaction is doing sequential instead of random reads.\n\nDefault: 2MB (2 * 1024 * 1024)",
-          "type": [
-            "integer",
-            "null"
-          ],
-          "format": "uint",
-          "minimum": 0.0
+          "description": "If non-zero, we perform bigger reads when doing compaction. If you're running RocksDB on spinning disks, you should set this to at least 2MB. That way RocksDB's compaction is doing sequential instead of random reads.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/HumanBytes"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "rocksdb-statistics-level": {
           "title": "RocksDB statistics level",
@@ -965,10 +1025,29 @@
         }
       }
     },
-    "PlainNodeId": {
-      "type": "integer",
-      "format": "uint32",
-      "minimum": 0.0
+    "Role": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "metadata-store"
+          ]
+        },
+        {
+          "description": "A worker runs partition processor (journal, state, and drives invocations)",
+          "type": "string",
+          "enum": [
+            "worker"
+          ]
+        },
+        {
+          "description": "Admin runs cluster controller and user-facing admin APIs",
+          "type": "string",
+          "enum": [
+            "admin"
+          ]
+        }
+      ]
     },
     "LogFormat": {
       "title": "Log format",
