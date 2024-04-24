@@ -362,7 +362,7 @@
       "description": "If non-zero, we perform bigger reads when doing compaction. If you're running RocksDB on spinning disks, you should set this to at least 2MB. That way RocksDB's compaction is doing sequential instead of random reads.",
       "anyOf": [
         {
-          "$ref": "#/definitions/HumanBytes"
+          "$ref": "#/definitions/NonZeroHumanBytes"
         },
         {
           "type": "null"
@@ -493,7 +493,7 @@
           "description": "If non-zero, we perform bigger reads when doing compaction. If you're running RocksDB on spinning disks, you should set this to at least 2MB. That way RocksDB's compaction is doing sequential instead of random reads.",
           "anyOf": [
             {
-              "$ref": "#/definitions/HumanBytes"
+              "$ref": "#/definitions/NonZeroHumanBytes"
             },
             {
               "type": "null"
@@ -689,15 +689,6 @@
       "description": "Non-zero human-readable bytes",
       "type": "string",
       "format": "non-zero human-bytes",
-      "minimum": 1.0,
-      "minLength": 1,
-      "pattern": "^\\d+(\\.\\d+)? ?[KMG]B$"
-    },
-    "HumanBytes": {
-      "title": "Human-readable bytes",
-      "description": "Human-readable bytes",
-      "type": "string",
-      "format": "human-bytes",
       "minimum": 1.0,
       "minLength": 1,
       "pattern": "^\\d+(\\.\\d+)? ?[KMG]B$"
@@ -1004,7 +995,7 @@
           "description": "If non-zero, we perform bigger reads when doing compaction. If you're running RocksDB on spinning disks, you should set this to at least 2MB. That way RocksDB's compaction is doing sequential instead of random reads.",
           "anyOf": [
             {
-              "$ref": "#/definitions/HumanBytes"
+              "$ref": "#/definitions/NonZeroHumanBytes"
             },
             {
               "type": "null"
@@ -1077,6 +1068,15 @@
           ]
         }
       ]
+    },
+    "HumanBytes": {
+      "title": "Human-readable bytes",
+      "description": "Human-readable bytes",
+      "type": "string",
+      "format": "human-bytes",
+      "minimum": 1.0,
+      "minLength": 1,
+      "pattern": "^\\d+(\\.\\d+)? ?[KMG]B$"
     },
     "Http2KeepAliveOptions": {
       "title": "HTTP/2 Keep alive options",
