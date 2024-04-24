@@ -1,95 +1,69 @@
-shutdown_grace_period: 1m
-observability:
-  tracing: null
-  log:
-    filter: warn,restate=info
-    format: Pretty
-    disable_ansi_codes: false
-tokio_runtime:
-  worker_threads: null
-  max_blocking_threads: null
-node_name: LocalNode
-node_id: null
-meta:
-  storage_path: target/meta/
-  service_client:
-    http:
-      keep_alive_options:
-        interval: 40s
-        timeout: 20s
-      proxy_uri: null
-    lambda:
-      aws_profile: null
-      assume_role_external_id: null
-worker:
-  channel_size: 64
-  timers:
-    num_timers_in_memory_limit: 1024
-  storage_query_datafusion:
-    memory_limit: null
-    temp_folder: null
-    query_parallelism: null
-  storage_query_postgres:
-    bind_address: 0.0.0.0:9071
-  storage_rocksdb:
-    path: target/db/
-    threads: 10
-    write_buffer_size: 0
-    max_total_wal_size: 2147483648
-    cache_size: 0
-    disable_statistics: false
-  ingress_grpc:
-    bind_address: 0.0.0.0:8080
-    concurrency_limit: 10000000
-    json:
-      deserialize_deny_unknown_fields: true
-      serialize_stringify_64_bit_integers: true
-      serialize_use_enum_numbers: false
-      serialize_use_proto_field_name: false
-      serialize_skip_default_fields: false
-  kafka:
-    clusters: {}
-  invoker:
-    retry_policy:
-      type: Exponential
-      initial_interval: 50ms
-      factor: 2.0
-      max_attempts: 18446744073709551615
-      max_interval: 10s
-    inactivity_timeout: 1m
-    abort_timeout: 1m
-    message_size_warning: 10485760
-    message_size_limit: null
-    tmp_dir: /var/folders/tw/68_ctnh50rn41q721zt5pwfc0000gn/T/invoker-018e5c9948497714a7a15271dc469905
-    concurrency_limit: null
-    service_client:
-      http:
-        keep_alive_options:
-          interval: 40s
-          timeout: 20s
-        proxy_uri: null
-      lambda:
-        aws_profile: null
-        assume_role_external_id: null
-    disable_eager_state: false
-  partition_processor:
-    max_batch_duration: 50ms
-  partitions: 1024
-server:
-  bind_address: 0.0.0.0:5122
-  histogram_inactivity_timeout: null
-  disable_prometheus: false
-admin:
-  bind_address: 0.0.0.0:9070
-  concurrency_limit: 1000
-bifrost:
-  default_provider: File
-  providers_config:
-    File:
-      path: target/logs/
-cluster_controller: {}
-roles:
-- Worker
-- ClusterController
-cluster_controller_address: ''
+roles = [
+    "worker",
+    "admin",
+    "metadata-store",
+]
+cluster-name = "localcluster"
+allow-bootstrap = true
+metadata-store-address = "http://127.0.0.1:5123/"
+bind-address = "0.0.0.0:5122"
+advertised-address = "http://127.0.0.1:5122/"
+shutdown-timeout = "1m"
+tracing-filter = "info"
+log-filter = "warn,restate=info"
+log-format = "pretty"
+log-disable-ansi-codes = false
+disable-prometheus = false
+rocksdb-total-memory-limit = 4000000000
+rocksdb-total-memtables-size-limit = 0
+rocksdb-high-priority-bg-threads = 2
+
+[http-keep-alive-options]
+interval = "40s"
+timeout = "20s"
+
+[worker]
+internal-queue-length = 64
+rocksdb-disable-wal = true
+bootstrap-num-partitions = 64
+
+[worker.invoker]
+inactivity-timeout = "1m"
+abort-timeout = "1m"
+message-size-warning = 10485760
+disable-eager-state = false
+
+[worker.invoker.retry-policy]
+type = "exponential"
+initial-interval = "50ms"
+factor = 2.0
+max-attempts = 9223372036854775807
+max-interval = "10s"
+
+[admin]
+bind-address = "0.0.0.0:9070"
+concurrent-api-requests-limit = 2305843009213693950
+
+[admin.query-engine]
+pgsql-bind-address = "0.0.0.0:9071"
+
+[ingress]
+bind-address = "0.0.0.0:8080"
+concurrent-api-requests-limit = 2305843009213693950
+kafka-clusters = []
+
+[bifrost]
+default-provider = "local"
+
+[bifrost.local]
+rocksdb-disable-wal = false
+writer-batch-commit-count = 500
+writer-batch-commit-duration = "5ns"
+sync-wal-before-ack = true
+
+[metadata-store]
+bind-address = "0.0.0.0:5123"
+request-queue-length = 32
+
+[metadata-store.rocksdb]
 
