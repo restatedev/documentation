@@ -1,6 +1,5 @@
 import "./animation-stylesheet.css"
-import React, {useEffect, useState} from "react"
-// import * as CH from "codehike/dist/components"
+import React, { useState, useRef, useEffect } from "react"
 
 class Ingress extends React.Component {
     render() {
@@ -389,21 +388,23 @@ const defaultAnimation = "<div class=\"col col--1 padding-horiz--sm\"><div id=\"
     "  <span class=\"hljs-keyword\">return</span> success;\n" +
     "}</pre></div><div id=\"journal_ticket\" class=\"smallest_font display-none padding--sm bg-light\"><p class=\"smaller_font margin-bottom--none\">Journal: <br></p><div id=\"journal_ticket_0\" class=\"text--center display-inline-block color-2 set-bg set-color padding-horiz--xs\">(seat2B) <br> state()</div><div id=\"journal_ticket_1\" class=\"text--center display-inline-block display-none color-3 set-bg set-color padding-horiz--xs\">response: <br> { success }</div></div></div></div></div>";
 
+
+
+
 export default function DurableExecutionAnimation() {
     console.info("Called DurableExecutionAnimation");
 
-    const [animationIndex, setAnimationIndex] = useState(0);
-    const [requestedIndex, setRequestedIndex] = useState(0);
-    const [cartSvcCodeLine, setCartSvcCodeLine] = useState(0);
-    const [ticketSvcCodeLine, setTicketSvcCodeLine] = useState(0);
+    const [animationState, setAnimationState] = useState({ animationIndex: 0, cartSvcCodeLine: 0, ticketSvcCodeLine: 0 });
+    const progressBarRef = useRef(null);
 
-    const [timer, setTimer] = useState(null);
+    useEffect(() => {
+        progressBarRef.current.value = animationState.animationIndex;
+    }, [animationState]);
 
-    function highlightNextCartSvcCodeLine() {
+    function highlightNextCartSvcCodeLine(cartSvcCodeLine) {
         console.info("Called highlightNextCartSvcCodeLine");
         // Update cart service code highlighting
         // Update state for journal element visibility
-        setCartSvcCodeLine(prevLine => {
             const linesToHighlightPerJournalIndex = {
                 0: [0],
                 1: [1,2,3],
@@ -416,50 +417,76 @@ export default function DurableExecutionAnimation() {
             document.getElementById("cart_service").innerHTML = document.getElementById("cart_service")
                 .innerHTML.split("\n")
                 .map((line, index) =>
-                    linesToHighlightPerJournalIndex[prevLine].includes(index)
-                        ? `<mark class="code-highlight color-${prevLine + 1} set-bg">${line}</mark>`
+                    linesToHighlightPerJournalIndex[cartSvcCodeLine].includes(index)
+                        ? `<mark class="code-highlight color-${cartSvcCodeLine + 1} set-bg">${line}</mark>`
                         : line,
                 )
                 .join("\n");
-            const journalCartElement = document.getElementById("journal_cart_" + prevLine);
+            const journalCartElement = document.getElementById("journal_cart_" + cartSvcCodeLine);
             if (journalCartElement) journalCartElement.classList.remove("display-none");
-            const restateJournalElement = document.getElementById("restate_journal_cart_" + prevLine);
+            const restateJournalElement = document.getElementById("restate_journal_cart_" + cartSvcCodeLine);
             if (restateJournalElement) restateJournalElement.classList.remove("display-none");
-            return prevLine + 1;
-        });
     }
 
-    function highlightNextTicketSvcCodeLine() {
+    function highlightNextTicketSvcCodeLine(cartSvcCodeLine, ticketSvcCodeLine) {
         console.info("Called highlightNextTicketSvcCodeLine");
         // Update ticket service code highlighting
         // Update state for journal element visibility
-        setTicketSvcCodeLine(prevLine => {
-            const linesToHighlightPerJournalIndex = {
-                0: [0],
-                1: [2],
-                2: [],
-            }
-            document.getElementById("ticket_service").innerHTML = document.getElementById("ticket_service")
-                .innerHTML.split("\n")
-                .map((line, index) =>
-                    linesToHighlightPerJournalIndex[prevLine].includes(index)
-                        ? `<mark class="code-highlight color-${cartSvcCodeLine + prevLine} set-bg">${line}</mark>`
-                        : line,
-                )
-                .join("\n");
-            const journalTicketElement = document.getElementById("journal_ticket_" + prevLine);
-            if (journalTicketElement) journalTicketElement.classList.remove("display-none");
-            const restateJournalTicketElement = document.getElementById("restate_journal_ticket_" + prevLine);
-            if (restateJournalTicketElement) restateJournalTicketElement.classList.remove("display-none");
-            return prevLine + 1;
-        });
+        const linesToHighlightPerJournalIndex = {
+            0: [0],
+            1: [2],
+            2: [],
+        }
+        document.getElementById("ticket_service").innerHTML = document.getElementById("ticket_service")
+            .innerHTML.split("\n")
+            .map((line, index) =>
+                linesToHighlightPerJournalIndex[ticketSvcCodeLine].includes(index)
+                    ? `<mark class="code-highlight color-${cartSvcCodeLine + ticketSvcCodeLine} set-bg">${line}</mark>`
+                    : line,
+            )
+            .join("\n");
+        const journalTicketElement = document.getElementById("journal_ticket_" + ticketSvcCodeLine);
+        if (journalTicketElement) journalTicketElement.classList.remove("display-none");
+        const restateJournalTicketElement = document.getElementById("restate_journal_ticket_" + ticketSvcCodeLine);
+        if (restateJournalTicketElement) restateJournalTicketElement.classList.remove("display-none");
     }
 
-    function animate() {
-        setAnimationIndex(prevState => prevState + 1);
-        console.info("Called animate, will animate to " + animationIndex);
+    function animate(rewind = false) {
+        setAnimationState(prevState => {
+            console.info("Called animate, will animate to " + prevState.animationIndex);
 
-        switch (animationIndex) {
+            let requestedIndex;
+            if(rewind){
+                console.info("Rewinding animation")
+                requestedIndex = prevState.animationIndex - 1;
+                prevState = { animationIndex: 0, cartSvcCodeLine: 0, ticketSvcCodeLine: 0 };
+                const animationElement = document.getElementById("animation");
+                animationElement.innerHTML = defaultAnimation;
+            } else {
+                requestedIndex = (prevState.animationIndex < 14) ? prevState.animationIndex + 1 : 0;
+            }
+
+            if(requestedIndex === 0){
+                prevState = { animationIndex: 0, cartSvcCodeLine: 0, ticketSvcCodeLine: 0 };
+                const animationElement = document.getElementById("animation");
+                animationElement.innerHTML = defaultAnimation;
+            } else {
+                while (prevState.animationIndex < requestedIndex) {
+                    prevState = switchToNewState(prevState);
+                }
+            }
+
+            progressBarRef.current.value = requestedIndex;
+
+            console.info("Returning new state", prevState)
+            return prevState;
+        })
+    }
+
+
+    function switchToNewState(prevState) {
+        prevState.animationIndex = prevState.animationIndex + 1
+        switch (prevState.animationIndex) {
             case 0: {
                 // Show the ingress call
                 console.info("Animation step 0 Show the ingress call")
@@ -492,7 +519,8 @@ export default function DurableExecutionAnimation() {
                 document
                     .getElementById("cart_title_invoked")
                     .classList.remove("display-none");
-                highlightNextCartSvcCodeLine()
+                highlightNextCartSvcCodeLine(prevState.cartSvcCodeLine)
+                prevState.cartSvcCodeLine += 1;
                 document
                     .getElementById("journal_cart")
                     .classList.remove("display-none");
@@ -508,7 +536,8 @@ export default function DurableExecutionAnimation() {
                     "Every time the code uses the Restate context `ctx`, the SDK notifies Restate of the outcome of this action. " +
                     "The Restate server then adds this action as a new entry to the journal. " +
                     "Once persisted in the journal, this action will be skipped during retries, and the journaled result will be returned."
-                highlightNextCartSvcCodeLine()
+                highlightNextCartSvcCodeLine(prevState.cartSvcCodeLine)
+                prevState.cartSvcCodeLine += 1;
                 document
                     .getElementById("cart_request_arrow")
                     .classList.add("display-none");
@@ -562,7 +591,8 @@ export default function DurableExecutionAnimation() {
                 document
                     .getElementById("ticket_title_invoked")
                     .classList.remove("display-none");
-                highlightNextTicketSvcCodeLine();
+                highlightNextTicketSvcCodeLine(prevState.cartSvcCodeLine, prevState.ticketSvcCodeLine)
+                prevState.ticketSvcCodeLine +=1;
                 document
                     .getElementById("journal_ticket")
                     .classList.remove("display-none");
@@ -577,7 +607,8 @@ export default function DurableExecutionAnimation() {
                 document.getElementById("animation_explanation").innerHTML = "The function executes and eventually the ticket gets reserved successfully. " +
                     "The success result is logged in the journal of the TicketObject, and this invocation is now considered completed. " +
                     "Restate will then proxy the response to the CartObject.";
-                highlightNextTicketSvcCodeLine();
+                highlightNextTicketSvcCodeLine(prevState.cartSvcCodeLine, prevState.ticketSvcCodeLine);
+                prevState.ticketSvcCodeLine +=1;
                 document
                     .getElementById("ticket_request_arrow")
                     .classList.add("display-none");
@@ -591,7 +622,8 @@ export default function DurableExecutionAnimation() {
                 document.getElementById("animation_explanation").innerHTML = "Restate adds the success response to the journal of the addTicket invocation. " +
                     "This way, the reserve call will not be re-executed during retries of the addTicket handler. " +
                     "Restate now re-invokes the addTicket handler with its new journal, including the RPC response.";
-                highlightNextCartSvcCodeLine()
+                highlightNextCartSvcCodeLine(prevState.cartSvcCodeLine)
+                prevState.cartSvcCodeLine += 1;
                 document
                     .getElementById("rpc_arrow_request")
                     .classList.add("display-none");
@@ -646,7 +678,8 @@ export default function DurableExecutionAnimation() {
                 document.getElementById("animation_explanation").innerHTML = "Now that the ticket has been reserved successfully, the addTicket handler will add the ticket to the cart." +
                     "The addTicket handler retrieves the cart state for the Virtual Object of Joe. " +
                     "This state is locally available since Restate transferred it together with the request.";
-                highlightNextCartSvcCodeLine();
+                highlightNextCartSvcCodeLine(prevState.cartSvcCodeLine);
+                prevState.cartSvcCodeLine += 1;
                 break;
             }
             case 11: {
@@ -655,7 +688,8 @@ export default function DurableExecutionAnimation() {
                     "The state changes are committed together with the rest of the execution progress in the journal. " +
                     "This makes sure that the state is always consistent with the progress. " +
                     "Any subsequent calls to the CartObject will see the updated state.";
-                highlightNextCartSvcCodeLine()
+                highlightNextCartSvcCodeLine(prevState.cartSvcCodeLine)
+                prevState.cartSvcCodeLine += 1;
                 // Set the state
                 document.getElementById("restate_user_state").innerHTML =
                     "cartService: Joe - cart=<mark class='code-highlight color-5 set-bg set-color'>[seat2B]</mark>";
@@ -664,8 +698,10 @@ export default function DurableExecutionAnimation() {
             case 12: {
                 console.log("Animation step 12")
                 document.getElementById("animation_explanation").innerHTML = "Finally, the handler finishes the execution. The journal with the response is transferred to Restate.";
-                highlightNextCartSvcCodeLine();
-                highlightNextCartSvcCodeLine();
+                highlightNextCartSvcCodeLine(prevState.cartSvcCodeLine);
+                prevState.cartSvcCodeLine += 1;
+                highlightNextCartSvcCodeLine(prevState.cartSvcCodeLine);
+                prevState.cartSvcCodeLine += 1;
                 document
                     .getElementById("cart_request_arrow")
                     .classList.add("display-none");
@@ -702,25 +738,18 @@ export default function DurableExecutionAnimation() {
             case 15: {
                 console.log("Animation step 15 RESET")
                 document.getElementById("animation_explanation").innerHTML = "Restate.";
-                resetAnimation();
+                prevState = { animationIndex: 0, cartSvcCodeLine: 0, ticketSvcCodeLine: 0 };
+                const animationElement = document.getElementById("animation");
+                animationElement.innerHTML = defaultAnimation;
                 break;
             }
         }
+        return prevState;
     }
 
-    function resetAnimation() {
-        console.info("Called resetAnimation");
-        setCartSvcCodeLine(0)
-        setTicketSvcCodeLine(0)
-        const animationElement = document.getElementById("animation");
-        animationElement.innerHTML = defaultAnimation;
-        setAnimationIndex(0);
-    }
-
-    const handleReset = () => {
-        resetAnimation();
+    const handlePrev = () => {
+        animate(true);
     };
-
     const handleNext = () => {
         animate()
     };
@@ -736,7 +765,7 @@ export default function DurableExecutionAnimation() {
                     <Services/>
                 </div>
                 <div id="progressBarContainer">
-                    <button onClick={handleReset}>Reset</button>
+                    <button onClick={handlePrev}>Prev</button>
                     <input
                         type="range"
                         id="progressBar"
@@ -744,7 +773,8 @@ export default function DurableExecutionAnimation() {
                         max={14}
                         step={1}
                         readOnly
-                        value={animationIndex}
+                        value={0}
+                        ref={progressBarRef}
                         onKeyDown={() => {}}
                     />
                     <button onClick={handleNext}>Next</button>
