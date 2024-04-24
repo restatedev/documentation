@@ -32,11 +32,13 @@ You can invoke handlers via Kafka events, by doing the following:
 <SubtleStep stepLabel="2" title="Configure Restate to connect to a Kafka cluster">
     Define the Kafka cluster that Restate needs to connect to in the [Restate configuration file](/operate/configuration#configuration-file):
 
-    ```toml
+    ```toml restate.toml
     [[ingress.kafka-clusters]]
     name = "my-cluster"
     brokers = ["PLAINTEXT://broker:9092"]
     ```
+
+    And make sure the Restate Server uses it via _`restate-server --config-file restate.toml`_.
 
     Check the [configuration docs](/operate/configuration) for more details.
 </SubtleStep>
@@ -48,7 +50,7 @@ You can invoke handlers via Kafka events, by doing the following:
     curl localhost:9070/subscriptions -H 'content-type: application/json' \
         -d '{
                 "source": "kafka://my-cluster/my-topic",
-                "sink": "component://MyService/Handle",
+                "sink": "service://MyService/handle",
                 "options": {"auto.offset.reset": "earliest"}
             }'
     ```
