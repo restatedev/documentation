@@ -9,7 +9,7 @@ By default, Restate logs INFO, WARN and ERROR events using a pretty format.
 
 A complete list of configuration options is available in the [configuration documentation](/operate/configuration).
 
-For service logging, check the [Typescript SDK logging](../../develop/ts/logging) and [Java SDK logging](../../develop/java/logging) pages.
+For service logging, check the [Typescript SDK logging](/develop/ts/logging) and [Java SDK logging](/develop/java/logging) pages.
 
 ## Log filter
 
