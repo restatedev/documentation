@@ -12,13 +12,13 @@ import Admonition from '@theme/Admonition';
 Restate uses an execution log for replay after failures and suspensions.
 This means that non-deterministic results (e.g. database responses, UUID generation) need to be stored in the execution log.
 The SDK offers some functionalities to help you with this:
-1. **[Side effects](/develop/java/side-effects#side-effects)**: Run any block of code and store the result in Restate. Restate replays the result instead of re-executing the block on retries.
-2. **[`Awaitable` combinators](/develop/java/side-effects#awaitable-combinators)**: Log the order in which Awaitables were resolved/rejected, to ensure deterministic replay.
-3. **[Random generators](/develop/java/side-effects#generating-randoms)**: Built-in helpers for generating stable UUIDs and random numbers.
+1. **[Journaled actions](/develop/java/journaling-results#journaling-actions)**: Run any block of code and store the result in Restate. Restate replays the result instead of re-executing the block on retries.
+2. **[`Awaitable` combinators](/develop/java/journaling-results#awaitable-combinators)**: Log the order in which Awaitables were resolved/rejected, to ensure deterministic replay.
+3. **[Random generators](/develop/java/journaling-results#generating-randoms)**: Built-in helpers for generating stable UUIDs and random numbers.
 
 
-## Side effects
-Side effects are a way to store the result of a non-deterministic operation in the Restate execution log (e.g. database requests, HTTP calls, etc).
+## Journaled actions
+You can store the result of a (non-deterministic) operation in the Restate execution log (e.g. database requests, HTTP calls, etc).
 Restate replays the result instead of re-executing the operation on retries.
 
 Here is an example of a database request for which the string response is stored in Restate:
@@ -47,13 +47,13 @@ Have a look at [serialization docs](/develop/java/serialization), for other opti
 </Tabs>
 
 <Admonition type="info">
-You cannot invoke any methods on the Restate context within a side effect.
-This includes actions such as getting state, calling another service, and nesting side effects.
+You cannot invoke any methods on the Restate context within a `ctx.run` function.
+This includes actions such as getting state, calling another service, and nesting other journaled actions.
 </Admonition>
 
-<Admonition type="info" title="Side effect failure semantics">
-Failures in side effects have the same semantics as failures in the main code.
-By default, a side effect function is retried infinitely on failure, unless you throw a [terminal error](/develop/java/error-handling).
+<Admonition type="info" title="Failure semantics">
+Failures in `ctx.run` have the same semantics as failures in the rest of your handler code.
+By default, the `ctx.run` function is retried infinitely on failure, unless you throw a [terminal error](/develop/java/error-handling).
 </Admonition>
 
 ## `Awaitable` combinators

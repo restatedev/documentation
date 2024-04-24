@@ -8,9 +8,10 @@ fi
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 IN_PATH=$1
+OUT_TMP_FILE=$SCRIPT_DIR/../docs/references/errors-tmp.md
 OUT_FILE=$SCRIPT_DIR/../docs/references/errors.md
 
-cat > $OUT_FILE << EOF
+cat > $OUT_TMP_FILE << EOF
 ---
 sidebar_position: 10
 slug: errors
@@ -24,8 +25,9 @@ EOF
 
 for md_file in $(find $IN_PATH -type f -name "*.md" | sort); do
     echo "Using $md_file";
-    printf "$(cat $md_file)\n\n" >> $OUT_FILE;
+    printf "$(cat $md_file)\n\n" >> $OUT_TMP_FILE;
 done
 
-# We need this to have anchors with uppercase error names
-yarn write-heading-ids . $OUT_FILE --maintain-case --overwrite
+chmod +x $SCRIPT_DIR/convert_headers.sh
+$SCRIPT_DIR/convert_headers.sh $OUT_TMP_FILE > $OUT_FILE
+rm $OUT_TMP_FILE

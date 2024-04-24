@@ -3,13 +3,16 @@ import {greetCounterObject, greeterService} from "../utils";
 
 // <start_one_way_call_node>
 const myPlainTSFunction = async () => {
-    // focus(1:7)
+    // focus(1:9)
     // From any TS code:
     const ingress = restate.connect({ url: "http://localhost:8080" })
-    ingress.serviceSendClient(greeterService)
+
+    const { invocationId } = await ingress
+        .serviceSendClient(greeterService)
         .greet({greeting: "Hi"});
 
-    ingress.objectSendClient(greetCounterObject, "Mary")
+    await ingress.objectSendClient(greetCounterObject, "Mary")
         .greet({greeting: "Hi"});
+
 }
 // <end_one_way_call_node>

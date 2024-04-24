@@ -28,11 +28,13 @@ For each Virtual Object, the events are delivered in the order in which they arr
 <SubtleStep stepLabel="2" title="Configure Restate to connect to a Kafka cluster">
 Define the Kafka cluster that Restate needs to connect to in the [Restate configuration file](/operate/configuration#configuration-file):
 
-```toml
+```toml restate.toml
 [[ingress.kafka-clusters]]
 name = "my-cluster"
 brokers = ["PLAINTEXT://broker:9092"]
 ```
+
+And make sure the Restate Server uses it via _`restate-server --config-file restate.toml`_.
 
 Check the [configuration docs](/operate/configuration) for more details.
 </SubtleStep>
@@ -44,7 +46,7 @@ Let Restate forward events from the Kafka topic to the event handler by creating
 curl localhost:9070/subscriptions -H 'content-type: application/json' \
     -d '{
            "source": "kafka://my-cluster/my-topic",
-           "sink": "component://MyService/Handle",
+           "sink": "service://MyService/handle",
            "options": {"auto.offset.reset": "earliest"}
         }'
 ```
@@ -57,7 +59,7 @@ The `options` field is optional and accepts any configuration parameter from [li
 </SubtleStep>
 
 <Admonition type="info" title="Managing subscriptions">
-Have a look at the [registration docs](/operate/registration#kafka-subscriptions) for more commands to manage subscriptions.
+Have a look at the [invocation docs](/operate/invocation#kafka-subscriptions) for more commands to manage subscriptions.
 </Admonition>
 
 <details className="grey-details">

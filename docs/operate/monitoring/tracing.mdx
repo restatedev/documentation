@@ -33,17 +33,28 @@ docker run -d --name jaeger \
 Configure the tracing endpoint in Restate as a fully specified URL.
 For example, locally with Docker:
 
-```shell
-docker run -p 8080:8080 -p 9070:9070 -p 9071:9071 \
-# withClass highlight-line
-  -e RESTATE_TRACING_ENDPOINT=http://host.docker.internal:4317 \
-  --add-host=host.docker.internal:host-gateway \
-  docker.io/restatedev/restate:VAR::RESTATE_VERSION
-```
+<CH.Code rows={"3"}>
+
+    ```shell npx
+    npx @restatedev/restate-server --tracing-endpoint http://localhost:4317
+    ```
+
+    ``` shell Homebrew
+    brew install restatedev/tap/restate-server &&
+    restate-server --tracing-endpoint http://localhost:4317
+    ```
+
+    ```shell Docker
+    docker run --name restate_dev -p 8080:8080 -p 9070:9070 -p 9071:9071 \
+        -e RESTATE_TRACING_ENDPOINT=http://host.docker.internal:4317 \
+        --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
+    ```
+
+</CH.Code>
 
 If you now spin up your services and send requests to them, you will see the traces appear in the Jaeger UI at http://localhost:16686:
 
-<img src="/img/observability.jpeg" width={"60%"}/>
+<img src="/img/tracing_tour.png" width={"60%"}/>
 
 <Admonition type="info" title={"Filtering traces"}>
     You can configure a span/event filter in a similar fashion to the [log filter](/operate/monitoring/logging#log-filter) setting the `tracing-filter` configuration entry.
@@ -63,7 +74,7 @@ If you now spin up your services and send requests to them, you will see the tra
 ## Understanding traces
 The traces contain detailed information about the context calls that were done during the invocation (e.g. sleep, one-way calls, interaction with state):
 
-<img src="/img/jaeger_tour_background_call_handler.png" width={"85%"}/>
+<img src="/img/tracing_span_tags.png" width={"75%"}/>
 
 The initial `ingress_invoke` spans show when the HTTP request was received by Restate. The `invoke` span beneath it shows when Restate invoked the service deployment to process the request.
 
@@ -72,7 +83,7 @@ The tags of the spans contain the metadata of the context calls (e.g. call argum
 <Admonition type="info" title={"One-way call traces are detached from the parent"}>
 When a service invokes another service, the child invocation is linked automatically to the parent invocation, as you can see in the image.
 Note that the spans of one-way calls are shown as separate traces. The parent invocation only shows that the one-way call was scheduled, not its entire tracing span.
-To see this information, search for the trace of the one-way call by filtering on the invocation id tag `restate.invocation.id="T4pIkIJIGAsBiiGDV2dxK7PkkKnWyWHE"`.
+To see this information, search for the trace of the one-way call by filtering on the invocation id tag `restate.invocation.id="inv_19maBIcE9uRD0gIu30mu6eqhZ4pQT"`.
 </Admonition>
 
 ## Searching traces

@@ -12,23 +12,31 @@ public class DelayedCalls {
     // <start_delayed_call>
     @Handler
     public void myRestateHandler(Context ctx){
-        // focus
+        // focus(1:3)
         GreeterServiceClient.fromContext(ctx)
-                // focus
                 .send(Duration.ofMillis(1000))
-                // focus
                 .greet("Hi");
 
-        // focus
+        // focus(1:3)
         GreetCounterObjectClient.fromContext(ctx, "Mary")
-                // focus
                 .send(Duration.ofMillis(1000))
-                // focus
                 .greet("Hi");
     }
     // <end_delayed_call>
 
     // <start_delayed_call_java>
-    // to do
+    public void myJavaHandler(Context ctx){
+        // focus(1:4)
+        String invocationId = GreeterServiceClient
+                .fromIngress("http://localhost:8080")
+                .send(Duration.ofMillis(1000))
+                .greet("Hi");
+
+        // focus(1:4)
+        String invocationIdCount = GreetCounterObjectClient
+                .fromIngress("http://localhost:8080", "Mary")
+                .send(Duration.ofMillis(1000))
+                .greet("Hi");
+    }
     // <end_delayed_call_java>
 }

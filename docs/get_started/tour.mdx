@@ -67,14 +67,7 @@ This guide is written for:
 <SubtleStep stepLabel="1" title="Set up the services">
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
-- Run the services in the browser:
-
-    <a className="btn btn-primary btn-lg"
-       href="https://stackblitz.com/github/restatedev/examples/tree/dev_0.9/tutorials/tour-of-restate-typescript?startScript=app-dev&embed=1&file=src%2Fapp%2Fapp.ts,src%2Fapp%2Fcheckout_service.ts,src%2Fapp%2Fticket_object.ts,src%2Fapp%2Fcart_object.ts&theme=dark&view=editor"
-       target="_blank"
-       role="button"><img className="buttonIcon" src="/img/open_in_stackblitz.svg"
-                          alt="TypeScript Quickstart"></img></a>
-- Or download the example and run locally with an IDE:
+Download the example and run locally with an IDE:
 <CH.Code>
     ```shell CLI
     restate example typescript-tour-of-restate && cd typescript-tour-of-restate
@@ -165,31 +158,62 @@ You can register services by calling the Restate Admin API (default port `9070`)
     curl localhost:9070/deployments -H 'content-type: application/json' \
         -d '{"uri": "http://localhost:9080"}'
     ```
-
 </CH.Code>
+
 <details className="grey-details">
-    <summary>Output</summary>
+<summary>Output</summary>
 
-    ```json
-    {
-        "id": "bG9jYWxob3N0OjgwODAv",
-        "services": [
-    {
-        "name": "TicketObject",
-        /* ... Additional information on registered methods ...*/
-    },
-    {
-        "name": "CartObject",
-        /* ... Additional information on registered methods ...*/
-    },
-    {
-        "name": "CheckoutService",
-        /* ... Additional information on registered methods ...*/
-    }
-        ]
-    }
-    ```
+<CH.Code>
+```shell CLI
+❯ SERVICES THAT WILL BE ADDED:
+- CheckoutService
+Type: Service
+HANDLER  INPUT TYPE                                   OUTPUT TYPE
+handle   one of "empty or value of content-type */*"  value with content-type "application/json"
 
+- CartObject
+Type: VirtualObject ⬅️ 🚶🚶🚶
+HANDLER       INPUT TYPE                                   OUTPUT TYPE
+addTicket     one of "empty or value of content-type */*"  value with content-type "application/json"
+expireTicket  one of "empty or value of content-type */*"  value with content-type "application/json"
+checkout      one of "empty or value of content-type */*"  value with content-type "application/json"
+
+- TicketObject
+Type: VirtualObject ⬅️ 🚶🚶🚶
+HANDLER     INPUT TYPE                                   OUTPUT TYPE
+reserve     one of "empty or value of content-type */*"  value with content-type "application/json"
+markAsSold  one of "empty or value of content-type */*"  value with content-type "application/json"
+unreserve   one of "empty or value of content-type */*"  value with content-type "application/json"
+
+
+✔ Are you sure you want to apply those changes? · yes
+✅ DEPLOYMENT:
+SERVICE          REV
+TicketObject     1
+CheckoutService  1
+CartObject       1
+```
+
+```json curl
+{
+    "id": "dp_11pXug0mWsff2NOoRBZbOcV",
+    "services": [
+        {
+            "name": "TicketObject",
+            /* ... Additional information on registered methods ...*/
+        },
+        {
+            "name": "CartObject",
+            /* ... Additional information on registered methods ...*/
+        },
+        {
+            "name": "CheckoutService",
+            /* ... Additional information on registered methods ...*/
+        }
+    ]
+}
+```
+</CH.Code>
 </details>
 
 If you run Restate with Docker, replace `http://localhost:9080` by `http://host.docker.internal:9080`.
@@ -660,72 +684,77 @@ You can use it to boostrap a new project, but also to get information about the 
 Have a look at some useful commands and try them out yourself:
 
 <CliAnimation listOfSteps={[`$ restate services list
-NAME             REVISION  FLAVOR  DEPLOYMENT TYPE  DEPLOYMENT ID
-🌎  TicketObject     1                 HTTP 2           dp_14LsPzGz9HBxXIeBoH5wYUh
-🌎  CartObject       1                 HTTP 2           dp_14LsPzGz9HBxXIeBoH5wYUh
-🌎  CheckoutService  1                 HTTP 2           dp_14LsPzGz9HBxXIeBoH5wYUh`,
+     NAME             REVISION  FLAVOR    DEPLOYMENT TYPE  DEPLOYMENT ID
+ 🌎  CartObject       1         ⬅️ 🚶🚶🚶  HTTP 2           dp_11pXug0mWsff2NOoRBZbOcV
+ 🌎  CheckoutService  1                   HTTP 2           dp_11pXug0mWsff2NOoRBZbOcV
+ 🌎  TicketObject     1         ⬅️ 🚶🚶🚶  HTTP 2           dp_11pXug0mWsff2NOoRBZbOcV`,
 `$ restate services describe CartObject
-📜 Component Information:
-―――――――――――――――――――――――――
-Name:                    CartObject
-Flavor (Instance Type):  Service
-Revision:                1
-Public:                  true
-Deployment ID:           dp_14LsPzGz9HBxXIeBoH5wYUh
-Deployment Type:         HTTP 2
-Protocol Style:          Streaming
-Endpoint:                http://host.docker.internal:9080/
-Created at:              2024-04-12T13:00:03.522000000Z
+📜 Service Information:
+―――――――――――――――――――――――
+ Name:             CartObject
+ Service type:     VirtualObject
+ Revision:         1
+ Public:           true
+ Deployment ID:    dp_11pXug0mWsff2NOoRBZbOcV
+ Deployment Type:  HTTP 2
+ Protocol Style:   Streaming
+ Endpoint:         http://localhost:9080/
+ Created at:       2024-04-23T12:32:16.691000000Z
 
 
-🔌 Methods:
-―――――――――――
-METHOD        INPUT TYPE                                   OUTPUT TYPE
-expireTicket  one of "empty or value of content-type */*"  value with content-type "application/json"
-checkout      one of "empty or value of content-type */*"  value with content-type "application/json"
-addTicket     one of "empty or value of content-type */*"  value with content-type "application/json"`,
+🔌 Handlers:
+――――――――――――
+ HANDLER       INPUT TYPE                 OUTPUT TYPE
+ addTicket     one of "empty or value of  value with content-type "application/json"
+               content-type */*"
+ checkout      one of "empty or value of  value with content-type "application/json"
+               content-type */*"
+ expireTicket  one of "empty or value of  value with content-type "application/json"
+               content-type */*"`,
 `$ restate invocations list
-  ❯ [2024-04-16 15:28:20.237 +02:00] inv_1aiqX0vFEFNH0TF1pLRFBDFosQCCTAN1M5 [CartObject @ Mary]::addTicket
-     Status:      backing-off  (4 minutes, 42 seconds and 653 ms. Retried 32 time(s). Next
-                  retry in in 9 seconds and 469 ms))
-     Deployment:  dp_14LsPzGz9HBxXIeBoH5wYUh [required]
-     Error:       [2024-04-16 15:33:01.930 +02:00]
+  ❯ [2024-04-23 14:41:59.365 +02:00] inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
+     Target:      CartObject/Mary/addTicket
+     Status:      backing-off  (18 seconds and 284 ms. Retried 9 time(s). Next
+                  retry in in 8 seconds and 220 ms))
+     Deployment:  dp_11pXug0mWsff2NOoRBZbOcV [required]
+     Error:       [2024-04-23 14:42:13.706 +02:00]
                   [500] Failing
-
-Showing 1/1 invocations. Query took 86.295361ms
-`,
-`$ restate invocations describe inv_1iGFK6hGrtOf3jcD8PupmCOJz1SDzvfPi1
+     Caused by:   UNKNOWN`,
+`$ restate invocations describe inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
 📜 Invocation Information:
 ――――――――――――――――――――――――――
- Created at:   2024-04-16 15:28:20.237 +02:00 (5 minutes ago)
- Component:    CartObject @ Mary
- Method:       addTicket
- Status:       backing-off  (5 minutes, 49 seconds and 253 ms. Retried 37 time(s). Next retry in in 508 ms))
- Deployment:   dp_14LsPzGz9HBxXIeBoH5wYUh [required]
- Error:        [2024-04-16 15:33:58.918 +02:00]
+ Created at:   2024-04-23 14:41:59.365 +02:00 (a minute ago)
+ Target:       CartObject/Mary/addTicket
+ Status:       backing-off  (1 minute, 23 seconds and 937 ms. Retried 14
+               time(s). Next retry in in 991 ms))
+ Deployment:   dp_11pXug0mWsff2NOoRBZbOcV [required]
+ Error:        [2024-04-23 14:43:13.248 +02:00]
                [500] Failing
- Modified at:  2024-04-16 15:28:20.278 +02:00
+ Caused by:    UNKNOWN
+ Modified at:  2024-04-23 14:41:59.388 +02:00
 
-  💡   This invocation is bound to run on deployment 'dp_14LsPzGz9HBxXIeBoH5wYUh'. To guarantee
+  💡   This invocation is bound to run on deployment 'dp_11pXug0mWsff2NOoRBZbOcV'. To guarantee
        safety and correctness, invocations that made progress on a deployment
        cannot move to newer deployments automatically.
 
 🚂 Invocation Progress:
 ―――――――――――――――――――――――
 [Ingress]
- └──(this)─> [CartObject @ Mary]::addTicket
+ └──(this)─> CartObject/Mary/addTicket
      ▸
-     ├──── ☑️  #1 Invoke TicketObject::reserve inv_1iGFK6hGrtOf3jcD8PupmCOJz1SDzvfPi1
+     ├──── ☑️  #1 Call TicketObject/seat2B/reserve inv_19maBIcE9uRD1CrHgpGXZ7FcXPsz4bzkbL
      └────>> backing-off`,
-`$ restate invocations cancel inv_1iGFK6hGrtOf3jcD8PupmCOJz1SDzvfPi1
-  ❯ [2024-04-16 15:28:20.237 +02:00] inv_1aiqX0vFEFNH0TF1pLRFBDFosQCCTAN1M5 [CartObject @ Mary]::addTicket
-     Status:      backing-off  (7 minutes, 9 seconds and 590 ms. Retried 44 time(s). Next retry in in 3 seconds
-                  and 673 ms))
-     Deployment:  dp_14LsPzGz9HBxXIeBoH5wYUh [required]
-     Error:       [2024-04-16 15:35:21.462 +02:00]
+`$ restate invocations cancel --kill inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
+  ❯ [2024-04-23 14:41:59.365 +02:00] inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
+     Target:      CartObject/Mary/addTicket
+     Status:      backing-off  (25 minutes, 29 seconds and 200 ms. Retried 141
+                  time(s). Next retry in in 12 seconds and 94 ms))
+     Deployment:  dp_11pXug0mWsff2NOoRBZbOcV [required]
+     Error:       [2024-04-23 15:07:27.860 +02:00]
                   [500] Failing
+     Caused by:   UNKNOWN
 
-✔ Are you sure you want to cancel this invocation · yes
+✔ Are you sure you want to kill this invocation · yes
 
 ✅ Request was sent successfully`]}
 />
@@ -1054,7 +1083,7 @@ You can watch the state of the `CartObject` service, via:
     ```
 
     ```shell psql
-    watch -n 1 'psql -h localhost -p 9071 -c "SELECT * FROM state WHERE component like '\''%CartObject%'\''";'
+    watch -n 1 'psql -h localhost -p 9071 -c "SELECT * FROM state WHERE service_name like '\''%CartObject%'\''";'
     ```
 </CH.Code>
 
@@ -1065,13 +1094,13 @@ You can watch the state of the `CartObject` service, via:
     🤖 State:
     ―――――――――
 
-    Component  CartObject
-    Key        Mary
+    Service  CartObject
+    Key      Mary
 
     KEY      VALUE
     tickets  [
-        "seat2B"
-    ]
+               "seat2B"
+             ]
     ```
 
 </details>
@@ -1132,7 +1161,7 @@ While you are developing them, you can use psql to monitor the state of the `Tic
     ```
 
     ```shell psql
-    watch -n 1 'psql -h localhost -p 9071 -c "select * from state where component like '\''%TicketObject%'\''";'
+    watch -n 1 'psql -h localhost -p 9071 -c "select * from state where service_name like '\''%TicketObject%'\''";'
     ```
 </CH.Code>
 
@@ -1244,12 +1273,12 @@ npm run part3
 </Admonition>
 
 
-## Storing results in the journal
+## Journaling actions
 
 <Admonition type="note" title="Implement it yourself or follow along by looking at the code under part4"/>
 
 Restate's Durable Execution mechanism tracks the progress of the code execution in a journal.
-Once a result has made it to the journal, it will not be re-executed on retries.
+Once an action/result has made it to the journal, it will not be re-executed on retries.
 
 You can store the return value of any function in the journal, by using `ctx.run`.
 This lets you capture potentially non-deterministic computation and interaction with external systems in a safe way.
@@ -1457,25 +1486,31 @@ docker run -d --name jaeger -e COLLECTOR_OTLP_ENABLED=true \
 ```
 </SubtleStep>
 <SubtleStep stepLabel="2" title="Relaunch Restate with tracing enabled">
-```shell
-docker run --name restate_dev -p 8080:8080 -p 9070:9070 -p 9071:9071 \
-    -e RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://host.docker.internal:4317 \
-    --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
-```
+
+    <CH.Code>
+    ```shell npx
+    npx @restatedev/restate-server --tracing-endpoint http://localhost:4317
+    ```
+
+    ``` shell Homebrew
+    brew install restatedev/tap/restate-server &&
+        restate-server --tracing-endpoint http://localhost:4317
+    ```
+
+    ```shell Docker
+    docker run --name restate_dev -p 8080:8080 -p 9070:9070 -p 9071:9071 \
+        -e RESTATE_TRACING_ENDPOINT=http://host.docker.internal:4317 \
+        --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
+    ```
+    </CH.Code>
 </SubtleStep>
-<SubtleStep stepLabel="3" title="Register the service and send a few requests">
-    <CH.Code rows={"4"}>
+<SubtleStep stepLabel="3" title="Send a few requests">
+    <CH.Code>
 
-        ```shell CLI
-        restate deployments register http://localhost:9080
+        ```shell
+        curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2A"'
         curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2B"'
-        curl -X POST localhost:8080/CartObject/Mary/checkout
-        ```
-
-        ```shell curl
-        curl localhost:9070/deployments -H 'content-type: application/json' \
-            -d '{"uri": "http://localhost:9080"}'
-        curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2B"'
+        curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2C"'
         curl -X POST localhost:8080/CartObject/Mary/checkout
         ```
 
@@ -1491,7 +1526,7 @@ Select the `CartObject` service from the service dropdown.
 You should see the `addTicket` and `checkout` requests listed.
 Have a look at the traces of the `checkout` call:
 
-![CheckoutService call traces](/img/jaeger_checkout_traces_tour_handler.png)
+![CheckoutService call traces](/img/tracing_tour.png)
 
 You can see the calls that were done to Restate, for example invoke, sleep, one way call, get state, etc., and their timings.
 If you expand one of the traces, you can see tags describing some metadata of the context call, for example invocation ID and the request.
