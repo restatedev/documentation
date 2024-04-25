@@ -99,20 +99,21 @@ Use the `deployService` method to tell the deployer about each service endpoint 
 If the target Restate environment is only accessible in a VPC, you will need to configure the service deployer with the appropriate
 details.
 
-:::caution
-Calling `deployService` grants `lambda:InvokeFunction` to the environment's invoker role by default.
-You can disable this behavior using the `skipInvokeFunctionGrant` option.
-:::
+<Admonition type={"caution"} title={"Implicit permission grant"}>
+    Calling `deployService` grants `lambda:InvokeFunction` to the environment's invoker role by default.
+    You can disable this behavior using the `skipInvokeFunctionGrant` option.
+</Admonition>
 
 <Tabs>
 <TabItem value="self-hosted" label="Self-hosted Restate construct" default>
 
-:::caution
 The `SingleNodeRestateDeployment` deploys Restate environment backed by a single EC2 instance and is suitable for
 development and testing purposes.
-The EC2 instance will be created in the default VPC unless otherwise specified.
-The instance will be assigned a public IP address.
-:::
+
+<Admonition type={"caution"} title={"EC2 instance creation"}>
+    The EC2 instance will be created in the default VPC unless otherwise specified.
+    The instance will be assigned a public IP address.
+</Admonition>
 
 ```typescript
 import * as restate from "@restatedev/restate-cdk";
