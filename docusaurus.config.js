@@ -98,14 +98,6 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     {
       image: "img/restate-og.png",
-      announcementBar: {
-        id: 'support_us',
-        content:
-            '🎉️ <a target="_blank" href="https://restate.dev/blog/release-announcement-restate-0.8-has-arrived/">Restate 0.8</a> is out now! 🎉️',
-        backgroundColor: '#d8dbff',
-        textColor: '#1d2d35',
-        isCloseable: false,
-      },
       navbar: {
         title: "",
         logo: {
