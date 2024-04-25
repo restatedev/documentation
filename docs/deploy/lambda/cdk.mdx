@@ -50,7 +50,7 @@ import * as lambda from "aws-cdk-lib/aws-lambda";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 
 const service = new NodejsFunction(scope, "RestateService", {
-  runtime: lambda.Runtime.NODEJS_18_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   architecture: lambda.Architecture.ARM_64,
   entry: "handler", // use the path to your service handler
 });
@@ -67,11 +67,11 @@ project.
 ```typescript
 import * as lambda from "aws-cdk-lib/aws-lambda";
 
-const service: lambda.Function = new lambda.Function(scope, "RestateService", {
+const serviceHandler: lambda.Function = new lambda.Function(scope, "RestateService", {
   runtime: lambda.Runtime.JAVA_21,
   architecture: lambda.Architecture.ARM_64,
   code: lambda.Code.fromAsset(".../lambda-all.jar"), // path to the "fat JAR" artifact
-  handler: "com.example.service.package.LambdaHandler", // fully qualified handler class name
+  handler: "com.example.service.LambdaHandler", // fully qualified handler class name
   timeout: cdk.Duration.seconds(10), // the default timeout of 3s may not be enough for initialization!
 });
 ```
@@ -82,42 +82,64 @@ const service: lambda.Function = new lambda.Function(scope, "RestateService", {
 ### Optional: Deploy a self-hosted Restate server
 
 Restate is [very easy to deploy](/deploy/overview), and we provide a CDK construct to make it super simple to deploy
-a self-hosted development server on Amazon EC2. Once you have a Restate service, you can optionally deploy your own
-Restate server in the same or separate CDK stack.
+a self-hosted development server on Amazon EC2.
 See [Deploying Restate on Amazon EC2 with CDK](/deploy/lambda/self-hosted) for more information on how to
-deploy Restate itself in your own CDK stack.
+deploy Restate using CDK.
+Alternatively, you can deploy and register services by targeting an existing Restate admin endpoint.
 
-### Register Lambda handlers with Restate
+### Deploy Restate services to a Restate environment
 
-To enable our Lambda handlers to receive Restate requests, we need to create a deployment with Restate.
-The `LambdaServiceRegistry` construct represents a collection of Lambda-backed Restate services and takes
-care of creating/updating Restate Deployments backed by the specified Lambda functions any time you deploy a change
-to your stack. Restate uses Lambda versioning to consistently target the same function configuration from a given
-deployment revision. Note that this is a quiescent component: it deploys a custom CloudFormation resource provider which
-is only activated during changes to the referenced Lambda functions, typically while you deploy your CDK stack.
+To enable Lambda handlers to receive Restate requests, we need to create a deployment in the desired Restate environment.
+To automate Lambda endpoint registration, use the `ServiceDeployer` construct in your stack which will take
+care of creating/updating Restate Deployments any time you deploy changes. Restate uses Lambda versioning to consistently
+target the same function configuration from a given deployment revision. This is a quiescent component: it deploys a custom
+CloudFormation resource provider which is handles deployment events only if any related resources in your CDK stack change.
+
+Use the `deployService` method to tell the deployer about each service endpoint that you want to register.
+If the target Restate environment is only accessible in a VPC, you will need to configure the service deployer with the appropriate
+details.
+
+:::caution
+Calling `deployService` grants `lambda:InvokeFunction` to the environment's invoker role by default.
+You can disable this behavior using the `skipInvokeFunctionGrant` option.
+:::
 
 <Tabs>
-<TabItem value="self-hosted" label="Self-hosted" default>
+<TabItem value="self-hosted" label="Self-hosted Restate construct" default>
+
+:::caution
+The `SingleNodeRestateDeployment` deploys Restate environment backed by a single EC2 instance and is suitable for
+development and testing purposes.
+The EC2 instance will be created in the default VPC unless otherwise specified.
+The instance will be assigned a public IP address.
+:::
 
 ```typescript
 import * as restate from "@restatedev/restate-cdk";
 
-new restate.SingleNodeRestateDeployment(scope, "Restate", {
-  logGroup: new logs.LogGroup(scope, "RestateLogs", {
-    retention: logs.RetentionDays.THREE_MONTHS,
-    removalPolicy: cdk.RemovalPolicy.DESTROY,
-  }),
-});
+const restateEnvironment = new restate.SingleNodeRestateDeployment(scope, "Restate", {});
 
-const handlers = new restate.LambdaServiceRegistry(scope, "ServiceRegistry", {
-  environment,
-  handlers: {
-    "namespace.Service": service,
-    // ...additional handlers as needed
-  },
-});
+const deployer = new restate.ServiceDeployer(stack, "ServiceDeployer");
+deployer.deployService("RestateService", serviceHandler.currentVersion, restateEnvironment);
 ```
 
+</TabItem>
+<TabItem value="custom" label="Custom environment" default>
+
+You can specify the target Restate environment explicitly:
+
+```typescript
+import * as restate from "@restatedev/restate-cdk";
+
+const restateEnvironment = RestateEnvironment.fromAttributes({
+  adminUrl: environment.adminUrl,
+  invokerRole: restateHandlerInvokerRole, // deployService grants invoke permissions for each registered handler
+  authTokenSecretArn: restateAdminAuthToken.secretFullArn, // optional
+});
+
+const deployer = new restate.ServiceDeployer(stack, "ServiceDeployer");
+deployer.deployService("RestateService", serviceHandler.currentVersion, restateEnvironment);
+```
 </TabItem>
 </Tabs>
 
