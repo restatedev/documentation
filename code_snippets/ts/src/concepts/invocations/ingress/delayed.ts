@@ -1,4 +1,4 @@
-import * as restate from "@restatedev/restate-sdk-ingress";
+import * as restate from "@restatedev/restate-sdk-clients";
 import {greetCounterObject, greeterService} from "../utils";
 
 // <start_delayed_call_node>
