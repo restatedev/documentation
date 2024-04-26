@@ -13,8 +13,8 @@ An invocation is a request to execute a handler that is part of either a service
 
 There are different ways to invoke a handler:
 
-* From within another handler, see the SDK docs for [TypeScript](/develop/ts/service-communication) or [Java/Kotlin](/develop/java/service-communication)
 * By sending a request to Restate [over HTTP](/operate/invocation#invoking-handlers-over-http)
+* By using the [SDK](/operate/invocation#invoking-with-sdk)
 * [Via Kafka events](/operate/invocation#kafka-subscriptions)
 
 ## Invoking handlers over HTTP
@@ -91,8 +91,6 @@ You can **delay the message** by adding a delay request parameter in ISO8601 not
     ```
 
 </CH.Code>
-
-
 
 ### Invoke a handler idempotently
 
@@ -186,6 +184,103 @@ curl localhost:9070/subscriptions
 </CH.Section>
 
 
+## Invoking handlers with the SDK
+
+You can invoke handlers with the SDK either:
+- from within a handler with access to the Restate `Context` or `ObjectContext`, as explained in the Develop docs ([TS](/develop/ts/service-communication) or [Java](/develop/ts/service-communication)).
+- from _plain TypeScript/Java/Kotlin code_.
+
+To invoke a Restate handler programmatically (without access to the context), do the following:
+
+<Tabs groupId="sdk" queryString>
+    <TabItem value="ts" label="TypeScript">
+
+        1. Add the dependency to your project:
+
+        ```shell
+        npm install @restatedev/restate-sdk-clients
+        ```
+
+        2. In your code, connect to Restate:
+
+        ```typescript
+        CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_connect>-<end_connect>
+        ```
+
+        3. Invoke the handler with your preferred semantics:
+
+        <CH.Spotlight className="durable-promises">
+
+            ```typescript
+            CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_rpc_call_node>-<end_rpc_call_node>
+            ```
+
+            ---
+
+            **<mark class="accent">Request-response</mark> invocations** allow you to wait on a response from the handler.
+
+            ---
+
+            ```typescript
+            CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_one_way_call_node>-<end_one_way_call_node>
+            ```
+
+            **<mark class="accent">One-way</mark> invocations** allow you to trigger an asynchronous action.
+            This returns an invocation ID with which you can retrieve the result of the invocation later, if desired.
+
+            ---
+
+            ```typescript
+            CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_delayed_call_node>-<end_delayed_call_node>
+            ```
+
+            **<mark class="accent">Delayed</mark> invocations** allow you to schedule an invocation for a later point in time.
+
+        </CH.Spotlight>
+    </TabItem>
+    <TabItem value="java" label="Java">
+
+
+        1. Add the dependency to your project:
+
+        ```kotlin
+        implementation("dev.restate:sdk-common:VAR::TYPESCRIPT_SDK_VERSION")
+        ```
+
+        2. From your code, connect to Restate and invoke the handler with your preferred semantics:
+
+        <CH.Spotlight className="durable-promises">
+
+            ```java
+            CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_rpc_java>-<end_rpc_java>
+            ```
+
+            ---
+
+            **<mark class="accent">Request-response</mark> invocations** allow you to wait on a response from the handler.
+
+            ---
+
+            ```java
+            CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_one_way_call_java>-<end_one_way_call_java>
+            ```
+
+            **<mark class="accent">One-way</mark> invocations** allow you to trigger an asynchronous action.
+            This returns an invocation ID with which you can retrieve the result of the invocation later, if desired.
+
+            ---
+
+            ```java
+            CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_delayed_call_java>-<end_delayed_call_java>
+            ```
+
+            **<mark class="accent">Delayed</mark> invocations** allow you to schedule an invocation for a later point in time.
+
+        </CH.Spotlight>
+
+    </TabItem>
+</Tabs>
+
 ## Invocation identifier
 
 Restate assigns an identifier to every invocation, the Invocation ID. You can use this Invocation ID to inspect the invocation via the CLI, filter the logs, find traces, cancel it, etc.
@@ -193,15 +288,15 @@ Restate assigns an identifier to every invocation, the Invocation ID. You can us
 The invocation ID starts with `inv_`, and can be found in the logs and traces (`restate.invocation.id`), for example:
 
 <CH.Code>
-```log TypeScript
-// focus[37:74]
-[restate] [CartObject/expireTicket][inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz][2024-03-18T16:14:24.671Z] DEBUG: Invoking function.
-```
+    ```log TypeScript
+    // focus[37:74]
+    [restate] [CartObject/expireTicket][inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz][2024-03-18T16:14:24.671Z] DEBUG: Invoking function.
+    ```
 
-```log Java
+    ```log Java
     // focus[53:90]
-2024-04-16 17:27:45 INFO  [CartObject/expireTicket][inv_1aiqX0vFEFNH0T0mRlvCk7xTVSB5xQIaKR] dev.restate.sdk.core.ResolvedEndpointHandlerImpl - Start invocation
-```
+    2024-04-16 17:27:45 INFO  [CartObject/expireTicket][inv_1aiqX0vFEFNH0T0mRlvCk7xTVSB5xQIaKR] dev.restate.sdk.core.ResolvedEndpointHandlerImpl - Start invocation
+    ```
 </CH.Code>
 
 Or you can use the CLI to list the invocations and retrieve the ID from there:
@@ -209,22 +304,20 @@ Or you can use the CLI to list the invocations and retrieve the ID from there:
 restate inv ls
 ```
 <details className={"grey-details"}>
-<summary>Output</summary>
+    <summary>Output</summary>
 
-```shell
-# focus[36:74]
-❯ [2024-04-16 15:28:20.237 +02:00] inv_1aiqX0vFEFNH0TF1pLRFBDFosQCCTAN1M5 [CartObject @ Mary]::addTicket
-Status:      backing-off  (4 minutes, 42 seconds and 653 ms. Retried 32 time(s). Next
-retry in in 9 seconds and 469 ms))
-Deployment:  dp_14LsPzGz9HBxXIeBoH5wYUh [required]
-Error:       [2024-04-16 15:33:01.930 +02:00]
-[500] Failing
+    ```shell
+    # focus[36:74]
+    ❯ [2024-04-16 15:28:20.237 +02:00] inv_1aiqX0vFEFNH0TF1pLRFBDFosQCCTAN1M5 [CartObject @ Mary]::addTicket
+    Status:      backing-off  (4 minutes, 42 seconds and 653 ms. Retried 32 time(s). Next
+    retry in in 9 seconds and 469 ms))
+    Deployment:  dp_14LsPzGz9HBxXIeBoH5wYUh [required]
+    Error:       [2024-04-16 15:33:01.930 +02:00]
+    [500] Failing
 
-Showing 1/1 invocations. Query took 86.295361ms
-```
+    Showing 1/1 invocations. Query took 86.295361ms
+    ```
 </details>
-
-
 
 ## Cancelling invocations
 
