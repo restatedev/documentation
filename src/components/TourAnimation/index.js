@@ -1,6 +1,6 @@
 import "./animation-stylesheet.css"
-import React, {useEffect, useState} from "react"
-// import * as CH from "codehike/dist/components"
+import React, {useEffect, useRef, useState} from "react"
+import clsx from "clsx";
 
 class Ingress extends React.Component {
     render() {
@@ -199,11 +199,11 @@ class Services extends React.Component {
                             <span className="hljs-keyword">await</span> ctx
                             {"\n"}
                             {"    "}
-                    .<span className="hljs-title function_">objectClient</span>
+                            .<span className="hljs-title function_">objectClient</span>
                     (ticketObject)
                             {"\n"}
                             {"    "}
-                    .<span className="hljs-title function_">reserve</span>
+                            .<span className="hljs-title function_">reserve</span>
                     (ticketId);
                             {"\n"}
                             {"\n"}
@@ -338,315 +338,355 @@ const defaultAnimation = "<div class=\"col col--1 padding-horiz--sm\"><div id=\"
 export default function TourAnimation() {
     console.info("Called DurableExecutionAnimation");
 
-    const [animationIndex, setAnimationIndex] = useState(0);
-    const [requestedIndex, setRequestedIndex] = useState(0);
-    const [cartSvcCodeLine, setCartSvcCodeLine] = useState(0);
-    const [ticketSvcCodeLine, setTicketSvcCodeLine] = useState(0);
+    const [animationState, setAnimationState] = useState({ animationIndex: -1, cartSvcCodeLine: 0, ticketSvcCodeLine: 0 });
+    const progressBarRef = useRef(null);
 
-    const [timer, setTimer] = useState(null);
+    useEffect(() => {
+        progressBarRef.current.value = animationState.animationIndex;
+    }, [animationState]);
 
-    function highlightNextCartSvcCodeLine() {
+    function highlightNextCartSvcCodeLine(cartSvcCodeLine) {
         console.info("Called highlightNextCartSvcCodeLine");
         // Update cart service code highlighting
         // Update state for journal element visibility
-        setCartSvcCodeLine(prevLine => {
-            const linesToHighlightPerJournalIndex = {
-                0: [0],
-                1: [1,2,3],
-                2: [5],
-                3: [6],
-                4: [7],
-                5: [9],
-                6: [],
-            }
-            document.getElementById("cart_service").innerHTML = document.getElementById("cart_service")
-                .innerHTML.split("\n")
-                .map((line, index) =>
-                    linesToHighlightPerJournalIndex[prevLine].includes(index)
-                        ? `<mark class="code-highlight color-${prevLine + 1} set-bg">${line}</mark>`
-                        : line,
-                )
-                .join("\n");
-            const journalCartElement = document.getElementById("journal_cart_" + prevLine);
-            if (journalCartElement) journalCartElement.classList.remove("display-none");
-            const restateJournalElement = document.getElementById("restate_journal_cart_" + prevLine);
-            if (restateJournalElement) restateJournalElement.classList.remove("display-none");
-            return prevLine + 1;
-        });
+        const linesToHighlightPerJournalIndex = {
+            0: [0],
+            1: [1,2,3],
+            2: [5],
+            3: [6],
+            4: [7],
+            5: [9],
+            6: [],
+        }
+        document.getElementById("cart_service").innerHTML = document.getElementById("cart_service")
+            .innerHTML.split("\n")
+            .map((line, index) =>
+                linesToHighlightPerJournalIndex[cartSvcCodeLine].includes(index)
+                    ? `<mark class="code-highlight color-${cartSvcCodeLine + 1} set-bg">${line}</mark>`
+                    : line,
+            )
+            .join("\n");
+        const journalCartElement = document.getElementById("journal_cart_" + cartSvcCodeLine);
+        if (journalCartElement) journalCartElement.classList.remove("display-none");
+        const restateJournalElement = document.getElementById("restate_journal_cart_" + cartSvcCodeLine);
+        if (restateJournalElement) restateJournalElement.classList.remove("display-none");
     }
 
-    function highlightNextTicketSvcCodeLine() {
+    function highlightNextTicketSvcCodeLine(cartSvcCodeLine, ticketSvcCodeLine) {
         console.info("Called highlightNextTicketSvcCodeLine");
         // Update ticket service code highlighting
         // Update state for journal element visibility
-        setTicketSvcCodeLine(prevLine => {
-            const linesToHighlightPerJournalIndex = {
-                0: [0],
-                1: [2],
-                2: [],
-            }
-            document.getElementById("ticket_service").innerHTML = document.getElementById("ticket_service")
-                .innerHTML.split("\n")
-                .map((line, index) =>
-                    linesToHighlightPerJournalIndex[prevLine].includes(index)
-                        ? `<mark class="code-highlight color-${cartSvcCodeLine + prevLine} set-bg">${line}</mark>`
-                        : line,
-                )
-                .join("\n");
-            const journalTicketElement = document.getElementById("journal_ticket_" + prevLine);
-            if (journalTicketElement) journalTicketElement.classList.remove("display-none");
-            const restateJournalTicketElement = document.getElementById("restate_journal_ticket_" + prevLine);
-            if (restateJournalTicketElement) restateJournalTicketElement.classList.remove("display-none");
-            return prevLine + 1;
-        });
-    }
-
-    function animate() {
-        setAnimationIndex(prevState => prevState + 1);
-        console.info("Called animate, will animate to " + animationIndex);
-
-        switch (animationIndex) {
-            case 0: {
-                // Show the ingress call
-                console.info("Animation step 0 Show the ingress call")
-                document.getElementById("animation_explanation").innerHTML = "An HTTP request arrives at Restate. The request specifies that Mary wants to add a ticket with seat2B to her cart.";
-                document
-                    .getElementById("ingress_call")
-                    .classList.remove("display-none");
-                break;
-            }
-            case 1: {
-                // Create journal in Restate
-                console.info("Animation step 1 Create journal in Restate")
-                document.getElementById("animation_explanation").innerHTML = "Restate persists the incoming request by creating a new journal for it.</br>" +
-                    "Restate will now make sure that the execution of this request will run to completion, even in the face of failures.";
-                document
-                    .getElementById("restate_journal_cart")
-                    .classList.remove("display-none");
-                break;
-            }
-            case 2: {
-                // Invoke the service
-                console.info("Animation step 2 Invoke the service")
-                document.getElementById("animation_explanation").innerHTML = "After persisting the request, Restate invokes the addTicket handler, as specified by the request. " +
-                    "Restate sends over the journal which contains the request data."
-                document.getElementById("cart_service").classList.remove("suspended");
-                document
-                    .getElementById("cart_title_suspended")
-                    .classList.add("display-none");
-                document
-                    .getElementById("cart_title_invoked")
-                    .classList.remove("display-none");
-                highlightNextCartSvcCodeLine()
-                document
-                    .getElementById("journal_cart")
-                    .classList.remove("display-none");
-                document
-                    .getElementById("cart_request_arrow")
-                    .classList.remove("display-none");
-                break;
-            }
-            case 3: {
-                // Execute first line
-                console.info("Animation step 3 Execute first line")
-                document.getElementById("animation_explanation").innerHTML = "The handler now starts executing. " +
-                    "Every time the code uses the Restate context `ctx`, the SDK notifies Restate of the outcome of this action. " +
-                    "The Restate server then adds this action as a new entry to the journal. " +
-                    "Once persisted in the journal, this action will be skipped during retries, and the journaled result will be returned."
-                highlightNextCartSvcCodeLine()
-                document
-                    .getElementById("cart_request_arrow")
-                    .classList.add("display-none");
-                break;
-            }
-            case 4: {
-                console.info("Animation step 4")
-                document.getElementById("animation_explanation").innerHTML = "Then, the addTicket handler does a call to the reserve handler of the TicketObject. " +
-                    "The RPC call gets proxied via Restate.";
-                document
-                    .getElementById("cart_suspend_arrow")
-                    .classList.remove("display-none");
-                break;
-            }
-            case 5: {
-                // suspension
-                console.info("Animation step 5 suspension")
-                document.getElementById("animation_explanation").innerHTML = "Restate creates a new journal for the reserve call and adds the request data to it. " +
-                    "In the meantime, the CartObject has suspended. Restate lets handlers suspend whenever they are waiting for something that gets managed by Restate (e.g. RPC, timers, awakeables). " +
-                    "This is especially useful when running handlers on FaaS platforms (e.g. AWS Lambda), because you don't pay for the wait time. "
-                document.getElementById("journal_cart").classList.add("display-none");
-                document.getElementById("cart_service").classList.add("suspended");
-                document
-                    .getElementById("cart_title_suspended")
-                    .classList.remove("display-none");
-                document
-                    .getElementById("cart_title_invoked")
-                    .classList.add("display-none");
-                document
-                    .getElementById("cart_suspend_arrow")
-                    .classList.add("display-none");
-
-                // start of call to ticket service
-                document
-                    .getElementById("rpc_arrow_request")
-                    .classList.remove("display-none");
-                document
-                    .getElementById("restate_journal_ticket")
-                    .classList.remove("display-none");
-                break;
-            }
-            case 6: {
-                // start executing ticket service
-                console.log("Animation step 6 start executing ticket service")
-                document.getElementById("animation_explanation").innerHTML = "Restate invokes the reserve handler of the TicketObject and supplies the journal.";
-                document.getElementById("ticket_service").classList.remove("suspended");
-                document
-                    .getElementById("ticket_title_suspended")
-                    .classList.add("display-none");
-                document
-                    .getElementById("ticket_title_invoked")
-                    .classList.remove("display-none");
-                highlightNextTicketSvcCodeLine();
-                document
-                    .getElementById("journal_ticket")
-                    .classList.remove("display-none");
-                document
-                    .getElementById("ticket_request_arrow")
-                    .classList.remove("display-none");
-                break;
-            }
-            case 7: {
-                // get response ticket service
-                console.log("Animation step 7 get response ticket service")
-                document.getElementById("animation_explanation").innerHTML = "The function executes and eventually the ticket gets reserved successfully. " +
-                    "The success result is logged in the journal of the TicketObject, and this invocation is now considered completed. " +
-                    "Restate will then proxy the response to the CartObject.";
-                highlightNextTicketSvcCodeLine();
-                document
-                    .getElementById("ticket_request_arrow")
-                    .classList.add("display-none");
-                document
-                    .getElementById("ticket_response_arrow")
-                    .classList.remove("display-none");
-                break;
-            }
-            case 8: {
-                console.log("Animation step 8")
-                document.getElementById("animation_explanation").innerHTML = "Restate adds the success response to the journal of the addTicket invocation. " +
-                    "This way, the reserve call will not be re-executed during retries of the addTicket handler. " +
-                    "Restate now re-invokes the addTicket handler with its new journal, including the RPC response.";
-                highlightNextCartSvcCodeLine()
-                document
-                    .getElementById("rpc_arrow_request")
-                    .classList.add("display-none");
-                document
-                    .getElementById("rpc_arrow_response")
-                    .classList.remove("display-none");
-                document.getElementById("ticket_service").classList.add("suspended");
-                document
-                    .getElementById("ticket_title_suspended")
-                    .classList.remove("display-none");
-                document
-                    .getElementById("ticket_title_invoked")
-                    .classList.add("display-none");
-                document.getElementById("journal_ticket").classList.add("display-none");
-                document
-                    .getElementById("journal_ticket_1")
-                    .classList.add("display-none");
-                document
-                    .getElementById("ticket_response_arrow")
-                    .classList.add("display-none");
-                break;
-            }
-            case 9: {
-                console.log("Animation step 9")
-                document.getElementById("animation_explanation").innerHTML = "The addTicket handler now continues executing.";
-                document
-                    .getElementById("restate_journal_ticket")
-                    .classList.add("display-none");
-                document
-                    .getElementById("restate_journal_ticket_1")
-                    .classList.add("display-none");
-                document
-                    .getElementById("rpc_arrow_response")
-                    .classList.add("display-none");
-                document
-                    .getElementById("cart_request_arrow")
-                    .classList.remove("display-none");
-                document
-                    .getElementById("journal_cart")
-                    .classList.remove("display-none");
-                document.getElementById("cart_service").classList.remove("suspended");
-                document
-                    .getElementById("cart_title_suspended")
-                    .classList.add("display-none");
-                document
-                    .getElementById("cart_title_invoked")
-                    .classList.remove("display-none");
-                break;
-            }
-            case 10: {
-                console.log("Animation step 10")
-                document.getElementById("animation_explanation").innerHTML = "The handler finishes the execution by returning the success boolean. The journal with the response is transferred to Restate.";
-                highlightNextCartSvcCodeLine();
-                highlightNextCartSvcCodeLine();
-                document
-                    .getElementById("cart_request_arrow")
-                    .classList.add("display-none");
-                document
-                    .getElementById("cart_response_arrow")
-                    .classList.remove("display-none");
-                break;
-            }
-            case 11: {
-                console.log("Animation step 11")
-                document.getElementById("animation_explanation").innerHTML = "The handler finishes the execution by returning the success boolean. The journal with the response is transferred to Restate.";
-                document.getElementById("journal_cart").classList.add("display-none");
-                document
-                    .getElementById("cart_response_arrow")
-                    .classList.add("display-none");
-                document.getElementById("cart_service").classList.add("suspended");
-                document
-                    .getElementById("cart_title_suspended")
-                    .classList.remove("display-none");
-                document
-                    .getElementById("cart_title_invoked")
-                    .classList.add("display-none");
-                break;
-            }
-            case 12: {
-                console.log("Animation step 12")
-                document.getElementById("animation_explanation").innerHTML = "Once Restate has persisted the response in the journal, it responds to the caller, and the invocation has completed successfully!";
-                document.getElementById("ingress_call").classList.add("display-none");
-                document
-                    .getElementById("response_ingress_call")
-                    .classList.remove("display-none");
-                break;
-            }
-            case 13: {
-                console.log("Animation step 13 RESET")
-                document.getElementById("animation_explanation").innerHTML = "Restate.";
-                resetAnimation();
-                break;
-            }
+        const linesToHighlightPerJournalIndex = {
+            0: [0],
+            1: [2],
+            2: [],
         }
+        document.getElementById("ticket_service").innerHTML = document.getElementById("ticket_service")
+            .innerHTML.split("\n")
+            .map((line, index) =>
+                linesToHighlightPerJournalIndex[ticketSvcCodeLine].includes(index)
+                    ? `<mark class="code-highlight color-${cartSvcCodeLine + ticketSvcCodeLine} set-bg">${line}</mark>`
+                    : line,
+            )
+            .join("\n");
+        const journalTicketElement = document.getElementById("journal_ticket_" + ticketSvcCodeLine);
+        if (journalTicketElement) journalTicketElement.classList.remove("display-none");
+        const restateJournalTicketElement = document.getElementById("restate_journal_ticket_" + ticketSvcCodeLine);
+        if (restateJournalTicketElement) restateJournalTicketElement.classList.remove("display-none");
     }
 
-    function resetAnimation() {
-        console.info("Called resetAnimation");
-        setCartSvcCodeLine(0)
-        setTicketSvcCodeLine(0)
-        const animationElement = document.getElementById("animation");
-        animationElement.innerHTML = defaultAnimation;
-        setAnimationIndex(0);
+    function animate(rewind=false) {
+        setAnimationState(prevState => {
+            console.info("Called animate, will animate to " + prevState.animationIndex);
+
+            let requestedIndex;
+            if(rewind){
+                console.info("Rewinding animation")
+                requestedIndex = prevState.animationIndex - 1;
+                prevState = { animationIndex: -1, cartSvcCodeLine: 0, ticketSvcCodeLine: 0 };
+                const animationElement = document.getElementById("animation");
+                animationElement.innerHTML = defaultAnimation;
+            } else {14
+                requestedIndex = (prevState.animationIndex < 12) ? prevState.animationIndex + 1 : -1;
+            }14
+
+            if(requestedIndex === -1){
+                prevState = { animationIndex: -1, cartSvcCodeLine: 0, ticketSvcCodeLine: 0 };
+                const animationElement = document.getElementById("animation");
+                animationElement.innerHTML = defaultAnimation;
+            } else {
+                while (prevState.animationIndex < requestedIndex) {
+                    prevState = switchToNewState(prevState);
+                }
+            }
+
+            progressBarRef.current.value = requestedIndex;
+
+            console.info("Returning new state", prevState)
+            return prevState;
+        })
     }
 
-    const handleReset = () => {
-        resetAnimation();
+
+    function switchToNewState(prevState) {
+        prevState.animationIndex = prevState.animationIndex + 1
+            switch (prevState.animationIndex) {
+                case 0: {
+                    // Show the ingress call
+                    console.info("Animation step 0 Show the ingress call")
+                    document.getElementById("animation_explanation").innerHTML = "An HTTP request arrives at Restate. The request specifies that Mary wants to add a ticket with seat2B to her cart.";
+                    document
+                        .getElementById("ingress_call")
+                        .classList.remove("display-none");
+                    break;
+                }
+                case 1: {
+                    // Create journal in Restate
+                    console.info("Animation step 1 Create journal in Restate")
+                    document.getElementById("animation_explanation").innerHTML = "Restate persists the incoming request by creating a new journal for it.</br>" +
+                        "Restate will now make sure that the execution of this request will run to completion, even in the face of failures.";
+                    document
+                        .getElementById("restate_journal_cart")
+                        .classList.remove("display-none");
+                    break;
+                }
+                case 2: {
+                    // Invoke the service
+                    console.info("Animation step 2 Invoke the service")
+                    document.getElementById("animation_explanation").innerHTML = "After persisting the request, Restate invokes the addTicket handler, as specified by the request. " +
+                        "Restate sends over the journal which contains the request data."
+                    document.getElementById("cart_service").classList.remove("suspended");
+                    document
+                        .getElementById("cart_title_suspended")
+                        .classList.add("display-none");
+                    document
+                        .getElementById("cart_title_invoked")
+                        .classList.remove("display-none");
+                    highlightNextCartSvcCodeLine(prevState.cartSvcCodeLine)
+                    prevState.cartSvcCodeLine += 1;
+                    document
+                        .getElementById("journal_cart")
+                        .classList.remove("display-none");
+                    document
+                        .getElementById("cart_request_arrow")
+                        .classList.remove("display-none");
+                    break;
+                }
+                case 3: {
+                    // Execute first line
+                    console.info("Animation step 3 Execute first line")
+                    document.getElementById("animation_explanation").innerHTML = "The handler now starts executing. " +
+                        "Every time the code uses the Restate context `ctx`, the SDK notifies Restate of the outcome of this action. " +
+                        "The Restate server then adds this action as a new entry to the journal. " +
+                        "Once persisted in the journal, this action will be skipped during retries, and the journaled result will be returned."
+                    highlightNextCartSvcCodeLine(prevState.cartSvcCodeLine)
+                    prevState.cartSvcCodeLine += 1;
+                    document
+                        .getElementById("cart_request_arrow")
+                        .classList.add("display-none");
+                    break;
+                }
+                case 4: {
+                    console.info("Animation step 4")
+                    document.getElementById("animation_explanation").innerHTML = "Then, the addTicket handler does a call to the reserve handler of the TicketObject. " +
+                        "The RPC call gets proxied via Restate.";
+                    document
+                        .getElementById("cart_suspend_arrow")
+                        .classList.remove("display-none");
+                    break;
+                }
+                case 5: {
+                    // suspension
+                    console.info("Animation step 5 suspension")
+                    document.getElementById("animation_explanation").innerHTML = "Restate creates a new journal for the reserve call and adds the request data to it. " +
+                        "In the meantime, the CartObject has suspended. Restate lets handlers suspend whenever they are waiting for something that gets managed by Restate (e.g. RPC, timers, awakeables). " +
+                        "This is especially useful when running handlers on FaaS platforms (e.g. AWS Lambda), because you don't pay for the wait time. "
+                    document.getElementById("journal_cart").classList.add("display-none");
+                    document.getElementById("cart_service").classList.add("suspended");
+                    document
+                        .getElementById("cart_title_suspended")
+                        .classList.remove("display-none");
+                    document
+                        .getElementById("cart_title_invoked")
+                        .classList.add("display-none");
+                    document
+                        .getElementById("cart_suspend_arrow")
+                        .classList.add("display-none");
+
+                    // start of call to ticket service
+                    document
+                        .getElementById("rpc_arrow_request")
+                        .classList.remove("display-none");
+                    document
+                        .getElementById("restate_journal_ticket")
+                        .classList.remove("display-none");
+                    break;
+                }
+                case 6: {
+                    // start executing ticket service
+                    console.log("Animation step 6 start executing ticket service")
+                    document.getElementById("animation_explanation").innerHTML = "Restate invokes the reserve handler of the TicketObject and supplies the journal.";
+                    document.getElementById("ticket_service").classList.remove("suspended");
+                    document
+                        .getElementById("ticket_title_suspended")
+                        .classList.add("display-none");
+                    document
+                        .getElementById("ticket_title_invoked")
+                        .classList.remove("display-none");
+                    highlightNextTicketSvcCodeLine(prevState.cartSvcCodeLine, prevState.ticketSvcCodeLine);
+                    prevState.ticketSvcCodeLine +=1;
+                    document
+                        .getElementById("journal_ticket")
+                        .classList.remove("display-none");
+                    document
+                        .getElementById("ticket_request_arrow")
+                        .classList.remove("display-none");
+                    break;
+                }
+                case 7: {
+                    // get response ticket service
+                    console.log("Animation step 7 get response ticket service")
+                    document.getElementById("animation_explanation").innerHTML = "The function executes and eventually the ticket gets reserved successfully. " +
+                        "The success result is logged in the journal of the TicketObject, and this invocation is now considered completed. " +
+                        "Restate will then proxy the response to the CartObject.";
+                    highlightNextTicketSvcCodeLine(prevState.cartSvcCodeLine, prevState.ticketSvcCodeLine);
+                    prevState.ticketSvcCodeLine +=1;
+                    document
+                        .getElementById("ticket_request_arrow")
+                        .classList.add("display-none");
+                    document
+                        .getElementById("ticket_response_arrow")
+                        .classList.remove("display-none");
+                    break;
+                }
+                case 8: {
+                    console.log("Animation step 8")
+                    document.getElementById("animation_explanation").innerHTML = "Restate adds the success response to the journal of the addTicket invocation. " +
+                        "This way, the reserve call will not be re-executed during retries of the addTicket handler. " +
+                        "Restate now re-invokes the addTicket handler with its new journal, including the RPC response.";
+                    highlightNextCartSvcCodeLine(prevState.cartSvcCodeLine)
+                    prevState.cartSvcCodeLine += 1;
+                    document
+                        .getElementById("rpc_arrow_request")
+                        .classList.add("display-none");
+                    document
+                        .getElementById("rpc_arrow_response")
+                        .classList.remove("display-none");
+                    document.getElementById("ticket_service").classList.add("suspended");
+                    document
+                        .getElementById("ticket_title_suspended")
+                        .classList.remove("display-none");
+                    document
+                        .getElementById("ticket_title_invoked")
+                        .classList.add("display-none");
+                    document.getElementById("journal_ticket").classList.add("display-none");
+                    document
+                        .getElementById("journal_ticket_1")
+                        .classList.add("display-none");
+                    document
+                        .getElementById("ticket_response_arrow")
+                        .classList.add("display-none");
+                    break;
+                }
+                case 9: {
+                    console.log("Animation step 9")
+                    document.getElementById("animation_explanation").innerHTML = "The addTicket handler now continues executing.";
+                    document
+                        .getElementById("restate_journal_ticket")
+                        .classList.add("display-none");
+                    document
+                        .getElementById("restate_journal_ticket_1")
+                        .classList.add("display-none");
+                    document
+                        .getElementById("rpc_arrow_response")
+                        .classList.add("display-none");
+                    document
+                        .getElementById("cart_request_arrow")
+                        .classList.remove("display-none");
+                    document
+                        .getElementById("journal_cart")
+                        .classList.remove("display-none");
+                    document.getElementById("cart_service").classList.remove("suspended");
+                    document
+                        .getElementById("cart_title_suspended")
+                        .classList.add("display-none");
+                    document
+                        .getElementById("cart_title_invoked")
+                        .classList.remove("display-none");
+                    break;
+                }
+                case 10: {
+                    console.log("Animation step 10")
+                    document.getElementById("animation_explanation").innerHTML = "The handler finishes the execution by returning the success boolean. The journal with the response is transferred to Restate.";
+                    highlightNextCartSvcCodeLine(prevState.cartSvcCodeLine);
+                    prevState.cartSvcCodeLine += 1;
+                    highlightNextCartSvcCodeLine(prevState.cartSvcCodeLine);
+                    prevState.cartSvcCodeLine += 1;
+                    document
+                        .getElementById("cart_request_arrow")
+                        .classList.add("display-none");
+                    document
+                        .getElementById("cart_response_arrow")
+                        .classList.remove("display-none");
+                    break;
+                }
+                case 11: {
+                    console.log("Animation step 11")
+                    document.getElementById("animation_explanation").innerHTML = "The handler finishes the execution by returning the success boolean. The journal with the response is transferred to Restate.";
+                    document.getElementById("journal_cart").classList.add("display-none");
+                    document
+                        .getElementById("cart_response_arrow")
+                        .classList.add("display-none");
+                    document.getElementById("cart_service").classList.add("suspended");
+                    document
+                        .getElementById("cart_title_suspended")
+                        .classList.remove("display-none");
+                    document
+                        .getElementById("cart_title_invoked")
+                        .classList.add("display-none");
+                    break;
+                }
+                case 12: {
+                    console.log("Animation step 12")
+                    document.getElementById("animation_explanation").innerHTML = "Once Restate has persisted the response in the journal, it responds to the caller, and the invocation has completed successfully!";
+                    document.getElementById("ingress_call").classList.add("display-none");
+                    document
+                        .getElementById("response_ingress_call")
+                        .classList.remove("display-none");
+                    break;
+                }
+                case 13: {
+                    console.log("Animation step 13 RESET")
+                    document.getElementById("animation_explanation").innerHTML = "Restate.";
+                    prevState = { animationIndex: 0, cartSvcCodeLine: 0, ticketSvcCodeLine: 0 };
+                    const animationElement = document.getElementById("animation");
+                    animationElement.innerHTML = defaultAnimation;
+                    break;
+                }
+            }
+            return prevState;
+        }
+
+    const handlePrev = () => {
+        animate(true);
     };
-
     const handleNext = () => {
         animate()
+    };
+
+    const handleProgressBarChange = (event) => {
+        const currentValue = parseInt(event.target.value);
+        if (currentValue > animationState.animationIndex) {
+            // Moved to the right, call handleNext
+            for (let i = animationState.animationIndex; i < currentValue; i++) {
+                handleNext();
+            }
+        } else if (currentValue < animationState.animationIndex) {
+            // Moved to the left, call handlePrev
+            for (let i = animationState.animationIndex; i > currentValue; i--) {
+                handlePrev();
+            }
+        }
     };
 
     return (
@@ -660,18 +700,17 @@ export default function TourAnimation() {
                     <Services/>
                 </div>
                 <div id="progressBarContainer">
-                    <button onClick={handleReset}>Reset</button>
+                    <button className={clsx("btn-animation")} onClick={handlePrev}>Prev</button>
                     <input
                         type="range"
                         id="progressBar"
                         min={0}
-                        max={13}
+                        max={12}
                         step={1}
-                        readOnly
-                        value={animationIndex}
-                        onKeyDown={() => {}}
+                        ref={progressBarRef}
+                        onChange={handleProgressBarChange}
                     />
-                    <button onClick={handleNext}>Next</button>
+                    <button className={clsx("btn-animation")} onClick={handleNext}>Next</button>
                 </div>
             </div>
         </div>
