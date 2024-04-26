@@ -768,7 +768,7 @@ export default function DurableExecutionAnimation() {
                 handlePrev();
             }
         }
-    };
+    }
 
     return (
         <div>
