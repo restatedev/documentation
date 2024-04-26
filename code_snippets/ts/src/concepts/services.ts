@@ -1,22 +1,24 @@
+/**
+ * WARNING:
+ * The Services page relies on the line numbers for the code animations
+ * Make sure you adapt the line numbers when adapting the code
+ */
+
 // <start_service>
 import * as restate from "@restatedev/restate-sdk";
+import {Context} from "@restatedev/restate-sdk";
 
 export const roleUpdateService = restate.service({
     name: "roleUpdate",
     handlers: {
-        applyRoleUpdate: async (ctx: restate.Context, update: UpdateRequest) => {
-            // parameters are durable across retries
+        applyRoleUpdate: async (ctx: Context, update: UpdateRequest) => {
             const { userId, role, permissions } = update;
 
-            // Apply a change to one system (e.g., DB upsert, API call, ...)
-            // and persist the result in Restate.
             const success = await ctx.run(() => applyUserRole(userId, role));
             if (!success) {
                 return;
             }
 
-            // Loop over the permission settings and
-            // journal each operation in Restate to avoid re-execution during retries.
             for (const permission of permissions) {
                 await ctx.run(() => applyPermission(userId, permission));
             }
