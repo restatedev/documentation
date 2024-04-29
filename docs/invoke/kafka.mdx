@@ -1,17 +1,20 @@
 ---
-sidebar_position: 10
-description: "Receive events from Kafka."
+sidebar_position: 3
+description: "Invoke handlers via Kafka events."
 ---
 
+import {SubtleStep} from "../../src/components/Stepper";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
-import {SubtleStep} from "../../../src/components/Stepper";
 
 # Kafka
 
 You can invoke handlers via Kafka events, by doing the following:
 
+<Admonition type="info">
+    Make sure to first [register the handler](/operate/registration) you want to invoke.
+</Admonition>
 
 <SubtleStep stepLabel="1" title="Develop an event handler">
 
@@ -49,10 +52,10 @@ You can invoke handlers via Kafka events, by doing the following:
     ```bash
     curl localhost:9070/subscriptions -H 'content-type: application/json' \
         -d '{
-                "source": "kafka://my-cluster/my-topic",
-                "sink": "service://MyService/handle",
-                "options": {"auto.offset.reset": "earliest"}
-            }'
+            "source": "kafka://my-cluster/my-topic",
+            "sink": "service://MyService/handle",
+            "options": {"auto.offset.reset": "earliest"}
+        }'
     ```
 
     Once you've created a subscription, Restate immediately starts consuming events from Kafka.
@@ -63,8 +66,11 @@ You can invoke handlers via Kafka events, by doing the following:
 </SubtleStep>
 
 <Admonition type="info" title="Managing subscriptions">
-    Have a look at the [invocation docs](/operate/invocation#kafka-subscriptions) for more commands to manage subscriptions.
+    Have a look at the [invocation docs](/operate/invocation#managing-kafka-subscriptions) for more commands to manage subscriptions.
 </Admonition>
+
+<Tabs groupId="sdk" queryString>
+    <TabItem value="ts" label="TypeScript">
 
 <details className="grey-details">
     <summary>Event metadata</summary>
@@ -78,3 +84,28 @@ You can invoke handlers via Kafka events, by doing the following:
 
 </details>
 
+    </TabItem>
+    <TabItem value="java" label="Java">
+
+
+<details className="grey-details">
+    <summary>Raw event support</summary>
+
+    If you use annotations for your services and handlers, the event payload will be (de)serialized as JSON.
+    If you need to access the raw Kafka payload, you can do this by doing manual service definition.
+</details>
+
+<details className="grey-details">
+    <summary>Event metadata</summary>
+
+    Each event carries within the _`CODE_LOAD::java/src/main/java/develop/MyKafkaVirtualObject.java#<start_headers>-<end_headers>`_ map the following entries:
+
+    * `restate.subscription.id`: The subscription identifier, as shown by the [Admin API](../../references/admin-api).
+    * `kafka.offset`: The record offset.
+    * `kafka.partition`: The record partition.
+    * `kafka.timestamp`: The record timestamp.
+
+</details>
+
+</TabItem>
+    </Tabs>

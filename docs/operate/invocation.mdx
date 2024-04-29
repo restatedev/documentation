@@ -7,279 +7,12 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
 
-# Invocation
+# Managing Invocations
 
 An invocation is a request to execute a handler that is part of either a service, or a virtual object.
+There are different ways to invoke a handler: by sending a request to Restate [over HTTP](/invoke/http), by using the [SDK clients](/invoke/clients), or [via Kafka events](/invoke/kafka).
 
-There are different ways to invoke a handler:
-
-* By sending a request to Restate [over HTTP](/operate/invocation#invoking-handlers-over-http)
-* By using the [SDK](/operate/invocation#invoking-with-sdk)
-* [Via Kafka events](/operate/invocation#kafka-subscriptions)
-
-## Invoking handlers over HTTP
-
-You can invoke handlers over HTTP with or without waiting for a response, and with or without an idempotency key.
-
-### Request-response calls over HTTP
-You can invoke services over HTTP 1.1 or higher.
-Request/response bodies should be encoded as JSON.
-
-**To invoke Services**, construct the path as follows:
-
-    ```shell
-    curl localhost:8080/MyService/myHandler \
-        -H 'content-type: application/json' \
-        -d '{"name": "Mary", "age": 25}'
-    ```
-
-
-**To invoke Virtual Objects**, construct the path as follows:
-
-    ```shell
-    curl localhost:8080/MyVirtualObject/myObjectKey/myHandler \
-        -H 'content-type: application/json' \
-        -d '{"name": "Mary", "age": 25}'
-    ```
-
-<Admonition type="info" title="Restate as proxy">
-Note that all invocations go first via the Restate Server. The server then forwards the request to the appropriate service.
-Therefore, `localhost:8080` refers to ingress port of the Restate Server, not the service instance.
-</Admonition>
-
-### Sending a (delayed) message over HTTP
-If you do not want to wait for the response, you can also send a message by adding `/send` to the URL path:
-
-```shell
-# focus[40:44]
-curl localhost:8080/MyService/myHandler/send \
-    -H 'content-type: application/json' \
-    -d '{"name": "Mary", "age": 25}'
-```
-
-<details className={"grey-details"}>
-    <summary>Output</summary>
-
-    ```json
-    {"invocationId":"inv_1aiqX0vFEFNH1Umgre58JiCLgHfTtztYK5"}
-    ```
-</details>
-
-    The response contains the [Invocation identifier](#invocation-identifier).
-You can use this identifier [to cancel](/operate/invocation#cancelling-invocations) or [kill the invocation](/operate/invocation#killing-invocations).
-
-<Admonition type="tip">
-    Use this to invoke long-running workflows.
-</Admonition>
-
-You can **delay the message** by adding a delay request parameter in ISO8601 notation or in seconds:
-
-<CH.Code>
-
-    ```shell seconds
-    # focus[40:56]
-    curl localhost:8080/MyService/myHandler/send?delaySec=10 \
-    -H 'content-type: application/json' \
-    -d '{"name": "Mary", "age": 25}'
-    ```
-
-    ```shell ISO8601
-    # focus[40:56]
-    curl localhost:8080/MyService/myHandler/send?delay=PT10S \
-    -H 'content-type: application/json' \
-    -d '{"name": "Mary", "age": 25}'
-    ```
-
-</CH.Code>
-
-### Invoke a handler idempotently
-
-You can send requests to Restate providing an idempotency key, through the [`Idempotency-Key` header](https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/):
-
-```shell
-curl localhost:8080/MyService/myHandler \
-# focus
-  -H 'idempotency-key: ad5472esg4dsg525dssdfa5loi' \
-  -H 'content-type: application/json' \
-  -d '{"name": "Mary", "age": 25}'
-```
-
-After the invocation completes, Restate persists the response for a retention period of one day (24 hours).
-If you re-invoke the service with the same idempotency key within 24 hours, Restate sends back the same response and doesn't re-execute the request to the service.
-
-<Admonition type="tip" title={"Make any service call idempotent by using Restate"}>
-    By using Restate and an idempotency key, you can make any service call idempotent, without any extra code or setup.
-    This is a very powerful feature to ensure that your system stays consistent and doesn't perform the same operation multiple times.
-</Admonition>
-
-<details className={"grey-details"}>
-    <summary> Tuning retention time</summary>
-
-    <CH.Section>
-    You can tune the [retention time](focus://3) on a service-level by using the [Admin API](focus://1[15:28]) ([docs](/references/admin-api#tag/service/operation/modify_service)):
-    ```shell
-    curl -X PATCH localhost:9070/services/MyService \
-        -H 'content-type: application/json' \
-        -d '{"idempotency_retention": "2days"}'
-    ```
-    The [retention time](focus://3) is in [humantime format](https://docs.rs/humantime/latest/humantime/).
-    </CH.Section>
-
-</details>
-
-## Kafka subscriptions
-
-Restate can trigger handlers via Kafka events.
-Have a look at the [Java](/develop/java/kafka) and [TypeScript](/develop/ts/kafka) docs to learn how to set up your handler to receive Kafka events.
-
-<CH.Section>
-- **Create subscriptions** for [a handler](focus://4) on [a topic](focus://3) via:
-```bash
-curl localhost:9070/subscriptions -H 'content-type: application/json' \
-    -d '{
-        "source": "kafka://my-cluster/my-topic",
-        "sink": "service://MyService/Handle",
-        "options": {"auto.offset.reset": "earliest"}
-    }'
-```
-The [options field](focus://5) is optional and accepts any configuration parameter from [librdkafka configuration](https://github.com/confluentinc/librdkafka/blob/master/CONFIGURATION.md).
-</CH.Section>
-- **List** the current subscriptions via:
-```bash
-curl localhost:9070/subscriptions
-```
-
-<details className="grey-details">
-    <summary>Output</summary>
-
-    ```json
-    {
-        "subscriptions": [
-            {
-                "id": "sub_11XHoawrCiWtv8kzhEyGtsR",
-                "source": "kafka://my-cluster/my-topic",
-                "sink": "service://Greeter/greet",
-                "options": {
-                    "auto.offset.reset": "earliest",
-                    "client.id": "restate",
-                    "group.id": "sub_11XHoawrCiWtv8kzhEyGtsR"
-                }
-            }
-        ]
-    }
-    ```
-
-</details>
-
-    The creation and listing of subscriptions returns an identifier.
-<CH.Section>
-    - **Delete** a subscription with [its identifier (starting with `sub_`)](focus://1[45:78]) via:
-    ```bash
-    curl -X DELETE localhost:9070/subscriptions/sub_11XHoawrCiWtv8kzhEyGtsR
-    ```
-
-    <Admonition type="info">
-        When you delete a subscription, Restate stops the consumer group associated to it. Any messages that were already enqueued by Restate will still be processed.
-    </Admonition>
-</CH.Section>
-
-
-## Invoking handlers with the SDK
-
-You can invoke handlers with the SDK either:
-- from within a handler with access to the Restate `Context` or `ObjectContext`, as explained in the Develop docs ([TS](/develop/ts/service-communication) or [Java](/develop/ts/service-communication)).
-- from _plain TypeScript/Java/Kotlin code_.
-
-To invoke a Restate handler programmatically (without access to the context), do the following:
-
-<Tabs groupId="sdk" queryString>
-    <TabItem value="ts" label="TypeScript">
-
-        1. Add the dependency to your project:
-
-        ```shell
-        npm install @restatedev/restate-sdk-clients
-        ```
-
-        2. In your code, connect to Restate:
-
-        ```typescript
-        CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_connect>-<end_connect>
-        ```
-
-        3. Invoke the handler with your preferred semantics:
-
-        <CH.Spotlight className="durable-promises">
-
-            ```typescript
-            CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_rpc_call_node>-<end_rpc_call_node>
-            ```
-
-            ---
-
-            **<mark class="accent">Request-response</mark> invocations** allow you to wait on a response from the handler.
-
-            ---
-
-            ```typescript
-            CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_one_way_call_node>-<end_one_way_call_node>
-            ```
-
-            **<mark class="accent">One-way</mark> invocations** allow you to trigger an asynchronous action.
-            This returns an invocation ID with which you can retrieve the result of the invocation later, if desired.
-
-            ---
-
-            ```typescript
-            CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_delayed_call_node>-<end_delayed_call_node>
-            ```
-
-            **<mark class="accent">Delayed</mark> invocations** allow you to schedule an invocation for a later point in time.
-
-        </CH.Spotlight>
-    </TabItem>
-    <TabItem value="java" label="Java">
-
-
-        1. Add the dependency to your project:
-
-        ```kotlin
-        implementation("dev.restate:sdk-common:VAR::TYPESCRIPT_SDK_VERSION")
-        ```
-
-        2. From your code, connect to Restate and invoke the handler with your preferred semantics:
-
-        <CH.Spotlight className="durable-promises">
-
-            ```java
-            CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_rpc_java>-<end_rpc_java>
-            ```
-
-            ---
-
-            **<mark class="accent">Request-response</mark> invocations** allow you to wait on a response from the handler.
-
-            ---
-
-            ```java
-            CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_one_way_call_java>-<end_one_way_call_java>
-            ```
-
-            **<mark class="accent">One-way</mark> invocations** allow you to trigger an asynchronous action.
-            This returns an invocation ID with which you can retrieve the result of the invocation later, if desired.
-
-            ---
-
-            ```java
-            CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_delayed_call_java>-<end_delayed_call_java>
-            ```
-
-            **<mark class="accent">Delayed</mark> invocations** allow you to schedule an invocation for a later point in time.
-
-        </CH.Spotlight>
-
-    </TabItem>
-</Tabs>
+Once an invocation is created, you can inspect it, cancel it, and kill it via its Invocation Identifier:
 
 ## Invocation identifier
 
@@ -413,3 +146,59 @@ curl -X DELETE http://localhost:9070/invocations/inv_1gdJBtdVEcM942bjcDmb1c1khoa
     This might leave the service instance in an inconsistent state.
     Use it with caution and try fixing the invocation in other ways before resorting to killing it.
 </Admonition>
+
+
+## Managing Kafka subscriptions
+
+Restate can trigger handlers via Kafka events.
+
+<CH.Section>
+    - **Create subscriptions** for [a handler](focus://4) on [a topic](focus://3) via:
+    ```bash
+    curl localhost:9070/subscriptions -H 'content-type: application/json' \
+        -d '{
+            "source": "kafka://my-cluster/my-topic",
+            "sink": "service://MyService/Handle",
+            "options": {"auto.offset.reset": "earliest"}
+        }'
+    ```
+    The [options field](focus://5) is optional and accepts any configuration parameter from [librdkafka configuration](https://github.com/confluentinc/librdkafka/blob/master/CONFIGURATION.md).
+</CH.Section>
+- **List** the current subscriptions via:
+```bash
+curl localhost:9070/subscriptions
+```
+
+<details className="grey-details">
+    <summary>Output</summary>
+
+    ```json
+    {
+        "subscriptions": [
+            {
+                "id": "sub_11XHoawrCiWtv8kzhEyGtsR",
+                "source": "kafka://my-cluster/my-topic",
+                "sink": "service://Greeter/greet",
+                "options": {
+                    "auto.offset.reset": "earliest",
+                    "client.id": "restate",
+                    "group.id": "sub_11XHoawrCiWtv8kzhEyGtsR"
+                }
+            }
+        ]
+    }
+    ```
+
+</details>
+
+    The creation and listing of subscriptions returns an identifier.
+<CH.Section>
+    - **Delete** a subscription with [its identifier (starting with `sub_`)](focus://1[45:78]) via:
+    ```bash
+    curl -X DELETE localhost:9070/subscriptions/sub_11XHoawrCiWtv8kzhEyGtsR
+    ```
+
+    <Admonition type="info">
+        When you delete a subscription, Restate stops the consumer group associated to it. Any messages that were already enqueued by Restate will still be processed.
+    </Admonition>
+</CH.Section>
