@@ -1,4 +1,4 @@
-package concepts.invocations;
+package operate.invocations;
 
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
