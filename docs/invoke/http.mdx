@@ -1,0 +1,122 @@
+---
+sidebar_position: 1
+description: "Invoke handlers over HTTP."
+---
+
+import Admonition from '@theme/Admonition';
+
+# HTTP
+
+You can invoke handlers over HTTP with or without waiting for a response, and with or without an idempotency key.
+
+<Admonition type="info">
+    Make sure to first [register the handler](/operate/registration) you want to invoke.
+</Admonition>
+
+## Request-response calls over HTTP
+You can invoke services over HTTP 1.1 or higher.
+Request/response bodies should be encoded as JSON.
+
+**To invoke Services**, construct the path as follows:
+
+    ```shell
+    curl localhost:8080/MyService/myHandler \
+        -H 'content-type: application/json' \
+        -d '{"name": "Mary", "age": 25}'
+    ```
+
+
+**To invoke Virtual Objects**, construct the path as follows:
+
+    ```shell
+    curl localhost:8080/MyVirtualObject/myObjectKey/myHandler \
+        -H 'content-type: application/json' \
+        -d '{"name": "Mary", "age": 25}'
+    ```
+
+<Admonition type="info" title="Restate as proxy">
+    Note that all invocations go first via the Restate Server. The server then forwards the request to the appropriate service.
+    Therefore, `localhost:8080` refers to ingress port of the Restate Server, not the service instance.
+</Admonition>
+
+## Sending a message over HTTP
+If you do not want to wait for the response, you can also send a message by adding `/send` to the URL path:
+
+```shell
+# focus[40:44]
+curl localhost:8080/MyService/myHandler/send \
+    -H 'content-type: application/json' \
+    -d '{"name": "Mary", "age": 25}'
+```
+
+<details className={"grey-details"}>
+    <summary>Output</summary>
+
+    ```json
+    {"invocationId":"inv_1aiqX0vFEFNH1Umgre58JiCLgHfTtztYK5"}
+    ```
+</details>
+
+The response contains the [Invocation identifier](/operate/invocation#invocation-identifier).
+You can use this identifier [to cancel](/operate/invocation#cancelling-invocations) or [kill the invocation](/operate/invocation#killing-invocations).
+
+<Admonition type="tip">
+    Use this to invoke long-running workflows.
+</Admonition>
+
+## Sending a delayed message over HTTP
+
+You can **delay the message** by adding a delay request parameter in ISO8601 notation or in seconds:
+
+<CH.Code>
+
+    ```shell seconds
+    # focus[40:56]
+    curl localhost:8080/MyService/myHandler/send?delaySec=10 \
+    -H 'content-type: application/json' \
+    -d '{"name": "Mary", "age": 25}'
+    ```
+
+    ```shell ISO8601
+    # focus[40:56]
+    curl localhost:8080/MyService/myHandler/send?delay=PT10S \
+    -H 'content-type: application/json' \
+    -d '{"name": "Mary", "age": 25}'
+    ```
+
+</CH.Code>
+
+## Invoke a handler idempotently
+
+You can send requests to Restate providing an idempotency key, through the [`Idempotency-Key` header](https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/):
+
+```shell
+curl localhost:8080/MyService/myHandler \
+# focus
+  -H 'idempotency-key: ad5472esg4dsg525dssdfa5loi' \
+  -H 'content-type: application/json' \
+  -d '{"name": "Mary", "age": 25}'
+```
+
+After the invocation completes, Restate persists the response for a retention period of one day (24 hours).
+If you re-invoke the service with the same idempotency key within 24 hours, Restate sends back the same response and doesn't re-execute the request to the service.
+
+<Admonition type="tip" title={"Make any service call idempotent by using Restate"}>
+    By using Restate and an idempotency key, you can make any service call idempotent, without any extra code or setup.
+    This is a very powerful feature to ensure that your system stays consistent and doesn't perform the same operation multiple times.
+</Admonition>
+
+<details className={"grey-details"}>
+    <summary> Tuning retention time</summary>
+
+    <CH.Section>
+        You can tune the [retention time](focus://3) on a service-level by using the [Admin API](focus://1[15:28]) ([docs](/references/admin-api#tag/service/operation/modify_service)):
+        ```shell
+        curl -X PATCH localhost:9070/services/MyService \
+        -H 'content-type: application/json' \
+        -d '{"idempotency_retention": "2days"}'
+        ```
+        The [retention time](focus://3) is in [humantime format](https://docs.rs/humantime/latest/humantime/).
+    </CH.Section>
+
+</details>
