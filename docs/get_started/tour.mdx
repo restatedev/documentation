@@ -1475,34 +1475,33 @@ npm run part4
 
 ## Idempotency for any request
 As you saw, generating idempotency keys inside your handlers and storing them in Restate is easy.
-
 But this doesn't guard us yet against retries of the HTTP request to Restate.
-If the system invoking the `checkout` handler retries the request, the handler gets executed twice.
+
+For example, if the caller of the `addTicket` handler didn't receive the success response of its first request, it might retry the request.
+The second request will return `false` because the ticket already got reserved the first time, but the caller won't know about this.
 
 To cover this, you can add an `idempotency-key` header to the incoming request to let Restate deduplicate them.
 
-Our `CartObject/checkout` handler is robust against retries since it checks the state content.
-So instead, check out how this works by calling the `CheckoutService/handle` handler with an idempotency key:
+In our example, when we call the `CartObject/addTicket` handler, the first time the response is `true` and the second time it's `false`.
+However, if we use the same idempotency key, the second call will return `true` as well, because it will return the result of the first call:
 
 ```shell
-curl localhost:8080/CheckoutService/handle \
+curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' \
     -H 'idempotency-key: ad5472esg4dsg525dssdfa5loi'  \
-    -H 'content-type: application/json' \
-    -d '{"userId": "Mary", "tickets":["123", "236"]}'
+    -d '"seat2C"'
 ```
 
-The first time you call it, Restate will execute the handler.
-The second time Restate returns the previous result of the invocation, without executing the handler (see the service logs).
+You can also see from the service logs that the handler wasn't executed the second time.
 
 <Admonition type="tip" title="End-to-end idempotency">
-    Restate gives you idempotency for any service, handler and request for free.
-    No extra setup.
+Restate gives you idempotency for any service, handler and request for free.
+No extra setup.
 </Admonition>
 
-Note that you only need this when invoking handlers over HTTP.
+<Admonition type="info">
+You only need this when invoking handlers over HTTP.
 When a handler calls another handler, Restate automatically takes care of the idempotency.
-
-
+</Admonition>
 
 ## Tracing
 Restate exposes OpenTelemetry traces of your invocations.
