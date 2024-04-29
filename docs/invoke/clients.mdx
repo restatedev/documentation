@@ -1,0 +1,121 @@
+---
+sidebar_position: 2
+description: "Use the clients to invoke handlers programmatically."
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import Admonition from '@theme/Admonition';
+
+# Clients
+
+You can use the clients in the Restate SDK to invoke handlers programmatically.
+
+<Admonition type="info">
+Make sure to first [register the handler](/operate/registration) you want to invoke.
+</Admonition>
+
+## Invoking handlers with the Restate Context
+
+When you implement a Restate handler, you have access to the Restate `Context` or `ObjectContext` object.
+You can use this context to invoke other handlers.
+
+Have a look at the Development docs ([TS](/develop/ts/service-communication)/[Java](/develop/java/service-communication)/[Kotlin](/develop/java/service-communication?sdk=kotlin)).
+
+<Admonition type="info">
+    Always use this way of invoking handlers when you have access to the context.
+    This way, Restate attaches information about the invocation to the parent invocation.
+</Admonition>
+
+## Invoking handlers from the client library
+
+If you do not have access to the context, you can use the client library to invoke handlers programmatically.
+
+To invoke a Restate handler programmatically from _plain TypeScript/Java/Kotlin code_, do:
+
+<Tabs groupId="sdk" queryString>
+    <TabItem value="ts" label="TypeScript">
+
+        1. Add the dependency to your project:
+
+        ```shell
+        npm install @restatedev/restate-sdk-clients
+        ```
+
+        2. In your code, connect to Restate:
+
+        ```typescript
+        CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_connect>-<end_connect>
+        ```
+
+        3. Invoke the handler with your preferred semantics:
+
+        <CH.Spotlight className="durable-promises">
+
+            ```typescript
+            CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_rpc_call_node>-<end_rpc_call_node>
+            ```
+
+            ---
+
+            **<mark class="accent">Request-response</mark> invocations** allow you to wait on a response from the handler.
+
+            ---
+
+            ```typescript
+            CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_one_way_call_node>-<end_one_way_call_node>
+            ```
+
+            **<mark class="accent">One-way</mark> invocations** allow you to send a message without waiting for a response.
+
+            ---
+
+            ```typescript
+            CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_delayed_call_node>-<end_delayed_call_node>
+            ```
+
+            **<mark class="accent">Delayed</mark> invocations** allow you to schedule an invocation for a later point in time.
+
+        </CH.Spotlight>
+    </TabItem>
+    <TabItem value="java" label="Java">
+
+
+        1. Add the dependency to your project:
+
+        ```kotlin
+        implementation("dev.restate:sdk-common:VAR::TYPESCRIPT_SDK_VERSION")
+        ```
+
+        2. From your code, connect to Restate and invoke the handler with the generated clients and your preferred semantics:
+
+        <CH.Spotlight className="durable-promises">
+
+            ```java
+            CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_rpc_java>-<end_rpc_java>
+            ```
+
+            ---
+
+            **<mark class="accent">Request-response</mark> invocations** allow you to wait on a response from the handler.
+
+            ---
+
+            ```java
+            CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_one_way_call_java>-<end_one_way_call_java>
+            ```
+
+            **<mark class="accent">One-way</mark> invocations** allow you to send a message without waiting for a response.
+
+            ---
+
+            ```java
+            CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_delayed_call_java>-<end_delayed_call_java>
+            ```
+
+            **<mark class="accent">Delayed</mark> invocations** allow you to schedule an invocation for a later point in time.
+
+        </CH.Spotlight>
+
+    </TabItem>
+</Tabs>
