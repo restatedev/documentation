@@ -32,7 +32,7 @@ Restate manages their invocation and execution.
 Services communicate with one another using Remote Procedure Calls (RPC).
 Our ticket example consists of three services:
 
-<img src="/img/tour-overview.svg" width="70%"/>
+<img src="/img/tour-overview.svg" width="700rem"/>
 
 As we go, you will discover how Restate can help you with some intricacies in this application.
 
@@ -1473,7 +1473,35 @@ npm run part4
 </Tabs>
 </Admonition>
 
+## Idempotency for any request
+As you saw, generating idempotency keys inside your handlers and storing them in Restate is easy.
+But this doesn't guard us yet against retries of the HTTP request to Restate.
 
+For example, if the caller of the `addTicket` handler didn't receive the success response of its first request, it might retry the request.
+The second request will return `false` because the ticket already got reserved the first time, but the caller won't know about this.
+
+To cover this, you can add an `idempotency-key` header to the incoming request to let Restate deduplicate them.
+
+In our example, when we call the `CartObject/addTicket` handler, the first time the response is `true` and the second time it's `false`.
+However, if we use the same idempotency key, the second call will return `true` as well, because it will return the result of the first call:
+
+```shell
+curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' \
+    -H 'idempotency-key: ad5472esg4dsg525dssdfa5loi'  \
+    -d '"seat2C"'
+```
+
+You can also see from the service logs that the handler wasn't executed the second time.
+
+<Admonition type="tip" title="End-to-end idempotency">
+Restate gives you idempotency for any service, handler and request for free.
+No extra setup.
+</Admonition>
+
+<Admonition type="info">
+You only need this when invoking handlers over HTTP.
+When a handler calls another handler, Restate automatically takes care of the idempotency.
+</Admonition>
 
 ## Tracing
 Restate exposes OpenTelemetry traces of your invocations.
@@ -1540,15 +1568,16 @@ Let's recap what you did! You have built a ticket reservation system that is res
 We used Restate to provide us with durable, distributed building blocks to simplify the implementation of the system.
 Let's list a few of them:
 
-| What you implemented                                        | What you didn't implement, as Restate handles it for you                                       |
-|--------------------------------------------------------------|------------------------------------------------------------------------------------------------|
-| ✅ Request-response invocations                               | ❌ Handling retries, timeouts, etc.                                                            |
-| ✅ Sending messages                                           | ❌ Deploy and operate message queues for async requests                                        |
+| What you implemented                                                     | What you didn't implement, as Restate handles it for you                                       |
+|--------------------------------------------------------------------------|------------------------------------------------------------------------------------------------|
+| ✅ Request-response invocations                                           | ❌ Handling retries, timeouts, etc.                                                            |
+| ✅ Sending messages                                                       | ❌ Deploy and operate message queues for async requests                                        |
+| ✅ Idempotent HTTP calls                                        | ❌ Write deduplication logic                                       |
 | ✅ Durable Execution: retries, partial progress recovery, and suspensions | ❌ Manual retry logic and partial progress recovery                                 |
-| ✅ Durable timers: sleeping and scheduling async tasks         | ❌ Workflow orchestrators or cron jobs for scheduling tasks                                     |
-| ✅ Virtual Objects: concurrency guarantees and shared state    | ❌ Guards for keeping state consistent across retries, concurrent requests, and scaling out.    |
-| ✅ K/V state: storing and inspecting                          | ❌ Session databases for state. State consistency guards.                                       |
-| ✅ Storing computation results in the journal                 | ❌ Logic to make operations idempotent (e.g. generate idempotency keys)                         |
+| ✅ Durable timers: sleeping and scheduling async tasks                    | ❌ Workflow orchestrators or cron jobs for scheduling tasks                                     |
+| ✅ Virtual Objects: concurrency guarantees and shared state               | ❌ Guards for keeping state consistent across retries, concurrent requests, and scaling out.    |
+| ✅ K/V state: storing and inspecting                                      | ❌ Session databases for state. State consistency guards.                                       |
+| ✅ Storing computation results in the journal                             | ❌ Logic to make operations idempotent (e.g. generate idempotency keys)                         |
 
 You now know the essentials to start developing Restate services! Have a look at the next steps to explore further.
 
