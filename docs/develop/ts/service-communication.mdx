@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 2
 description: "Find out how Restate services can send requests to each other."
 ---
 
@@ -33,10 +33,18 @@ Request-response calls are requests where the client waits for the response.
 CODE_LOAD::ts/src/develop/service_communication.ts#<start_request_response_service>-<end_request_response_service>
 ```
 
----
+</CH.Code>
+<CH.Code>
 
 ```ts call_object.ts
 CODE_LOAD::ts/src/develop/service_communication.ts#<start_request_response_object>-<end_request_response_object>
+```
+
+</CH.Code>
+<CH.Code>
+
+```ts call_workflow.ts
+CODE_LOAD::ts/src/develop/service_communication.ts#<start_request_response_workflow>-<end_request_response_workflow>
 ```
 
 </CH.Code>
@@ -49,6 +57,11 @@ CODE_LOAD::ts/src/develop/service_communication.ts#<start_request_response_objec
 <Admonition type="tip" title="No need for manual retry logic">
     These calls are proxied by Restate, and get logged in the journal.
     In case of failures, Restate takes care of retries.
+</Admonition>
+
+<Admonition type="info" title="Workflow retention time">
+    Once the `run` handler has finished, the other handlers can still be called up to the retention time of the workflow, by default 24 hours.
+    This can be configured via the [Admin API](/references/admin-api/#tag/service/operation/get_service) per Workflow definition by setting `workflow_completion_retention`.
 </Admonition>
 
 <Admonition type={"caution"} title={"Deadlocks with Virtual Objects"}>

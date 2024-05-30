@@ -3,8 +3,6 @@ sidebar_position: 1
 description: "Get an idea of what a Restate TypeScript service looks like."
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
 
 # Overview
@@ -18,11 +16,11 @@ Have a look at the [TypeScript Quickstart](/get_started/quickstart?sdk=ts)!
 Add the `@restatedev/restate-sdk` dependency to your NodeJS project to start developing Restate services.
 
 The Restate SDK lets you implement handlers.
-Handlers can either be part of a [Service](/concepts/services#services-1) or of a [Virtual Object](/concepts/services#virtual-objects). Let's have a look at how to define them.
+Handlers can either be part of a [Service](/concepts/services#services-1), a [Virtual Object](/concepts/services#virtual-objects), or a [Workflow](/concepts/services#workflows). Let's have a look at how to define them.
 
 ## Services
 
-Services and their handlers are defined as follows:
+[Services](/concepts/services#services-1) and their handlers are defined as follows:
 <CH.Section>
 <CH.Code lineNumbers={"true"}>
 
@@ -47,7 +45,7 @@ CODE_LOAD::ts/src/develop/my_service.ts
 
 ## Virtual Objects
 
-Virtual objects and their handlers are defined similarly to services, with the following differences:
+[Virtual Objects](/concepts/services#virtual-objects) and their handlers are defined similarly to services, with the following differences:
 
 <CH.Section>
 <CH.Code lineNumbers={"true"}>
@@ -62,5 +60,26 @@ CODE_LOAD::ts/src/develop/my_virtual_object.ts
 - [The handlers use the `ObjectContext` instead of the `Context`.](focus://6)
 
 </CH.Section>
+
+## Workflows
+
+[Workflows](/concepts/services#workflows) are a special type of Virtual Objects, their definition is similar but with the following differences:
+
+<CH.Section>
+    <CH.Code lineNumbers={"true"}>
+
+        ```typescript
+        CODE_LOAD::ts/src/develop/workflow.ts
+        ```
+
+    </CH.Code>
+
+    - [Create the workflow](focus://3,17)
+    - [Every workflow implementation needs to have a handler called `run` that implements the workflow logic. This handler uses the `WorkflowContext` to interact with the SDK. The `run` handler executes exactly one time per workflow exeuction/object.](focus://6)
+    - [The other handlers of the workflow are used to interact with the workflow: either query it, or signal it. They use the `WorkflowSharedContext` to interact with the SDK. These handlers can run concurrently with the `run` handler and can still be called after the `run` handler has finished.](focus://13)
+    - [The `WorkflowContext` and `WorkflowSharedContext` give access to some additional features: workflow state, and shared promises. Have a look at their respective docs to learn more.](focus://6,13)
+</CH.Section>
+
+
 
 Now that you have a high-level idea of what a Restate service might look like, let's have a look at what the Restate Context allows you to do.

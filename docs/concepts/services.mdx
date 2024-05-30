@@ -9,6 +9,7 @@ import FeatureWidget from "../../src/components/FeatureWidget";
 
 # Services
 
+import Admonition from '@theme/Admonition';
 
 This is what a Restate application looks like from a helicopter view:
 
@@ -72,6 +73,12 @@ Services expose a collection of handlers:
 
             Service handlers **don't have access to Restate's K/V store**.
 
+            ---
+
+            ```diff
+            ```
+            🔙
+
         </CH.Spotlight>
     </TabItem>
     <TabItem value="java" label="Java">
@@ -107,7 +114,16 @@ Services expose a collection of handlers:
 
             ---
 
+            ```diff
+            ```
+
             Service handlers **don't have access to Restate's K/V store**.
+
+            ---
+
+            ```diff
+            ```
+            🔙
 
 
         </CH.Spotlight>
@@ -157,6 +173,12 @@ Virtual objects expose a set of handlers with access to K/V state stored in Rest
             To ensure consistent writes to the state, Restate provides **concurrency guarantees**: at most one handler can execute at a time for a given virtual object.
             This can also be used for example to implement a locking mechanism or to ensure single writer to a database row.
 
+            ---
+
+            ```diff
+            ```
+            🔙
+
         </CH.Spotlight>
     </TabItem>
     <TabItem value="java" label="Java">
@@ -191,15 +213,20 @@ Virtual objects expose a set of handlers with access to K/V state stored in Rest
             **Concurrency guarantees**: to ensure consistent writes to the state, at most one handler can execute at a time for a given virtual object.
             This can also be used, for example, to implement a locking mechanism or to ensure single writer to a database row.
 
+            ---
+
+            ```diff
+            ```
+            🔙
+
         </CH.Spotlight>
     </TabItem>
 </Tabs>
 
 ## Workflows
 
-A workflow is a special type of Virtual Object.
-
-
+A workflow is a special type of Virtual Object that can be used to implement a set of steps that needs to be executed durably.
+They have some added capabilities such as signaling, querying, additional invocation options, and a longer retention time in the CLI.
 
 <Tabs groupId="sdk" queryString>
     <TabItem value="ts" label="TypeScript">
@@ -225,7 +252,6 @@ A workflow is a special type of Virtual Object.
 
             You can **query the workflow** by defining other handlers in the same object.
             For example, you can store state in the workflow object, and query it from other handlers.
-            These handlers are able to run concurrently to the `run` handler.
 
             ---
 
@@ -234,6 +260,12 @@ A workflow is a special type of Virtual Object.
 
             You can **signal the workflow**, to send information to it.
             For example, the payment provider signals the workflow that the payment was successful by calling the `paymentWebhook`.
+
+            ---
+
+            ```diff
+            ```
+            🔙
 
         </CH.Spotlight>
     </TabItem>
@@ -259,7 +291,6 @@ A workflow is a special type of Virtual Object.
 
             You can **query the workflow** by defining other handlers in the same object.
             For example, you can store state in the workflow object, and query it from other handlers.
-            These handlers are able to run concurrently to the `run` handler.
 
             ---
 
@@ -269,9 +300,22 @@ A workflow is a special type of Virtual Object.
             You can **signal the workflow**, to send information to it.
             For example, the payment provider signals the workflow that the payment was successful by calling the `paymentWebhook`.
 
+            ---
+
+            ```diff
+            ```
+            🔙
+
         </CH.Spotlight>
     </TabItem>
 </Tabs>
+
+<Admonition type="note">
+    The `run` handler is the only handler that can **write K/V state**.
+    The other handlers are able to run concurrently to the `run` handler, and can get state but cannot set it.
+</Admonition>
+
+
 
 ## Restate Server
 
