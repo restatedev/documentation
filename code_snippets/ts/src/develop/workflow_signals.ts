@@ -29,7 +29,7 @@ const myWorkflow = restate.workflow({
             return "success";
         },
 
-        interactWithWorkflow: async (ctx: restate.WorkflowSharedContext, signal: boolean) => {
+        resolveMySignal: async (ctx: restate.WorkflowSharedContext, signal: boolean) => {
             // withClass highlight-line
             // Resolution of the Durable Promise
             // withClass highlight-line

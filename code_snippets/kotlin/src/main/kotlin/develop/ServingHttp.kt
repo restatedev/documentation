@@ -7,6 +7,7 @@ fun main() {
     RestateHttpEndpointBuilder.builder()
         .bind(MyService())
         .bind(MyVirtualObject())
+        .bind(MyWorkflow())
         .buildAndListen()
 }
 // <end_here>

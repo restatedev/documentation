@@ -12,8 +12,11 @@ You can use signals to interact with your running workflows.
 You can use them to let the workflow block until an event occurs, or to send a signal / information to a running workflow.
 
 You can implement signals via the Durable Promises feature of the SDK.
-This allows you to create a promise in your `run` handler that is durable and distributed.
-This promise can be resolved or rejected by any other handler in the workflow.
+These promises are durable and distributed, meaning they survive crashes and can be resolved or rejected by any handler in the workflow.
+
+Do the following:
+1. Create a promise in your `run` handler that is durable and distributed
+2. Resolve or reject the promise in any other handler in the workflow.
 
 ```ts
 CODE_LOAD::ts/src/develop/workflow_signals.ts

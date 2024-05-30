@@ -1,7 +1,6 @@
 package develop
 
 import dev.restate.sdk.kotlin.Context
-import java.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 class ServiceCommunication {
@@ -24,6 +23,23 @@ class ServiceCommunication {
             .myHandler(request)
             .await()
         // <end_request_response_virtual_object>
+    }
+
+    suspend fun requestResponseWorkflow(ctx: Context) {
+        val workflowId = ""
+        val request = ""
+
+        // <start_request_response_workflow>
+        // Call the `run` handler of the workflow
+        val response: String = MyWorkflowClient.fromContext(ctx, workflowId)
+            .run(request)
+            .await()
+
+        // Calling other handlers of the workflow. (Callable up to 24 hours after end of `run` handler execution.)
+        MyWorkflowClient.fromContext(ctx, workflowId)
+            .interactWithWorkflow(request)
+            .await()
+        // <end_request_response_workflow>
     }
 
     suspend fun oneWay(ctx: Context) {

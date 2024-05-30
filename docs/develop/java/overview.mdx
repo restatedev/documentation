@@ -102,22 +102,38 @@ Handlers can either be part of a [Service](/concepts/services#services-1), a [Vi
 
 [Workflows](/concepts/services#workflows) are a special type of Virtual Objects, their definition is similar but with the following differences:
 
-<CH.Section>
-    <CH.Code lineNumbers={"true"}>
+<Tabs>
+<TabItem value="java" label="Java">
+    <CH.Section>
+        <CH.Code>
+            ```java
+            CODE_LOAD::java/src/main/java/develop/MyWorkflow.java
+            ```
+        </CH.Code>
 
-        ```java
-        CODE_LOAD::java/src/main/java/develop/MyWorkflow.java
-        ```
+        - [Create the workflow](focus://1,2)
+        - [Every workflow implementation needs to have a handler called `run` that implements the workflow logic. This handler uses the `WorkflowContext` to interact with the SDK. The `run` handler executes exactly one time per workflow execution/object.](focus://4:10)
+        - [The other handlers of the workflow are used to interact with the workflow: either query it, or signal it. They use the `SharedWorkflowContext` to interact with the SDK. These handlers can run concurrently with the `run` handler and can still be called after the `run` handler has finished.](focus://12:15)
+        - [The `WorkflowContext` and `SharedWorkflowContext` give access to some additional features](focus://5,13): [workflow K/V state](/develop/java/state), and [Durable Promises](/develop/java/workflow_signals). Have a look at their respective docs to learn more.
 
-    </CH.Code>
+    </CH.Section>
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+    <CH.Section>
+        <CH.Code>
+            ```kotlin
+            CODE_LOAD::kotlin/src/main/kotlin/develop/MyWorkflow.kt
+            ```
+        </CH.Code>
 
-    - [Create the workflow](focus://1,2)
-    - [Every workflow implementation needs to have a handler called `run` that implements the workflow logic. This handler uses the `WorkflowContext` to interact with the SDK. The `run` handler executes exactly one time per workflow execution/object.](focus://4:10)
-    - [The other handlers of the workflow are used to interact with the workflow: either query it, or signal it. They use the `WorkflowSharedContext` to interact with the SDK. These handlers can run concurrently with the `run` handler and can still be called after the `run` handler has finished.](focus://12:15)
-    - [The `WorkflowContext` and `WorkflowSharedContext` give access to some additional features](focus://5,13): [workflow K/V state](/develop/java/state), and [Durable Promises](/develop/java/workflow_signals). Have a look at their respective docs to learn more.
+        - [Create the workflow](focus://1,2)
+        - [Every workflow implementation needs to have a handler called `run` that implements the workflow logic. This handler uses the `WorkflowContext` to interact with the SDK. The `run` handler executes exactly one time per workflow execution/object.](focus://4:10)
+        - [The other handlers of the workflow are used to interact with the workflow: either query it, or signal it. They use the `SharedWorkflowContext` to interact with the SDK. These handlers can run concurrently with the `run` handler and can still be called after the `run` handler has finished.](focus://12:15)
+        - [The `WorkflowContext` and `SharedWorkflowContext` give access to some additional features](focus://5,13): [workflow K/V state](/develop/java/state), and [Durable Promises](/develop/java/workflow_signals). Have a look at their respective docs to learn more.
 
-</CH.Section>
-
+    </CH.Section>
+</TabItem>
+</Tabs>
 
 Now that you have a high-level idea of what a Restate service might look like, let's have a look at what the Restate Context allows you to do.
 
@@ -177,9 +193,9 @@ Now that you have a high-level idea of what a Restate service might look like, l
 
             ```kotlin
             plugins {
-            kotlin("plugin.serialization") version "1.9.22"
-            id("com.google.devtools.ksp") version "1.9.22-1.0.18"
-        }
+                kotlin("plugin.serialization") version "1.9.22"
+                id("com.google.devtools.ksp") version "1.9.22-1.0.18"
+            }
             ```
 
             Add the runtime dependency `sdk-api-kotlin` and the `ksp` dependency `sdk-api-kotlin-gen`:

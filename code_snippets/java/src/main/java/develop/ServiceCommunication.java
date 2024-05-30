@@ -26,6 +26,23 @@ public class ServiceCommunication {
         // <end_request_response_virtual_object>
     }
 
+    private void requestResponseWorkflow(Context ctx) {
+        String workflowId = "";
+        String request = "";
+
+        // <start_request_response_workflow>
+        // Call the `run` handler of the workflow
+        String response = MyWorkflowClient.fromContext(ctx, workflowId)
+                .run(request)
+                .await();
+
+        // Calling other handlers of the workflow. (Callable up to 24 hours after end of `run` handler execution.)
+        MyWorkflowClient.fromContext(ctx, workflowId)
+                .interactWithWorkflow(request)
+                .await();
+        // <end_request_response_workflow>
+    }
+
     private void oneWay(Context ctx) {
         String request = "";
 
