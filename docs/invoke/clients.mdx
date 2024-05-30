@@ -119,13 +119,69 @@ Then, invoke the Restate handler programmatically from plain TypeScript/Java/Kot
     </TabItem>
 </Tabs>
 
+
+<Admonition type={"tip"} title={"Latch onto running invocations with idempotency key and workflows"}>
+    You can latch onto running invocations with an idempotency key and workflows. This lets you retrieve their result if they finished, or attach to them if they are still ongoing.
+    Check [the documentation below for more information](#latching-onto-running-invocations-and-workflows) below.
+</Admonition>
+
+## Invoke a handler idempotently
+
+You can send requests to Restate providing an idempotency key, through the [`Idempotency-Key` header](https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/).
+You can add the idempotency key to the header via:
+
+<Tabs groupId="sdk" queryString>
+    <TabItem value="ts" label="TypeScript">
+
+        ```typescript
+        CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_service_idempotent>-<end_service_idempotent>
+        ```
+
+    </TabItem>
+    <TabItem value="java" label="Java">
+
+        ```java
+        CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_service_idempotent>-<end_service_idempotent>
+        ```
+
+    </TabItem>
+</Tabs>
+
+
+
+After the invocation completes, Restate persists the response for a retention period of one day (24 hours).
+If you re-invoke the service with the same idempotency key within 24 hours, Restate sends back the same response and doesn't re-execute the request to the service.
+
+<Admonition type="tip" title={"Make any service call idempotent by using Restate"}>
+    By using Restate and an idempotency key, you can make any service call idempotent, without any extra code or setup.
+    This is a very powerful feature to ensure that your system stays consistent and doesn't perform the same operation multiple times.
+</Admonition>
+
+<Admonition type="note" title={"Adding headers to the request"}>
+    You can use these call options to set headers on the request.
+</Admonition>
+
+<details className={"grey-details"}>
+    <summary> Tuning retention time</summary>
+
+    <CH.Section>
+        You can tune the [retention time](focus://3) on a service-level by using the [Admin API](focus://1[15:28]) ([docs](/references/admin-api#tag/service/operation/modify_service)):
+        ```shell
+        curl -X PATCH localhost:9070/services/MyService \
+        -H 'content-type: application/json' \
+        -d '{"idempotency_retention": "2days"}'
+        ```
+        The [retention time](focus://3) is in [humantime format](https://docs.rs/humantime/latest/humantime/).
+    </CH.Section>
+
+</details>
+
 ## Latching onto running invocations and workflows
 
-If you use the client for one-way calls to a [workflow](/concepts/services#workflows) or handler, then the invocation runs in the background.
+You can also use the client library to attach to running invocations with an idempotency key or workflows.
+This lets you retrieve their results or wait for them to finish.
 
-Restate allows you to attach to a running invocation or workflow again later on to retrieve the results or wait for it to finish.
-
-**For services or objects**, you can attach to an ongoing invocation via:
+**For services or objects**, you can attach to an ongoing invocation only if it used an idempotency key, via:
 
 <Tabs groupId="sdk" queryString>
     <TabItem value="ts" label="TypeScript">

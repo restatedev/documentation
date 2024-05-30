@@ -1,6 +1,7 @@
 package operate.invocations;
 
 import dev.restate.sdk.Context;
+import dev.restate.sdk.client.CallRequestOptions;
 import dev.restate.sdk.client.IngressClient;
 import develop.MyWorkflowClient;
 
@@ -23,7 +24,7 @@ public class Ingress {
     public void myOneWayCallHandler(Context ctx) {
 
         // <start_one_way_call_java>
-        String invocationId = GreeterServiceClient
+        GreeterServiceClient
             .fromIngress("http://localhost:8080")
             .send()
             .greet("Hi");
@@ -33,7 +34,7 @@ public class Ingress {
             .send()
             .greet("Hi");
 
-        IngressClient.WorkflowHandle<String> handle = MyWorkflowClient
+        MyWorkflowClient
             .fromIngress("http://localhost:8080", "wf-id-1")
             .submit("input");
         // <end_one_way_call_java>
@@ -44,12 +45,25 @@ public class Ingress {
             .send(Duration.ofMillis(1000))
             .greet("Hi");
 
-        String count = GreetCounterObjectClient
+        GreetCounterObjectClient
             .fromIngress("http://localhost:8080", "Mary")
             .send(Duration.ofMillis(1000))
             .greet("Hi");
         // <end_delayed_call_java>
 
+    }
+
+    public void idempotentInvoke(){
+        // <start_service_idempotent>
+        String count = GreetCounterObjectClient
+            .fromIngress("http://localhost:8080", "Mary")
+            .send(Duration.ofMillis(1000))
+            .greet(
+                "Hi",
+                // withClass highlight-line
+                CallRequestOptions.DEFAULT.withIdempotency("abcde")
+            );
+        // <end_service_idempotent>
     }
 
     public void latchOntoWorkflow(){

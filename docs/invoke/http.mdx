@@ -70,8 +70,8 @@ curl localhost:8080/MyService/myHandler/send \
 The response contains the [Invocation ID](/operate/invocation#invocation-identifier).
 You can use this identifier [to cancel](/operate/invocation#cancelling-invocations) or [kill the invocation](/operate/invocation#killing-invocations).
 
-<Admonition type={"tip"} title={"Latch onto running invocations and workflows"}>
-    You can latch onto running invocations and workflows to wait for them to finish or to peek at their output.
+<Admonition type={"tip"} title={"Latch onto running invocations with idempotency key and workflows"}>
+    You can latch onto running invocations with an idempotency key and workflows. This lets you retrieve their result if they finished, or latch on if they are still ongoing.
     Check [the documentation below for more information](#latching-onto-running-invocations-and-workflows) below.
 </Admonition>
 
@@ -142,9 +142,7 @@ If you re-invoke the service with the same idempotency key within 24 hours, Rest
 
 ## Latching onto running invocations and workflows
 
-If you use the `/send` endpoint to invoke a [workflow](/concepts/services#workflows) or handler, then the invocation runs in the background.
-
-Restate allows you to latch onto the ongoing invocation.
+Restate allows you to latch onto the ongoing workflows and invocations that had an idempotency token.
 There are two options:
 - To **attach** to a running invocation or workflow and wait for it to finish, use `/attach`.
 - To **peek at the output** of a running invocation or workflow, use `/output`. This will return:

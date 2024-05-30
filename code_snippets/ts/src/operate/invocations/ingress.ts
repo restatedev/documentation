@@ -39,12 +39,24 @@ const myPlainTSFunction = async () => {
     // <end_delayed_call_node>
 }
 
+const servicesIdempotent = async () => {
+    // <start_service_idempotent>
+    const ingress = restate.connect({url: "http://localhost:8080"});
+    const send = await ingress.serviceSendClient(greeterService)
+        .greet(
+            {greeting: "Hi"},
+            // withClass highlight-line
+            SendOpts.from({ idempotencyKey: "abcde" })
+        );
+    // <end_service_idempotent>
+}
+
 const servicesAttach = async () => {
     // <start_service_attach>
     const ingress = restate.connect({url: "http://localhost:8080"});
     // Do one-way call
     const send = await ingress.serviceSendClient(greeterService)
-        .greet({greeting: "Hi"});
+        .greet({greeting: "Hi"}, SendOpts.from({ idempotencyKey: "abcde" }));
 
     // ... do something else ...
 
