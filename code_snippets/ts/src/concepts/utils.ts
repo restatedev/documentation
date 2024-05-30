@@ -12,6 +12,7 @@ export enum Status {
     DELIVERED = "DELIVERED",
     REJECTED = "REJECTED",
     CANCELLED = "CANCELLED",
+    UNKNOWN = "UNKNOWN"
 }
 
 export type Order = {
@@ -30,7 +31,7 @@ export const deliveryManager = restate.object({
 
 
 export class RestaurantClientImpl {
-    async prepare(orderId: string, cb: string) {
+    async prepare(id: string, order: Order) {
     }
 }
 
@@ -43,3 +44,11 @@ export class PaymentClient {
 }
 
 export const paymentClnt= new PaymentClient();
+
+export class EmailClient {
+    async sendSuccessNotification(emailAddress: string): Promise<boolean> {
+        return true;
+    }
+}
+
+export const emailClnt = new EmailClient();

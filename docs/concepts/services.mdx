@@ -24,14 +24,10 @@ As you can see, handlers are bundled into services.
 Services run like regular RPC services (e.g. a NodeJS app in a Docker container).
 Services can be written in any language for which there is an SDK available (currently [TypeScript](/category/typescript-sdk) and [Java/Kotlin](/category/javakotlin-sdk)).
 
-There are two types of services in Restate:
+There are three types of services in Restate:
 
-| Services (plain)                                                                                                                                   | Virtual objects                                                                                                                                       |
-| -------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Set of handlers durably executed                                                                                                                   | Set of handlers durably executed                                                                                                                      |
-| No associated K/V store                                                                                                                            | Handlers share K/V state; isolated per virtual object                                                                                                 |
-| No concurrency limits                                                                                                                              | Single concurrent invocation per virtual object                                                                                                       |
-| Example use cases: <ul><li>Microservice orchestration</li><li>To benefit from idempotency</li><li>Transformation functions</li><li>Sagas</li></ul> | Example use cases: <ul><li>Atomic state machines</li><li>Digital twin</li><li>Locking mechanisms</li><li>Sequencing or ordering invocations</li></ul> |
+[//]: # (This is an html table because markdown tables don't support setting the column width and for some reason the workflow column was very large)
+<table><thead><tr><th>Services (plain)</th><th>Virtual objects</th><th>Workflows</th></tr></thead><tbody><tr><td width={"30%"}>Set of handlers durably executed</td><td width={"30%"}>Set of handlers durably executed</td><td width={"30%"}>The workflow <code>run</code> handler is durably executed a single time.</td></tr><tr><td>No concurrency limits</td><td>Single concurrent invocation per virtual object</td><td>The <code>run</code> handler can run only a single time. Other handlers can run concurrently to interact with the workflow.</td></tr><tr><td>No associated K/V store</td><td>Handlers share K/V state; isolated per virtual object</td><td>K/V state isolated per workflow execution. Can only be set by the <code>run</code> handler.</td></tr><tr><td>Example use cases: <ul><li>Microservice orchestration</li><li>To benefit from idempotency</li><li>Transformation functions</li><li>Sagas</li></ul></td><td>Example use cases: <ul><li>Atomic state machines</li><li>Digital twin</li><li>Locking mechanisms</li><li>Sequencing or ordering invocations</li></ul></td><td>Example use cases: <ul><li>Order processing and logistics</li><li>User sign-up workflow</li><li>Infrastructure provisioning</li><li>Workflow interpreters</li></ul></td></tr></tbody></table>
 
 ## Services
 
@@ -51,7 +47,7 @@ Services expose a collection of handlers:
             ```diff focus=10,16
             ```
 
-            - Restate makes sure that **handlers run to completion**, even in the presence of failures.
+            Restate makes sure that **handlers run to completion**, even in the presence of failures.
             Restate logs the **results of actions** in the system.
             Restate takes care of retries and recovers the handler to the point where it failed.
 
@@ -60,21 +56,21 @@ Services expose a collection of handlers:
             ```diff focus=4,6,7,18,19,20
             ```
 
-            - The handlers of services are **independent** and can be **invoked concurrently**.
+            The handlers of services are **independent** and can be **invoked concurrently**.
 
             ---
 
             ```diff focus=11:13,15,17
             ```
 
-            - Handlers use the regular code and control flow, no custom DSLs.
+            Handlers use the regular code and control flow, no custom DSLs.
 
             ---
 
             ```diff
             ```
 
-            - Service handlers **don't have access to Restate's K/V store**.
+            Service handlers **don't have access to Restate's K/V store**.
 
         </CH.Spotlight>
     </TabItem>
@@ -91,7 +87,7 @@ Services expose a collection of handlers:
             ```diff focus=6:7,13:14
             ```
 
-            - Restate makes sure that **handlers run to completion**, even in the presence of failures.
+            Restate makes sure that **handlers run to completion**, even in the presence of failures.
             Restate logs the **results of actions** in the system.
             Restate takes care of retries and recovers the handler to the point where it failed.
 
@@ -100,18 +96,18 @@ Services expose a collection of handlers:
             ```diff focus=1:5,16,19,20,23
             ```
 
-            - The handlers of services are **independent** and can be **invoked concurrently**.
+            The handlers of services are **independent** and can be **invoked concurrently**.
 
             ---
 
             ```diff focus=8:10,12,14,15
             ```
 
-            - Handlers use the regular code and control flow, no custom DSLs.
+            Handlers use the regular code and control flow, no custom DSLs.
 
             ---
 
-            - Service handlers **don't have access to Restate's K/V store**.
+            Service handlers **don't have access to Restate's K/V store**.
 
 
         </CH.Spotlight>
@@ -141,14 +137,14 @@ Virtual objects expose a set of handlers with access to K/V state stored in Rest
             ```diff focus=4,6,7,11,12,14,20,21,22
             ```
 
-            - A virtual object is **uniquely identified and accessed by its key**.
+            A virtual object is **uniquely identified and accessed by its key**.
 
             ---
 
             ```diff focus=8:10,15,17,19
             ```
 
-            - Each virtual object has access to its own **isolated K/V state**, stored in Restate.
+            Each virtual object has access to its own **isolated K/V state**, stored in Restate.
             The handlers of a virtual object can read and write to the state of the object.
             Restate delivers the state together with the request to the virtual object, so virtual objects have their state locally accessible without requiring any database connection or lookup.
             State is exclusive, and atomically committed with the method execution.
@@ -158,7 +154,7 @@ Virtual objects expose a set of handlers with access to K/V state stored in Rest
             ```diff focus=4,6,7,9,12,14,17,21,22,23
             ```
 
-            - To ensure consistent writes to the state, Restate provides **concurrency guarantees**: at most one handler can execute at a time for a given virtual object.
+            To ensure consistent writes to the state, Restate provides **concurrency guarantees**: at most one handler can execute at a time for a given virtual object.
             This can also be used for example to implement a locking mechanism or to ensure single writer to a database row.
 
         </CH.Spotlight>
@@ -175,14 +171,14 @@ Virtual objects expose a set of handlers with access to K/V state stored in Rest
             ```diff focus=1,2,7,8,12,13,15,16,22,23
             ```
 
-            - A virtual object is **uniquely identified and accessed by its key**.
+            A virtual object is **uniquely identified and accessed by its key**.
 
             ---
 
             ```diff focus=9:11,17,19,21
             ```
 
-            - Each virtual object has access to its own **isolated K/V state**, stored in Restate.
+            Each virtual object has access to its own **isolated K/V state**, stored in Restate.
             The handlers of a virtual object can read and write to the state of the object.
             Restate delivers the state together with the request to the virtual object, so virtual objects have their state locally accessible without requiring any database connection or lookup.
             State is exclusive, and atomically committed with the method execution.
@@ -192,13 +188,90 @@ Virtual objects expose a set of handlers with access to K/V state stored in Rest
             ```diff focus=1,2,7,8,13,15,16,23
             ```
 
-            - **Concurrency guarantees**: to ensure consistent writes to the state, at most one handler can execute at a time for a given virtual object.
+            **Concurrency guarantees**: to ensure consistent writes to the state, at most one handler can execute at a time for a given virtual object.
             This can also be used, for example, to implement a locking mechanism or to ensure single writer to a database row.
 
         </CH.Spotlight>
     </TabItem>
 </Tabs>
 
+## Workflows
+
+A workflow is a special type of Virtual Object.
+
+
+
+<Tabs groupId="sdk" queryString>
+    <TabItem value="ts" label="TypeScript">
+
+        <CH.Spotlight className={"spotlight-long-code"}>
+
+            ```typescript
+            CODE_LOAD::ts/src/concepts/workflow.ts#<start_workflow>-<end_workflow>
+            ```
+
+            ---
+
+            ```diff focus=4:25
+            ```
+
+            A workflow has a **`run` handler** that implements the **workflow logic**.
+            The `run` handler runs exactly once per workflow ID (object).
+
+            ---
+
+            ```diff focus=16,22,31
+            ```
+
+            You can **query the workflow** by defining other handlers in the same object.
+            For example, you can store state in the workflow object, and query it from other handlers.
+            These handlers are able to run concurrently to the `run` handler.
+
+            ---
+
+            ```diff focus=15,27:29
+            ```
+
+            You can **signal the workflow**, to send information to it.
+            For example, the payment provider signals the workflow that the payment was successful by calling the `paymentWebhook`.
+
+        </CH.Spotlight>
+    </TabItem>
+    <TabItem value="java" label="Java">
+        <CH.Spotlight className={"spotlight-long-code"}>
+
+            ```java
+            CODE_LOAD::java/src/main/java/concepts/services/Payment.java#<start_workflow>-<end_workflow>
+            ```
+
+            ---
+
+            ```diff focus=8:28
+            ```
+
+            A workflow has a **`run` handler** that implements the **workflow logic**.
+            The `run` handler runs exactly once per workflow ID (object).
+
+            ---
+
+            ```diff focus=20,25,35:38
+            ```
+
+            You can **query the workflow** by defining other handlers in the same object.
+            For example, you can store state in the workflow object, and query it from other handlers.
+            These handlers are able to run concurrently to the `run` handler.
+
+            ---
+
+            ```diff focus=18,30:33
+            ```
+
+            You can **signal the workflow**, to send information to it.
+            For example, the payment provider signals the workflow that the payment was successful by calling the `paymentWebhook`.
+
+        </CH.Spotlight>
+    </TabItem>
+</Tabs>
 
 ## Restate Server
 
