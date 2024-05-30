@@ -17,7 +17,6 @@ public class MyWorkflow {
 
         // implement workflow logic here
 
-        ctx.sleep(Duration.ofMillis(100000));
         return "success";
     }
 

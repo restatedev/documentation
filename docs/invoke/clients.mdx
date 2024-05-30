@@ -9,30 +9,20 @@ import Admonition from '@theme/Admonition';
 
 # Clients
 
-You can use the clients in the Restate SDK to invoke handlers programmatically.
+In plain TypeScript/Java/Kotlin code, where you do not have access to the Restate Context, you can invoke handlers programmatically using the Restate SDK client library.
 
-<Admonition type="info">
-Make sure to first [register the handler](/operate/registration) you want to invoke.
-</Admonition>
-
-## Invoking handlers with the Restate Context
-
-When you implement a Restate handler, you have access to a Restate `Context` object.
+<Admonition type="note" title={"In Restate handlers, invoke via the Restate Context"}>
+When you implement a Restate handler, you have access to a Restate `Context`.
 You can use this context to invoke other handlers.
-
 Have a look at the Development docs ([TS](/develop/ts/service-communication)/[Java](/develop/java/service-communication)/[Kotlin](/develop/java/service-communication?sdk=kotlin)).
 
-<Admonition type="info">
-    Always use this way of invoking handlers when you have access to the context.
-    This way, Restate attaches information about the invocation to the parent invocation.
+Always use this way of invoking handlers when you have access to the context.
+This way, Restate attaches information about the invocation to the parent invocation.
 </Admonition>
 
-## Invoking handlers from the client library
+## Invoking handlers with the SDK clients
 
-If you do not have access to the context, you can use the client library to invoke handlers programmatically.
-
-To invoke a Restate handler programmatically from _plain TypeScript/Java/Kotlin code_, do:
-
+Then, invoke the Restate handler programmatically from plain TypeScript/Java/Kotlin code, via:
 
 <Tabs groupId="sdk" queryString>
     <TabItem value="ts" label="TypeScript">
@@ -43,7 +33,9 @@ To invoke a Restate handler programmatically from _plain TypeScript/Java/Kotlin 
         npm install @restatedev/restate-sdk-clients
         ```
 
-        2. In your code, connect to Restate:
+        2. Make sure to first [register the handler](/operate/registration) you want to invoke.
+
+        3. In your code, connect to Restate:
 
         ```typescript
         CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_connect>-<end_connect>
@@ -51,7 +43,7 @@ To invoke a Restate handler programmatically from _plain TypeScript/Java/Kotlin 
 
 
 
-        3. Invoke the handler with your preferred semantics:
+        4. Invoke the handler with your preferred semantics:
 
         <CH.Spotlight className="durable-promises">
 
@@ -90,7 +82,9 @@ To invoke a Restate handler programmatically from _plain TypeScript/Java/Kotlin 
         implementation("dev.restate:sdk-common:VAR::TYPESCRIPT_SDK_VERSION")
         ```
 
-        2. From your code, connect to Restate and invoke the handler with the generated clients and your preferred semantics:
+        2. Make sure to first [register the handler](/operate/registration) you want to invoke.
+
+        3. From your code, connect to Restate and invoke the handler with the generated clients and your preferred semantics:
 
         <CH.Spotlight className="durable-promises">
 
@@ -126,6 +120,67 @@ To invoke a Restate handler programmatically from _plain TypeScript/Java/Kotlin 
 </Tabs>
 
 ## Latching onto running invocations and workflows
+
+If you use the client for one-way calls to a [workflow](/concepts/services#workflows) or handler, then the invocation runs in the background.
+
+Restate allows you to attach to a running invocation or workflow again later on to retrieve the results or wait for it to finish.
+
+**For services or objects**, you can attach to an ongoing invocation via:
+
+<Tabs groupId="sdk" queryString>
+    <TabItem value="ts" label="TypeScript">
+
+        ```typescript
+        CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_service_attach>-<end_service_attach>
+        ```
+
+    </TabItem>
+    <TabItem value="java" label="Java">
+    </TabItem>
+</Tabs>
+
+
+**For workflows**, you can attach to an ongoing invocation via:
+
+<Tabs groupId="sdk" queryString>
+    <TabItem value="ts" label="TypeScript">
+
+        ```typescript
+        CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_workflow_attach>-<end_workflow_attach>
+        ```
+
+    </TabItem>
+    <TabItem value="java" label="Java">
+
+        ```java
+        CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_workflow_attach>-<end_workflow_attach>
+        ```
+
+    </TabItem>
+</Tabs>
+
+**For workflows**, you can also **peek at the output** of a running invocation or workflow via:
+
+<Tabs groupId="sdk" queryString>
+    <TabItem value="ts" label="TypeScript">
+
+        ```typescript
+        CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_workflow_peek>-<end_workflow_peek>
+        ```
+
+    </TabItem>
+    <TabItem value="java" label="Java">
+
+        ```java
+        CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_workflow_peek>-<end_workflow_peek>
+        ```
+
+    </TabItem>
+</Tabs>
+
+The output contains a `ready` flag that indicates whether the invocation has finished.
+And if it has, the `result` contains the output of the invocation.
+
 
 
 

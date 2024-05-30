@@ -51,4 +51,38 @@ public class Ingress {
         // <end_delayed_call_java>
 
     }
+
+    public void latchOntoWorkflow(){
+
+        // <start_workflow_attach>
+        IngressClient.WorkflowHandle<String> handle = MyWorkflowClient
+                .fromIngress("http://localhost:8080", "wf-id-1")
+                .submit("input");
+
+        // If you have access to the workflow handle:
+        // withClass highlight-line
+        String response = handle.attach();
+
+        // If you do not have access to the workflow handle, use the workflow ID:
+        String response2 = MyWorkflowClient
+                .fromIngress("http://localhost:8080", "wf-id-1")
+                // withClass(1:2) highlight-line
+                .workflowHandle()
+                .attach();
+        // <end_workflow_attach>
+
+        // <start_workflow_peek>
+        // If you have access to the workflow handle:
+        // withClass highlight-line
+        String peekResponse = handle.getOutput();
+
+        // If you do not have access to the workflow handle, use the workflow ID:
+        String peekResponse2 = MyWorkflowClient
+                .fromIngress("http://localhost:8080", "wf-id-1")
+                // withClass(1:2) highlight-line
+                .workflowHandle()
+                .getOutput();
+        // <end_workflow_peek>
+
+    }
 }
