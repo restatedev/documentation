@@ -5,6 +5,7 @@ import dev.restate.sdk.annotation.Workflow
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
 import dev.restate.sdk.kotlin.SharedWorkflowContext
 import dev.restate.sdk.kotlin.WorkflowContext
+import kotlin.time.Duration
 
 // <start_here>
 @Workflow

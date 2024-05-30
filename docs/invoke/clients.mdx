@@ -17,7 +17,7 @@ Make sure to first [register the handler](/operate/registration) you want to inv
 
 ## Invoking handlers with the Restate Context
 
-When you implement a Restate handler, you have access to the Restate `Context` or `ObjectContext` object.
+When you implement a Restate handler, you have access to a Restate `Context` object.
 You can use this context to invoke other handlers.
 
 Have a look at the Development docs ([TS](/develop/ts/service-communication)/[Java](/develop/java/service-communication)/[Kotlin](/develop/java/service-communication?sdk=kotlin)).
@@ -33,6 +33,7 @@ If you do not have access to the context, you can use the client library to invo
 
 To invoke a Restate handler programmatically from _plain TypeScript/Java/Kotlin code_, do:
 
+
 <Tabs groupId="sdk" queryString>
     <TabItem value="ts" label="TypeScript">
 
@@ -47,6 +48,8 @@ To invoke a Restate handler programmatically from _plain TypeScript/Java/Kotlin 
         ```typescript
         CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_connect>-<end_connect>
         ```
+
+
 
         3. Invoke the handler with your preferred semantics:
 
@@ -106,6 +109,8 @@ To invoke a Restate handler programmatically from _plain TypeScript/Java/Kotlin 
             ```
 
             **<mark class="accent">One-way</mark> invocations** allow you to send a message without waiting for a response.
+            You can schedule an invocation as a one-way invocation and later on latch onto it to retrieve the response.
+            Have a look below.
 
             ---
 
@@ -119,3 +124,8 @@ To invoke a Restate handler programmatically from _plain TypeScript/Java/Kotlin 
 
     </TabItem>
 </Tabs>
+
+## Latching onto running invocations and workflows
+
+
+

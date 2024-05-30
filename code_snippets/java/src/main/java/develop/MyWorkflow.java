@@ -6,6 +6,8 @@ import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Workflow;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 
+import java.time.Duration;
+
 // <start_here>
 @Workflow
 public class MyWorkflow {
@@ -15,6 +17,7 @@ public class MyWorkflow {
 
         // implement workflow logic here
 
+        ctx.sleep(Duration.ofMillis(100000));
         return "success";
     }
 

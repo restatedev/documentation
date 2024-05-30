@@ -1,5 +1,7 @@
 import * as restate from "@restatedev/restate-sdk-clients";
 import {greetCounterObject, greeterService} from "./utils";
+import {SendOpts} from "@restatedev/restate-sdk-clients";
+import {myWorkflow} from "../../concepts/invocations/utils";
 
 
 const myPlainTSFunction = async () => {
@@ -13,6 +15,9 @@ const myPlainTSFunction = async () => {
 
     const count = await ingress.objectClient(greetCounterObject, "Mary")
         .greet({ greeting: "Hi" });
+
+    const result = await ingress.workflowClient(myWorkflow, "wf-id-1")
+        .workflowSubmit({ input: "Hi" });
     // <end_rpc_call_node>
 
     // <start_one_way_call_node>
@@ -27,11 +32,9 @@ const myPlainTSFunction = async () => {
     // <start_delayed_call_node>
     await ingress
         .serviceSendClient(greeterService)
-        .greet({greeting: "Hi"},
-            restate.SendOpts.from({ delay: 1000 }));
+        .greet({greeting: "Hi"}, SendOpts.from({ delay: 1000 }));
 
     await ingress.objectSendClient(greetCounterObject, "Mary")
-        .greet({greeting: "Hi"},
-            restate.SendOpts.from({ delay: 1000 }));
+        .greet({greeting: "Hi"}, SendOpts.from({ delay: 1000 }));
     // <end_delayed_call_node>
 }
