@@ -1,12 +1,8 @@
 package develop;
 
 import dev.restate.sdk.Context;
-import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.common.CoreSerdes;
-import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 
 import java.util.UUID;

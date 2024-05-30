@@ -13,13 +13,12 @@ public class OrderRequest {
     private final double totalCost;
     private final int deliveryDelay;
 
-    @JsonCreator
     public OrderRequest(
-            @JsonProperty("orderId") String orderId,
-            @JsonProperty("restaurantId") String restaurantId,
-            @JsonProperty("products") Product[] products,
-            @JsonProperty("totalCost") double totalCost,
-            @JsonProperty("deliveryDelay") int deliveryDelay) {
+            String orderId,
+            String restaurantId,
+            Product[] products,
+            double totalCost,
+            int deliveryDelay) {
         this.orderId = orderId;
         this.restaurantId = restaurantId;
         this.products = products;

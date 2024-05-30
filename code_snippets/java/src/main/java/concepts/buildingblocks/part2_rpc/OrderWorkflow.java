@@ -5,10 +5,11 @@ import concepts.buildingblocks.types.OrderRequest;
 import concepts.buildingblocks.types.StatusEnum;
 import concepts.buildingblocks.utils.PaymentClient;
 import concepts.buildingblocks.utils.RestaurantClient;
+import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.common.CoreSerdes;
+import dev.restate.sdk.common.Serde;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
 
@@ -27,7 +28,7 @@ public class OrderWorkflow {
 
         // 2. Handle payment
         String token = ctx.random().nextUUID().toString();
-        boolean paid = ctx.run(CoreSerdes.JSON_BOOLEAN, () ->
+        boolean paid = ctx.run(JsonSerdes.BOOLEAN, () ->
             PaymentClient.charge(id, token, order.getTotalCost()));
 
         if (!paid) {
@@ -40,7 +41,7 @@ public class OrderWorkflow {
         ctx.sleep(Duration.ofMillis(order.getDeliveryDelay()));
 
         // 4. Trigger preparation
-        var awakeable = ctx.awakeable(CoreSerdes.VOID);
+        var awakeable = ctx.awakeable(Serde.VOID);
         ctx.run(() ->
             RestaurantClient.prepare(id, awakeable.id()));
         ctx.set(STATUS, StatusEnum.IN_PREPARATION);
