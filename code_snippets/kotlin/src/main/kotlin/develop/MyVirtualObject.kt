@@ -5,7 +5,7 @@ import dev.restate.sdk.annotation.VirtualObject
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
 import dev.restate.sdk.kotlin.ObjectContext
 
-// <start_virtual_object>
+// <start_here>
 @VirtualObject
 class MyVirtualObject {
 
@@ -22,4 +22,4 @@ fun main() {
         .bind(MyVirtualObject())
         .buildAndListen()
 }
-// <end_virtual_object>
+// <end_here>
