@@ -132,8 +132,8 @@ restate whoami
 ### HTTP
 
 Restate invokes your services over the public internet. For production use cases
-HTTPS must be used between Restate and your services. You can apply a
-certificate to the service directly, but its likely easier to use a fronting
+HTTPS must be used between Restate and your services. You can terminate TLS at
+the service endpoint directly, but it's likely easier to use a fronting
 load balancer like an AWS NLB.
 
 You must secure access to your service so that only Restate can call it.
