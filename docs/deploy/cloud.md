@@ -83,7 +83,7 @@ that has permission to invoke your Lambdas and give it the following trust polic
 ```
 
 <Admonition type="info" title="Trust policy">
-This trust policy allows the Restate cloud `us.restate.cloud` region role ID (`AROAZQ3DNV5IY6KP4ODO4`) to assume your role, as long as it is using an ExternalId that matches your environment ID. The environment ID can be found in the UI and in the output of `restate whoami`.
+This trust policy allows the Restate Cloud `us.restate.cloud` region principal (role ID `AROAZQ3DNV5IY6KP4ODO4`) to assume your role, as long as it is using an ExternalId that matches your environment ID. The environment ID can be found in the UI and in the output of `restate whoami`.
 </Admonition>
 
 You can now register your Lambda through the new role:
