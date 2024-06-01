@@ -1,6 +1,7 @@
 package operate.invocations;
 
 import dev.restate.sdk.Context;
+import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.client.CallRequestOptions;
 import dev.restate.sdk.client.IngressClient;
 import develop.MyWorkflowClient;
@@ -64,6 +65,27 @@ public class Ingress {
                 CallRequestOptions.DEFAULT.withIdempotency("abcde")
             );
         // <end_service_idempotent>
+    }
+
+    public void latchOntoService(){
+
+        // <start_service_attach>
+        String handle = GreeterServiceClient.fromIngress("http://localhost:8080")
+            .send()
+            .greet(
+                    "Hi",
+                    CallRequestOptions.DEFAULT.withIdempotency("abcde")
+             );
+
+        // ... do something else ...
+
+        // Attach later to retrieve the result
+        // withClass(1:3) highlight-line
+        String greeting = IngressClient.defaultClient("http://localhost:8080")
+            .invocationHandle(handle, JsonSerdes.STRING)
+            .attach();
+        // <end_service_attach>
+
     }
 
     public void latchOntoWorkflow(){
