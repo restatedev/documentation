@@ -55,9 +55,9 @@ service running on your local machine, you can expose it using our tunnel
 feature:
 ```bash
 # expose localhost:9080 to Restate Cloud
-restate cloud tunnel 9080
-# copy the url from the output and register against your environment
-restate dp add https://tunnel.us.restate.cloud:9081/...
+restate cloud env tunnel --local-port 9080
+# copy the tunnel url from the output and register it to your environment
+restate deployments register tunnel://example:9081
 ```
 
 ### AWS Lambda services
@@ -100,11 +100,11 @@ you find the issue.
 In the UI you can find the URL of your Restate environment. All requests must be
 authenticated using a Bearer token. We suggest that humans use their SSO token
 which is obtained by `restate cloud login`, and will be used automatically by
-the CLI. If you want to test invocations using `curl` as described in the [invoke docs](/invoke/http), you can use a local authenticated proxy to expose
-the Restate server as if it was running on your machine:
+the CLI. If you want to test invocations using `curl` as described in the [invoke docs](/invoke/http), you can use the tunnel command to expose
+the ingress port of the Restate server as if it was running on your machine:
 
 ```bash
-restate cloud env proxy
+restate cloud env tunnel --remote-port 8080
 curl localhost:8080/MyService/myHandler
 ```
 
