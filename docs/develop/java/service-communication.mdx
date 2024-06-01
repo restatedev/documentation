@@ -22,6 +22,11 @@ A handler can call another handler and wait for the response (request-response),
 ## Request-response calls
 
 Request-response calls are requests where the client waits for the response.
+The Java SDK generates a client for each service, which you can use to make these calls.
+
+<Admonition type="info" title={"Generating the clients"}>
+    The clients are generated when you build the project. If you don't see the generated clients, make sure you have built the project with `./gradlew build`.
+</Admonition>
 
 Use the generated client's of the SDK to do the request-response call:
 
@@ -75,10 +80,6 @@ CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#<start_request
 
     </TabItem>
 </Tabs>
-
-<Admonition type="info" title={"Generating the clients"}>
-    The clients are generated when you build the project. If you don't see the generated clients, make sure you have built the project with `./gradlew build`.
-</Admonition>
 
 <Admonition type="tip" title="No need for manual retry logic">
     These calls are proxied by Restate, and get logged in the journal.
