@@ -18,8 +18,8 @@ import Admonition from '@theme/Admonition';
 
 ## Creating your first environment
 
-You can sign in to Cloud using Google or GitHub SSO. After signing up, you'll
-be prompted to create an account, and an environment. An environment is an instance of the Restate server that is unique to you, and managed by Restate.
+You can sign in to Cloud using an email address and password, or using Google or GitHub SSO.
+After signing up, you'll be prompted to create an account, and an environment. An environment is an instance of the Restate server that is unique to you, and managed by Restate.
 
 <Admonition type="tip" title="Naming">
 Accounts and environments must have a name comprising of lowercase alphanumeric
