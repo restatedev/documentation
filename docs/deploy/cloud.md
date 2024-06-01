@@ -136,10 +136,11 @@ HTTPS must be used between Restate and your services. You can apply a
 certificate to the service directly, but its likely easier to use a fronting
 load balancer like an AWS NLB.
 
-It is also a good idea to secure access to your service so that only Restate can
-call it. The easiest way to do this is with our native request identity feature.
-All requests to your service will contain a signature from a public key which can be seen in the UI. It's safe to include it directly in
-your service code:
+You must secure access to your service so that only Restate can call it.
+The easiest way to do this is with our native request identity feature.
+All requests to your service will be signed with a unique environment-specific private
+key. You can find the corresponding public key in the environment settings UI, under HTTP Services.
+It is safe to include this public key directly in your service code:
 
 <CH.Code>
 
