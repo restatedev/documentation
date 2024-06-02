@@ -20,7 +20,8 @@ The Restate Server is a single binary that contains everything you need to host 
 There are a few options for hosting the Restate Server:
 
 - [Self-host on AWS](/deploy/lambda/self-hosted)
-- [Self-host on Kubernetes](/deploy/kubernetes).
+- [Self-host on Kubernetes](/deploy/kubernetes)
+- [Use the early access of Restate Cloud](/deploy/cloud)
 
 The server will store metadata and RocksDB data under `./restate-data/<NODE-NAME>`.
 `<NODE-NAME>` is the name of the Restate server, which is set by the `--node-name` flag (defaults to hostname).
