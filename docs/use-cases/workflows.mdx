@@ -1,0 +1,222 @@
+---
+title: "Workflows-as-code"
+sidebar_position: 1
+description: "Write workflows-as-code with Restate"
+hide_table_of_contents: true
+hide_title: true
+---
+
+import FeatureWidget from "../../src/components/FeatureWidget"
+import FeatureSpotlight from "../../src/components/FeatureSpotlight"
+
+<h1 className={"use-case-title padding-top--lg text--center"}>WORKFLOWS-AS-CODE</h1>
+<h1 className={"use-case-subtitle text--center"}>Lightweight, flexible, durable.</h1>
+<p className={"use-case-description padding-bottom--lg text--center"}>Combine the resiliency of workflows with the speed and flexibility of regular functions.<br/>
+    Restate orchestrates and manages their execution till completion, whether it’s millis or months.</p>
+
+
+<FeatureWidget className={"padding-bottom--lg"} features={[
+    {
+        title: 'Just code',
+        iconPath: '/img/code-icon.svg',
+        description: "Get workflow-like semantics for any function: retries, recovery of progress,... Restate provides a distributed, durable version of familiar building blocks: timers, promises, signals,...",
+    },
+    {
+        title: 'Low latency',
+        iconPath: '/img/use_cases/lightning.svg',
+        description: "Restate is built from the ground up to serve low-latency workflows. You can now put workflows in the latency-sensitive path of user interactions.",
+    },
+    {
+        title: 'Deploy on FaaS',
+        iconPath: '/img/use_cases/aws-lambda-icon.svg',
+        description: "Run (parts of) your workflow on AWS Lambda. Restate lets your Lambda function suspend whenever its waiting on inputs.",
+    },
+]}/>
+
+<p className={"padding-bottom--lg"}></p>
+
+## Workflows with Restate
+
+Implement the run function of your workflow, using the Restate SDK.
+
+
+<CH.Scrollycoding className="durable-promises">
+
+    ### Run once, retrieve later
+
+    A workflow runs exactly one time.
+    If the caller loses the connection to the workflow, he can latch on again to retrieve the result.
+
+    ```ts user_sign_up_flow.ts withClass=3:10 highlight-line
+    CODE_LOAD::ts/src/use_cases/workflows.ts
+    ```
+
+    ---
+
+    ### Workflow state
+
+    Use Restate’s built-in key-value store to store workflow state,
+    and expose it to external clients.
+
+    ```ts user_sign_up_flow.ts
+    CODE_LOAD::ts/src/use_cases/workflows.ts
+    ```
+
+    ---
+
+    ### Persist progress
+
+    Store results of interaction with external systems or non-deterministic actions. On retries, the previous result is returned.
+
+    ```ts user_sign_up_flow.ts focus=11:14
+    CODE_LOAD::ts/src/use_cases/workflows.ts
+    ```
+
+    ---
+
+    ### Wait on external signals
+
+    Make Promises/Futures resilient by registering them in Restate.
+    Share them and wait until other functions resolve them.
+
+
+    ```ts user_sign_up_flow.ts focus=15:21
+    CODE_LOAD::ts/src/use_cases/workflows.ts
+    ```
+
+    ---
+
+    ### Flexible failure handling
+
+    Implement sagas and compensations in code, as per your requirements.
+
+    ```ts user_sign_up_flow.ts
+    CODE_LOAD::ts/src/use_cases/workflows.ts
+    ```
+
+</CH.Scrollycoding>
+
+
+
+<FeatureWidget features={[
+    {
+        title: 'LOW-LATENCY',
+        description: (
+            <p className="font-size-90">
+                Restate’s event-driven foundation built in Rust lets you put workflows in the latency-sensitive path of user interaction.
+            </p>
+        ),
+    },
+    {
+        title: 'DURABLE EXECUTION',
+        description: (
+            <p className="font-size-90">
+                Restate handles retries and recovers your code to the exact point before the crash. No more coarse per-step retries. State changes take part in durable execution, so the state never gets out of sync.
+            </p>
+        ),
+    },
+]}/>
+
+Interact with in-flight workflows
+
+<CH.Scrollycoding>
+
+    ### Query workflow state
+
+    Retrieve the current state of the workflow from within other handlers and expose it to external clients.
+
+    ```ts user_sign_up_flow.ts
+    CODE_LOAD::ts/src/use_cases/workflows.ts
+    ```
+
+    ---
+
+    ### Signal in-flight workflows
+
+    Notify the workflow of external signals, callbacks or Kafka events.
+    Resolve or reject shared promises on which the workflow is waiting.  The workflow handles the outcome.
+
+    ```ts user_sign_up_flow.ts
+    CODE_LOAD::ts/src/use_cases/workflows.ts
+    ```
+
+</CH.Scrollycoding>
+
+<FeatureSpotlight
+    title={"Workflows as regular, lightweight functions"}
+    description={<p>Restate’s workflow functionality is integrated in its core. <br/> Workflows run like any other function in your infrastructure: on K8S, FaaS, or mix-and-match. <br/> No need to spin up extra infrastructure of dedicated workers.</p>}
+    imgPath={"/img/use_cases/workflows.svg"}
+/>
+
+
+## What you can build with Workflows and Restate
+
+<FeatureWidget features={[
+    {
+        title: 'User sign-up workflow',
+        description: (
+            <p className="font-size-90">
+                Create user in the system, wait until email confirmation, schedule a reminder, send welcome email, etc.
+            </p>
+        ),
+        ts: "https://github.com/restatedev/examples/blob/main/basics/basics-typescript/src/3_workflows.ts",
+    },
+    {
+        title: 'Order processing and logistics',
+        description: (
+            <p className="font-size-90">
+                Handle the payment, request the order preparation, wait for driver acceptance callback, etc.
+            </p>
+        ),
+        java: "https://github.com/restatedev/examples/tree/main/end-to-end-applications/java/food-ordering",
+        ts: "https://github.com/restatedev/examples/tree/main/end-to-end-applications/typescript",
+        kotlin: "https://github.com/restatedev/examples/tree/main/end-to-end-applications/kotlin",
+    },
+    {
+        title: 'Infrastructure provisioning',
+        description: (
+            <p className="font-size-90">
+                Go through a set of steps to provision a setup. Retry until resources are up, handle timeouts, rollbacks, etc.
+            </p>
+        ),
+    },
+    {
+        title: 'Workflow interpreters',
+        description: (
+            <p className="font-size-90">
+                Dynamically compose workflows based on user input. For example, an image transformer that lets users specify the steps to be taken.
+            </p>
+        ),
+        ts: "https://github.com/restatedev/examples/tree/main/end-to-end-applications/typescript/ai-image-workflows"
+    },
+    {
+        title: 'Wondering about a specific use case?',
+        description: (
+            <p className="font-size-90">
+                Let’s brainstorm together on Discord
+            </p>
+        ),
+        link: "https://discord.gg/skW3AZ6uGd"
+    },
+    ]}>
+</FeatureWidget>
+
+## Developer Resources
+
+<FeatureWidget features={[
+    {
+        title: 'Blog post',
+    },
+    {
+        title: 'Docs',
+    },
+    {
+        title: 'Need help?',
+        description: (
+            <p class="font-size-90">
+                Join the Restate Discord channel
+            </p>
+        ),
+        link: "https://discord.gg/skW3AZ6uGd"
+    }
+]}/>
