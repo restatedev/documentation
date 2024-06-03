@@ -24,9 +24,9 @@ public class Payment {
         DurablePromiseKey.of("payment.success", JacksonSerdes.of(PaymentSuccess.class));
 
     @Workflow
-    public String run(WorkflowContext ctx, PaymentRequest payment){
+    public String run(WorkflowContext ctx, PaymentRequest payment) {
 
-        if(payment.getAmount() < 0){
+        if (payment.getAmount() < 0) {
             throw new TerminalException("Payment refused: negative amount");
         }
 
@@ -46,12 +46,12 @@ public class Payment {
     }
 
     @Shared
-    public void paymentWebhook(SharedWorkflowContext ctx, PaymentSuccess msg){
+    public void paymentWebhook(SharedWorkflowContext ctx, PaymentSuccess msg) {
         ctx.durablePromiseHandle(PAYMENT_SUCCESS).resolve(msg);
     }
 
     @Shared
-    public String getStatus (SharedWorkflowContext ctx){
+    public String getStatus(SharedWorkflowContext ctx) {
         return ctx.get(STATUS).orElse("unknown");
     }
 }

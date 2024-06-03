@@ -13,7 +13,7 @@ public class WorkflowSubmitter {
     }
 
 
-    public void interactWithWorkflow(){
+    public void interactWithWorkflow() {
         // <start_interact>
         // Attach to the workflow
         SignupWorkflowClient
