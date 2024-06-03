@@ -66,13 +66,13 @@ You can use this identifier [to cancel](/operate/invocation#cancelling-invocatio
 
 ## Sending a delayed message over HTTP
 
-You can **delay the message** by adding a delay request parameter in ISO8601 notation or in seconds:
+You can **delay the message** by adding a delay request parameter in ISO8601 notation or using [humantime format](https://docs.rs/humantime/latest/humantime/):
 
 <CH.Code>
 
-    ```shell seconds
+    ```shell humantime
     # focus[40:56]
-    curl localhost:8080/MyService/myHandler/send?delaySec=10 \
+    curl localhost:8080/MyService/myHandler/send?delay=10s \
     -H 'content-type: application/json' \
     -d '{"name": "Mary", "age": 25}'
     ```
