@@ -15,8 +15,7 @@ public class WorkflowSubmitter {
 
     public void interactWithWorkflow() {
         // <start_interact>
-        // Attach to the workflow
-        SignupWorkflowClient
+        boolean success = SignupWorkflowClient
                 .fromIngress("http://localhost:8080", "someone")
                 .workflowHandle()
                 .attach();
