@@ -1,4 +1,4 @@
-package concepts.services;
+package concepts.services.types;
 
 public class UpdateRequest {
     private String userId;

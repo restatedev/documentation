@@ -1,9 +1,9 @@
 package concepts.services;
 
+import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.common.CoreSerdes;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 
@@ -18,7 +18,7 @@ import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 public class Greeter {
 
     public final static StateKey<Integer> COUNT =
-            StateKey.of("count", CoreSerdes.JSON_INT);
+            StateKey.of("count", JsonSerdes.INT);
 
     @Handler
     public String greet(ObjectContext ctx, String greeting) {

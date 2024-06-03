@@ -9,9 +9,9 @@ class Product {
     private final int quantity;
 
     public Product(
-            @JsonProperty("productId") String productId,
-            @JsonProperty("description") String description,
-            @JsonProperty("quantity") int quantity) {
+            String productId,
+            String description,
+            int quantity) {
         this.productId = productId;
         this.description = description;
         this.quantity = quantity;

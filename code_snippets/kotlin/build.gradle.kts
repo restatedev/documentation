@@ -11,9 +11,10 @@ plugins {
 
 repositories {
   mavenCentral()
+  mavenLocal()
 }
 
-val restateVersion = "0.9.0"
+val restateVersion = "0.10.0-SNAPSHOT"
 
 dependencies {
   // Annotation processor

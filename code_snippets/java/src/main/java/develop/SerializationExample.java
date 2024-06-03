@@ -2,7 +2,7 @@ package develop;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.protobuf.Duration;
-import dev.restate.sdk.common.CoreSerdes;
+import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.common.Serde;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
@@ -14,21 +14,22 @@ import java.util.List;
 public class SerializationExample {
     List<Serde> serializers = Arrays.asList(
             //<start_here>
-            CoreSerdes.VOID,
-            CoreSerdes.JSON_BYTE,
-            CoreSerdes.JSON_STRING,
-            CoreSerdes.JSON_BOOLEAN,
-            CoreSerdes.JSON_BYTE,
-            CoreSerdes.JSON_SHORT,
-            CoreSerdes.JSON_INT,
-            CoreSerdes.JSON_LONG,
-            CoreSerdes.JSON_FLOAT,
-            CoreSerdes.JSON_DOUBLE
+            Serde.VOID,
+            Serde.RAW,
+            Serde.BYTE_BUFFER,
+            JsonSerdes.STRING,
+            JsonSerdes.BOOLEAN,
+            JsonSerdes.BYTE,
+            JsonSerdes.SHORT,
+            JsonSerdes.INT,
+            JsonSerdes.LONG,
+            JsonSerdes.FLOAT,
+            JsonSerdes.DOUBLE
             //<end_here>
     );
 
     // <start_statekey>
-    StateKey<Long> STATE_KEY = StateKey.of("my-key", CoreSerdes.JSON_LONG);
+    StateKey<Long> STATE_KEY = StateKey.of("my-key", JsonSerdes.LONG);
     // <end_statekey>
 
     private void someFn(){

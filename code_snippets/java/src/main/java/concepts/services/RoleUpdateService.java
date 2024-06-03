@@ -1,9 +1,12 @@
 package concepts.services;
 
+import concepts.services.types.SystemA;
+import concepts.services.types.SystemB;
+import concepts.services.types.UpdateRequest;
 import dev.restate.sdk.Context;
+import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.common.CoreSerdes;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 
 /**
@@ -18,14 +21,14 @@ public class RoleUpdateService {
 
   @Handler
   public void applyRoleUpdate(Context ctx, UpdateRequest req) {
-    boolean success = ctx.run(CoreSerdes.JSON_BOOLEAN, () ->
+    boolean success = ctx.run(JsonSerdes.BOOLEAN, () ->
         SystemA.applyUserRole(req.getUserId(), req.getRole()));
     if (!success) {
         return;
     }
 
     for(String permission: req.getPermissions()) {
-        ctx.run(CoreSerdes.JSON_BOOLEAN, () ->
+        ctx.run(JsonSerdes.BOOLEAN, () ->
           SystemB.applyPermission(req.getUserId(), permission));
     }
   }

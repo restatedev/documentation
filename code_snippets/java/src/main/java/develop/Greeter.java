@@ -8,7 +8,7 @@ import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 @VirtualObject
 public class Greeter {
 
-  private static final StateKey<Integer> COUNT = StateKey.of("count", CoreSerdes.JSON_INT);
+  private static final StateKey<Integer> COUNT = StateKey.of("count", JsonSerdes.INT);
 
   @Handler
   public String greet(ObjectContext ctx, String greeting) {
