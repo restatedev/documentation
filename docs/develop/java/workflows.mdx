@@ -7,16 +7,25 @@ import Admonition from '@theme/Admonition';
 
 # Workflows
 
-The Workflow API let's you define workflows as a sequence of steps that gets executed durably.
+Workflows are a sequence of steps that gets executed durably.
 A workflow can be seen as a special type of Virtual Object with some special characteristics.
 
 In summary:
 
 - A `run` handler that executes exactly one time for each workflow instance (object).
 This is the handler which implements the workflow logic.
-- Optionally, other handlers that can be called multiple times, and which interact with the workflow.
-These handlers can be called up to 24 hours after the `run` handler has finished.
+- Optionally, other handlers that can be called multiple times, and can interact with the workflow.
 - Some extra SDK functionality to signal workflows via Durable Promises.
+
+<Admonition type="note" title={"Workflow retention time"}>
+    The retention time of a workflow execution is 24 hours.
+    After this timeout:
+    - Any K/V state is cleared
+    - The workflow's shared handlers cannot be called anymore
+    - The Durable Promises are discarded
+
+    The retention time can be configured via the [Admin API](/references/admin-api/#tag/service/operation/modify_service) per Workflow definition by setting `workflow_completion_retention`.
+</Admonition>
 
 <CH.Scrollycoding>
 
@@ -30,21 +39,11 @@ These handlers can be called up to 24 hours after the `run` handler has finished
 
     ---
 
-    ## Implement the `run` handler
+    ## The `run` handler
 
     Every workflow needs a `run` handler.
     This handler has access to the same SDK features as Service and Virtual Object handlers.
     For example, use `ctx.run` to log intermediate resuljava in Restate and avoid re-execution on replay.
-
-    <Admonition type="note" title={"Workflow retention time"}>
-        The retention time of a workflow execution is 24 hours.
-        After this timeout:
-        - Any K/V state is cleared
-        - The workflow's shared handlers cannot be called anymore
-        - The Durable Promises are discarded
-
-        The retention time can be configured via the [Admin API](/references/admin-api/#tag/service/operation/modify_service) per Workflow definition by setting `workflow_completion_retention`.
-    </Admonition>
 
     <CH.Code lineNumbers={"true"}>
         ```java SignupWorkflow.java focus=9:25
@@ -81,11 +80,6 @@ These handlers can be called up to 24 hours after the `run` handler has finished
     Do the following:
     1. Create a promise in your `run` handler that is durable and distributed
     2. Resolve or reject the promise in any other handler in the workflow. This can be done at most one time.
-
-    <Admonition type={"note"} title={"Lifecycle of Restate's Durable Promises"}>
-        The lifetime of the Promise is tied to the workflow execution/object and gets discarded when the retention time has passed.
-        The retention time can be configured via the [Admin API](/references/admin-api/#tag/service/operation/modify_service) per workflow definition by setting `workflow_completion_retention`.
-    </Admonition>
 
     <CH.Code lineNumbers={"true"}>
         ```java SignupWorkflow.java focus=18,26:29
