@@ -1,19 +1,19 @@
 ---
 sidebar_position: 7
-description: "Find out how Restate services can send requesjava to each other."
+description: "Find out how you can implement workflows with the Restate SDK."
 ---
 
 import Admonition from '@theme/Admonition';
 
 # Workflows
 
-The Workflow API let's you define workflows as a sequence of steps that gejava executed durably.
+The Workflow API let's you define workflows as a sequence of steps that gets executed durably.
 A workflow can be seen as a special type of Virtual Object with some special characteristics.
 
 In summary:
 
 - A `run` handler that executes exactly one time for each workflow instance (object).
-This is the handler which implemenjava the workflow logic.
+This is the handler which implements the workflow logic.
 - Optionally, other handlers that can be called multiple times, and which interact with the workflow.
 These handlers can be called up to 24 hours after the `run` handler has finished.
 - Some extra SDK functionality to signal workflows via Durable Promises.
@@ -42,6 +42,8 @@ These handlers can be called up to 24 hours after the `run` handler has finished
         - Any K/V state is cleared
         - The workflow's shared handlers cannot be called anymore
         - The Durable Promises are discarded
+
+        The retention time can be configured via the [Admin API](/references/admin-api/#tag/service/operation/modify_service) per Workflow definition by setting `workflow_completion_retention`.
     </Admonition>
 
     <CH.Code lineNumbers={"true"}>
