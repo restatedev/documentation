@@ -5,14 +5,12 @@ import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 
-import java.util.UUID;
-
-// <start_service>
+// <start_here>
 @Service
 public class MyService {
 
     @Handler
-    String myHandler(Context ctx, String input) {
+    public String myHandler(Context ctx, String input) {
         return "my-output";
     }
 
@@ -22,4 +20,4 @@ public class MyService {
             .buildAndListen();
     }
 }
-// <end_service>
+// <end_here>

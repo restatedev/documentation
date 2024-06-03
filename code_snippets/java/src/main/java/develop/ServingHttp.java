@@ -8,6 +8,7 @@ class MyApp {
         RestateHttpEndpointBuilder.builder()
             .bind(new MyService())
             .bind(new MyVirtualObject())
+            .bind(new MyWorkflow())
             .buildAndListen();
     }
 }

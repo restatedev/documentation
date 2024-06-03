@@ -1,0 +1,175 @@
+---
+sidebar_position: 7
+description: "Find out how Restate services can send requests to each other."
+---
+
+import Admonition from '@theme/Admonition';
+
+# Workflows
+
+Workflows are a sequence of steps that gets executed durably.
+A workflow can be seen as a special type of Virtual Object with some special characteristics.
+
+In summary:
+
+- A `run` handler that executes exactly one time for each workflow instance (object).
+This is the handler which implements the workflow logic.
+- Optionally, other handlers that can be called multiple times, and can interact with the workflow.
+- Some extra SDK functionality to signal workflows via Durable Promises.
+
+<Admonition type="note" title={"Workflow retention time"}>
+    The retention time of a workflow execution is 24 hours.
+    After this timeout:
+    - Any K/V state is cleared
+    - The workflow's shared handlers cannot be called anymore
+    - The Durable Promises are discarded
+
+    The retention time can be configured via the [Admin API](/references/admin-api/#tag/service/operation/modify_service) per Workflow definition by setting `workflow_completion_retention`.
+</Admonition>
+
+
+<CH.Scrollycoding>
+
+Have a look at the code example to get a better understanding of how workflows are implemented:
+
+<CH.Code lineNumbers={"true"}>
+    ```ts signup.ts
+    CODE_LOAD::ts/src/develop/workflows/signup.ts
+    ```
+</CH.Code>
+
+---
+
+## The `run` handler
+
+Every workflow needs a `run` handler.
+This handler has access to the same SDK features as Service and Virtual Object handlers.
+For example, use `ctx.run` to log intermediate results in Restate and avoid re-execution on replay.
+
+
+<CH.Code lineNumbers={"true"}>
+    ```ts signup.ts focus=6:19
+    CODE_LOAD::ts/src/develop/workflows/signup.ts
+    ```
+</CH.Code>
+
+---
+
+## Querying workflows
+
+You can query workflows via the other shared handlers defined in the workflow definition.
+For example, here we retrieve the status of the workflow.
+
+This is similar to how you would use shared handlers in a Virtual Object.
+
+<CH.Code lineNumbers={"true"}>
+```ts signup.ts focus=23
+CODE_LOAD::ts/src/develop/workflows/signup.ts
+```
+</CH.Code>
+
+---
+
+## Signaling workflows
+
+You can use signals to interact with your running workflows.
+You can use them to let the workflow block until an event occurs, or to send a signal / information to a running workflow.
+
+You can implement signals via the Durable Promises feature of the SDK.
+These promises are durable and distributed, meaning they survive crashes and can be resolved or rejected by any handler in the workflow.
+
+Do the following:
+1. Create a promise in your `run` handler that is durable and distributed
+2. Resolve or reject the promise in any other handler in the workflow. This can be done at most one time.
+
+<CH.Code lineNumbers={"true"}>
+    ```ts signup.ts focus=14,20,21
+    CODE_LOAD::ts/src/develop/workflows/signup.ts
+    ```
+</CH.Code>
+
+</CH.Scrollycoding>
+
+## Submitting workflows
+
+You can submit workflows in multiple ways:
+
+### Via HTTP
+
+- [By calling the `run` handler over HTTP and waiting for the response](/invoke/http#invoke-workflows):
+    ```shell
+    curl localhost:8080/signup/someone/run \
+        -H 'content-type: application/json' \
+        -d '{"email": "someone@restate.dev"}'
+    ```
+
+- [By calling the `run` handler over HTTP and not waiting for the response](/invoke/http#sending-a-message-over-http):
+    ```shell
+    curl localhost:8080/signup/someone/run/send \
+        -H 'content-type: application/json' \
+        -d '{"email": "someone@restate.dev"}'
+    ```
+
+### Via programmatic clients
+
+- **From another Restate Service**, submit the workflow and wait for the result via:
+    <CH.Code lineNumbers={"true"}>
+    ```ts submit.ts
+    CODE_LOAD::ts/src/develop/workflows/service.ts
+    ```
+    </CH.Code>
+
+    Use the `workflowSendClient` to submit the workflow and not wait for the result.
+
+- From any other codebase:
+    <CH.Code lineNumbers={"true"}>
+    ```ts submit.ts
+    CODE_LOAD::ts/src/develop/workflows/submit.ts
+    ```
+    </CH.Code>
+
+
+## Attaching to ongoing workflows
+
+You can attach to ongoing workflows and retrieve their result later. You can either:
+- Attach to a running invocation or workflow and wait for it to finish.
+- Peek at the output of a running invocation or workflow. This will return:
+    - `{"message":"not ready"}` for ongoing workflows
+    - The result for finished workflows
+    - `{"message":"not found"}` for non-existing workflows
+
+### Via HTTP
+
+<CH.Code>
+
+```shell attach.sh
+curl localhost:8080/restate/workflow/signup/someone/attach
+```
+
+---
+
+```shell output.sh
+curl localhost:8080/restate/workflow/signup/someone/output
+```
+
+</CH.Code>
+
+### Via programmatic clients
+
+
+<CH.Code lineNumbers={"true"}>
+```ts submit.ts
+CODE_LOAD::ts/src/develop/workflows/interact.ts
+```
+</CH.Code>
+
+
+<Admonition type={"info"} title={"Inspecting workflows"}>
+    Have a look at the [CLI docs](/operate/introspection) on how to inspect workflows.
+</Admonition>
+
+
+
+
+
+
