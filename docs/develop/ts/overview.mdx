@@ -56,9 +56,12 @@ CODE_LOAD::ts/src/develop/my_virtual_object.ts
 
 </CH.Code>
 
-- [Create the virtual object](focus://3,10)
-- [The handlers use the `ObjectContext` instead of the `Context`.](focus://6)
-
+- [Create the virtual object](focus://4)
+- [The first argument of the handler must be the `ObjectContext` parameter](focus://7).
+Handlers with the `ObjectContext` parameter can write to the K/V state store.
+Only one handler can be active at a time, to ensure consistency.
+- [If you want to have a handler that executes concurrently to the others and doesn't have write access to the K/V state, wrap the handler in `handlers.object.shared` and use the `ObjectSharedContext`.](focus://10)
+For example, you can use these handlers to read K/V state, or interact with the blocking handler.
 </CH.Section>
 
 ## Workflows

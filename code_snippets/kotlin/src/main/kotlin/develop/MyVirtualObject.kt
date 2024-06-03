@@ -1,9 +1,11 @@
 package develop
 
 import dev.restate.sdk.annotation.Handler
+import dev.restate.sdk.annotation.Shared
 import dev.restate.sdk.annotation.VirtualObject
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
 import dev.restate.sdk.kotlin.ObjectContext
+import dev.restate.sdk.kotlin.SharedObjectContext
 
 // <start_here>
 @VirtualObject
@@ -14,6 +16,11 @@ class MyVirtualObject {
         return "my-output"
     }
 
+
+    @Shared
+    suspend fun myConcurrentHandler(ctx: SharedObjectContext, input: String): String {
+        return "my-output"
+    }
 }
 
 fun main() {

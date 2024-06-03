@@ -79,7 +79,11 @@ Handlers can either be part of a [Service](/concepts/services#services-1), a [Vi
             </CH.Code>
 
         - [Use the `@VirtualObject` annotation.](focus://1)
-        - [The first argument of the handler must be the `ObjectContext` parameter](focus://5[22:38]) ([JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api/latest/dev/restate/sdk/ObjectContext.html)).
+        - [The first argument of the handler must be the `ObjectContext` parameter](focus://5[29:45]) ([JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api/latest/dev/restate/sdk/ObjectContext.html)).
+        Handlers with the `ObjectContext` parameter can write to the K/V state store.
+        Only one handler can be active at a time, to ensure consistency.
+        - [If you want to have a handler that executes concurrently to the others and doesn't have write access to the K/V state, use the `@Shared` annotation and the `SharedObjectContext`.](focus://9,10[39:61])
+        For example, you can use these handlers to read K/V state, or interact with the blocking handler.
 
         </CH.Section>
     </TabItem>
@@ -93,7 +97,10 @@ Handlers can either be part of a [Service](/concepts/services#services-1), a [Vi
 
         - [Use the `@VirtualObject` annotation.](focus://1)
         - [The first argument of the handler must be the `ObjectContext` parameter](focus://5[27:44]) ([JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api/latest/dev/restate/sdk/ObjectContext.html)).
-
+            Handlers with the `ObjectContext` parameter can write to the K/V state store.
+            Only one handler can be active at a time, to ensure consistency.
+        - [If you want to have a handler that executes concurrently to the others and doesn't have write access to the K/V state, use the `@Shared` annotation and the `SharedObjectContext`.](focus://10,11[37:60])
+            For example, you can use these handlers to read K/V state, or interact with the blocking handler.
         </CH.Section>
     </TabItem>
 </Tabs>
@@ -215,6 +222,5 @@ Now that you have a high-level idea of what a Restate service might look like, l
 
 <details className="grey-details">
     <summary>Manual service definition without annotation processing</summary>
-
-    In case you don't want to use annotation processing, you can manually define your service by using the class `dev.restate.sdk.Service` for Java, or `dev.restate.sdk.kotlin.Service`. Check the respective JavaDocs/KTDocs for more details.
+    In case you don't want to use annotation processing, you can manually define your service by using the class `dev.restate.sdk.common.syscalls.ServiceDefinition`. Check the respective JavaDocs/KTDocs for more details.
 </details>
