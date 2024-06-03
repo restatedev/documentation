@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 2
 description: "Find out how Restate services can send requests to each other."
 ---
 
@@ -20,50 +20,75 @@ A handler can call another handler and wait for the response (request-response),
 </Tabs>
 
 ## Request-response calls
-To call **service** handlers, use the generated clients:
+
+Request-response calls are requests where the client waits for the response.
+The Java SDK generates a client for each service, which you can use to make these calls.
+
+<Admonition type="info" title={"Generating the clients"}>
+    The clients are generated when you build the project. If you don't see the generated clients, make sure you have built the project with `./gradlew build`.
+</Admonition>
+
+Use the generated client's of the SDK to do the request-response call:
+
 <Tabs groupId="sdk" queryString className={"display-none"}>
  <TabItem value="java" label="Java">
 
-```java
+```java CallService.java
 CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_request_response_service>-<end_request_response_service>
 ```
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
+```kotlin CallService.kt
 CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#<start_request_response_service>-<end_request_response_service>
 ```
 
 </TabItem>
 </Tabs>
 
-To call **Virtual Object** handlers, you need to pass the object key to the client factory method:
-
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="java" label="Java">
 
-```java
+```java CallVirtualObject.java
 CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_request_response_virtual_object>-<end_request_response_virtual_object>
 ```
 
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
 
-```kotlin
+```kotlin CallVirtualObject.kt
 CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#<start_request_response_virtual_object>-<end_request_response_virtual_object>
 ```
 
 </TabItem>
 </Tabs>
 
-<Admonition type="info">
-    The clients are generated when you build the project. If you don't see the generated clients, make sure you have built the project with `./gradlew build`.
-</Admonition>
+<Tabs groupId="sdk" queryString className={"display-none"}>
+    <TabItem value="java" label="Java">
+
+        ```java CallWorkflow.java
+        CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_request_response_workflow>-<end_request_response_workflow>
+        ```
+
+    </TabItem>
+    <TabItem value="kotlin" label="Kotlin">
+
+        ```kotlin CallWorkflow.kt
+        CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#<start_request_response_workflow>-<end_request_response_workflow>
+        ```
+
+    </TabItem>
+</Tabs>
 
 <Admonition type="tip" title="No need for manual retry logic">
     These calls are proxied by Restate, and get logged in the journal.
     In case of failures, Restate takes care of retries.
+</Admonition>
+
+<Admonition type="info" title="Workflow retention time">
+    Once the `run` handler of the workflow has finished, the other handlers can still be called up to the retention time of the workflow, by default 24 hours.
+    This can be configured via the [Admin API](/references/admin-api/#tag/service/operation/modify_service) per Workflow definition by setting `workflow_completion_retention`.
 </Admonition>
 
 <Admonition type={"caution"} title={"Deadlocks with Virtual Objects"}>

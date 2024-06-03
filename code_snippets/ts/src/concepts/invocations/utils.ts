@@ -21,3 +21,15 @@ export const greetCounterObject = restate.object({
         }
     }
 })
+
+export const myWorkflow = restate.workflow({
+    name: "greetCounterObject",
+    handlers:{
+        run: async (ctx: restate.WorkflowContext, request: { input?: string }) => {
+            let count = (await ctx.get<number>("count")) ?? 0;
+            count++;
+            ctx.set("count", count);
+            return count;
+        }
+    }
+})

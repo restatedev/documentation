@@ -7,7 +7,7 @@ import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 
-// <start_virtual_object>
+// <start_here>
 @VirtualObject
 public class MyVirtualObject {
 
@@ -27,4 +27,4 @@ public class MyVirtualObject {
             .buildAndListen();
     }
 }
-// <end_virtual_object>
+// <end_here>

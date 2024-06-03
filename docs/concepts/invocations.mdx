@@ -59,10 +59,10 @@ Invocations get a unique identifier. This identifier is used to track the progre
 
 <Tabs groupId="sdk" queryString>
     <TabItem value="ts" label="TypeScript">
-
         <CH.Spotlight className="durable-promises">
 
-            <CH.Code>
+
+            <CH.Code rows={20}>
 
                 ```typescript restate_service.ts
                 CODE_LOAD::ts/src/concepts/invocations/rpc.ts#<start_rpc_call>-<end_rpc_call>
@@ -80,7 +80,7 @@ Invocations get a unique identifier. This identifier is used to track the progre
 
             ---
 
-            <CH.Code>
+            <CH.Code rows={20}>
 
                 ```typescript restate_service.ts
                 CODE_LOAD::ts/src/concepts/invocations/one_way.ts#<start_one_way_call>-<end_one_way_call>
@@ -97,7 +97,7 @@ Invocations get a unique identifier. This identifier is used to track the progre
 
             ---
 
-            <CH.Code>
+            <CH.Code rows={20}>
 
                 ```typescript restate_service.ts
                 CODE_LOAD::ts/src/concepts/invocations/delayed.ts#<start_delayed_call>-<end_delayed_call>
@@ -117,7 +117,7 @@ Invocations get a unique identifier. This identifier is used to track the progre
 
         <CH.Spotlight className="durable-promises">
 
-            <CH.Code>
+            <CH.Code rows={20}>
 
                 ```java RestateService.java
                 CODE_LOAD::java/src/main/java/concepts/invocations/RpcCalls.java#<start_rpc>-<end_rpc>
@@ -132,11 +132,12 @@ Invocations get a unique identifier. This identifier is used to track the progre
             ---
 
 
+
             **<mark class="accent">Request-response</mark> invocations** allow you to wait on a response from the handler.
 
             ---
 
-            <CH.Code>
+            <CH.Code rows={20}>
 
                 ```java RestateService.java
                 CODE_LOAD::java/src/main/java/concepts/invocations/OneWayCalls.java#<start_one_way_call>-<end_one_way_call>
@@ -154,7 +155,7 @@ Invocations get a unique identifier. This identifier is used to track the progre
 
             ---
 
-            <CH.Code>
+            <CH.Code rows={20}>
 
                 ```java RestateService.java
                 CODE_LOAD::java/src/main/java/concepts/invocations/DelayedCalls.java#<start_delayed_call>-<end_delayed_call>
@@ -170,6 +171,7 @@ Invocations get a unique identifier. This identifier is used to track the progre
 
         </CH.Spotlight>
 
+
     </TabItem>
     <TabItem value="shell" label="Shell">
 
@@ -181,6 +183,10 @@ Invocations get a unique identifier. This identifier is used to track the progre
                 -d '"Hi"'
 
             curl localhost:8080/GreetCounter/Mary/greet \
+                -H 'content-type: application/json' \
+                -d '"Hi"'
+
+            curl localhost:8080/MyWorkflow/wf-id-1/run \
                 -H 'content-type: application/json' \
                 -d '"Hi"'
             ```
@@ -197,6 +203,10 @@ Invocations get a unique identifier. This identifier is used to track the progre
                 -d '"Hi"'
 
             curl localhost:8080/GreetCounter/Mary/greet/send \
+                -H 'content-type: application/json' \
+                -d '"Hi"'
+
+            curl localhost:8080/MyWorkflow/wf-id-1/run/send \
                 -H 'content-type: application/json' \
                 -d '"Hi"'
             ```
