@@ -2,11 +2,12 @@ package operate.invocations;
 
 import dev.restate.sdk.Context;
 import dev.restate.sdk.JsonSerdes;
-import dev.restate.sdk.client.CallRequestOptions;
 import dev.restate.sdk.client.IngressClient;
 import develop.MyWorkflowClient;
 
 import java.time.Duration;
+
+import static dev.restate.sdk.client.CallRequestOptions.DEFAULT;
 
 public class Ingress {
 
@@ -59,11 +60,8 @@ public class Ingress {
         String count = GreetCounterObjectClient
             .fromIngress("http://localhost:8080", "Mary")
             .send(Duration.ofMillis(1000))
-            .greet(
-                "Hi",
-                // withClass highlight-line
-                CallRequestOptions.DEFAULT.withIdempotency("abcde")
-            );
+            // withClass highlight-line
+            .greet( "Hi", DEFAULT.withIdempotency("abcde"));
         // <end_service_idempotent>
     }
 
@@ -72,10 +70,7 @@ public class Ingress {
         // <start_service_attach>
         String handle = GreeterServiceClient.fromIngress("http://localhost:8080")
             .send()
-            .greet(
-                    "Hi",
-                    CallRequestOptions.DEFAULT.withIdempotency("abcde")
-             );
+            .greet("Hi", DEFAULT.withIdempotency("abcde"));
 
         // ... do something else ...
 
