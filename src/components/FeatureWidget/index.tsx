@@ -9,7 +9,7 @@ type FeatureItem = {
   java: string;
   ts: string;
   kotlin: string;
-  link: string;
+  link: { icon: string; url: string};
 };
 
 
@@ -53,8 +53,8 @@ function Feature({title, iconPath, description, java, ts, link, kotlin}: Feature
               ) : null}
               {link ? (
                   <div id="overviewButtonDiv"><a className="overviewButton btn btn-primary btn-lg firstTimeButton"
-                                                 href={link} target={"_blank"} role="button">
-                      <img className="buttonIcon" src="/img/arrow-right.svg" width="24"/>
+                                                 href={link.url} target={"_blank"} role="button">
+                      <img className="buttonIcon" src={link.icon ? link.icon : "/img/arrow-right.svg"} width="24"/>
                       </a>
                   </div>
               ) : null}
