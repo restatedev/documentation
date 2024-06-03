@@ -5,7 +5,7 @@ import dev.restate.sdk.annotation.Service
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
 import dev.restate.sdk.kotlin.Context
 
-// <start_service>
+// <start_here>
 @Service
 class MyService {
 
@@ -21,4 +21,4 @@ fun main() {
         .bind(MyService())
         .buildAndListen()
 }
-// <end_service>
+// <end_here>

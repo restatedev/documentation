@@ -7,7 +7,9 @@ plugins {
 
 repositories {
   mavenCentral()
-  mavenLocal()
+  maven {
+    url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+  }
 }
 
 val restateVersion = "0.10.0-SNAPSHOT"
@@ -16,6 +18,7 @@ dependencies {
   // Restate SDK
   annotationProcessor("dev.restate:sdk-api-gen:$restateVersion")
   implementation("dev.restate:sdk-api:$restateVersion")
+  implementation("dev.restate:sdk-common:$restateVersion")
   implementation("dev.restate:sdk-http-vertx:$restateVersion")
   implementation("dev.restate:sdk-lambda:$restateVersion")
   implementation("dev.restate:sdk-serde-jackson:$restateVersion")

@@ -7,8 +7,7 @@ const myPlainTSFunction = async () => {
     // From any TS code:
     const ingress = restate.connect({ url: "http://localhost:8080" })
 
-    const { invocationId } = await ingress
-        .serviceSendClient(greeterService)
+    const { invocationId } = await ingress.serviceSendClient(greeterService)
         .greet({greeting: "Hi"});
 
     await ingress.objectSendClient(greetCounterObject, "Mary")

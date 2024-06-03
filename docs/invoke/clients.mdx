@@ -9,29 +9,20 @@ import Admonition from '@theme/Admonition';
 
 # Clients
 
-You can use the clients in the Restate SDK to invoke handlers programmatically.
+In plain TypeScript/Java/Kotlin code, where you do not have access to the Restate Context, you can invoke handlers programmatically using the Restate SDK client library.
 
-<Admonition type="info">
-Make sure to first [register the handler](/operate/registration) you want to invoke.
-</Admonition>
-
-## Invoking handlers with the Restate Context
-
-When you implement a Restate handler, you have access to the Restate `Context` or `ObjectContext` object.
+<Admonition type="note" title={"In Restate handlers, invoke via the Restate Context"}>
+When you implement a Restate handler, you have access to a Restate `Context`.
 You can use this context to invoke other handlers.
-
 Have a look at the Development docs ([TS](/develop/ts/service-communication)/[Java](/develop/java/service-communication)/[Kotlin](/develop/java/service-communication?sdk=kotlin)).
 
-<Admonition type="info">
-    Always use this way of invoking handlers when you have access to the context.
-    This way, Restate attaches information about the invocation to the parent invocation.
+Always use this way of invoking handlers when you have access to the context.
+This way, Restate attaches information about the invocation to the parent invocation.
 </Admonition>
 
-## Invoking handlers from the client library
+## Invoking handlers with the SDK clients
 
-If you do not have access to the context, you can use the client library to invoke handlers programmatically.
-
-To invoke a Restate handler programmatically from _plain TypeScript/Java/Kotlin code_, do:
+Then, invoke the Restate handler programmatically from plain TypeScript/Java/Kotlin code, via:
 
 <Tabs groupId="sdk" queryString>
     <TabItem value="ts" label="TypeScript">
@@ -42,13 +33,17 @@ To invoke a Restate handler programmatically from _plain TypeScript/Java/Kotlin 
         npm install @restatedev/restate-sdk-clients
         ```
 
-        2. In your code, connect to Restate:
+        2. Make sure to first [register the handler](/operate/registration) you want to invoke.
+
+        3. In your code, connect to Restate:
 
         ```typescript
         CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_connect>-<end_connect>
         ```
 
-        3. Invoke the handler with your preferred semantics:
+
+
+        4. Invoke the handler with your preferred semantics:
 
         <CH.Spotlight className="durable-promises">
 
@@ -87,7 +82,9 @@ To invoke a Restate handler programmatically from _plain TypeScript/Java/Kotlin 
         implementation("dev.restate:sdk-common:VAR::TYPESCRIPT_SDK_VERSION")
         ```
 
-        2. From your code, connect to Restate and invoke the handler with the generated clients and your preferred semantics:
+        2. Make sure to first [register the handler](/operate/registration) you want to invoke.
+
+        3. From your code, connect to Restate and invoke the handler with the generated clients and your preferred semantics:
 
         <CH.Spotlight className="durable-promises">
 
@@ -106,6 +103,8 @@ To invoke a Restate handler programmatically from _plain TypeScript/Java/Kotlin 
             ```
 
             **<mark class="accent">One-way</mark> invocations** allow you to send a message without waiting for a response.
+            You can schedule an invocation as a one-way invocation and later on latch onto it to retrieve the response.
+            Have a look below.
 
             ---
 
@@ -119,3 +118,130 @@ To invoke a Restate handler programmatically from _plain TypeScript/Java/Kotlin 
 
     </TabItem>
 </Tabs>
+
+
+<Admonition type={"tip"} title={"Latch onto running invocations with idempotency key and workflows"}>
+    You can latch onto running invocations with an idempotency key and workflows. This lets you retrieve their result if they finished, or attach to them if they are still ongoing.
+    Check [the documentation below for more information](#latching-onto-running-invocations-and-workflows) below.
+</Admonition>
+
+## Invoke a handler idempotently
+
+You can send requests to Restate providing an idempotency key, through the [`Idempotency-Key` header](https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/).
+You can add the idempotency key to the header via:
+
+<Tabs groupId="sdk" queryString>
+    <TabItem value="ts" label="TypeScript">
+
+        ```typescript
+        CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_service_idempotent>-<end_service_idempotent>
+        ```
+
+    </TabItem>
+    <TabItem value="java" label="Java">
+
+        ```java
+        CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_service_idempotent>-<end_service_idempotent>
+        ```
+
+    </TabItem>
+</Tabs>
+
+
+
+After the invocation completes, Restate persists the response for a retention period of one day (24 hours).
+If you re-invoke the service with the same idempotency key within 24 hours, Restate sends back the same response and doesn't re-execute the request to the service.
+
+<Admonition type="tip" title={"Make any service call idempotent by using Restate"}>
+    By using Restate and an idempotency key, you can make any service call idempotent, without any extra code or setup.
+    This is a very powerful feature to ensure that your system stays consistent and doesn't perform the same operation multiple times.
+</Admonition>
+
+<Admonition type="note" title={"Adding headers to the request"}>
+    You can use these call options to set headers on the request.
+</Admonition>
+
+<details className={"grey-details"}>
+    <summary> Tuning retention time</summary>
+
+    <CH.Section>
+        You can tune the [retention time](focus://3) on a service-level by using the [Admin API](focus://1[15:28]) ([docs](/references/admin-api#tag/service/operation/modify_service)):
+        ```shell
+        curl -X PATCH localhost:9070/services/MyService \
+            -H 'content-type: application/json' \
+            -d '{"idempotency_retention": "2days"}'
+        ```
+        The [retention time](focus://3) is in [humantime format](https://docs.rs/humantime/latest/humantime/).
+    </CH.Section>
+
+</details>
+
+## Latching onto running invocations and workflows
+
+You can also use the client library to attach to running invocations with an idempotency key or workflows.
+This lets you retrieve their results or wait for them to finish.
+
+**For services or objects**, you can attach to an ongoing invocation **only if it used an idempotency key**, via:
+
+<Tabs groupId="sdk" queryString>
+    <TabItem value="ts" label="TypeScript">
+
+        ```typescript
+        CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_service_attach>-<end_service_attach>
+        ```
+
+    </TabItem>
+    <TabItem value="java" label="Java">
+
+        ```java
+        CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_service_attach>-<end_service_attach>
+        ```
+
+    </TabItem>
+</Tabs>
+
+
+**For workflows**, you can attach to an ongoing invocation via:
+
+<Tabs groupId="sdk" queryString>
+    <TabItem value="ts" label="TypeScript">
+
+        ```typescript
+        CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_workflow_attach>-<end_workflow_attach>
+        ```
+
+    </TabItem>
+    <TabItem value="java" label="Java">
+
+        ```java
+        CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_workflow_attach>-<end_workflow_attach>
+        ```
+
+    </TabItem>
+</Tabs>
+
+**For workflows**, you can also **peek at the output** of a running invocation or workflow via:
+
+<Tabs groupId="sdk" queryString>
+    <TabItem value="ts" label="TypeScript">
+
+        ```typescript
+        CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_workflow_peek>-<end_workflow_peek>
+        ```
+
+    </TabItem>
+    <TabItem value="java" label="Java">
+
+        ```java
+        CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_workflow_peek>-<end_workflow_peek>
+        ```
+
+    </TabItem>
+</Tabs>
+
+The output contains a `ready` flag that indicates whether the invocation has finished.
+And if it has, the `result` contains the output of the invocation.
+
+
+
+

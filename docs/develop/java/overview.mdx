@@ -16,10 +16,10 @@ Have a look at the quickstart for [Java](/get_started/quickstart?sdk=java) or [K
 </Admonition>
 
 The Restate SDK lets you implement handlers.
-Handlers can either be part of a [Service](/concepts/services#services-1) or of a [Virtual Object](/concepts/services#virtual-objects). Let's have a look at how to define them.
+Handlers can either be part of a [Service](/concepts/services#services-1), a [Virtual Object](/concepts/services#virtual-objects), or a [Workflow](/develop/java/overview#workflows). Let's have a look at how to define them.
 
 ## Services
-Services and their handlers are defined as follows:
+[Services](/concepts/services#services-1) and their handlers are defined as follows:
 
 <Tabs groupId="sdk" queryString>
     <TabItem value="java" label="Java">
@@ -28,7 +28,7 @@ Services and their handlers are defined as follows:
 
             <CH.Code lineNumbers={"true"}>
             ```java MyService.java
-            CODE_LOAD::java/src/main/java/develop/MyService.java#<start_service>-<end_service>
+            CODE_LOAD::java/src/main/java/develop/MyService.java
             ```
 
 [//]: # (This code snippet is also used in the communication page, to show how to export the definition)
@@ -49,7 +49,7 @@ Services and their handlers are defined as follows:
         <CH.Section>
         <CH.Code lineNumbers={"true"}>
             ```kotlin MyService.kt
-            CODE_LOAD::kotlin/src/main/kotlin/develop/MyService.kt#<start_service>-<end_service>
+            CODE_LOAD::kotlin/src/main/kotlin/develop/MyService.kt
             ```
         </CH.Code>
 
@@ -67,19 +67,23 @@ Services and their handlers are defined as follows:
 
 
 ## Virtual Objects
-Virtual objects and their handlers are defined similarly to services, with the following differences:
+[Virtual Objects](/concepts/services#virtual-objects) and their handlers are defined similarly to services, with the following differences:
 
 <Tabs groupId="sdk" queryString>
     <TabItem value="java" label="Java">
         <CH.Section>
             <CH.Code>
                 ```java
-                CODE_LOAD::java/src/main/java/develop/MyVirtualObject.java#<start_virtual_object>-<end_virtual_object>
+                CODE_LOAD::java/src/main/java/develop/MyVirtualObject.java
                 ```
             </CH.Code>
 
         - [Use the `@VirtualObject` annotation.](focus://1)
-        - [The first argument of the handler must be the `ObjectContext` parameter](focus://5[22:38]) ([JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api/latest/dev/restate/sdk/ObjectContext.html)).
+        - [The first argument of the handler must be the `ObjectContext` parameter](focus://5[29:45]) ([JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api/latest/dev/restate/sdk/ObjectContext.html)).
+        Handlers with the `ObjectContext` parameter can write to the K/V state store.
+        Only one handler can be active at a time, to ensure consistency.
+        - [If you want to have a handler that executes concurrently to the others and doesn't have write access to the K/V state, use the `@Shared` annotation and the `SharedObjectContext`.](focus://9,10[39:61])
+        For example, you can use these handlers to read K/V state, or interact with the blocking handler.
 
         </CH.Section>
     </TabItem>
@@ -87,15 +91,55 @@ Virtual objects and their handlers are defined similarly to services, with the f
         <CH.Section>
             <CH.Code>
                 ```kotlin
-                CODE_LOAD::kotlin/src/main/kotlin/develop/MyVirtualObject.kt#<start_virtual_object>-<end_virtual_object>
+                CODE_LOAD::kotlin/src/main/kotlin/develop/MyVirtualObject.kt
                 ```
             </CH.Code>
 
         - [Use the `@VirtualObject` annotation.](focus://1)
         - [The first argument of the handler must be the `ObjectContext` parameter](focus://5[27:44]) ([JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api/latest/dev/restate/sdk/ObjectContext.html)).
-
+            Handlers with the `ObjectContext` parameter can write to the K/V state store.
+            Only one handler can be active at a time, to ensure consistency.
+        - [If you want to have a handler that executes concurrently to the others and doesn't have write access to the K/V state, use the `@Shared` annotation and the `SharedObjectContext`.](focus://10,11[37:60])
+            For example, you can use these handlers to read K/V state, or interact with the blocking handler.
         </CH.Section>
     </TabItem>
+</Tabs>
+
+## Workflows
+
+[Workflows](/concepts/services#workflows) are a special type of Virtual Objects, their definition is similar but with the following differences:
+
+<Tabs>
+<TabItem value="java" label="Java">
+    <CH.Section>
+        <CH.Code>
+            ```java
+            CODE_LOAD::java/src/main/java/develop/MyWorkflow.java
+            ```
+        </CH.Code>
+
+        - [Create the workflow](focus://1,2)
+        - [Every workflow implementation needs to have a handler called `run` that implements the workflow logic. This handler uses the `WorkflowContext` to interact with the SDK. The `run` handler executes exactly one time per workflow execution/object.](focus://4:10)
+        - [The other handlers of the workflow are used to interact with the workflow: either query it, or signal it. They use the `SharedWorkflowContext` to interact with the SDK. These handlers can run concurrently with the `run` handler and can still be called after the `run` handler has finished.](focus://12:15)
+        - Have a look at the workflow docs to learn more.
+
+    </CH.Section>
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+    <CH.Section>
+        <CH.Code>
+            ```kotlin
+            CODE_LOAD::kotlin/src/main/kotlin/develop/MyWorkflow.kt
+            ```
+        </CH.Code>
+
+        - [Create the workflow](focus://1,2)
+        - [Every workflow implementation needs to have a handler called `run` that implements the workflow logic. This handler uses the `WorkflowContext` to interact with the SDK. The `run` handler executes exactly one time per workflow execution/object.](focus://4:10)
+        - [The other handlers of the workflow are used to interact with the workflow: either query it, or signal it. They use the `SharedWorkflowContext` to interact with the SDK. These handlers can run concurrently with the `run` handler and can still be called after the `run` handler has finished.](focus://12:15)
+        - [Have a look at the workflow docs to learn more.](/develop/java/workflows)
+
+    </CH.Section>
+</TabItem>
 </Tabs>
 
 Now that you have a high-level idea of what a Restate service might look like, let's have a look at what the Restate Context allows you to do.
@@ -107,8 +151,7 @@ Now that you have a high-level idea of what a Restate service might look like, l
 </Admonition>
 
 
-<details>
-<summary>Advanced / further details</summary>
+
 
 <details className="grey-details">
     <summary>Annotating interfaces</summary>
@@ -156,9 +199,9 @@ Now that you have a high-level idea of what a Restate service might look like, l
 
             ```kotlin
             plugins {
-            kotlin("plugin.serialization") version "1.9.22"
-            id("com.google.devtools.ksp") version "1.9.22-1.0.18"
-        }
+                kotlin("plugin.serialization") version "1.9.22"
+                id("com.google.devtools.ksp") version "1.9.22-1.0.18"
+            }
             ```
 
             Add the runtime dependency `sdk-api-kotlin` and the `ksp` dependency `sdk-api-kotlin-gen`:
@@ -179,8 +222,5 @@ Now that you have a high-level idea of what a Restate service might look like, l
 
 <details className="grey-details">
     <summary>Manual service definition without annotation processing</summary>
-
-    In case you don't want to use annotation processing, you can manually define your service by using the class `dev.restate.sdk.Service` for Java, or `dev.restate.sdk.kotlin.Service`. Check the respective JavaDocs/KTDocs for more details.
-</details>
-
+    In case you don't want to use annotation processing, you can manually define your service by using the class `dev.restate.sdk.common.syscalls.ServiceDefinition`. Check the respective JavaDocs/KTDocs for more details.
 </details>
