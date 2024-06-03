@@ -6,6 +6,9 @@ const myVirtualObject = restate.object({
         myHandler: async (ctx: restate.ObjectContext, greeting: string) => {
             return `${greeting} ${ctx.key}!`;
         },
+        myConcurrentHandler: async (ctx: restate.ObjectSharedContext, greeting: string) => {
+            return `${greeting} ${ctx.key}!`;
+        },
     }
 })
 
