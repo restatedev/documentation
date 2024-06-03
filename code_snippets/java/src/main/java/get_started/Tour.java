@@ -1,9 +1,9 @@
 package get_started;
 
 import dev.restate.sdk.Context;
+import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.common.CoreSerdes;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 
 import java.time.Duration;
@@ -52,7 +52,7 @@ class CheckoutService {
         String idempotencyKey = ctx.random().nextUUID().toString();
 
         // withClass highlight-line
-        boolean success = ctx.run(CoreSerdes.JSON_BOOLEAN, () ->
+        boolean success = ctx.run(JsonSerdes.BOOLEAN, () ->
                 PaymentClient.get().call(idempotencyKey, totalPrice));
 
         return success;
