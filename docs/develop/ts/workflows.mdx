@@ -83,8 +83,8 @@ Do the following:
 2. Resolve or reject the promise in any other handler in the workflow. This can be done at most one time.
 
 <Admonition type={"note"} title={"Lifecycle of Restate's Durable Promises"}>
-    A Durable Promise can only be resolved or rejected while the workflow's `run` handler is running.
-    The lifetime of the Promise is tied to the execution time of the `run` handler.
+    The lifetime of the Promise is tied to the workflow execution/object and gets discarded when the retention time has passed.
+    The retention time can be configured via the [Admin API](/references/admin-api/#tag/service/operation/modify_service) per workflow definition by setting `workflow_completion_retention`.
 </Admonition>
 
 <CH.Code lineNumbers={"true"}>
