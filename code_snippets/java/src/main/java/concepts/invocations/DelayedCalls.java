@@ -3,6 +3,8 @@ package concepts.invocations;
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
+import dev.restate.sdk.client.Client;
+import dev.restate.sdk.client.SendResponse;
 import develop.MyWorkflowClient;
 
 import java.time.Duration;
@@ -30,14 +32,15 @@ public class DelayedCalls {
 
     // <start_delayed_call_java>
     public void myJavaHandler(Context ctx){
-        // focus(1:15)
-        String invocationId = GreeterServiceClient
-                .fromIngress("http://localhost:8080")
+        // focus(1:10)
+        Client restate = Client.connect("http://localhost:8080");
+        SendResponse handle = GreeterServiceClient
+                .fromClient(restate)
                 .send(Duration.ofMillis(1000))
                 .greet("Hi");
 
-        String invocationIdCount = GreetCounterObjectClient
-                .fromIngress("http://localhost:8080", "Mary")
+        SendResponse handle2 = GreetCounterObjectClient
+                .fromClient(restate, "Mary")
                 .send(Duration.ofMillis(1000))
                 .greet("Hi");
     }

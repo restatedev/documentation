@@ -3,6 +3,7 @@ package concepts.invocations;
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
+import dev.restate.sdk.client.Client;
 import develop.MyWorkflowClient;
 
 @Service
@@ -29,12 +30,13 @@ public class RpcCalls {
     // <start_rpc_java>
     public void myJavaHandler(Context ctx){
         // focus(1:12)
+        Client restate = Client.connect("http://localhost:8080");
         String greet = GreeterServiceClient
-                .fromIngress("http://localhost:8080")
+                .fromClient(restate)
                 .greet("Hi");
 
         int count = GreetCounterObjectClient
-                .fromIngress("http://localhost:8080", "Mary")
+                .fromClient(restate, "Mary")
                 .greet("Hi");
     }
     // <end_rpc_java>

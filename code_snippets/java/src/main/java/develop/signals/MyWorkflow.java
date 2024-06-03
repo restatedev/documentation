@@ -24,7 +24,7 @@ public class MyWorkflow {
         // withClass highlight-line
         // Creation of the Durable Promise
         // withClass highlight-line
-        boolean signal = ctx.durablePromise(MY_BOOLEAN_SIGNAL).awaitable().await();
+        boolean signal = ctx.promise(MY_BOOLEAN_SIGNAL).awaitable().await();
 
         // do some steps...
 
@@ -36,7 +36,7 @@ public class MyWorkflow {
         // withClass highlight-line
         // Resolution of the Durable Promise
         // withClass highlight-line
-        ctx.durablePromiseHandle(MY_BOOLEAN_SIGNAL).resolve(signal);
+        ctx.promiseHandle(MY_BOOLEAN_SIGNAL).resolve(signal);
     }
 }
 // <end_here>

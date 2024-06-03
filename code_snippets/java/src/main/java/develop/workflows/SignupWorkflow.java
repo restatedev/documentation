@@ -28,7 +28,7 @@ public class SignupWorkflow {
                 () -> sendEmailWithLink(email, secret));
         ctx.set(STATUS, "Sent email");
 
-        String clickSecret = ctx.durablePromise(EMAIL_CLICKED)
+        String clickSecret = ctx.promise(EMAIL_CLICKED)
                 .awaitable()
                 .await();
         ctx.set(STATUS, "Clicked email");
@@ -38,7 +38,7 @@ public class SignupWorkflow {
 
     @Shared
     public void click(SharedWorkflowContext ctx, String secret) {
-        ctx.durablePromiseHandle(EMAIL_CLICKED).resolve(secret);
+        ctx.promiseHandle(EMAIL_CLICKED).resolve(secret);
     }
 
     @Shared

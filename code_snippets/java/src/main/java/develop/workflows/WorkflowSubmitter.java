@@ -1,13 +1,14 @@
 package develop.workflows;
 
-import develop.workflow.SignupWorkflowClient;
+import dev.restate.sdk.client.Client;
 
 public class WorkflowSubmitter {
 
     public void submitWorkflow(Email email) {
         // <start_submit>
+        Client restate = Client.connect("http://localhost:8080");
         SignupWorkflowClient
-                .fromIngress("http://localhost:8080", "someone")
+                .fromClient(restate, "someone")
                 .submit(email);
         // <end_submit>
     }
@@ -15,8 +16,9 @@ public class WorkflowSubmitter {
 
     public void interactWithWorkflow() {
         // <start_interact>
+        Client restate = Client.connect("http://localhost:8080");
         boolean success = SignupWorkflowClient
-                .fromIngress("http://localhost:8080", "someone")
+                .fromClient(restate, "someone")
                 .workflowHandle()
                 .attach();
         // <end_interact>

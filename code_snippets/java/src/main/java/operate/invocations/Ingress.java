@@ -2,7 +2,8 @@ package operate.invocations;
 
 import dev.restate.sdk.Context;
 import dev.restate.sdk.JsonSerdes;
-import dev.restate.sdk.client.IngressClient;
+import dev.restate.sdk.client.Client;
+import dev.restate.sdk.client.SendResponse;
 import develop.MyWorkflowClient;
 
 import java.time.Duration;
@@ -13,12 +14,13 @@ public class Ingress {
 
     public void myJavaHandler(Context ctx) {
         // <start_rpc_java>
+        Client restate = Client.connect("http://localhost:8080");
         String greet = GreeterServiceClient
-            .fromIngress("http://localhost:8080")
+            .fromClient(restate)
             .greet("Hi");
 
         int count = GreetCounterObjectClient
-            .fromIngress("http://localhost:8080", "Mary")
+            .fromClient(restate, "Mary")
             .greet("Hi");
         // <end_rpc_java>
     }
@@ -26,29 +28,33 @@ public class Ingress {
     public void myOneWayCallHandler(Context ctx) {
 
         // <start_one_way_call_java>
+        Client restate = Client.connect("http://localhost:8080");
         GreeterServiceClient
-            .fromIngress("http://localhost:8080")
-            .send()
-            .greet("Hi");
+                .fromClient(restate)
+                .send()
+                .greet("Hi");
 
         GreetCounterObjectClient
-            .fromIngress("http://localhost:8080", "Mary")
-            .send()
-            .greet("Hi");
+                .fromClient(restate, "Mary")
+                .send()
+                .greet("Hi");
 
         MyWorkflowClient
-            .fromIngress("http://localhost:8080", "wf-id-1")
-            .submit("input");
+                .fromClient(restate, "wf-id-1")
+                .submit("input");
         // <end_one_way_call_java>
+    }
 
+    public void myDelayedOneWayCallHandler(Context ctx) {
         // <start_delayed_call_java>
+        Client restate = Client.connect("http://localhost:8080");
         GreeterServiceClient
-            .fromIngress("http://localhost:8080")
+            .fromClient(restate)
             .send(Duration.ofMillis(1000))
             .greet("Hi");
 
         GreetCounterObjectClient
-            .fromIngress("http://localhost:8080", "Mary")
+            .fromClient(restate, "Mary")
             .send(Duration.ofMillis(1000))
             .greet("Hi");
         // <end_delayed_call_java>
@@ -57,8 +63,9 @@ public class Ingress {
 
     public void idempotentInvoke(){
         // <start_service_idempotent>
-        String count = GreetCounterObjectClient
-            .fromIngress("http://localhost:8080", "Mary")
+        Client restate = Client.connect("http://localhost:8080");
+        GreetCounterObjectClient
+            .fromClient(restate, "Mary")
             .send(Duration.ofMillis(1000))
             // withClass highlight-line
             .greet( "Hi", DEFAULT.withIdempotency("abcde"));
@@ -68,7 +75,8 @@ public class Ingress {
     public void latchOntoService(){
 
         // <start_service_attach>
-        String handle = GreeterServiceClient.fromIngress("http://localhost:8080")
+        Client restate = Client.connect("http://localhost:8080");
+        SendResponse handle = GreeterServiceClient.fromClient(restate)
             .send()
             .greet("Hi", DEFAULT.withIdempotency("abcde"));
 
@@ -76,8 +84,8 @@ public class Ingress {
 
         // Attach later to retrieve the result
         // withClass(1:3) highlight-line
-        String greeting = IngressClient.defaultClient("http://localhost:8080")
-            .invocationHandle(handle, JsonSerdes.STRING)
+        String greeting = restate
+            .invocationHandle(handle.getInvocationId(), JsonSerdes.STRING)
             .attach();
         // <end_service_attach>
 
@@ -86,17 +94,20 @@ public class Ingress {
     public void latchOntoWorkflow(){
 
         // <start_workflow_attach>
-        IngressClient.WorkflowHandle<String> handle = MyWorkflowClient
-                .fromIngress("http://localhost:8080", "wf-id-1")
+        Client restate = Client.connect("http://localhost:8080");
+        SendResponse handle = MyWorkflowClient
+                .fromClient(restate, "wf-id-1")
                 .submit("input");
 
         // If you have access to the workflow handle:
-        // withClass highlight-line
-        String response = handle.attach();
+        // withClass(1:3) highlight-line
+        String response = restate
+                .invocationHandle(handle.getInvocationId(), JsonSerdes.STRING)
+                .attach();
 
         // If you do not have access to the workflow handle, use the workflow ID:
         String response2 = MyWorkflowClient
-                .fromIngress("http://localhost:8080", "wf-id-1")
+                .fromClient(restate, "wf-id-1")
                 // withClass(1:2) highlight-line
                 .workflowHandle()
                 .attach();
@@ -104,12 +115,14 @@ public class Ingress {
 
         // <start_workflow_peek>
         // If you have access to the workflow handle:
-        // withClass highlight-line
-        String peekResponse = handle.getOutput();
+        // withClass(1:3) highlight-line
+        String peekResponse = restate
+                .invocationHandle(handle.getInvocationId(), JsonSerdes.STRING)
+                .getOutput();
 
         // If you do not have access to the workflow handle, use the workflow ID:
         String peekResponse2 = MyWorkflowClient
-                .fromIngress("http://localhost:8080", "wf-id-1")
+                .fromClient(restate, "wf-id-1")
                 // withClass(1:2) highlight-line
                 .workflowHandle()
                 .getOutput();

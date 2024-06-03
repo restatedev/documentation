@@ -33,7 +33,7 @@ public class Payment {
         ctx.run("make a payment", JsonSerdes.BOOLEAN, () ->
             PaymentClient.charge(ctx.key(), payment.getAccount(), payment.getAmount()));
 
-        ctx.durablePromise(PAYMENT_SUCCESS).awaitable().await();
+        ctx.promise(PAYMENT_SUCCESS).awaitable().await();
 
         ctx.set(STATUS, "Payment succeeded");
 
@@ -47,7 +47,7 @@ public class Payment {
 
     @Shared
     public void paymentWebhook(SharedWorkflowContext ctx, PaymentSuccess msg) {
-        ctx.durablePromiseHandle(PAYMENT_SUCCESS).resolve(msg);
+        ctx.promiseHandle(PAYMENT_SUCCESS).resolve(msg);
     }
 
     @Shared

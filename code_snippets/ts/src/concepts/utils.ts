@@ -31,7 +31,7 @@ export const deliveryManager = restate.object({
 
 
 export class RestaurantClientImpl {
-    async prepare(id: string, order: Order) {
+    async prepare(id: string, cb: string) {
     }
 }
 

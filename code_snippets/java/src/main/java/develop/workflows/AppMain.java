@@ -8,7 +8,7 @@ public class AppMain {
         RestateHttpEndpointBuilder.builder()
                 .bind(new SignupWorkflow())
                 .bind(new UserManagementService())
-                .buildAndListen();
+                .buildAndListen(9086);
 
     }
 }

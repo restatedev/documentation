@@ -1,5 +1,6 @@
 // <start_here>
 import * as restate from "@restatedev/restate-sdk";
+import userManagement from "./service";
 
 const signUpWorkflow = restate.workflow({
     name: "signup",
@@ -31,3 +32,9 @@ export type SignUpWorkflow = typeof signUpWorkflow;
 function sendEmailWithLink(param: { email: string, secret: string}){
     console.log(`Sending email to ${param.email} with secret ${param.secret}`);
 }
+
+restate
+    .endpoint()
+    .bind(userManagement)
+    .bind(signUpWorkflow)
+    .listen(9088);
