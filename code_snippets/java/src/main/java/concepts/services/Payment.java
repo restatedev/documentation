@@ -7,6 +7,7 @@ import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.SharedWorkflowContext;
 import dev.restate.sdk.WorkflowContext;
 import dev.restate.sdk.annotation.Handler;
+import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.Workflow;
 import dev.restate.sdk.common.DurablePromiseKey;
 import dev.restate.sdk.common.StateKey;
@@ -44,12 +45,12 @@ public class Payment {
         return "success";
     }
 
-    @Handler
+    @Shared
     public void paymentWebhook(SharedWorkflowContext ctx, PaymentSuccess msg){
         ctx.durablePromiseHandle(PAYMENT_SUCCESS).resolve(msg);
     }
 
-    @Handler
+    @Shared
     public String getStatus (SharedWorkflowContext ctx){
         return ctx.get(STATUS).orElse("unknown");
     }

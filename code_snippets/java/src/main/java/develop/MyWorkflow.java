@@ -3,6 +3,7 @@ package develop;
 import dev.restate.sdk.SharedWorkflowContext;
 import dev.restate.sdk.WorkflowContext;
 import dev.restate.sdk.annotation.Handler;
+import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.Workflow;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 
@@ -20,7 +21,7 @@ public class MyWorkflow {
         return "success";
     }
 
-    @Handler
+    @Shared
     public void interactWithWorkflow(SharedWorkflowContext ctx, String input) {
         // implement interaction logic here
     }
