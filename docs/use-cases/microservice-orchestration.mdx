@@ -1,8 +1,162 @@
 ---
+title: "Microservice Orchestration"
 sidebar_position: 2
-description: "Specification of the API to administer services."
+description: "Write resilient microservices with Restate"
 hide_table_of_contents: true
+hide_title: true
 ---
 
+import FeatureHorizontalSpotlight from "../../src/components/FeatureHorizontalSpotlight";
+import FeatureWidget from "../../src/components/FeatureWidget"
+import FeatureSpotlight from "../../src/components/FeatureSpotlight"
 
-# Microservice Orchestration
+<h1 className={"padding-top--lg text--center"}>Microservice Orchestration</h1>
+<h1 className={"use-case-subtitle text--center"}>The simplest way to build resilient applications.</h1>
+<p className={"use-case-description padding-bottom--lg text--center"}>Regular functions and services, but now resilient, consistent, and scalable.<br/>
+    Restate serves as the resilience and durability layer for distributed apps.</p>
+
+
+<FeatureWidget className={"padding-bottom--lg"} features={[
+    {
+        title: 'Durable Execution',
+        iconPath: '/img/code-icon.svg',
+        description: "Restate ensures code runs to the end, even in the presence of failures. Failures are retried, with recovery of the progress that had been made.",
+    },
+    {
+        title: 'Persistent K/V state',
+        iconPath: '/img/use_cases/data.svg',
+        description: "Persistent state directly in your objects with a simple concurrency model. State is always consistent with execution progress.",
+    },
+    {
+        title: 'Reliable RPC',
+        iconPath: '/img/use_cases/call.svg',
+        description: "Restate makes communication resilient: request-response calls, async messages, webhooks, and delayed calls. User can latch onto in-flight idempotent requests.",
+    },
+]}/>
+
+<p className={"padding-bottom--lg"}></p>
+
+## Microservice Orchestration with Restate
+
+Turn functions into durable functions with the Restate SDK.
+
+<CH.Scrollycoding className="workflows-scroller">
+
+    ### Distributed, durable building blocks
+    Work with objects, functions, and promises as if failures don’t happen.
+    Restate makes them distributed and durable out-of-the-box.
+
+
+    ```ts user_sign_up_flow.ts
+    CODE_LOAD::ts/src/use_cases/event_processing.ts
+    ```
+
+    ---
+
+    ### Scalability and concurrency
+
+    Restate sequences requests per key, if desired. Scale out without fearing issues such as race conditions, multiple writers to state, etc.
+
+    ```ts user_sign_up_flow.ts
+    CODE_LOAD::ts/src/use_cases/event_processing.ts
+    ```
+
+    ---
+
+    ### Idempotency for free
+
+    Add an idempotency token to your request and let Restate take care of deduplication for you.
+    Duplicate requests latch on to the previous one and see the same response.
+
+    ```ts user_sign_up_flow.ts
+    CODE_LOAD::ts/src/use_cases/event_processing.ts
+    ```
+
+    ---
+
+    ### Persist progress
+
+    Store results of interaction with external systems or non-deterministic actions.
+    On retries, the previous result is returned.
+
+    ```ts user_sign_up_flow.ts
+    CODE_LOAD::ts/src/use_cases/event_processing.ts
+    ```
+
+    ---
+
+    ### Sagas and rollbacks
+
+    Implement compensation logic with Restate’s durable building blocks and Restate takes care of running it till completion.
+
+    ```ts user_sign_up_flow.ts
+    CODE_LOAD::ts/src/use_cases/event_processing.ts
+    ```
+
+</CH.Scrollycoding>
+
+
+<FeatureHorizontalSpotlight
+    title={"Detailed Observability"}
+    description={<p>Understand what is happening in your distributed applications, by using built-in tracing, the CLI, and the SQL engine.<br/>
+    Restate tracks communication and execution, giving it a unique position for observability.</p>}
+    imgPath={"/img/use_cases/tracing.svg"}
+/>
+
+
+<FeatureSpotlight
+    title={"Regular functions and services, in your existing infra"}
+    description={<p>On FaaS, K8s, servers, containers. On-prem or in the cloud.<br/>
+        Restate meets you where you are.</p>}
+    imgPath={"/img/use_cases/event_processing.svg"}
+/>
+
+## What you can build with Microservice Orchestration and Restate
+
+<FeatureWidget features={[
+    {
+        title: 'Idempotent payments',
+        description: "Add an idempotency key to the header to avoid processing payments twice when the external request is retried.",
+    },
+    {
+        title: 'Keeping systems in sync',
+        description: "Send request to DB, then to another DB, then send an email, then publish an event.",
+    },
+    {
+        title: 'Human-in-the-loop workflows',
+        description: "Call another service and wait for the response, then wait either for  a human interaction or for a timeout, then schedule a delayed action, etc.",
+    },
+    {
+        title: 'Tracking delivery status',
+        description: "Track the progress of a shipment or an order by storing the current status and location in state. Update it via Kafka events and expose it over RPC to external clients.",
+    },
+    {
+        title: 'Wondering about a specific use case?',
+        description: "Let’s brainstorm together on Discord",
+        link: {url: "https://discord.gg/skW3AZ6uGd", icon: "/img/discord-icon.svg"}
+    },
+]}>
+</FeatureWidget>
+
+## Developer Resources
+
+<FeatureWidget features={[
+    {
+        title: 'Blog post',
+        description: <i>Event-driven apps where event-driven is an implementation detail.</i>,
+        link: {url: "https://restate.dev/blog/restate--kafka-event-driven-apps-where-event-driven-is-an-implementation-detail/"}
+    },
+    {
+        title: 'Docs',
+        description: (
+            "Read the docs to learn more."
+        ),
+        ts: "/invoke/kafka?sdk=ts",
+        java: "/invoke/kafka?sdk=java"
+    },
+    {
+        title: 'Need help?',
+        description: "Join the Restate Discord channel",
+        link: {url: "https://discord.gg/skW3AZ6uGd", icon: "/img/discord-icon.svg"}
+    }
+]}/>
