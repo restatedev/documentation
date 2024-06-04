@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import styles from './styles.module.css';
 
 type FeatureItem = {
+  itemsPerRow: number
   title: string;
   iconPath: string;
   description: JSX.Element;
@@ -13,9 +14,13 @@ type FeatureItem = {
 };
 
 
-function Feature({title, iconPath, description, java, ts, link, kotlin}: FeatureItem) {
+function Feature({itemsPerRow, title, iconPath, description, java, ts, link, kotlin}: FeatureItem) {
+  const colWidth = (itemsPerRow) ? Math.floor(12/itemsPerRow) : 4;
+
+  console.log(itemsPerRow);
+  console.log(colWidth);
   return (
-    <div className={clsx('col col--4 margin-bottom--sm')}>
+    <div className={clsx(`col col--${colWidth} margin-bottom--sm`)}>
         <div className={styles.featureDiv}>
             {iconPath ? (
                 <div className="text--center">
@@ -64,13 +69,13 @@ function Feature({title, iconPath, description, java, ts, link, kotlin}: Feature
   );
 }
 
-export default function FeatureWidget({ features }): JSX.Element {
+export default function FeatureWidget({ itemsPerRow, features }): JSX.Element {
   return (
     <section className={styles.features}>
       <div className="container">
         <div className={clsx('row', 'featureRow')}>
           {features.map((props, idx) => (
-            <Feature key={idx} {...props} />
+            <Feature key={idx} {...props} itemsPerRow={itemsPerRow}/>
           ))}
         </div>
       </div>

@@ -22,7 +22,7 @@ export default function FeatureSpotlight({title, imgPath, description}): JSX.Ele
                 ) : null}
                 {imgPath ? (
                     <div className="text--center">
-                      <img src={imgPath} />
+                      <img width="80%" src={imgPath} />
                     </div>
                 ) : null}
               </div>

@@ -1,8 +1,203 @@
 ---
+title: "Event Processing"
 sidebar_position: 3
-description: "Specification of the API to administer services."
+description: "Write event processing apps with Restate"
 hide_table_of_contents: true
+hide_title: true
 ---
 
+import FeatureWidget from "../../src/components/FeatureWidget"
+import FeatureSpotlight from "../../src/components/FeatureSpotlight"
+import TwoColumnText from "../../src/components/TwoColumnText";
 
-# Event Processing
+<h1 className={"padding-top--lg text--center"}>Event Processing</h1>
+<h1 className={"use-case-subtitle text--center"}>Lightweight, transactional event processing.</h1>
+<p className={"use-case-description padding-bottom--lg text--center"}>Process Kafka events with flexible flows of transactional steps.<br/>
+    Restate takes care of the event plumbing and pushes events to your handler.</p>
+
+
+<FeatureWidget className={"padding-bottom--lg"} features={[
+    {
+        title: 'Lightweight Durable Functions',
+        iconPath: '/img/code-icon.svg',
+        description: "Functions are executed durably with fine-grained retries and workflow-like semantics. ",
+    },
+    {
+        title: 'Queue per key',
+        iconPath: '/img/use_cases/lightning.svg',
+        description: "Restate splits partitions into a queue per key. If it takes long to process an event, the events for other keys aren’t blocked.",
+    },
+    {
+        title: 'Push events to functions',
+        iconPath: '/img/use_cases/aws-lambda-icon.svg',
+        description: "Restate pushes events to your handlers. No need to implement consumers, manage subscriptions/offsets, etc. ",
+    },
+]}/>
+
+<p className={"padding-bottom--lg"}></p>
+
+## Event processing with Restate
+
+Connect functions to Kafka topics.
+Restate pushes the events to your function.
+
+<CH.Scrollycoding className="workflows-scroller">
+
+    ### Queue per key
+    Events get send to objects based on the Kafka key. For each key, Restate ensures events are processed sequentially and in order.
+    Slow events on other keys do not block processing.
+
+
+    ```ts user_sign_up_flow.ts
+    CODE_LOAD::ts/src/use_cases/event_processing.ts
+    ```
+
+    ---
+
+    ### Flexible control flow
+
+    As opposed to many stream processing systems, Restate does not put any restrictions on the control flow (e.g. DAG).
+    Each event craft its own path through the code
+    and builds up its own recovery log.
+
+    <CH.Code>
+        ```ts user_sign_up_flow.ts
+        CODE_LOAD::ts/src/use_cases/event_processing.ts
+        ```
+    </CH.Code>
+
+    ---
+
+    ### Delayed actions
+
+    Flexibly postpone processing of events until later
+    or schedule follow-up tasks. Restate tracks the timers and re-invokes.
+    When sleeping, other events for that key are enqueued.
+
+
+    ```ts user_sign_up_flow.ts
+    CODE_LOAD::ts/src/use_cases/event_processing.ts
+    ```
+
+    ---
+
+    ### Durable side effects
+
+    The results of interactions with external systems are tracked and recovered after failures. This simplifies writing flows that keep multiple systems in sync.
+
+    ```ts user_sign_up_flow.ts
+    CODE_LOAD::ts/src/use_cases/event_processing.ts
+    ```
+
+</CH.Scrollycoding>
+
+
+
+<TwoColumnText features={[
+    {
+        title: 'LOW-LATENCY',
+        description: "Restate’s event-driven foundation built in Rust lets you process events fast.",
+    },
+    {
+        title: 'DURABLE EXECUTION',
+        description: "Restate handles retries and recovers your code to the exact point before the crash. No more coarse per-step retries. State changes take part in durable execution, so the state never gets out of sync.",
+    },
+]}/>
+
+Stateful event processing
+
+<CH.Spotlight className={"durable-promises"}>
+
+    ### K/V State
+    Store state in Restate and access it from other handlers. Restate guarantees that it is consistent and persistent.
+    ```ts submit.ts
+    CODE_LOAD::ts/src/use_cases/events_state.ts
+    ```
+
+    ---
+
+    ### Combine Kafka and RPC
+
+    Functions can be called over RPC or Kafka without changing the code.
+    In the example, the registration can come over Kafka, while the email gets called via HTTP.
+
+
+    ```ts submit.ts
+    CODE_LOAD::ts/src/use_cases/events_state.ts
+    ```
+
+    ---
+
+    ### Event Enrichment
+
+    Enrich events with data from multiple sources by storing it in state and eventually exposing it via other functions.
+
+
+    ```ts submit.ts
+    CODE_LOAD::ts/src/use_cases/events_state.ts
+    ```
+
+</CH.Spotlight>
+
+
+<FeatureSpotlight
+    title={"Event handlers as regular, lightweight functions"}
+    description={<p>Let Restate subscribe to a Kafka topic and push events to your functions. <br/>
+        Your functions run as normal Java or NodeJS services in your existing infra.
+    </p>}
+    imgPath={"/img/use_cases/event_processing.svg"}
+/>
+
+## What you can build with Event Processing and Restate
+
+<FeatureWidget itemsPerRow={4} features={[
+    {
+        title: 'Kafka-triggered workflows',
+        description: "Handle the payment, request the order preparation, wait for driver acceptance callback, etc.",
+        java: "https://github.com/restatedev/examples/tree/main/end-to-end-applications/java/food-ordering#the-order-workflow",
+        kotlin: "https://github.com/restatedev/examples/tree/main/end-to-end-applications/kotlin/food-ordering#the-order-workflow",
+        ts: "https://github.com/restatedev/examples/tree/main/end-to-end-applications/typescript/food-ordering#the-order-workflow"
+    },
+    {
+        title: 'Digital twin pattern',
+        description: "A delivery service that responds to location updates arriving over Kafka. The order gets updated accordingly. ",
+        java: "https://github.com/restatedev/examples/tree/main/end-to-end-applications/java/food-ordering#the-delivery-workflow",
+        kotlin: "https://github.com/restatedev/examples/tree/main/end-to-end-applications/kotlin/food-ordering#the-delivery-workflow",
+        ts: "https://github.com/restatedev/examples/tree/main/end-to-end-applications/typescript/food-ordering#the-delivery-workflow"
+    },
+    {
+        title: 'Event-based task scheduling',
+        description: "For each event that comes in, schedule some tasks for in the future.",
+        ts: "https://github.com/restatedev/examples/blob/main/basics/basics-typescript/src/5_events_processing.ts",
+        java: "https://github.com/restatedev/examples/tree/main/basics/basics-java"
+    },
+    {
+        title: 'Wondering about a specific use case?',
+        description: "Let’s brainstorm together on Discord",
+        link: {url: "https://discord.gg/skW3AZ6uGd", icon: "/img/discord-icon.svg"}
+    },
+]}>
+</FeatureWidget>
+
+## Developer Resources
+
+<FeatureWidget features={[
+    {
+        title: 'Blog post',
+        description: <i>Event-driven apps where event-driven is an implementation detail.</i>,
+        link: {url: "https://restate.dev/blog/restate--kafka-event-driven-apps-where-event-driven-is-an-implementation-detail/"}
+    },
+    {
+        title: 'Docs',
+        description: (
+            "Read the docs to learn more."
+        ),
+        ts: "/invoke/kafka?sdk=ts",
+        java: "/invoke/kafka?sdk=java"
+    },
+    {
+        title: 'Need help?',
+        description: "Join the Restate Discord channel",
+        link: {url: "https://discord.gg/skW3AZ6uGd", icon: "/img/discord-icon.svg"}
+    }
+]}/>
