@@ -1,7 +1,6 @@
-import * as restate from "@restatedev/restate-sdk";
-import * as clients from "@restatedev/restate-sdk-clients";
+import * as restate from "@restatedev/restate-sdk-clients";
 import * as readline from "readline";
-import {DataPreparationService} from "./data_preparation_service";
+import {DataPrepService} from "./data_preparation_service";
 
 const RESTATE_URL = process.env.RESTATE_URL ?? "http://localhost:8080";
 // Client:
@@ -11,27 +10,23 @@ const RESTATE_URL = process.env.RESTATE_URL ?? "http://localhost:8080";
 // workflow to send an email instead.
 
 // <start_here>
+const rs = restate.connect({ url: RESTATE_URL });
+const dataPrepService: DataPrepService = { name: "dataPrep" };
+
 async function downloadData(userId: string) {
     const workflowId = userId;
 
-    // connect to the Restate server and create a client for the data preparation workflow
-    const dataPrep = clients.connect({ url: RESTATE_URL })
-        .workflowClient<DataPreparationService>({ name: "dataPreparation" }, workflowId);
+    const dataPrep = rs.workflowClient(dataPrepService, workflowId);
 
-    // kick off a new data preparation workflow. this is idempotent per workflow-id
     await dataPrep.workflowSubmit({ userId });
 
-    // wait for the result for 30 secs
     const result = await withTimeout(dataPrep.workflowAttach(), 30_000);
 
-    // if it takes longer, rewire the workflow to send an email instead
     if (result === Timeout) {
-        const email = await readLine("This takes longer, give us an email, we'll mail you the link: ");
+        const email = await readLine("This takes long... Just mail us the link later");
         await dataPrep.resultAsEmail({ email });
         return;
     }
-
-    // if returns within 30 secs, process directly
 }
 // <end_here>
 

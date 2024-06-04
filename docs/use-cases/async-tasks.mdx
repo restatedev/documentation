@@ -41,25 +41,7 @@ import TwoColumnText from "../../src/components/TwoColumnText";
 ## Async tasks with Restate
 Schedule tasks for now or later with the Restate SDK.
 
-<CH.Scrollycoding className="workflows-scroller">
-
-    Restate is as a sophisticated task queue, with extra features like
-    stateful tasks, queues per key, workflows-as-code,
-    and reliable timers.
-
-    <CH.Code>
-
-        ```ts task_submitter.ts
-        CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/task_submitter.ts
-        ```
-
-        ```ts async_task_service.ts
-        CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/async_task_service.ts
-        ```
-
-    </CH.Code>
-
-    ---
+<CH.Scrollycoding className="workflows-scroller-large">
 
     ### Execute any handler async
 
@@ -68,8 +50,18 @@ Schedule tasks for now or later with the Restate SDK.
     Restate persists the requests to this handler and makes sure they run to completion.
     Restate handles retries and recovery upon failures.
 
-    ```ts async_task_service.ts focus=1:8 mark=4:6
-    ```
+    <CH.Code>
+
+        ```ts async_task_service.ts focus=1:8 mark=4:6
+        CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/async_task_service.ts
+        ```
+
+
+        ```ts task_submitter.ts
+        CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/task_submitter.ts
+        ```
+
+    </CH.Code>
 
     ---
 
@@ -96,8 +88,8 @@ Schedule tasks for now or later with the Restate SDK.
     ---
 
     This works across processes, so you can have a separate process latch on to the task later.
-    
-    ```ts task_submitter.ts focus=15:18 mark=15:18
+
+    ```ts task_submitter.ts focus=15:18 mark=17
     CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/task_attach.ts
     ```
 
@@ -114,19 +106,14 @@ Schedule tasks for now or later with the Restate SDK.
     },
 ]}/>
 
-<CH.Scrollycoding className={"workflows-scroller"}>
-    ### Fan out / fan in
-    Restate makes it easy to run async work in parallel, fan-out / fan-in style:
+Write flexible scheduling logic via durable building blocks.
 
+<CH.Scrollycoding className={"workflows-scroller"}>
+    Restate makes it easy to run async work in parallel, fan-out / fan-in style:
     - every handler is an asynchronous task, invoked through a fast reliably queue
     - invocations produce durable promises that can be awaited and combined
     - the durable execution ensures that the fan-out and fan-in steps happen
       reliably exactly once.
-
-    The code below shows how to build a fault-tolerant fan-out task flow.
-
-    Deploy this service on an platform like Kubernetes or AWS Lambda to
-    automatically get parallel scale out.
 
     ```ts fan_out_worker.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/fan_out_fan_in.ts
@@ -134,16 +121,33 @@ Schedule tasks for now or later with the Restate SDK.
 
     ---
 
+    ### Fan out
 
-    // fan out work by calling the subtask handler for each subtask. the subtasks
-    // might run in different processes, if this is deployed in a parallel setup
+    Fan out tasks by calling the subtask handler for each subtask.
 
-    // invocation promises recover from failures, re-connect to running subtasks
+    The subtasks might run in different processes, if this is deployed in a parallel setup.
 
+    ```ts fan_out_worker.ts focus=6:12 mark=9,10
+    ```
+
+    ---
+
+    ### Fan in
+    Fan in by simply awaiting the combined promise.
+    Invocation promises recover from failures, re-connect to running subtasks.
 
     ```ts fan_out_worker.ts
-    CODE_LOAD::ts/src/use_cases/async_tasks/fan_out_fan_in.ts
     ```
+
+    ---
+
+    ### Server(less)
+    Deploy this service on an platform like Kubernetes or AWS Lambda to
+    automatically get parallel scale out.
+
+    ```ts fan_out_worker.ts
+    ```
+
 </CH.Scrollycoding>
 
 
@@ -154,41 +158,61 @@ Schedule tasks for now or later with the Restate SDK.
 />
 
 
-<CH.Scrollycoding className={"workflows-scroller"}>
+### Switch between async and sync
 
-    ### Switch between async and sync
+<CH.Scrollycoding className={"workflows-scroller"}>
+    Imagine a data preparation workflow that creates an S3 bucket, uploads a file to it, and then returns the URL.
+
+    Let's now kick off this workflow from another process.
 
     <CH.Code>
-        ```ts client.ts
-        CODE_LOAD::ts/src/use_cases/async_tasks/sync_to_async/client.ts
-        ```
 
         ```ts data_preparation_client.ts
         CODE_LOAD::ts/src/use_cases/async_tasks/sync_to_async/data_preparation_service.ts
         ```
+
+        ```ts client.ts
+        CODE_LOAD::ts/src/use_cases/async_tasks/sync_to_async/client.ts
+        ```
     </CH.Code>
+
+    ---
+
+    Connect to the Restate server and create a client for the data preparation workflow
+
+    ```ts client.ts focus=1:7,18 mark=7
+    ```
+
+    ---
+
+    Kick off a new data preparation workflow. this is idempotent per workflow-id
+
+    ```ts client.ts focus=1:9,18 mark=9
+    ```
+
+    ---
+
+    Wait for the result for 30 secs
+
+    ```ts client.ts focus=1:11,18 mark=11
+    ```
+
+    ---
+
+
+    If it takes longer, rewire the workflow to send an email instead
+
+    If returns within 30 secs, process directly
+
+    ```ts client.ts focus=1:17,18 mark=13:17
+    ```
+
 </CH.Scrollycoding>
 
 
 ## What you can build with Async Tasks and Restate
 
 <FeatureWidget features={[
-    {
-        title: 'User sign-up workflow',
-        description: "Create user in the system, wait until email confirmation, schedule a reminder, send welcome email, etc.",
-    },
-    {
-        title: 'Order processing and logistics',
-        description: "Handle the payment, request the order preparation, wait for driver acceptance callback, etc.",
-    },
-    {
-        title: 'Infrastructure provisioning',
-        description: "Go through a set of steps to provision a setup. Retry until resources are up, handle timeouts, rollbacks, etc.",
-    },
-    {
-        title: 'Workflow interpreters',
-        description: "Dynamically compose workflows based on user input. For example, an image transformer that lets users specify the steps to be taken.",
-    },
     {
         title: 'Wondering about a specific use case?',
         description: "Let’s brainstorm together on Discord",

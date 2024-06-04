@@ -7,7 +7,8 @@ const workerService = restate.service({
     handlers: {
         run: async (ctx: Context, task: Task) => {
             // run the first step of the work, creating a set of subtasks
-            const subtasks: SubTask[] = await ctx.run("first step", () => process(task));
+            const subtasks: SubTask[] = await ctx.run("first step",
+                () => process(task));
 
             const subtaskResults: CombineablePromise<SubTaskResult>[] = [];
             for (const subtask of subtasks) {
@@ -15,8 +16,8 @@ const workerService = restate.service({
                 subtaskResults.push(subResult);
             }
 
-            // fan in by simply awaiting the combined promise
-            const results: SubTaskResult[] = await CombineablePromise.all(subtaskResults);
+            const results: SubTaskResult[] = await CombineablePromise
+                .all(subtaskResults);
             return aggregate(results);
         },
 

@@ -1,10 +1,11 @@
 import * as restate from "@restatedev/restate-sdk";
+import {WorkflowContext, WorkflowSharedContext} from "@restatedev/restate-sdk";
 
 // <start_here>
 const dataPreparationService = restate.workflow({
-    name: "dataPreparation",
+    name: "dataPrep",
     handlers: {
-        run: async (ctx: restate.WorkflowContext, args: { userId: string }): Promise<URL> => {
+        run: async (ctx: WorkflowContext, args: { userId: string }) => {
             const url = await ctx.run("create S3 bucket", () => createS3Bucket());
             await ctx.run("upload data", () => uploadData(url));
 
@@ -13,14 +14,14 @@ const dataPreparationService = restate.workflow({
             return url;
         },
 
-        resultAsEmail: async (ctx: restate.WorkflowSharedContext, req: { email: string }) => {
+        resultAsEmail: async (ctx: WorkflowSharedContext, req: { email: string }) => {
             const url = await ctx.promise<URL>("url");
             await ctx.run("send email", () => sendEmail(url, req.email ));
         }
     }
 });
 
-export type DataPreparationService = typeof dataPreparationService;
+export type DataPrepService = typeof dataPreparationService;
 // <end_here>
 
 async function createS3Bucket(): Promise<URL> {
