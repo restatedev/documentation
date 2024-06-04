@@ -6,7 +6,6 @@ hide_table_of_contents: true
 hide_title: true
 ---
 
-import FeatureHorizontalSpotlight from "../../src/components/FeatureHorizontalSpotlight";
 import FeatureWidget from "../../src/components/FeatureWidget"
 import FeatureSpotlight from "../../src/components/FeatureSpotlight"
 
@@ -47,8 +46,8 @@ Turn functions into durable functions with the Restate SDK.
     Restate makes them distributed and durable out-of-the-box.
 
 
-    ```ts user_sign_up_flow.ts
-    CODE_LOAD::ts/src/use_cases/event_processing.ts
+    ```ts role_updater.ts
+    CODE_LOAD::ts/src/use_cases/role_updater.ts
     ```
 
     ---
@@ -57,8 +56,8 @@ Turn functions into durable functions with the Restate SDK.
 
     Restate sequences requests per key, if desired. Scale out without fearing issues such as race conditions, multiple writers to state, etc.
 
-    ```ts user_sign_up_flow.ts
-    CODE_LOAD::ts/src/use_cases/event_processing.ts
+    ```ts role_updater.ts
+    CODE_LOAD::ts/src/use_cases/role_updater.ts
     ```
 
     ---
@@ -68,8 +67,8 @@ Turn functions into durable functions with the Restate SDK.
     Add an idempotency token to your request and let Restate take care of deduplication for you.
     Duplicate requests latch on to the previous one and see the same response.
 
-    ```ts user_sign_up_flow.ts
-    CODE_LOAD::ts/src/use_cases/event_processing.ts
+    ```ts role_updater.ts
+    CODE_LOAD::ts/src/use_cases/role_updater.ts
     ```
 
     ---
@@ -79,8 +78,8 @@ Turn functions into durable functions with the Restate SDK.
     Store results of interaction with external systems or non-deterministic actions.
     On retries, the previous result is returned.
 
-    ```ts user_sign_up_flow.ts
-    CODE_LOAD::ts/src/use_cases/event_processing.ts
+    ```ts role_updater.ts
+    CODE_LOAD::ts/src/use_cases/role_updater.ts
     ```
 
     ---
@@ -89,14 +88,13 @@ Turn functions into durable functions with the Restate SDK.
 
     Implement compensation logic with Restate’s durable building blocks and Restate takes care of running it till completion.
 
-    ```ts user_sign_up_flow.ts
-    CODE_LOAD::ts/src/use_cases/event_processing.ts
+    ```ts role_updater.ts
+    CODE_LOAD::ts/src/use_cases/role_updater.ts
     ```
 
 </CH.Scrollycoding>
 
-
-<FeatureHorizontalSpotlight
+<FeatureSpotlight
     title={"Detailed Observability"}
     description={<p>Understand what is happening in your distributed applications, by using built-in tracing, the CLI, and the SQL engine.<br/>
     Restate tracks communication and execution, giving it a unique position for observability.</p>}
@@ -108,27 +106,36 @@ Turn functions into durable functions with the Restate SDK.
     title={"Regular functions and services, in your existing infra"}
     description={<p>On FaaS, K8s, servers, containers. On-prem or in the cloud.<br/>
         Restate meets you where you are.</p>}
-    imgPath={"/img/use_cases/event_processing.svg"}
+    imgPath={"/img/use_cases/microservice_orchestration.svg"}
 />
 
 ## What you can build with Microservice Orchestration and Restate
 
 <FeatureWidget features={[
     {
-        title: 'Idempotent payments',
-        description: "Add an idempotency key to the header to avoid processing payments twice when the external request is retried.",
+        title: 'Idempotent async payments',
+        description: "Issue an idempotent payment to Stripe and process the response. The payment provider either responds immediately or notifies us later via a webhook.",
+        ts: "https://github.com/restatedev/examples/tree/main/patterns-use-cases/async-signals-payment/async-signals-payment-typescript",
+        java: "https://github.com/restatedev/examples/tree/main/patterns-use-cases/async-signals-payment/async-signals-payment-java"
     },
     {
-        title: 'Keeping systems in sync',
-        description: "Send request to DB, then to another DB, then send an email, then publish an event.",
+        title: 'Keeping systems in sync / sagas',
+        description: "Reserve a flight, then a car, then handle the payment. If the payment fails, rollback the reservations.",
+        ts: "https://github.com/restatedev/examples/tree/main/patterns-use-cases/sagas/sagas-typescript",
+        java: "https://github.com/restatedev/examples/tree/main/patterns-use-cases/sagas/sagas-java",
+        kotlin: "https://github.com/restatedev/examples/tree/main/patterns-use-cases/sagas/sagas-kotlin"
     },
     {
         title: 'Human-in-the-loop workflows',
-        description: "Call another service and wait for the response, then wait either for  a human interaction or for a timeout, then schedule a delayed action, etc.",
+        description: "Food ordering: handle payment, wait till desired delivery time, ask restaurant to start preparation, wait for restaurant to confirm, deliver.",
+        java: "https://github.com/restatedev/examples/tree/main/end-to-end-applications/java/food-ordering",
+        kotlin: "https://github.com/restatedev/examples/tree/main/end-to-end-applications/kotlin/food-ordering",
+        ts: "https://github.com/restatedev/examples/tree/main/end-to-end-applications/typescript/food-ordering"
     },
     {
-        title: 'Tracking delivery status',
-        description: "Track the progress of a shipment or an order by storing the current status and location in state. Update it via Kafka events and expose it over RPC to external clients.",
+        title: 'Durable state machines',
+        description: "Define state transitions in your handlers and store the current state in Restate. Use single-writer per key and concurrency limits to simplify writing robust state machines.",
+        ts: "https://github.com/restatedev/examples/tree/main/patterns-use-cases/state-machines/state-machines-typescript"
     },
     {
         title: 'Wondering about a specific use case?',
@@ -143,16 +150,16 @@ Turn functions into durable functions with the Restate SDK.
 <FeatureWidget features={[
     {
         title: 'Blog post',
-        description: <i>Event-driven apps where event-driven is an implementation detail.</i>,
-        link: {url: "https://restate.dev/blog/restate--kafka-event-driven-apps-where-event-driven-is-an-implementation-detail/"}
+        description: <i>Why we built Restate</i>,
+        link: {url: "https://restate.dev/blog/why-we-built-restate/"}
     },
     {
-        title: 'Docs',
+        title: 'Learn',
         description: (
-            "Read the docs to learn more."
+            "Follow the Tour of Restate to learn more."
         ),
-        ts: "/invoke/kafka?sdk=ts",
-        java: "/invoke/kafka?sdk=java"
+        ts: "/get_started/tour?sdk=ts",
+        java: "/get_started/tour?sdk=java"
     },
     {
         title: 'Need help?',

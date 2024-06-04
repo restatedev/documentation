@@ -48,7 +48,7 @@ Restate pushes the events to your function.
     Slow events on other keys do not block processing.
 
 
-    ```ts user_sign_up_flow.ts
+    ```ts user_updates.ts
     CODE_LOAD::ts/src/use_cases/event_processing.ts
     ```
 
@@ -61,7 +61,7 @@ Restate pushes the events to your function.
     and builds up its own recovery log.
 
     <CH.Code>
-        ```ts user_sign_up_flow.ts
+        ```ts user_updates.ts
         CODE_LOAD::ts/src/use_cases/event_processing.ts
         ```
     </CH.Code>
@@ -75,7 +75,7 @@ Restate pushes the events to your function.
     When sleeping, other events for that key are enqueued.
 
 
-    ```ts user_sign_up_flow.ts
+    ```ts user_updates.ts
     CODE_LOAD::ts/src/use_cases/event_processing.ts
     ```
 
@@ -85,7 +85,7 @@ Restate pushes the events to your function.
 
     The results of interactions with external systems are tracked and recovered after failures. This simplifies writing flows that keep multiple systems in sync.
 
-    ```ts user_sign_up_flow.ts
+    ```ts user_updates.ts
     CODE_LOAD::ts/src/use_cases/event_processing.ts
     ```
 
@@ -110,7 +110,8 @@ Stateful event processing
 
     ### K/V State
     Store state in Restate and access it from other handlers. Restate guarantees that it is consistent and persistent.
-    ```ts submit.ts
+
+    ```ts profile_service.ts
     CODE_LOAD::ts/src/use_cases/events_state.ts
     ```
 
@@ -121,8 +122,7 @@ Stateful event processing
     Functions can be called over RPC or Kafka without changing the code.
     In the example, the registration can come over Kafka, while the email gets called via HTTP.
 
-
-    ```ts submit.ts
+    ```ts profile_service.ts
     CODE_LOAD::ts/src/use_cases/events_state.ts
     ```
 
@@ -133,7 +133,7 @@ Stateful event processing
     Enrich events with data from multiple sources by storing it in state and eventually exposing it via other functions.
 
 
-    ```ts submit.ts
+    ```ts profile_service.ts
     CODE_LOAD::ts/src/use_cases/events_state.ts
     ```
 
