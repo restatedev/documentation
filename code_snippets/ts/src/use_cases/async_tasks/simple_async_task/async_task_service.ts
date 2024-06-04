@@ -1,0 +1,24 @@
+// --------------- define async task logic as a service handler ---------------
+
+import * as restate from "@restatedev/restate-sdk";
+
+// <start_here>
+const asyncTaskService = restate.service({
+    name: "taskWorker",
+    handlers: {
+        runTask: async (ctx: restate.Context, params: TaskOpts) => {
+            return someHeavyWork(params);
+        }
+    }
+});
+
+export type AsyncTaskService = typeof asyncTaskService;
+
+const endpoint = restate.endpoint().bind(asyncTaskService).listen(9080);
+// <end_here>
+
+// ----------------------- Stubs to please the compiler -----------------------
+
+export type TaskOpts = {}
+
+function someHeavyWork(work: TaskOpts) { return "Work!"}

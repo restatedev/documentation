@@ -1,8 +1,217 @@
 ---
+title: "Async tasks"
 sidebar_position: 4
-description: "Specification of the API to administer services."
+description: "Schedule async tasks and let Restate manage their execution."
 hide_table_of_contents: true
+hide_title: true
 ---
 
+import FeatureWidget from "../../src/components/FeatureWidget"
+import FeatureSpotlight from "../../src/components/FeatureSpotlight"
+import TwoColumnText from "../../src/components/TwoColumnText";
 
-# Async Tasks
+<h1 className={"padding-top--lg text--center"}>Async tasks</h1>
+<h1 className={"use-case-subtitle text--center"}>Flexible, durable scheduling across processes and time.</h1>
+<p className={"use-case-description padding-bottom--lg text--center"}>
+    Write resilient scheduling logic with the flexibility of code: delay execution, re-attach to ongoing tasks, fan out/in, etc. <br/>
+    Restate runs your tasks to completion exactly once.
+</p>
+
+<FeatureWidget className={"padding-bottom--lg"} features={[
+    {
+        title: 'Durable timers',
+        iconPath: '/img/use_cases/hour-glass.svg',
+        description: "Register timers with Restate to make them durable. Restate makes sure that they get fired when they should, whether it's millis or months.",
+    },
+    {
+        title: 'Message queue',
+        iconPath: '/img/use_cases/queue.svg',
+        description: "Schedule tasks asynchronously, by using Restate as message queue. Tasks execute with workflow-like semantics and durability. Restate handles retries and recovery of progress."
+    },
+    {
+        title: 'Switch between async and sync',
+        iconPath: '/img/use_cases/switch.svg',
+        description: "Schedule an async task, by using Restate as queue. Let another process latch on to it later and wait for the result, or peek at the output to see if it has finished.",
+    },
+]}/>
+
+<p className={"padding-bottom--lg"}></p>
+
+
+## Async tasks with Restate
+Schedule tasks for now or later with the Restate SDK.
+
+<CH.Scrollycoding className="workflows-scroller">
+
+    Restate is as a sophisticated task queue, with extra features like
+    stateful tasks, queues per key, workflows-as-code,
+    and reliable timers.
+
+    <CH.Code>
+
+        ```ts task_submitter.ts
+        CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/task_submitter.ts
+        ```
+
+        ```ts async_task_service.ts
+        CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/async_task_service.ts
+        ```
+
+    </CH.Code>
+
+    ---
+
+    ### Execute any handler async
+
+    Every handler in Restate is executed asynchronously and can be treated
+    as a reliable asynchronous task. No matter whether it is a simple function, or a complex workflow.
+    Restate persists the requests to this handler and makes sure they run to completion.
+    Restate handles retries and recovery upon failures.
+
+    ```ts async_task_service.ts focus=1:8 mark=4:6
+    ```
+
+    ---
+
+    ### Schedule tasks reliably
+
+    Schedule tasks asynchronously, by using Restate as message queue.
+    Restate reliably queues them, also under backpressure/load.
+
+    Handlers can be called asynchronously from anywhere.
+    This returns a task handle once the call in enqueued.
+
+    ```ts task_submitter.ts focus=1:9,13 mark=4:9
+    ```
+
+    ---
+
+    ### Latch on to the task
+
+    You can use this task handle to latch on to the task later and retrieve the result, or wait for it to finish.
+
+    ```ts task_submitter.ts focus=1:13 mark=12
+    ```
+
+    ---
+
+    This works across processes, so you can have a separate process latch on to the task later.
+    
+    ```ts task_submitter.ts focus=15:18 mark=15:18
+    CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/task_attach.ts
+    ```
+
+</CH.Scrollycoding>
+
+<TwoColumnText features={[
+    {
+        title: 'LOW-LATENCY',
+        description: "Restate’s event-driven foundation built in Rust lets you put workflows in the latency-sensitive path of user interaction.",
+    },
+    {
+        title: 'DURABLE EXECUTION',
+        description: "Restate handles retries and recovers your code to the exact point before the crash. No more coarse per-step retries. State changes take part in durable execution, so the state never gets out of sync.",
+    },
+]}/>
+
+<CH.Scrollycoding className={"workflows-scroller"}>
+    ### Fan out / fan in
+    Restate makes it easy to run async work in parallel, fan-out / fan-in style:
+
+    - every handler is an asynchronous task, invoked through a fast reliably queue
+    - invocations produce durable promises that can be awaited and combined
+    - the durable execution ensures that the fan-out and fan-in steps happen
+      reliably exactly once.
+
+    The code below shows how to build a fault-tolerant fan-out task flow.
+
+    Deploy this service on an platform like Kubernetes or AWS Lambda to
+    automatically get parallel scale out.
+
+    ```ts fan_out_worker.ts
+    CODE_LOAD::ts/src/use_cases/async_tasks/fan_out_fan_in.ts
+    ```
+
+    ---
+
+
+    // fan out work by calling the subtask handler for each subtask. the subtasks
+    // might run in different processes, if this is deployed in a parallel setup
+
+    // invocation promises recover from failures, re-connect to running subtasks
+
+
+    ```ts fan_out_worker.ts
+    CODE_LOAD::ts/src/use_cases/async_tasks/fan_out_fan_in.ts
+    ```
+</CH.Scrollycoding>
+
+
+<FeatureSpotlight
+    title={"Restate as sophisticated task queue"}
+    description={<p>Restate is built as an event-driven foundation, and therefore supports task queues by design. <br/> Async tasks run like any other function in your infrastructure: on K8S, FaaS, or mix-and-match. <br/> No need to spin up extra infrastructure or message queues.</p>}
+    imgPath={"/img/use_cases/workflows.svg"}
+/>
+
+
+<CH.Scrollycoding className={"workflows-scroller"}>
+
+    ### Switch between async and sync
+
+    <CH.Code>
+        ```ts client.ts
+        CODE_LOAD::ts/src/use_cases/async_tasks/sync_to_async/client.ts
+        ```
+
+        ```ts data_preparation_client.ts
+        CODE_LOAD::ts/src/use_cases/async_tasks/sync_to_async/data_preparation_service.ts
+        ```
+    </CH.Code>
+</CH.Scrollycoding>
+
+
+## What you can build with Async Tasks and Restate
+
+<FeatureWidget features={[
+    {
+        title: 'User sign-up workflow',
+        description: "Create user in the system, wait until email confirmation, schedule a reminder, send welcome email, etc.",
+    },
+    {
+        title: 'Order processing and logistics',
+        description: "Handle the payment, request the order preparation, wait for driver acceptance callback, etc.",
+    },
+    {
+        title: 'Infrastructure provisioning',
+        description: "Go through a set of steps to provision a setup. Retry until resources are up, handle timeouts, rollbacks, etc.",
+    },
+    {
+        title: 'Workflow interpreters',
+        description: "Dynamically compose workflows based on user input. For example, an image transformer that lets users specify the steps to be taken.",
+    },
+    {
+        title: 'Wondering about a specific use case?',
+        description: "Let’s brainstorm together on Discord",
+        link: {url: "https://discord.gg/skW3AZ6uGd", icon: "/img/discord-icon.svg"}
+    },
+]}>
+</FeatureWidget>
+
+## Developer Resources
+
+<FeatureWidget features={[
+    {
+        title: 'Blog post',
+    },
+    {
+        title: 'Docs',
+        description: (
+            "Read the docs to learn more."
+        ),
+    },
+    {
+        title: 'Need help?',
+        description: "Join the Restate Discord channel",
+        link: {url: "https://discord.gg/skW3AZ6uGd", icon: "/img/discord-icon.svg"}
+    }
+]}/>
