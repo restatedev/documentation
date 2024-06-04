@@ -106,13 +106,15 @@ Schedule tasks for now or later with the Restate SDK.
     },
 ]}/>
 
+## Parallelizing work
+
 Write flexible scheduling logic via durable building blocks.
 
 <CH.Scrollycoding className={"workflows-scroller"}>
-    Restate makes it easy to run async work in parallel, fan-out / fan-in style:
-    - every handler is an asynchronous task, invoked through a fast reliably queue
-    - invocations produce durable promises that can be awaited and combined
-    - the durable execution ensures that the fan-out and fan-in steps happen
+
+    Restate makes it easy to parallelize async work by fanning out tasks.
+    Afterwards, you can collect the result by fanning in the partial results.
+    Durable Execution ensures that the fan-out and fan-in steps happen
       reliably exactly once.
 
     ```ts fan_out_worker.ts
@@ -124,19 +126,21 @@ Write flexible scheduling logic via durable building blocks.
     ### Fan out
 
     Fan out tasks by calling the subtask handler for each subtask.
+    Every handler is an asynchronous task, for which Restate serves as the queue.
 
     The subtasks might run in different processes, if this is deployed in a parallel setup.
 
-    ```ts fan_out_worker.ts focus=6:12 mark=9,10
+    ```ts fan_out_worker.ts focus=4:13,18:23 mark=10:12
     ```
 
     ---
 
     ### Fan in
+    Invocations produce durable promises that can be awaited and combined.
     Fan in by simply awaiting the combined promise.
     Invocation promises recover from failures, re-connect to running subtasks.
 
-    ```ts fan_out_worker.ts
+    ```ts fan_out_worker.ts focus=5:17,18:23 mark=16:17
     ```
 
     ---
@@ -145,7 +149,7 @@ Write flexible scheduling logic via durable building blocks.
     Deploy this service on an platform like Kubernetes or AWS Lambda to
     automatically get parallel scale out.
 
-    ```ts fan_out_worker.ts
+    ```ts fan_out_worker.ts mark=27
     ```
 
 </CH.Scrollycoding>
@@ -158,7 +162,7 @@ Write flexible scheduling logic via durable building blocks.
 />
 
 
-### Switch between async and sync
+## Switch between async and sync
 
 <CH.Scrollycoding className={"workflows-scroller"}>
     Imagine a data preparation workflow that creates an S3 bucket, uploads a file to it, and then returns the URL.

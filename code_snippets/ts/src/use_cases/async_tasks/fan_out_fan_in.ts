@@ -6,18 +6,18 @@ const workerService = restate.service({
     name: "worker",
     handlers: {
         run: async (ctx: Context, task: Task) => {
-            // run the first step of the work, creating a set of subtasks
-            const subtasks: SubTask[] = await ctx.run("first step",
-                () => process(task));
+            // Split the task in subtasks
+            const subtasks: SubTask[] = await ctx.run("split task",
+                () => split(task));
 
-            const subtaskResults: CombineablePromise<SubTaskResult>[] = [];
+            const resultPromises = [];
             for (const subtask of subtasks) {
-                const subResult = ctx.serviceClient(workerService).runSubtask(subtask);
-                subtaskResults.push(subResult);
+                const subResultPromise = ctx.serviceClient(workerService)
+                    .runSubtask(subtask);
+                resultPromises.push(subResultPromise);
             }
 
-            const results: SubTaskResult[] = await CombineablePromise
-                .all(subtaskResults);
+            const results = await CombineablePromise.all(resultPromises);
             return aggregate(results);
         },
 
@@ -40,7 +40,7 @@ type Result = {}
 type SubTask = { }
 type SubTaskResult = void
 
-async function process(task: Task): Promise<SubTask[]> {
+async function split(task: Task): Promise<SubTask[]> {
     return [];
 }
 
