@@ -15,7 +15,7 @@ export default function FeatureSpotlight({title, imgPath, description}): JSX.Ele
         <div className="row">
           <div className={clsx('col col--12')}>
             <div className={styles.featureDiv}>
-              <div className="text--center padding-horiz--md">
+              <div className="text--center padding-horiz--md padding-vert--lg">
                 <h2>{title}</h2>
                 {description ? (
                     <p>{description}</p>
