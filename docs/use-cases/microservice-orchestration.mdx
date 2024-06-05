@@ -46,17 +46,22 @@ Turn functions into durable functions with the Restate SDK.
     Restate makes them distributed and durable out-of-the-box.
 
 
-    ```ts role_updater.ts
+    ```ts role_updater.ts mark=1,4 focus=1:4,25
     CODE_LOAD::ts/src/use_cases/role_updater.ts
     ```
 
     ---
 
-    ### Scalability and concurrency
+    ### Scalability, concurrency, consistency
 
-    Restate sequences requests per key, if desired. Scale out without fearing issues such as race conditions, multiple writers to state, etc.
+    Restate sequences requests per key, if desired.
+    Scale out without fearing issues such as race conditions, multiple writers to state, etc.
 
-    ```ts role_updater.ts
+    This handler updates a user’s role in set of systems.
+    Other updates to the same user are queued and processed in order.
+    Updates either succeed or fail, but never leave the user in an inconsistent state.
+
+    ```ts role_updater.ts mark=4 focus=1:4,25
     CODE_LOAD::ts/src/use_cases/role_updater.ts
     ```
 
@@ -65,19 +70,22 @@ Turn functions into durable functions with the Restate SDK.
     ### Persist progress
 
     Store results of interaction with external systems or non-deterministic actions.
-    On retries, the previous result is returned.
+    On retries, the action does not get re-executed but the previous result will be returned.
 
-    ```ts role_updater.ts
+    ```ts role_updater.ts focus=1:5,24,7,8,13:14 mark=7,8,13:14
     CODE_LOAD::ts/src/use_cases/role_updater.ts
     ```
 
     ---
 
+
     ### Sagas and rollbacks
 
     Implement compensation logic with Restate’s durable building blocks and Restate takes care of running it till completion.
 
-    ```ts role_updater.ts
+    Here, we update the user’s role in multiple systems. If one fails, we rollback the changes in the other systems.
+
+    ```ts role_updater.ts focus=10:24 mark=12:16,18
     CODE_LOAD::ts/src/use_cases/role_updater.ts
     ```
 
@@ -89,6 +97,8 @@ Turn functions into durable functions with the Restate SDK.
 
     Add an idempotency token to your request and let Restate take care of deduplication for you.
     Duplicate requests latch on to the previous one and see the same response.
+
+    Here, we reserve a product for a user. We connect to Restate and send a `reserve` request with an idempotency key so retries wouldn't lead to double reservations.
 
     ```ts product_reservation.ts
     CODE_LOAD::ts/src/use_cases/idempotency.ts

@@ -16,19 +16,17 @@ const roleUpdater = restate.object({
     name: "roleUpdate",
     handlers: {
         applyRoleUpdate: async function applyRoleUpdate(ctx: restate.Context, update: UpdateRequest) {
-            // parameters are durable across retries
             const { userId, role, permissions: permissions } = update;
 
             const previousRole = await ctx.run(() => getCurrentRole(userId));
-            await ctx.run(() => tryApplyUserRole(userId, role));
+            await ctx.run(() => applyUserRole(userId, role));
 
-            // Apply all permissions in order.
-            // We collect the previous permission settings to reset if the process fails.
             const previousPermissions: Permission[] = [];
             for (const permission of permissions) {
                 try {
-                    const previous = await ctx.run(() => tryApplyPermission(userId, permission));
-                    previousPermissions.push(previous); // remember the previous setting
+                    const previous = await ctx.run(() =>
+                        applyPermission(userId, permission));
+                    previousPermissions.push(previous);
                 } catch (err) {
                     if (err instanceof restate.TerminalError) {
                         await rollback(ctx, userId, previousRole, previousPermissions);
@@ -49,9 +47,9 @@ async function rollback(
 ) {
     console.log(">>> !!! ROLLING BACK CHANGES !!! <<<");
     for (const prev of permissions.reverse()) {
-        await ctx.run(() => tryApplyPermission(userId, prev));
+        await ctx.run(() => applyPermission(userId, prev));
     }
-    await ctx.run(() => tryApplyUserRole(userId, role));
+    await ctx.run(() => applyUserRole(userId, role));
 }
 
 export type UserRole = {
@@ -78,20 +76,10 @@ export async function getCurrentRole(userId: string): Promise<UserRole> {
 export async function applyUserRole(userId: string, userRole: UserRole): Promise<boolean> {
     console.log(`>>> Applied role ${userRole.roleKey} for user ${userId}`);
     return true;
-}
-
-
-export async function applyPermission(userId: string, permission: Permission): Promise<void> {
-    console.log(
-        `>>> Applied permission ${permission.permissionKey}:${permission.setting} for user ${userId}`
-    );
-}
-
-export async function tryApplyUserRole(userId: string, userRole: UserRole): Promise<void> {
 
 }
 
-export async function tryApplyPermission(
+export async function applyPermission(
     userId: string,
     permission: Permission
 ): Promise<Permission> {
