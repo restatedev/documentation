@@ -1,0 +1,209 @@
+---
+title: "Workflows-as-code"
+sidebar_position: 1
+description: "Write workflows-as-code with Restate"
+hide_table_of_contents: true
+hide_title: true
+---
+
+import FeatureWidget from "../../src/components/FeatureWidget"
+import FeatureSpotlight from "../../src/components/FeatureSpotlight"
+import TwoColumnText from "../../src/components/TwoColumnText";
+
+<h1 className={"padding-top--lg text--center"}>Workflows-as-code</h1>
+<h1 className={"use-case-subtitle text--center"}>Lightweight, flexible, durable.</h1>
+<p className={"use-case-description padding-bottom--lg text--center"}>Combine the resiliency of workflows with the speed and flexibility of regular functions.<br/>
+    Restate orchestrates and manages their execution till completion, whether it’s millis or months.</p>
+
+
+<FeatureWidget className={"padding-bottom--lg"} features={[
+    {
+        title: 'Just code',
+        iconPath: '/img/code-icon.svg',
+        description: "Get workflow-like semantics for any function: retries, recovery of progress,... Restate provides a distributed, durable version of familiar building blocks: timers, promises, signals,...",
+    },
+    {
+        title: 'Low latency',
+        iconPath: '/img/use_cases/lightning.svg',
+        description: "Restate is built from the ground up to serve low-latency workflows. You can now put workflows in the latency-sensitive path of user interactions.",
+    },
+    {
+        title: 'Deploy on FaaS',
+        iconPath: '/img/use_cases/aws-lambda-icon.svg',
+        description: "Run (parts of) your workflow on AWS Lambda. Restate lets your Lambda function suspend whenever its waiting on inputs.",
+    },
+]}/>
+
+<p className={"padding-bottom--lg"}></p>
+
+## Workflows with Restate
+
+Implement the `run` function of your workflow, using the Restate SDK.
+
+<CH.Scrollycoding className="workflows-scroller">
+
+    ### Run once, idempotently
+    A workflow runs exactly one time.
+    Restate makes sure that duplicate requests do not lead to duplicate execution.
+
+    ```ts user_sign_up_flow.ts focus=1:4,25 mark=1:4,25
+    CODE_LOAD::ts/src/use_cases/signup_workflow.ts
+    ```
+
+    ---
+
+    ### Persist progress
+
+    Store results of intermediate steps, interaction with external systems, or non-deterministic actions.
+    Restate makes sure that on retries, the code does not get re-executed and the previous result is returned.
+    This lets you execute the steps of your workflows durably.
+
+    <CH.Code>
+        ```ts user_sign_up_flow.ts focus=1:4,24,8,11,12 mark=8,11,12
+        CODE_LOAD::ts/src/use_cases/signup_workflow.ts
+        ```
+    </CH.Code>
+
+    ---
+
+    ### Workflow state
+
+    Use Restate’s built-in key-value store to store workflow state.
+    Restate guarantees that it is consistent and persistent, since state updates are tracked together with the rest of the execution progress.
+
+    ```ts user_sign_up_flow.ts focus=1:4,24,8,11,12,7,10,20,23 mark=7,10,20,23
+    CODE_LOAD::ts/src/use_cases/signup_workflow.ts
+    ```
+
+    ---
+
+    ### Query workflow state
+
+    Retrieve the current state of the workflow from within other handlers and expose it to external clients.
+
+    ```ts user_sign_up_flow.ts focus=1:4,24,8,11,12,7,10,20,23,27 mark=27
+    CODE_LOAD::ts/src/use_cases/signup_workflow.ts
+    ```
+
+    ---
+
+    ### Wait on external signals
+
+    Make Promises/Futures resilient by registering them in Restate.
+    Share them and wait until other functions resolve them.
+
+    ```ts user_sign_up_flow.ts focus=1:4,24,8,11,12,7,10,20,23,26:28,15 mark=15
+    CODE_LOAD::ts/src/use_cases/signup_workflow.ts
+    ```
+
+    ---
+
+    ### Signal in-flight workflows
+
+    Notify the workflow of external signals, callbacks or Kafka events.
+    Resolve or reject shared promises on which the workflow is waiting.  The workflow handles the outcome.
+
+    ```ts user_sign_up_flow.ts focus=1:4,24,8,11,12,7,10,20,23,26:28,15,29:37 mark=29:35
+    CODE_LOAD::ts/src/use_cases/signup_workflow.ts
+    ```
+
+    ---
+
+    ### Flexible failure handling
+
+    Implement sagas and compensations in code, as per your requirements.
+
+    ```ts user_sign_up_flow.ts mark=14,16:19,21,22
+    CODE_LOAD::ts/src/use_cases/signup_workflow.ts
+    ```
+
+</CH.Scrollycoding>
+
+
+
+<TwoColumnText features={[
+    {
+        title: 'LOW-LATENCY',
+        description: "Restate’s event-driven foundation built in Rust lets you put workflows in the latency-sensitive path of user interaction.",
+    },
+    {
+        title: 'DURABLE EXECUTION',
+        description: "Restate handles retries and recovers your code to the exact point before the crash. No more coarse per-step retries. State changes take part in durable execution, so the state never gets out of sync.",
+    },
+]}/>
+
+
+<CH.Spotlight className={"durable-promises"}>
+
+    ### Latch on to a workflow
+    A workflow runs exactly one time.
+    If the caller loses the connection to the workflow, he can latch on again to retrieve the result.
+
+    ```ts submit.ts
+    CODE_LOAD::ts/src/use_cases/submit.ts
+    ```
+</CH.Spotlight>
+
+
+<FeatureSpotlight
+    title={"Workflows as regular, lightweight functions"}
+    description={<p>Restate’s workflow functionality is integrated in its core. <br/>
+        Workflows run like any other function in your infrastructure: on K8S, FaaS, or mix-and-match. <br/>
+        No need to spin up extra infrastructure or dedicated workers.</p>}
+    imgPath={"/img/use_cases/workflows.svg"}
+/>
+
+## What you can build with Workflows and Restate
+
+<FeatureWidget features={[
+    {
+        title: 'User sign-up workflow',
+        description: "Create user in the system, wait until email confirmation, schedule a reminder, send welcome email, etc.",
+        ts: "https://github.com/restatedev/examples/blob/main/basics/basics-typescript/src/3_workflows.ts",
+    },
+    {
+        title: 'Order processing and logistics',
+        description: "Handle the payment, request the order preparation, wait for driver acceptance callback, etc.",
+        java: "https://github.com/restatedev/examples/tree/main/end-to-end-applications/java/food-ordering",
+        ts: "https://github.com/restatedev/examples/tree/main/end-to-end-applications/typescript/food-ordering",
+        kotlin: "https://github.com/restatedev/examples/tree/main/end-to-end-applications/kotlin/food-ordering",
+    },
+    {
+        title: 'Infrastructure provisioning',
+        description: "Go through a set of steps to provision a setup. Retry until resources are up, handle timeouts, rollbacks, etc.",
+    },
+    {
+        title: 'Workflow interpreters',
+        description: "Dynamically compose workflows based on user input. For example, an image transformer that lets users specify the steps to be taken.",
+        ts: "https://github.com/restatedev/examples/tree/main/end-to-end-applications/typescript/ai-image-workflows"
+    },
+    {
+        title: 'Wondering about a specific use case?',
+        description: "Let’s brainstorm together on Discord",
+        link: {url: "https://discord.gg/skW3AZ6uGd", icon: "/img/discord-icon.svg"}
+    },
+    ]}>
+</FeatureWidget>
+
+## Developer Resources
+
+<FeatureWidget features={[
+    {
+        title: 'Blog post',
+        description: <i>We replaced 400 lines of StepFunctions ASL with 40 lines of TypeScript by making Lambdas suspendable.</i>,
+        link: {url: "https://restate.dev/blog/we-replaced-400-lines-of-stepfunctions-asl-with-40-lines-of-typescript-by-making-lambdas-suspendable/"}
+    },
+    {
+        title: 'Docs',
+        description: (
+            "Read the docs to learn more."
+        ),
+        ts: "/develop/ts/workflows",
+        java: "/develop/java/workflows"
+    },
+    {
+        title: 'Need help?',
+        description: "Join the Restate Discord channel",
+        link: {url: "https://discord.gg/skW3AZ6uGd", icon: "/img/discord-icon.svg"}
+    }
+]}/>
