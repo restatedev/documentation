@@ -31,7 +31,7 @@ The following components are producing relevant logs:
 * `restate_admin`: The component responsible for holding the metadata information and executing service discovery
 * `restate_invoker`: The component interacting with deployed service deployments
 * `restate_worker::partition::state_machine`: The state machine effects
-* `restate_storage`: Restate storage layer
+* `restate_partition_store`: Restate partition storage layer
 * `restate_bifrost`: Restate durable log layer
 * `hyper`: The HTTP library
 
@@ -51,4 +51,4 @@ We recommend to set up logging to a more verbose filter, and use the `pretty` fo
 
 * `info,restate_ingress_http=trace,restate_invoker=trace,restate=debug,hyper=debug` for network related issues
 * `info,restate_worker::partition::effects=debug` to get insights on the state machine effects
-* `info,restate_meta=trace` to check service discovery and registration
+* `info,restate_admin=trace` to check service discovery and registration
