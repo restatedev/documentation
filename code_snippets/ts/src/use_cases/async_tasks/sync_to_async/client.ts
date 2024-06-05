@@ -27,6 +27,8 @@ async function downloadData(userId: string) {
         await dataPrep.resultAsEmail({ email });
         return;
     }
+
+    // ... process directly ...
 }
 // <end_here>
 

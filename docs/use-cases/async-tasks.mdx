@@ -78,9 +78,20 @@ Schedule tasks for now or later with the Restate SDK.
 
     ---
 
+    ### Idempotent task submission
+
+    Use an idempotency key to ensure that the task is only scheduled once.
+    Restate will deduplicate the request and return the previous response.
+
+
+    ```ts task_submitter.ts focus=1:9,13 mark=8
+    ```
+
+    ---
+
     ### Latch on to the task
 
-    You can use this task handle to latch on to the task later and retrieve the result, or wait for it to finish.
+    For requests with an idempotency key, you can use this task handle to latch on to the task later and retrieve the result, or wait for it to finish.
 
     ```ts task_submitter.ts focus=1:13 mark=12
     ```
@@ -106,7 +117,7 @@ Schedule tasks for now or later with the Restate SDK.
     },
 ]}/>
 
-## Parallelizing work
+## Parallelizing work with Restate
 
 Write flexible scheduling logic via durable building blocks.
 
@@ -130,7 +141,7 @@ Write flexible scheduling logic via durable building blocks.
 
     The subtasks might run in different processes, if this is deployed in a parallel setup.
 
-    ```ts fan_out_worker.ts focus=4:13,18:23 mark=10:12
+    ```ts fan_out_worker.ts focus=4:14,18:23 mark=10:12
     ```
 
     ---
@@ -162,7 +173,7 @@ Write flexible scheduling logic via durable building blocks.
 />
 
 
-## Switch between async and sync
+## Switch between async and sync with Restate
 
 <CH.Scrollycoding className={"workflows-scroller"}>
     Imagine a data preparation workflow that creates an S3 bucket, uploads a file to it, and then returns the URL.
@@ -171,7 +182,7 @@ Write flexible scheduling logic via durable building blocks.
 
     <CH.Code>
 
-        ```ts data_preparation_client.ts
+        ```ts data_preparation_client.ts mark=5:10
         CODE_LOAD::ts/src/use_cases/async_tasks/sync_to_async/data_preparation_service.ts
         ```
 
@@ -182,33 +193,39 @@ Write flexible scheduling logic via durable building blocks.
 
     ---
 
-    Connect to the Restate server and create a client for the data preparation workflow
+    1. Connect to the Restate server and create a client for the data preparation workflow.
 
     ```ts client.ts focus=1:7,18 mark=7
     ```
 
     ---
 
-    Kick off a new data preparation workflow. this is idempotent per workflow-id
+    2. Kick off a new data preparation workflow. This is idempotent per workflow ID.
 
     ```ts client.ts focus=1:9,18 mark=9
     ```
 
     ---
 
-    Wait for the result for 30 secs
+    3. Wait for the result for 30 seconds.
 
     ```ts client.ts focus=1:11,18 mark=11
     ```
 
     ---
 
+    4. If it takes longer, rewire the workflow to send an email instead.
+    If returns within 30 seconds, process the URL directly.
 
-    If it takes longer, rewire the workflow to send an email instead
+    ```ts client.ts focus=1:20 mark=13:19
+    ```
 
-    If returns within 30 secs, process directly
+    ---
 
-    ```ts client.ts focus=1:17,18 mark=13:17
+    5. This is implemented in the data preparation workflow by letting the workflow signal our handler when it's done.
+    It does this by resolving a shared Durable Promise that we then retrieve in our handler to send the email.
+
+    ```ts data_preparation_client.ts focus=4:16 mark=8,13:16
     ```
 
 </CH.Scrollycoding>
@@ -216,7 +233,22 @@ Write flexible scheduling logic via durable building blocks.
 
 ## What you can build with Async Tasks and Restate
 
-<FeatureWidget features={[
+<FeatureWidget itemsPerRow={2} features={[
+    {
+        title: "Payments: Combining sync & async responses",
+        description: "Issue an idempotent payment to Stripe and process the response. The payment provider either responds immediately or notifies us later via a webhook.",
+        java: "https://github.com/restatedev/examples/tree/main/patterns-use-cases/async-signals-payment/async-signals-payment-java",
+        ts: "https://github.com/restatedev/examples/tree/main/patterns-use-cases/async-signals-payment/async-signals-payment-typescript"
+    },
+    {
+        title: "Job scheduler",
+        description: "A job scheduler that can handle both immediate and delayed jobs. The scheduler makes sure job submissions are idempotent and that jobs run to completion exactly once. You can attach back to jobs to retrieve their result later."
+    },
+    {
+        title: "Building Durable Promises on top of Restate",
+        description: "Promises that get durably stored in Restate, and can be resolved by any process. Implemented as a Restate service, to use for callbacks, signal and communicate between systems. The SDK offers similar constructs with Awakeables and Durable Promises.",
+        ts: "https://github.com/restatedev/examples/tree/main/patterns-use-cases/durable-promises/durable-promises-typescript"
+    },
     {
         title: 'Wondering about a specific use case?',
         description: "Let’s brainstorm together on Discord",
@@ -229,12 +261,15 @@ Write flexible scheduling logic via durable building blocks.
 
 <FeatureWidget features={[
     {
-        title: 'Blog post',
-    },
-    {
         title: 'Docs',
         description: (
-            "Read the docs to learn more."
+            <p>Read the docs to learn more.
+            <ul className={"text--left"}>
+                <li>Schedulers & timers  <a href="/develop/ts/durable-timers">TS</a> / <a href="/develop/java/durable-timers">Java/Kotlin</a></li>
+                <li><a href="/invoke/clients">Client library</a> / <a href="/invoke/http">HTTP</a></li>
+            </ul>
+
+            </p>
         ),
     },
     {
