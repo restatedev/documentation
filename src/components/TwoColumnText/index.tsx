@@ -17,8 +17,8 @@ export default function TwoColumnText({ features }): JSX.Element {
           <div className={clsx('col col--4 margin-vert--lg')}>
             <div className={styles.featureDivBlue}>
               <div className="text--right padding-horiz--none">
-                <h6 className="color-blue">{left.title}</h6>
-                <p className="color-blue">{left.description}</p>
+                <h6>{left.title}</h6>
+                <p>{left.description}</p>
               </div>
             </div>
           </div>
