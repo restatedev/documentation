@@ -4,6 +4,7 @@ import dev.restate.sdk.Context;
 import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.client.Client;
 import dev.restate.sdk.client.SendResponse;
+import dev.restate.sdk.common.Output;
 import develop.MyWorkflowClient;
 
 import java.time.Duration;
@@ -87,6 +88,15 @@ public class Ingress {
         String greeting = restate
             .invocationHandle(handle.getInvocationId(), JsonSerdes.STRING)
             .attach();
+
+        // Or peek to see if the result is ready
+        Output<String> output = restate
+            .invocationHandle(handle.getInvocationId(), JsonSerdes.STRING)
+            .getOutput();
+
+        if (output.isReady()) {
+            String result = output.getValue();
+        }
         // <end_service_attach>
 
     }
@@ -116,12 +126,16 @@ public class Ingress {
         // <start_workflow_peek>
         // If you have access to the workflow handle:
         // withClass(1:3) highlight-line
-        String peekResponse = restate
+        Output<String> output = restate
                 .invocationHandle(handle.getInvocationId(), JsonSerdes.STRING)
                 .getOutput();
 
+        if (output.isReady()) {
+            String result = output.getValue();
+        }
+
         // If you do not have access to the workflow handle, use the workflow ID:
-        String peekResponse2 = MyWorkflowClient
+        Output<String> output2 = MyWorkflowClient
                 .fromClient(restate, "wf-id-1")
                 // withClass(1:2) highlight-line
                 .workflowHandle()

@@ -5,12 +5,12 @@ import {greetCounterObject, greeterService} from "../utils";
 const myPlainTSFunction = async () => {
     // focus(1:9)
     // From any TS code:
-    const ingress = restate.connect({ url: "http://localhost:8080" })
+    const rs = restate.connect({ url: "http://localhost:8080" })
 
-    const { invocationId } = await ingress.serviceSendClient(greeterService)
+    const { invocationId } = await rs.serviceSendClient(greeterService)
         .greet({greeting: "Hi"});
 
-    await ingress.objectSendClient(greetCounterObject, "Mary")
+    await rs.objectSendClient(greetCounterObject, "Mary")
         .greet({greeting: "Hi"});
 
 }

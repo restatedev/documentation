@@ -23,7 +23,7 @@ class MyWorkflow {
         // withClass highlight-line
         // Creation of the Durable Promise
         // withClass highlight-line
-        val signal: Boolean = ctx.durablePromise(MY_BOOLEAN_SIGNAL).awaitable().await()
+        val signal: Boolean = ctx.promise(MY_BOOLEAN_SIGNAL).awaitable().await()
 
         // do some steps...
 
@@ -35,7 +35,7 @@ class MyWorkflow {
         // withClass highlight-line
         // Resolution of the Durable Promise
         // withClass highlight-line
-        ctx.durablePromiseHandle(MY_BOOLEAN_SIGNAL).resolve(signal)
+        ctx.promiseHandle(MY_BOOLEAN_SIGNAL).resolve(signal)
     }
 
 }
