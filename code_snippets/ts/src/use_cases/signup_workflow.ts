@@ -28,9 +28,7 @@ const signUpWorkflow = restate.workflow({
             return true;
         },
 
-        getStage: (ctx: WorkflowSharedContext) => {
-            return ctx.get("stage");
-        },
+        getStage: (ctx: WorkflowSharedContext) => ctx.get("stage"),
 
         approveEmail: async (ctx: WorkflowSharedContext, secret: string) => {
             await ctx.promise<string>("email-link").resolve(secret);
@@ -38,10 +36,6 @@ const signUpWorkflow = restate.workflow({
 
         rejectEmail: async (ctx: WorkflowSharedContext) => {
             await ctx.promise<string>("email-link").reject("Abort verification");
-        },
-
-        handleKafkaEvent: async (ctx: WorkflowSharedContext, event: KafkaEvent) => {
-            await ctx.promise<string>("email-link").resolve(event.message);
         },
     }
 });

@@ -42,11 +42,11 @@ Implement the `run` function of your workflow, using the Restate SDK.
 
 <CH.Scrollycoding className="workflows-scroller">
 
-    ### Run once
+    ### Run once, idempotently
     A workflow runs exactly one time.
     Restate makes sure that duplicate requests do not lead to duplicate execution.
 
-    ```ts user_sign_up_flow.ts focus=1:4,24,44:45 mark=1:4,24,44,45
+    ```ts user_sign_up_flow.ts focus=1:4,25 mark=1:4,25
     CODE_LOAD::ts/src/use_cases/signup_workflow.ts
     ```
 
@@ -59,7 +59,7 @@ Implement the `run` function of your workflow, using the Restate SDK.
     This lets you execute the steps of your workflows durably.
 
     <CH.Code>
-        ```ts user_sign_up_flow.ts focus=1:4,24,44:45,8,11,12 mark=8,11,12
+        ```ts user_sign_up_flow.ts focus=1:4,24,8,11,12 mark=8,11,12
         CODE_LOAD::ts/src/use_cases/signup_workflow.ts
         ```
     </CH.Code>
@@ -71,7 +71,7 @@ Implement the `run` function of your workflow, using the Restate SDK.
     Use Restate’s built-in key-value store to store workflow state.
     Restate guarantees that it is consistent and persistent, since state updates are tracked together with the rest of the execution progress.
 
-    ```ts user_sign_up_flow.ts focus=1:4,24,44:45,8,11,12,7,10,20,23 mark=7,10,20,23
+    ```ts user_sign_up_flow.ts focus=1:4,24,8,11,12,7,10,20,23 mark=7,10,20,23
     CODE_LOAD::ts/src/use_cases/signup_workflow.ts
     ```
 
@@ -81,7 +81,7 @@ Implement the `run` function of your workflow, using the Restate SDK.
 
     Retrieve the current state of the workflow from within other handlers and expose it to external clients.
 
-    ```ts user_sign_up_flow.ts focus=1:4,24,44:45,8,11,12,7,10,20,23,27:29 mark=27:29
+    ```ts user_sign_up_flow.ts focus=1:4,24,8,11,12,7,10,20,23,27 mark=27
     CODE_LOAD::ts/src/use_cases/signup_workflow.ts
     ```
 
@@ -92,7 +92,7 @@ Implement the `run` function of your workflow, using the Restate SDK.
     Make Promises/Futures resilient by registering them in Restate.
     Share them and wait until other functions resolve them.
 
-    ```ts user_sign_up_flow.ts focus=1:4,24,44:45,8,11,12,7,10,20,23,26:28,15 mark=15
+    ```ts user_sign_up_flow.ts focus=1:4,24,8,11,12,7,10,20,23,26:28,15 mark=15
     CODE_LOAD::ts/src/use_cases/signup_workflow.ts
     ```
 
@@ -103,7 +103,7 @@ Implement the `run` function of your workflow, using the Restate SDK.
     Notify the workflow of external signals, callbacks or Kafka events.
     Resolve or reject shared promises on which the workflow is waiting.  The workflow handles the outcome.
 
-    ```ts user_sign_up_flow.ts focus=1:4,24,44:45,8,11,12,7,10,20,23,26:28,15,31:44 mark=31:44
+    ```ts user_sign_up_flow.ts focus=1:4,24,8,11,12,7,10,20,23,26:28,15,29:37 mark=29:35
     CODE_LOAD::ts/src/use_cases/signup_workflow.ts
     ```
 
