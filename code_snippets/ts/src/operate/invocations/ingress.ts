@@ -5,19 +5,19 @@ import {myWorkflow} from "../../concepts/invocations/utils";
 
 
 const myPlainTSFunction = async () => {
-    // <start_connect>
-    const rs = restate.connect({ url: "http://localhost:8080" });
-    // <end_connect>
-
     // <start_rpc_call_node>
+    const rs = restate.connect({url: "http://localhost:8080"});
     const greet = await rs.serviceClient(greeterService)
-        .greet({ greeting: "Hi" });
+        .greet({greeting: "Hi"});
 
     const count = await rs.objectClient(greetCounterObject, "Mary")
-        .greet({ greeting: "Hi" });
+        .greet({greeting: "Hi"});
     // <end_rpc_call_node>
+}
 
+const myPlainTSFunction2 = async () => {
     // <start_one_way_call_node>
+    const rs = restate.connect({url: "http://localhost:8080"});
     await rs.serviceSendClient(greeterService)
         .greet({greeting: "Hi"});
 
@@ -25,10 +25,13 @@ const myPlainTSFunction = async () => {
         .greet({greeting: "Hi"});
 
     await rs.workflowClient(myWorkflow, "wf-id-1")
-        .workflowSubmit({ input: "Hi" });
+        .workflowSubmit({input: "Hi"});
     // <end_one_way_call_node>
+}
 
+const myPlainTSFunction3 = async () => {
     // <start_delayed_call_node>
+    const rs = restate.connect({url: "http://localhost:8080"});
     await rs.serviceSendClient(greeterService)
         .greet({greeting: "Hi"}, SendOpts.from({ delay: 1000 }));
 
@@ -74,21 +77,24 @@ const workflowAttach = async () => {
 
     // ... do something else ...
 
-    // Attach later to retrieve the result, by using the handle:
+    // Attach by using the handle:
     // withClass highlight-line
     const count = await rs.result(handle);
 
-    // Or, if you do not have the handle, you can use the workflow ID.
-    // You can use this from within another service.
+    // Or, attach by using the workflow ID (from another service):
     // withClass highlight-line
     const count2 = await rs.workflowClient(myWorkflow, "wf-id-1").workflowAttach();
     // <end_workflow_attach>
+}
 
+const workflowPeek = async () => {
     // <start_workflow_peek>
-    // You can peek the output with the workflow ID.
-    // You can use this from within another service.
+    const rs = restate.connect({url: "http://localhost:8080"});
+
+    // Peek at the output by using the workflow ID (from another service):
     // withClass highlight-line
     const output = await rs.workflowClient(myWorkflow, "wf-id-1").workflowOutput();
+    // If the workflow is ready, do something with the result
     if (output.ready) {
         console.log(output.result);
     }
