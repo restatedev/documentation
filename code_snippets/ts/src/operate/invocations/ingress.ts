@@ -15,23 +15,21 @@ const myPlainTSFunction = async () => {
 
     const count = await rs.objectClient(greetCounterObject, "Mary")
         .greet({ greeting: "Hi" });
-
-    const result = await rs.workflowClient(myWorkflow, "wf-id-1")
-        .workflowSubmit({ input: "Hi" });
     // <end_rpc_call_node>
 
     // <start_one_way_call_node>
-    const { invocationId } = await rs
-        .serviceSendClient(greeterService)
+    await rs.serviceSendClient(greeterService)
         .greet({greeting: "Hi"});
 
     await rs.objectSendClient(greetCounterObject, "Mary")
         .greet({greeting: "Hi"});
+
+    await rs.workflowClient(myWorkflow, "wf-id-1")
+        .workflowSubmit({ input: "Hi" });
     // <end_one_way_call_node>
 
     // <start_delayed_call_node>
-    await rs
-        .serviceSendClient(greeterService)
+    await rs.serviceSendClient(greeterService)
         .greet({greeting: "Hi"}, SendOpts.from({ delay: 1000 }));
 
     await rs.objectSendClient(greetCounterObject, "Mary")
@@ -40,29 +38,29 @@ const myPlainTSFunction = async () => {
 }
 
 const servicesIdempotent = async () => {
+    const request = {greeting: "Hi"}
     // <start_service_idempotent>
     const rs = restate.connect({url: "http://localhost:8080"});
-    const send = await rs.serviceSendClient(greeterService)
-        .greet(
-            {greeting: "Hi"},
-            // withClass highlight-line
-            SendOpts.from({ idempotencyKey: "abcde" })
-        );
+    await rs.serviceSendClient(greeterService)
+        // withClass highlight-line
+        .greet(request, SendOpts.from({ idempotencyKey: "abcde" }));
     // <end_service_idempotent>
 }
 
 const servicesAttach = async () => {
+    const request = {greeting: "Hi"}
     // <start_service_attach>
     const rs = restate.connect({url: "http://localhost:8080"});
-    // Do one-way call
-    const send = await rs.serviceSendClient(greeterService)
-        .greet({greeting: "Hi"}, SendOpts.from({ idempotencyKey: "abcde" }));
+
+    // Send a message
+    const handle = await rs.serviceSendClient(greeterService)
+        .greet(request, SendOpts.from({ idempotencyKey: "abcde" }));
 
     // ... do something else ...
 
     // Attach later to retrieve the result
     // withClass highlight-line
-    const response = await rs.result(send);
+    const response = await rs.result(handle);
     // <end_service_attach>
 }
 

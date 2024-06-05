@@ -1,16 +1,16 @@
 import * as restate from "@restatedev/restate-sdk";
-import {greetCounterObject, greeterService} from "./utils";
+import {greetCounterObject, greeterService, myWorkflow} from "./utils";
 
 // <start_one_way_call>
 async function myRestateHandler(ctx: restate.Context) {
-    // focus
+    // focus(1:8)
     ctx.serviceSendClient(greeterService)
-        // focus
         .greet({greeting: "Hi"});
 
-    // focus
     ctx.objectSendClient(greetCounterObject, "Mary")
-        // focus
         .greet({greeting: "Hi"});
+
+    ctx.workflowSendClient(myWorkflow, "wf-id-1")
+        .run({input: "Hi"});
 }
 // <end_one_way_call>
