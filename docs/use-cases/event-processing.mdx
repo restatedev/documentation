@@ -45,7 +45,7 @@ Restate pushes the events to your function.
 
     ### Lightweight Durable Functions
     Write functions that get a the Kafka event as an input.
-    Functions execute with Durable Execution: their progress is tracked and they can be retried from the exact point before the crash, a bit like taking micro-checkpoints throughout the function execution.
+    Functions execute with Durable Execution: their progress is tracked and they can be retried from the exact point before the crash, as if you are taking micro-checkpoints throughout the function execution.
 
     ```ts user_updates.ts mark=4
     CODE_LOAD::ts/src/use_cases/event_processing.ts
@@ -130,11 +130,11 @@ Restate pushes the events to your function.
 <TwoColumnText features={[
     {
         title: 'LOW-LATENCY',
-        description: "Restate’s event-driven foundation built in Rust lets you process events fast.",
+        description: "Restate’s event-driven foundation built in Rust lets you process events at high speed. Restate keeps a queue per key and pushes events to your functions to process them in parallel as fast as possible.",
     },
     {
         title: 'DURABLE EXECUTION',
-        description: "Restate handles retries and recovers your code to the exact point before the crash. No more coarse per-step retries. State changes take part in durable execution, so the state never gets out of sync.",
+        description: "Restate manages the complexities of reading from Kafka to make sure each event gets processed exactly once. Restate handles retries and recovery of your event handlers to the exact point before the crash.",
     },
 ]}/>
 
@@ -153,6 +153,7 @@ Restate pushes the events to your function.
     ### K/V State
     Store state in Restate and access it from other handlers.
     Restate guarantees that it is consistent and persistent.
+    The state gets delivered together with the request, so you operate on local state.
 
     ```ts profile_service.ts mark=5,10,12,16,17
     CODE_LOAD::ts/src/use_cases/events_state.ts
@@ -223,7 +224,7 @@ Restate pushes the events to your function.
         title: 'Event-based task scheduling',
         description: "For each event that comes in, schedule some tasks for in the future.",
         ts: "https://github.com/restatedev/examples/blob/main/basics/basics-typescript/src/5_events_processing.ts",
-        java: "https://github.com/restatedev/examples/tree/main/basics/basics-java"
+        java: "https://github.com/restatedev/examples/blob/main/basics/basics-java/src/main/java/events_processing/UserUpdatesService.java"
     },
     {
         title: 'Wondering about a specific use case?',

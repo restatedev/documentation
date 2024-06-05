@@ -14,8 +14,8 @@ const productService: ProductService = {name: "product"};
 app.get('/reserve/:product/:reservationId', async (req, res) => {
     const { product, reservationId } = req.params;
 
+    // withClass(1:5) highlight-line
     const products = rs.serviceClient(productService);
-    // withClass(1:4) highlight-line
     const reservation = await products.reserve(
         product,
         Opts.from({ idempotencyKey : reservationId })
