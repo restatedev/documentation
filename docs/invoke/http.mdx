@@ -162,43 +162,46 @@ There are two options:
   - The result for finished workflows
   - `{"message":"not found"}` for non-existing workflows
 
-<CH.Spotlight className="durable-promises">
+<CH.Spotlight start={1} className="durable-promises">
 
     ```shell
     curl localhost:8080/restate/invocation/myInvocationId/attach
     curl localhost:8080/restate/invocation/myInvocationId/output
     ```
 
-    Via invocation ID:
+    ---
 
-</CH.Spotlight>
-<CH.Spotlight>
+    Via invocation ID
 
-    ```shell attach.sh
+    ```shell
+    curl localhost:8080/restate/invocation/myInvocationId/attach
+    curl localhost:8080/restate/invocation/myInvocationId/output
+    ```
+    ---
+
+    ```shell
     curl localhost:8080/restate/invocation/MyService/myHandler/myIdempotencyKey/attach
     curl localhost:8080/restate/invocation/MyService/myHandler/myIdempotencyKey/output
     ```
 
-    For Services, via [idempotency key](/invoke/http#invoke-a-handler-idempotently):
+    For Services, via [idempotency key](/invoke/http#invoke-a-handler-idempotently)
 
-</CH.Spotlight>
-<CH.Spotlight>
+    ---
 
     ```shell
     curl localhost:8080/restate/invocation/myObject/myKey/myHandler/myIdempotencyKey/attach
     curl localhost:8080/restate/invocation/myObject/myKey/myHandler/myIdempotencyKey/output
     ```
 
-    For Virtual Objects, via [idempotency key](/invoke/http#invoke-a-handler-idempotently):
+    For Virtual Objects, via [idempotency key](/invoke/http#invoke-a-handler-idempotently)
 
-</CH.Spotlight>
-<CH.Spotlight>
+    ---
 
     ```shell
     curl localhost:8080/restate/workflow/MyWorkflow/myWorkflowId/attach
     curl localhost:8080/restate/workflow/MyWorkflow/myWorkflowId/output
     ```
 
-    For Workflows, with the Workflow ID:
+    For Workflows, with the Workflow ID
 
 </CH.Spotlight>
