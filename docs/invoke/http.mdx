@@ -152,15 +152,17 @@ If you re-invoke the service with the same idempotency key within 24 hours, Rest
 </details>
 
 
-## Latching onto running invocations and workflows
+## Retrieve result of invocations and workflows
 
-Restate allows you to latch onto the ongoing workflows and invocations that had an idempotency token.
+Restate allows you to retrieve the result of workflows and invocations with an idempotency key.
 There are two options:
-- To **attach** to a running invocation or workflow and wait for it to finish, use `/attach`.
-- To **peek at the output** of a running invocation or workflow, use `/output`. This will return:
+- To **attach** to an invocation or workflow and wait for it to finish, use `/attach`.
+- To **peek at the output** of an invocation or workflow, use `/output`. This will return:
   - `{"message":"not ready"}` for ongoing workflows
   - The result for finished workflows
   - `{"message":"not found"}` for non-existing workflows
+
+You can attach to a service/object invocation only if the invocation used an idempotency key.
 
 <CH.Spotlight start={1} className="durable-promises">
 

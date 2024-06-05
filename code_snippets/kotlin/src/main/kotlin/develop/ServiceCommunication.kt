@@ -35,7 +35,7 @@ class ServiceCommunication {
             .run(request)
             .await()
 
-        // Calling other handlers of the workflow. (Callable up to 24 hours after end of `run` handler execution.)
+        // Call some other `interactWithWorkflow` handler of the workflow.
         MyWorkflowClient.fromContext(ctx, workflowId)
             .interactWithWorkflow(request)
             .await()

@@ -23,9 +23,10 @@ Here is an example of a database request for which the string response is stored
 CODE_LOAD::ts/src/develop/side_effects.ts#<start_side_effect>-<end_side_effect>
 ```
 
-<Admonition type="info" title={"Result value serialization"}>
-    You can store any result value that can be serialized as a Buffer with _`Buffer.from(JSON.stringify(yourObject))`_ and deserialized with _`JSON.parse(result.toString()) as T`_.
-</Admonition>
+You cannot invoke any methods on the Restate context within a side effect.
+This includes actions such as getting state, calling another service, and nesting other journaled actions.
+
+You can store any result value that can be serialized as a Buffer with _`Buffer.from(JSON.stringify(yourObject))`_ and deserialized with _`JSON.parse(result.toString()) as T`_.
 
 <Admonition type="caution" title={"Immediately await journaled actions"}>
 Always immediately await `ctx.run`, before doing any other context calls.
@@ -34,93 +35,87 @@ because the journaled result can get interleaved with the other context calls in
 </Admonition>
 
 
-<Admonition type="info">
-You cannot invoke any methods on the Restate context within a side effect.
-This includes actions such as getting state, calling another service, and nesting other journaled actions.
-</Admonition>
-
-## `CombineablePromise` combinators
+## Combineable Promise combinators
 Operations such as calls, awakeables, and sleep return a `CombineablePromise`.
 The SDK provides combinators for working with `CombineablePromise`.
 Restate then logs the order in which they are resolved or rejected, to make them deterministic on replay.
 
-Imagine the following promises:
-```typescript
-CODE_LOAD::ts/src/develop/side_effects.ts#<start_promises>-<end_promises>
-```
 
-### Await all
+<CH.Spotlight start={1} className={"durable-promises-short"}>
 
-```typescript
-CODE_LOAD::ts/src/develop/side_effects.ts#<start_combine_all>-<end_combine_all>
-```
-Creates a promise that is either:
-- Resolved with an array of results, once all input promises are resolved.
-- Rejected when any input promise is rejected.
 
-Similar to [`Promise.all()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all),
-but the outcome is stored in the Restate journal to be deterministically replayable.
+    ```typescript
+    CODE_LOAD::ts/src/develop/side_effects.ts#<start_promises>-<end_promises>
+    ```
 
-### Await any
+    ---
 
-```typescript
-CODE_LOAD::ts/src/develop/side_effects.ts#<start_combine_any>-<end_combine_any>
-```
+    **Await all** creates a promise that is similar to [`Promise.all()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all), but the outcome is stored in the Restate journal to be deterministically replayable:
+    - Resolves with an array of results, once all input promises are resolved.
+    - Rejects when any input promise is rejected.
 
-Creates a promise that is:
-- Resolved with the result of the first successfully resolved input promise.
-- Rejected when all the input promises are rejected (including when an empty iterable is passed).
-This results in an `AggregateError` containing an array of the reasons for rejection.
 
-Similar to [`Promise.any()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/any),
-but the outcome is stored in the Restate journal to be deterministically replayable.
+    ```typescript focus=1:6 mark=5:6
+    ```
 
-### Race
+    ---
 
-```typescript
-CODE_LOAD::ts/src/develop/side_effects.ts#<start_combine_race>-<end_combine_race>
-```
+    **Await any** creates a promise that is similar to [`Promise.any()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/any),
+    but the outcome is stored in the Restate journal to be deterministically replayable:
+    - Resolves with the result of the first successfully resolved input promise.
+    - Rejects when all the input promises are rejected (including when an empty iterable is passed).
+    This results in an `AggregateError` containing an array of the reasons for rejection.
 
-Creates a Promise that is:
-- Resolved when any of the input promises are resolved.
-- Rejected when any of the input promises are rejected.
+    ```typescript focus=1:3,8,9 mark=8:9
+    ```
 
-Similar to [`Promise.race()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/race),
-but the outcome is stored in the Restate journal to be deterministically replayable.
+    ---
 
-### Await all settled
+    **Race** creates a Promise that is similar to [`Promise.race()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/race),
+    but the outcome is stored in the Restate journal to be deterministically replayable.:
+    - Resolves when any of the input promises are resolved.
+    - Rejects when any of the input promises are rejected.
 
-```typescript
-CODE_LOAD::ts/src/develop/side_effects.ts#<start_combine_allsettled>-<end_combine_allsettled>
-```
+    ```typescript focus=1:3,11,12 mark=11,12
+    ```
 
-Creates a promise that resolves once all the input promises have settled (including when an empty iterable is passed).
-It returns an array of objects describing the outcome of each promise, whether resolved or rejected.
+    ---
 
-Similar to [`Promise.allSettled()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled),
-but the outcome is stored in the Restate journal to be deterministically replayable.
+    **Await all settled** creates a promise that resolves once all the input promises have settled (including when an empty iterable is passed).
+    It returns an array of objects describing the outcome of each promise, whether resolved or rejected.
+    Similar to [`Promise.allSettled()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled),
+    but the outcome is stored in the Restate journal to be deterministically replayable.
+
+
+    ```typescript focus=1:3,14,15 mark=14,15
+    ```
+
+</CH.Spotlight>
 
 ## Generating randoms
 The SDK provides helper functions for the deterministic generation of UUIDs and random numbers. Restate seeds the random number generator with the invocation ID, so it always returns the same value on retries.
 
-### Generating UUIDs
+<CH.Spotlight className={"durable-promises-short"}>
+    ### Generating UUIDs
 
-```typescript
-CODE_LOAD::ts/src/develop/side_effects.ts#<start_uuid>-<end_uuid>
-
-```
-
-Do not use this in cryptographic contexts.
-
-<Admonition type="tip" title="Generate stable idempotency tokens in one line of code.">
     You can use these UUIDs to generate stable idempotency keys, to deduplicate operations. For example, you can use this to let a payment service avoid duplicate payments during retries.
-</Admonition>
 
-### Generating random numbers
+    Do not use this in cryptographic contexts.
 
-```typescript
-CODE_LOAD::ts/src/develop/side_effects.ts#<start_random_nb>-<end_random_nb>
-```
+    ```typescript
+    CODE_LOAD::ts/src/develop/side_effects.ts#<start_uuid>-<end_uuid>
+    ```
 
-This returns a new pseudorandom float within the range `[0,1]`.
-This is the equivalent of JS `Math.random()` but deterministically replayable.
+</CH.Spotlight>
+<CH.Spotlight className={"durable-promises-short"}>
+
+    ### Generating random numbers
+
+
+    This returns a new pseudorandom float within the range `[0,1]`.
+    This is the equivalent of JS `Math.random()` but deterministically replayable.
+
+    ```typescript
+    CODE_LOAD::ts/src/develop/side_effects.ts#<start_random_nb>-<end_random_nb>
+    ```
+</CH.Spotlight>

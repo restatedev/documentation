@@ -53,7 +53,8 @@ internal class SideEffects {
         // <end_combine_all>
 
         // <start_combine_any>
-        val res = Awaitable.any(a1, a2, a3).await() as Boolean
+        val res = Awaitable.any(a1, a2, a3)
+            .await() as Boolean
 
         // Or using the select statement
         val resSelect = select {

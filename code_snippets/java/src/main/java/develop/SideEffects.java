@@ -60,7 +60,9 @@ class SideEffects {
         // <end_combine_all>
 
         // <start_combine_any>
-        boolean res = (boolean) Awaitable.any(a1, a2, a3).await();
+        boolean res = (boolean) Awaitable
+                .any(a1, a2, a3)
+                .await();
         // <end_combine_any>
 
         // <start_uuid>
