@@ -43,12 +43,73 @@ Restate pushes the events to your function.
 
 <CH.Scrollycoding className="workflows-scroller">
 
+    ### Lightweight Durable Functions
+    Write functions that get a the Kafka event as an input.
+    Functions execute with Durable Execution: their progress is tracked and they can be retried from the exact point before the crash, a bit like taking micro-checkpoints throughout the function execution.
+
+    ```ts user_updates.ts mark=4
+    CODE_LOAD::ts/src/use_cases/event_processing.ts
+    ```
+
+    ---
+
+    ### Push events to functions
+    Let Restate subscribe to a Kafka topic and specify to which function to push the events.
+    Restate will take care of the event plumbing: polling for records, committing offsets, recovering...
+
+    <CH.Code rows={"focus"}>
+
+        ```ts user_updates.ts mark=4
+        CODE_LOAD::ts/src/use_cases/event_processing.ts
+        ```
+
+        ---
+
+        ```shell subscribe.sh mark=2:3
+        curl restate:9070/subscriptions --json '{
+            "source": "kafka://my-cluster/user-events",
+            "sink": "service://userUpdates/updateUserEvent"
+        }'
+        ```
+
+    </CH.Code>
+
+    ---
+
     ### Queue per key
-    Events get send to objects based on the Kafka key. For each key, Restate ensures events are processed sequentially and in order.
+    Events get send to objects based on the Kafka key.
+    For each key, Restate ensures that events are processed sequentially and in order.
     Slow events on other keys do not block processing.
 
+    In the example, we process user updates in a queue per user.
+    Slow updates for one user do not block updates for other users.
 
-    ```ts user_updates.ts
+    ```ts user_updates.ts mark=4
+    CODE_LOAD::ts/src/use_cases/event_processing.ts
+    ```
+
+    ---
+
+    ### Postpone processing
+
+    Flexibly postpone processing of events until later.
+    Restate tracks the timers and re-invokes.
+    When sleeping, other events for that key are enqueued.
+
+    Here, we postpone processing for 5 seconds if the user profile is not ready yet.
+
+
+    ```ts user_updates.ts focus=6:11 mark=9
+    CODE_LOAD::ts/src/use_cases/event_processing.ts
+    ```
+
+    ---
+
+    ### Durable side effects
+
+    The results of interactions with external systems are tracked and recovered after failures. This simplifies writing flows that keep multiple systems in sync.
+
+    ```ts user_updates.ts focus=7,10,13:14 mark=7,10,13:14
     CODE_LOAD::ts/src/use_cases/event_processing.ts
     ```
 
@@ -60,38 +121,11 @@ Restate pushes the events to your function.
     Each event craft its own path through the code
     and builds up its own recovery log.
 
-    <CH.Code>
-        ```ts user_updates.ts
-        CODE_LOAD::ts/src/use_cases/event_processing.ts
-        ```
-    </CH.Code>
-
-    ---
-
-    ### Delayed actions
-
-    Flexibly postpone processing of events until later
-    or schedule follow-up tasks. Restate tracks the timers and re-invokes.
-    When sleeping, other events for that key are enqueued.
-
-
-    ```ts user_updates.ts
-    CODE_LOAD::ts/src/use_cases/event_processing.ts
-    ```
-
-    ---
-
-    ### Durable side effects
-
-    The results of interactions with external systems are tracked and recovered after failures. This simplifies writing flows that keep multiple systems in sync.
-
-    ```ts user_updates.ts
+    ```ts user_updates.ts focus=6:14
     CODE_LOAD::ts/src/use_cases/event_processing.ts
     ```
 
 </CH.Scrollycoding>
-
-
 
 <TwoColumnText features={[
     {
@@ -104,14 +138,45 @@ Restate pushes the events to your function.
     },
 ]}/>
 
-Stateful event processing
+## Stateful event processing with Restate
 
 <CH.Scrollycoding className={"workflows-scroller"}>
 
-    ### K/V State
-    Store state in Restate and access it from other handlers. Restate guarantees that it is consistent and persistent.
+    Implement stateful event handlers with Restate.
 
     ```ts profile_service.ts
+    CODE_LOAD::ts/src/use_cases/events_state.ts
+    ```
+
+    ---
+
+    ### K/V State
+    Store state in Restate and access it from other handlers.
+    Restate guarantees that it is consistent and persistent.
+
+    ```ts profile_service.ts mark=5,10,12,16,17
+    CODE_LOAD::ts/src/use_cases/events_state.ts
+    ```
+
+    ---
+
+    ### Event Enrichment
+
+    Enrich events with data from multiple sources by storing it in state and eventually exposing it via other functions.
+
+    ```ts profile_service.ts mark=4,9,15
+    CODE_LOAD::ts/src/use_cases/events_state.ts
+    ```
+
+    ---
+
+    ### Delayed actions
+    Schedule async follow-up tasks for now or for later.
+    Restate tracks the timers and triggers them when the time comes.
+
+    Here, we wait one second for other user features to arrive before sending the event to downstream processing.
+
+    ```ts profile_service.ts mark=6
     CODE_LOAD::ts/src/use_cases/events_state.ts
     ```
 
@@ -122,18 +187,7 @@ Stateful event processing
     Functions can be called over RPC or Kafka without changing the code.
     In the example, the registration can come over Kafka, while the email gets called via HTTP.
 
-    ```ts profile_service.ts
-    CODE_LOAD::ts/src/use_cases/events_state.ts
-    ```
-
-    ---
-
-    ### Event Enrichment
-
-    Enrich events with data from multiple sources by storing it in state and eventually exposing it via other functions.
-
-
-    ```ts profile_service.ts
+    ```ts profile_service.ts mark=4,9,15
     CODE_LOAD::ts/src/use_cases/events_state.ts
     ```
 

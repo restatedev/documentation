@@ -7,15 +7,13 @@ const userUpdates = restate.object({
         updateUserEvent: async (ctx: restate.ObjectContext, event: UserUpdate) => {
             const { profile, permissions, resources } = verifyEvent(event);
 
-            let userId = await ctx.run(() => updateUserProfile(profile));
+            let userId = await ctx.run(() => updateProfile(profile));
             while (userId === NOT_READY) {
-                ctx.sleep(5_000);
-                userId = await ctx.run(() => updateUserProfile(profile));
+                await ctx.sleep(5_000);
+                userId = await ctx.run(() => updateProfile(profile));
             }
 
-            const roleId = await ctx.run(() =>
-                setupUserPermissions(userId, permissions)
-            );
+            const roleId = await ctx.run(() => setPermissions(userId, permissions));
             await ctx.run(() => provisionResources(userId, roleId, resources));
         },
     },
@@ -33,10 +31,10 @@ export type UserUpdate = {
 
 export const NOT_READY = "NOT_READY";
 
-export async function updateUserProfile(profile: string, token?: string): Promise<string> {
+export async function updateProfile(profile: string, token?: string): Promise<string> {
     return Math.random() < 0.8 ? NOT_READY : profile + "-id";
 }
-export async function setupUserPermissions(
+export async function setPermissions(
     id: string,
     permissions: string,
     token?: string

@@ -10,35 +10,40 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
+import {ObjectContext} from "@restatedev/restate-sdk";
 
 // <start_here>
-const profileService = restate.object({
+const eventEnricher = restate.object({
     name: "profile",
     handlers: {
-        registration: async (
-            ctx: restate.ObjectContext,
-            event: { name: string }
-        ) => {
-            ctx.set("name", event.name);
+        userEvent: async (ctx: ObjectContext, event: UserProfile) => {
+            ctx.set("user", event);
+            ctx.objectSendClient(EventEnricher, ctx.key,{ delay: 1000 }).emit();
         },
 
-        email: async (ctx: restate.ObjectContext, event: { email: string }) => {
-            ctx.set("email", event.email);
+        featureEvent: async (ctx: ObjectContext, featureEvent: string) => {
+            const userEvent = await ctx.get<UserProfile>("user");
+            (userEvent!.features ??= []).push(featureEvent);
+            ctx.set("user", userEvent)
         },
 
-        get: async (ctx: restate.ObjectContext): Promise<UserProfile> => {
-            return {
-                id: ctx.key,
-                name: (await ctx.get<string>("name")) ?? "",
-                email: (await ctx.get<string>("email")) ?? "",
-            };
-        },
-    },
-});
+        emit: async (ctx: ObjectContext) => {
+            send(ctx.key, await ctx.get("user"));
+            ctx.clearAll();
+        }
+    }
+})
+
+type EventEnricherType = typeof eventEnricher;
+const EventEnricher: EventEnricherType = {name:"profile"}
 // <end_here>
 
 type UserProfile = {
     id: string;
     name: string;
     email: string;
+    features: string[];
 };
+
+function send(key: string, user: UserProfile | null) {
+}

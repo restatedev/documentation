@@ -16,9 +16,6 @@ type FeatureItem = {
 
 function Feature({itemsPerRow, title, iconPath, description, java, ts, link, kotlin}: FeatureItem) {
   const colWidth = (itemsPerRow) ? Math.floor(12/itemsPerRow) : 4;
-
-  console.log(itemsPerRow);
-  console.log(colWidth);
   return (
     <div className={clsx(`col col--${colWidth} margin-bottom--sm`)}>
         <div className={styles.featureDiv}>
