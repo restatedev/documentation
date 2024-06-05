@@ -2,14 +2,13 @@ package operate.invocations;
 
 import dev.restate.sdk.Context;
 import dev.restate.sdk.JsonSerdes;
+import dev.restate.sdk.client.CallRequestOptions;
 import dev.restate.sdk.client.Client;
 import dev.restate.sdk.client.SendResponse;
 import dev.restate.sdk.common.Output;
 import develop.MyWorkflowClient;
 
 import java.time.Duration;
-
-import static dev.restate.sdk.client.CallRequestOptions.DEFAULT;
 
 public class Ingress {
 
@@ -61,7 +60,7 @@ public class Ingress {
         GreetCounterObjectClient.fromClient(rs, "Mary")
             .send()
             // withClass highlight-line
-            .greet( "Hi", DEFAULT.withIdempotency("abcde"));
+            .greet( "Hi", CallRequestOptions.DEFAULT.withIdempotency("abcde"));
         // <end_service_idempotent>
     }
 
@@ -71,7 +70,7 @@ public class Ingress {
         Client rs = Client.connect("http://localhost:8080");
         SendResponse handle = GreeterServiceClient.fromClient(rs)
                 .send()
-                .greet("Hi", DEFAULT.withIdempotency("abcde"));
+                .greet("Hi", CallRequestOptions.DEFAULT.withIdempotency("abcde"));
 
         // ... do something else ...
 
@@ -88,7 +87,7 @@ public class Ingress {
         Client rs = Client.connect("http://localhost:8080");
         SendResponse handle = GreeterServiceClient.fromClient(rs)
                 .send()
-                .greet("Hi", DEFAULT.withIdempotency("abcde"));
+                .greet("Hi", CallRequestOptions.DEFAULT.withIdempotency("abcde"));
 
         // ... do something else ...
 
