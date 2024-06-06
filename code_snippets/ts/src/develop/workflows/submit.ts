@@ -1,15 +1,19 @@
-import * as clients from "@restatedev/restate-sdk-clients";
+import * as restate from "@restatedev/restate-sdk-clients";
 import {SignUpWorkflow} from "./signup";
 type User = {id: string, email: string};
 
 
 async function signUpUser(user: User){
-    // <start_here>
-    // focus(1:5)
-    const rs = clients.connect({url: "http://localhost:8080"});
-    const signUpWorkflow: SignUpWorkflow = {name: "signup"};
-
-    await rs.workflowClient(signUpWorkflow, user.id)
+    // <start_submit>
+    // import * as restate from "@restatedev/restate-sdk-clients";
+    const rs = restate.connect({url: "http://localhost:8080"});
+    await rs.workflowClient<SignUpWorkflow>({name: "signup"}, user.id)
         .workflowSubmit({email: user.email});
-// <end_here>
+    // <end_submit>
+
+    // <start_attach>
+    await rs.workflowClient<SignUpWorkflow>({name: "signup"}, "someone")
+        .workflowAttach();
+    // <end_attach>
+
 }

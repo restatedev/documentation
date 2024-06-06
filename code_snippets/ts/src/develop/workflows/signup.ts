@@ -1,6 +1,6 @@
+import userManagement from "./service";
 // <start_here>
 import * as restate from "@restatedev/restate-sdk";
-import userManagement from "./service";
 import {WorkflowContext} from "@restatedev/restate-sdk";
 
 const signUpWorkflow = restate.workflow({
@@ -24,7 +24,7 @@ const signUpWorkflow = restate.workflow({
             ctx.promise<string>("email.clicked").resolve(secret),
 
         getStatus: (ctx: restate.WorkflowSharedContext) =>
-            ctx.get("status"),
+            ctx.get<string>("status"),
     },
 });
 

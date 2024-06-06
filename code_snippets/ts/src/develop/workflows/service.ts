@@ -7,10 +7,8 @@ export default restate.object({
     handlers: {
         // <start_here>
         signUpUser: async (ctx: ObjectContext, email: string) => {
-            const signUpWorkflow: SignUpWorkflow = {name: "signup"};
-
             // focus(1:2)
-            await ctx.workflowClient(signUpWorkflow, ctx.key)
+            await ctx.workflowClient<SignUpWorkflow>({name: "signup"}, "someone")
                 .run({email});
         },
         // <end_here>
