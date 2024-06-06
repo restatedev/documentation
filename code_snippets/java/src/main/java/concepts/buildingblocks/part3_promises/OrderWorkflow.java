@@ -41,14 +41,14 @@ public class OrderWorkflow {
         ctx.sleep(Duration.ofMillis(order.getDeliveryDelay()));
 
         // 4. Trigger preparation
-        // focus
+        // mark
         var awakeable = ctx.awakeable(Serde.VOID);
         ctx.run(() ->
-            // focus
+            // mark
             RestaurantClient.prepare(id, awakeable.id()));
         ctx.set(STATUS, StatusEnum.IN_PREPARATION);
 
-        // focus
+        // mark
         awakeable.await();
         ctx.set(STATUS, StatusEnum.SCHEDULING_DELIVERY);
 

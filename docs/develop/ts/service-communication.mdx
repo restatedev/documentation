@@ -9,7 +9,7 @@ import Admonition from '@theme/Admonition';
 
 A handler can call another handler and wait for the response (request-response), or it can send a message without waiting for the response.
 
-<Admonition type="info" title="Exporting the service definition">
+<Admonition type="note" title="Exporting the service definition">
 Make sure you export the service definition of the service you want to call, as we did in the [service example on the overview page](/develop/ts/overview#services):
 
 <CH.Code lineNumbers={"true"} rows={"focus"} >
@@ -27,27 +27,34 @@ Import this service definition in the service handler that wants to call it.
 
 Request-response calls are requests where the client waits for the response.
 
-<CH.Code>
+<CH.Spotlight className={"durable-promises"}>
 
-```ts call_service.ts
-CODE_LOAD::ts/src/develop/service_communication.ts#<start_request_response_service>-<end_request_response_service>
-```
+    To a Service:
 
-</CH.Code>
-<CH.Code>
+    ```ts
+    CODE_LOAD::ts/src/develop/service_communication.ts#<start_request_response_service>-<end_request_response_service>
+    ```
 
-```ts call_object.ts
-CODE_LOAD::ts/src/develop/service_communication.ts#<start_request_response_object>-<end_request_response_object>
-```
+</CH.Spotlight>
 
-</CH.Code>
-<CH.Code>
+<CH.Spotlight>
 
-```ts call_workflow.ts
-CODE_LOAD::ts/src/develop/service_communication.ts#<start_request_response_workflow>-<end_request_response_workflow>
-```
+    To a Virtual Object:
 
-</CH.Code>
+    ```ts
+    CODE_LOAD::ts/src/develop/service_communication.ts#<start_request_response_object>-<end_request_response_object>
+    ```
+
+</CH.Spotlight>
+<CH.Spotlight>
+
+    To a Workflow:
+
+    ```ts
+    CODE_LOAD::ts/src/develop/service_communication.ts#<start_request_response_workflow>-<end_request_response_workflow>
+    ```
+
+</CH.Spotlight>
 
 1. **Create a service client** and supply the service definition of the service you want to call.
    For Virtual Objects, you also need to supply the key of the Virtual Object you want to call, here `"Mary"`.
@@ -59,38 +66,53 @@ CODE_LOAD::ts/src/develop/service_communication.ts#<start_request_response_workf
     In case of failures, Restate takes care of retries.
 </Admonition>
 
-<Admonition type="info" title="Workflow retention time">
+<Admonition type="note" title="Workflow retention time">
     Once the `run` handler of the workflow has finished, the other handlers can still be called up to the retention time of the workflow, by default 24 hours.
     This can be configured via the [Admin API](/references/admin-api/#tag/service/operation/modify_service) per Workflow definition by setting `workflow_completion_retention`.
 </Admonition>
 
 <Admonition type={"caution"} title={"Deadlocks with Virtual Objects"}>
-
-    Request-response calls to Virtual Object can lead to deadlocks.
-    When this happens, the Virtual Object remains locked and the system can't process any more requests.
-    In this situation you'll have to unblock the Virtual Object manually by [cancelling invocations](/operate/invocation#cancelling-invocations). Some example cases:
+    Request-response calls to Virtual Objects can lead to deadlocks, in which the Virtual Object remains locked and can't process any more requests.
+    Some example cases:
     - Cross deadlock between Virtual Object A and B: A calls B, and B calls A, both using same keys.
     - Cyclical deadlock: A calls B, and B calls C, and C calls A again.
 
+    In this situation, you can use the CLI to unblock the Virtual Object manually by [cancelling invocations](/operate/invocation#cancelling-invocations).
 </Admonition>
 
 ## Sending messages
 
 Handlers can send messages (a.k.a. one-way calls, or fire-and-forget calls), as follows:
 
-<CH.Code>
+<CH.Spotlight>
 
-```ts call_service.ts
-CODE_LOAD::ts/src/develop/service_communication.ts#<start_one_way_service>-<end_one_way_service>
-```
+    To a Service:
 
-    ---
+    ```ts
+    CODE_LOAD::ts/src/develop/service_communication.ts#<start_one_way_service>-<end_one_way_service>
+    ```
 
-```ts call_object.ts
-CODE_LOAD::ts/src/develop/service_communication.ts#<start_one_way_object>-<end_one_way_object>
-```
+</CH.Spotlight>
 
-</CH.Code>
+<CH.Spotlight>
+
+    To a Virtual Object:
+
+    ```ts
+    CODE_LOAD::ts/src/develop/service_communication.ts#<start_one_way_object>-<end_one_way_object>
+    ```
+
+</CH.Spotlight>
+
+<CH.Spotlight>
+
+    To a Workflow:
+
+    ```ts
+    CODE_LOAD::ts/src/develop/service_communication.ts#<start_one_way_workflow>-<end_one_way_workflow>
+    ```
+
+</CH.Spotlight>
 
 <Admonition type="tip" title="No need for message queues">
     Without Restate, you would usually put a message queue in between the two services, to guarantee the message delivery.
@@ -103,26 +125,32 @@ A delayed call is a one-way call that gets executed after a specified delay.
 
 To schedule a delayed call, send a message with a delay parameter, as follows:
 
-<CH.Code>
+<CH.Spotlight>
 
-```ts call_service.ts
-CODE_LOAD::ts/src/develop/service_communication.ts#<start_delayed_service>-<end_delayed_service>
-```
+    To a Service:
 
-    ---
+    ```ts
+    CODE_LOAD::ts/src/develop/service_communication.ts#<start_delayed_service>-<end_delayed_service>
+    ```
 
-```ts call_object.ts
-CODE_LOAD::ts/src/develop/service_communication.ts#<start_delayed_object>-<end_delayed_object>
-```
+</CH.Spotlight>
 
-</CH.Code>
+<CH.Spotlight>
+
+    To a Virtual Object:
+
+    ```ts
+    CODE_LOAD::ts/src/develop/service_communication.ts#<start_delayed_object>-<end_delayed_object>
+    ```
+
+</CH.Spotlight>
 
 <Admonition type="tip" title="Scheduling async tasks">
     You can also use this functionality to schedule async tasks.
     Restate will make sure the task gets executed at the desired time.
 </Admonition>
 
-<Admonition type="info" title="Ordering guarantees in Virtual Objects">
+<Admonition type="note" title="Ordering guarantees in Virtual Objects">
     <CH.Section>
     Invocations to a Virtual Object are executed serially.
     Invocations will execute in the same order in which they arrive at Restate.

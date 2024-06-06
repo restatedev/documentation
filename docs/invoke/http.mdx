@@ -17,8 +17,9 @@ You can invoke handlers over HTTP with or without waiting for a response, and wi
 You can invoke services over HTTP 1.1 or higher.
 Request/response bodies should be encoded as JSON.
 
-### Invoking services
-Invoke `myHandler` of `myService` as follows:
+<CH.Spotlight>
+    ### Invoking Services
+    Invoke `myHandler` of `myService` as follows:
 
     ```shell
     curl localhost:8080/MyService/myHandler \
@@ -26,9 +27,11 @@ Invoke `myHandler` of `myService` as follows:
         -d '{"name": "Mary", "age": 25}'
     ```
 
+</CH.Spotlight>
+<CH.Spotlight>
 
-### Invoking Virtual Objects
-Invoke `myHandler` of `myVirtualObject` for `myKey` as follows:
+    ### Invoking Virtual Objects
+    Invoke `myHandler` of `myVirtualObject` for `myKey` as follows:
 
     ```shell
     curl localhost:8080/MyVirtualObject/myObjectKey/myHandler \
@@ -36,14 +39,20 @@ Invoke `myHandler` of `myVirtualObject` for `myKey` as follows:
         -d '{"name": "Mary", "age": 25}'
     ```
 
-### Invoke Workflows
-Call the `run` handler of the `MyWorkflow` as follows:
+</CH.Spotlight>
+<CH.Spotlight>
+
+    ### Invoke Workflows
+    Call the `run` handler of the `MyWorkflow` as follows:
 
     ```shell
     curl localhost:8080/MyWorkflow/myWorkflowId/run \
         -H 'content-type: application/json' \
         -d '{"name": "Mary", "age": 25}'
     ```
+
+</CH.Spotlight>
+
 
 Follow the same pattern for calling the other handlers of the workflow.
 
@@ -73,9 +82,8 @@ curl localhost:8080/MyService/myHandler/send \
 The response contains the [Invocation ID](/operate/invocation#invocation-identifier).
 You can use this identifier [to cancel](/operate/invocation#cancelling-invocations) or [kill the invocation](/operate/invocation#killing-invocations).
 
-<Admonition type={"tip"} title={"Latch onto running invocations with idempotency key and workflows"}>
-    You can latch onto running invocations with an idempotency key and workflows. This lets you retrieve their result if they finished, or latch on if they are still ongoing.
-    Check [the documentation below for more information](#latching-onto-running-invocations-and-workflows) below.
+<Admonition type={"tip"} title={"Retrieving results of one-way invocations and workflows"}>
+    You can retrieve the results of one-way invocations with an idempotency key and workflows, as [described here](/invoke/clients#retrieve-result-of-invocations-and-workflows).
 </Admonition>
 
 
@@ -103,7 +111,7 @@ You can **delay the message** by adding a delay request parameter in ISO8601 not
 
 <Admonition type="note" title={"Not supported for workflows"}>
     You cannot yet use this feature for workflows.
-    Workflows can only we scheduled with a delay from within another Restate handler ([TS](/develop/ts/service-communication#delayed-calls)/[Java/Kotlin](/develop/java/service-communication#delayed-calls)).
+    Workflows can only be scheduled with a delay from within another Restate handler ([TS](/develop/ts/service-communication#delayed-calls)/[Java/Kotlin](/develop/java/service-communication#delayed-calls)).
 </Admonition>
 
 
@@ -122,8 +130,8 @@ curl localhost:8080/MyService/myHandler \
 After the invocation completes, Restate persists the response for a retention period of one day (24 hours).
 If you re-invoke the service with the same idempotency key within 24 hours, Restate sends back the same response and doesn't re-execute the request to the service.
 
-<Admonition type="tip" title={"Make any service call idempotent by using Restate"}>
-    By using Restate and an idempotency key, you can make any service call idempotent, without any extra code or setup.
+<Admonition type="tip" title={"Make any service call idempotent with Restate"}>
+    With Restate and an idempotency key, you can make any service call idempotent, without any extra code or setup.
     This is a very powerful feature to ensure that your system stays consistent and doesn't perform the same operation multiple times.
 </Admonition>
 
@@ -143,88 +151,58 @@ If you re-invoke the service with the same idempotency key within 24 hours, Rest
 </details>
 
 
-## Latching onto running invocations and workflows
+## Retrieve result of invocations and workflows
 
-Restate allows you to latch onto the ongoing workflows and invocations that had an idempotency token.
+Restate allows you to retrieve the result of workflows and invocations with an idempotency key.
 There are two options:
-- To **attach** to a running invocation or workflow and wait for it to finish, use `/attach`.
-- To **peek at the output** of a running invocation or workflow, use `/output`. This will return:
+- To **attach** to an invocation or workflow and wait for it to finish, use `/attach`.
+- To **peek at the output** of an invocation or workflow, use `/output`. This will return:
   - `{"message":"not ready"}` for ongoing workflows
   - The result for finished workflows
   - `{"message":"not found"}` for non-existing workflows
 
-<CH.Spotlight className="durable-promises">
+You can attach to a service/object invocation only if the invocation used an idempotency key.
 
-    <CH.Code>
-        ```shell attach.sh
-        curl localhost:8080/restate/invocation/myInvocationId/attach
-        ```
+<CH.Spotlight start={1} className="durable-promises">
 
-        ---
-
-        ```shell output.sh
-        curl localhost:8080/restate/invocation/myInvocationId/output
-        ```
-
-    </CH.Code>
+    ```shell
+    curl localhost:8080/restate/invocation/myInvocationId/attach
+    curl localhost:8080/restate/invocation/myInvocationId/output
+    ```
 
     ---
 
     Via invocation ID
 
+    ```shell
+    curl localhost:8080/restate/invocation/myInvocationId/attach
+    curl localhost:8080/restate/invocation/myInvocationId/output
+    ```
     ---
 
-    <CH.Code>
-        ```shell attach.sh
-        curl localhost:8080/restate/invocation/MyService/myHandler/myIdempotencyKey/attach
-        ```
+    ```shell
+    curl localhost:8080/restate/invocation/MyService/myHandler/myIdempotencyKey/attach
+    curl localhost:8080/restate/invocation/MyService/myHandler/myIdempotencyKey/output
+    ```
 
-        ---
-
-        ```shell output.sh
-        curl localhost:8080/restate/invocation/MyService/myHandler/myIdempotencyKey/output
-        ```
-
-    </CH.Code>
-
-    For Services, via [idempotency key](/invoke/http#invoke-a-handler-idempotently).
+    For Services, via [idempotency key](/invoke/http#invoke-a-handler-idempotently)
 
     ---
 
-    <CH.Code>
+    ```shell
+    curl localhost:8080/restate/invocation/myObject/myKey/myHandler/myIdempotencyKey/attach
+    curl localhost:8080/restate/invocation/myObject/myKey/myHandler/myIdempotencyKey/output
+    ```
 
-        ```shell attach.sh
-        curl localhost:8080/restate/invocation/myVirtualObject/myKey/myHandler/myIdempotencyKey/attach
-        ```
-
-        ---
-
-        ```shell output.sh
-        curl localhost:8080/restate/invocation/myVirtualObject/myKey/myHandler/myIdempotencyKey/output
-        ```
-
-    </CH.Code>
-
-    For Virtual Objects, via [idempotency key](/invoke/http#invoke-a-handler-idempotently).
+    For Virtual Objects, via [idempotency key](/invoke/http#invoke-a-handler-idempotently)
 
     ---
 
-    <CH.Code>
+    ```shell
+    curl localhost:8080/restate/workflow/MyWorkflow/myWorkflowId/attach
+    curl localhost:8080/restate/workflow/MyWorkflow/myWorkflowId/output
+    ```
 
-        ```shell attach.sh
-        curl localhost:8080/restate/workflow/MyWorkflow/myWorkflowId/attach
-        ```
-
-        ---
-
-        ```shell output.sh
-        curl localhost:8080/restate/workflow/MyWorkflow/myWorkflowId/output
-        ```
-
-    </CH.Code>
-
-
-    For Workflows, with the Workflow ID.
-
+    For Workflows, with the Workflow ID
 
 </CH.Spotlight>

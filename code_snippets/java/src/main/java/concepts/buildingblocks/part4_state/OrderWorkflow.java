@@ -18,15 +18,15 @@ import java.time.Duration;
 // <start_here>
 @VirtualObject
 public class OrderWorkflow {
-    // focus
+    // mark
     public final static StateKey<StatusEnum> STATUS =
-        // focus
+        // mark
         StateKey.of("status", JacksonSerdes.of(StatusEnum.class));
 
     @Handler
     public void process(ObjectContext ctx, OrderRequest order) {
         String id = order.getOrderId();
-        // focus
+        // mark
         ctx.set(STATUS, StatusEnum.CREATED);
 
         // 2. Handle payment
@@ -35,13 +35,13 @@ public class OrderWorkflow {
             PaymentClient.charge(id, token, order.getTotalCost()));
 
         if (!paid) {
-            // focus
+            // mark
             ctx.set(STATUS, StatusEnum.REJECTED);
             return;
         }
 
         // 3. Schedule preparation
-        // focus
+        // mark
         ctx.set(STATUS, StatusEnum.SCHEDULED);
         ctx.sleep(Duration.ofMillis(order.getDeliveryDelay()));
 
@@ -49,17 +49,17 @@ public class OrderWorkflow {
         var awakeable = ctx.awakeable(Serde.VOID);
         ctx.run(() ->
             RestaurantClient.prepare(id, awakeable.id()));
-        // focus
+        // mark
         ctx.set(STATUS, StatusEnum.IN_PREPARATION);
 
         awakeable.await();
-        // focus
+        // mark
         ctx.set(STATUS, StatusEnum.SCHEDULING_DELIVERY);
 
         // 5. Find a driver and start delivery
         DeliveryManagerClient.fromContext(ctx, id)
             .startDelivery(order).await();
-        // focus
+        // mark
         ctx.set(STATUS, StatusEnum.DELIVERED);
     }
 }

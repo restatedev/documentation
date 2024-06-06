@@ -25,15 +25,15 @@ async function process(ctx: ObjectContext, order: Order) {
     await ctx.sleep(order.deliveryDelay);
 
     // 4. Trigger preparation
-    // focus
+    // mark
     const preparationPromise = ctx.awakeable();
     await ctx.run(() =>
-        // focus
+        // mark
         restaurant.prepare(order.id, preparationPromise.id)
     );
     ctx.set("status", Status.IN_PREPARATION);
 
-    // focus
+    // mark
     await preparationPromise.promise;
     ctx.set("status", Status.SCHEDULING_DELIVERY);
 

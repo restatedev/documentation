@@ -6,129 +6,109 @@ description: "Use the clients to invoke handlers programmatically."
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
+import {Step} from "../../src/components/Stepper";
 
 # Clients
-
-In plain TypeScript/Java/Kotlin code, where you do not have access to the Restate Context, you can invoke handlers programmatically using the Restate SDK client library.
-
-<Admonition type="note" title={"In Restate handlers, invoke via the Restate Context"}>
 When you implement a Restate handler, you have access to a Restate `Context`.
 You can use this context to invoke other handlers.
 Have a look at the Development docs ([TS](/develop/ts/service-communication)/[Java](/develop/java/service-communication)/[Kotlin](/develop/java/service-communication?sdk=kotlin)).
 
-Always use this way of invoking handlers when you have access to the context.
-This way, Restate attaches information about the invocation to the parent invocation.
+
+In plain TypeScript/Java/Kotlin code, where you do not have access to the Restate Context, you can invoke handlers programmatically using the Restate SDK client library.
+
+<Admonition type="note" title={"Use the Restate Context"}>
+Always invoke handlers via the context, if you have access to it.
+Restate then attaches information about the invocation to the parent invocation.
 </Admonition>
 
 ## Invoking handlers with the SDK clients
 
-Then, invoke the Restate handler programmatically from plain TypeScript/Java/Kotlin code, via:
+Invoke a handler programmatically with the SDK clients as follows:
 
 <Tabs groupId="sdk" queryString>
     <TabItem value="ts" label="TypeScript">
-
-        1. Add the dependency to your project:
-
-        ```shell
-        npm install @restatedev/restate-sdk-clients
-        ```
-
-        2. Make sure to first [register the handler](/operate/registration) you want to invoke.
-
-        3. In your code, connect to Restate:
-
-        ```typescript
-        CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_connect>-<end_connect>
-        ```
-
-
-
-        4. Invoke the handler with your preferred semantics:
-
-        <CH.Spotlight className="durable-promises">
-
-            ```typescript
-            CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_rpc_call_node>-<end_rpc_call_node>
+        <Step stepLabel="1" title="Add the dependency to your project">
+            ```shell
+            npm install @restatedev/restate-sdk-clients
             ```
+        </Step>
+        <Step stepLabel="2" title={<span><a href={"/operate/registration"}>Register the service</a> you want to invoke.</span>}/>
+        <Step stepLabel="3" title="Connect to Restate and invoke the handler with your preferred semantics">
+            <CH.Spotlight start={1} className="durable-promises">
 
-            ---
+                ```typescript
+                CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_rpc_call_node>-<end_rpc_call_node>
+                ```
 
-            **<mark class="accent">Request-response</mark> invocations** allow you to wait on a response from the handler.
+                ---
 
-            ---
+                **Request-response invocations** allow you to wait on a response from the handler.
 
-            ```typescript
-            CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_one_way_call_node>-<end_one_way_call_node>
-            ```
+                ---
 
-            **<mark class="accent">One-way</mark> invocations** allow you to send a message without waiting for a response.
+                ```typescript
+                CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_one_way_call_node>-<end_one_way_call_node>
+                ```
 
-            ---
+                **One-way invocations** allow you to send a message without waiting for a response.
 
-            ```typescript
-            CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_delayed_call_node>-<end_delayed_call_node>
-            ```
+                ---
 
-            **<mark class="accent">Delayed</mark> invocations** allow you to schedule an invocation for a later point in time.
+                ```typescript
+                CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_delayed_call_node>-<end_delayed_call_node>
+                ```
 
-        </CH.Spotlight>
+                **Delayed invocations** allow you to schedule an invocation for a later point in time.
+            </CH.Spotlight>
+        </Step>
     </TabItem>
     <TabItem value="java" label="Java">
-
-
-        1. Add the dependency to your project:
-
-        ```kotlin
-        implementation("dev.restate:sdk-common:VAR::TYPESCRIPT_SDK_VERSION")
-        ```
-
-        2. Make sure to first [register the handler](/operate/registration) you want to invoke.
-
-        3. From your code, connect to Restate and invoke the handler with the generated clients and your preferred semantics:
-
-        <CH.Spotlight className="durable-promises">
-
-            ```java
-            CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_rpc_java>-<end_rpc_java>
+        <Step stepLabel="1" title="Add the dependency to your project">
+            ```kotlin
+            implementation("dev.restate:sdk-common:VAR::TYPESCRIPT_SDK_VERSION")
             ```
+        </Step>
+        <Step stepLabel="2" title={<span><a href={"/operate/registration"}>Register the service</a> you want to invoke.</span>}/>
+        <Step stepLabel="3" title="Connect to Restate and invoke the handler with your preferred semantics">
+            <CH.Spotlight start={1} className="durable-promises">
 
-            ---
+                ```java
+                CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_rpc_java>-<end_rpc_java>
+                ```
 
-            **<mark class="accent">Request-response</mark> invocations** allow you to wait on a response from the handler.
+                ---
 
-            ---
+                **Request-response invocations** allow you to wait on a response from the handler.
 
-            ```java
-            CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_one_way_call_java>-<end_one_way_call_java>
-            ```
+                ---
 
-            **<mark class="accent">One-way</mark> invocations** allow you to send a message without waiting for a response.
-            You can schedule an invocation as a one-way invocation and later on latch onto it to retrieve the response.
-            Have a look below.
+                ```java
+                CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_one_way_call_java>-<end_one_way_call_java>
+                ```
 
-            ---
+                **One-way invocations** allow you to send a message without waiting for a response.
 
-            ```java
-            CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_delayed_call_java>-<end_delayed_call_java>
-            ```
+                ---
 
-            **<mark class="accent">Delayed</mark> invocations** allow you to schedule an invocation for a later point in time.
+                ```java
+                CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_delayed_call_java>-<end_delayed_call_java>
+                ```
 
-        </CH.Spotlight>
+                **Delayed invocations** allow you to schedule an invocation for a later point in time.
 
+            </CH.Spotlight>
+        </Step>
     </TabItem>
 </Tabs>
 
-
-<Admonition type={"tip"} title={"Latch onto running invocations with idempotency key and workflows"}>
-    You can latch onto running invocations with an idempotency key and workflows. This lets you retrieve their result if they finished, or attach to them if they are still ongoing.
-    Check [the documentation below for more information](#latching-onto-running-invocations-and-workflows) below.
+<Admonition type={"tip"} title={"Retrieve results of one-way invocations and workflows"}>
+    You can retrieve the results of one-way invocations with an idempotency key and workflows, as [described here](/invoke/clients#retrieve-result-of-invocations-and-workflows).
 </Admonition>
 
 ## Invoke a handler idempotently
 
-You can send requests to Restate providing an idempotency key, through the [`Idempotency-Key` header](https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/).
-You can add the idempotency key to the header via:
+To make a service call idempotent, you can use the idempotency key feature.
+Add the idempotency key [to the header](https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/) via:
 
 <Tabs groupId="sdk" queryString>
     <TabItem value="ts" label="TypeScript">
@@ -158,7 +138,7 @@ If you re-invoke the service with the same idempotency key within 24 hours, Rest
 </Admonition>
 
 <Admonition type="note" title={"Adding headers to the request"}>
-    You can use these call options to set headers on the request.
+    The call options, with which we set the idempotency key, also let you add other headers to the request.
 </Admonition>
 
 <details className={"grey-details"}>
@@ -176,71 +156,89 @@ If you re-invoke the service with the same idempotency key within 24 hours, Rest
 
 </details>
 
-## Latching onto running invocations and workflows
+## Retrieve result of invocations and workflows
 
-You can also use the client library to attach to running invocations with an idempotency key or workflows.
-This lets you retrieve their results or wait for them to finish.
+You can use the client library to retrieve the results of invocations with an idempotency key or workflows.
+You can:
+- Attach to an ongoing invocation and retrieve the result when it finishes.
+- Peek at the output of a running invocation or workflow, to check if it has finished and optionally retrieve the result.
 
-**For services or objects**, you can attach to an ongoing invocation **only if it used an idempotency key**, via:
-
-<Tabs groupId="sdk" queryString>
-    <TabItem value="ts" label="TypeScript">
-
-        ```typescript
-        CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_service_attach>-<end_service_attach>
-        ```
-
-    </TabItem>
-    <TabItem value="java" label="Java">
-
-        ```java
-        CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_service_attach>-<end_service_attach>
-        ```
-
-    </TabItem>
-</Tabs>
-
-**For workflows**, you can attach to an ongoing invocation via:
+You can attach to a service/object invocation only if the invocation used an idempotency key.
 
 <Tabs groupId="sdk" queryString>
     <TabItem value="ts" label="TypeScript">
 
-        ```typescript
-        CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_workflow_attach>-<end_workflow_attach>
-        ```
+<CH.Spotlight start={1} className={"workflows-scroller-large"}>
 
-    </TabItem>
-    <TabItem value="java" label="Java">
+    ```typescript
+    CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_service_attach>-<end_service_attach>
+    ```
 
-        ```java
-        CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_workflow_attach>-<end_workflow_attach>
-        ```
+    ---
 
-    </TabItem>
+    **Attach to service/object calls** by using the handle that is returned from the invocation.
+
+    ```typescript
+    CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_service_attach>-<end_service_attach>
+    ```
+
+    ---
+
+    **Attach to workflows** by using the handle that is returned from the invocation, or by using the workflow ID.
+
+    ```typescript
+    CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_workflow_attach>-<end_workflow_attach>
+    ```
+
+    ---
+
+    **Peek at the output of workflows** by using the workflow ID.
+
+    ```typescript
+    CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_workflow_peek>-<end_workflow_peek>
+    ```
+
+</CH.Spotlight>
+
+</TabItem>
+<TabItem value="java" label="Java">
+<CH.Spotlight start={1}>
+    ```java
+    CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_service_attach>-<end_service_attach>
+    ```
+
+    ---
+
+    **Attach to service/object calls** by using the handle that is returned from the invocation.
+
+    ```java
+    CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_service_attach>-<end_service_attach>
+    ```
+
+    ---
+
+    **Peek at the output of service/object calls** by using the handle that is returned from the invocation.
+
+    ```java
+    CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_service_peek>-<end_service_peek>
+    ```
+
+    ---
+
+    **Attach to workflows** by using the handle that is returned from the invocation, or by using the workflow ID.
+
+    ```java
+    CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_workflow_attach>-<end_workflow_attach>
+    ```
+
+    ---
+
+    **Peek at the output of workflows** by using the workflow ID.
+
+    ```java
+    CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_workflow_peek>-<end_workflow_peek>
+    ```
+</CH.Spotlight>
+</TabItem>
 </Tabs>
-
-**For workflows**, you can also **peek at the output** of a running invocation or workflow via:
-
-<Tabs groupId="sdk" queryString>
-    <TabItem value="ts" label="TypeScript">
-
-        ```typescript
-        CODE_LOAD::ts/src/operate/invocations/ingress.ts#<start_workflow_peek>-<end_workflow_peek>
-        ```
-
-    </TabItem>
-    <TabItem value="java" label="Java">
-
-        ```java
-        CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_workflow_peek>-<end_workflow_peek>
-        ```
-
-    </TabItem>
-</Tabs>
-
-The output contains a `ready` flag that indicates whether the invocation has finished.
-And if it has, the `result` contains the output of the invocation.
-
-
-
 

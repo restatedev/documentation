@@ -41,9 +41,16 @@ const service = restate.service({
             // <start_request_response_workflow>
             // Call the `run` handler of the workflow
             await ctx.workflowClient(MyWorkflow, "my-workflow-id").run("Hi");
-            // Calling other handlers of the workflow. (Callable up to 24 hours after end of `run` handler execution.)
+            // Call some other `interactWithWorkflow` handler of the workflow.
             await ctx.workflowClient(MyWorkflow, "my-workflow-id").interactWithWorkflow();
             // <end_request_response_workflow>
+
+            // <start_one_way_workflow>
+            // Call the `run` handler of the workflow
+            ctx.workflowSendClient(MyWorkflow, "wf-id").run("Hi");
+            // Call some other `interactWithWorkflow` handler of the workflow.
+            ctx.workflowSendClient(MyWorkflow, "wf-id").interactWithWorkflow();
+            // <end_one_way_workflow>
 
         }
     }
