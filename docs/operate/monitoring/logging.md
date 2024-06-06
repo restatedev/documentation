@@ -7,7 +7,7 @@ description: "Find out how to configure logging for Restate."
 
 By default, Restate logs INFO, WARN and ERROR events using a pretty format.
 
-A complete list of configuration options is available in the [configuration documentation](/operate/configuration).
+A complete list of configuration options is available in the [configuration documentation](/operate/configuration/server).
 
 For service logging, check the [Typescript SDK logging](/develop/ts/logging) and [Java SDK logging](/develop/java/logging) pages.
 
