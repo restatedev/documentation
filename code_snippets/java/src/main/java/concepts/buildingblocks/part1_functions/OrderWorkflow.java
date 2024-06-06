@@ -21,7 +21,7 @@ public class OrderWorkflow {
     public final static StateKey<StatusEnum> STATUS =
         StateKey.of("status", JacksonSerdes.of(StatusEnum.class));
 
-    // focus(1:2)
+    // mark(1:2)
     @Handler
     public void process(ObjectContext ctx, OrderRequest order) {
         String id = order.getOrderId();
@@ -54,7 +54,7 @@ public class OrderWorkflow {
         DeliveryManagerClient.fromContext(ctx, id)
             .startDelivery(order).await();
         ctx.set(STATUS, StatusEnum.DELIVERED);
-        // focus
+        // mark
     }
 }
 // <end_here>
