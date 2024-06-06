@@ -1,11 +1,12 @@
 // <start_here>
 import * as restate from "@restatedev/restate-sdk";
 import userManagement from "./service";
+import {WorkflowContext} from "@restatedev/restate-sdk";
 
 const signUpWorkflow = restate.workflow({
     name: "signup",
     handlers: {
-        run: async (ctx: restate.WorkflowContext, req: { email: string }) => {
+        run: async (ctx: WorkflowContext, req: { email: string }) => {
             const secret = ctx.rand.uuidv4();
             ctx.set("status", "Generated secret");
 
@@ -22,7 +23,8 @@ const signUpWorkflow = restate.workflow({
         click: (ctx: restate.WorkflowSharedContext, secret: string) =>
             ctx.promise<string>("email.clicked").resolve(secret),
 
-        getStatus: (ctx: restate.WorkflowSharedContext) => ctx.get("status"),
+        getStatus: (ctx: restate.WorkflowSharedContext) =>
+            ctx.get("status"),
     },
 });
 
