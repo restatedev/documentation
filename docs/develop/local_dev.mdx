@@ -1,0 +1,136 @@
+---
+sidebar_position: 2
+description: "Learn how to set up your local dev environment"
+---
+
+import Admonition from '@theme/Admonition';
+
+# Local Dev
+
+## Install Restate Server & CLI
+### Option 1: Using a package manager
+
+<CH.Spotlight>
+Install the Restate Server via:
+
+<CH.Code rows={2}>
+    ```shell npm
+    npm install --global @restatedev/restate-server@latest
+    ```
+
+    ``` shell Homebrew
+    brew install restatedev/tap/restate-server && restate-server
+    ```
+
+    ```shell Docker
+    docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 \
+    --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
+    ```
+</CH.Code>
+</CH.Spotlight>
+
+
+<CH.Spotlight>
+    Install the Restate CLI via:
+
+    <CH.Code>
+
+        ```shell npm
+        npm install --global @restatedev/restate@latest
+        ```
+
+        ```shell Homebrew
+        brew install restatedev/tap/restate
+        ```
+
+    </CH.Code>
+</CH.Spotlight>
+### Option 2: Download the binary
+
+Install the Restate Server and CLI by downloading the binaries with `curl` from the [releases page](https://github.com/restatedev/restate/releases/latest), and make them executable:
+
+<CH.Code rows={"5"}>
+
+    ```shell MacOS-x64
+    curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.x86_64-apple-darwin.tar.gz && \
+    tar -xvf restate.x86_64-apple-darwin.tar.gz && \
+    chmod +x restate restate-server && \
+    sudo mv restate /usr/local/bin/ && \
+    sudo mv restate-server /usr/local/bin/
+    ```
+
+    ```shell MacOS-arm64
+    curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.aarch64-apple-darwin.tar.gz && \
+    tar -xvf restate.aarch64-apple-darwin.tar.gz && \
+    chmod +x restate restate-server && \
+    sudo mv restate /usr/local/bin/ && \
+    sudo mv restate-server /usr/local/bin/
+    ```
+
+    ```shell Linux-x64
+    curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.x86_64-unknown-linux-musl.tar.gz && \
+    tar -xvf restate.x86_64-unknown-linux-musl.tar.gz && \
+    chmod +x restate restate-server && \
+    sudo mv restate /usr/local/bin/ && \
+    sudo mv restate-server /usr/local/bin/
+    ```
+
+    ```shell Linux-arm64
+    curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.aarch64-unknown-linux-musl.tar.gz && \
+    tar -xvf restate.aarch64-unknown-linux-musl.tar.gz && \
+    chmod +x restate restate-server && \
+    sudo mv restate /usr/local/bin/ && \
+    sudo mv restate-server /usr/local/bin/
+    ```
+</CH.Code>
+
+<Admonition type="note" title="Server and CLI configuration">
+    Have a look at the [CLI configuration docs](/operate/configuration/cli) or [Server configuration docs](/operate/configuration/server) for more configuration options.
+</Admonition>
+
+
+## Running Restate locally
+
+
+
+<CH.Spotlight>
+    Check if the CLI is installed correctly and can find the server:
+
+    ```shell
+    restate whoami
+    ```
+</CH.Spotlight>
+
+--wipe
+
+--config
+
+## Useful dev CLI commands
+
+```shell
+restate invocation cancel
+```
+
+```shell
+restate invocation prune
+```
+
+```shell
+restate kv clear
+```
+
+```shell
+restate sql --json "query"
+```
+
+
+Print help to see all available commands:
+
+```shell
+restate --help
+```
+
+<Admonition type="tip">
+    The CLI can be a useful tool for debugging and troubleshooting.
+    Have a look at the [introspection page](/operate/introspection) for a list of useful commands .
+</Admonition>
