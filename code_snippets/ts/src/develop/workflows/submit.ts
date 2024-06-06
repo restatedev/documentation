@@ -7,7 +7,7 @@ async function signUpUser(user: User){
     // <start_submit>
     // import * as restate from "@restatedev/restate-sdk-clients";
     const rs = restate.connect({url: "http://localhost:8080"});
-    await rs.workflowClient<SignUpWorkflow>({name: "signup"}, user.id)
+    await rs.workflowClient<SignUpWorkflow>({name: "signup"}, "someone")
         .workflowSubmit({email: user.email});
     // <end_submit>
 

@@ -29,14 +29,11 @@ const signUpWorkflow = restate.workflow({
 });
 
 export type SignUpWorkflow = typeof signUpWorkflow;
+
+restate.endpoint().bind(signUpWorkflow).listen();
 // <end_here>
 
 function sendEmailWithLink(param: { email: string, secret: string}){
     console.log(`Sending email to ${param.email} with secret ${param.secret}`);
 }
 
-restate
-    .endpoint()
-    .bind(userManagement)
-    .bind(signUpWorkflow)
-    .listen(9088);
