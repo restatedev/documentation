@@ -91,46 +91,98 @@ Install the Restate Server and CLI by downloading the binaries with `curl` from 
 
 ## Running Restate locally
 
+<CH.Spotlight className={"spotlight-medium"}>
+    Start the Restate Server:
 
+    ```shell
+    restate-server
+    ```
+</CH.Spotlight>
+<CH.Spotlight className={"spotlight-medium"}>
+    Start the Restate Server and wipe ongoing invocations and K/V state.
 
-<CH.Spotlight>
+    ```shell
+    restate-server --wipe all
+    ```
+</CH.Spotlight>
+<CH.Spotlight className={"spotlight-medium"}>
+    Check out all available commands and configuration options ([docs](/operate/configuration/server)):
+
+    ```shell
+    restate-server --help
+    ```
+</CH.Spotlight>
+
+## Useful dev CLI commands
+
+<CH.Spotlight className={"spotlight-medium"}>
     Check if the CLI is installed correctly and can find the server:
 
     ```shell
     restate whoami
     ```
 </CH.Spotlight>
+<CH.Spotlight className={"spotlight-medium"}>
+    Register a new service deployment:
 
---wipe
+    ```shell
+    restate deployments register localhost:9080
+    ```
+</CH.Spotlight>
+<CH.Spotlight className={"spotlight-medium"}>
 
---config
+    [Cancel](/operate/invocation#cancelling-invocations) a single invocation or a batch of invocations.
+    Use `--kill` to [kill](/operate/invocation#killing-invocations) the invocation.
+    To remove all invocations, restart the server with `--wipe all`.
 
-## Useful dev CLI commands
+    ```shell
+    restate invocation cancel <INVOCATION_ID>
+    # also works with <SERVICE>/<SERVICE_KEY>/<HANDLER> or a subset of it
+    ```
 
-```shell
-restate invocation cancel
-```
+</CH.Spotlight>
+<CH.Spotlight className={"spotlight-medium"}>
 
-```shell
-restate invocation prune
-```
+    Purge completed invocations from the state:
 
-```shell
-restate kv clear
-```
+    ```shell
+    restate invocation purge <INVOCATION_ID>
+    # also works with <SERVICE>/<SERVICE_KEY>/<HANDLER> or a subset of it
+    ```
 
-```shell
-restate sql --json "query"
-```
+</CH.Spotlight>
+<CH.Spotlight className={"spotlight-medium"}>
+
+    Clear the K/V state of a Virtual Object or Workflows.
+    To clear all state, restart the server with `--wipe all`.
+
+    ```shell
+    restate kv clear <OBJECT_OR_WORKFLOW_NAME>
+    restate kv clear <OBJECT_OR_WORKFLOW_NAME>/<SERVICE_KEY>
+    ```
+
+</CH.Spotlight>
+<CH.Spotlight className={"spotlight-medium"}>
+
+    Execute a SQL query on the invocation or application state.
+    See [SQL introspection docs](/operate/introspection?interface=psql#inspecting-invocations) for example queries.
+
+    ```shell
+    restate sql --json "query"
+    ```
+
+</CH.Spotlight>
+<CH.Spotlight className={"spotlight-medium"}>
+
+    Check out all available commands:
+
+    ```shell
+    restate --help
+    ```
+
+</CH.Spotlight>
 
 
-Print help to see all available commands:
-
-```shell
-restate --help
-```
-
-<Admonition type="tip">
-    The CLI can be a useful tool for debugging and troubleshooting.
-    Have a look at the [introspection page](/operate/introspection) for a list of useful commands .
+<Admonition type="tip" title={"Debugging and troubleshooting with the CLI"}>
+    Have a look at the [introspection page](/operate/introspection) for a list of useful commands.
 </Admonition>
