@@ -31,52 +31,53 @@ The Java SDK generates a client for each service, which you can use to make thes
 Use the generated client's of the SDK to do the request-response call:
 
 <Tabs groupId="sdk" queryString className={"display-none"}>
- <TabItem value="java" label="Java">
-
-```java CallService.java
-CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_request_response_service>-<end_request_response_service>
-```
-
-</TabItem>
-<TabItem value="kotlin" label="Kotlin">
-
-```kotlin CallService.kt
-CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#<start_request_response_service>-<end_request_response_service>
-```
-
-</TabItem>
-</Tabs>
-
-<Tabs groupId="sdk" queryString className={"display-none"}>
-<TabItem value="java" label="Java">
-
-```java CallVirtualObject.java
-CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_request_response_virtual_object>-<end_request_response_virtual_object>
-```
-
-</TabItem>
-<TabItem value="kotlin" label="Kotlin">
-
-```kotlin CallVirtualObject.kt
-CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#<start_request_response_virtual_object>-<end_request_response_virtual_object>
-```
-
-</TabItem>
-</Tabs>
-
-<Tabs groupId="sdk" queryString className={"display-none"}>
     <TabItem value="java" label="Java">
 
-        ```java CallWorkflow.java
-        CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_request_response_workflow>-<end_request_response_workflow>
-        ```
+         <CH.Spotlight>
+             To a Service:
 
+             ```java
+             CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_request_response_service>-<end_request_response_service>
+             ```
+         </CH.Spotlight>
+         <CH.Spotlight>
+             To a Virtual Object:
+
+             ```java
+             CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_request_response_virtual_object>-<end_request_response_virtual_object>
+             ```
+         </CH.Spotlight>
+
+         <CH.Spotlight>
+             To a Workflow:
+             ```java
+             CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#<start_request_response_workflow>-<end_request_response_workflow>
+             ```
+         </CH.Spotlight>
     </TabItem>
     <TabItem value="kotlin" label="Kotlin">
+        <CH.Spotlight>
+            To a Service:
 
-        ```kotlin CallWorkflow.kt
-        CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#<start_request_response_workflow>-<end_request_response_workflow>
-        ```
+            ```kotlin
+            CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#<start_request_response_service>-<end_request_response_service>
+            ```
+        </CH.Spotlight>
+        <CH.Spotlight>
+            To a Virtual Object:
+
+            ```kotlin
+            CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#<start_request_response_virtual_object>-<end_request_response_virtual_object>
+            ```
+        </CH.Spotlight>
+        <CH.Spotlight>
+
+            To a Workflow:
+
+            ```kotlin CallWorkflow.kt
+            CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#<start_request_response_workflow>-<end_request_response_workflow>
+            ```
+        </CH.Spotlight>
 
     </TabItem>
 </Tabs>
@@ -86,7 +87,7 @@ CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#<start_request
     In case of failures, Restate takes care of retries.
 </Admonition>
 
-<Admonition type="info" title="Workflow retention time">
+<Admonition type="note" title="Workflow retention time">
     Once the `run` handler of the workflow has finished, the other handlers can still be called up to the retention time of the workflow, by default 24 hours.
     This can be configured via the [Admin API](/references/admin-api/#tag/service/operation/modify_service) per Workflow definition by setting `workflow_completion_retention`.
 </Admonition>
@@ -152,7 +153,7 @@ You can also use this functionality to schedule async tasks.
 Restate will make sure the task gets executed at the desired time.
 </Admonition>
 
-<Admonition type="info" title="Ordering guarantees in Virtual Objects">
+<Admonition type="note" title="Ordering guarantees in Virtual Objects">
 <CH.Section>
 
     Invocations to a Virtual Object are executed serially.

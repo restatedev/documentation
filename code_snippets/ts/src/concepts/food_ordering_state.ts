@@ -6,7 +6,7 @@ import {deliveryManager, Order, paymentClnt, restaurant, Status} from "./utils";
 async function process(ctx: ObjectContext, order: Order) {
 
     // 1. Set status
-    // focus
+    // mark
     ctx.set("status", Status.CREATED);
 
     // 2. Handle payment
@@ -16,13 +16,13 @@ async function process(ctx: ObjectContext, order: Order) {
     );
 
     if (!paid) {
-        // focus
+        // mark
         ctx.set("status", Status.REJECTED);
         return;
     }
 
     // 3. Wait until the requested preparation time
-    // focus
+    // mark
     ctx.set("status", Status.SCHEDULED);
     await ctx.sleep(order.deliveryDelay);
 
@@ -31,17 +31,17 @@ async function process(ctx: ObjectContext, order: Order) {
     await ctx.run(() =>
         restaurant.prepare(order.id, preparationPromise.id)
     );
-    // focus
+    // mark
     ctx.set("status", Status.IN_PREPARATION);
 
     await preparationPromise.promise;
-    // focus
+    // mark
     ctx.set("status", Status.SCHEDULING_DELIVERY);
 
     // 5. Find a driver and start delivery
     await ctx.objectClient(deliveryManager, order.id)
         .startDelivery(order);
-    // focus
+    // mark
     ctx.set("status", Status.DELIVERED);
 }
 // <end_here>
