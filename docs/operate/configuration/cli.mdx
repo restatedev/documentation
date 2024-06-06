@@ -1,90 +1,26 @@
 ---
-sidebar_position: 1
-description: "Use the CLI to interact with Restate."
+sidebar_position: 2
+description: "Restate CLI configuration options."
 ---
 
 import Admonition from '@theme/Admonition';
 
-# CLI
+# Restate CLI
 
 You can use the CLI to interact with Restate, and manage your services, deployments and invocations.
 
-## Installation
-
-### Option 1: Using a package manager
-
-Install the Restate CLI via:
-
-<CH.Code>
-
-```shell npm
-npm install --global @restatedev/restate
-```
-
-```shell Homebrew
-brew install restatedev/tap/restate
-```
-
-</CH.Code>
-
-### Option 2: Download the binary
-
-Use `curl` to download the binaries from the [releases page](https://github.com/restatedev/restate/releases/latest), and make them executable:
-
-<CH.Code rows={"5"}>
-
-```shell MacOS-x64
-curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.x86_64-apple-darwin.tar.gz && \
-tar -xvf restate.x86_64-apple-darwin.tar.gz && \
-chmod +x restate && \
-sudo mv restate /usr/local/bin/
-```
-
-```shell MacOS-arm64
-curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.aarch64-apple-darwin.tar.gz && \
-tar -xvf restate.aarch64-apple-darwin.tar.gz && \
-chmod +x restate && \
-sudo mv restate /usr/local/bin/
-```
-
-```shell Linux-x64
-curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.x86_64-unknown-linux-musl.tar.gz && \
-tar -xvf restate.x86_64-unknown-linux-musl.tar.gz && \
-chmod +x restate && \
-sudo mv restate /usr/local/bin/
-```
-
-```shell Linux-arm64
-curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.aarch64-unknown-linux-musl.tar.gz && \
-tar -xvf restate.aarch64-unknown-linux-musl.tar.gz && \
-chmod +x restate && \
-sudo mv restate /usr/local/bin/
-```
-
-</CH.Code>
-
-Check if the CLI is configured correctly:
-
-```shell
-restate whoami
-```
-
-Print help to see all available commands:
-
-```shell
-restate --help
-```
+<Admonition type="note" title="Installing the CLI">
+    Have a look at the [CLI installation docs](/develop/local_dev#install-restate-server--cli).
+</Admonition>
 
 <Admonition type="tip">
     The CLI can be a useful tool for debugging and troubleshooting.
     Have a look at the [introspection page](/operate/introspection) for a list of useful commands .
 </Admonition>
 
-## Configuration
-
 There are 2 ways to configure the CLI: via environment variables or via a configuration file.
 
-### Using environment variables
+## Using environment variables
 
 You can specify the following environment variables:
 
@@ -111,7 +47,7 @@ For example, to connect to a Restate admin server running at `http://myhost:9070
 RESTATE_ADMIN_URL=http://myhost:9070
 ```
 
-### Using the config file
+## Using the config file
 
 By default, the CLI will treat `$HOME/.config/restate` as its config directory.
 This is configurable with `$RESTATE_CLI_CONFIG_HOME`. Restate will look for file
