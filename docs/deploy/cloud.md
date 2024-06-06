@@ -27,7 +27,7 @@ characters or hyphens. For example, you can choose `dev` for your account and
 `my-environment` for your environment.
 </Admonition>
 
-You can start using your new environment straight away using the [CLI](/operate/cli):
+You can start using your new environment straight away using the [CLI](/develop/local_dev#install-restate-server--cli):
 
 ```bash
 # authenticate to Cloud
@@ -41,7 +41,7 @@ restate whoami
 <Admonition type="tip" title="Switching environments in the CLI">
 At any time, you can switch your CLI back to point to a Restate server running
 on your machine with `restate config use-environment local`. See the
-[CLI docs](/operate/cli#using-the-config-file) for more.
+[CLI docs](/operate/configuration/cli#using-the-config-file) for more.
 </Admonition>
 
 ## Registering Restate services with your environment
