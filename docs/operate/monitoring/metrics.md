@@ -5,7 +5,7 @@ description: "Find out how to scrape Prometheus runtime metrics from Restate."
 
 # Metrics
 
-Restate servers expose operational metrics in [Prometheus exposition format](https://github.com/prometheus/docs/blob/main/content/docs/instrumenting/exposition_formats.md) via the [Node-ctrl](/deploy/overview#exposed-ports) endpoint, i.e. `localhost:9070/metrics`. For instance, configure Prometheus to scrape this endpoint every 30 seconds by adding this section to Prometheus configuration (assuming restate server's IP address is `10.10.10.1` and accessible by Prometheus:
+Restate servers expose operational metrics in [Prometheus exposition format](https://github.com/prometheus/docs/blob/main/content/docs/instrumenting/exposition_formats.md) via the [Node-ctrl](/deploy/overview#exposed-ports) endpoint, i.e. `localhost:9070/metrics`. For instance, configure Prometheus to scrape this endpoint every 30 seconds by adding this section to Prometheus configuration (assuming Restate server's IP address is `10.10.10.1` and accessible by Prometheus:
 
 ```yml
 scrape_configs:
