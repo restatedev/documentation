@@ -74,7 +74,7 @@ The Restate Introspection SQL API has been implemented based on [DataFusion](htt
 <TabItem value="cli" label="CLI">
 
 ```shell
-restate inv ls
+restate invocations list
 ```
 
 <Admonition type="info">
@@ -101,7 +101,7 @@ The `sys_invocation` table only contains entries for active invocations. Active 
 <TabItem value="cli" label="CLI">
 
 ```shell
-restate inv get <INVOCATION_ID>
+restate invocations describe <INVOCATION_ID>
 ```
 
 Check the status field in the invocation information in the output.
@@ -131,7 +131,7 @@ The status is either:
 <TabItem value="cli" label="CLI">
 
 ```shell
-restate inv get <INVOCATION_ID>
+restate invocations describe <INVOCATION_ID>
 ```
 
 You see the journal printed in the output.
@@ -158,7 +158,7 @@ To have a look at the invocations that are currently in a retry loop, you can ex
 <TabItem value="cli" label="CLI">
 
 ```shell
-restate inv ls --status backing-off
+restate invocations list --status backing-off
 ```
 
 </TabItem>
@@ -174,15 +174,21 @@ This metadata can be found in the `sys_invocation` table.
 </TabItem>
 </Tabs>
 
-### Listing invocations that are blocking a specific key
+### Listing invocations that are blocking a Virtual Object
 
-You can retrieve the invocation ID that is currently blocking a service-key combination via:
+You can retrieve the invocation ID that is currently blocking a Virtual Object via:
 
 <Tabs groupId="interface" queryString>
 <TabItem value="cli" label="CLI">
 
 ```shell
-restate inv ls --key <KEY> --service <SERVICE>
+restate invocations list --service <SERVICE> --key <KEY>
+```
+
+Or list all invocations that are blocking any Virtual Object:
+
+```shell
+restate invocations list --virtual-objects-only
 ```
 
 </TabItem>
@@ -203,7 +209,7 @@ You can then use the invocation ID to [kill the invocation](/operate/invocation#
 <TabItem value="cli" label="CLI">
 
 ```shell
-restate inv get <INVOCATION_ID>
+restate invocations describe <INVOCATION_ID>
 ```
 
 Check the `Modified at` field in the invocation information in the output.
@@ -226,7 +232,7 @@ To find out if an invocation was triggered via the ingress or by another service
 <TabItem value="cli" label="CLI">
 
 ```shell
-restate inv get <INVOCATION_ID>
+restate invocations describe <INVOCATION_ID>
 ```
 
 You can check this at the root of the tree in the invocation progress.
@@ -248,7 +254,7 @@ The `invoked_by` field contains either `ingress` or `service`. If the invocation
 <TabItem value="cli" label="CLI">
 
 ```shell
-restate inv get <INVOCATION_ID>
+restate invocations describe <INVOCATION_ID>
 ```
 
 </TabItem>
@@ -270,7 +276,7 @@ Afterwards, you can use this trace ID to [search for spans in Jaeger](/operate/m
 To list the oldest invocations that are not making progress:
 
 ```shell
-restate inv ls --oldest-first --status pending,backing-off,suspended
+restate invocations list --oldest-first --status pending,backing-off,suspended
 ```
 
 </TabItem>
@@ -292,7 +298,7 @@ Zombie invocations are invocations that are pinned to a specific deployment but 
 <TabItem value="cli" label="CLI">
 
 ```shell
-restate inv ls --zombie
+restate invocations list --zombie
 ```
 
 </TabItem>
@@ -316,15 +322,7 @@ To retrieve the state of a specific service and service key, do:
 <TabItem value="cli" label="CLI">
 
 ```shell
-restate state get <SERVICE_NAME> <SERVICE_KEY>
-```
-
-Instead of `state`, you can use the alias `kv`.
-
-For example:
-
-```shell
-restate kv get counter bob
+restate kv get <SERVICE_NAME> <SERVICE_KEY>
 ```
 
 This will output the state of the service `counter` with the key `bob`:
@@ -385,7 +383,7 @@ select * from sys_invocation JOIN state on sys_invocation.target_service_name = 
 To edit the application state, do:
 
 ```shell
-restate state edit <SERVICE_NAME> <SERVICE_KEY>
+restate kv edit <SERVICE_NAME> <SERVICE_KEY>
 ```
 
 This command opens your default editor (as configured in the `cli env`).
@@ -412,7 +410,7 @@ If you want the CLI state edit to be applied even if the state has changed in th
 An example on how to edit the K/V state of the service `counter` for the key `bob`:
 
 ```shell
-restate state edit counter bob
+restate kv edit counter bob
 ```
 
 After changing the state in our editor, we get:

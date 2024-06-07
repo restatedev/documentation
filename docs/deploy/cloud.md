@@ -89,7 +89,7 @@ This trust policy allows the Restate Cloud `us.restate.cloud` region principal t
 You can now register your Lambda through the new role:
 
 ```shell
-restate dp add <LAMBDA_FUNCTION_ARN> --assume-role-arn <ROLE_ARN>
+restate deployments register <LAMBDA_FUNCTION_ARN> --assume-role-arn <ROLE_ARN>
 ```
 
 If something isn't working, the environment logs in the cloud UI may help
