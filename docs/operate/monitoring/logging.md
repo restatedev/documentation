@@ -7,13 +7,13 @@ description: "Find out how to configure logging for Restate."
 
 By default, Restate logs INFO, WARN and ERROR events using a pretty format.
 
-A complete list of configuration options is available in the [configuration documentation](/operate/configuration).
+A complete list of configuration options is available in the [configuration documentation](/operate/configuration/server).
 
 For service logging, check the [Typescript SDK logging](/develop/ts/logging) and [Java SDK logging](/develop/java/logging) pages.
 
 ## Log filter
 
-You can modify the filter used for log events setting the configuration entry `log-filter`, or alternatively setting the `RUST_LOG` environment variable. Check the [`RUST_LOG` documentation](https://docs.rs/tracing-subscriber/latest/tracing_subscriber/filter/struct.EnvFilter.html) for more details about the filter format. For example to enable debug logs on all restate components, and info on other logs, set the filter as `info,restate=debug`. See the paragraph below [components and log events](#components-and-log-event-context-fields) for more details about filter targets.
+You can modify the filter used for log events setting the configuration entry `log-filter`, or alternatively setting the `RUST_LOG` environment variable. Check the [`RUST_LOG` documentation](https://docs.rs/tracing-subscriber/latest/tracing_subscriber/filter/struct.EnvFilter.html) for more details about the filter format. For example to enable debug logs on all Restate components, and info on other logs, set the filter as `info,restate=debug`. See the paragraph below [components and log events](#components-and-log-event-context-fields) for more details about filter targets.
 
 ## Log format
 
