@@ -1,9 +1,6 @@
-
 import {greetCounterObject, greeterService} from "./utils";
 import {SendOpts} from "@restatedev/restate-sdk-clients";
 import {myWorkflow} from "../../concepts/invocations/utils";
-import * as clients from "@restatedev/restate-sdk-clients";
-const myPlainTSFunction = async () => {
 
 // <start_clients_import>
 import * as clients from "@restatedev/restate-sdk-clients";
