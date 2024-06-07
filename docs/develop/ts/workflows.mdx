@@ -7,12 +7,12 @@ import Admonition from '@theme/Admonition';
 
 # Workflows
 
-Workflows are a sequence of steps that gets executed durably.
-A workflow can be seen as a special type of Virtual Object with some special characteristics:
+[Workflows](/concepts/services#workflows) are a sequence of steps that gets executed durably.
+A workflow can be seen as a special type of [Virtual Object](/concepts/services#virtual-objects) with some special characteristics:
 
-- Each workflow definition has a `run` handler that implements the workflow logic.
+- Each [workflow definition](/develop/ts/overview#workflows) has a `run` handler that implements the workflow logic.
 - The `run` handler executes exactly one time for each workflow instance (object / key).
-- A workflow definition can implement other handlers that can be called multiple times, and can interact with the workflow.
+- A [workflow definition](/develop/ts/overview#workflows) can implement other handlers that can be called multiple times, and can interact with the workflow.
 - Workflows have access to the `WorkflowContext` and `WorkflowSharedContext`, giving them some extra functionality, for example [Durable Promises](/develop/ts/workflows#signaling-workflows) to signal workflows.
 
 <Admonition type="note" title={"Workflow retention time"}>
@@ -41,7 +41,7 @@ Have a look at the code example to get a better understanding of how workflows a
     ### Querying workflows
 
     Similar to Virtual Objects, you can retrieve the [K/V state](/develop/ts/state#retrieving-state) of workflows via the other handlers defined in the workflow definition,
-    For example, here we retrieve the status of the workflow.
+    For example, here we expose the status of the workflow to external clients.
 
     ```ts signup.ts mark=24,25
     ```
@@ -62,7 +62,7 @@ Have a look at the code example to get a better understanding of how workflows a
 
     ---
 
-    ### Serving workflows
+    ### Serving and registering workflows
 
     You serve workflows in the same way as Services and Virtual Objects: by binding them to an [HTTP endpoint](/develop/ts/serving#creating-an-http-endpoint) or [AWS Lambda handler](/develop/ts/serving#creating-a-lambda-handler).
     Make sure you [register the endpoint or Lambda handler](/operate/registration) in Restate before invoking it.
