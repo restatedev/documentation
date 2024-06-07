@@ -31,6 +31,7 @@ const signUpWorkflow = restate.workflow({
 export type SignUpWorkflow = typeof signUpWorkflow;
 
 restate.endpoint().bind(signUpWorkflow).listen();
+// or .lambdaHandler();
 // <end_here>
 
 function sendEmailWithLink(param: { email: string, secret: string}){
