@@ -82,11 +82,6 @@ curl localhost:8080/MyService/myHandler/send \
 The response contains the [Invocation ID](/operate/invocation#invocation-identifier).
 You can use this identifier [to cancel](/operate/invocation#cancelling-invocations) or [kill the invocation](/operate/invocation#killing-invocations).
 
-<Admonition type={"tip"} title={"Retrieving results of one-way invocations and workflows"}>
-    You can retrieve the results of one-way invocations with an idempotency key and workflows, as [described here](/invoke/clients#retrieve-result-of-invocations-and-workflows).
-</Admonition>
-
-
 ## Sending a delayed message over HTTP
 
 You can **delay the message** by adding a delay request parameter in ISO8601 notation or using [humantime format](https://docs.rs/humantime/latest/humantime/):
@@ -161,48 +156,24 @@ There are two options:
   - The result for finished workflows
   - `{"message":"not found"}` for non-existing workflows
 
-You can attach to a service/object invocation only if the invocation used an idempotency key.
+You can attach to a service/object invocation only if the invocation used an idempotency key:
 
-<CH.Spotlight start={1} className="durable-promises">
+```shell
+# Via invocation ID
+curl localhost:8080/restate/invocation/myInvocationId/attach
+curl localhost:8080/restate/invocation/myInvocationId/output
 
-    ```shell
-    curl localhost:8080/restate/invocation/myInvocationId/attach
-    curl localhost:8080/restate/invocation/myInvocationId/output
-    ```
+# For Services, via idempotency key
+curl localhost:8080/restate/invocation/MyService/myHandler/myIdempotencyKey/attach
+curl localhost:8080/restate/invocation/MyService/myHandler/myIdempotencyKey/output
 
-    ---
+# For Virtual Objects, via idempotency key
+curl localhost:8080/restate/invocation/myObject/myKey/myHandler/myIdempotencyKey/attach
+curl localhost:8080/restate/invocation/myObject/myKey/myHandler/myIdempotencyKey/output
 
-    Via invocation ID
+# For Workflows, with the Workflow ID
+curl localhost:8080/restate/workflow/MyWorkflow/myWorkflowId/attach
+curl localhost:8080/restate/workflow/MyWorkflow/myWorkflowId/output
+```
 
-    ```shell
-    curl localhost:8080/restate/invocation/myInvocationId/attach
-    curl localhost:8080/restate/invocation/myInvocationId/output
-    ```
-    ---
 
-    ```shell
-    curl localhost:8080/restate/invocation/MyService/myHandler/myIdempotencyKey/attach
-    curl localhost:8080/restate/invocation/MyService/myHandler/myIdempotencyKey/output
-    ```
-
-    For Services, via [idempotency key](/invoke/http#invoke-a-handler-idempotently)
-
-    ---
-
-    ```shell
-    curl localhost:8080/restate/invocation/myObject/myKey/myHandler/myIdempotencyKey/attach
-    curl localhost:8080/restate/invocation/myObject/myKey/myHandler/myIdempotencyKey/output
-    ```
-
-    For Virtual Objects, via [idempotency key](/invoke/http#invoke-a-handler-idempotently)
-
-    ---
-
-    ```shell
-    curl localhost:8080/restate/workflow/MyWorkflow/myWorkflowId/attach
-    curl localhost:8080/restate/workflow/MyWorkflow/myWorkflowId/output
-    ```
-
-    For Workflows, with the Workflow ID
-
-</CH.Spotlight>

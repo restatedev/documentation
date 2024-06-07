@@ -82,7 +82,7 @@ Have a look at the code example to get a better understanding of how workflows a
 ## Submitting workflows with SDK clients
 
 <CH.Spotlight className={"spotlight-medium"}>
-    [**Submit**](/invoke/clients?sdk=java#invoking-handlers-with-the-sdk-clients):
+    [**Submit**](/develop/java/clients):
     This returns a handle to the workflow once it has been registered in Restate.
     You can only submit once per workflow ID (here `"someone"`).
 
@@ -92,7 +92,7 @@ Have a look at the code example to get a better understanding of how workflows a
 </CH.Spotlight>
 
 <CH.Spotlight className={"spotlight-medium"}>
-    [**Query/signal**](/invoke/clients?sdk=java#invoking-handlers-with-the-sdk-clients):
+    [**Query/signal**](/develop/java/clients):
     Call the other handlers of the workflow in the same way as for Virtual Object handlers.
     Use `send()` for one-way calls.
 
@@ -103,14 +103,14 @@ Have a look at the code example to get a better understanding of how workflows a
 
 <CH.Spotlight className={"spotlight-medium"}>
 
-    [**Attach**](/invoke/clients?sdk=java#retrieve-result-of-invocations-and-workflows): This lets you retrieve the result of a workflow later.
+    [**Attach/peek**](/develop/java/clients#retrieve-result-of-invocations-and-workflows):
+    This lets you retrieve the result of a workflow or check if it's finished.
     Use `.getOutput()` to peek whether the result is ready.
-    
+
     ```java
     CODE_LOAD::java/src/main/java/develop/workflows/WorkflowSubmitter.java#<start_interact>-<end_interact>
     ```
 </CH.Spotlight>
-
 
 ## Submitting workflows from a Restate service
 
@@ -130,7 +130,7 @@ Have a look at the code example to get a better understanding of how workflows a
 ## Submitting workflows over HTTP
 
 <CH.Spotlight className={"spotlight-medium"}>
-    [**Submit/query/signal**](/invoke/http#request-response-calls-over-http):
+    [**Submit/query/signal**](/invoke/http):
     Call any handler of the workflow in the same way as for Services and Virtual Objects.
     This returns the result of the handler once it has finished.
     Add `/send` to the path for one-way calls.
@@ -145,8 +145,8 @@ Have a look at the code example to get a better understanding of how workflows a
 
 <CH.Spotlight className={"spotlight-medium"}>
 
-    [**Attach**](/invoke/http#retrieve-result-of-invocations-and-workflows):
-    This lets you retrieve the result of a workflow later.
+    [**Attach/peek**](/invoke/http#retrieve-result-of-invocations-and-workflows):
+    This lets you retrieve the result of a workflow or check if it's finished.
 
     ```shell
     curl localhost:8080/restate/workflow/SignupWorkflow/someone/attach
