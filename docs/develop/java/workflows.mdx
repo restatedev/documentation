@@ -7,21 +7,21 @@ import Admonition from '@theme/Admonition';
 
 # Workflows
 
-Workflows are a sequence of steps that gets executed durably.
-A workflow can be seen as a special type of Virtual Object with some special characteristics.
+[Workflows](/concepts/services#workflows) are a sequence of steps that gets executed durably.
+A workflow can be seen as a special type of [Virtual Object](/concepts/services#virtual-objects) with some special characteristics:
 
-In summary:
-- A `run` handler that executes exactly one time for each workflow instance (object / key).
-This handler implements the workflow logic.
-- Optionally, other handlers that can be called multiple times, and can interact with the workflow.
-- Some extra SDK functionality to signal workflows via [Durable Promises](/develop/java/workflows#signaling-workflows).
+- Each [workflow definition](/develop/java/overview#workflows) has a `run` handler that implements the workflow logic.
+- The `run` handler executes exactly one time for each workflow instance (object / key).
+- A [workflow definition](/develop/java/overview#workflows) can implement other handlers that can be called multiple times, and can interact with the workflow.
+- Workflows have access to the `WorkflowContext` and `SharedWorkflowContext`, giving them some extra functionality, for example [Durable Promises](/develop/java/workflows#signaling-workflows) to signal workflows.
 
 <Admonition type="note" title={"Workflow retention time"}>
     The retention time of a workflow execution is 24 hours after the finishing of the `run` handler.
-    After this timeout any K/V state is cleared, the workflow's shared handlers cannot be called anymore, and the Durable Promises are discarded.
+    After this timeout any [K/V state](/develop/java/state) is cleared, the workflow's shared handlers cannot be called anymore, and the [Durable Promises](/develop/java/workflows#signaling-workflows) are discarded.
     The retention time can be configured via the [Admin API](/references/admin-api/#tag/service/operation/modify_service) per Workflow definition by setting `workflow_completion_retention`.
 </Admonition>
 
+## Implementing workflows
 Have a look at the code example to get a better understanding of how workflows are implemented:
 
 <CH.Scrollycoding className={"spotlight-medium"}>
@@ -30,7 +30,7 @@ Have a look at the code example to get a better understanding of how workflows a
 
     Every workflow needs a `run` handler.
     This handler has access to the same SDK features as Service and Virtual Object handlers.
-    For example, use `ctx.run` to log intermediate resuljava in Restate and avoid re-execution on replay.
+    For example, use [`ctx.run`](/develop/java/journaling-results#journaled-actions) to log intermediate results in Restate and avoid re-execution on replay.
 
     ```java SignupWorkflow.java mark=9:25
     CODE_LOAD::java/src/main/java/develop/workflows/SignupWorkflow.java
@@ -40,10 +40,10 @@ Have a look at the code example to get a better understanding of how workflows a
 
     ### Querying workflows
 
-    You can query workflows via the other shared handlers defined in the workflow definition.
-    For example, here we retrieve the status of the workflow.
-
-    This is similar to how you would use shared handlers in a Virtual Object.
+    Similar to Virtual Objects, you can retrieve the [K/V state](/develop/java/state#retrieving-state) of workflows via the other handlers defined in the workflow definition,
+    For example, here we expose the status of the workflow to external clients.
+    Every workflow execution can be seen as a new object, so the state is isolated to a single workflow execution.
+    The state can only be mutated by the `run` handler of the workflow. The other handlers can only read the state.
 
     ```java SignupWorkflow.java mark=31:34
     ```
@@ -52,10 +52,7 @@ Have a look at the code example to get a better understanding of how workflows a
 
     ### Signaling workflows
 
-    You can use signals to interact with your running workflows.
-    You can use them to let the workflow block until an event occurs, or to send a signal / information to a running workflow.
-
-    You can implement signals via the Durable Promises feature of the SDK.
+    You can use Durable Promises to interact with your running workflows: to let the workflow block until an event occurs, or to send a signal / information into or out of a running workflow.
     These promises are durable and distributed, meaning they survive crashes and can be resolved or rejected by any handler in the workflow.
 
     Do the following:
@@ -65,14 +62,79 @@ Have a look at the code example to get a better understanding of how workflows a
     ```java SignupWorkflow.java mark=18,26:29
     ```
 
+    ---
+
+    ### Serving and registering workflows
+
+    You serve workflows in the same way as Services and Virtual Objects: by binding them to an [HTTP endpoint](/develop/java/serving#creating-an-http-endpoint) or [AWS Lambda handler](/develop/java/serving#creating-a-lambda-handler).
+    Make sure you [register the endpoint or Lambda handler](/operate/registration) in Restate before invoking it.
+
+    ```java SignupWorkflow.java mark=36:40
+
+    ```
+
 </CH.Scrollycoding>
 
-## Submitting workflows
-You can submit workflows in multiple ways:
+<Admonition type={"tip"} title={"Workflows-as-code with Restate"}>
+    [Check out some examples of workflows-as-code with Restate on the use case page](/use-cases/workflows).
+</Admonition>
+
+## Submitting workflows with SDK clients
 
 <CH.Spotlight className={"spotlight-medium"}>
-    **HTTP request-response** ([docs](/invoke/http#invoke-workflows)) <br/>
+    [**Submit**](/invoke/clients?sdk=java#invoking-handlers-with-the-sdk-clients):
+    This returns a handle to the workflow once it has been registered in Restate.
+    You can only submit once per workflow ID (here `"someone"`).
+
+    ```java
+    CODE_LOAD::java/src/main/java/develop/workflows/WorkflowSubmitter.java#<start_submit>-<end_submit>
+    ```
+</CH.Spotlight>
+
+<CH.Spotlight className={"spotlight-medium"}>
+    [**Query/signal**](/invoke/clients?sdk=java#invoking-handlers-with-the-sdk-clients):
+    Call the other handlers of the workflow in the same way as for Virtual Object handlers.
+    Use `send()` for one-way calls.
+
+    ```java
+    CODE_LOAD::java/src/main/java/develop/workflows/WorkflowSubmitter.java#<start_query>-<end_query>
+    ```
+</CH.Spotlight>
+
+<CH.Spotlight className={"spotlight-medium"}>
+
+    [**Attach**](/invoke/clients?sdk=java#retrieve-result-of-invocations-and-workflows): This lets you retrieve the result of a workflow later.
+    Use `.getOutput()` to peek whether the result is ready.
+    
+    ```java
+    CODE_LOAD::java/src/main/java/develop/workflows/WorkflowSubmitter.java#<start_interact>-<end_interact>
+    ```
+</CH.Spotlight>
+
+
+## Submitting workflows from a Restate service
+
+<CH.Spotlight className={"spotlight-medium"}>
+
+    [**Submit/query/signal**](/develop/java/service-communication):
+    Use the generated client to call any workflow handler in the same way as for Services and Virtual Objects.
+    This returns the result of the workflow/handler once it has finished.
+    Use `.send()` for to call the handler without waiting for the result.
+    You can only call the `run` handler (submit) once per workflow ID (here `"someone"`).
+
+    ```java
+    CODE_LOAD::java/src/main/java/develop/workflows/UserManagementService.java
+    ```
+</CH.Spotlight>
+
+## Submitting workflows over HTTP
+
+<CH.Spotlight className={"spotlight-medium"}>
+    [**Submit/query/signal**](/invoke/http#request-response-calls-over-http):
+    Call any handler of the workflow in the same way as for Services and Virtual Objects.
+    This returns the result of the handler once it has finished.
     Add `/send` to the path for one-way calls.
+    You can only call the `run` handler once per workflow ID (here `"someone"`).
 
     ```shell
     curl localhost:8080/SignupWorkflow/someone/run \
@@ -80,36 +142,11 @@ You can submit workflows in multiple ways:
         -d '{"email": "someone@restate.dev"}'
     ```
 </CH.Spotlight>
-<CH.Spotlight className={"spotlight-medium"}>
-
-    **Programmatically from a Restate service** ([docs](/develop/java/service-communication)) <br/>
-    Use the generated client. Use `.send()` for one-way calls.
-
-
-    <CH.Code>
-        ```java
-        CODE_LOAD::java/src/main/java/develop/workflows/UserManagementService.java
-        ```
-    </CH.Code>
-</CH.Spotlight>
-<CH.Spotlight className={"spotlight-medium"}>
-    **With the SDK clients** ([docs](/invoke/clients?sdk=java))
-
-    <CH.Code>
-        ```java
-        CODE_LOAD::java/src/main/java/develop/workflows/WorkflowSubmitter.java#<start_submit>-<end_submit>
-        ```
-    </CH.Code>
-</CH.Spotlight>
-
-## Retrieving the result of workflows
-
-You can attach to ongoing workflows and retrieve their result later.
-You can either attach to a workflow and wait for it to finish, or you can peek at the output of the workflow.
 
 <CH.Spotlight className={"spotlight-medium"}>
 
-    **Via HTTP** ([docs](/invoke/clients#retrieve-result-of-invocations-and-workflows))
+    [**Attach**](/invoke/http#retrieve-result-of-invocations-and-workflows):
+    This lets you retrieve the result of a workflow later.
 
     ```shell
     curl localhost:8080/restate/workflow/SignupWorkflow/someone/attach
@@ -118,20 +155,15 @@ You can either attach to a workflow and wait for it to finish, or you can peek a
 
 </CH.Spotlight>
 
-<CH.Spotlight className={"spotlight-medium"}>
+## Inspecting workflows
 
-    **Via SDK clients** ([docs](/invoke/clients?sdk=java#retrieve-result-of-invocations-and-workflows))
+Have a look at the [introspection docs](/operate/introspection) on how to inspect workflows.
+You can use this to for example:
+- [Inspect the progress of a workflow by looking at the invocation journal](/operate/introspection#inspecting-the-invocation-journal)
+- [Inspect the K/V state of a workflow](/operate/introspection#inspecting-application-state)
 
-    ```java
-    CODE_LOAD::java/src/main/java/develop/workflows/WorkflowSubmitter.java#<start_interact>-<end_interact>
-    ```
-</CH.Spotlight>
 
-Look at the [HTTP](/invoke/clients#retrieve-result-of-invocations-and-workflows) and [client invocation docs](/invoke/clients?sdk=java#retrieve-result-of-invocations-and-workflows) for more details.
 
-<Admonition type={"info"} title={"Inspecting workflows"}>
-    Have a look at the [CLI docs](/operate/introspection) on how to inspect workflows.
-</Admonition>
 
 
 

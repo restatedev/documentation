@@ -11,8 +11,15 @@ async function signUpUser(user: User){
         .workflowSubmit({email: user.email});
     // <end_submit>
 
+    // <start_query>
+    const status = await rs
+        .workflowClient<SignUpWorkflow>({name: "signup"}, "someone")
+        .getStatus();
+    // <end_query>
+
     // <start_attach>
-    await rs.workflowClient<SignUpWorkflow>({name: "signup"}, "someone")
+    const result = await rs
+        .workflowClient<SignUpWorkflow>({name: "signup"}, "someone")
         .workflowAttach();
     // <end_attach>
 
