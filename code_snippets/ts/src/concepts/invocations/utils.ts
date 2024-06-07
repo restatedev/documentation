@@ -30,6 +30,9 @@ export const myWorkflow = restate.workflow({
             count++;
             ctx.set("count", count);
             return count;
+        },
+        myOtherHandler: async (ctx: restate.WorkflowSharedContext, request: { input?: string })=> {
+            return "";
         }
     }
 })

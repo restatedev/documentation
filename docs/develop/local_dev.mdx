@@ -4,114 +4,123 @@ description: "Learn how to set up your local dev environment"
 ---
 
 import Admonition from '@theme/Admonition';
+import TabItem from "@theme/TabItem";
+import Tabs from "@theme/Tabs";
 
 # Local Dev
 
-## Install Restate Server & CLI
-### Option 1: Using a package manager
+## Running Restate Server & CLI locally
+<Tabs groupId={"running-restate"}>
+    <TabItem value={"npm"} label={"npm"}>
+        <CH.Spotlight className={"spotlight-medium"}>
+            Install Restate Server and run it:
+            ```shell
+            npm install --global @restatedev/restate-server@latest &&
+            restate-server
+            ```
+        </CH.Spotlight>
+        <CH.Spotlight className={"spotlight-medium"}>
+            Or use npx, without installation:
+            ```shell
+            npx @restatedev/restate-server
+            ```
+        </CH.Spotlight>
+        <CH.Spotlight className={"spotlight-medium"}>
+            Install the Restate CLI via:
+            ```shell
+            npm install --global @restatedev/restate@latest
+            ```
+        </CH.Spotlight>
 
-<CH.Spotlight>
-Install the Restate Server via:
+    </TabItem>
+    <TabItem value={"Homebrew"}  label={"Homebrew"}>
+        <CH.Spotlight className={"spotlight-medium"}>
 
-<CH.Code rows={2}>
-    ```shell npm
-    npm install --global @restatedev/restate-server@latest
-    ```
-
-    ``` shell Homebrew
-    brew install restatedev/tap/restate-server && restate-server
-    ```
-
-    ```shell Docker
-    docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 \
-    --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
-    ```
-</CH.Code>
-</CH.Spotlight>
-
-
-<CH.Spotlight>
-    Install the Restate CLI via:
-
-    <CH.Code>
-
-        ```shell npm
-        npm install --global @restatedev/restate@latest
+        Install Restate Server and run it with:
+        ```shell
+        brew install restatedev/tap/restate-server &&
+        restate-server
         ```
+        </CH.Spotlight>
 
-        ```shell Homebrew
+        <CH.Spotlight className={"spotlight-medium"}>
+        Install the CLI via:
+        ```shell
         brew install restatedev/tap/restate
         ```
+        </CH.Spotlight>
 
-    </CH.Code>
-</CH.Spotlight>
-### Option 2: Download the binary
+    </TabItem>
+    <TabItem value={"bin"} label={"Download binaries"}>
+        Install the Restate Server and CLI by downloading the binaries with `curl` from the [releases page](https://github.com/restatedev/restate/releases/latest), and make them executable:
 
-Install the Restate Server and CLI by downloading the binaries with `curl` from the [releases page](https://github.com/restatedev/restate/releases/latest), and make them executable:
+        <CH.Code>
 
-<CH.Code rows={"5"}>
+            ```shell MacOS-x64
+            BIN=/usr/local/bin && RESTATE_PLATFORM=x86_64-apple-darwin && \
+            curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
+            tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+            chmod +x restate restate-server && \
+            mv restate $BIN && \
+            mv restate-server $BIN
+            ```
 
-    ```shell MacOS-x64
-    curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.x86_64-apple-darwin.tar.gz && \
-    tar -xvf restate.x86_64-apple-darwin.tar.gz && \
-    chmod +x restate restate-server && \
-    sudo mv restate /usr/local/bin/ && \
-    sudo mv restate-server /usr/local/bin/
-    ```
+            ```shell MacOS-arm64
+            BIN=/usr/local/bin && RESTATE_PLATFORM=aarch64-apple-darwin && \
+            curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
+            tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+            chmod +x restate restate-server && \
+            mv restate $BIN && \
+            mv restate-server $BIN
+            ```
 
-    ```shell MacOS-arm64
-    curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.aarch64-apple-darwin.tar.gz && \
-    tar -xvf restate.aarch64-apple-darwin.tar.gz && \
-    chmod +x restate restate-server && \
-    sudo mv restate /usr/local/bin/ && \
-    sudo mv restate-server /usr/local/bin/
-    ```
+            ```shell Linux-x64
+            BIN=/usr/local/bin && RESTATE_PLATFORM=x86_64-unknown-linux-musl && \
+            curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
+            tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+            chmod +x restate restate-server && \
+            mv restate $BIN && \
+            mv restate-server $BIN
+            ```
 
-    ```shell Linux-x64
-    curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.x86_64-unknown-linux-musl.tar.gz && \
-    tar -xvf restate.x86_64-unknown-linux-musl.tar.gz && \
-    chmod +x restate restate-server && \
-    sudo mv restate /usr/local/bin/ && \
-    sudo mv restate-server /usr/local/bin/
-    ```
+            ```shell Linux-arm64
+            BIN=/usr/local/bin && RESTATE_PLATFORM=aarch64-unknown-linux-musl && \
+            curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
+            tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+            chmod +x restate restate-server && \
+            mv restate $BIN && \
+            mv restate-server $BIN
+            ```
+        </CH.Code>
 
-    ```shell Linux-arm64
-    curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.aarch64-unknown-linux-musl.tar.gz && \
-    tar -xvf restate.aarch64-unknown-linux-musl.tar.gz && \
-    chmod +x restate restate-server && \
-    sudo mv restate /usr/local/bin/ && \
-    sudo mv restate-server /usr/local/bin/
-    ```
-</CH.Code>
+        Then run it with:
+        ```shell
+        restate-server
+        ```
+
+    </TabItem>
+    <TabItem value={"Docker"} label={"Docker"}>
+        ```shell
+        docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 \
+        --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
+        ```
+    </TabItem>
+</Tabs>
 
 <Admonition type="note" title="Server and CLI configuration">
     Have a look at the [CLI configuration docs](/operate/configuration/cli) or [Server configuration docs](/operate/configuration/server) for more configuration options.
 </Admonition>
 
+<details>
+    <summary> Wiping Restate </summary>
 
-## Running Restate locally
-
-<CH.Spotlight className={"spotlight-medium"}>
-    Start the Restate Server:
-
-    ```shell
-    restate-server
-    ```
-</CH.Spotlight>
-<CH.Spotlight className={"spotlight-medium"}>
-    Start the Restate Server and wipe ongoing invocations and K/V state.
+    To start the Restate Server from a clean slate and wipe ongoing invocations and K/V state:
 
     ```shell
     restate-server --wipe all
     ```
-</CH.Spotlight>
-<CH.Spotlight className={"spotlight-medium"}>
-    Check out all available commands and configuration options ([docs](/operate/configuration/server)):
 
-    ```shell
-    restate-server --help
-    ```
-</CH.Spotlight>
+</details>
 
 ## Useful dev CLI commands
 
@@ -123,7 +132,8 @@ Install the Restate Server and CLI by downloading the binaries with `curl` from 
     ```
 </CH.Spotlight>
 <CH.Spotlight className={"spotlight-medium"}>
-    Register a new service deployment:
+    Register a new service deployment. <br/>
+    When running Restate in a Docker, replace localhost with host.docker.internal.
 
     ```shell
     restate deployments register localhost:9080
@@ -166,18 +176,10 @@ Install the Restate Server and CLI by downloading the binaries with `curl` from 
 
     Execute a SQL query on the invocation or application state.
     See [SQL introspection docs](/operate/introspection?interface=psql#inspecting-invocations) for example queries.
+    Use `--json` to get the output in json format.
 
     ```shell
-    restate sql --json "query"
-    ```
-
-</CH.Spotlight>
-<CH.Spotlight className={"spotlight-medium"}>
-
-    Check out all available commands:
-
-    ```shell
-    restate --help
+    restate sql "query"
     ```
 
 </CH.Spotlight>

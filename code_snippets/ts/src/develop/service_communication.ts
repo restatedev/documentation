@@ -39,14 +39,14 @@ const service = restate.service({
         },
         callWorkflows: async (ctx: restate.Context, name: string) => {
             // <start_request_response_workflow>
-            // Call the `run` handler of the workflow
+            // Call the `run` handler of the workflow (only works once).
             await ctx.workflowClient(MyWorkflow, "my-workflow-id").run("Hi");
             // Call some other `interactWithWorkflow` handler of the workflow.
             await ctx.workflowClient(MyWorkflow, "my-workflow-id").interactWithWorkflow();
             // <end_request_response_workflow>
 
             // <start_one_way_workflow>
-            // Call the `run` handler of the workflow
+            // Call the `run` handler of the workflow (only works once).
             ctx.workflowSendClient(MyWorkflow, "wf-id").run("Hi");
             // Call some other `interactWithWorkflow` handler of the workflow.
             ctx.workflowSendClient(MyWorkflow, "wf-id").interactWithWorkflow();
