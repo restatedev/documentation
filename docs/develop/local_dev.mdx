@@ -54,38 +54,42 @@ import Tabs from "@theme/Tabs";
     <TabItem value={"bin"} label={"Download binaries"}>
         Install the Restate Server and CLI by downloading the binaries with `curl` from the [releases page](https://github.com/restatedev/restate/releases/latest), and make them executable:
 
-        <CH.Code rows={"5"}>
+        <CH.Code>
 
             ```shell MacOS-x64
-            curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.x86_64-apple-darwin.tar.gz && \
-            tar -xvf restate.x86_64-apple-darwin.tar.gz && \
+            BIN=/usr/local/bin && RESTATE_PLATFORM=x86_64-apple-darwin && \
+            curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
+            tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
             chmod +x restate restate-server && \
-            sudo mv restate /usr/local/bin/ && \
-            sudo mv restate-server /usr/local/bin/
+            mv restate $BIN && \
+            mv restate-server $BIN
             ```
 
             ```shell MacOS-arm64
-            curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.aarch64-apple-darwin.tar.gz && \
-            tar -xvf restate.aarch64-apple-darwin.tar.gz && \
+            BIN=/usr/local/bin && RESTATE_PLATFORM=aarch64-apple-darwin && \
+            curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
+            tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
             chmod +x restate restate-server && \
-            sudo mv restate /usr/local/bin/ && \
-            sudo mv restate-server /usr/local/bin/
+            mv restate $BIN && \
+            mv restate-server $BIN
             ```
 
             ```shell Linux-x64
-            curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.x86_64-unknown-linux-musl.tar.gz && \
-            tar -xvf restate.x86_64-unknown-linux-musl.tar.gz && \
+            BIN=/usr/local/bin && RESTATE_PLATFORM=x86_64-unknown-linux-musl && \
+            curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
+            tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
             chmod +x restate restate-server && \
-            sudo mv restate /usr/local/bin/ && \
-            sudo mv restate-server /usr/local/bin/
+            mv restate $BIN && \
+            mv restate-server $BIN
             ```
 
             ```shell Linux-arm64
-            curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.aarch64-unknown-linux-musl.tar.gz && \
-            tar -xvf restate.aarch64-unknown-linux-musl.tar.gz && \
+            BIN=/usr/local/bin && RESTATE_PLATFORM=aarch64-unknown-linux-musl && \
+            curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
+            tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
             chmod +x restate restate-server && \
-            sudo mv restate /usr/local/bin/ && \
-            sudo mv restate-server /usr/local/bin/
+            mv restate $BIN && \
+            mv restate-server $BIN
             ```
         </CH.Code>
 
