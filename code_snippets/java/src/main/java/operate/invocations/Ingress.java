@@ -34,9 +34,6 @@ public class Ingress {
         GreetCounterObjectClient.fromClient(rs, "Mary")
                 .send()
                 .greet("Hi");
-
-        MyWorkflowClient.fromClient(rs, "wf-id-1")
-                .submit("input");
         // <end_one_way_call_java>
     }
 
@@ -70,77 +67,25 @@ public class Ingress {
         Client rs = Client.connect("http://localhost:8080");
         SendResponse handle = GreeterServiceClient.fromClient(rs)
                 .send()
+                // mark
                 .greet("Hi", CallRequestOptions.DEFAULT.withIdempotency("abcde"));
 
         // ... do something else ...
 
-        // Attach later to retrieve the result
-        // withClass(1:3) highlight-line
+        // Option 1: Attach later to retrieve the result
+        // mark(1:3)
         String greeting = rs
                 .invocationHandle(handle.getInvocationId(), JsonSerdes.STRING)
                 .attach();
+
+        // Option 2: Peek to see if the result is ready
+        // mark(1:3) 
+        Output<String> output = rs
+                .invocationHandle(handle.getInvocationId(), JsonSerdes.STRING)
+                .getOutput();
+        if (output.isReady()) {
+            String result = output.getValue();
+        }
         // <end_service_attach>
-    }
-
-    public void peekAtOutput(){
-        // <start_service_peek>
-        Client rs = Client.connect("http://localhost:8080");
-        SendResponse handle = GreeterServiceClient.fromClient(rs)
-                .send()
-                .greet("Hi", CallRequestOptions.DEFAULT.withIdempotency("abcde"));
-
-        // ... do something else ...
-
-        // Peek to see if the result is ready
-        // withClass(1:3) highlight-line
-        Output<String> output = rs
-            .invocationHandle(handle.getInvocationId(), JsonSerdes.STRING)
-            .getOutput();
-
-        if (output.isReady()) {
-            String result = output.getValue();
-        }
-        // <end_service_peek>
-    }
-
-    public void latchOntoWorkflow(){
-
-        // <start_workflow_attach>
-        Client rs = Client.connect("http://localhost:8080");
-        SendResponse handle = MyWorkflowClient
-                .fromClient(rs, "wf-id-1")
-                .submit("input");
-
-        // If you have access to the workflow handle:
-        // withClass(1:3) highlight-line
-        String response = rs
-                .invocationHandle(handle.getInvocationId(), JsonSerdes.STRING)
-                .attach();
-
-        // If you do not have access to the workflow handle, use the workflow ID:
-        String response2 = MyWorkflowClient.fromClient(rs, "wf-id-1")
-                // withClass(1:2) highlight-line
-                .workflowHandle()
-                .attach();
-        // <end_workflow_attach>
-
-        // <start_workflow_peek>
-        // If you have access to the workflow handle:
-        // withClass(1:3) highlight-line
-        Output<String> output = rs
-                .invocationHandle(handle.getInvocationId(), JsonSerdes.STRING)
-                .getOutput();
-
-        if (output.isReady()) {
-            String result = output.getValue();
-        }
-
-        // If you do not have access to the workflow handle, use the workflow ID:
-        Output<String> output2 = MyWorkflowClient.fromClient(rs, "wf-id-1")
-                // withClass(1:2) highlight-line
-                .workflowHandle()
-                .getOutput();
-        // <end_workflow_peek>
-
     }
 }

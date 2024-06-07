@@ -1,0 +1,113 @@
+---
+sidebar_position: 13
+description: "Use the clients to invoke handlers programmatically."
+---
+
+import Admonition from '@theme/Admonition';
+import {Step} from "../../../src/components/Stepper";
+
+# Clients
+The Restate SDK client library lets you invoke Restate handlers from anywhere in your application.
+Use this only in non-Restate services without access to the Restate Context.
+
+<Admonition type="note" title={"Use the Restate Context"}>
+    Always [invoke handlers via the context](/develop/java/service-communication), if you have access to it.
+    Restate then attaches information about the invocation to the parent invocation.
+</Admonition>
+
+## Invoking handlers with the SDK clients
+
+Invoke a handler programmatically with the SDK clients as follows:
+
+<Step stepLabel="1" title="Add the dependency to your project">
+    ```kotlin
+    implementation("dev.restate:sdk-common:VAR::TYPESCRIPT_SDK_VERSION")
+    ```
+</Step>
+<Step stepLabel="2" title={<span><a href={"/operate/registration"}>Register the service</a> you want to invoke.</span>}/>
+<Step stepLabel="3" title="Connect to Restate and invoke the handler with your preferred semantics">
+    <CH.Spotlight start={1} className="durable-promises">
+
+        ```java
+        CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_rpc_java>-<end_rpc_java>
+        ```
+
+        ---
+
+        **Request-response invocations** allow you to wait on a response from the handler.
+
+        ---
+
+        ```java
+        CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_one_way_call_java>-<end_one_way_call_java>
+        ```
+
+        **One-way invocations** allow you to send a message without waiting for a response.
+
+        ---
+
+        ```java
+        CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_delayed_call_java>-<end_delayed_call_java>
+        ```
+
+        **Delayed invocations** allow you to schedule an invocation for a later point in time.
+
+    </CH.Spotlight>
+</Step>
+
+<Admonition type="info" title="Invoking workflows">
+    [Have a look at the workflow documentation to learn what's different when invoking workflows.](/develop/java/workflows#submitting-workflows-with-sdk-clients)
+</Admonition>
+
+## Invoke a handler idempotently
+
+To make a service call idempotent, you can use the idempotency key feature.
+Add the idempotency key [to the header](https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/) via:
+
+```java
+CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_service_idempotent>-<end_service_idempotent>
+```
+
+After the invocation completes, Restate persists the response for a retention period of one day (24 hours).
+If you re-invoke the service with the same idempotency key within 24 hours, Restate sends back the same response and doesn't re-execute the request to the service.
+
+<Admonition type="tip" title={"Make any service call idempotent by using Restate"}>
+    By using Restate and an idempotency key, you can make any service call idempotent, without any extra code or setup.
+    This is a very powerful feature to ensure that your system stays consistent and doesn't perform the same operation multiple times.
+</Admonition>
+
+<Admonition type="note" title={"Adding headers to the request"}>
+    The call options, with which we set the idempotency key, also let you add other headers to the request.
+</Admonition>
+
+<details className={"grey-details"}>
+    <summary> Tuning retention time</summary>
+
+    <CH.Section>
+        You can tune the [retention time](focus://3) on a service-level by using the [Admin API](focus://1[15:28]) ([docs](/references/admin-api#tag/service/operation/modify_service)):
+        ```shell
+        curl -X PATCH localhost:9070/services/MyService \
+            -H 'content-type: application/json' \
+            -d '{"idempotency_retention": "2days"}'
+        ```
+        The [retention time](focus://3) is in [humantime format](https://docs.rs/humantime/latest/humantime/).
+    </CH.Section>
+
+</details>
+
+## Retrieve result of invocations and workflows
+
+You can use the client library to retrieve the results of invocations **with an idempotency key** or workflows.
+You can:
+- Attach to an ongoing invocation and retrieve the result when it finishes.
+- Peek at the output of a running invocation or workflow, to check if it has finished and optionally retrieve the result.
+
+You can use the invocation ID to attach or peek at a service/object invocation that used an idempotency key:
+
+```java
+CODE_LOAD::java/src/main/java/operate/invocations/Ingress.java#<start_service_attach>-<end_service_attach>
+```
+
+<Admonition type={"info"} title={"Attaching to workflows"}>
+    [Have a look at the workflow documentation to learn how to attach to workflow executions.](/develop/java/workflows#submitting-workflows-with-sdk-clients)
+</Admonition>
