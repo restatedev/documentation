@@ -14,7 +14,7 @@ import Admonition from '@theme/Admonition';
     no reliability SLAs at this time. Production usage is not recommended.
 </Admonition>
 
-[Restate Cloud](https://cloud.restate.dev) is the early-access managed service of Restate, where we run an instance of the Restate server for you. This allows you to focus on your services, which you can deploy whereever you normally do - long-lived compute, or serverless platforms like Lambda.
+[Restate Cloud](https://cloud.restate.dev) is the early-access managed service of Restate, where we run an instance of the Restate server for you. This allows you to focus on your services, which you can deploy wherever you normally do - long-lived compute, or serverless platforms like Lambda.
 
 ## Creating your first environment
 
