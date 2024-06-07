@@ -7,6 +7,7 @@ import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.Workflow;
 import dev.restate.sdk.common.DurablePromiseKey;
 import dev.restate.sdk.common.StateKey;
+import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 
 import static develop.workflows.Utils.sendEmailWithLink;
 
@@ -43,7 +44,13 @@ public class SignupWorkflow {
 
     @Shared
     public String getStatus(SharedWorkflowContext ctx) {
-        return ctx.get(STATUS).orElse("Ynknown");
+        return ctx.get(STATUS).orElse("Unknown");
+    }
+
+    public static void main(String[] args) {
+        RestateHttpEndpointBuilder.builder()
+                .bind(new SignupWorkflow())
+                .buildAndListen();
     }
 }
 // <end_here>
