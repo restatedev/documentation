@@ -6,11 +6,10 @@
   "properties": {
     "worker": {
       "default": {
-        "bootstrap-num-partitions": 64,
-        "internal-queue-length": 64,
+        "internal-queue-length": 10000,
         "invoker": {
           "abort-timeout": "1m",
-          "concurrent-invocations-limit": null,
+          "concurrent-invocations-limit": 10000,
           "inactivity-timeout": "1m",
           "message-size-limit": null,
           "message-size-warning": "10.0 MB",
@@ -25,8 +24,10 @@
         },
         "num-timers-in-memory-limit": null,
         "storage": {
+          "persist-lsn-interval": "1h",
+          "persist-lsn-threshold": 1000,
           "rocksdb-disable-wal": true,
-          "sync-wal-on-flush": false
+          "rocksdb-memory-ratio": 0.49000000953674316
         }
       },
       "$ref": "#/definitions/WorkerOptions"
@@ -35,8 +36,11 @@
       "default": {
         "bind-address": "0.0.0.0:9070",
         "concurrent-api-requests-limit": null,
+        "heartbeat-interval": "1s 500ms",
+        "log-trim-interval": "1h",
+        "log-trim-threshold": 1000,
         "query-engine": {
-          "memory-size": null,
+          "memory-size": "4.0 GB",
           "pgsql-bind-address": "0.0.0.0:9071",
           "query-parallelism": null,
           "tmp-dir": null
@@ -56,11 +60,11 @@
       "default": {
         "default-provider": "local",
         "local": {
-          "batch-wal-flushes": true,
           "rocksdb-disable-wal": false,
-          "sync-wal-before-ack": true,
-          "writer-batch-commit-count": 500,
-          "writer-batch-commit-duration": "5ns"
+          "rocksdb-disable-wal-fsync": false,
+          "rocksdb-memory-ratio": 0.5,
+          "writer-batch-commit-count": 5000,
+          "writer-batch-commit-duration": "0s"
         }
       },
       "$ref": "#/definitions/BifrostOptions"
@@ -71,7 +75,8 @@
         "request-queue-length": 32,
         "rocksdb": {
           "rocksdb-disable-wal": false
-        }
+        },
+        "rocksdb-memory-ratio": 0.009999999776482582
       },
       "$ref": "#/definitions/LocalMetadataStoreOptions"
     },
@@ -91,7 +96,6 @@
     "node-name": {
       "title": "Node Name",
       "description": "Unique name for this node in the cluster. The node must not change unless it's started with empty local store. It defaults to the node's hostname.",
-      "default": null,
       "type": [
         "string",
         "null"
@@ -99,7 +103,6 @@
     },
     "force-node-id": {
       "description": "If set, the node insists on acquiring this node ID.",
-      "default": null,
       "type": [
         "integer",
         "null"
@@ -120,7 +123,6 @@
     },
     "base-dir": {
       "description": "The working directory which this Restate node should use for relative paths. The default is `restate-data` under the current working directory.",
-      "default": null,
       "type": [
         "string",
         "null"
@@ -141,6 +143,14 @@
       "default": "http://127.0.0.1:5122/",
       "type": "string"
     },
+    "bootstrap-num-partitions": {
+      "title": "Partitions",
+      "description": "Number of partitions that will be provisioned during cluster bootstrap, partitions used to process messages.\n\nNOTE: This config entry only impacts the initial number of partitions, the value of this entry is ignored for bootstrapped nodes/clusters.\n\nCannot be higher than `4611686018427387903` (You should almost never need as many partitions anyway)",
+      "default": 24,
+      "type": "integer",
+      "format": "uint64",
+      "minimum": 1.0
+    },
     "shutdown-timeout": {
       "title": "Shutdown grace timeout",
       "description": "This timeout is used when shutting down the various Restate components to drain all the internal queues.\n\nCan be configured using the [`humantime`](https://docs.rs/humantime/latest/humantime/fn.parse_duration.html) format.",
@@ -150,7 +160,6 @@
     "default-thread-pool-size": {
       "title": "Default async runtime thread pool",
       "description": "Size of the default thread pool used to perform internal tasks. If not set, it defaults to the number of CPU cores.",
-      "default": null,
       "type": [
         "integer",
         "null"
@@ -161,7 +170,6 @@
     "tracing-endpoint": {
       "title": "Tracing Endpoint",
       "description": "Specify the tracing endpoint to send traces to. Traces will be exported using [OTLP gRPC](https://opentelemetry.io/docs/specs/otlp/#otlpgrpc) through [opentelemetry_otlp](https://docs.rs/opentelemetry-otlp/0.12.0/opentelemetry_otlp/).\n\nTo configure the sampling, please refer to the [opentelemetry autoconfigure docs](https://github.com/open-telemetry/opentelemetry-java/blob/main/sdk-extensions/autoconfigure/README.md#sampler).",
-      "default": null,
       "type": [
         "string",
         "null"
@@ -170,7 +178,6 @@
     "tracing-json-path": {
       "title": "Distributed Tracing JSON Export Path",
       "description": "If set, an exporter will be configured to write traces to files using the Jaeger JSON format. Each trace file will start with the `trace` prefix.\n\nIf unset, no traces will be written to file.\n\nIt can be used to export traces in a structured format without configuring a Jaeger agent.\n\nTo inspect the traces, open the Jaeger UI and use the Upload JSON feature to load and inspect them.",
-      "default": null,
       "type": [
         "string",
         "null"
@@ -202,7 +209,6 @@
     },
     "histogram-inactivity-timeout": {
       "description": "Timeout for idle histograms.\n\nThe duration after which a histogram is considered idle and will be removed from metric responses to save memory. Unsetting means that histograms will never be removed.",
-      "default": null,
       "type": [
         "string",
         "null"
@@ -234,14 +240,15 @@
     "rocksdb-total-memory-size": {
       "title": "Total memory limit for rocksdb caches and memtables.",
       "description": "This includes memory for uncompressed block cache and all memtables by all open databases. The memory size used for rocksdb caches.",
-      "default": "4.0 GB",
+      "default": "6.0 GB",
       "$ref": "#/definitions/NonZeroHumanBytes"
     },
-    "rocksdb-total-memtables-size": {
-      "title": "Rocksdb total memtable size limit",
-      "description": "The memory size used across all memtables. This limits how much memory memtables can eat up from the value in rocksdb_total_memory_limit. When set to 0, memtables can take all available memory up to the value specified in rocksdb_total_memory_limit.",
-      "default": "0 B",
-      "$ref": "#/definitions/HumanBytes"
+    "rocksdb-total-memtables-ratio": {
+      "title": "Rocksdb total memtable size ratio",
+      "description": "The memory size used across all memtables (ratio between 0 to 1.0). This limits how much memory memtables can eat up from the value in rocksdb-total-memory-limit. When set to 0, memtables can take all available memory up to the value specified in rocksdb-total-memory-limit. This value will be sanitized to 1.0 if outside the valid bounds.",
+      "default": 0.5,
+      "type": "number",
+      "format": "float"
     },
     "rocksdb-bg-threads": {
       "title": "Rocksdb Background Threads",
@@ -261,10 +268,27 @@
       "format": "uint32",
       "minimum": 1.0
     },
+    "rocksdb-write-stall-threshold": {
+      "title": "Rocksdb stall detection threshold",
+      "description": "This defines the duration afterwhich a write is to be considered in \"stall\" state. For every write that meets this threshold, the system will increment the `restate.rocksdb_stall_flare` gauge, if the write is unstalled, the guage will be updated accordingly.",
+      "default": "3s",
+      "type": "string"
+    },
+    "rocksdb-enable-stall-on-memory-limit": {
+      "title": "Allow rocksdb writes to stall if memory limit is reached",
+      "description": "Note if automatic memory budgeting is enabled, it should be safe to allow rocksdb to stall if it hits the limit. However, if rocksdb stall kicked in, it's unlikely that the system will recover from this without intervention.",
+      "default": false,
+      "type": "boolean"
+    },
+    "rocksdb-perf-level": {
+      "title": "Rocksdb performance statistics level",
+      "description": "Defines the level of PerfContext used internally by rocksdb. Default is `enable-count` which should be sufficient for most users. Note that higher levels incur a CPU cost and might slow down the critical path.",
+      "default": "enable-count",
+      "$ref": "#/definitions/RocksbPerfStatisticsLevel"
+    },
     "request-identity-private-key-pem-file": {
       "title": "Request identity private key PEM file",
       "description": "A path to a file, such as \"/var/secrets/key.pem\", which contains exactly one ed25519 private key in PEM format. Such a file can be generated with `openssl genpkey -algorithm ed25519`. If provided, this key will be used to attach JWTs to requests from this client which SDKs may optionally verify, proving that the caller is a particular Restate instance.\n\nThis file is currently only read on client creation, but this may change in future. Parsed public keys will be logged at INFO level in the same format that SDKs expect.",
-      "default": null,
       "type": [
         "string",
         "null"
@@ -282,52 +306,47 @@
     "http-proxy": {
       "title": "Proxy URI",
       "description": "A URI, such as `http://127.0.0.1:10001`, of a server to which all invocations should be sent, with the `Host` header set to the deployment URI. HTTPS proxy URIs are supported, but only HTTP endpoint traffic will be proxied currently. Can be overridden by the `HTTP_PROXY` environment variable.",
-      "default": null,
       "type": [
         "string",
         "null"
       ]
     },
-    "aws_profile": {
+    "connect-timeout": {
+      "title": "Connect timeout",
+      "description": "How long to wait for a TCP connection to be established before considering it a failed attempt.",
+      "default": "10s",
+      "type": "string"
+    },
+    "aws-profile": {
       "title": "AWS Profile",
       "description": "Name of the AWS profile to select. Defaults to 'AWS_PROFILE' env var, or otherwise the `default` profile.",
-      "default": null,
       "type": [
         "string",
         "null"
       ]
     },
-    "aws_assume_role_external_id": {
+    "aws-assume-role-external-id": {
       "title": "AssumeRole external ID",
       "description": "An external ID to apply to any AssumeRole operations taken by this client. https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html Can be overridden by the `AWS_EXTERNAL_ID` environment variable.",
-      "default": null,
       "type": [
         "string",
         "null"
       ]
     },
-    "rocksdb-write-buffer-size": {
-      "title": "Write Buffer size",
-      "description": "The size of a single memtable. Once memtable exceeds this size, it is marked immutable and a new one is created. Default is 256MB per memtable.",
-      "anyOf": [
-        {
-          "$ref": "#/definitions/NonZeroHumanBytes"
-        },
-        {
-          "type": "null"
-        }
+    "rocksdb-disable-direct-io-for-reads": {
+      "title": "Disable Direct IO for reads",
+      "description": "Files will be opened in \"direct I/O\" mode which means that data r/w from the disk will not be cached or buffered. The hardware buffer of the devices may however still be used. Memory mapped files are not impacted by these parameters.",
+      "type": [
+        "boolean",
+        "null"
       ]
     },
-    "rocksdb-max-total-wal-size": {
-      "title": "Maximum total WAL size",
-      "description": "Max WAL size, that after this Rocksdb start flushing mem tables to disk.",
-      "anyOf": [
-        {
-          "$ref": "#/definitions/NonZeroHumanBytes"
-        },
-        {
-          "type": "null"
-        }
+    "rocksdb-disable-direct-io-for-flush-and-compactions": {
+      "title": "Disable Direct IO for flush and compactions",
+      "description": "Use O_DIRECT for writes in background flush and compactions.",
+      "type": [
+        "boolean",
+        "null"
       ]
     },
     "rocksdb-disable-wal": {
@@ -387,7 +406,7 @@
       "properties": {
         "internal-queue-length": {
           "title": "Internal queue for partition processor communication",
-          "default": 64,
+          "default": 10000,
           "type": "integer",
           "format": "uint",
           "minimum": 1.0
@@ -395,7 +414,6 @@
         "num-timers-in-memory-limit": {
           "title": "Num timers in memory limit",
           "description": "The number of timers in memory limit is used to bound the amount of timers loaded in memory. If this limit is set, when exceeding it, the timers farther in the future will be spilled to disk.",
-          "default": null,
           "type": [
             "integer",
             "null"
@@ -405,15 +423,17 @@
         },
         "storage": {
           "default": {
+            "persist-lsn-interval": "1h",
+            "persist-lsn-threshold": 1000,
             "rocksdb-disable-wal": true,
-            "sync-wal-on-flush": false
+            "rocksdb-memory-ratio": 0.49000000953674316
           },
           "$ref": "#/definitions/StorageOptions"
         },
         "invoker": {
           "default": {
             "abort-timeout": "1m",
-            "concurrent-invocations-limit": null,
+            "concurrent-invocations-limit": 10000,
             "inactivity-timeout": "1m",
             "message-size-limit": null,
             "message-size-warning": "10.0 MB",
@@ -427,14 +447,6 @@
             "tmp-dir": null
           },
           "$ref": "#/definitions/InvokerOptions"
-        },
-        "bootstrap-num-partitions": {
-          "title": "Partitions",
-          "description": "Number of partitions that will be provisioned during cluster bootstrap, partitions used to process messages.\n\nNOTE: This config entry only impacts the initial number of partitions, the value of this entry is ignored for bootstrapped nodes/clusters.\n\nCannot be higher than `4611686018427387903` (You should almost never need as many partitions anyway)",
-          "default": 64,
-          "type": "integer",
-          "format": "uint64",
-          "minimum": 1.0
         }
       }
     },
@@ -442,15 +454,17 @@
       "title": "Storage options",
       "type": "object",
       "properties": {
-        "sync-wal-on-flush": {
-          "title": "Sync WAL on flushes",
-          "description": "If WAL is enabled, this option defines whether the WAL will also be synced on flushes.",
-          "default": false,
-          "type": "boolean"
+        "num-partitions-to-share-memory-budget": {
+          "description": "How many partitions to divide memory across?\n\nBy default this uses the value defined in `bootstrap-num-partitions` in the common section of the config.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint64",
+          "minimum": 1.0
         },
-        "rocksdb-write-buffer-size": {
-          "title": "Write Buffer size",
-          "description": "The size of a single memtable. Once memtable exceeds this size, it is marked immutable and a new one is created. Default is 256MB per memtable.",
+        "rocksdb-memory-budget": {
+          "description": "The memory budget for rocksdb memtables in bytes\n\nThe total is divided evenly across partitions. The divisor is defined in `num-partitions-to-share-memory-budget`. If this value is set, it overrides the ratio defined in `rocksdb-memory-ratio`.",
           "anyOf": [
             {
               "$ref": "#/definitions/NonZeroHumanBytes"
@@ -460,16 +474,43 @@
             }
           ]
         },
-        "rocksdb-max-total-wal-size": {
-          "title": "Maximum total WAL size",
-          "description": "Max WAL size, that after this Rocksdb start flushing mem tables to disk.",
-          "anyOf": [
-            {
-              "$ref": "#/definitions/NonZeroHumanBytes"
-            },
-            {
-              "type": "null"
-            }
+        "rocksdb-memory-ratio": {
+          "description": "The memory budget for rocksdb memtables as ratio\n\nThis defines the total memory for rocksdb as a ratio of all memory available to memtables (See `rocksdb-total-memtables-ratio` in common). The budget is then divided evenly across partitions. The divisor is defined in `num-partitions-to-share-memory-budget`",
+          "default": 0.49000000953674316,
+          "type": "number",
+          "format": "float"
+        },
+        "persist-lsn-interval": {
+          "title": "Persist lsn interval",
+          "description": "Controls the interval at which worker tries to persist the last applied lsn. Lsn persisting can be disabled by setting it to \"\".",
+          "default": "1h",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "persist-lsn-threshold": {
+          "title": "Persist lsn threshold",
+          "description": "Minimum number of applied log entries before persisting the lsn. The worker will only persist a lsn if the partition processor has applied at least #threshold log entries since the last persisting. This prevents the worker from flushing the RocksDB memtables too often.",
+          "default": 1000,
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "rocksdb-disable-direct-io-for-reads": {
+          "title": "Disable Direct IO for reads",
+          "description": "Files will be opened in \"direct I/O\" mode which means that data r/w from the disk will not be cached or buffered. The hardware buffer of the devices may however still be used. Memory mapped files are not impacted by these parameters.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "rocksdb-disable-direct-io-for-flush-and-compactions": {
+          "title": "Disable Direct IO for flush and compactions",
+          "description": "Use O_DIRECT for writes in background flush and compactions.",
+          "type": [
+            "boolean",
+            "null"
           ]
         },
         "rocksdb-disable-wal": {
@@ -615,7 +656,6 @@
         "message-size-limit": {
           "title": "Message size limit",
           "description": "Threshold to fail the invocation in case protocol messages coming from a service are larger than the specified amount.",
-          "default": null,
           "anyOf": [
             {
               "$ref": "#/definitions/NonZeroHumanBytes"
@@ -628,7 +668,6 @@
         "tmp-dir": {
           "title": "Temporary directory",
           "description": "Temporary directory to use for the invoker temporary files. If empty, the system temporary directory will be used instead.",
-          "default": null,
           "type": [
             "string",
             "null"
@@ -637,7 +676,7 @@
         "concurrent-invocations-limit": {
           "title": "Limit number of concurrent invocations from this node",
           "description": "Number of concurrent invocations that can be processed by the invoker.",
-          "default": null,
+          "default": 10000,
           "type": [
             "integer",
             "null"
@@ -761,7 +800,6 @@
         "concurrent-api-requests-limit": {
           "title": "Concurrency limit",
           "description": "Concurrency limit for the Admin APIs. Default is unlimited.",
-          "default": null,
           "type": [
             "integer",
             "null"
@@ -771,12 +809,35 @@
         },
         "query-engine": {
           "default": {
-            "memory-size": null,
+            "memory-size": "4.0 GB",
             "pgsql-bind-address": "0.0.0.0:9071",
             "query-parallelism": null,
             "tmp-dir": null
           },
           "$ref": "#/definitions/QueryEngineOptions"
+        },
+        "heartbeat-interval": {
+          "title": "Controller heartbeats",
+          "description": "Controls the interval at which cluster controller polls nodes of the cluster.",
+          "default": "1s 500ms",
+          "type": "string"
+        },
+        "log-trim-interval": {
+          "title": "Log trim interval",
+          "description": "Controls the interval at which cluster controller tries to trim the logs. Log trimming can be disabled by setting it to \"\".",
+          "default": "1h",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "log-trim-threshold": {
+          "title": "Log trim threshold",
+          "description": "Minimum number of trimmable log entries. The cluster controller will only trim a log if it can remove equal or more entries than this threshold. This prevents too many small trim operations.",
+          "default": 1000,
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
         }
       }
     },
@@ -787,20 +848,12 @@
         "memory-size": {
           "title": "Memory size limit",
           "description": "The total memory in bytes that can be used to preform sql queries",
-          "default": null,
-          "anyOf": [
-            {
-              "$ref": "#/definitions/NonZeroHumanBytes"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "default": "4.0 GB",
+          "$ref": "#/definitions/NonZeroHumanBytes"
         },
         "tmp-dir": {
           "title": "Temp folder to use for spill",
           "description": "The path to spill to",
-          "default": null,
           "type": [
             "string",
             "null"
@@ -809,7 +862,6 @@
         "query-parallelism": {
           "title": "Default query parallelism",
           "description": "The number of parallel partitions to use for a query execution",
-          "default": null,
           "type": [
             "integer",
             "null"
@@ -838,7 +890,6 @@
         "concurrent-api-requests-limit": {
           "title": "Concurrency limit",
           "description": "Local concurrency limit to use to limit the amount of concurrent requests. If exceeded, the ingress will reply immediately with an appropriate status code. Default is unlimited.",
-          "default": null,
           "type": [
             "integer",
             "null"
@@ -890,11 +941,11 @@
         "local": {
           "description": "Configuration of local loglet provider",
           "default": {
-            "batch-wal-flushes": true,
             "rocksdb-disable-wal": false,
-            "sync-wal-before-ack": true,
-            "writer-batch-commit-count": 500,
-            "writer-batch-commit-duration": "5ns"
+            "rocksdb-disable-wal-fsync": false,
+            "rocksdb-memory-ratio": 0.5,
+            "writer-batch-commit-count": 5000,
+            "writer-batch-commit-duration": "0s"
           },
           "type": "string"
         }
@@ -937,6 +988,23 @@
           "format": "uint",
           "minimum": 1.0
         },
+        "rocksdb-memory-budget": {
+          "description": "The memory budget for rocksdb memtables in bytes\n\nIf this value is set, it overrides the ratio defined in `rocksdb-memory-ratio`.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/NonZeroHumanBytes"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rocksdb-memory-ratio": {
+          "description": "The memory budget for rocksdb memtables as ratio\n\nThis defines the total memory for rocksdb as a ratio of all memory available to memtables (See `rocksdb-total-memtables-ratio` in common).",
+          "default": 0.009999999776482582,
+          "type": "number",
+          "format": "float"
+        },
         "rocksdb": {
           "title": "RocksDB options for metadata store's RocksDB instance",
           "description": "The RocksDB options which will be used to configure the metadata store's RocksDB instance.",
@@ -950,28 +1018,20 @@
     "RocksDbOptions": {
       "type": "object",
       "properties": {
-        "rocksdb-write-buffer-size": {
-          "title": "Write Buffer size",
-          "description": "The size of a single memtable. Once memtable exceeds this size, it is marked immutable and a new one is created. Default is 256MB per memtable.",
-          "anyOf": [
-            {
-              "$ref": "#/definitions/NonZeroHumanBytes"
-            },
-            {
-              "type": "null"
-            }
+        "rocksdb-disable-direct-io-for-reads": {
+          "title": "Disable Direct IO for reads",
+          "description": "Files will be opened in \"direct I/O\" mode which means that data r/w from the disk will not be cached or buffered. The hardware buffer of the devices may however still be used. Memory mapped files are not impacted by these parameters.",
+          "type": [
+            "boolean",
+            "null"
           ]
         },
-        "rocksdb-max-total-wal-size": {
-          "title": "Maximum total WAL size",
-          "description": "Max WAL size, that after this Rocksdb start flushing mem tables to disk.",
-          "anyOf": [
-            {
-              "$ref": "#/definitions/NonZeroHumanBytes"
-            },
-            {
-              "type": "null"
-            }
+        "rocksdb-disable-direct-io-for-flush-and-compactions": {
+          "title": "Disable Direct IO for flush and compactions",
+          "description": "Use O_DIRECT for writes in background flush and compactions.",
+          "type": [
+            "boolean",
+            "null"
           ]
         },
         "rocksdb-disable-wal": {
@@ -1078,14 +1138,44 @@
         }
       ]
     },
-    "HumanBytes": {
-      "title": "Human-readable bytes",
-      "description": "Human-readable bytes",
-      "type": "string",
-      "format": "human-bytes",
-      "minimum": 1.0,
-      "minLength": 1,
-      "pattern": "^\\d+(\\.\\d+)? ?[KMG]B$"
+    "RocksbPerfStatisticsLevel": {
+      "oneOf": [
+        {
+          "description": "Disable perf stats",
+          "type": "string",
+          "enum": [
+            "disable"
+          ]
+        },
+        {
+          "description": "Enables only count stats",
+          "type": "string",
+          "enum": [
+            "enable-count"
+          ]
+        },
+        {
+          "description": "Count stats and enable time stats except for mutexes",
+          "type": "string",
+          "enum": [
+            "enable-time-except-for-mutex"
+          ]
+        },
+        {
+          "description": "Other than time, also measure CPU time counters. Still don't measure time (neither wall time nor CPU time) for mutexes",
+          "type": "string",
+          "enum": [
+            "enable-time-and-c-p-u-time-except-for-mutex"
+          ]
+        },
+        {
+          "description": "Enables count and time stats",
+          "type": "string",
+          "enum": [
+            "enable-time"
+          ]
+        }
+      ]
     },
     "Http2KeepAliveOptions": {
       "title": "HTTP/2 Keep alive options",

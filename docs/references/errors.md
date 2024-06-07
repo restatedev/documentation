@@ -75,6 +75,26 @@ Suggestions:
 * Configure a different meta storage directory via `meta.storage_path`.
 * Downgrade your Restate server to {'<='} 0.7.
 
+<h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="META0012">META0012<a href="#META0012" class="hash-link">&#8203;</a></h2>
+
+Trying to register a service endpoint whose supported service protocol versions is incompatible with the server. This indicates that you have to upgrade your server to make it work together with the deployed SDK.
+
+Suggestions:
+
+* Check the compatibility matrix between SDK and server versions
+  * Try upgrading to a server version which is compatible with your SDK
+  * Try using an SDK version which is compatible with your server
+
+<h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="META0013">META0013<a href="#META0013" class="hash-link">&#8203;</a></h2>
+
+Received a bad service discovery response from the specified service endpoint. This indicates that you are trying to register a service endpoint with an incompatible server. 
+
+Suggestions:
+
+* Check the compatibility matrix between SDK and server versions
+  * Either deploy a server version which is compatible with your SDK
+  * Or use an SDK version which is compatible with your server
+
 <h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="RT0001">RT0001<a href="#RT0001" class="hash-link">&#8203;</a></h2>
 
 The invocation response stream was aborted due to the timeout configured in `worker.invoker.abort_timeout`.
@@ -161,4 +181,22 @@ Check whether the schema registry contains the related service and deployment.
 <h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="RT0012">RT0012<a href="#RT0012" class="hash-link">&#8203;</a></h2>
 
 Protocol violation error. This can be caused by an incompatible runtime and SDK version. If the error persists, please file a [bug report](https://github.com/restatedev/restate/issues). 
+
+<h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="RT0013">RT0013<a href="#RT0013" class="hash-link">&#8203;</a></h2>
+
+The service endpoint does not support any of the supported service protocol versions of the server. Therefore, the server cannot talk to this endpoint. Please make sure that the service endpoint's SDK and the Restate server are compatible.
+
+Suggestions:
+
+* Register a service endpoint which uses an SDK which is compatible with the used server
+* Upgrade the server to a version which is compatible with the used SDK
+
+<h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="RT0014">RT0014<a href="#RT0014" class="hash-link">&#8203;</a></h2>
+
+The server cannot resume an in-flight invocation which has been started with a now incompatible service protocol version. Restate does not support upgrading service protocols yet.
+
+Suggestions:
+
+* Downgrade the server to a version which is compatible with the used service protocol version
+* Kill the affected invocation via the CLI.
 
