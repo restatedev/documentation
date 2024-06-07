@@ -27,7 +27,7 @@ characters or hyphens. For example, you can choose `dev` for your account and
 `my-environment` for your environment.
 </Admonition>
 
-You can start using your new environment straight away using the [CLI](/develop/local_dev#install-restate-server--cli):
+You can start using your new environment straight away using the [CLI](/develop/local_dev#running-restate-server--cli-locally):
 
 ```bash
 # authenticate to Cloud
