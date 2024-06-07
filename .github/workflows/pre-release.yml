@@ -87,6 +87,9 @@ jobs:
       - name: Upgrade TS Restate SDK
         if: github.event.inputs.sdkTypescriptVersion != ''
         run: npm --prefix code_snippets/ts install @restatedev/restate-sdk@^${{ inputs.sdkTypescriptVersion }}
+      - name: Upgrade TS Restate SDK Clients
+        if: github.event.inputs.sdkTypescriptVersion != ''
+        run: npm --prefix code_snippets/ts install @restatedev/restate-sdk-clients@^${{ inputs.sdkTypescriptVersion }}
 
       # Test if TS code snippets compile and build
       - name: Compile TypeScript code snippets
