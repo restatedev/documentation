@@ -2,6 +2,7 @@ package develop.workflows;
 
 import dev.restate.sdk.client.Client;
 import dev.restate.sdk.client.SendResponse;
+import dev.restate.sdk.common.Output;
 
 public class WorkflowSubmitter {
 
@@ -20,10 +21,20 @@ public class WorkflowSubmitter {
         // <end_query>
 
         // <start_interact>
+        // Option 1: attach and wait for result
         boolean result = SignupWorkflowClient
                 .fromClient(restate, "someone")
                 .workflowHandle()
                 .attach();
+
+        // Option 2: peek to check if ready
+        Output<Boolean> peekOutput = SignupWorkflowClient
+                .fromClient(restate, "someone")
+                .workflowHandle()
+                .getOutput();
+        if(peekOutput.isReady()){
+            boolean result2 = peekOutput.getValue();
+        }
         // <end_interact>
 
     }
