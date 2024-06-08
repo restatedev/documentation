@@ -10,8 +10,8 @@ import Admonition from '@theme/Admonition';
 # Restate Cloud
 
 <Admonition type="warning">
-    Restate Cloud is an early-access preview. Features may change, and we offer
-    no reliability SLAs at this time. Production usage is not recommended.
+    Restate Cloud free tier is in early access and we don't offer strict
+    availability or durability SLAs at this time.
 </Admonition>
 
 [Restate Cloud](https://cloud.restate.dev) is the early-access managed service of Restate, where we run an instance of the Restate server for you. This allows you to focus on your services, which you can deploy wherever you normally do - long-lived compute, or serverless platforms like Lambda.
