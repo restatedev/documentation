@@ -45,6 +45,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # We need java and gradle for the javadocs
+      - uses: actions/setup-java@v4
+        if: ${{ inputs.sdkJavaVersion != '' }}
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - name: Setup Gradle
+        if: ${{ inputs.sdkJavaVersion != '' }}
+        uses: gradle/actions/setup-gradle@v3
+
       - name: Run the runtime generate script
         if: ${{ inputs.restateVersion != '' }}
         run: |
@@ -95,35 +105,37 @@ jobs:
       - name: Compile TypeScript code snippets
         run: npm install --prefix code_snippets/ts && npm run build --prefix code_snippets/ts
 
-      # Setup Java
-      - uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-
       # Upgrade Java code snippets if new version is provided
       - name: Find and replace restateVersion in build.gradle.kts for Java code snippets
-        if: github.event.inputs.sdkJavaVersion != ''
+        if: ${{ inputs.sdkJavaVersion != '' }}
         run: sed -i 's/val restateVersion = "[0-9A-Z.-]*"/val restateVersion = "${{ inputs.sdkJavaVersion }}"/' code_snippets/java/build.gradle.kts
+      # Upgrade Kotlin code snippets if new version is provided
+      - name: Find and replace restateVersion in build.gradle.kts for Kotlin code snippets
+        if: ${{ inputs.sdkJavaVersion != '' }}
+        run: sed -i 's/val restateVersion = "[0-9A-Z.-]*"/val restateVersion = "${{ inputs.sdkJavaVersion }}"/' code_snippets/kotlin/build.gradle.kts
 
       # Check Java code snippets
       - name: Test Java code snippets
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: check
-          build-root-directory: code_snippets/java
-
-      # Upgrade Kotlin code snippets if new version is provided
-      - name: Find and replace restateVersion in build.gradle.kts for Kotlin code snippets
-        if: github.event.inputs.sdkJavaVersion != ''
-        run: sed -i 's/val restateVersion = "[0-9A-Z.-]*"/val restateVersion = "${{ inputs.sdkJavaVersion }}"/' code_snippets/kotlin/build.gradle.kts
+        if: ${{ inputs.sdkJavaVersion != '' }}
+        run: gradle -p code_snippets/java check
 
       # Check Kotlin code snippets
       - name: Test Kotlin code snippets
-        uses: gradle/gradle-build-action@v2
+        if: ${{ inputs.sdkJavaVersion != '' }}
+        run: gradle -p code_snippets/kotlin check
+
+      # Checkout SDK java for the javadocs/ktdocs
+      - name: Checkout SDK-Java
+        uses: actions/checkout@v3
+        if: ${{ inputs.sdkJavaVersion != '' }}
         with:
-          arguments: check
-          build-root-directory: code_snippets/kotlin
+          repository: restatedev/sdk-java
+          ref: v${{ inputs.sdkJavaVersion }}
+          path: temp-sdk-java
+      - name: Run the runtime generate script
+        if: ${{ inputs.sdkJavaVersion != '' }}
+        run: |
+          ./tools/build_sdk_java_docs.sh temp-sdk-java
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
@@ -133,4 +145,6 @@ jobs:
           add-paths: |
             restate.config.json
             static/schemas/*
+            static/javadocs/*
+            static/ktdocs/*
             docs/references/*
