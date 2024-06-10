@@ -161,11 +161,7 @@ const config = {
               {
                 label: "GitHub",
                 href: "https://github.com/restatedev",
-              },
-              {
-                label: "JavaDocs",
-                href: "https://javadoc.io/doc/dev.restate",
-              },
+              }
             ],
           },
         ],

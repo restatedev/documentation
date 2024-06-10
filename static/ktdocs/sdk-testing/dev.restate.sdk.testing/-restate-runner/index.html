@@ -1,0 +1,141 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>RestateRunner</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../index.html">
+                            sdk-java
+                    </a>            </div>
+            <div class="library-version">1.1.0-SNAPSHOT
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":sdk-testing:dokkaHtmlPartial/main">jvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="sdk-testing::dev.restate.sdk.testing/RestateRunner///PointingToDeclaration//-101612483">
+  <div class="breadcrumbs"><a href="../../index.html">sdk-testing</a><span class="delimiter">/</span><a href="../index.html">dev.restate.sdk.testing</a><span class="delimiter">/</span><span class="current">RestateRunner</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Restate</span><wbr><span><span>Runner</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-testing:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">RestateRunner</a> : <a href="../../../sdk-testing/dev.restate.sdk.testing/-base-restate-runner/index.html">BaseRestateRunner</a>, <span data-unresolved-link="org.junit.jupiter.api.extension/BeforeAllCallback///PointingToDeclaration/">BeforeAllCallback</span></div><p class="paragraph">Restate runner for JUnit 5. Example: </p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">
+{@}RegisterExtension
+private final static RestateRunner restateRunner = RestateRunnerBuilder.create()
+        .withService(new MyService())
+        .buildRunner();
+</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><p class="paragraph">The runner will deploy the services locally, execute Restate as container using testcontainers, and register the services. </p><p class="paragraph">This extension is scoped per test class, meaning that the restate runner will be shared among test methods. </p><p class="paragraph">Use the annotations <a href="../-restate-client/index.html">RestateClient</a>, <a href="../-restate-u-r-l/index.html">RestateURL</a> and <a href="../-restate-admin-client/index.html">RestateAdminClient</a> to interact with the deployed runtime: </p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">
+{@}Test
+void testGreet({@}RestateGrpcChannel ManagedChannel channel) {
+    CounterGrpc.CounterBlockingStub client = CounterGrpc.newBlockingStub(channel);
+    // Use client
+}
+</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-314213078%2FFunctions%2F-101612483" anchor-label="beforeAll" id="-314213078%2FFunctions%2F-101612483" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-testing:dokkaHtmlPartial/main" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="before-all.html"><span>before</span><wbr><span><span>All</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-314213078%2FFunctions%2F-101612483"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-testing:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="before-all.html"><span class="token function">beforeAll</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><span data-unresolved-link="org.junit.jupiter.api.extension/ExtensionContext///PointingToDeclaration/">ExtensionContext</span></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1876552331%2FFunctions%2F-101612483" anchor-label="resolveParameter" id="1876552331%2FFunctions%2F-101612483" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-testing:dokkaHtmlPartial/main" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1922071613%2FFunctions%2F-101612483"><span>resolve</span><wbr><span><span>Parameter</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1876552331%2FFunctions%2F-101612483"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-testing:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#-1922071613%2FFunctions%2F-101612483"><span class="token function">resolveParameter</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">parameterContext<span class="token operator">: </span><span data-unresolved-link="org.junit.jupiter.api.extension/ParameterContext///PointingToDeclaration/">ParameterContext</span><span class="token punctuation">, </span></span><span class="parameter ">extensionContext<span class="token operator">: </span><span data-unresolved-link="org.junit.jupiter.api.extension/ExtensionContext///PointingToDeclaration/">ExtensionContext</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a></div><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#-1611457900%2FFunctions%2F-101612483"><span class="token function">resolveParameter</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p<span class="token operator">: </span><span data-unresolved-link="org.junit.jupiter.api.extension/ParameterContext///PointingToDeclaration/">ParameterContext</span><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><span data-unresolved-link="org.junit.jupiter.api.extension/ExtensionContext///PointingToDeclaration/">ExtensionContext</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1798134907%2FFunctions%2F-101612483" anchor-label="supportsParameter" id="1798134907%2FFunctions%2F-101612483" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-testing:dokkaHtmlPartial/main" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1902565391%2FFunctions%2F-101612483"><span>supports</span><wbr><span><span>Parameter</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1798134907%2FFunctions%2F-101612483"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-testing:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#1902565391%2FFunctions%2F-101612483"><span class="token function">supportsParameter</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">parameterContext<span class="token operator">: </span><span data-unresolved-link="org.junit.jupiter.api.extension/ParameterContext///PointingToDeclaration/">ParameterContext</span><span class="token punctuation">, </span></span><span class="parameter ">extensionContext<span class="token operator">: </span><span data-unresolved-link="org.junit.jupiter.api.extension/ExtensionContext///PointingToDeclaration/">ExtensionContext</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#-1353311394%2FFunctions%2F-101612483"><span class="token function">supportsParameter</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p<span class="token operator">: </span><span data-unresolved-link="org.junit.jupiter.api.extension/ParameterContext///PointingToDeclaration/">ParameterContext</span><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><span data-unresolved-link="org.junit.jupiter.api.extension/ExtensionContext///PointingToDeclaration/">ExtensionContext</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
