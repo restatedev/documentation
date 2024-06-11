@@ -26,7 +26,7 @@ const redocusaurus = [
 const config = {
   title: "Restate documentation",
   tagline: "Distributed application development made simple",
-  favicon: "/img/favicon.png",
+  favicon: "/img/favicon.ico",
 
   // Set the production url of your site here
   url: "https://docs.restate.dev",
