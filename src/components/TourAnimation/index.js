@@ -59,7 +59,7 @@ class Runtime extends React.Component {
                 <div className="text--center">
                     <img
                         className="logo-animation img-fluid"
-                        src="/img/durable_execution_animation/restate.png"
+                        src="/img/restate-logo.svg"
                     />
                 </div>
                 <h6>Journals</h6>
