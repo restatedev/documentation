@@ -4,6 +4,7 @@ description: "Learn how to store the results of non-deterministic operations."
 ---
 
 import Admonition from '@theme/Admonition';
+import clsx from "clsx";
 
 # Journaling Results
 
@@ -41,21 +42,14 @@ The SDK provides combinators for working with `CombineablePromise`.
 Restate then logs the order in which they are resolved or rejected, to make them deterministic on replay.
 
 
-<CH.Spotlight start={1} className={"durable-promises-short"}>
-
-
-    ```typescript
-    CODE_LOAD::ts/src/develop/side_effects.ts#<start_promises>-<end_promises>
-    ```
-
-    ---
+<CH.Scrollycoding className={"durable-promises-short"}>
 
     **Await all** creates a promise that is similar to [`Promise.all()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all), but the outcome is stored in the Restate journal to be deterministically replayable:
     - Resolves with an array of results, once all input promises are resolved.
     - Rejects when any input promise is rejected.
 
-
     ```typescript focus=1:6 mark=5:6
+    CODE_LOAD::ts/src/develop/side_effects.ts#<start_promises>-<end_promises>
     ```
 
     ---
@@ -90,12 +84,12 @@ Restate then logs the order in which they are resolved or rejected, to make them
     ```typescript focus=1:3,14,15 mark=14,15
     ```
 
-</CH.Spotlight>
+</CH.Scrollycoding>
 
 ## Generating randoms
 The SDK provides helper functions for the deterministic generation of UUIDs and random numbers. Restate seeds the random number generator with the invocation ID, so it always returns the same value on retries.
 
-<CH.Spotlight className={"durable-promises-short"}>
+<CH.Scrollycoding className={clsx("single-item", "durable-promises-short")}>
     ### Generating UUIDs
 
     You can use these UUIDs to generate stable idempotency keys, to deduplicate operations. For example, you can use this to let a payment service avoid duplicate payments during retries.
@@ -106,8 +100,8 @@ The SDK provides helper functions for the deterministic generation of UUIDs and 
     CODE_LOAD::ts/src/develop/side_effects.ts#<start_uuid>-<end_uuid>
     ```
 
-</CH.Spotlight>
-<CH.Spotlight className={"durable-promises-short"}>
+</CH.Scrollycoding>
+<CH.Scrollycoding className={clsx("single-item", "durable-promises-short")}>
 
     ### Generating random numbers
 
@@ -118,4 +112,4 @@ The SDK provides helper functions for the deterministic generation of UUIDs and 
     ```typescript
     CODE_LOAD::ts/src/develop/side_effects.ts#<start_random_nb>-<end_random_nb>
     ```
-</CH.Spotlight>
+</CH.Scrollycoding>

@@ -28,12 +28,14 @@ public class Ingress {
         // <start_one_way_call_java>
         Client rs = Client.connect("http://localhost:8080");
         GreeterServiceClient.fromClient(rs)
-                .send()
-                .greet("Hi");
+            // mark
+            .send()
+            .greet("Hi");
 
         GreetCounterObjectClient.fromClient(rs, "Mary")
-                .send()
-                .greet("Hi");
+            // mark
+            .send()
+            .greet("Hi");
         // <end_one_way_call_java>
     }
 
@@ -41,10 +43,12 @@ public class Ingress {
         // <start_delayed_call_java>
         Client rs = Client.connect("http://localhost:8080");
         GreeterServiceClient.fromClient(rs)
+        // mark
             .send(Duration.ofMillis(1000))
             .greet("Hi");
 
         GreetCounterObjectClient.fromClient(rs, "Mary")
+            // mark
             .send(Duration.ofMillis(1000))
             .greet("Hi");
         // <end_delayed_call_java>

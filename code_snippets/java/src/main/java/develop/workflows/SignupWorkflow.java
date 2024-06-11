@@ -14,7 +14,6 @@ import static develop.workflows.Utils.sendEmailWithLink;
 // <start_here>
 @Workflow
 public class SignupWorkflow {
-
     private static final DurablePromiseKey<String> EMAIL_CLICKED =
             DurablePromiseKey.of("email_clicked", JsonSerdes.STRING);
     private static final StateKey<String> STATUS =

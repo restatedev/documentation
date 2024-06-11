@@ -6,49 +6,52 @@ description: "Learn how to set up your local dev environment"
 import Admonition from '@theme/Admonition';
 import TabItem from "@theme/TabItem";
 import Tabs from "@theme/Tabs";
+import clsx from "clsx";
 
 # Local Dev
 
 ## Running Restate Server & CLI locally
+
+
 <Tabs groupId={"running-restate"}>
     <TabItem value={"npm"} label={"npm"}>
-        <CH.Spotlight className={"spotlight-medium"}>
-            Install Restate Server and run it:
+        <CH.Scrollycoding className={clsx("single-item", "short-code")}>
+        Install Restate Server and run it:
             ```shell
             npm install --global @restatedev/restate-server@latest &&
             restate-server
             ```
-        </CH.Spotlight>
-        <CH.Spotlight className={"spotlight-medium"}>
-            Or use npx, without installation:
+        </CH.Scrollycoding>
+        <CH.Scrollycoding className={clsx("single-item", "short-code")}>
+        Or use npx, without installation:
             ```shell
             npx @restatedev/restate-server
             ```
-        </CH.Spotlight>
-        <CH.Spotlight className={"spotlight-medium"}>
-            Install the Restate CLI via:
+        </CH.Scrollycoding>
+        <CH.Scrollycoding className={clsx("single-item", "short-code")}>
+        Install the Restate CLI via:
             ```shell
             npm install --global @restatedev/restate@latest
             ```
-        </CH.Spotlight>
+        </CH.Scrollycoding>
 
     </TabItem>
     <TabItem value={"Homebrew"}  label={"Homebrew"}>
-        <CH.Spotlight className={"spotlight-medium"}>
+        <CH.Scrollycoding className={clsx("single-item", "short-code")}>
 
         Install Restate Server and run it with:
         ```shell
         brew install restatedev/tap/restate-server &&
         restate-server
         ```
-        </CH.Spotlight>
+        </CH.Scrollycoding>
 
-        <CH.Spotlight className={"spotlight-medium"}>
+        <CH.Scrollycoding className={clsx("single-item", "short-code")}>
         Install the CLI via:
         ```shell
         brew install restatedev/tap/restate
         ```
-        </CH.Spotlight>
+        </CH.Scrollycoding>
 
     </TabItem>
     <TabItem value={"bin"} label={"Download binaries"}>
@@ -124,22 +127,22 @@ import Tabs from "@theme/Tabs";
 
 ## Useful dev CLI commands
 
-<CH.Spotlight className={"spotlight-medium"}>
+<CH.Scrollycoding className={clsx("single-item", "short-code")}>
     Check if the CLI is installed correctly and can find the server:
 
     ```shell
     restate whoami
     ```
-</CH.Spotlight>
-<CH.Spotlight className={"spotlight-medium"}>
+</CH.Scrollycoding>
+<CH.Scrollycoding className={clsx("single-item", "short-code")}>
     Register a new service deployment. <br/>
     When running Restate in a Docker, replace localhost with host.docker.internal.
 
     ```shell
     restate deployments register localhost:9080
     ```
-</CH.Spotlight>
-<CH.Spotlight className={"spotlight-medium"}>
+</CH.Scrollycoding>
+<CH.Scrollycoding className={clsx("single-item", "short-code")}>
 
     [Cancel](/operate/invocation#cancelling-invocations) a single invocation or a batch of invocations.
     Use `--kill` to [kill](/operate/invocation#killing-invocations) the invocation.
@@ -150,8 +153,8 @@ import Tabs from "@theme/Tabs";
     # also works with <SERVICE>/<SERVICE_KEY>/<HANDLER> or a subset of it
     ```
 
-</CH.Spotlight>
-<CH.Spotlight className={"spotlight-medium"}>
+</CH.Scrollycoding>
+<CH.Scrollycoding className={clsx("single-item", "short-code")}>
 
     Purge completed invocations from the state:
 
@@ -160,8 +163,8 @@ import Tabs from "@theme/Tabs";
     # also works with <SERVICE>/<SERVICE_KEY>/<HANDLER> or a subset of it
     ```
 
-</CH.Spotlight>
-<CH.Spotlight className={"spotlight-medium"}>
+</CH.Scrollycoding>
+<CH.Scrollycoding className={clsx("single-item", "short-code")}>
 
     Clear the K/V state of a Virtual Object or Workflows.
     To clear all state, restart the server with `--wipe all`.
@@ -171,8 +174,8 @@ import Tabs from "@theme/Tabs";
     restate kv clear <OBJECT_OR_WORKFLOW_NAME>/<SERVICE_KEY>
     ```
 
-</CH.Spotlight>
-<CH.Spotlight className={"spotlight-medium"}>
+</CH.Scrollycoding>
+<CH.Scrollycoding className={clsx("single-item", "short-code")}>
 
     Execute a SQL query on the invocation or application state.
     See [SQL introspection docs](/operate/introspection?interface=psql#inspecting-invocations) for example queries.
@@ -182,8 +185,7 @@ import Tabs from "@theme/Tabs";
     restate sql "query"
     ```
 
-</CH.Spotlight>
-
+</CH.Scrollycoding>
 
 <Admonition type="tip" title={"Debugging and troubleshooting with the CLI"}>
     Have a look at the [introspection page](/operate/introspection) for a list of useful commands.
