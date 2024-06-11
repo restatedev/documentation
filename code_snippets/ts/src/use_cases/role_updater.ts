@@ -10,12 +10,13 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
+import {Context} from "@restatedev/restate-sdk";
 
 // <start_here>
 const roleUpdater = restate.object({
     name: "roleUpdate",
     handlers: {
-        applyRoleUpdate: async function applyRoleUpdate(ctx: restate.Context, update: UpdateRequest) {
+        updateRole: async function applyRoleUpdate(ctx: Context, update: UpdateRequest) {
             const { userId, role, permissions: permissions } = update;
 
             const previousRole = await ctx.run(() => getCurrentRole(userId));
