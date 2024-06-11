@@ -1,67 +1,98 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.css';
+import React from "react";
+import clsx from "clsx";
+import styles from "./styles.module.css";
 
 type FeatureItem = {
-  itemsPerRow: number
+  itemsPerRow: number;
   title: string;
   iconPath: string;
   description: JSX.Element;
   java: string;
   ts: string;
   kotlin: string;
-  link: { icon: string; url: string};
+  link: { icon: string; url: string };
 };
 
-
-function Feature({itemsPerRow, title, iconPath, description, java, ts, link, kotlin}: FeatureItem) {
-  const colWidth = (itemsPerRow) ? Math.floor(12/itemsPerRow) : 4;
+function Feature({
+  itemsPerRow,
+  title,
+  iconPath,
+  description,
+  java,
+  ts,
+  link,
+  kotlin,
+}: FeatureItem) {
+  const colWidth = itemsPerRow ? Math.floor(12 / itemsPerRow) : 4;
   return (
     <div className={clsx(`col col--${colWidth} margin-bottom--sm`)}>
-        <div className={styles.featureDiv}>
-            {iconPath ? (
-                <div className="text--center">
-                    <img className={styles.featureSvg} src={iconPath} />
-                </div>
-            ) : null}
-          <div className="text--center padding-horiz--md">
-            <h6>{title}</h6>
-              {description ? (
-                  <p>{description}</p>
-              ) : null}
-              {ts ? (
-                  <div id="overviewButtonDiv">
-                    <a className="overviewButton btn btn-primary btn-lg firstTimeButton"
-                       href={ts} target={"_blank"} role="button">
-                      <img className="buttonIcon" src="/img/typescript.svg" width="28"/>
-                    </a>
-                  </div>
-              ) : null}
-              {java ? (
-                  <div id="overviewButtonDiv">
-                      <a className="overviewButton btn btn-primary btn-lg firstTimeButton"
-                                     href={java} target={"_blank"} role="button">
-                          <img className="buttonIcon" src="/img/java.svg" width="28"/>
-                      </a>
-                  </div>
-              ) : null}
-              {kotlin ? (
-                  <div id="overviewButtonDiv">
-                      <a className="overviewButton btn btn-primary btn-lg firstTimeButton"
-                                     href={kotlin} target={"_blank"} role="button">
-                          <img className="buttonIcon" src="/img/kotlin.svg" width="28"/>
-                      </a>
-                  </div>
-              ) : null}
-              {link ? (
-                  <div id="overviewButtonDiv"><a className="overviewButton btn btn-primary btn-lg firstTimeButton"
-                                                 href={link.url} target={"_blank"} role="button">
-                      <img className="buttonIcon" src={link.icon ? link.icon : "/img/arrow-right.svg"} width="24"/>
-                      </a>
-                  </div>
-              ) : null}
+      <div className={styles.featureDiv}>
+        {iconPath ? (
+          <div className="text--center">
+            <img className={styles.featureSvg} src={iconPath} />
           </div>
+        ) : null}
+        <div className="text--center padding-horiz--md">
+          <h6>{title}</h6>
+          {description ? <p>{description}</p> : null}
+          {ts ? (
+            <div id="overviewButtonDiv">
+              <a
+                className="overviewButton btn btn-primary btn-lg firstTimeButton"
+                href={ts}
+                target={"_blank"}
+                role="button"
+              >
+                <img
+                  className="buttonIcon"
+                  src="/img/typescript.svg"
+                  width="28"
+                />
+              </a>
+            </div>
+          ) : null}
+          {java ? (
+            <div id="overviewButtonDiv">
+              <a
+                className="overviewButton btn btn-primary btn-lg firstTimeButton"
+                href={java}
+                target={"_blank"}
+                role="button"
+              >
+                <img className="buttonIcon" src="/img/java.svg" width="28" />
+              </a>
+            </div>
+          ) : null}
+          {kotlin ? (
+            <div id="overviewButtonDiv">
+              <a
+                className="overviewButton btn btn-primary btn-lg firstTimeButton"
+                href={kotlin}
+                target={"_blank"}
+                role="button"
+              >
+                <img className="buttonIcon" src="/img/kotlin.svg" width="28" />
+              </a>
+            </div>
+          ) : null}
+          {link ? (
+            <div id="overviewButtonDiv">
+              <a
+                className="overviewButton btn btn-primary btn-lg firstTimeButton"
+                href={link.url}
+                target={"_blank"}
+                role="button"
+              >
+                <img
+                  className="buttonIcon"
+                  src={link.icon ? link.icon : "/img/arrow-right.svg"}
+                  width="24"
+                />
+              </a>
+            </div>
+          ) : null}
         </div>
+      </div>
     </div>
   );
 }
@@ -70,9 +101,9 @@ export default function FeatureWidget({ itemsPerRow, features }): JSX.Element {
   return (
     <section className={styles.features}>
       <div className="container">
-        <div className={clsx('row', 'featureRow')}>
+        <div className={clsx("row", "")}>
           {features.map((props, idx) => (
-            <Feature key={idx} {...props} itemsPerRow={itemsPerRow}/>
+            <Feature key={idx} {...props} itemsPerRow={itemsPerRow} />
           ))}
         </div>
       </div>

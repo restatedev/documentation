@@ -1,6 +1,6 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.css';
+import React from "react";
+import clsx from "clsx";
+import styles from "./styles.module.css";
 
 type FeatureItem = {
   title: string;
@@ -8,22 +8,25 @@ type FeatureItem = {
   description: JSX.Element;
 };
 
-export default function FeatureSpotlight({title, imgPath, imgSize, description}): JSX.Element {
+export default function FeatureSpotlight({
+  title,
+  imgPath,
+  imgSize,
+  description,
+}): JSX.Element {
   return (
     <section className={styles.featurespotlight}>
       <div className="container">
         <div className="row">
-          <div className={clsx('col col--12')}>
+          <div className={clsx("col col--12")}>
             <div className={styles.featureDiv}>
               <div className="text--center padding-horiz--md padding-vert--lg">
                 <h2>{title}</h2>
-                {description ? (
-                    <p>{description}</p>
-                ) : null}
+                {description ? <div>{description}</div> : null}
                 {imgPath ? (
-                    <div className="text--center">
-                      <img src={imgPath}  alt={title}/>
-                    </div>
+                  <div className="text--center">
+                    <img src={imgPath} alt={title} />
+                  </div>
                 ) : null}
               </div>
             </div>
