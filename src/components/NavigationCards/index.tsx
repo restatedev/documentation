@@ -15,7 +15,7 @@ function NavigationCard({title, category, stepLabel, description}: FeatureItem) 
             <div className={(category === "first_time") ? styles.featureFirstTime : styles.featureFamiliar}>
                 <div className={(category === "first_time") ? styles.circleFirstTime : styles.circleFamiliar}>{stepLabel}</div>
                 <h6 className={styles.title}>{title}</h6>
-                <p className={styles.description}>{description}</p>
+                <div className={styles.description}>{description}</div>
             </div>
     );
 }
@@ -26,7 +26,7 @@ export default function NavigationCards({ features }): JSX.Element {
             <div className="container">
                 <div className="row">
                         {features.map((props, idx) => (
-                            <div className={clsx('col col--3 margin-vert--md')}>
+                            <div className={clsx('col col--3 margin-vert--md')} key={props.title}>
                                 <NavigationCard key={idx} {...props} />
                             </div>
                         ))}

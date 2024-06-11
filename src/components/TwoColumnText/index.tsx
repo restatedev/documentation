@@ -1,6 +1,6 @@
-import React from 'react';
-import clsx from 'clsx';
-import styles from './styles.module.css';
+import React from "react";
+import clsx from "clsx";
+import styles from "./styles.module.css";
 
 type FeatureItem = {
   title: string;
@@ -13,8 +13,8 @@ export default function TwoColumnText({ features }): JSX.Element {
   return (
     <section className={styles.features}>
       <div className="container">
-        <div className={clsx('row', 'featureRow')}>
-          <div className={clsx('col col--4 margin-vert--lg')}>
+        <div className={clsx("row", "featureRow")}>
+          <div className={clsx("col col--4 margin-vert--lg")}>
             <div className={styles.featureDivBlue}>
               <div className="text--right padding-horiz--none">
                 <h6>{left.title}</h6>
@@ -22,7 +22,7 @@ export default function TwoColumnText({ features }): JSX.Element {
               </div>
             </div>
           </div>
-          <div className={clsx('col col--4 margin-vert--lg')}>
+          <div className={clsx("col col--4 margin-vert--lg")}>
             <div className={styles.featureDiv}>
               <div className="text--left padding-horiz--none">
                 <h6>{right.title}</h6>

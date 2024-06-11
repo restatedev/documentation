@@ -9,14 +9,17 @@ hide_title: true
 import FeatureWidget from "../../src/components/FeatureWidget"
 import FeatureSpotlight from "../../src/components/FeatureSpotlight"
 import TwoColumnText from "../../src/components/TwoColumnText";
+import ExampleWidget from "../../src/components/ExampleWidget"
+import FeatureList from "../../src/components/FeatureList"
+import SpotlightCard from "../../src/components/SpotlightCard"
 
-<h1 className={"padding-top--lg text--center"}>Event Processing</h1>
-<h1 className={"use-case-subtitle text--center"}>Lightweight, transactional event processing.</h1>
-<p className={"use-case-description padding-bottom--lg text--center"}>Process Kafka events with flexible flows of transactional steps.<br/>
+<h1 className={"padding-top--lg text--left"}>Event Processing</h1>
+<h1 className={"use-case-subtitle text--left"}>Lightweight, transactional event processing.</h1>
+<p className={"use-case-description padding-bottom--lg text--left"}>Process Kafka events with flexible flows of transactional steps.<br/>
     Restate takes care of the event plumbing and pushes events to your handler.</p>
 
 
-<FeatureWidget className={"padding-bottom--lg"} features={[
+<FeatureList className={"padding-bottom--lg"} features={[
     {
         title: 'Lightweight Durable Functions',
         iconPath: '/img/code-icon.svg',
@@ -127,16 +130,18 @@ Restate pushes the events to your function.
 
 </CH.Scrollycoding>
 
-<TwoColumnText features={[
-    {
-        title: 'LOW-LATENCY',
-        description: "Restate’s event-driven foundation built in Rust lets you process events at high speed. Restate keeps a queue per key and pushes events to your functions to process them in parallel as fast as possible.",
-    },
-    {
-        title: 'DURABLE EXECUTION',
-        description: "Restate manages the complexities of reading from Kafka to make sure each event gets processed exactly once. Restate handles retries and recovery of your event handlers to the exact point before the crash.",
-    },
-]}/>
+<SpotlightCard>
+    <TwoColumnText features={[
+        {
+            title: 'LOW-LATENCY',
+            description: "Restate’s event-driven foundation built in Rust lets you process events at high speed. Restate keeps a queue per key and pushes events to your functions to process them in parallel as fast as possible.",
+        },
+        {
+            title: 'DURABLE EXECUTION',
+            description: "Restate manages the complexities of reading from Kafka to make sure each event gets processed exactly once. Restate handles retries and recovery of your event handlers to the exact point before the crash.",
+        },
+    ]}/>
+</SpotlightCard>
 
 ## Stateful event processing with Restate
 
@@ -188,18 +193,19 @@ Implement stateful event handlers with Restate.
 
 </CH.Scrollycoding>
 
-
-<FeatureSpotlight
-    title={"Event handlers as regular, lightweight functions"}
-    description={<p>Let Restate subscribe to a Kafka topic and push events to your functions. <br/>
-        Your functions run as normal Java or NodeJS services in your existing infra.
-    </p>}
-    imgPath={"/img/use_cases/event_processing.svg"}
-/>
+<SpotlightCard>
+    <FeatureSpotlight
+        title={"Event handlers as regular, lightweight functions"}
+        description={<p>Let Restate subscribe to a Kafka topic and push events to your functions. <br/>
+            Your functions run as normal Java or NodeJS services in your existing infra.
+        </p>}
+        imgPath={"/img/use_cases/event_processing-white.svg"}
+    />
+</SpotlightCard>
 
 ## What you can build with Event Processing and Restate
 
-<FeatureWidget itemsPerRow={4} features={[
+<ExampleWidget itemsPerRow={4} features={[
     {
         title: 'Kafka-triggered workflows',
         description: "Handle the payment, request the order preparation, wait for driver acceptance callback, etc.",
@@ -226,7 +232,7 @@ Implement stateful event handlers with Restate.
         link: {url: "https://discord.gg/skW3AZ6uGd", icon: "/img/discord-icon.svg"}
     },
 ]}>
-</FeatureWidget>
+</ExampleWidget>
 
 ## Developer Resources
 
