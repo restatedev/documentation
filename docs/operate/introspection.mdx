@@ -2,7 +2,6 @@
 title: "Introspection"
 sidebar_position: 5
 description: "Learn how to inspect/troubleshoot stuck or failing invocations."
-draft: false
 ---
 
 import Tabs from '@theme/Tabs';
@@ -13,9 +12,8 @@ import Admonition from '@theme/Admonition';
 
 Restate exposes information on invocations and application state via its CLI and Introspection SQL API. You can use this to gain insight into the status of invocations and the service state that is stored.
 
-This can be useful for troubleshooting. For example, a handler might be blocked for a specific key, and you want to kill the invocation that is blocking it, but you don't know the invocation ID. Or you want to check what is currently stored in the state of a service.
+This can be useful for troubleshooting. For example, a Virtual Object might be blocked and you want to kill the invocation that is blocking it, but you don't know the invocation ID. Or you want to check what is currently stored in the state of a service.
 
-## Setting up introspection
 
 <Tabs groupId="interface" queryString>
 <TabItem value="cli" label="CLI">
@@ -25,7 +23,6 @@ Have a look at the [installation guide](/develop/local_dev#running-restate-serve
 
 </TabItem>
 <TabItem value="psql" label="psql">
-
 
 Restate exposes the following SQL tables, queryable via the [*psql* client](https://www.postgresql.org/docs/current/app-psql.html):
 - `sys_invocation` table to inspect invocations
@@ -68,46 +65,42 @@ The Restate Introspection SQL API has been implemented based on [DataFusion](htt
 
 ## Inspecting invocations
 
-### Listing ongoing invocations
+    ### Listing ongoing invocations
 
-<Tabs groupId="interface" queryString>
+<Tabs groupId="interface" queryString  className={"display-none"}>
 <TabItem value="cli" label="CLI">
 
-```shell
-restate invocations list
-```
-
-<Admonition type="info">
-The CLI only allows you to interact with active invocations. Active invocations are invocations that haven't completed yet and are either invoked or suspended.
-</Admonition>
+    ```shell
+    restate invocations list
+    ```
 
 </TabItem>
 <TabItem value="psql" label="psql">
 
-```sql
-select * from sys_invocation;
-```
+    ```sql
+    select * from sys_invocation;
+    ```
 
-<Admonition type="info">
-The `sys_invocation` table only contains entries for active invocations. Active invocations are invocations that haven't completed yet and are either invoked or suspended.
-</Admonition>
-
+    <Admonition type="info">
+        The `sys_invocation` table only contains entries for active invocations. Active invocations are invocations that haven't completed yet and are either invoked or suspended.
+    </Admonition>
 </TabItem>
 </Tabs>
 
 ### Retrieving the status of an invocation
 
-<Tabs groupId="interface" queryString>
+<Tabs groupId="interface" queryString  className={"display-none"}>
 <TabItem value="cli" label="CLI">
 
-```shell
-restate invocations describe <INVOCATION_ID>
-```
 
-Check the status field in the invocation information in the output.
+        ```shell
+        restate invocations describe <INVOCATION_ID>
+        ```
 
 </TabItem>
 <TabItem value="psql" label="psql">
+
+    ### Retrieving the status of an invocation
 
 ```sql
 select target_service_name, target_handler_name, status from sys_invocation where id = '<INVOCATION_ID>';
@@ -127,7 +120,7 @@ The status is either:
 
 ### Inspecting the invocation journal
 
-<Tabs groupId="interface" queryString>
+<Tabs groupId="interface" queryString  className={"display-none"}>
 <TabItem value="cli" label="CLI">
 
 ```shell
@@ -154,7 +147,7 @@ If you don't know the invocation id of your request, you can find it in the `sys
 
 To have a look at the invocations that are currently in a retry loop, you can execute:
 
-<Tabs groupId="interface" queryString>
+<Tabs groupId="interface" queryString  className={"display-none"}>
 <TabItem value="cli" label="CLI">
 
 ```shell
@@ -178,7 +171,7 @@ This metadata can be found in the `sys_invocation` table.
 
 You can retrieve the invocation ID that is currently blocking a Virtual Object via:
 
-<Tabs groupId="interface" queryString>
+<Tabs groupId="interface" queryString  className={"display-none"}>
 <TabItem value="cli" label="CLI">
 
 ```shell
@@ -205,7 +198,7 @@ You can then use the invocation ID to [kill the invocation](/operate/invocation#
 
 ### Checking the last time an invocation was modified
 
-<Tabs groupId="interface" queryString>
+<Tabs groupId="interface" queryString  className={"display-none"}>
 <TabItem value="cli" label="CLI">
 
 ```shell
@@ -228,7 +221,7 @@ This includes any modification to the row in the table (e.g. when the service la
 ### Checking how an invocation was triggered
 To find out if an invocation was triggered via the ingress or by another service:
 
-<Tabs groupId="interface" queryString>
+<Tabs groupId="interface" queryString  className={"display-none"}>
 <TabItem value="cli" label="CLI">
 
 ```shell
@@ -250,7 +243,7 @@ The `invoked_by` field contains either `ingress` or `service`. If the invocation
 
 ### Retrieving the trace ID of an invocation
 
-<Tabs groupId="interface" queryString>
+<Tabs groupId="interface" queryString  className={"display-none"}>
 <TabItem value="cli" label="CLI">
 
 ```shell
@@ -271,7 +264,7 @@ Afterwards, you can use this trace ID to [search for spans in Jaeger](/operate/m
 
 ### Listing inactive invocations
 
-<Tabs groupId="interface" queryString>
+<Tabs groupId="interface" queryString  className={"display-none"}>
 <TabItem value="cli" label="CLI">
 To list the oldest invocations that are not making progress:
 
@@ -294,7 +287,7 @@ select * from sys_invocation where to_timestamp(modified_at) <= now() - interval
 
 Zombie invocations are invocations that are pinned to a specific deployment but that deployment was forcefully removed. You can list them by executing:
 
-<Tabs groupId="interface" queryString>
+<Tabs groupId="interface" queryString  className={"display-none"}>
 <TabItem value="cli" label="CLI">
 
 ```shell
@@ -318,25 +311,28 @@ select * from sys_invocation where pinned_deployment_id = '<DEPLOYMENT_ID>';
 
 To retrieve the state of a specific service and service key, do:
 
-<Tabs groupId="interface" queryString>
+<Tabs groupId="interface" queryString  className={"display-none"}>
 <TabItem value="cli" label="CLI">
 
 ```shell
 restate kv get <SERVICE_NAME> <SERVICE_KEY>
 ```
 
-This will output the state of the service `counter` with the key `bob`:
+    <details className={"grey-details"}>
+        <summary>Output</summary>
 
-```log
-🤖 State:
-―――――――――
+        ```log
+        🤖 State:
+        ―――――――――
 
-service  counter
-key      bob
+        service  counter
+        key      bob
 
-KEY   VAL
-seen  8
-```
+        KEY   VAL
+        seen  8
+        ```
+
+    </details>
 
 <Admonition type="info">
 If the values are not JSON-encoded UTF-8 strings, then it is also possible to use the `--binary` flag,
@@ -377,7 +373,7 @@ select * from sys_invocation JOIN state on sys_invocation.target_service_name = 
 
 ### To edit application state
 
-<Tabs groupId="interface" queryString>
+<Tabs groupId="interface" queryString  className={"display-none"}>
 <TabItem value="cli" label="CLI">
 
 To edit the application state, do:
@@ -413,26 +409,29 @@ An example on how to edit the K/V state of the service `counter` for the key `bo
 restate kv edit counter bob
 ```
 
-After changing the state in our editor, we get:
+    <details className={"grey-details"}>
+        <summary>Output</summary>
 
-```log
-ℹ️  About to write the following state :
-―――――――――――――――――――――――――――――――――――――――
-
-
-service  counter
-key      bob
-force?   false
-binary?  false
-
-KEY   VAL
-seen  8
-
-✔ Are you sure? · yes
+        ```log
+        ℹ️  About to write the following state :
+        ―――――――――――――――――――――――――――――――――――――――
 
 
-Enqueued successfully for processing
-```
+        service  counter
+        key      bob
+        force?   false
+        binary?  false
+
+        KEY   VAL
+        seen  8
+
+        ✔ Are you sure? · yes
+
+
+        Enqueued successfully for processing
+        ```
+    </details>
+
 
 </TabItem>
 </Tabs>
