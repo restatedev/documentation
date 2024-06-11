@@ -26,7 +26,7 @@ export default function NavigationCards({ features }): JSX.Element {
             <div className="container">
                 <div className="row">
                         {features.map((props, idx) => (
-                            <div className={clsx('col col--3')}>
+                            <div className={clsx('col col--3 margin-vert--md')}>
                                 <NavigationCard key={idx} {...props} />
                             </div>
                         ))}
