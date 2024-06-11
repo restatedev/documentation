@@ -7,9 +7,7 @@ const variableInjector = require("./src/plugins/variable-injector");
 const variablesReplacements = require("./restate.config.json");
 const codeLoaderPlugin = require("./src/plugins/code-loader");
 
-const {
-  remarkCodeHike,
-} = require("@code-hike/mdx")
+const { remarkCodeHike } = require("@code-hike/mdx");
 
 const redocusaurus = [
   "redocusaurus",
@@ -56,26 +54,33 @@ const config = {
     [
       "classic",
       /** @type {import('@docusaurus/preset-classic').Options} */
-      ({docs: {
+      ({
+        docs: {
           beforeDefaultRemarkPlugins: [
-            [codeLoaderPlugin, {
-              codeSnippets: {},
-            }],
+            [
+              codeLoaderPlugin,
+              {
+                codeSnippets: {},
+              },
+            ],
             [
               variableInjector, // replaces eg VAR::RESTATE_VERSION with config strings
               {
                 replacements: variablesReplacements,
               },
             ],
-            [remarkCodeHike, {
-              lineNumbers: false,
-              showCopyButton: true,
-              theme: "github-light",
-              skipLanguages: ["mermaid"],
-              staticMediaQuery: "not screen, (max-width: 768px)",
-              autoImport: true,
-              autoLink: false,
-            }],
+            [
+              remarkCodeHike,
+              {
+                lineNumbers: false,
+                showCopyButton: true,
+                theme: "github-light",
+                skipLanguages: ["mermaid"],
+                staticMediaQuery: "not screen, (max-width: 768px)",
+                autoImport: true,
+                autoLink: false,
+              },
+            ],
           ],
           remarkPlugins: [],
           routeBasePath: "/", // Set this value to '/'.
@@ -103,7 +108,7 @@ const config = {
         title: "",
         logo: {
           alt: "Restate Logo",
-          src: "img/restate-logo.svg",
+          src: "img/restate.svg",
           href: "https://restate.dev",
           target: "_self",
         },
@@ -115,17 +120,39 @@ const config = {
           },
           {
             href: "https://discord.gg/skW3AZ6uGd",
-            html: '<svg xmlns="http://www.w3.org/2000/svg" width="25" height="20" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"  viewBox="0 0 127.14 96.36"><g id="图层_2" data-name="图层 2"><g id="Discord_Logos" data-name="Discord Logos"><g id="Discord_Logo_-_Large_-_White" data-name="Discord Logo - Large - White"><path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/></g></g></g></svg>',
+            html: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19.98 5.16936C18.0694 3.63186 15.0469 3.37123 14.9175 3.36186C14.7169 3.34498 14.5256 3.45748 14.4431 3.64311C14.4356 3.65436 14.37 3.80623 14.2969 4.04248C15.5606 4.25623 17.1131 4.68561 18.5175 5.55748C18.7425 5.69623 18.8119 5.99248 18.6731 6.21748C18.5813 6.36561 18.4256 6.44623 18.2644 6.44623C18.1781 6.44623 18.09 6.42186 18.0113 6.37311C15.5963 4.87498 12.5813 4.79998 12 4.79998C11.4188 4.79998 8.4019 4.87498 5.98877 6.37311C5.76377 6.51373 5.46752 6.44436 5.32877 6.21936C5.18815 5.99248 5.25752 5.69811 5.48252 5.55748C6.8869 4.68748 8.4394 4.25623 9.70315 4.04436C9.63002 3.80623 9.5644 3.65623 9.55877 3.64311C9.4744 3.45748 9.28502 3.34123 9.08252 3.36186C8.95315 3.37123 5.93065 3.63186 3.99377 5.18998C2.98315 6.12561 0.960022 11.5931 0.960022 16.32C0.960022 16.4044 0.982522 16.485 1.02377 16.5581C2.41877 19.0106 6.2269 19.6519 7.09502 19.68C7.09877 19.68 7.1044 19.68 7.11002 19.68C7.26377 19.68 7.40815 19.6069 7.49815 19.4831L8.37565 18.2756C6.00752 17.6644 4.79815 16.6256 4.72877 16.5637C4.53002 16.3894 4.51127 16.0856 4.68752 15.8869C4.8619 15.6881 5.16565 15.6694 5.3644 15.8437C5.39252 15.87 7.62002 17.76 12 17.76C16.3875 17.76 18.615 15.8625 18.6375 15.8437C18.8363 15.6712 19.1381 15.6881 19.3144 15.8887C19.4888 16.0875 19.47 16.3894 19.2713 16.5637C19.2019 16.6256 17.9925 17.6644 15.6244 18.2756L16.5019 19.4831C16.5919 19.6069 16.7363 19.68 16.89 19.68C16.8956 19.68 16.9013 19.68 16.905 19.68C17.7731 19.6519 21.5813 19.0106 22.9763 16.5581C23.0175 16.485 23.04 16.4044 23.04 16.32C23.04 11.5931 21.0169 6.12561 19.98 5.16936ZM8.88002 14.4C7.9519 14.4 7.20002 13.5412 7.20002 12.48C7.20002 11.4187 7.9519 10.56 8.88002 10.56C9.80815 10.56 10.56 11.4187 10.56 12.48C10.56 13.5412 9.80815 14.4 8.88002 14.4ZM15.12 14.4C14.1919 14.4 13.44 13.5412 13.44 12.48C13.44 11.4187 14.1919 10.56 15.12 10.56C16.0481 10.56 16.8 11.4187 16.8 12.48C16.8 13.5412 16.0481 14.4 15.12 14.4Z" fill="#393D7A"/>
+            </svg>
+            `,
             position: "right",
           },
           {
             href: "https://twitter.com/restatedev",
-            html: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-twitter"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>',
+            html: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clip-path="url(#clip0_998_21597)">
+            <path d="M2.18182 0C0.976364 0 0 0.976364 0 2.18182V21.8182C0 23.0236 0.976364 24 2.18182 24H21.8182C23.0236 24 24 23.0236 24 21.8182V2.18182C24 0.976364 23.0236 0 21.8182 0H2.18182ZM5.07102 5.45455H10.1016L13.0376 9.65199L16.6705 5.45455H18.2536L13.7493 10.6705L19.2592 18.5455H14.2287L10.9709 13.8878L6.94815 18.5455H5.33949L10.255 12.8672L5.07102 5.45455ZM7.50426 6.74574L14.8722 17.2479H16.8239L9.45384 6.74574H7.50426Z" fill="#393D7A"/>
+            </g>
+            <defs>
+            <clipPath id="clip0_998_21597">
+            <rect width="24" height="24" fill="white"/>
+            </clipPath>
+            </defs>
+            </svg>`,
             position: "right",
           },
           {
             href: "https://github.com/restatedev/restate",
-            html: '<svg width="24" height="24" viewBox="0 0 98 96" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z" fill="#24292f"/></svg>',
+            html: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clip-path="url(#clip0_998_21595)">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M11.9642 0C5.34833 0 0 5.38776 0 12.0531C0 17.3811 3.42686 21.8912 8.18082 23.4874C8.77518 23.6074 8.9929 23.2281 8.9929 22.909C8.9929 22.6296 8.97331 21.6718 8.97331 20.6738C5.64514 21.3923 4.95208 19.237 4.95208 19.237C4.41722 17.8401 3.62473 17.4811 3.62473 17.4811C2.53543 16.7427 3.70408 16.7427 3.70408 16.7427C4.91241 16.8225 5.54645 17.9799 5.54645 17.9799C6.61592 19.8157 8.33926 19.297 9.03257 18.9776C9.13151 18.1993 9.44865 17.6606 9.78539 17.3613C7.13094 17.0819 4.33812 16.0442 4.33812 11.4144C4.33812 10.0974 4.81322 9.01984 5.56604 8.1818C5.44727 7.88253 5.03118 6.64506 5.68506 4.98882C5.68506 4.98882 6.69527 4.66947 8.97306 6.22604C9.94827 5.9622 10.954 5.82799 11.9642 5.82686C12.9744 5.82686 14.0042 5.96669 14.9552 6.22604C17.2332 4.66947 18.2434 4.98882 18.2434 4.98882C18.8973 6.64506 18.481 7.88253 18.3622 8.1818C19.1349 9.01984 19.5904 10.0974 19.5904 11.4144C19.5904 16.0442 16.7976 17.0618 14.1233 17.3613C14.5592 17.7404 14.9353 18.4587 14.9353 19.5962C14.9353 21.2126 14.9158 22.5098 14.9158 22.9087C14.9158 23.2281 15.1337 23.6074 15.7278 23.4877C20.4818 21.8909 23.9087 17.3811 23.9087 12.0531C23.9282 5.38776 18.5603 0 11.9642 0Z" fill="#393D7A"/>
+            </g>
+            <defs>
+            <clipPath id="clip0_998_21595">
+            <rect width="24" height="23.5102" fill="white"/>
+            </clipPath>
+            </defs>
+            </svg>
+            `,
             position: "right",
           },
         ],
@@ -161,7 +188,7 @@ const config = {
               {
                 label: "GitHub",
                 href: "https://github.com/restatedev",
-              }
+              },
             ],
           },
         ],
@@ -170,7 +197,16 @@ const config = {
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
-        additionalLanguages: ["protobuf", "log", "java", "kotlin", "scala", "bash", "json", "toml"], // adding scala to fix redoc from breaking (https://github.com/PrismJS/prism/issues/3458)
+        additionalLanguages: [
+          "protobuf",
+          "log",
+          "java",
+          "kotlin",
+          "scala",
+          "bash",
+          "json",
+          "toml",
+        ], // adding scala to fix redoc from breaking (https://github.com/PrismJS/prism/issues/3458)
         magicComments: [
           // Remember to extend the default highlight class name as well!
           {
@@ -210,10 +246,7 @@ const config = {
         searchParameters: {},
       },
     },
-  themes: [
-    "docusaurus-json-schema-plugin",
-    "mdx-v2"
-  ],
+  themes: ["docusaurus-json-schema-plugin", "mdx-v2"],
   scripts: ["/js/store-query-parameter.js"],
 };
 
