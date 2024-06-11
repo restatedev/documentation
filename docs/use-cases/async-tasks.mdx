@@ -9,15 +9,18 @@ hide_title: true
 import FeatureWidget from "../../src/components/FeatureWidget"
 import FeatureSpotlight from "../../src/components/FeatureSpotlight"
 import TwoColumnText from "../../src/components/TwoColumnText";
+import ExampleWidget from "../../src/components/ExampleWidget"
+import FeatureList from "../../src/components/FeatureList"
+import SpotlightCard from "../../src/components/SpotlightCard"
 
-<h1 className={"padding-top--lg text--center"}>Async tasks</h1>
-<h1 className={"use-case-subtitle text--center"}>Flexible, durable scheduling across processes and time.</h1>
-<p className={"use-case-description padding-bottom--lg text--center"}>
+<h1 className={"padding-top--lg text--left"}>Async tasks</h1>
+<h1 className={"use-case-subtitle text--left"}>Flexible, durable scheduling across processes and time.</h1>
+<p className={"use-case-description padding-bottom--lg text--left"}>
     Write resilient scheduling logic with the flexibility of code: delay execution, re-attach to ongoing tasks, fan out/in, etc. <br/>
     Restate runs your tasks to completion exactly once.
 </p>
 
-<FeatureWidget className={"padding-bottom--lg"} features={[
+<FeatureList className={"padding-bottom--lg"} features={[
     {
         title: 'Durable timers',
         iconPath: '/img/use_cases/hour-glass.svg',
@@ -106,17 +109,18 @@ Schedule tasks for now or later with the Restate SDK.
 
 </CH.Scrollycoding>
 
-<TwoColumnText features={[
-    {
-        title: 'LOW-LATENCY',
-        description: "Restate’s event-driven foundation built in Rust lets you queue events. Restate pushes them to your functions at high speed.",
-    },
-    {
-        title: 'DURABLE EXECUTION',
-        description: "Restate makes sure all tasks run to completion. It keeps track of timers, handles retries and recovery upon failures, and ensures that tasks are executed exactly once.",
-    },
-]}/>
-
+<SpotlightCard>
+    <TwoColumnText features={[
+        {
+            title: 'LOW-LATENCY',
+            description: "Restate’s event-driven foundation built in Rust lets you queue events. Restate pushes them to your functions at high speed.",
+        },
+        {
+            title: 'DURABLE EXECUTION',
+            description: "Restate makes sure all tasks run to completion. It keeps track of timers, handles retries and recovery upon failures, and ensures that tasks are executed exactly once.",
+        },
+    ]}/>
+</SpotlightCard>
 ## Parallelizing work with Restate
 
 Write flexible scheduling logic via durable building blocks.
@@ -165,13 +169,13 @@ Write flexible scheduling logic via durable building blocks.
 
 </CH.Scrollycoding>
 
-
-<FeatureSpotlight
-    title={"Restate as sophisticated task queue"}
-    description={<p>Restate is built as an event-driven foundation, and therefore supports task queues by design. <br/> Async tasks run like any other function in your infrastructure: on K8S, FaaS, or mix-and-match. <br/> No need to spin up extra infrastructure or message queues.</p>}
-    imgPath={"/img/use_cases/workflows.svg"}
-/>
-
+<SpotlightCard>
+    <FeatureSpotlight
+        title={"Restate as sophisticated task queue"}
+        description={<p>Restate is built as an event-driven foundation, and therefore supports task queues by design. <br/> Async tasks run like any other function in your infrastructure: on K8S, FaaS, or mix-and-match. <br/> No need to spin up extra infrastructure or message queues.</p>}
+        imgPath={"/img/use_cases/workflows-white.svg"}
+    />
+</SpotlightCard>
 
 ## Switch between async and sync with Restate
 
@@ -233,7 +237,7 @@ Write flexible scheduling logic via durable building blocks.
 
 ## What you can build with Async Tasks and Restate
 
-<FeatureWidget itemsPerRow={2} features={[
+<ExampleWidget itemsPerRow={2} features={[
     {
         title: "Payments: Combining sync & async responses",
         description: "Issue an idempotent payment to Stripe and process the response. The payment provider either responds immediately or notifies us later via a webhook.",
@@ -255,7 +259,7 @@ Write flexible scheduling logic via durable building blocks.
         link: {url: "https://discord.gg/skW3AZ6uGd", icon: "/img/discord-icon.svg"}
     },
 ]}>
-</FeatureWidget>
+</ExampleWidget>
 
 ## Developer Resources
 

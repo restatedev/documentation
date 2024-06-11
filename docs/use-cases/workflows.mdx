@@ -8,16 +8,19 @@ hide_title: true
 
 import clsx from "clsx";
 import FeatureWidget from "../../src/components/FeatureWidget"
+import ExampleWidget from "../../src/components/ExampleWidget"
+import FeatureList from "../../src/components/FeatureList"
 import FeatureSpotlight from "../../src/components/FeatureSpotlight"
+import SpotlightCard from "../../src/components/SpotlightCard"
 import TwoColumnText from "../../src/components/TwoColumnText";
 
-<h1 className={"padding-top--lg text--center"}>Workflows-as-code</h1>
-<h1 className={"use-case-subtitle text--center"}>Lightweight, flexible, durable.</h1>
-<p className={"use-case-description padding-bottom--lg text--center"}>Combine the resiliency of workflows with the speed and flexibility of regular functions.<br/>
+<h1 className={"padding-top--lg text--left"}>Workflows-as-code</h1>
+<h1 className={"use-case-subtitle text--left"}>Lightweight, flexible, durable.</h1>
+<p className={"use-case-description padding-bottom--lg text--left"}>Combine the resiliency of workflows with the speed and flexibility of regular functions.<br/>
     Restate orchestrates and manages their execution till completion, whether it’s millis or months.</p>
 
 
-<FeatureWidget className={"padding-bottom--lg"} features={[
+<FeatureList className={"padding-bottom--lg"} features={[
     {
         title: 'Just code',
         iconPath: '/img/code-icon.svg',
@@ -121,18 +124,18 @@ Implement the `run` function of your workflow, using the Restate SDK.
 </CH.Scrollycoding>
 
 
-
-<TwoColumnText features={[
-    {
-        title: 'LOW-LATENCY',
-        description: "Restate’s event-driven foundation built in Rust lets you put workflows in the latency-sensitive path of user interaction.",
-    },
-    {
-        title: 'DURABLE EXECUTION',
-        description: "Restate handles retries and recovers your code to the exact point before the crash. No more coarse per-step retries. State changes take part in durable execution, so the state never gets out of sync.",
-    },
-]}/>
-
+<SpotlightCard>
+    <TwoColumnText features={[
+        {
+            title: 'LOW-LATENCY',
+            description: "Restate’s event-driven foundation built in Rust lets you put workflows in the latency-sensitive path of user interaction.",
+        },
+        {
+            title: 'DURABLE EXECUTION',
+            description: "Restate handles retries and recovers your code to the exact point before the crash. No more coarse per-step retries. State changes take part in durable execution, so the state never gets out of sync.",
+        },
+    ]}/>
+</SpotlightCard>
 
 <CH.Scrollycoding className={clsx("single-item", "durable-promises")}>
 
@@ -146,17 +149,18 @@ Implement the `run` function of your workflow, using the Restate SDK.
 </CH.Scrollycoding>
 
 
-<FeatureSpotlight
-    title={"Workflows as regular, lightweight functions"}
-    description={<p>Restate’s workflow functionality is integrated in its core. <br/>
-        Workflows run like any other function in your infrastructure: on K8S, FaaS, or mix-and-match. <br/>
-        No need to spin up extra infrastructure or dedicated workers.</p>}
-    imgPath={"/img/use_cases/workflows.svg"}
-/>
-
+<SpotlightCard>
+    <FeatureSpotlight
+        title={"Workflows as regular, lightweight functions"}
+        description={<p>Restate’s workflow functionality is integrated in its core. <br/>
+            Workflows run like any other function in your infrastructure: on K8S, FaaS, or mix-and-match. <br/>
+            No need to spin up extra infrastructure or dedicated workers.</p>}
+        imgPath={"/img/use_cases/workflows-white.svg"}
+    />
+</SpotlightCard>
 ## What you can build with Workflows and Restate
 
-<FeatureWidget features={[
+<ExampleWidget features={[
     {
         title: 'User sign-up workflow',
         description: "Create user in the system, wait until email confirmation, schedule a reminder, send welcome email, etc.",
@@ -184,7 +188,7 @@ Implement the `run` function of your workflow, using the Restate SDK.
         link: {url: "https://discord.gg/skW3AZ6uGd", icon: "/img/discord-icon.svg"}
     },
     ]}>
-</FeatureWidget>
+</ExampleWidget>
 
 ## Developer Resources
 
