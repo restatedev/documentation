@@ -2,7 +2,7 @@ import * as restate from "@restatedev/restate-sdk";
 import {TerminalError, WorkflowContext, WorkflowSharedContext} from "@restatedev/restate-sdk";
 
 // <start_here>
-const signUpWorkflow = restate.workflow({
+export default restate.workflow({
     name: "sign-up-workflow",
     handlers: {
         run: async (ctx: WorkflowContext, user: User) => {
@@ -40,8 +40,6 @@ const signUpWorkflow = restate.workflow({
     }
 });
 // <end_here>
-
-export type SignUpWorkflow = typeof signUpWorkflow;
 
 type KafkaEvent = { topic: string, message: string };
 export type User = { id: string, name: string, email: string };
