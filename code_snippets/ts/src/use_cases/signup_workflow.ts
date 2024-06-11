@@ -2,7 +2,7 @@ import * as restate from "@restatedev/restate-sdk";
 import {TerminalError, WorkflowContext, WorkflowSharedContext} from "@restatedev/restate-sdk";
 
 // <start_here>
-export default restate.workflow({
+const signUpWorkflow = restate.workflow({
     name: "sign-up-workflow",
     handlers: {
         run: async (ctx: WorkflowContext, user: User) => {
@@ -15,14 +15,10 @@ export default restate.workflow({
             const secret = ctx.rand.uuidv4();
             await ctx.run(() => sendEmailWithLink({ email, secret }));
 
-            try {
-                const clickSecret = await ctx.promise<string>("email-link");
-                if (clickSecret !== secret) {
-                    throw new TerminalError("Wrong secret from email link");
-                }
-            } catch (err: any) {
-                ctx.set("stage", `Verification failed: ${err.message}`);
-                return false;
+            const clickSecret = await ctx.promise<string>("email-link");
+            if (clickSecret !== secret) {
+                ctx.set("stage", `Verification failed`);
+                throw new TerminalError("Wrong secret from email link");
             }
             ctx.set("stage", "User verified");
             return true;
@@ -40,6 +36,8 @@ export default restate.workflow({
     }
 });
 // <end_here>
+
+export type SignUpWorkflow = typeof signUpWorkflow;
 
 type KafkaEvent = { topic: string, message: string };
 export type User = { id: string, name: string, email: string };
