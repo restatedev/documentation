@@ -29,118 +29,106 @@ Let's have a look at a handler that processes food orders:
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
-<CH.Spotlight start={1} className="durable-promises">
+<CH.Scrollycoding className="durable-promises">
+    ### Durable <mark class="accent">functions</mark>
+    Handlers take part in durable execution, meaning that Restate keeps track of their progress and recovers them to the previously reached state in case of failures.
 
-    ```ts order_processor.ts
-    CODE_LOAD::ts/src/concepts/food_ordering.ts
-    ```
-
-    ---
 
     ```ts order_processor.ts
     CODE_LOAD::ts/src/concepts/food_ordering_functions.ts
     ```
 
-    ### Durable <mark class="accent">functions</mark>
-    Handlers take part in durable execution, meaning that Restate keeps track of their progress and recovers them to the previously reached state in case of failures.
-
     ---
-
-    ```ts order_processor.ts
-    CODE_LOAD::ts/src/concepts/food_ordering_rpc.ts
-    ```
 
     ### Durable <mark class="accent">RPCs</mark> and <mark class="accent">queues</mark>
     Handlers can call other handlers in a resilient way, with or without waiting for the response.
     When a failure happens, Restate handles retries and recovers partial progress.
 
-    ---
-
     ```ts order_processor.ts
-    CODE_LOAD::ts/src/concepts/food_ordering_awakeables.ts
+    CODE_LOAD::ts/src/concepts/food_ordering_rpc.ts
     ```
+
+    ---
 
     ### Durable <mark class="accent">promises and timers</mark>
     Register promises in Restate to make them resilient to failures (e.g. webhooks, timers).
     Restate lets the handler suspend while awaiting the promise, and invokes it again when the result is available.
     A great match for function-as-a-service platforms.
 
-    ---
-
     ```ts order_processor.ts
-    CODE_LOAD::ts/src/concepts/food_ordering_state.ts
+    CODE_LOAD::ts/src/concepts/food_ordering_awakeables.ts
     ```
+
+    ---
 
     ### Consistent <mark class="accent">K/V state</mark>
     Persist application state in Restate with a simple concurrency model and no extra setup. Restate makes sure state remains consistent amid failures.
 
+
+    ```ts order_processor.ts
+    CODE_LOAD::ts/src/concepts/food_ordering_state.ts
+    ```
     ---
+
+    ### Journaling <mark className="accent">actions</mark>
+    Store the result of an action in Restate. The result gets replayed in case of failures and the action is not executed again.
 
     ```ts order_processor.ts
     CODE_LOAD::ts/src/concepts/food_ordering_side_effect.ts
     ```
 
-    ### Journaling <mark className="accent">actions</mark>
-    Store the result of an action in Restate. The result gets replayed in case of failures and the action is not executed again.
-
-</CH.Spotlight>
+</CH.Scrollycoding>
 </TabItem>
 <TabItem value="java" label="Java">
 
-<CH.Spotlight start={1} className="durable-promises">
+<CH.Scrollycoding className="durable-promises">
 
-    ```java OrderWorkflow.java
-    CODE_LOAD::java/src/main/java/concepts/buildingblocks/part0/OrderWorkflow.java
-    ```
+    ### Durable <mark className="accent">functions</mark>
+    Handlers take part in durable execution, meaning that Restate keeps track of their progress and recovers them to the previously reached state in case of failures.
 
-    ---
 
     ```java OrderWorkflow.java
     CODE_LOAD::java/src/main/java/concepts/buildingblocks/part1_functions/OrderWorkflow.java
     ```
 
-    ### Durable <mark className="accent">functions</mark>
-    Handlers take part in durable execution, meaning that Restate keeps track of their progress and recovers them to the previously reached state in case of failures.
-
     ---
-
-    ```java OrderWorkflow.java
-    CODE_LOAD::java/src/main/java/concepts/buildingblocks/part2_rpc/OrderWorkflow.java
-    ```
 
     ### Durable <mark className="accent">RPCs</mark> and <mark className="accent">queues</mark>
     Handlers can call other handlers in a resilient way, with or without waiting for the response.
     When a failure happens, Restate handles retries and recovers partial progress.
 
+    ```java OrderWorkflow.java
+    CODE_LOAD::java/src/main/java/concepts/buildingblocks/part2_rpc/OrderWorkflow.java
+    ```
+
     ---
+
+    ### Durable <mark className="accent">promises and timers</mark>
+    Register promises in Restate to make them resilient to failures (e.g. webhooks, timers). Restate lets the handler suspend while awaiting the promise, and invokes it again when the result is available. A great match for function-as-a-service platforms.
 
     ```java OrderWorkflow.java
     CODE_LOAD::java/src/main/java/concepts/buildingblocks/part3_promises/OrderWorkflow.java
     ```
 
-    ### Durable <mark className="accent">promises and timers</mark>
-    Register promises in Restate to make them resilient to failures (e.g. webhooks, timers). Restate lets the handler suspend while awaiting the promise, and invokes it again when the result is available. A great match for function-as-a-service platforms.
-
     ---
+
+    ### Consistent <mark className="accent">K/V state</mark>
+    Persist application state in Restate with a simple concurrency model and no extra setup. Restate makes sure state remains consistent amid failures.
 
     ```java OrderWorkflow.java
     CODE_LOAD::java/src/main/java/concepts/buildingblocks/part4_state/OrderWorkflow.java
     ```
 
-    ### Consistent <mark className="accent">K/V state</mark>
-    Persist application state in Restate with a simple concurrency model and no extra setup. Restate makes sure state remains consistent amid failures.
-
     ---
+
+    ### Journaling <mark className="accent">actions</mark>
+    Store the result of an action in Restate. The result gets replayed in case of failures and the function is not executed again.
 
     ```java OrderWorkflow.java
     CODE_LOAD::java/src/main/java/concepts/buildingblocks/part5_sideeffects/OrderWorkflow.java
     ```
 
-    ### Journaling <mark className="accent">actions</mark>
-    Store the result of an action in Restate. The result gets replayed in case of failures and the function is not executed again.
-
-
-</CH.Spotlight>
+</CH.Scrollycoding>
 </TabItem>
 </Tabs>
 
