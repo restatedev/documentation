@@ -11,9 +11,9 @@ import Admonition from '@theme/Admonition';
 
 # AWS Lambda + TypeScript
 
-## Deploying services as AWS Lambda functions
-
 You can run your Restate services as serverless functions on [AWS Lambda](https://aws.amazon.com/lambda/).
+
+First, make sure you create a Lambda endpoint in your Restate service, as described in the [TypeScript SDK docs](/develop/ts/serving#creating-a-lambda-handler).
 
 <Admonition type="tip">
 The easiest way to run Restate handlers on AWS Lambda is to use the [Restate CDK construct library](/deploy/lambda/cdk).
@@ -29,31 +29,10 @@ npm run bundle
 AWS Lambda assumes that the handler can be found under `index.handler` in the uploaded code.
 By default, this is also the case for the Lambda functions developed with the Restate SDK.
 
-## Discovery of services
-
-To let Restate discover the services, execute the following curl command,
-pointed at the Restate runtime and with the Lambda function ARN in the data field.
-
-<Tabs groupId="interface" queryString>
-<TabItem value="cli" label="CLI">
-
-```shell
-restate deployments register "arn:aws:lambda:my-region:123456789101:function:my-function:my-version"
-```
-
-Replace the Lambda function ARN in the data field.
-
-</TabItem>
-<TabItem value="curl" label="curl">
-
-```shell
-curl <RESTATE_ADMIN_URL>/deployments -H 'content-type: application/json' -d '{"arn": "arn:aws:lambda:my-region:123456789101:function:my-function:my-version"}'
-```
-
-Replace `<RESTATE_ADMIN_URL>` and the Lambda function ARN in the data field.
-
-</TabItem>
-</Tabs>
+<Admonition type="info" title={"Lambda service registration"}>
+    Once your Lambda handler is deployed, register it with Restate as described in the [registration docs](/operate/registration#registering-deployments).
+    Make sure you first publish a new version of the Lambda function before registering it with Restate.
+</Admonition>
 
 ## Tutorial
 
@@ -135,7 +114,7 @@ Connect to the Restate (e.g. via an SSH session if it is running on EC2) runtime
 <Tabs groupId="interface" queryString>
 <TabItem value="cli" label="CLI">
 
-```shell 
+```shell
 restate deployments register arn:aws:lambda:eu-central-1:000000000000:function:my-greeter:1
 ```
 
