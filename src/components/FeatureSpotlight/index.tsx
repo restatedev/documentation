@@ -9,7 +9,6 @@ type FeatureItem = {
 };
 
 export default function FeatureSpotlight({title, imgPath, imgSize, description}): JSX.Element {
-  const widthImg = imgSize ? imgSize : '70%';
   return (
     <section className={styles.featurespotlight}>
       <div className="container">
@@ -23,7 +22,7 @@ export default function FeatureSpotlight({title, imgPath, imgSize, description})
                 ) : null}
                 {imgPath ? (
                     <div className="text--center">
-                      <img width={widthImg} src={imgPath}  alt={title}/>
+                      <img src={imgPath}  alt={title}/>
                     </div>
                 ) : null}
               </div>
