@@ -4,13 +4,9 @@ sidebar_position: 4
 description: "Learn how to run Restate Java services on AWS Lambda."
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
 
 # AWS Lambda + Java
-
-## Deploying services as AWS Lambda functions
 
 You can run your Restate services as serverless functions on [AWS Lambda](https://aws.amazon.com/lambda/).
 
@@ -47,27 +43,8 @@ gradle shadowJar
 
 Then upload the generated Jar to AWS Lambda, and configure `MyLambdaHandler` as the Lambda class in the AWS UI.
 
-## Discovery of services
 
-To let Restate discover the services, execute the following:
-
-<Tabs groupId="interface" queryString>
-<TabItem value="cli" label="CLI">
-
-```shell
-restate deployments register "arn:aws:lambda:my-region:123456789101:function:my-function:my-version"
-```
-
-Replace the Lambda function ARN in the data field.
-
-</TabItem>
-<TabItem value="curl" label="curl">
-
-```shell
-curl <RESTATE_ADMIN_URL>/deployments -H 'content-type: application/json' -d '{"arn": "arn:aws:lambda:my-region:123456789101:function:my-function:my-version"}'
-```
-
-Replace `<RESTATE_ADMIN_URL>` and the Lambda function ARN in the data field.
-
-</TabItem>
-</Tabs>
+<Admonition type="info" title={"Lambda service registration"}>
+    Once your Lambda handler is deployed, register it with Restate as described in the [registration docs](/operate/registration#registering-deployments).
+    Make sure you first publish a new version of the Lambda function before registering it with Restate.
+</Admonition>
