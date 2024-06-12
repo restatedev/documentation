@@ -126,13 +126,13 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Build the <code>HttpServer</code> serving the Restate service endpoint.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#buildAndListen()" class="member-name-link">buildAndListen</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Build and listen on the port specified by the environment variable <code>PORT</code>, or
  alternatively on the default <code>9080</code> port.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#buildAndListen(int)" class="member-name-link">buildAndListen</a><wbr>(int&nbsp;port)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Build and listen on the specified port.</div>
@@ -255,16 +255,30 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="buildAndListen(int)">
 <h3>buildAndListen</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">buildAndListen</span><wbr><span class="parameters">(int&nbsp;port)</span></div>
-<div class="block">Build and listen on the specified port.</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">buildAndListen</span><wbr><span class="parameters">(int&nbsp;port)</span></div>
+<div class="block">Build and listen on the specified port.
+
+ <p>NOTE: this method will block for opening the socket and reserving the port. If you need a
+ non-blocking variant, manually <a href="#build()"><code>build()</code></a> the server and start listening it.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The listening port</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="buildAndListen()">
 <h3>buildAndListen</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">buildAndListen</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">buildAndListen</span>()</div>
 <div class="block">Build and listen on the port specified by the environment variable <code>PORT</code>, or
- alternatively on the default <code>9080</code> port.</div>
+ alternatively on the default <code>9080</code> port.
+
+ <p>NOTE: this method will block for opening the socket and reserving the port. If you need a
+ non-blocking variant, manually <a href="#build()"><code>build()</code></a> the server and start listening it.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The listening port</dd>
+</dl>
 </section>
 </li>
 <li>

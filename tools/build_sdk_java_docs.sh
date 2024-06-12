@@ -13,5 +13,7 @@ DOCS_DIR=$SCRIPT_DIR/../
 gradle -p $SDK_PATH :sdk-aggregated-javadocs:javadoc
 gradle -p $SDK_PATH :dokkaHtmlMultiModule
 
+rm -r $DOCS_DIR/static/javadocs
+rm -r $DOCS_DIR/static/ktdocs
 mv $SDK_PATH/sdk-aggregated-javadocs/build/docs/javadoc $DOCS_DIR/static/javadocs
 mv $SDK_PATH/build/dokka/htmlMultiModule $DOCS_DIR/static/ktdocs
