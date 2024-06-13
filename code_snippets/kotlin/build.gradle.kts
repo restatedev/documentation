@@ -21,6 +21,7 @@ dependencies {
 
   // Restate SDK
   implementation("dev.restate:sdk-api-kotlin:$restateVersion")
+  implementation("dev.restate:sdk-common:$restateVersion")
   implementation("dev.restate:sdk-http-vertx:$restateVersion")
   implementation("dev.restate:sdk-lambda:$restateVersion")
 
