@@ -1,18 +1,16 @@
 package operate.invocations;
 
-import dev.restate.sdk.Context;
 import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.client.CallRequestOptions;
 import dev.restate.sdk.client.Client;
 import dev.restate.sdk.client.SendResponse;
 import dev.restate.sdk.common.Output;
-import develop.MyWorkflowClient;
 
 import java.time.Duration;
 
 public class Ingress {
 
-    public void myJavaHandler(Context ctx) {
+    public void myJavaHandler() {
         // <start_rpc_java>
         Client rs = Client.connect("http://localhost:8080");
         String greet = GreeterServiceClient.fromClient(rs)
@@ -23,7 +21,7 @@ public class Ingress {
         // <end_rpc_java>
     }
 
-    public void myOneWayCallHandler(Context ctx) {
+    public void myOneWayCallHandler() {
 
         // <start_one_way_call_java>
         Client rs = Client.connect("http://localhost:8080");
@@ -39,7 +37,7 @@ public class Ingress {
         // <end_one_way_call_java>
     }
 
-    public void myDelayedOneWayCallHandler(Context ctx) {
+    public void myDelayedOneWayCallHandler() {
         // <start_delayed_call_java>
         Client rs = Client.connect("http://localhost:8080");
         GreeterServiceClient.fromClient(rs)
@@ -61,7 +59,7 @@ public class Ingress {
         GreetCounterObjectClient.fromClient(rs, "Mary")
             .send()
             // withClass highlight-line
-            .greet( "Hi", CallRequestOptions.DEFAULT.withIdempotency("abcde"));
+            .greet("Hi", CallRequestOptions.DEFAULT.withIdempotency("abcde"));
         // <end_service_idempotent>
     }
 

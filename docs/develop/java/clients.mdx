@@ -3,9 +3,10 @@ sidebar_position: 13
 description: "Use the clients to invoke handlers programmatically."
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
 import {Step} from "../../../src/components/Stepper";
-import clsx from "clsx";
 
 # Clients
 The Restate SDK client library lets you invoke Restate handlers from anywhere in your application.
@@ -27,33 +28,66 @@ Invoke a handler programmatically with the SDK clients as follows:
 </Step>
 <Step stepLabel="2" title={<span><a href={"/operate/registration"}>Register the service</a> you want to invoke.</span>}/>
 <Step stepLabel="3" title="Connect to Restate and invoke the handler with your preferred semantics">
-    <CH.Scrollycoding className={"single-item"}>
+    <Tabs groupId="sdk" queryString>
+    <TabItem value="java" label="Java">
+        <CH.Scrollycoding className={"single-item"}>
 
-        **Request-response invocations** allow you to wait on a response from the handler.
+            **Request-response invocations** allow you to wait on a response from the handler.
 
-        ```java
-        CODE_LOAD::java/src/main/java/develop/clients/Ingress.java#<start_rpc_java>-<end_rpc_java>
-        ```
+            ```java
+            CODE_LOAD::java/src/main/java/develop/clients/Ingress.java#<start_rpc_java>-<end_rpc_java>
+            ```
 
-    </CH.Scrollycoding>
-    <CH.Scrollycoding className={"single-item"}>
+        </CH.Scrollycoding>
+        <CH.Scrollycoding className={"single-item"}>
 
-        **One-way invocations** allow you to send a message without waiting for a response.
+            **One-way invocations** allow you to send a message without waiting for a response.
 
-        ```java
-        CODE_LOAD::java/src/main/java/develop/clients/Ingress.java#<start_one_way_call_java>-<end_one_way_call_java>
-        ```
+            ```java
+            CODE_LOAD::java/src/main/java/develop/clients/Ingress.java#<start_one_way_call_java>-<end_one_way_call_java>
+            ```
 
-    </CH.Scrollycoding>
-    <CH.Scrollycoding className={"single-item"}>
+        </CH.Scrollycoding>
+        <CH.Scrollycoding className={"single-item"}>
 
-        **Delayed invocations** allow you to schedule an invocation for a later point in time.
+            **Delayed invocations** allow you to schedule an invocation for a later point in time.
 
-        ```java
-        CODE_LOAD::java/src/main/java/develop/clients/Ingress.java#<start_delayed_call_java>-<end_delayed_call_java>
-        ```
+            ```java
+            CODE_LOAD::java/src/main/java/develop/clients/Ingress.java#<start_delayed_call_java>-<end_delayed_call_java>
+            ```
 
-    </CH.Scrollycoding>
+        </CH.Scrollycoding>
+    </TabItem>
+        <TabItem value="kotlin" label="Kotlin">
+            <CH.Scrollycoding className={"single-item"}>
+
+                **Request-response invocations** allow you to wait on a response from the handler.
+
+                ```kotlin
+                CODE_LOAD::kotlin/src/main/kotlin/develop/clients/Ingress.kt#<start_rpc_kotlin>-<end_rpc_kotlin>
+                ```
+
+            </CH.Scrollycoding>
+            <CH.Scrollycoding className={"single-item"}>
+
+                **One-way invocations** allow you to send a message without waiting for a response.
+
+                ```kotlin
+                CODE_LOAD::kotlin/src/main/kotlin/develop/clients/Ingress.kt#<start_one_way_call_kotlin>-<end_one_way_call_kotlin>
+                ```
+
+            </CH.Scrollycoding>
+            <CH.Scrollycoding className={"single-item"}>
+
+                **Delayed invocations** allow you to schedule an invocation for a later point in time.
+
+                ```kotlin
+                CODE_LOAD::kotlin/src/main/kotlin/develop/clients/Ingress.kt#<start_delayed_call_kotlin>-<end_delayed_call_kotlin>
+                ```
+
+            </CH.Scrollycoding>
+        </TabItem>
+    </Tabs>
 </Step>
 
 <Admonition type="info" title="Invoking workflows">
@@ -65,9 +99,18 @@ Invoke a handler programmatically with the SDK clients as follows:
 To make a service call idempotent, you can use the idempotency key feature.
 Add the idempotency key [to the header](https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/) via:
 
-```java
-CODE_LOAD::java/src/main/java/develop/clients/Ingress.java#<start_service_idempotent>-<end_service_idempotent>
-```
+<Tabs groupId="sdk" queryString>
+    <TabItem value="java" label="Java">
+        ```java
+        CODE_LOAD::java/src/main/java/develop/clients/Ingress.java#<start_service_idempotent>-<end_service_idempotent>
+        ```
+    </TabItem>
+    <TabItem value="kotlin" label="Kotlin">
+        ```kotlin
+        CODE_LOAD::kotlin/src/main/kotlin/develop/clients/Ingress.kt#<start_service_idempotent>-<end_service_idempotent>
+        ```
+    </TabItem>
+</Tabs>
 
 After the invocation completes, Restate persists the response for a retention period of one day (24 hours).
 If you re-invoke the service with the same idempotency key within 24 hours, Restate sends back the same response and doesn't re-execute the request to the service.
@@ -105,10 +148,18 @@ You can:
 
 You can use the invocation ID to attach or peek at a service/object invocation that used an idempotency key:
 
-```java
-CODE_LOAD::java/src/main/java/develop/clients/Ingress.java#<start_service_attach>-<end_service_attach>
-```
-
+<Tabs groupId="sdk" queryString>
+    <TabItem value="java" label="Java">
+        ```java
+        CODE_LOAD::java/src/main/java/develop/clients/Ingress.java#<start_service_attach>-<end_service_attach>
+        ```
+    </TabItem>
+    <TabItem value="kotlin" label="Kotlin">
+        ```kotlin
+        CODE_LOAD::kotlin/src/main/kotlin/develop/clients/Ingress.kt#<start_service_attach>-<end_service_attach>
+        ```
+    </TabItem>
+</Tabs>
 <Admonition type={"info"} title={"Attaching to workflows"}>
     [Have a look at the workflow documentation to learn how to attach to workflow executions.](/develop/java/workflows#submitting-workflows-with-sdk-clients)
 </Admonition>
