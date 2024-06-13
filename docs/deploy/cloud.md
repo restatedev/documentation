@@ -88,7 +88,6 @@ trust policy.
             }
         },
         {
-            "Sid": "AllowTagSession",
             "Effect": "Allow",
             "Principal": {
                 "AWS": "arn:aws:iam::654654156625:root"
@@ -99,7 +98,7 @@ trust policy.
 }
 ```
 
-<Admonition type="info" title="Trust policy">
+<Admonition type="info" title="Environment Identifier">
 Replace the `${ENVIRONMENT_ID}` placeholder with the environment ID can be found in the UI and in the output of `restate whoami`.
 This trust policy allows the Restate Cloud `us.restate.cloud` region principal to assume the role, but only on behalf of the specified environment ID.
 </Admonition>
@@ -119,7 +118,6 @@ const invokerRole = new iam.Role(this, "InvokerRole", {
 });
 invokerRole.assumeRolePolicy!.addStatements(
   new iam.PolicyStatement({
-    sid: "AllowTagSession",
     principals: [new iam.AccountPrincipal("654654156625")],
     actions: ["sts:TagSession"],
   }),
@@ -131,7 +129,7 @@ Lambda handlers, the provided invoker role will automatically be granted access
 to invoke the corresponding functions. Alternatively, you will need to do so
 explicitly.
 
-<Admonition type="info" title="Trust policy">
+<Admonition type="info" title="Environment Identifier">
 Use the `environmentId` variable to pass the environment ID can be found in the UI and in the output of `restate whoami`.
 This trust policy allows the Restate Cloud `us.restate.cloud` region principal to assume the role, but only on behalf of the specified environment ID.
 </Admonition>
