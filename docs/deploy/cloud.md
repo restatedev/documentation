@@ -64,26 +64,46 @@ restate deployments register tunnel://example:9081
 
 To invoke services running on AWS Lambda, Restate Cloud needs to assume an AWS
 identity in the same account that the Lambda is deployed to. Create a new role
-that has permission to invoke your Lambdas and give it the following trust policy:
+that has permission to invoke your Lambda handlers, and give it the following
+trust policy.
 
 ```json
 {
-  "Sid": "AllowRestateCloudToAssumeRole",
-  "Effect": "Allow",
-  "Principal": {
-    "AWS": "arn:aws:iam::654654156625:role/RestateCloud"
-  },
-  "Action": ["sts:AssumeRole", "sts:TagSession"],
-  "Condition": {
-    "StringEquals": {
-      "sts:ExternalId": "$ENVIRONMENT_ID"
-    }
-  }
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::654654156625:root"
+            },
+            "Action": "sts:AssumeRole",
+            "Condition": {
+                "StringEquals": {
+                    "aws:PrincipalArn": "arn:aws:iam::654654156625:role/RestateCloud",
+                    "sts:ExternalId": "${ENVIRONMENT_ID}"
+                }
+            }
+        },
+        {
+            "Sid": "AllowTagSession",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::654654156625:root"
+            },
+            "Action": "sts:TagSession",
+            "Condition": {
+                "StringEquals": {
+                    "aws:PrincipalArn": "arn:aws:iam::654654156625:role/RestateCloud"
+                }
+            }
+        }
+    ]
 }
 ```
 
 <Admonition type="info" title="Trust policy">
-This trust policy allows the Restate Cloud `us.restate.cloud` region principal to assume your role, as long as it is using an ExternalId that matches your environment ID. The environment ID can be found in the UI and in the output of `restate whoami`.
+Replace the `${ENVIRONMENT_ID}` placeholder with the environment ID can be found in the UI and in the output of `restate whoami`.
+This trust policy allows the Restate Cloud `us.restate.cloud` region principal to assume the role, as long as it is using an ExternalId that matches your environment ID.
 </Admonition>
 
 You can now register your Lambda through the new role:
