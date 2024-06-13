@@ -67,6 +67,9 @@ identity in the same account that the Lambda is deployed to. Create a new role
 that has permission to invoke your Lambda handlers, and give it the following
 trust policy.
 
+<Tabs>
+<TabItem value="json" label="IAM JSON Policy" default>
+
 ```json
 {
     "Version": "2012-10-17",
@@ -90,12 +93,7 @@ trust policy.
             "Principal": {
                 "AWS": "arn:aws:iam::654654156625:root"
             },
-            "Action": "sts:TagSession",
-            "Condition": {
-                "StringEquals": {
-                    "aws:PrincipalArn": "arn:aws:iam::654654156625:role/RestateCloud"
-                }
-            }
+            "Action": "sts:TagSession"
         }
     ]
 }
@@ -103,8 +101,43 @@ trust policy.
 
 <Admonition type="info" title="Trust policy">
 Replace the `${ENVIRONMENT_ID}` placeholder with the environment ID can be found in the UI and in the output of `restate whoami`.
-This trust policy allows the Restate Cloud `us.restate.cloud` region principal to assume the role, as long as it is using an ExternalId that matches your environment ID.
+This trust policy allows the Restate Cloud `us.restate.cloud` region principal to assume the role, but only on behalf of the specified environment ID.
 </Admonition>
+
+</TabItem>
+<TabItem value="cdk" label="AWS CDK">
+
+```ts
+const invokerRole = new iam.Role(this, "InvokerRole", {
+  assumedBy: new iam.AccountPrincipal("654654156625")
+    .withConditions({
+      "StringEquals": {
+        "sts:ExternalId": environmentId,
+        "aws:PrincipalArn": "arn:aws:iam::654654156625:role/RestateCloud",
+      },
+    }),
+});
+invokerRole.assumeRolePolicy!.addStatements(
+  new iam.PolicyStatement({
+    sid: "AllowTagSession",
+    principals: [new iam.AccountPrincipal("654654156625")],
+    actions: ["sts:TagSession"],
+  }),
+);
+```
+
+When you use the [Restate CDK construct library](/deploy/lambda/cdk) to deploy
+Lambda handlers, the provided invoker role will automatically be granted access
+to invoke the corresponding functions. Alternatively, you will need to do so
+explicitly.
+
+<Admonition type="info" title="Trust policy">
+Use the `environmentId` variable to pass the environment ID can be found in the UI and in the output of `restate whoami`.
+This trust policy allows the Restate Cloud `us.restate.cloud` region principal to assume the role, but only on behalf of the specified environment ID.
+</Admonition>
+
+</TabItem>
+</Tabs>
 
 You can now register your Lambda through the new role:
 
