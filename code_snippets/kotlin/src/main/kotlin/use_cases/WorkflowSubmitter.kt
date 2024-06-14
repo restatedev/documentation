@@ -2,9 +2,9 @@ package use_cases
 
 import dev.restate.sdk.client.Client
 
-// <start_here>
 class WorkflowSubmitter {
     suspend fun submit(user: User) {
+        // <start_here>
         // import dev.restate.sdk.client.Client;
         val rs = Client.connect("http://localhost:8080")
         // mark
@@ -21,5 +21,6 @@ class WorkflowSubmitter {
             .workflowHandle()
             // mark
             .attach()
+        // <end_here>
     }
-} // <end_here>
+}

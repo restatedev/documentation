@@ -3,9 +3,10 @@ package use_cases;
 import dev.restate.sdk.client.Client;
 import use_cases.utils.User;
 
-// <start_here>
+
 public class WorkflowSubmitter {
     public void submit(User user){
+        // <start_here>
         // import dev.restate.sdk.client.Client;
         Client rs = Client.connect("http://localhost:8080");
         // mark
@@ -22,6 +23,6 @@ public class WorkflowSubmitter {
                 .workflowHandle()
                 // mark
                 .attach();
+        // <end_here>
     }
 }
-// <end_here>
