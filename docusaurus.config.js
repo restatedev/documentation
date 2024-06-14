@@ -114,6 +114,24 @@ const config = {
         },
         items: [
           {
+            type: 'custom-SdkNavbarItem',
+            position: 'left',
+            label: 'Java SDK',
+            sdk: 'java'
+          },
+          {
+            type: 'custom-SdkNavbarItem',
+            position: 'left',
+            label: 'TypeScript SDK',
+            sdk: 'ts'
+          },
+          {
+            type: 'custom-SdkNavbarItem',
+            position: 'left',
+            label: 'Kotlin SDK',
+            sdk: 'kotlin'
+          },
+          {
             to: "https://restate.dev/get-restate/",
             label: "Get Restate",
             position: "right",
