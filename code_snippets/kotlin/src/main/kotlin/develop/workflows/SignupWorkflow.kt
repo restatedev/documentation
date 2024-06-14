@@ -4,7 +4,6 @@ import dev.restate.sdk.annotation.Shared
 import dev.restate.sdk.annotation.Workflow
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
 import dev.restate.sdk.kotlin.*
-import develop.workflows.Utils.Companion.sendEmailWithLink
 import kotlinx.serialization.Serializable
 
 // <start_here>
@@ -55,10 +54,4 @@ fun main() {
 @Serializable
 data class Email(val email: String)
 
-class Utils {
-    companion object {
-        fun sendEmailWithLink(email: Email, secret: String){
-
-        }
-    }
-}
+fun sendEmailWithLink(email: Email, secret: String){}
