@@ -16,20 +16,32 @@ import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
  */
 
 // <start_here>
+// <mark_2>
 @Service
 public class RoleUpdateService {
+// </mark_2>
 
+  // <mark_2>
   @Handler
   public void applyRoleUpdate(Context ctx, UpdateRequest req) {
+    // </mark_2>
+    // <mark_1>
     boolean success = ctx.run(JsonSerdes.BOOLEAN, () ->
         SystemA.applyUserRole(req.getUserId(), req.getRole()));
+    // </mark_1>
+    // <mark_3>
     if (!success) {
         return;
     }
+    // </mark_3>
 
+    // <mark_3>
     for(String permission: req.getPermissions()) {
-        ctx.run(JsonSerdes.BOOLEAN, () ->
+      // </mark_3>
+      // <mark_1>
+      ctx.run(JsonSerdes.BOOLEAN, () ->
           SystemB.applyPermission(req.getUserId(), permission));
+      // </mark_1>
     }
   }
 

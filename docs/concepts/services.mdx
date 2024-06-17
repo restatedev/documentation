@@ -43,29 +43,32 @@ Services expose a collection of handlers:
             Restate logs the **results of actions** in the system.
             Restate takes care of retries and recovers the handler to the point where it failed.
 
-            ```typescript mark=10,16
-            CODE_LOAD::ts/src/concepts/services.ts#service
+            ```ts
+            CODE_LOAD::ts/src/concepts/services.ts?1
             ```
 
             ---
 
             The handlers of services are **independent** and can be **invoked concurrently**.
 
-            ```diff mark=4,6,7,18,19,20
+            ```ts
+            CODE_LOAD::ts/src/concepts/services.ts?2
             ```
 
             ---
 
             Handlers use the regular code and control flow, no custom DSLs.
 
-            ```diff mark=11:13,15,17
+            ```ts
+            CODE_LOAD::ts/src/concepts/services.ts?3
             ```
 
             ---
 
             Service handlers **don't have access to Restate's K/V store**.
 
-            ```diff
+            ```ts
+            CODE_LOAD::ts/src/concepts/services.ts
             ```
 
         </CH.Scrollycoding>
@@ -77,29 +80,32 @@ Services expose a collection of handlers:
             Restate logs the **results of actions** in the system.
             Restate takes care of retries and recovers the handler to the point where it failed.
 
-            ```java mark=6:7,13:14
-            CODE_LOAD::java/src/main/java/concepts/services/RoleUpdateService.java
+            ```java
+            CODE_LOAD::java/src/main/java/concepts/services/RoleUpdateService.java?1
             ```
 
             ---
 
             The handlers of services are **independent** and can be **invoked concurrently**.
 
-            ```diff mark=1:5,16,19,20,23
+            ```java
+            CODE_LOAD::java/src/main/java/concepts/services/RoleUpdateService.java?2
             ```
 
             ---
 
             Handlers use the regular code and control flow, no custom DSLs.
 
-            ```diff mark=8:10,12,14,15
+            ```java
+            CODE_LOAD::java/src/main/java/concepts/services/RoleUpdateService.java?3
             ```
 
             ---
 
             Service handlers **don't have access to Restate's K/V store**.
 
-            ```diff
+            ```java
+            CODE_LOAD::java/src/main/java/concepts/services/RoleUpdateService.java
             ```
 
         </CH.Scrollycoding>
@@ -119,8 +125,8 @@ Virtual objects expose a set of handlers with access to K/V state stored in Rest
 
             A virtual object is **uniquely identified and accessed by its key**.
 
-            ```typescript mark=4,6,7,11,12,14,20,21,22
-            CODE_LOAD::ts/src/concepts/virtual_objects.ts#virtual_object
+            ```ts
+            CODE_LOAD::ts/src/concepts/virtual_objects.ts?1
             ```
 
             ---
@@ -130,7 +136,8 @@ Virtual objects expose a set of handlers with access to K/V state stored in Rest
             Restate delivers the state together with the request to the virtual object, so virtual objects have their state locally accessible without requiring any database connection or lookup.
             State is exclusive, and atomically committed with the method execution.
 
-            ```diff mark=8:10,15,17,19
+            ```ts
+            CODE_LOAD::ts/src/concepts/virtual_objects.ts?2
             ```
 
             ---
@@ -138,7 +145,8 @@ Virtual objects expose a set of handlers with access to K/V state stored in Rest
             To ensure consistent writes to the state, Restate provides **concurrency guarantees**: at most one handler can execute at a time for a given virtual object.
             This can also be used for example to implement a locking mechanism or to ensure single writer to a database row.
 
-            ```diff mark=4,6,7,9,12,14,17,21,22,23
+            ```ts
+            CODE_LOAD::ts/src/concepts/virtual_objects.ts?3
             ```
 
         </CH.Scrollycoding>
@@ -148,8 +156,8 @@ Virtual objects expose a set of handlers with access to K/V state stored in Rest
 
             A virtual object is **uniquely identified and accessed by its key**.
 
-            ```java mark=1,2,7,8,12,13,15,16,22,23
-            CODE_LOAD::java/src/main/java/concepts/services/Greeter.java
+            ```java
+            CODE_LOAD::java/src/main/java/concepts/services/Greeter.java?1
             ```
 
             ---
@@ -159,7 +167,8 @@ Virtual objects expose a set of handlers with access to K/V state stored in Rest
             Restate delivers the state together with the request to the virtual object, so virtual objects have their state locally accessible without requiring any database connection or lookup.
             State is exclusive, and atomically committed with the method execution.
 
-            ```diff mark=9:11,17,19,21
+            ```java
+            CODE_LOAD::java/src/main/java/concepts/services/Greeter.java?2
             ```
 
             ---
@@ -167,7 +176,8 @@ Virtual objects expose a set of handlers with access to K/V state stored in Rest
             **Concurrency guarantees**: to ensure consistent writes to the state, at most one handler can execute at a time for a given virtual object.
             This can also be used, for example, to implement a locking mechanism or to ensure single writer to a database row.
 
-            ```diff mark=1,2,7,8,13,15,16,23
+            ```java
+            CODE_LOAD::java/src/main/java/concepts/services/Greeter.java?3
             ```
 
         </CH.Scrollycoding>
@@ -186,8 +196,8 @@ They have some added capabilities such as signaling, querying, additional invoca
             A workflow has a **`run` handler** that implements the **workflow logic**.
             The `run` handler runs exactly once per workflow ID (object).
 
-            ```typescript mark=4:25
-            CODE_LOAD::ts/src/concepts/workflow.ts#workflow
+            ```ts
+            CODE_LOAD::ts/src/concepts/workflow.ts?1
             ```
 
             ---
@@ -195,7 +205,8 @@ They have some added capabilities such as signaling, querying, additional invoca
             You can **query the workflow** by defining other handlers in the same object.
             For example, you can store state in the workflow object, and query it from other handlers.
 
-            ```diff mark=16,22,31
+            ```ts
+            CODE_LOAD::ts/src/concepts/workflow.ts?2
             ```
 
             ---
@@ -203,7 +214,8 @@ They have some added capabilities such as signaling, querying, additional invoca
             You can **signal the workflow**, to send information to it, via [Durable Promises](/develop/ts/workflows#signaling-workflows).
             For example, the payment provider signals the workflow that the payment was successful by calling the `paymentWebhook`.
 
-            ```diff mark=15,27:29
+            ```ts
+            CODE_LOAD::ts/src/concepts/workflow.ts?3
             ```
 
         </CH.Scrollycoding>
@@ -214,8 +226,8 @@ They have some added capabilities such as signaling, querying, additional invoca
             A workflow has a **`run` handler** that implements the **workflow logic**.
             The `run` handler runs exactly once per workflow ID (object).
 
-            ```java mark=8:28
-            CODE_LOAD::java/src/main/java/concepts/services/Payment.java#workflow
+            ```java
+            CODE_LOAD::java/src/main/java/concepts/services/Payment.java?1
             ```
 
             ---
@@ -223,7 +235,8 @@ They have some added capabilities such as signaling, querying, additional invoca
             You can **query the workflow** by defining other handlers in the same object.
             For example, you can store state in the workflow object, and query it from other handlers.
 
-            ```diff mark=20,25,35:38
+            ```java
+            CODE_LOAD::java/src/main/java/concepts/services/Payment.java?2
             ```
 
             ---
@@ -231,7 +244,8 @@ They have some added capabilities such as signaling, querying, additional invoca
             You can **signal the workflow**, to send information to it, via [Durable Promises](/develop/ts/workflows#signaling-workflows).
             For example, the payment provider signals the workflow that the payment was successful by calling the `paymentWebhook`.
 
-            ```diff mark=18,30:33
+            ```java
+            CODE_LOAD::java/src/main/java/concepts/services/Payment.java?3
             ```
 
         </CH.Scrollycoding>
