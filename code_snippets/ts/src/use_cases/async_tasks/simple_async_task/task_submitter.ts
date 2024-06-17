@@ -20,15 +20,27 @@ const RESTATE_URL = process.env.RESTATE_URL ?? "http://localhost:8080";
 async function submitAndAwaitTask(task: TaskOpts) {
     const rs = restate.connect({ url: RESTATE_URL });
 
+    // <mark_1>
     const taskHandle = await rs
         .serviceSendClient<AsyncTaskService>({ name: "taskWorker" })
         .runTask(
             task,
+            // <mark_2>
             SendOpts.from({ idempotencyKey: "dQw4w9WgXcQ" })
+            // </mark_2>
         );
+    // </mark_1>
 
     // await the handler's result
+    // <mark_3>
     const result = await rs.result(taskHandle);
+    // </mark_3>
 }
 
+// <mark_4>
+async function attachToTask(taskHandle: string) {
+    const rs = restate.connect({ url: RESTATE_URL });
+    const result2 = await rs.result<string>(JSON.parse(taskHandle));
+}
+// </mark_4>
 // <end_here>

@@ -54,16 +54,13 @@ Schedule tasks for now or later with the Restate SDK.
     Restate handles retries and recovery upon failures.
 
     <CH.Code>
-
-        ```ts async_task_service.ts focus=1:8 mark=4:6
-        CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/async_task_service.ts
-        ```
-
-
         ```ts task_submitter.ts
         CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/task_submitter.ts
         ```
 
+        ```ts async_task_service.ts active
+        CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/async_task_service.ts?1
+        ```
     </CH.Code>
 
     ---
@@ -76,7 +73,8 @@ Schedule tasks for now or later with the Restate SDK.
     Handlers can be called asynchronously from anywhere.
     This returns a task handle once the call in enqueued.
 
-    ```ts task_submitter.ts focus=1:9,13 mark=4:9
+    ```ts task_submitter.ts
+    CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/task_submitter.ts?1
     ```
 
     ---
@@ -87,7 +85,8 @@ Schedule tasks for now or later with the Restate SDK.
     Restate will deduplicate the request and return the previous response.
 
 
-    ```ts task_submitter.ts focus=1:9,13 mark=8
+    ```ts task_submitter.ts
+    CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/task_submitter.ts?2
     ```
 
     ---
@@ -96,15 +95,16 @@ Schedule tasks for now or later with the Restate SDK.
 
     For requests with an idempotency key, you can use this task handle to latch on to the task later and retrieve the result, or wait for it to finish.
 
-    ```ts task_submitter.ts focus=1:13 mark=12
+    ```ts task_submitter.ts
+    CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/task_submitter.ts?3
     ```
 
     ---
 
     This works across processes, so you can have a separate process latch on to the task later.
 
-    ```ts task_submitter.ts focus=15:18 mark=17
-    CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/task_attach.ts
+    ```ts task_submitter.ts
+    CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/task_submitter.ts?4
     ```
 
 </CH.Scrollycoding>
@@ -121,6 +121,7 @@ Schedule tasks for now or later with the Restate SDK.
         },
     ]}/>
 </SpotlightCard>
+
 ## Parallelizing work with Restate
 
 Write flexible scheduling logic via durable building blocks.
@@ -133,7 +134,7 @@ Write flexible scheduling logic via durable building blocks.
       reliably exactly once.
 
     ```ts fan_out_worker.ts
-    CODE_LOAD::ts/src/use_cases/async_tasks/fan_out_fan_in.ts
+    CODE_LOAD::ts/src/use_cases/async_tasks/fan_out_worker.ts
     ```
 
     ---
@@ -145,7 +146,8 @@ Write flexible scheduling logic via durable building blocks.
 
     The subtasks might run in different processes, if this is deployed in a parallel setup.
 
-    ```ts fan_out_worker.ts focus=4:14,18:23 mark=10:12
+    ```ts fan_out_worker.ts
+    CODE_LOAD::ts/src/use_cases/async_tasks/fan_out_worker.ts?1
     ```
 
     ---
@@ -155,7 +157,8 @@ Write flexible scheduling logic via durable building blocks.
     Fan in by simply awaiting the combined promise.
     Invocation promises recover from failures, re-connect to running subtasks.
 
-    ```ts fan_out_worker.ts focus=5:17,18:23 mark=16:17
+    ```ts fan_out_worker.ts
+    CODE_LOAD::ts/src/use_cases/async_tasks/fan_out_worker.ts?2
     ```
 
     ---
@@ -164,7 +167,8 @@ Write flexible scheduling logic via durable building blocks.
     Deploy this service on an platform like Kubernetes or AWS Lambda to
     automatically get parallel scale out.
 
-    ```ts fan_out_worker.ts mark=27
+    ```ts fan_out_worker.ts
+    CODE_LOAD::ts/src/use_cases/async_tasks/fan_out_worker.ts?3
     ```
 
 </CH.Scrollycoding>
@@ -179,15 +183,15 @@ Write flexible scheduling logic via durable building blocks.
 
 ## Switch between async and sync with Restate
 
-<CH.Scrollycoding className={"workflows-scroller"}>
+<CH.Scrollycoding className={"workflows-scroller-large"}>
     Imagine a data preparation workflow that creates an S3 bucket, uploads a file to it, and then returns the URL.
 
     Let's now kick off this workflow from another process.
 
     <CH.Code>
 
-        ```ts data_preparation_service.ts mark=5:10
-        CODE_LOAD::ts/src/use_cases/async_tasks/sync_to_async/data_preparation_service.ts
+        ```ts data_preparation_service.ts
+        CODE_LOAD::ts/src/use_cases/async_tasks/sync_to_async/data_preparation_service.ts?1
         ```
 
         ```ts client.ts
@@ -199,21 +203,24 @@ Write flexible scheduling logic via durable building blocks.
 
     1. Connect to the Restate server and create a client for the data preparation workflow.
 
-    ```ts client.ts focus=1:7,18 mark=7
+    ```ts client.ts
+    CODE_LOAD::ts/src/use_cases/async_tasks/sync_to_async/client.ts?1
     ```
 
     ---
 
     2. Kick off a new data preparation workflow. This is idempotent per workflow ID.
 
-    ```ts client.ts focus=1:9,18 mark=9
+    ```ts client.ts
+    CODE_LOAD::ts/src/use_cases/async_tasks/sync_to_async/client.ts?2
     ```
 
     ---
 
     3. Wait for the result for 30 seconds.
 
-    ```ts client.ts focus=1:11,18 mark=11
+    ```ts client.ts
+    CODE_LOAD::ts/src/use_cases/async_tasks/sync_to_async/client.ts?3
     ```
 
     ---
@@ -221,7 +228,8 @@ Write flexible scheduling logic via durable building blocks.
     4. If it takes longer, rewire the workflow to send an email instead.
     If returns within 30 seconds, process the URL directly.
 
-    ```ts client.ts focus=1:20 mark=13:19
+    ```ts client.ts
+    CODE_LOAD::ts/src/use_cases/async_tasks/sync_to_async/client.ts?4
     ```
 
     ---
@@ -229,7 +237,8 @@ Write flexible scheduling logic via durable building blocks.
     5. This is implemented in the data preparation workflow by letting the workflow signal our handler when it's done.
     It does this by resolving a shared Durable Promise that we then retrieve in our handler to send the email.
 
-    ```ts data_preparation_client.ts focus=4:16 mark=8,13:16
+    ```ts data_preparation_service.ts
+    CODE_LOAD::ts/src/use_cases/async_tasks/sync_to_async/data_preparation_service.ts?2
     ```
 
 </CH.Scrollycoding>

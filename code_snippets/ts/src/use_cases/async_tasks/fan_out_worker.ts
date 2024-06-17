@@ -11,13 +11,17 @@ const workerService = restate.service({
                 () => split(task));
 
             const resultPromises = [];
+            // <mark_1>
             for (const subtask of subtasks) {
                 const subResultPromise = ctx.serviceClient(workerService)
                     .runSubtask(subtask);
+                // </mark_1>
                 resultPromises.push(subResultPromise);
             }
 
+            // <mark_2>
             const results = await CombineablePromise.all(resultPromises);
+            // </mark_2>
             return aggregate(results);
         },
 
@@ -28,8 +32,9 @@ const workerService = restate.service({
     }
 });
 
+// <mark_3>
 export const handler = restate.endpoint().bind(workerService).lambdaHandler();
-
+// </mark_3>
 // <end_here>
 
 // ----------------------- Stubs to please the compiler -----------------------

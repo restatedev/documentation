@@ -14,20 +14,25 @@ const rs = restate.connect({ url: RESTATE_URL });
 const dataPrepService: DataPrepService = { name: "dataPrep" };
 
 async function downloadData(userId: string) {
-    const workflowId = userId;
+    // <mark_1>
+    const dataPrep = rs.workflowClient(dataPrepService, userId);
+    // </mark_1>
 
-    const dataPrep = rs.workflowClient(dataPrepService, workflowId);
-
+    // <mark_2>
     await dataPrep.workflowSubmit({ userId });
+    // </mark_2>
 
+    // <mark_3>
     const result = await withTimeout(dataPrep.workflowAttach(), 30_000);
+    // </mark_3>
 
+    // <mark_4>
     if (result === Timeout) {
-        const email = await readLine("This takes long... Just mail us the link later");
+        const email = await readLine("This takes long... Mail us the link later");
         await dataPrep.resultAsEmail({ email });
         return;
     }
-
+    // </mark_4>
     // ... process directly ...
 }
 // <end_here>
