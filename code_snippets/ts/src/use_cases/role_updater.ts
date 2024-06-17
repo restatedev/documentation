@@ -13,20 +13,31 @@ import * as restate from "@restatedev/restate-sdk";
 import {Context} from "@restatedev/restate-sdk";
 
 // <start_here>
+// <mark_1>
 const roleUpdater = restate.object({
+    // </mark_1>
     name: "roleUpdate",
     handlers: {
-        updateRole: async function applyRoleUpdate(ctx: Context, update: UpdateRequest) {
+        // <mark_1>
+        // <mark_2>
+        update: async function (ctx: Context, update: UpdateRequest) {
+            // </mark_2>
+            // </mark_1>
             const { userId, role, permissions: permissions } = update;
 
+            // <mark_3>
             const previousRole = await ctx.run(() => getCurrentRole(userId));
             await ctx.run(() => applyUserRole(userId, role));
+            // </mark_3>
 
             const previousPermissions: Permission[] = [];
             for (const permission of permissions) {
+                // <mark_4>
                 try {
+                    // <mark_3>
                     const previous = await ctx.run(() =>
                         applyPermission(userId, permission));
+                    // </mark_3>
                     previousPermissions.push(previous);
                 } catch (err) {
                     if (err instanceof restate.TerminalError) {
@@ -34,6 +45,7 @@ const roleUpdater = restate.object({
                     }
                     throw err;
                 }
+                // </mark_4>
             }
         }
     },
