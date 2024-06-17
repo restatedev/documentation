@@ -48,9 +48,9 @@ greet: async (ctx: restate.Context, name: string) => {
     // <end_here>
 },
 ```
-You can also use custom tags. Please keep the tags a bit uniform and descriptive. For example, `// <start_custom_tag>` and `// <end_custom_tag>`. This way it's easy to discriminate tags from just comments.
+You can also use custom tags. Tags need to follow the format  `// <start_custom_tag>` and `// <end_custom_tag>`. 
 
-Refer to the code snippet from within the markdown documentation file as follows `CODE_LOAD::<path_to_snippet>`. If you use custom tags, specify them as  `CODE_LOAD::<path_to_snippet>#<start_custom_tag>-<end_custom_tag>`. You need to put this inside a code block with the language specified. The path is relative from **within** the code_snippets folder. For example, `CODE_LOAD::java/src/main/java/Greeter.java#<start_greet_function>-<end_greet_function`.
+Refer to the code snippet from within the markdown documentation file as follows `CODE_LOAD::<path_to_snippet>`. If you use custom tags, specify them as  `CODE_LOAD::<path_to_snippet>#custom_tag`. You need to put this inside a code block with the language specified. The path is relative from **within** the code_snippets folder. For example, `CODE_LOAD::java/src/main/java/Greeter.java#greet_function` will look for the tags `// <start_greet_function>` and `// <end_greet_function>` in the code.
 
 ### Marking code 
 If you want to mark a specific line in the code snippet, you can use the following tags : `// <mark_1>` and `// </mark_1>`.
