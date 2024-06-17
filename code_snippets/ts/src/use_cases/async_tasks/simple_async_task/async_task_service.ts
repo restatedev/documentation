@@ -7,9 +7,11 @@ import {Context} from "@restatedev/restate-sdk";
 const asyncTaskService = restate.service({
     name: "taskWorker",
     handlers: {
+        // <mark_1>
         runTask: async (ctx: Context, params: TaskOpts) => {
             return someHeavyWork(params);
         }
+        // </mark_1>
     }
 });
 

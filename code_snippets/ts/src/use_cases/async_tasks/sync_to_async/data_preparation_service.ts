@@ -6,16 +6,22 @@ const dataPreparationService = restate.workflow({
     name: "dataPrep",
     handlers: {
         run: async (ctx: WorkflowContext, args: { userId: string }) => {
+            // <mark_1>
             const url = await ctx.run("create S3 bucket", () => createS3Bucket());
             await ctx.run("upload data", () => uploadData(url));
 
-            ctx.promise<URL>("url").resolve(url);
+            // <mark_2>
+            await ctx.promise<URL>("url").resolve(url);
+            // </mark_2>
 
             return url;
+            // </mark_1>
         },
 
         resultAsEmail: async (ctx: WorkflowSharedContext, req: { email: string }) => {
+            // <mark_2>
             const url = await ctx.promise<URL>("url");
+            // </mark_2>
             await ctx.run("send email", () => sendEmail(url, req.email ));
         }
     }
