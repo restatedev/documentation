@@ -1,27 +1,24 @@
-// Plugin to load code snippets from files and replace the CODE_LOAD tag with the content of the file
-
 const fs = require('fs');
 const fetch = require('node-fetch');
 
 const plugin = (options) => {
-    const codeLoadRegex = /^CODE_LOAD::([^#]+)(?:#([^#]+)-([^#]+))?$/g;
+    const codeLoadRegex = /^CODE_LOAD::([^#?]+)(?:#([^#]+)-([^#]+))?(?:\?([^#]+))?$/g;
 
     const injectCode = async (str) => {
         let fileData = null;
-        str.replace(codeLoadRegex, (match, filePath, customStartTag, customEndTag) => {
-            console.info(`Loading code snippet from with optional custom tags: ${customStartTag} and ${customEndTag}`)
-            fileData = { filePath, customStartTag, customEndTag }
+        str.replace(codeLoadRegex, (match, filePath, customStartTag, customEndTag, markNumber) => {
+            fileData = { filePath, customStartTag, customEndTag, markNumber };
             return match;
         });
 
-        if(!fileData){
+        if (!fileData) {
             return str;
         }
 
         const fileContent = await readFileOrFetch(fileData.filePath);
-        const data = extractAndClean(fileContent, fileData.customStartTag, fileData.customEndTag, fileData.filePath);
+        const data = extractAndClean(fileContent, fileData.customStartTag, fileData.customEndTag, fileData.markNumber, fileData.filePath);
         return str.replace(codeLoadRegex, () => data);
-    }
+    };
 
     async function readFileOrFetch(filepath) {
         if (filepath.startsWith('https://raw.githubusercontent.com/')) {
@@ -35,8 +32,7 @@ const plugin = (options) => {
         }
     }
 
-    function extractAndClean(fileContent, customStartTag, customEndTag, filePath){
-        // If custom start and end tags are provided, check if they are present in the file, otherwise fail
+    function extractAndClean(fileContent, customStartTag, customEndTag, markNumber, filePath) {
         if (customStartTag && !fileContent.includes(customStartTag)) {
             throw new Error(`Custom start tag "${customStartTag}" not found in file ${filePath}`);
         }
@@ -47,27 +43,54 @@ const plugin = (options) => {
         const startTag = customStartTag ?? "<start_here>";
         const endTag = customEndTag ?? "<end_here>";
 
-        // Split to only keep lines between "start_here" and "end_here"
-        const lines = fileContent.split(startTag).pop().split(endTag).shift();
+        let lines = fileContent.split(startTag).pop().split(endTag).shift().split('\n').slice(1,-1);
+        let finalLines = [];
 
-        // If start and end tags were used, Remove the last empty line with the "//" symbol
-        const startLine = fileContent.includes(startTag) ? 1 : 0;
-        const endLine = fileContent.includes(endTag) ? -1 : lines.length;
-        const indentedCodeSnippet = lines.split("\n").slice(startLine, endLine).join("\n");
+        if (markNumber) {
+            const markStartTag = `// <mark_${markNumber}>`;
+            const markEndTag = `// </mark_${markNumber}>`;
 
-        // The code snippet can have leading whitespace on each line, so we need to reformat it
-        // and remove the common whitespace
-        // Determine common leading whitespace
-        const leadingWhitespace = indentedCodeSnippet.match(/^\s*/)[0];
+            let needToMark = false;
+            lines.forEach(function (line, index) {
+                if(line.includes(markStartTag)){
+                    if(needToMark){
+                        throw new Error(`Mark start tag found before mark end tag in file ${filePath}`)
+                    }
+                    needToMark = true;
+                }
+                if(line.includes(markEndTag)){
+                    if(!needToMark){
+                        throw new Error(`Mark end tag found before mark start tag in file ${filePath}`)
+                    }
+                    needToMark = false;
+                }
 
-        // Remove leading whitespace from each line
-        return indentedCodeSnippet.split('\n')
+                if(!line.includes('<start_') && !line.includes('<end_') && !line.includes('<mark_') && !line.includes('</mark_')) {
+                    if(needToMark){
+                        finalLines.push(`// mark`)
+                    }
+                    finalLines.push(line);
+                }
+            });
+
+            console.log(finalLines)
+        } else {
+            finalLines = lines;
+        }
+
+        const cleanedLines = finalLines.filter(line => {
+            return !line.includes('<start_') && !line.includes('<end_') && !line.includes('<mark_') && !line.includes('</mark_');
+        }).join('\n');
+
+        const leadingWhitespace = cleanedLines.match(/^\s*/)[0];
+
+        return cleanedLines.split('\n')
             .map(line => line.replace(new RegExp(`^${leadingWhitespace}`), ''))
             .join('\n');
     }
 
     const transformer = async (ast) => {
-        const {visit} = await import('unist-util-visit')
+        const { visit } = await import('unist-util-visit');
         const codes = [];
         await visit(ast, ['code', 'inlineCode'], (node) => {
             codes.push(node);

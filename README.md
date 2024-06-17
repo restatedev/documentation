@@ -34,9 +34,12 @@ The `main` branch of the documentation is continuously deployed at https://main.
 
 ## Adding code snippets
 If you want to add code snippets to the docs, they should be testable and compileable on PR merges and releases.
-Follow these steps:
-1. Add you code snippet in the folder [`code_snippets`](/code_snippets) in the subprojects for the respective language: [TypeScript](code_snippets/ts) or [Java](code_snippets/java). Keep the package structure identical to path of where the code snippet is referenced in the documentation.
-2. If you only want to use a section of the code snippet in the docs. Specify the start by specifying a comment `<start_here>` and the end by specifying a comment `<end_here>` inside the code snippet. For example:
+
+### Adding the code snippet
+Add you code snippet in the folder [`code_snippets`](/code_snippets) in the subprojects for the respective language: [TypeScript](code_snippets/ts) or [Java](code_snippets/java). Keep the package structure identical to path of where the code snippet is referenced in the documentation.
+
+### Using tags in the code snippet for start and end
+If you only want to use a section of the code snippet in the docs. Specify the start by specifying a comment `<start_here>` and the end by specifying a comment `<end_here>` inside the code snippet. For example:
 ```
 greet: async (ctx: restate.Context, name: string) => {
     // <start_here>
@@ -46,9 +49,26 @@ greet: async (ctx: restate.Context, name: string) => {
 },
 ```
 You can also use custom tags. Please keep the tags a bit uniform and descriptive. For example, `// <start_custom_tag>` and `// <end_custom_tag>`. This way it's easy to discriminate tags from just comments.
-3. Refer to the code snippet from within the markdown documentation file as follows `CODE_LOAD::<path_to_snippet>`. If you use custom tags, specify them as  `CODE_LOAD::<path_to_snippet>#<start_custom_tag>-<end_custom_tag>`. You need to put this inside a code block with the language specified. The path is relative from **within** the code_snippets folder. For example, `CODE_LOAD::java/src/main/java/Greeter.java#<start_greet_function>-<end_greet_function`. 
 
-4. You can also use GitHub links for your code snippets. For example: 
+Refer to the code snippet from within the markdown documentation file as follows `CODE_LOAD::<path_to_snippet>`. If you use custom tags, specify them as  `CODE_LOAD::<path_to_snippet>#<start_custom_tag>-<end_custom_tag>`. You need to put this inside a code block with the language specified. The path is relative from **within** the code_snippets folder. For example, `CODE_LOAD::java/src/main/java/Greeter.java#<start_greet_function>-<end_greet_function`.
+
+### Marking code 
+If you want to mark a specific line in the code snippet, you can use the following tags : `// <mark_1>` and `// </mark_1>`.
+You can use other numbers as well 
+
+You can specify in markdown which marking number should be applied: `CODE_LOAD::<path_to_snippet>?mark_number`, for example:
+```ts user_sign_up_flow.ts
+CODE_LOAD::ts/src/use_cases/signup_workflow.ts?5
+```
+This will look for the following tags: `// <mark_5>` and `// </mark_5>` and only mark those. Other custom tags are removed in the final output
+
+**Reason this exists:**
+For Codehike scrollycoding, the different steps should mark different parts of the code. 
+To do this, you need to pass the lines that need to marked in the markdown file but this gets very quickly outdated. 
+So instead, you can mark the lines in the code snippet itself and add a number to then link the correct number from the scrollycoding step.
+
+### Using GitHub links for your code snippets. 
+For example: 
 `CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part1/user_session.ts#<start_expire_ticket>-<end_expire_ticket>`
 
 
