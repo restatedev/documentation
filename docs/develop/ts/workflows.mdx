@@ -33,8 +33,8 @@ Have a look at the code example to get a better understanding of how workflows a
     This handler has access to the same SDK features as Service and Virtual Object handlers.
     For example, use [`ctx.run`](/develop/ts/journaling-results#journaled-actions) to log intermediate results in Restate and avoid re-execution on replay.
 
-    ```ts signup.ts mark=7:19
-    CODE_LOAD::ts/src/develop/workflows/signup.ts
+    ```ts
+    CODE_LOAD::ts/src/develop/workflows/signup.ts?1
     ```
 
     ---
@@ -46,7 +46,8 @@ Have a look at the code example to get a better understanding of how workflows a
     Every workflow execution can be seen as a new object, so the state is isolated to a single workflow execution.
     The state can only be mutated by the `run` handler of the workflow. The other handlers can only read the state.
 
-    ```ts signup.ts mark=24,25
+    ```ts
+    CODE_LOAD::ts/src/develop/workflows/signup.ts?2
     ```
 
     ---
@@ -60,7 +61,8 @@ Have a look at the code example to get a better understanding of how workflows a
     1. Create a promise in your one handler that is durable and distributed. For example, here in the `run` handler.
     2. Resolve or reject the promise in any other handler in the workflow. This can be done at most one time.
 
-    ```ts signup.ts mark=15,21,22
+    ```ts
+    CODE_LOAD::ts/src/develop/workflows/signup.ts?3
     ```
 
     ---
@@ -70,7 +72,8 @@ Have a look at the code example to get a better understanding of how workflows a
     You serve workflows in the same way as Services and Virtual Objects: by binding them to an [HTTP endpoint](/develop/ts/serving#creating-an-http-endpoint) or [AWS Lambda handler](/develop/ts/serving#creating-a-lambda-handler).
     Make sure you [register the endpoint or Lambda handler](/operate/registration) in Restate before invoking it.
 
-    ```ts signup.ts mark=31,32
+    ```ts
+    CODE_LOAD::ts/src/develop/workflows/signup.ts?4
     ```
 </CH.Scrollycoding>
 

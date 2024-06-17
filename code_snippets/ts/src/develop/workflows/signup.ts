@@ -6,6 +6,7 @@ import {WorkflowContext} from "@restatedev/restate-sdk";
 const signUpWorkflow = restate.workflow({
     name: "signup",
     handlers: {
+        // <mark_1>
         run: async (ctx: WorkflowContext, req: { email: string }) => {
             const secret = ctx.rand.uuidv4();
             ctx.set("status", "Generated secret");
@@ -14,24 +15,33 @@ const signUpWorkflow = restate.workflow({
                 sendEmailWithLink({ email: req.email, secret }));
             ctx.set("status", "Sent email");
 
+            // <mark_3>
             const clickSecret = await ctx.promise<string>("email.clicked");
+            // </mark_3>
             ctx.set("status", "Clicked email");
 
             return clickSecret == secret;
         },
+        // </mark_1>
+
 
         click: (ctx: restate.WorkflowSharedContext, secret: string) =>
+            // <mark_3>
             ctx.promise<string>("email.clicked").resolve(secret),
+        // </mark_3>
 
+        // <mark_2>
         getStatus: (ctx: restate.WorkflowSharedContext) =>
             ctx.get<string>("status"),
+        // </mark_2>
     },
 });
 
 export type SignUpWorkflow = typeof signUpWorkflow;
 
+// <mark_4>
 restate.endpoint().bind(signUpWorkflow).listen();
-// or .lambdaHandler();
+// </mark_4>
 // <end_here>
 
 function sendEmailWithLink(param: { email: string, secret: string}){
