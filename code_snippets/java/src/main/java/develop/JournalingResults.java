@@ -8,7 +8,7 @@ import dev.restate.sdk.common.TerminalException;
 
 import java.util.UUID;
 
-class SideEffects {
+class JournalingResults {
 
     void sideEffect(Context ctx) {
 
