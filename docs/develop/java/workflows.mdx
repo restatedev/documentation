@@ -36,8 +36,8 @@ Have a look at the code example to get a better understanding of how workflows a
     This handler has access to the same SDK features as Service and Virtual Object handlers.
     For example, use [`ctx.run`](/develop/java/journaling-results#journaled-actions) to log intermediate results in Restate and avoid re-execution on replay.
 
-    ```java SignupWorkflow.java mark=8:23
-    CODE_LOAD::java/src/main/java/develop/workflows/SignupWorkflow.java
+    ```java
+    CODE_LOAD::java/src/main/java/develop/workflows/SignupWorkflow.java?1
     ```
 
     ---
@@ -49,7 +49,8 @@ Have a look at the code example to get a better understanding of how workflows a
     Every workflow execution can be seen as a new object, so the state is isolated to a single workflow execution.
     The state can only be mutated by the `run` handler of the workflow. The other handlers can only read the state.
 
-    ```java SignupWorkflow.java mark=30:33
+    ```java
+    CODE_LOAD::java/src/main/java/develop/workflows/SignupWorkflow.java?2
     ```
 
     ---
@@ -63,7 +64,8 @@ Have a look at the code example to get a better understanding of how workflows a
     1. Create a promise in your `run` handler that is durable and distributed
     2. Resolve or reject the promise in any other handler in the workflow. This can be done at most one time.
 
-    ```java SignupWorkflow.java mark=17:19,25:28
+    ```java
+    CODE_LOAD::java/src/main/java/develop/workflows/SignupWorkflow.java?3
     ```
 
     ---
@@ -73,7 +75,8 @@ Have a look at the code example to get a better understanding of how workflows a
     You serve workflows in the same way as Services and Virtual Objects: by binding them to an [HTTP endpoint](/develop/java/serving#creating-an-http-endpoint) or [AWS Lambda handler](/develop/java/serving#creating-a-lambda-handler).
     Make sure you [register the endpoint or Lambda handler](/operate/registration) in Restate before invoking it.
 
-    ```java SignupWorkflow.java mark=35:39
+    ```java
+    CODE_LOAD::java/src/main/java/develop/workflows/SignupWorkflow.java?4
     ```
 
 </CH.Scrollycoding>
@@ -87,8 +90,8 @@ Have a look at the code example to get a better understanding of how workflows a
             This handler has access to the same SDK features as Service and Virtual Object handlers.
             For example, use [`ctx.runBlock`](/develop/java/journaling-results#journaled-actions) to log intermediate results in Restate and avoid re-execution on replay.
 
-            ```kotlin SignupWorkflow.kt mark=9:24
-            CODE_LOAD::kotlin/src/main/kotlin/develop/workflows/SignupWorkflow.kt
+            ```kotlin
+            CODE_LOAD::kotlin/src/main/kotlin/develop/workflows/SignupWorkflow.kt?1
             ```
 
             ---
@@ -100,7 +103,8 @@ Have a look at the code example to get a better understanding of how workflows a
             Every workflow execution can be seen as a new object, so the state is isolated to a single workflow execution.
             The state can only be mutated by the `run` handler of the workflow. The other handlers can only read the state.
 
-            ```kotlin SignupWorkflow.kt mark=31:34
+            ```kotlin
+            CODE_LOAD::kotlin/src/main/kotlin/develop/workflows/SignupWorkflow.kt?2
             ```
 
             ---
@@ -114,7 +118,8 @@ Have a look at the code example to get a better understanding of how workflows a
             1. Create a promise in your `run` handler that is durable and distributed
             2. Resolve or reject the promise in any other handler in the workflow. This can be done at most one time.
 
-            ```kotlin SignupWorkflow.kt mark=18:20,26:29
+            ```kotlin
+            CODE_LOAD::kotlin/src/main/kotlin/develop/workflows/SignupWorkflow.kt?3
             ```
 
             ---
@@ -124,11 +129,11 @@ Have a look at the code example to get a better understanding of how workflows a
             You serve workflows in the same way as Services and Virtual Objects: by binding them to an [HTTP endpoint](/develop/java/serving#creating-an-http-endpoint) or [AWS Lambda handler](/develop/java/serving#creating-a-lambda-handler).
             Make sure you [register the endpoint or Lambda handler](/operate/registration) in Restate before invoking it.
 
-            ```kotlin SignupWorkflow.kt mark=38:41
+            ```kotlin
+            CODE_LOAD::kotlin/src/main/kotlin/develop/workflows/SignupWorkflow.kt?4
             ```
 
         </CH.Scrollycoding>
-
     </TabItem>
 </Tabs>
 
