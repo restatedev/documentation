@@ -14,28 +14,50 @@ import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
  */
 
 // <start_here>
+// <mark_1>
 @VirtualObject
 public class Greeter {
+    // </mark_1>
 
     public final static StateKey<Integer> COUNT =
             StateKey.of("count", JsonSerdes.INT);
 
+    // <mark_1>
+    // <mark_3>
     @Handler
     public String greet(ObjectContext ctx, String greeting) {
+        // </mark_3>
+        // </mark_1>
+        // <mark_2>
         Integer count = ctx.get(COUNT).orElse(0);
         count++;
         ctx.set(COUNT, count);
+        // </mark_2>
+        // <mark_1>
         return greeting + " " + ctx.key() + "for the " + count + "-th time";
+        // </mark_1>
     }
 
+    // <mark_1>
+    // <mark_3>
     @Handler
     public String ungreet(ObjectContext ctx) {
+        // </mark_3>
+        // </mark_1>
+        // <mark_2>
         Integer count = ctx.get(COUNT).orElse(0);
+        // </mark_2>
         if (count > 0) {
+            // <mark_2>
             count--;
+            // </mark_2>
         }
+        // <mark_2>
         ctx.set(COUNT, count);
+        // </mark_2>
+        // <mark_1>
         return "Dear "  + ctx.key() + ", taking one greeting back";
+        // </mark_1>
     }
 
     public static void main(String[] args) {
