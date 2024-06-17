@@ -21,7 +21,7 @@ Restate replays the result instead of re-executing the operation on retries.
 
 Here is an example of a database request for which the string response is stored in Restate:
 ```typescript
-CODE_LOAD::ts/src/develop/side_effects.ts#side_effect
+CODE_LOAD::ts/src/develop/journaling_results.ts#side_effect
 ```
 
 You cannot invoke any methods on the Restate context within a side effect.
@@ -48,8 +48,8 @@ Restate then logs the order in which they are resolved or rejected, to make them
     - Resolves with an array of results, once all input promises are resolved.
     - Rejects when any input promise is rejected.
 
-    ```typescript focus=1:6 mark=5:6
-    CODE_LOAD::ts/src/develop/side_effects.ts#promises
+    ```ts
+    CODE_LOAD::ts/src/develop/journaling_results.ts#promises?1
     ```
 
     ---
@@ -60,7 +60,8 @@ Restate then logs the order in which they are resolved or rejected, to make them
     - Rejects when all the input promises are rejected (including when an empty iterable is passed).
     This results in an `AggregateError` containing an array of the reasons for rejection.
 
-    ```typescript focus=1:3,8,9 mark=8:9
+    ```ts
+    CODE_LOAD::ts/src/develop/journaling_results.ts#promises?2
     ```
 
     ---
@@ -70,7 +71,8 @@ Restate then logs the order in which they are resolved or rejected, to make them
     - Resolves when any of the input promises are resolved.
     - Rejects when any of the input promises are rejected.
 
-    ```typescript focus=1:3,11,12 mark=11,12
+    ```ts
+    CODE_LOAD::ts/src/develop/journaling_results.ts#promises?3
     ```
 
     ---
@@ -80,8 +82,8 @@ Restate then logs the order in which they are resolved or rejected, to make them
     Similar to [`Promise.allSettled()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled),
     but the outcome is stored in the Restate journal to be deterministically replayable.
 
-
-    ```typescript focus=1:3,14,15 mark=14,15
+    ```ts
+    CODE_LOAD::ts/src/develop/journaling_results.ts#promises?4
     ```
 
 </CH.Scrollycoding>
@@ -97,7 +99,7 @@ The SDK provides helper functions for the deterministic generation of UUIDs and 
     Do not use this in cryptographic contexts.
 
     ```typescript
-    CODE_LOAD::ts/src/develop/side_effects.ts#uuid
+    CODE_LOAD::ts/src/develop/journaling_results.ts#uuid
     ```
 
 </CH.Scrollycoding>
@@ -110,6 +112,6 @@ The SDK provides helper functions for the deterministic generation of UUIDs and 
     This is the equivalent of JS `Math.random()` but deterministically replayable.
 
     ```typescript
-    CODE_LOAD::ts/src/develop/side_effects.ts#random_nb
+    CODE_LOAD::ts/src/develop/journaling_results.ts#random_nb
     ```
 </CH.Scrollycoding>

@@ -14,20 +14,29 @@ const service = restate.service({
         promiseCombinators: async (ctx: restate.Context, name: string) => {
             // <start_promises>
             const sleepPromise = ctx.sleep(100);
-            const callPromise = ctx.serviceClient(MyService)
+            const callPromise = ctx
+                .serviceClient(MyService)
                 .myHandler("Hi");
 
+            // <mark_1>
             const resultArray = await CombineablePromise
                 .all([sleepPromise, callPromise]);
+            // </mark_1>
 
+            // <mark_2>
             const anyResult = await CombineablePromise
                 .any([sleepPromise, callPromise]);
+            // </mark_2>
 
+            // <mark_3>
             const raceResult = await CombineablePromise
                 .race([sleepPromise, callPromise]);
+            // </mark_3>
 
-            const allSettledResult = await CombineablePromise
+            // <mark_4>
+            const settledResult = await CombineablePromise
                 .allSettled([sleepPromise, callPromise]);
+            // </mark_4>
             // <end_promises>
 
             // <start_uuid>
