@@ -77,13 +77,6 @@ public class SignupWorkflow {
         ctx.promiseHandle(EMAIL_LINK).reject("Abort verification");
     }
     // </mark_6>
-
-    public static void main(String[] args) {
-        RestateHttpEndpointBuilder
-                .builder()
-                .bind(new SignupWorkflow())
-                .buildAndListen();
-    }
 }
 // <end_here>
 
