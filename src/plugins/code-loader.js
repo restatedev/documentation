@@ -2,12 +2,12 @@ const fs = require('fs');
 const fetch = require('node-fetch');
 
 const plugin = (options) => {
-    const codeLoadRegex = /^CODE_LOAD::([^#?]+)(?:#([^#]+)-([^#]+))?(?:\?([^#]+))?$/g;
+    const codeLoadRegex = /^CODE_LOAD::([^#?]+)(?:#([^#]+))?(?:\?([^#]+))?$/g;
 
     const injectCode = async (str) => {
         let fileData = null;
-        str.replace(codeLoadRegex, (match, filePath, customStartTag, customEndTag, markNumber) => {
-            fileData = { filePath, customStartTag, customEndTag, markNumber };
+        str.replace(codeLoadRegex, (match, filePath, customTag, markNumber) => {
+            fileData = { filePath, customTag, markNumber };
             return match;
         });
 
@@ -16,7 +16,7 @@ const plugin = (options) => {
         }
 
         const fileContent = await readFileOrFetch(fileData.filePath);
-        const data = extractAndClean(fileContent, fileData.customStartTag, fileData.customEndTag, fileData.markNumber, fileData.filePath);
+        const data = extractAndClean(fileContent, fileData.customTag, fileData.markNumber, fileData.filePath);
         return str.replace(codeLoadRegex, () => data);
     };
 
@@ -32,18 +32,24 @@ const plugin = (options) => {
         }
     }
 
-    function extractAndClean(fileContent, customStartTag, customEndTag, markNumber, filePath) {
-        if (customStartTag && !fileContent.includes(customStartTag)) {
-            throw new Error(`Custom start tag "${customStartTag}" not found in file ${filePath}`);
+    function extractAndClean(fileContent, customTag, markNumber, filePath) {
+        const startTag = (customTag) ? `<start_${customTag}>` : "<start_here>";
+        const endTag = (customTag) ? `<end_${customTag}>` : "<end_here>";
+        if (customTag && !fileContent.includes(startTag)) {
+            throw new Error(`Custom start tag "${startTag}" not found in file ${filePath}`);
         }
-        if (customEndTag && !fileContent.includes(customEndTag)) {
-            throw new Error(`Custom end tag "${customEndTag}" not found in file ${filePath}`);
+        if (customTag && !fileContent.includes(endTag)) {
+            throw new Error(`Custom end tag "${endTag}" not found in file ${filePath}`);
         }
 
-        const startTag = customStartTag ?? "<start_here>";
-        const endTag = customEndTag ?? "<end_here>";
+        let lines;
+        // Only remove the tag lines if there are tags present
+        if(fileContent.includes(startTag) && fileContent.includes(endTag)){
+            lines = fileContent.split(startTag).pop().split(endTag).shift().split('\n').slice(1,-1);
+        } else {
+            lines = fileContent.split('\n');
+        }
 
-        let lines = fileContent.split(startTag).pop().split(endTag).shift().split('\n').slice(1,-1);
         let finalLines = [];
 
         if (markNumber) {
@@ -72,8 +78,6 @@ const plugin = (options) => {
                     finalLines.push(line);
                 }
             });
-
-            console.log(finalLines)
         } else {
             finalLines = lines;
         }
