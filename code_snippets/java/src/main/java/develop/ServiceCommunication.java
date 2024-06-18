@@ -68,8 +68,8 @@ public class ServiceCommunication {
     private void orderingGuarantees(Context ctx){
         String objectKey = "";
            // <start_ordering>
-           MyVirtualObjectClient.fromContext(ctx, objectKey).send().myHandler("Hi!");
-           MyVirtualObjectClient.fromContext(ctx, objectKey).send().myHandler("Hi again!");
+           MyVirtualObjectClient.fromContext(ctx, objectKey).send().myHandler("I'm call A");
+           MyVirtualObjectClient.fromContext(ctx, objectKey).send().myHandler("I'm call B");
            // <end_ordering>
     }
 }
