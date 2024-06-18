@@ -28,7 +28,7 @@ This pattern is also known as the callback (task token) pattern.
 
     2. The handler **triggers a task/process** and attaches the awakeable ID  (e.g. over Kafka, via HTTP,...).
     For example, send an HTTP request to a service that executes the task, and attach the ID to the payload.
-    You use `ctx.run` to avoid retriggering the task this on retries.
+    You use `ctx.run` to avoid re-triggering the task on retries.
 
     ```java
     CODE_LOAD::java/src/main/java/develop/Awakeables.java?2
@@ -59,7 +59,7 @@ This pattern is also known as the callback (task token) pattern.
 
             2. The handler **triggers a task/process** and attaches the awakeable ID  (e.g. over Kafka, via HTTP,...).
             For example, send an HTTP request to a service that executes the task, and attach the ID to the payload.
-            You use `ctx.runBlock` to avoid retriggering the task this on retries.
+            You use `ctx.runBlock` to avoid re-triggering the task on retries.
 
             ```kotlin
             CODE_LOAD::kotlin/src/main/kotlin/develop/Awakeables.kt?2
@@ -77,6 +77,7 @@ This pattern is also known as the callback (task token) pattern.
         </CH.Scrollycoding>
 </TabItem>
 </Tabs>
+
 ## Completing awakeables
 
 The external process completes the awakeable by either resolving it with an optional payload or by rejecting it

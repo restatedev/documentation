@@ -12,51 +12,74 @@ Awakeables pause an invocation while waiting for another process to complete a t
 You can use this pattern to let a handler execute a task somewhere else and retrieve the result.
 This pattern is also known as the callback (task token) pattern.
 
-<CH.Section>
-    <CH.Code>
-        ```typescript my_handler.ts
-        CODE_LOAD::ts/src/develop/awakeable.ts#create
-        ```
-    </CH.Code>
+## Creating awakeables
 
-    1. [The handler **creates an awakeable**](focus://1,2). This contains a [String identifier](focus://2) and a Promise/Awaitable.
-    2. [The handler **triggers a task/process** and attaches the awakeable ID](focus://4)  (e.g. over Kafka, via HTTP,...).
+<CH.Scrollycoding className={"spotlight-medium"}>
+
+    1. The handler **creates an awakeable**. This contains a String identifier and a Promise.
+
+    ```ts
+    CODE_LOAD::ts/src/develop/awakeable.ts?1
+    ```
+
+    ---
+
+    2. The handler **triggers a task/process** and attaches the awakeable ID  (e.g. over Kafka, via HTTP,...).
     For example, send an HTTP request to a service that executes the task, and attach the ID to the payload.
-    You use `ctx.run` to avoid retriggering the task this on retries.
-    3. [The handler **waits** until the other process has executed the task.](focus://6)
-</CH.Section>
-<CH.Section>
-    4. **The external process completes the awakeable** when the task is finished by:
+    You use `ctx.run` to avoid re-triggering the task on retries.
 
-        <CH.Code>
-            ```shell resolve_curl.sh
-            curl localhost:8080/restate/awakeables/prom_1PePOqp/resolve -H 'content-type: application/json'
-                -d '{"hello": "world"}'
-            ```
+    ```ts
+    CODE_LOAD::ts/src/develop/awakeable.ts?2
+    ```
 
-            ```shell reject_curl.sh
-            curl localhost:8080/restate/awakeables/prom_1PePOqp/reject -H 'content-type: text/plain' \
-                -d 'Very bad error!'
-            ```
+    ---
 
-            ```typescript external_process_resolve.ts
-            CODE_LOAD::ts/src/develop/awakeable.ts#resolve
-            ```
+    3. The handler **waits** until the other process has executed the task.
+    The handler **receives the payload and resumes**.
 
-            ```typescript external_proces_reject.ts
-            CODE_LOAD::ts/src/develop/awakeable.ts#reject
-            ```
+    ```ts
+    CODE_LOAD::ts/src/develop/awakeable.ts?3
+    ```
 
-        </CH.Code>
-        - **Resolving** the awakeable
-            - [Over HTTP](focus://resolve_curl.sh#1:2) with [its ID](focus://resolve_curl.sh#1[40:52]) and [an optional payload](focus://resolve_curl.sh#2)
-            - [Via the SDK with its ID and an optional payload](focus://external_process_resolve.ts#1)
-        - **Rejecting** the awakeable. This throws [a terminal error](/develop/java/error-handling) in the waiting handler.
-            - [Over HTTP](focus://reject_curl.sh#1:2) with [its ID](focus://reject_curl.sh#1[40:52]) and [a failure reason](focus://reject_curl.sh#2)
-            - [Via the SDK with its ID and a failure reason](focus://external_proces_reject.ts#1)
-</CH.Section>
-    5. The handler **receives the payload and resumes**.
+</CH.Scrollycoding>
 
+## Completing awakeables
+
+The external process completes the awakeable by either resolving it with an optional payload or by rejecting it
+with its ID and a reason for the failure. This throws [a terminal error](/develop/java/error-handling) in the waiting handler.
+
+<CH.Scrollycoding className={"single-item spotlight-medium"}>
+    - Resolving over HTTP with its ID and an optional payload:
+
+    ```shell
+    curl localhost:8080/restate/awakeables/prom_1PePOqp/resolve
+        -H 'content-type: application/json'
+        -d '{"hello": "world"}'
+    ```
+</CH.Scrollycoding>
+<CH.Scrollycoding className={"single-item spotlight-medium"}>
+    - Rejecting over HTTP with its ID and a reason:
+
+    ```shell
+    curl localhost:8080/restate/awakeables/prom_1PePOqp/reject
+        -H 'content-type: text/plain' \
+        -d 'Very bad error!'
+    ```
+</CH.Scrollycoding>
+<CH.Scrollycoding className={"single-item spotlight-medium"}>
+    - Resolving via the SDK with its ID and an optional payload:
+
+    ```ts
+    CODE_LOAD::ts/src/develop/awakeable.ts#resolve
+    ```
+</CH.Scrollycoding>
+<CH.Scrollycoding className={"single-item spotlight-medium"}>
+    - Rejecting via the SDK with its ID and a reason:
+
+    ```ts
+    CODE_LOAD::ts/src/develop/awakeable.ts#reject
+    ```
+</CH.Scrollycoding>
 
 
 <Admonition type="info" title={"Payload serialization"}>

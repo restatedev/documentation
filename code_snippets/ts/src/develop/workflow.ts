@@ -11,18 +11,19 @@
 
 // <start_here>
 import * as restate from "@restatedev/restate-sdk";
+import {WorkflowContext, WorkflowSharedContext} from "@restatedev/restate-sdk";
 
 const myWorkflow = restate.workflow({
     name: "MyWorkflow",
     handlers: {
-        run: async (ctx: restate.WorkflowContext, req: string) => {
+        run: async (ctx: WorkflowContext, req: string) => {
 
             // implement workflow logic here
 
             return "success";
         },
 
-        interactWithWorkflow: async (ctx: restate.WorkflowSharedContext) => {
+        interactWithWorkflow: async (ctx: WorkflowSharedContext) => {
             // implement interaction logic here
         },
     },
