@@ -14,72 +14,47 @@ Restate services can run in two ways: as an HTTP endpoint or as AWS Lambda funct
 
 <Tabs groupId="sdk" queryString>
     <TabItem value="java" label="Java">
-        <CH.Section>
+        1. Create a `RestateHttpEndpointBuilder`
+        2. Bind one or multiple services to it
+        3. Listen on the specified port (default `9080`) for connections and requests.
 
-            <CH.Code>
-                ```java
-                CODE_LOAD::java/src/main/java/develop/ServingHttp.java
-                ```
-            </CH.Code>
+        ```java
+        CODE_LOAD::java/src/main/java/develop/ServingHttp.java
+        ```
+    </TabItem>
+    <TabItem value="kotlin" label="Kotlin">
+        1. Create a `RestateHttpEndpointBuilder`
+        2. Bind one or multiple services to it
+        3. Listen on the specified port (default `9080`) for connections and requests.
 
-            1. [Create a `RestateHttpEndpointBuilder`](focus://5)
-            2. [Bind one or multiple services to it](focus://6:8)
-            3. [Listen on the specified port (default `9080`) for connections and requests.](focus://9)
-
-        </CH.Section>
-
-</TabItem>
-<TabItem value="kotlin" label="Kotlin">
-    <CH.Section>
-
-        <CH.Code>
-            ```kotlin
-            CODE_LOAD::kotlin/src/main/kotlin/develop/ServingHttp.kt
-            ```
-        </CH.Code>
-
-        1. [Create a `RestateHttpEndpointBuilder`](focus://4)
-        2. [Bind one or multiple services to it](focus://5:7)
-        3. [Listen on the specified port (default `9080`) for connections and requests.](focus://8)
-
-    </CH.Section>
-
-
-</TabItem>
+        ```kotlin
+        CODE_LOAD::kotlin/src/main/kotlin/develop/ServingHttp.kt
+        ```
+    </TabItem>
 </Tabs>
-
 
 ## Creating a Lambda handler
 <Tabs groupId="sdk" queryString>
     <TabItem value="java" label="Java">
-<CH.Section>
-    <CH.Code>
-    ```java
-    CODE_LOAD::java/src/main/java/develop/ServingLambda.java
-    ```
-    </CH.Code>
+        1. Add the dependency `dev.restate:sdk-lambda:VAR::JAVA_SDK_VERSION`.
+        2. Extend the class `BaseRestateLambdaHandler`
+        3. Override the register method
+        4. Bind one or multiple services to the builder
 
-    1. Add the dependency `dev.restate:sdk-lambda:VAR::JAVA_SDK_VERSION`.
-    2. [Extend the class `BaseRestateLambdaHandler`](focus://4)
-    3. [Override the register method](focus://5:6,10)
-    4. [Bind one or multiple services to the builder](focus://7:9)
+        ```java
+        CODE_LOAD::java/src/main/java/develop/ServingLambda.java
+        ```
+    </TabItem>
+    <TabItem value="kotlin" label="Kotlin">
+        1. Add the dependency `dev.restate:sdk-lambda:VAR::JAVA_SDK_VERSION`.
+        2. Extend the class `BaseRestateLambdaHandler`
+        3. Override the register method
+        4. Bind one or multiple services to the builder
 
-</CH.Section>
-</TabItem>
-<TabItem value="kotlin" label="Kotlin">
-    <CH.Section>
-        <CH.Code>
-    ```kotlin
-    CODE_LOAD::kotlin/src/main/kotlin/develop/MyLambdaHandler.kt
-    ```
-        </CH.Code>
-
-    1. Add the dependency `dev.restate:sdk-lambda:VAR::JAVA_SDK_VERSION`.
-    2. [Extend the class `BaseRestateLambdaHandler`](focus://4)
-    3. [Override the register method](focus://5,9)
-    4. [Bind one or multiple services to the builder](focus://6:8)
-    </CH.Section>
-</TabItem>
+        ```kotlin
+        CODE_LOAD::kotlin/src/main/kotlin/develop/MyLambdaHandler.kt
+        ```
+    </TabItem>
 </Tabs>
 
 Have a look at the [deployment section](/category/aws--aws-lambda) for guidance on how to deploy your services on AWS Lambda.

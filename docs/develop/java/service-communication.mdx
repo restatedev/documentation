@@ -155,19 +155,15 @@ Restate will make sure the task gets executed at the desired time.
 </Admonition>
 
 <Admonition type="note" title="Ordering guarantees in Virtual Objects">
-<CH.Section>
 
     Invocations to a Virtual Object are executed serially.
     Invocations will execute in the same order in which they arrive at Restate.
     For example, assume the following code in `ServiceA`:
 
-    <CH.Code lineNumbers={"true"}>
-        ```java
-        CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#ordering
-        ```
-    </CH.Code>
+    ```java
+    CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#ordering
+    ```
 
-    It is guaranteed that [the invocation on line `1`](focus://1) will execute before [the invocation on line `2`](focus://2).
-    It is not guaranteed though that [invocation `2`](focus://2) will be executed immediately after [invocation `1`](focus://1), as invocations coming from other handlers/sources, could interleave these two calls.
-</CH.Section>
+    It is guaranteed that call A will execute before call B.
+    It is not guaranteed though that call B will be executed immediately after call A, as invocations coming from other handlers/sources, could interleave these two calls.
 </Admonition>
