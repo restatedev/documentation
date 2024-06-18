@@ -33,8 +33,8 @@ const service = restate.service({
             // <end_delayed_object>
 
             // <start_ordering>
-            ctx.objectSendClient(MyVirtualObject, "Mary").myHandler("Hi!");
-            ctx.objectSendClient(MyVirtualObject, "Mary").myHandler("Hi again!");
+            ctx.objectSendClient(MyVirtualObject, "Mary").myHandler("I'm call A");
+            ctx.objectSendClient(MyVirtualObject, "Mary").myHandler("I'm call B");
             // <end_ordering>
         },
         callWorkflows: async (ctx: restate.Context, name: string) => {

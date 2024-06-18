@@ -91,15 +91,15 @@ You can **delay the message** by adding a delay request parameter in ISO8601 not
     ```shell humantime
     # focus[40:56]
     curl localhost:8080/MyService/myHandler/send?delay=10s \
-    -H 'content-type: application/json' \
-    -d '{"name": "Mary", "age": 25}'
+        -H 'content-type: application/json' \
+        -d '{"name": "Mary", "age": 25}'
     ```
 
     ```shell ISO8601
     # focus[40:56]
     curl localhost:8080/MyService/myHandler/send?delay=PT10S \
-    -H 'content-type: application/json' \
-    -d '{"name": "Mary", "age": 25}'
+        -H 'content-type: application/json' \
+        -d '{"name": "Mary", "age": 25}'
     ```
 
 </CH.Code>
@@ -137,8 +137,8 @@ If you re-invoke the service with the same idempotency key within 24 hours, Rest
         You can tune the [retention time](focus://3) on a service-level by using the [Admin API](focus://1[15:28]) ([docs](/references/admin-api#tag/service/operation/modify_service)):
         ```shell
         curl -X PATCH localhost:9070/services/MyService \
-        -H 'content-type: application/json' \
-        -d '{"idempotency_retention": "2days"}'
+            -H 'content-type: application/json' \
+            -d '{"idempotency_retention": "2days"}'
         ```
         The [retention time](focus://3) is in [humantime format](https://docs.rs/humantime/latest/humantime/).
     </CH.Section>

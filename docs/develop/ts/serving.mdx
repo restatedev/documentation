@@ -10,17 +10,13 @@ import Admonition from '@theme/Admonition';
 Restate services can run in two ways: as an HTTP endpoint or as AWS Lambda functions.
 
 ## Creating an HTTP endpoint
-<CH.Section>
+1. Create the endpoint
+2. Bind one or multiple services to it.
+3. Listen on the specified port (default `9080`) for connections and requests.
+
 ```typescript
 CODE_LOAD::ts/src/develop/serving.ts#endpoint
 ```
-
-
-1. [Create the endpoint](focus://1,2)
-2. [Bind one or multiple services to it.](focus://3,4,5)
-3. [Listen on the specified port (default `9080`) for connections and requests.](focus://6)
-
-</CH.Section>
 
 <details className={"grey-details"}>
     <summary>Customizing the HTTP2 server</summary>
@@ -41,7 +37,6 @@ CODE_LOAD::ts/src/develop/serving.ts#lambda
 
 Have a look at the [deployment section](/category/aws--aws-lambda)
 for guidance on how to deploy your services on AWS Lambda.
-
 
 <Admonition type="tip" title={"Run on Lambda without handler changes"}>
     The implementation of your services and handlers remains the same for both deployment options.
