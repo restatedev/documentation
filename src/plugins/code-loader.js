@@ -82,7 +82,6 @@ const plugin = (options) => {
         }
 
         const leadingWhitespace = lines[0].match(/^\s*/)[0];
-        console.log("Number of spaces in leadingWhitespace: ", leadingWhitespace.length)
 
         return finalLines.filter(line => {
                 return !line.includes('<start_') &&

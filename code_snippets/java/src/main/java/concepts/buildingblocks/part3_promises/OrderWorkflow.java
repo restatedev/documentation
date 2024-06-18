@@ -12,51 +12,49 @@ import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.common.Serde;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
-
 import java.time.Duration;
 
 // <start_here>
 @VirtualObject
 public class OrderWorkflow {
-    public final static StateKey<StatusEnum> STATUS =
-        StateKey.of("status", JacksonSerdes.of(StatusEnum.class));
+  public static final StateKey<StatusEnum> STATUS =
+      StateKey.of("status", JacksonSerdes.of(StatusEnum.class));
 
-    @Handler
-    public void process(ObjectContext ctx, OrderRequest order) {
-        String id = order.getOrderId();
-        ctx.set(STATUS, StatusEnum.CREATED);
+  @Handler
+  public void process(ObjectContext ctx, OrderRequest order) {
+    String id = order.getOrderId();
+    ctx.set(STATUS, StatusEnum.CREATED);
 
-        // 2. Handle payment
-        String token = ctx.random().nextUUID().toString();
-        boolean paid = ctx.run(JsonSerdes.BOOLEAN, () ->
-            PaymentClient.charge(id, token, order.getTotalCost()));
+    // 2. Handle payment
+    String token = ctx.random().nextUUID().toString();
+    boolean paid =
+        ctx.run(JsonSerdes.BOOLEAN, () -> PaymentClient.charge(id, token, order.getTotalCost()));
 
-        if (!paid) {
-            ctx.set(STATUS, StatusEnum.REJECTED);
-            return;
-        }
+    if (!paid) {
+      ctx.set(STATUS, StatusEnum.REJECTED);
+      return;
+    }
 
-        // 3. Schedule preparation
-        ctx.set(STATUS, StatusEnum.SCHEDULED);
-        ctx.sleep(Duration.ofMillis(order.getDeliveryDelay()));
+    // 3. Schedule preparation
+    ctx.set(STATUS, StatusEnum.SCHEDULED);
+    ctx.sleep(Duration.ofMillis(order.getDeliveryDelay()));
 
-        // 4. Trigger preparation
-        // mark
-        var awakeable = ctx.awakeable(Serde.VOID);
-        ctx.run(() ->
+    // 4. Trigger preparation
+    // mark
+    var awakeable = ctx.awakeable(Serde.VOID);
+    ctx.run(
+        () ->
             // mark
             RestaurantClient.prepare(id, awakeable.id()));
-        ctx.set(STATUS, StatusEnum.IN_PREPARATION);
+    ctx.set(STATUS, StatusEnum.IN_PREPARATION);
 
-        // mark
-        awakeable.await();
-        ctx.set(STATUS, StatusEnum.SCHEDULING_DELIVERY);
+    // mark
+    awakeable.await();
+    ctx.set(STATUS, StatusEnum.SCHEDULING_DELIVERY);
 
-        // 5. Find a driver and start delivery
-        DeliveryManagerClient.fromContext(ctx, id)
-            .startDelivery(order).await();
-        ctx.set(STATUS, StatusEnum.DELIVERED);
-    }
+    // 5. Find a driver and start delivery
+    DeliveryManagerClient.fromContext(ctx, id).startDelivery(order).await();
+    ctx.set(STATUS, StatusEnum.DELIVERED);
+  }
 }
 // <end_here>
-

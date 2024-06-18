@@ -8,8 +8,6 @@ import dev.restate.sdk.annotation.VirtualObject;
 @VirtualObject
 public class DeliveryManager {
 
-    @Handler
-    public void startDelivery(ObjectContext ctx, OrderRequest order) {
-
-    }
+  @Handler
+  public void startDelivery(ObjectContext ctx, OrderRequest order) {}
 }

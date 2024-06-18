@@ -11,20 +11,18 @@ import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 @VirtualObject
 public class MyVirtualObject {
 
-    @Handler
-    public String myHandler(ObjectContext ctx, String input) {
-        return "my-output";
-    }
+  @Handler
+  public String myHandler(ObjectContext ctx, String input) {
+    return "my-output";
+  }
 
-    @Shared
-    public String myConcurrentHandler(SharedObjectContext ctx, String input){
-        return "my-output";
-    }
+  @Shared
+  public String myConcurrentHandler(SharedObjectContext ctx, String input) {
+    return "my-output";
+  }
 
-    public static void main(String[] args) {
-        RestateHttpEndpointBuilder.builder()
-            .bind(new MyVirtualObject())
-            .buildAndListen();
-    }
+  public static void main(String[] args) {
+    RestateHttpEndpointBuilder.builder().bind(new MyVirtualObject()).buildAndListen();
+  }
 }
 // <end_here>
