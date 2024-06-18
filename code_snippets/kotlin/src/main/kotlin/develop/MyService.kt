@@ -8,7 +8,6 @@ import dev.restate.sdk.kotlin.Context
 // <start_here>
 @Service
 class MyService {
-
     @Handler
     suspend fun myHandler(ctx: Context, input: String): String {
         return "my-output"
