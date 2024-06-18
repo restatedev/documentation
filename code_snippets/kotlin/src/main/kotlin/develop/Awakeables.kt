@@ -4,14 +4,20 @@ import dev.restate.sdk.kotlin.*
 
 class Awakeables {
     suspend fun awakeables(ctx: ObjectContext) {
-        // <start_create>
+        // <start_here>
+        // <mark_1>
         val awakeable = ctx.awakeable<String>()
         val awakeableId: String = awakeable.id
+        // </mark_1>
 
+        // <mark_2>
         ctx.runBlock{ triggerTaskAndDeliverId(awakeableId) }
+        // </mark_2>
 
+        // <mark_3>
         val payload: String = awakeable.await()
-        // <end_create>
+        // </mark_3>
+        // <end_here>
 
 
         // <start_resolve>
