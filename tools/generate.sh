@@ -25,5 +25,8 @@ cargo xtask generate-config-schema > $DOCS_DIR/static/schemas/config_schema.json
 echo "Generate default config"
 cargo xtask generate-default-config > $DOCS_DIR/static/schemas/restate.toml
 
+echo "Generate sql introspection page"
+$SCRIPT_DIR/generate_sql_introspection_page.sh $RESTATE_PATH
+
 
 popd
