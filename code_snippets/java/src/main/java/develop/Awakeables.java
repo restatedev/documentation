@@ -6,26 +6,32 @@ import dev.restate.sdk.ObjectContext;
 
 public class Awakeables {
 
-    public void awakeables(ObjectContext ctx) {
-        // <start_create>
-        Awakeable<String> awakeable = ctx.awakeable(JsonSerdes.STRING);
-        String awakeableId = awakeable.id();
+public void awakeables(ObjectContext ctx) {
+    // <start_here>
+    // <mark_1>
+    Awakeable<String> awakeable = ctx.awakeable(JsonSerdes.STRING);
+    String awakeableId = awakeable.id();
+    // </mark_1>
 
-        ctx.run(() -> triggerTaskAndDeliverId(awakeableId));
+    // <mark_2>
+    ctx.run(() -> triggerTaskAndDeliverId(awakeableId));
+    // </mark_2>
 
-        String payload = awakeable.await();
-        // <end_create>
+    // <mark_3>
+    String payload = awakeable.await();
+    // </mark_3>
+    // <end_here>
 
-        // <start_resolve>
-        ctx.awakeableHandle(awakeableId)
-                .resolve(JsonSerdes.STRING, "hello");
-        // <end_resolve>
+    // <start_resolve>
+    ctx.awakeableHandle(awakeableId)
+        .resolve(JsonSerdes.STRING, "hello");
+    // <end_resolve>
 
-        // <start_reject>
-        ctx.awakeableHandle(awakeableId)
-                .reject("my error reason");
-        // <end_reject>
-    }
+    // <start_reject>
+    ctx.awakeableHandle(awakeableId)
+        .reject("my error reason");
+    // <end_reject>
+}
 
     public void triggerTaskAndDeliverId(String awakeableId) {
     }
