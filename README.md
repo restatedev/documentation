@@ -76,6 +76,20 @@ Code snippets will be compiled and build on PRs and releases.
 
 Details on how code snippets are parsed and inserted can be found in the [code-loader.js](src/plugins/code-loader.js) file.
 
+### Code formatting
+We use Spotless for formatting the Java code snippets. 
+However, Spotless is quite eager on merging lines together into longer lines. 
+This doesn't work well for the documentation sometimes because it requires horizontal scrolling.
+If you don't want Spotless to merge lines on formatting use `// break` in between the lines.
+The code loader will filter these out and the formatter will respect the breaks:
+```java
+RestateHttpEndpointBuilder.builder()
+    // break
+    .bind(new TicketObject())
+    // break
+    .buildAndListen();
+```
+
 ## Releasing the documentation
 
 Before releasing the documentation, update schemas and version of Restate artifacts, either:

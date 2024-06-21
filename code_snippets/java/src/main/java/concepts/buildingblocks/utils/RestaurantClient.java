@@ -4,7 +4,5 @@ package concepts.buildingblocks.utils;
 
 public class RestaurantClient {
 
-    static public void prepare(String orderId, String callbackId) {
-    }
-
+  public static void prepare(String orderId, String callbackId) {}
 }

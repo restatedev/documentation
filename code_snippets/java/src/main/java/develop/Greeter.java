@@ -22,8 +22,8 @@ public class Greeter {
 
   public static void main(String[] args) {
     RestateHttpEndpointBuilder.builder()
-      .bind(new Greeter())
-      // Start the Restate Endpoint HTTP Server
-      .buildAndListen();
+        .bind(new Greeter())
+        // Start the Restate Endpoint HTTP Server
+        .buildAndListen();
   }
 }
