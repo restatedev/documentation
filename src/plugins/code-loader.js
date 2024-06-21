@@ -2,7 +2,7 @@ const fs = require('fs');
 const fetch = require('node-fetch');
 
 const plugin = (options) => {
-    const codeLoadRegex = /^CODE_LOAD::([^#?]+)(?:#([^#]+))?(?:\?([^#]+))?$/g;
+    const codeLoadRegex = /^CODE_LOAD::([^#?]+)(?:#([^?]*))?(?:\?(.+))?$/g;
 
     const injectCode = async (str) => {
         let fileData = null;
