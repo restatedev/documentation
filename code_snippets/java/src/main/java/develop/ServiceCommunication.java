@@ -9,7 +9,12 @@ public class ServiceCommunication {
     String request = "";
 
     // <start_request_response_service>
-    String response = MyServiceClient.fromContext(ctx).myHandler(request).await();
+    String response =
+        MyServiceClient.fromContext(ctx)
+            // break
+            .myHandler(request)
+            // break
+            .await();
     // <end_request_response_service>
   }
 
@@ -18,7 +23,12 @@ public class ServiceCommunication {
     String request = "";
 
     // <start_request_response_virtual_object>
-    String response = MyVirtualObjectClient.fromContext(ctx, objectKey).myHandler(request).await();
+    String response =
+        MyVirtualObjectClient.fromContext(ctx, objectKey)
+            // break
+            .myHandler(request)
+            // break
+            .await();
     // <end_request_response_virtual_object>
   }
 
@@ -28,10 +38,19 @@ public class ServiceCommunication {
 
     // <start_request_response_workflow>
     // Call the `run` handler of the workflow
-    String response = MyWorkflowClient.fromContext(ctx, workflowId).run(request).await();
+    String response =
+        MyWorkflowClient.fromContext(ctx, workflowId)
+            // break
+            .run(request)
+            // break
+            .await();
 
     // Calling some other `interactWithWorkflow` handler of the workflow
-    MyWorkflowClient.fromContext(ctx, workflowId).interactWithWorkflow(request).await();
+    MyWorkflowClient.fromContext(ctx, workflowId)
+        // break
+        .interactWithWorkflow(request)
+        // break
+        .await();
     // <end_request_response_workflow>
   }
 
@@ -40,7 +59,7 @@ public class ServiceCommunication {
 
     // <start_one_way>
     MyServiceClient.fromContext(ctx)
-        // withClass highlight-line
+        // mark
         .send()
         .myHandler(request);
     // <end_one_way>
@@ -51,7 +70,7 @@ public class ServiceCommunication {
 
     // <start_delayed>
     MyServiceClient.fromContext(ctx)
-        // withClass highlight-line
+        // mark
         .send(Duration.ofSeconds(1))
         .myHandler(request);
     // <end_delayed>

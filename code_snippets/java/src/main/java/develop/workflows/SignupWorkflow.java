@@ -16,7 +16,9 @@ import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 public class SignupWorkflow {
   private static final DurablePromiseKey<String> EMAIL_CLICKED =
       DurablePromiseKey.of("email_clicked", JsonSerdes.STRING);
-  private static final StateKey<String> STATUS = StateKey.of("status", JsonSerdes.STRING);
+  private static final StateKey<String> STATUS =
+      // break
+      StateKey.of("status", JsonSerdes.STRING);
 
   // <mark_1>
   @Workflow
@@ -28,7 +30,12 @@ public class SignupWorkflow {
     ctx.set(STATUS, "Sent email");
 
     // <mark_3>
-    String clickSecret = ctx.promise(EMAIL_CLICKED).awaitable().await();
+    String clickSecret =
+        ctx.promise(EMAIL_CLICKED)
+            // break
+            .awaitable()
+            // break
+            .await();
     // </mark_3>
     ctx.set(STATUS, "Clicked email");
 
@@ -54,7 +61,11 @@ public class SignupWorkflow {
 
   public static void main(String[] args) {
     // <mark_4>
-    RestateHttpEndpointBuilder.builder().bind(new SignupWorkflow()).buildAndListen();
+    RestateHttpEndpointBuilder.builder()
+        // break
+        .bind(new SignupWorkflow())
+        // break
+        .buildAndListen();
     // </mark_4>
   }
 }

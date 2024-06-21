@@ -11,6 +11,7 @@ public class UserManagementService {
   public void setup(ObjectContext ctx, Email email) {
     // focus
     boolean result =
+        // focus
         SignupWorkflowClient.fromContext(ctx, "someone")
             // focus
             .run(email)
@@ -22,6 +23,7 @@ public class UserManagementService {
   public void queryStatus(ObjectContext ctx) {
     // focus
     String status =
+        // focus
         SignupWorkflowClient.fromContext(ctx, "someone")
             // focus
             .getStatus()
