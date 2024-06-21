@@ -28,10 +28,11 @@ interface PaymentSuccess {
     account: string;
 }
 
-// <start_workflow>
+// <start_here>
 const payment = restate.workflow({
     name: "payment",
     handlers: {
+        // <mark_1>
         run: async (ctx: restate.WorkflowContext, payment: PaymentRequest) => {
 
             // Validate payment. If not valid, end workflow right here without retries.
@@ -43,23 +44,36 @@ const payment = restate.workflow({
                 await paymentClnt.charge(ctx.key, payment.account, payment.amount);
             });
 
+            // <mark_3>
             await ctx.promise<PaymentSuccess>("payment.success");
+            // </mark_3>
+            // <mark_2>
             ctx.set("status", "Payment succeeded");
+            // </mark_2>
 
             await ctx.run("notify the user", async () => {
                 await emailClnt.sendSuccessNotification(payment.email);
             });
 
+            // <mark_2>
             ctx.set("status", "User notified of payment success");
+            // </mark_2>
 
             return "success";
         },
+        // </mark_1>
 
+        // <mark_3>
         paymentWebhook: async (ctx: restate.WorkflowSharedContext, account: string) => {
             await ctx.promise<PaymentSuccess>("payment.success").resolve({ account });
         },
+        // </mark_3>
 
+        // <mark_2>
         status: (ctx: restate.WorkflowSharedContext) => ctx.get("status"),
+        // </mark_2>
     },
 });
-// <end_workflow>
+
+restate.endpoint().bind(payment).listen();
+// <end_here>

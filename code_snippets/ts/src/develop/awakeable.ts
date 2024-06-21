@@ -4,14 +4,20 @@ const service = restate.service({
     name: "Awakeable",
     handlers: {
         greet: async (ctx: restate.Context, name: string) => {
-            // <start_create>
+            // <start_here>
+            // <mark_1>
             const awakeable = ctx.awakeable<string>();
             const awakeableId = awakeable.id
+            // </mark_1>
 
+            // <mark_2>
             await ctx.run(() => triggerTaskAndDeliverId(awakeableId));
+            // </mark_2>
 
+            // <mark_3>
             const payload = await awakeable.promise;
-            // <end_create>
+            // </mark_3>
+            // <end_here>
 
             // <start_resolve>
             ctx.resolveAwakeable(awakeableId, "hello");

@@ -12,13 +12,10 @@ A handler can call another handler and wait for the response (request-response),
 <Admonition type="note" title="Exporting the service definition">
 Make sure you export the service definition of the service you want to call, as we did in the [service example on the overview page](/develop/ts/overview#services):
 
-<CH.Code lineNumbers={"true"} rows={"focus"} >
-
-    ```typescript focus=12
-    CODE_LOAD::ts/src/develop/my_service.ts
-    ```
-</CH.Code>
-
+```typescript
+CODE_LOAD::ts/src/develop/my_service.ts#api_export
+```
+  
 Import this service definition in the service handler that wants to call it.
 </Admonition>
 
@@ -149,19 +146,14 @@ To schedule a delayed call, send a message with a delay parameter, as follows:
 </Admonition>
 
 <Admonition type="note" title="Ordering guarantees in Virtual Objects">
-    <CH.Section>
     Invocations to a Virtual Object are executed serially.
     Invocations will execute in the same order in which they arrive at Restate.
     For example, assume a handler calls the same Virtual Object twice:
 
-        <CH.Code lineNumbers={"true"}>
-            ```typescript
-            CODE_LOAD::ts/src/develop/service_communication.ts#ordering
-            ```
-        </CH.Code>
+    ```typescript
+    CODE_LOAD::ts/src/develop/service_communication.ts#ordering
+    ```
 
-    It is guaranteed that [the invocation on line `1`](focus://1) will execute before [the invocation on line `2`](focus://2).
-    It is not guaranteed though that [invocation `2`](focus://2) will be executed immediately after [invocation `1`](focus://1), as invocations coming from other handlers/sources, could interleave these two calls.
-    </CH.Section>
-
+    It is guaranteed that call A will execute before call B.
+    It is not guaranteed though that call B will be executed immediately after call A, as invocations coming from other handlers/sources, could interleave these two calls.
 </Admonition>

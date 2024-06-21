@@ -50,8 +50,8 @@ Restate pushes the events to your function.
     Write functions that get a the Kafka event as an input.
     Functions execute with Durable Execution: their progress is tracked and they can be retried from the exact point before the crash, as if you are taking micro-checkpoints throughout the function execution.
 
-    ```ts user_updates.ts mark=4
-    CODE_LOAD::ts/src/use_cases/event_processing.ts
+    ```ts user_updates.ts
+    CODE_LOAD::ts/src/use_cases/event_processing.ts?1
     ```
 
     ---
@@ -60,10 +60,10 @@ Restate pushes the events to your function.
     Let Restate subscribe to a Kafka topic and specify to which function to push the events.
     Restate will take care of the event plumbing: polling for records, committing offsets, recovering...
 
-    <CH.Code rows={"focus"}>
+    <CH.Code>
 
-        ```ts user_updates.ts mark=4
-        CODE_LOAD::ts/src/use_cases/event_processing.ts
+        ```ts user_updates.ts
+        CODE_LOAD::ts/src/use_cases/event_processing.ts?1
         ```
 
         ---
@@ -87,8 +87,8 @@ Restate pushes the events to your function.
     In the example, we process user updates in a queue per user.
     Slow updates for one user do not block updates for other users.
 
-    ```ts user_updates.ts mark=4
-    CODE_LOAD::ts/src/use_cases/event_processing.ts
+    ```ts user_updates.ts
+    CODE_LOAD::ts/src/use_cases/event_processing.ts?1
     ```
 
     ---
@@ -101,9 +101,8 @@ Restate pushes the events to your function.
 
     Here, we postpone processing for 5 seconds if the user profile is not ready yet.
 
-
-    ```ts user_updates.ts mark=9
-    CODE_LOAD::ts/src/use_cases/event_processing.ts
+    ```ts user_updates.ts
+    CODE_LOAD::ts/src/use_cases/event_processing.ts?2
     ```
 
     ---
@@ -112,8 +111,8 @@ Restate pushes the events to your function.
 
     The results of interactions with external systems are tracked and recovered after failures. This simplifies writing flows that keep multiple systems in sync.
 
-    ```ts user_updates.ts mark=7,10,13:14
-    CODE_LOAD::ts/src/use_cases/event_processing.ts
+    ```ts user_updates.ts
+    CODE_LOAD::ts/src/use_cases/event_processing.ts?3
     ```
 
     ---
@@ -124,8 +123,8 @@ Restate pushes the events to your function.
     Each event craft its own path through the code
     and builds up its own recovery log.
 
-    ```ts user_updates.ts mark=8:14
-    CODE_LOAD::ts/src/use_cases/event_processing.ts
+    ```ts user_updates.ts
+    CODE_LOAD::ts/src/use_cases/event_processing.ts?4
     ```
 
 </CH.Scrollycoding>
@@ -154,8 +153,8 @@ Implement stateful event handlers with Restate.
     Restate guarantees that it is consistent and persistent.
     The state gets delivered together with the request, so you operate on local state.
 
-    ```ts profile_service.ts mark=5,10,12,16,17
-    CODE_LOAD::ts/src/use_cases/events_state.ts
+    ```ts profile_service.ts
+    CODE_LOAD::ts/src/use_cases/events_state.ts?1
     ```
 
     ---
@@ -164,8 +163,8 @@ Implement stateful event handlers with Restate.
 
     Enrich events with data from multiple sources by storing it in state and eventually exposing it via other functions.
 
-    ```ts profile_service.ts mark=4,9,15
-    CODE_LOAD::ts/src/use_cases/events_state.ts
+    ```ts profile_service.ts
+    CODE_LOAD::ts/src/use_cases/events_state.ts?2
     ```
 
     ---
@@ -176,8 +175,8 @@ Implement stateful event handlers with Restate.
 
     Here, we wait one second for other user features to arrive before sending the event to downstream processing.
 
-    ```ts profile_service.ts mark=6
-    CODE_LOAD::ts/src/use_cases/events_state.ts
+    ```ts profile_service.ts
+    CODE_LOAD::ts/src/use_cases/events_state.ts?3
     ```
 
     ---
@@ -187,8 +186,8 @@ Implement stateful event handlers with Restate.
     Functions can be called over RPC or Kafka without changing the code.
     In the example, the registration can come over Kafka, while the email gets called via HTTP.
 
-    ```ts profile_service.ts mark=4,9,15
-    CODE_LOAD::ts/src/use_cases/events_state.ts
+    ```ts profile_service.ts
+    CODE_LOAD::ts/src/use_cases/events_state.ts?2
     ```
 
 </CH.Scrollycoding>

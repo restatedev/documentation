@@ -15,6 +15,7 @@ class SignupWorkflow {
         private val STATUS = KtStateKey.json<String>("status")
     }
 
+    // <mark_1>
     @Workflow
     suspend fun run(ctx: WorkflowContext, email: Email): Boolean {
         val secret = ctx.random().nextUUID().toString()
@@ -24,30 +25,40 @@ class SignupWorkflow {
             sendEmailWithLink(email, secret)
         }
 
+        // <mark_3>
         val clickSecret = ctx.promise(EMAIL_CLICKED)
             .awaitable()
             .await()
+        // </mark_3>
         ctx.set(STATUS, "Clicked email")
 
         return clickSecret == secret
     }
+    // </mark_1>
 
     @Shared
     suspend fun click(ctx: SharedWorkflowContext, secret: String) {
+        // <mark_3>
         ctx.promiseHandle(EMAIL_CLICKED).resolve(secret)
+        // </mark_3>
     }
 
+    // <mark_2>
     @Shared
     suspend fun getStatus(ctx: SharedWorkflowContext): String? {
         return ctx.get(STATUS)
     }
+    // </mark_2>
 }
 
+
 fun main() {
+    // <mark_4>
     RestateHttpEndpointBuilder
         .builder()
         .bind(SignupWorkflow())
         .buildAndListen()
+    // </mark_4>
 }
 // <end_here>
 

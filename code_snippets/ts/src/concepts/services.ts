@@ -4,30 +4,44 @@
  * Make sure you adapt the line numbers when adapting the code
  */
 
-// <start_service>
+// <start_here>
 import * as restate from "@restatedev/restate-sdk";
 import {Context} from "@restatedev/restate-sdk";
 
+// <mark_2>
 export const roleUpdateService = restate.service({
+    // </mark_2>
     name: "roleUpdate",
+    // <mark_2>
     handlers: {
         applyRoleUpdate: async (ctx: Context, update: UpdateRequest) => {
+            // </mark_2>
             const { userId, role, permissions } = update;
 
+            // <mark_1>
             const success = await ctx.run(() => applyUserRole(userId, role));
+            // </mark_1>
+            // <mark_3>
             if (!success) {
                 return;
             }
+            // </mark_3>
 
+            // <mark_3>
             for (const permission of permissions) {
+                // </mark_3>
+                // <mark_1>
                 await ctx.run(() => applyPermission(userId, permission));
+                // </mark_1>
+                // <mark_3>
             }
+            // </mark_3>
         }
     }
 });
 
 restate.endpoint().bind(roleUpdateService).listen();
-// <end_service>
+// <end_here>
 
 export type UserRole = {
     roleKey: string;

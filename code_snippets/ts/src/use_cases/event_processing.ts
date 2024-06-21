@@ -4,17 +4,29 @@ import * as restate from "@restatedev/restate-sdk";
 const userUpdates = restate.object({
     name: "userUpdates",
     handlers: {
+        // <mark_1>
         updateUserEvent: async (ctx: restate.ObjectContext, event: UserUpdate) => {
+            // </mark_1>
             const { profile, permissions, resources } = verifyEvent(event);
 
+            // <mark_3>
             let userId = await ctx.run(() => updateProfile(profile));
+            // </mark_3>
+            // <mark_4>
             while (userId === NOT_READY) {
+                // <mark_2>
                 await ctx.sleep(5_000);
+                // </mark_2>
+                // <mark_3>
                 userId = await ctx.run(() => updateProfile(profile));
+                // </mark_3>
             }
 
+            // <mark_3>
             const roleId = await ctx.run(() => setPermissions(userId, permissions));
             await ctx.run(() => provisionResources(userId, roleId, resources));
+            // </mark_3>
+            // </mark_4>
         },
     },
 });

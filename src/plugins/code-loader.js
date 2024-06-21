@@ -51,7 +51,6 @@ const plugin = (options) => {
         }
 
         let finalLines = [];
-
         if (markNumber) {
             const markStartTag = `// <mark_${markNumber}>`;
             const markEndTag = `// </mark_${markNumber}>`;
@@ -82,13 +81,15 @@ const plugin = (options) => {
             finalLines = lines;
         }
 
-        const cleanedLines = finalLines.filter(line => {
-            return !line.includes('<start_') && !line.includes('<end_') && !line.includes('<mark_') && !line.includes('</mark_');
-        }).join('\n');
+        const leadingWhitespace = lines[0].match(/^\s*/)[0];
+        console.log("Number of spaces in leadingWhitespace: ", leadingWhitespace.length)
 
-        const leadingWhitespace = cleanedLines.match(/^\s*/)[0];
-
-        return cleanedLines.split('\n')
+        return finalLines.filter(line => {
+                return !line.includes('<start_') &&
+                    !line.includes('<end_') &&
+                    !line.includes('<mark_') &&
+                    !line.includes('</mark_');
+            })
             .map(line => line.replace(new RegExp(`^${leadingWhitespace}`), ''))
             .join('\n');
     }

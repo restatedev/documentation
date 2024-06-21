@@ -13,118 +13,154 @@ Awakeables pause an invocation while waiting for another process to complete a t
 You can use this pattern to let a handler execute a task somewhere else and retrieve the result.
 This pattern is also known as the callback (task token) pattern.
 
+## Creating awakeables
 <Tabs groupId="sdk" queryString>
-    <TabItem value="java" label="Java">
-        <CH.Section>
-        <CH.Code>
-        ```java MyHandler.java
-        CODE_LOAD::java/src/main/java/develop/Awakeables.java#create
-        ```
-        </CH.Code>
 
-        1. [The handler **creates an awakeable**](focus://1,2). This contains a [String identifier](focus://2) and a Promise/Awaitable.
-        2. [The handler **triggers a task/process** and attaches the awakeable ID](focus://4)  (e.g. over Kafka, via HTTP,...).
-            For example, send an HTTP request to a service that executes the task, and attach the ID to the payload.
-            You use `ctx.run` to avoid retriggering the task this on retries.
-        3. [The handler **waits** until the other process has executed the task.](focus://6)
-</CH.Section>
-<CH.Section>
-    4. **The external process completes the awakeable** when the task is finished by:
-            <CH.Code>
+<TabItem value="java" label="Java">
+    <CH.Scrollycoding className={"spotlight-medium"}>
 
-                ```shell resolve_with_curl.sh
-                curl localhost:8080/restate/awakeables/prom_1PePOqp/resolve -H 'content-type: application/json'
-                    -d '{"hello": "world"}'
-                ```
+    1. The handler **creates an awakeable**. This contains a String identifier and a Promise/Awaitable.
 
-                ```shell reject_with_curl.sh
-                curl localhost:8080/restate/awakeables/prom_1PePOqp/reject -H 'content-type: text/plain' \
-                    -d 'Very bad error!'
-                ```
+    ```java
+    CODE_LOAD::java/src/main/java/develop/Awakeables.java?1
+    ```
 
-                ```java ExternalProcessResolve.java
-                CODE_LOAD::java/src/main/java/develop/Awakeables.java#resolve
-                ```
+    ---
 
-                ```java ExternalProcessReject.java
-                CODE_LOAD::java/src/main/java/develop/Awakeables.java#reject
-                ```
-            </CH.Code>
-            - **Resolves** the awakeable
-                - [Over HTTP](focus://resolve_with_curl.sh#1:2) with [its ID](focus://resolve_with_curl.sh#1[40:52]) and [an optional payload](focus://resolve_with_curl.sh#2)
-                - [Via the SDK with its ID and an optional payload](focus://ExternalProcessResolve.java#1:2)
-            - **Rejects** the awakeable with its ID and a reason: failure. This throws [a terminal error](/develop/java/error-handling) in the waiting handler.
-                - [Over HTTP](focus://reject_with_curl.sh#1:2) with [its ID](focus://reject_with_curl.sh#1[40:52]) and [an optional payload](focus://reject_with_curl.sh#2)
-                - [Via the SDK with its ID and an optional payload](focus://ExternalProcessReject.java#1:2)
-</CH.Section>
-        5. Once the ID has been returned to the service, the **invocation resumes**.
+    2. The handler **triggers a task/process** and attaches the awakeable ID  (e.g. over Kafka, via HTTP,...).
+    For example, send an HTTP request to a service that executes the task, and attach the ID to the payload.
+    You use `ctx.run` to avoid re-triggering the task on retries.
 
+    ```java
+    CODE_LOAD::java/src/main/java/develop/Awakeables.java?2
+    ```
 
+    ---
+
+    3. The handler **waits** until the other process has executed the task.
+        The handler **receives the payload and resumes**.
+
+    ```java
+    CODE_LOAD::java/src/main/java/develop/Awakeables.java?3
+    ```
+
+    </CH.Scrollycoding>
 
     </TabItem>
     <TabItem value="kotlin" label="Kotlin">
-        <CH.Section>
-        <CH.Code>
-        ```kotlin MyHandler.kt
-        CODE_LOAD::kotlin/src/main/kotlin/develop/Awakeables.kt#create
-        ```
-        </CH.Code>
+        <CH.Scrollycoding className={"spotlight-medium"}>
 
-        1. [The handler **creates an awakeable**](focus://1,2). This contains a [String identifier](focus://2) and a Promise/Awaitable.
-        2. [The handler **triggers a task/process** and attaches the awakeable ID](focus://4)  (e.g. over Kafka, via HTTP,...).
-        For example, send an HTTP request to a service that executes the task, and attach the ID to the payload.
-        You use `ctx.run` to avoid retriggering the task this on retries.
-        3. [The handler **waits** until the other process has executed the task.](focus://6)
-</CH.Section>
-<CH.Section>
-    4. **The external process completes the awakeable** when the task is finished by:
+            1. The handler **creates an awakeable**. This contains a String identifier and a Promise/Awaitable.
 
-            <CH.Code>
+            ```kotlin
+            CODE_LOAD::kotlin/src/main/kotlin/develop/Awakeables.kt?1
+            ```
 
-                ```shell resolve_curl.sh
-                curl localhost:8080/restate/awakeables/prom_1PePOqp/resolve -H 'content-type: application/json'
-                    -d '{"hello": "world"}'
-                ```
+            ---
 
-                ```shell reject_curl.sh
-                curl localhost:8080/restate/awakeables/prom_1PePOqp/reject -H 'content-type: text/plain' \
-                    -d 'Very bad error!'
-                ```
+            2. The handler **triggers a task/process** and attaches the awakeable ID  (e.g. over Kafka, via HTTP,...).
+            For example, send an HTTP request to a service that executes the task, and attach the ID to the payload.
+            You use `ctx.runBlock` to avoid re-triggering the task on retries.
 
-                ```kotlin ExternalProcessResolve.kt
-                CODE_LOAD::kotlin/src/main/kotlin/develop/Awakeables.kt#resolve
-                ```
+            ```kotlin
+            CODE_LOAD::kotlin/src/main/kotlin/develop/Awakeables.kt?2
+            ```
 
-                ```kotlin ExternalProcessReject.kt
-                CODE_LOAD::kotlin/src/main/kotlin/develop/Awakeables.kt#reject
-                ```
-            </CH.Code>
-            - **Resolving** the awakeable
-                - [Over HTTP](focus://resolve_curl.sh#1:2) with [its ID](focus://resolve_curl.sh#1[40:52]) and [an optional payload](focus://resolve_curl.sh#2)
-                - [Via the SDK with its ID and an optional payload](focus://ExternalProcessResolve.kt#1:2)
-            - **Rejecting** the awakeable. This throws [a terminal error](/develop/java/error-handling) in the waiting handler.
-                - [Over HTTP](focus://reject_curl.sh#1:2) with [its ID](focus://reject_curl.sh#1[40:52]) and [a failure reason](focus://reject_curl.sh#2)
-                - [Via the SDK with its ID and a failure reason](focus://ExternalProcessReject.kt#1:2)
-</CH.Section>
-    5. The handler **receives the payload and resumes**.
+            ---
+
+            3. The handler **waits** until the other process has executed the task.
+            The handler **receives the payload and resumes**.
+
+            ```kotlin
+            CODE_LOAD::kotlin/src/main/kotlin/develop/Awakeables.kt?3
+            ```
+
+        </CH.Scrollycoding>
 </TabItem>
 </Tabs>
 
+## Completing awakeables
+
+The external process completes the awakeable by either resolving it with an optional payload or by rejecting it
+with its ID and a reason for the failure. This throws [a terminal error](/develop/java/error-handling) in the waiting handler.
+
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="java" label="Java">
+<CH.Scrollycoding className={"single-item spotlight-medium"}>
+- Resolving over HTTP with its ID and an optional payload:
+
+```shell
+curl localhost:8080/restate/awakeables/prom_1PePOqp/resolve
+    -H 'content-type: application/json'
+    -d '{"hello": "world"}'
+```
+</CH.Scrollycoding>
+<CH.Scrollycoding className={"single-item spotlight-medium"}>
+- Rejecting over HTTP with its ID and a reason:
+
+```shell
+curl localhost:8080/restate/awakeables/prom_1PePOqp/reject
+    -H 'content-type: text/plain' \
+    -d 'Very bad error!'
+```
+</CH.Scrollycoding>
+<CH.Scrollycoding className={"single-item spotlight-medium"}>
+- Resolving via the SDK with its ID and an optional payload:
+
+```java
+CODE_LOAD::java/src/main/java/develop/Awakeables.java#resolve
+```
+</CH.Scrollycoding>
+<CH.Scrollycoding className={"single-item spotlight-medium"}>
+- Rejecting via the SDK with its ID and a reason:
+
+```java
+CODE_LOAD::java/src/main/java/develop/Awakeables.java#reject
+```
+</CH.Scrollycoding>
 
     <Admonition type="info" title="Specifying the serializer">
         For primitive types, you can use the Restate SDK's `CoreSerdes`.
         For other types, have a look at the [serialization docs](/develop/java/serialization).
     </Admonition>
-
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
+    <CH.Scrollycoding className={"single-item spotlight-medium"}>
+        - Resolving over HTTP with its ID and an optional payload:
+
+        ```shell
+        curl localhost:8080/restate/awakeables/prom_1PePOqp/resolve
+            -H 'content-type: application/json'
+            -d '{"hello": "world"}'
+        ```
+    </CH.Scrollycoding>
+    <CH.Scrollycoding className={"single-item spotlight-medium"}>
+        - Rejecting over HTTP with its ID and a reason:
+
+        ```shell
+        curl localhost:8080/restate/awakeables/prom_1PePOqp/reject
+            -H 'content-type: text/plain' \
+            -d 'Very bad error!'
+        ```
+    </CH.Scrollycoding>
+    <CH.Scrollycoding className={"single-item spotlight-medium"}>
+        - Resolving via the SDK with its ID and an optional payload:
+
+        ```kotlin
+        CODE_LOAD::kotlin/src/main/kotlin/develop/Awakeables.kt#resolve
+        ```
+    </CH.Scrollycoding>
+    <CH.Scrollycoding className={"single-item spotlight-medium"}>
+        - Rejecting via the SDK with its ID and a reason:
+
+        ```kotlin
+        CODE_LOAD::kotlin/src/main/kotlin/develop/Awakeables.kt#reject
+        ```
+    </CH.Scrollycoding>
     <Admonition type="info" title="Specifying the serializer">
         By default JSON is used to serialize payloads, using Kotlin serialization.
         For other types, have a look at the [serialization docs](/develop/java/serialization).
     </Admonition>
-
 </TabItem>
 </Tabs>
 

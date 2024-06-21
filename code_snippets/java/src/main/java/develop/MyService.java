@@ -8,7 +8,6 @@ import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 // <start_here>
 @Service
 public class MyService {
-
     @Handler
     public String myHandler(Context ctx, String input) {
         return "my-output";
