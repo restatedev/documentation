@@ -12,23 +12,53 @@ public class RpcCalls {
   // <start_rpc>
   @Handler
   public void myRestateHandler(Context ctx) {
-    // focus(1:11)
-    String greet = GreeterServiceClient.fromContext(ctx).greet("Hi").await();
+    // focus
+    String greet =
+        // focus
+        GreeterServiceClient.fromContext(ctx)
+            // focus
+            .greet("Hi")
+            // focus
+            .await();
 
-    int count = GreetCounterObjectClient.fromContext(ctx, "Mary").greet("Hi").await();
+    // focus
+    int count =
+        // focus
+        GreetCounterObjectClient.fromContext(ctx, "Mary")
+            // focus
+            .greet("Hi")
+            // focus
+            .await();
 
-    String result = MyWorkflowClient.fromContext(ctx, "wf-id-1").run("input").await();
+    // focus
+    String result =
+        // focus
+        MyWorkflowClient.fromContext(ctx, "wf-id-1")
+            // focus
+            .run("input")
+            // focus
+            .await();
   }
 
   // <end_rpc>
 
   // <start_rpc_java>
   public void myJavaHandler(Context ctx) {
-    // focus(1:12)
+    // focus
     Client restate = Client.connect("http://localhost:8080");
-    String greet = GreeterServiceClient.fromClient(restate).greet("Hi");
+    // focus
+    String greet =
+        // focus
+        GreeterServiceClient.fromClient(restate)
+            // focus
+            .greet("Hi");
 
-    int count = GreetCounterObjectClient.fromClient(restate, "Mary").greet("Hi");
+    // focus
+    int count =
+        // focus
+        GreetCounterObjectClient.fromClient(restate, "Mary")
+            // focus
+            .greet("Hi");
   }
   // <end_rpc_java>
 

@@ -48,8 +48,9 @@ public class OrderWorkflow {
     ctx.set(STATUS, StatusEnum.SCHEDULING_DELIVERY);
 
     // 5. Find a driver and start delivery
-    // mark(1:2)
+    // mark
     DeliveryManagerClient.fromContext(ctx, id).startDelivery(order).await();
+    // mark
     ctx.set(STATUS, StatusEnum.DELIVERED);
   }
 }

@@ -27,10 +27,12 @@ public class Tour {
   // <start_uuid>
   @Handler
   public boolean handle(Context ctx, CheckoutRequest request) {
-    // withClass(1,2,4) highlight-line
+    // mark
     String idempotencyKey = ctx.random().nextUUID().toString();
+    // mark
     System.out.println("My idempotency key: " + idempotencyKey);
 
+    // mark
     throw new IllegalStateException("The handler failed");
   }
 
@@ -46,14 +48,19 @@ class CheckoutService {
   // <start_checkout>
   @Handler
   public boolean handle(Context ctx, CheckoutRequest request) {
-    // withClass highlight-line
+    // mark
     double totalPrice = request.getTickets().size() * 40.0;
 
     String idempotencyKey = ctx.random().nextUUID().toString();
 
-    // withClass highlight-line
+    // mark
     boolean success =
-        ctx.run(JsonSerdes.BOOLEAN, () -> PaymentClient.get().call(idempotencyKey, totalPrice));
+        // mark
+        ctx.run(
+            // mark
+            JsonSerdes.BOOLEAN,
+            // mark
+            () -> PaymentClient.get().call(idempotencyKey, totalPrice));
 
     return success;
   }

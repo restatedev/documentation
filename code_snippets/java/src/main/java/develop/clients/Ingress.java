@@ -73,12 +73,15 @@ public class Ingress {
     // ... do something else ...
 
     // Option 1: Attach later to retrieve the result
-    // mark(1:3)
-    String greeting = rs.invocationHandle(handle.getInvocationId(), JsonSerdes.STRING).attach();
+    // mark
+    String greeting =
+        // mark
+        rs.invocationHandle(handle.getInvocationId(), JsonSerdes.STRING).attach();
 
     // Option 2: Peek to see if the result is ready
-    // mark(1:3)
+    // mark
     Output<String> output =
+        // mark
         rs.invocationHandle(handle.getInvocationId(), JsonSerdes.STRING).getOutput();
     if (output.isReady()) {
       String result = output.getValue();

@@ -4,7 +4,6 @@ import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
 import dev.restate.sdk.client.Client;
-import dev.restate.sdk.client.SendResponse;
 import develop.MyWorkflowClient;
 
 @Service
@@ -13,25 +12,52 @@ public class OneWayCalls {
   // <start_one_way_call>
   @Handler
   public void myRestateHandler(Context ctx) {
-    // focus(1:11)
-    GreeterServiceClient.fromContext(ctx).send().greet("Hi");
+    // focus
+    GreeterServiceClient.fromContext(ctx)
+        // focus
+        .send()
+        // focus
+        .greet("Hi");
 
-    GreetCounterObjectClient.fromContext(ctx, "Mary").send().greet("Hi");
+    // focus
+    GreetCounterObjectClient.fromContext(ctx, "Mary")
+        // focus
+        .send()
+        // focus
+        .greet("Hi");
 
-    MyWorkflowClient.fromContext(ctx, "wf-id-1").send().run("input");
+    // focus
+    MyWorkflowClient.fromContext(ctx, "wf-id-1")
+        // focus
+        .send()
+        // focus
+        .run("input");
   }
 
   // <end_one_way_call>
 
   // <start_one_way_call_java>
   public void myJavaHandler(Context ctx) {
-    // focus(1:14)
+    // focus
     Client restate = Client.connect("http://localhost:8080");
-    GreeterServiceClient.fromClient(restate).send().greet("Hi");
+    // focus
+    GreeterServiceClient.fromClient(restate)
+        // focus
+        .send()
+        // focus
+        .greet("Hi");
 
-    SendResponse handle2 = GreetCounterObjectClient.fromClient(restate, "Mary").send().greet("Hi");
+    // focus
+    GreetCounterObjectClient.fromClient(restate, "Mary")
+        // focus
+        .send()
+        // focus
+        .greet("Hi");
 
-    SendResponse wfHandle = MyWorkflowClient.fromClient(restate, "wf-id-1").submit("input");
+    // focus
+    MyWorkflowClient.fromClient(restate, "wf-id-1")
+        // focus
+        .submit("input");
   }
   // <end_one_way_call_java>
 }
