@@ -18,7 +18,9 @@ import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 public class Greeter {
   // </mark_1>
 
-  public static final StateKey<Integer> COUNT = StateKey.of("count", JsonSerdes.INT);
+  public static final StateKey<Integer> COUNT =
+      // break
+      StateKey.of("count", JsonSerdes.INT);
 
   // <mark_1>
   // <mark_3>
@@ -59,7 +61,11 @@ public class Greeter {
   }
 
   public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder().bind(new Greeter()).buildAndListen();
+    RestateHttpEndpointBuilder.builder()
+        // break
+        .bind(new Greeter())
+        // break
+        .buildAndListen();
   }
 }
 // <end_here>

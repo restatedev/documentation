@@ -45,9 +45,13 @@ const plugin = (options) => {
         let lines;
         // Only remove the tag lines if there are tags present
         if(fileContent.includes(startTag) && fileContent.includes(endTag)){
-            lines = fileContent.split(startTag).pop().split(endTag).shift().split('\n').slice(1,-1);
+            lines = fileContent.split(startTag).pop().split(endTag).shift().split('\n').slice(1,-1)
+                // filter out the forced spotless breaks
+                .filter(line => !line.includes('// break'));
         } else {
-            lines = fileContent.split('\n');
+            lines = fileContent.split('\n')
+                // filter out the forced spotless breaks
+                .filter(line => !line.includes('// break'));
         }
 
         let finalLines = [];
@@ -84,6 +88,7 @@ const plugin = (options) => {
         const leadingWhitespace = lines[0].match(/^\s*/)[0];
 
         return finalLines.filter(line => {
+            // filter out all code loader tags
                 return !line.includes('<start_') &&
                     !line.includes('<end_') &&
                     !line.includes('<mark_') &&

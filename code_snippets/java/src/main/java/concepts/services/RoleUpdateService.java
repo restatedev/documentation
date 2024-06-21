@@ -26,7 +26,10 @@ public class RoleUpdateService {
     // </mark_2>
     // <mark_1>
     boolean success =
-        ctx.run(JsonSerdes.BOOLEAN, () -> SystemA.applyUserRole(req.getUserId(), req.getRole()));
+        ctx.run(
+            JsonSerdes.BOOLEAN,
+            // break
+            () -> SystemA.applyUserRole(req.getUserId(), req.getRole()));
     // </mark_1>
     // <mark_3>
     if (!success) {
@@ -38,13 +41,20 @@ public class RoleUpdateService {
     for (String permission : req.getPermissions()) {
       // </mark_3>
       // <mark_1>
-      ctx.run(JsonSerdes.BOOLEAN, () -> SystemB.applyPermission(req.getUserId(), permission));
+      ctx.run(
+          JsonSerdes.BOOLEAN,
+          // break
+          () -> SystemB.applyPermission(req.getUserId(), permission));
       // </mark_1>
     }
   }
 
   public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder().bind(new RoleUpdateService()).buildAndListen();
+    RestateHttpEndpointBuilder.builder()
+        // break
+        .bind(new RoleUpdateService())
+        // break
+        .buildAndListen();
   }
 }
 // <end_here>
