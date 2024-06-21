@@ -18,20 +18,6 @@ public class OneWayCalls {
         .send()
         // focus
         .greet("Hi");
-
-    // focus
-    GreetCounterObjectClient.fromContext(ctx, "Mary")
-        // focus
-        .send()
-        // focus
-        .greet("Hi");
-
-    // focus
-    MyWorkflowClient.fromContext(ctx, "wf-id-1")
-        // focus
-        .send()
-        // focus
-        .run("input");
   }
 
   // <end_one_way_call>
@@ -46,18 +32,6 @@ public class OneWayCalls {
         .send()
         // focus
         .greet("Hi");
-
-    // focus
-    GreetCounterObjectClient.fromClient(restate, "Mary")
-        // focus
-        .send()
-        // focus
-        .greet("Hi");
-
-    // focus
-    MyWorkflowClient.fromClient(restate, "wf-id-1")
-        // focus
-        .submit("input");
   }
   // <end_one_way_call_java>
 }

@@ -1,42 +1,66 @@
-import * as restate from "@restatedev/restate-sdk";
-import {ObjectContext} from "@restatedev/restate-sdk";
-import {deliveryManager, Order, paymentClnt, restaurant, Status} from "./utils";
+import { ObjectContext } from "@restatedev/restate-sdk";
+import {
+  deliveryManager,
+  Order,
+  paymentClnt,
+  restaurant,
+  Status,
+} from "./utils";
 
 // <start_here>
+// <mark_1>
 async function process(ctx: ObjectContext, order: Order) {
+  // </mark_1>
+  // 1. Set status
+  // <mark_4>
+  ctx.set("status", Status.CREATED);
+  // </mark_4>
 
-    // 1. Set status
-    ctx.set("status", Status.CREATED);
+  // 2. Handle payment
+  // <mark_5>
+  const token = ctx.rand.uuidv4();
+  const paid = await ctx.run(() =>
+    paymentClnt.charge(order.id, token, order.totalCost)
+  );
+  // </mark_5>
 
-    // 2. Handle payment
-    const token = ctx.rand.uuidv4();
-    const paid = await ctx.run(() =>
-        paymentClnt.charge(order.id, token, order.totalCost)
-    );
+  if (!paid) {
+    // <mark_4>
+    ctx.set("status", Status.REJECTED);
+    // </mark_4>
+    return;
+  }
 
-    if (!paid) {
-        ctx.set("status", Status.REJECTED);
-        return;
-    }
+  // 3. Wait until the requested preparation time
+  // <mark_4>
+  ctx.set("status", Status.SCHEDULED);
+  // </mark_4>
+  await ctx.sleep(order.deliveryDelay);
 
-    // 3. Wait until the requested preparation time
-    ctx.set("status", Status.SCHEDULED);
-    await ctx.sleep(order.deliveryDelay);
+  // 4. Trigger preparation
+  // <mark_3>
+  const preparationPromise = ctx.awakeable();
+  // <mark_5>
+  await ctx.run(() => restaurant.prepare(order.id, preparationPromise.id));
+  // </mark_5>
+  // </mark_3>
+  // <mark_4>
+  ctx.set("status", Status.IN_PREPARATION);
+  // </mark_4>
 
-    // 4. Trigger preparation
-    const preparationPromise = ctx.awakeable();
-    await ctx.run(() =>
-        restaurant.prepare(order.id, preparationPromise.id)
-    );
-    ctx.set("status", Status.IN_PREPARATION);
+  // <mark_3>
+  await preparationPromise.promise;
+  // </mark_3>
+  // <mark_4>
+  ctx.set("status", Status.SCHEDULING_DELIVERY);
+  // </mark_4>
 
-    await preparationPromise.promise;
-    ctx.set("status", Status.SCHEDULING_DELIVERY);
-
-    // 5. Find a driver and start delivery
-    await ctx.objectClient(deliveryManager, order.id)
-        .startDelivery(order);
-    ctx.set("status", Status.DELIVERED);
+  // 5. Find a driver and start delivery
+  // <mark_2>
+  await ctx.objectClient(deliveryManager, order.id).startDelivery(order);
+  // </mark_2>
+  // <mark_4>
+  ctx.set("status", Status.DELIVERED);
+  // </mark_4>
 }
 // <end_here>
-

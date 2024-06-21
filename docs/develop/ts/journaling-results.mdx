@@ -41,52 +41,15 @@ Operations such as calls, awakeables, and sleep return a `CombineablePromise`.
 The SDK provides combinators for working with `CombineablePromise`.
 Restate then logs the order in which they are resolved or rejected, to make them deterministic on replay.
 
+```ts
+CODE_LOAD::ts/src/develop/journaling_results.ts#all
+```
 
-<CH.Scrollycoding className={"durable-promises-short"}>
-
-    **Await all** creates a promise that is similar to [`Promise.all()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all), but the outcome is stored in the Restate journal to be deterministically replayable:
-    - Resolves with an array of results, once all input promises are resolved.
-    - Rejects when any input promise is rejected.
-
-    ```ts
-    CODE_LOAD::ts/src/develop/journaling_results.ts#promises?1
-    ```
-
-    ---
-
-    **Await any** creates a promise that is similar to [`Promise.any()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/any),
-    but the outcome is stored in the Restate journal to be deterministically replayable:
-    - Resolves with the result of the first successfully resolved input promise.
-    - Rejects when all the input promises are rejected (including when an empty iterable is passed).
-    This results in an `AggregateError` containing an array of the reasons for rejection.
-
-    ```ts
-    CODE_LOAD::ts/src/develop/journaling_results.ts#promises?2
-    ```
-
-    ---
-
-    **Race** creates a Promise that is similar to [`Promise.race()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/race),
-    but the outcome is stored in the Restate journal to be deterministically replayable.:
-    - Resolves when any of the input promises are resolved.
-    - Rejects when any of the input promises are rejected.
-
-    ```ts
-    CODE_LOAD::ts/src/develop/journaling_results.ts#promises?3
-    ```
-
-    ---
-
-    **Await all settled** creates a promise that resolves once all the input promises have settled (including when an empty iterable is passed).
-    It returns an array of objects describing the outcome of each promise, whether resolved or rejected.
-    Similar to [`Promise.allSettled()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled),
-    but the outcome is stored in the Restate journal to be deterministically replayable.
-
-    ```ts
-    CODE_LOAD::ts/src/develop/journaling_results.ts#promises?4
-    ```
-
-</CH.Scrollycoding>
+Restate provides the following deterministic combinators:
+- `CombineablePromise.all`: similar to [`Promise.all()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all).
+- `CombineablePromise.any`: similar to [`Promise.any()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/any).
+- `CombineablePromise.race`: similar to [`Promise.race()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/race).
+- `CombineablePromise.allSettled`: similar to [`Promise.allSettled()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled).
 
 ## Generating randoms
 The SDK provides helper functions for the deterministic generation of UUIDs and random numbers. Restate seeds the random number generator with the invocation ID, so it always returns the same value on retries.

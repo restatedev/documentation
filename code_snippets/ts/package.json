@@ -10,7 +10,9 @@
     "bundle": "esbuild src/app.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js",
     "postbundle": "cd dist && zip -r index.zip index.js*",
     "app": "node ./dist/app.js",
-    "app-dev": "ts-node-dev --watch src --respawn --transpile-only ./src/app.ts"
+    "app-dev": "ts-node-dev --watch src --respawn --transpile-only ./src/app.ts",
+    "lint": "eslint --ignore-path .eslintignore --ext .ts .",
+    "format": "prettier --ignore-path .eslintignore --write \"**/*.+(js|ts|json)\""
   },
   "dependencies": {
     "@restatedev/restate-cdk": "^1.0.0",
@@ -23,6 +25,10 @@
     "@types/node": "^20.12.7",
     "esbuild": "^0.18.12",
     "ts-node-dev": "^1.1.1",
-    "typescript": "^5.0.2"
+    "typescript": "^5.0.2",
+    "@typescript-eslint/eslint-plugin": "^5.53.0",
+    "@typescript-eslint/parser": "^5.53.0",
+    "eslint": "^8.35.0",
+    "prettier": "^2.8.4"
   }
 }

@@ -4,7 +4,6 @@ import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
 import dev.restate.sdk.client.Client;
-import develop.MyWorkflowClient;
 
 @Service
 public class RpcCalls {
@@ -20,24 +19,6 @@ public class RpcCalls {
             .greet("Hi")
             // focus
             .await();
-
-    // focus
-    int count =
-        // focus
-        GreetCounterObjectClient.fromContext(ctx, "Mary")
-            // focus
-            .greet("Hi")
-            // focus
-            .await();
-
-    // focus
-    String result =
-        // focus
-        MyWorkflowClient.fromContext(ctx, "wf-id-1")
-            // focus
-            .run("input")
-            // focus
-            .await();
   }
 
   // <end_rpc>
@@ -50,13 +31,6 @@ public class RpcCalls {
     String greet =
         // focus
         GreeterServiceClient.fromClient(restate)
-            // focus
-            .greet("Hi");
-
-    // focus
-    int count =
-        // focus
-        GreetCounterObjectClient.fromClient(restate, "Mary")
             // focus
             .greet("Hi");
   }

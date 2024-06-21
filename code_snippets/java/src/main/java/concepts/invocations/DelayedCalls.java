@@ -19,20 +19,6 @@ public class DelayedCalls {
         .send(Duration.ofMillis(1000))
         // focus
         .greet("Hi");
-
-    // focus
-    GreetCounterObjectClient.fromContext(ctx, "Mary")
-        // focus
-        .send(Duration.ofMillis(1000))
-        // focus
-        .greet("Hi");
-
-    // focus
-    MyWorkflowClient.fromContext(ctx, "wf-id-1")
-        // focus
-        .send(Duration.ofMillis(1000))
-        // focus
-        .run("input");
   }
 
   // <end_delayed_call>
@@ -43,13 +29,6 @@ public class DelayedCalls {
     Client restate = Client.connect("http://localhost:8080");
     // focus
     GreeterServiceClient.fromClient(restate)
-        // focus
-        .send(Duration.ofMillis(1000))
-        // focus
-        .greet("Hi");
-
-    // focus
-    GreetCounterObjectClient.fromClient(restate, "Mary")
         // focus
         .send(Duration.ofMillis(1000))
         // focus
