@@ -1,4 +1,4 @@
-import * as restate from "@restatedev/restate-sdk";
+import * as restate from "@restatedev/restate-sdk/lambda";
 import { Context, CombineablePromise } from "@restatedev/restate-sdk";
 
 // <start_here>
@@ -35,7 +35,7 @@ const workerService = restate.service({
 });
 
 // <mark_3>
-export const handler = restate.endpoint().bind(workerService).lambdaHandler();
+export const handler = restate.endpoint().bind(workerService).handler();
 // </mark_3>
 // <end_here>
 
