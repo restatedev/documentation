@@ -53,6 +53,7 @@ However, currently your services must be accessible over the public internet for
 Restate to be able to invoke them. If you want to develop using a
 service running on your local machine, you can expose it using our tunnel
 feature:
+
 ```bash
 # expose localhost:9080 to Restate Cloud
 restate cloud env tunnel --local-port 9080
@@ -66,6 +67,13 @@ To invoke services running on AWS Lambda, Restate Cloud needs to assume an AWS
 identity in the same account that the Lambda is deployed to. Create a new role
 that has permission to invoke your Lambda handlers, and give it the following
 trust policy.
+
+<Admonition type="warning">
+The Restate Cloud role is distinct from the Lambda function's execution role.
+The execution role is assumed by your function to perform its work. A dedicated
+invoker role is needed to grant Restate Cloud permission to invoke service handler
+functions in your account, and nothing more.
+</Admonition>
 
 <Tabs>
 <TabItem value="json" label="IAM JSON Policy" default>
@@ -107,7 +115,7 @@ This trust policy allows the Restate Cloud `us.restate.cloud` region principal t
 <TabItem value="cdk" label="AWS CDK">
 
 ```ts
-const invokerRole = new iam.Role(this, "InvokerRole", {
+const restateCloudRole = new iam.Role(this, "RestateCloudRole", {
   assumedBy: new iam.AccountPrincipal("654654156625")
     .withConditions({
       "StringEquals": {
@@ -116,7 +124,7 @@ const invokerRole = new iam.Role(this, "InvokerRole", {
       },
     }),
 });
-invokerRole.assumeRolePolicy!.addStatements(
+restateCloudRole.assumeRolePolicy!.addStatements(
   new iam.PolicyStatement({
     principals: [new iam.AccountPrincipal("654654156625")],
     actions: ["sts:TagSession"],
@@ -126,12 +134,13 @@ invokerRole.assumeRolePolicy!.addStatements(
 
 When you use the [Restate CDK construct library](/deploy/lambda/cdk) to deploy
 Lambda handlers, the provided invoker role will automatically be granted access
-to invoke the corresponding functions. Alternatively, you will need to do so
-explicitly.
+to invoke the corresponding functions. If you manage Restate service deployments
+some other way, you should ensure that the Restate Cloud invoker role is permitted
+to call the appropriate Lambda handler functions by allowing it to perform `lambda:InvokeFunction`.
 
 <Admonition type="info" title="Environment Identifier">
 Use the `environmentId` variable to pass the environment ID can be found in the UI and in the output of `restate whoami`.
-This trust policy allows the Restate Cloud `us.restate.cloud` region principal to assume the role, but only on behalf of the specified environment ID.
+This trust policy allows the Restate Cloud `us.restate.cloud` region principal to assume the role, but only on behalf of the specified environment.
 </Admonition>
 
 </TabItem>
