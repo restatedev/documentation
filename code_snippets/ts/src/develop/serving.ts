@@ -1,4 +1,3 @@
-import * as restate from "@restatedev/restate-sdk";
 import * as http2 from "http2";
 
 const myService = restate.service({
@@ -17,6 +16,7 @@ const myWorkflow = restate.workflow({
 });
 
 // <start_endpoint>
+import * as restate from "@restatedev/restate-sdk";
 restate
   .endpoint()
   .bind(myService)
@@ -37,13 +37,3 @@ const http2Handler = restate
 const httpServer = http2.createServer(http2Handler);
 httpServer.listen();
 // <end_custom_endpoint>
-
-// <start_lambda>
-export const handler = restate
-  .endpoint()
-  .bind(myService)
-  .bind(myVirtualObject)
-  .bind(myWorkflow)
-  // withClass highlight-line
-  .lambdaHandler();
-// <end_lambda>
