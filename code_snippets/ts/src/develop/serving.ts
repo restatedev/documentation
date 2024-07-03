@@ -37,3 +37,13 @@ const http2Handler = restate
 const httpServer = http2.createServer(http2Handler);
 httpServer.listen();
 // <end_custom_endpoint>
+
+// <start_identity>
+restate
+  .endpoint()
+  .bind(myService)
+  .bind(myVirtualObject)
+  .bind(myWorkflow)
+  .withIdentityV1("publickeyv1_w7YHemBctH5Ck2nQRQ47iBBqhNHy4FV7t2Usbye2A6f")
+  .listen();
+// <end_identity>

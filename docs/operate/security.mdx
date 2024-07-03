@@ -1,0 +1,98 @@
+---
+title: "Security"
+sidebar_position: 6
+description: "Restrict access to Restate services"
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import Admonition from '@theme/Admonition';
+
+# Security
+
+## Private services
+<CH.Section>
+    When registering an endpoint, every service is by default reachable via HTTP requests to the ingress.
+
+    You can configure a service as `private`, such that you can't invoke it over HTTP, through the [Admin API](focus://1[15:28]) ([docs](/references/admin-api#tag/service/operation/modify_service)):
+
+    ```shell
+    curl -X PATCH localhost:9070/services/MyService \
+        -H 'content-type: application/json' \
+        -d '{"public": false}'
+    ```
+
+    You can revert it back to public with [`{"public": true}`](focus://3).
+
+    <Admonition type="info">
+        Private services can still be invoked by other handlers via the SDK.
+    </Admonition>
+</CH.Section>
+
+## Locking down service access
+Only Restate needs to be able to make requests to your services - requests from
+other services or from the ingress will always go via the Restate runtime. It is
+therefore advisable to ensure that only Restate can reach your service.
+Unrestricted access to the services is dangerous.
+
+To make this easier, Restate has a native request identity feature which can be
+used in the SDK to cryptographically verify that requests have come from a
+particular Restate instance.
+
+To get started, you need an ED25519 private key, which you can generate using
+openssl as follows:
+```bash
+openssl genpkey -algorithm ed25519 -outform pem -out private.pem
+```
+
+You can provide the path to the key to Restate on startup using an environment
+variable: `RESTATE_REQUEST_IDENTITY_PRIVATE_KEY_PEM_FILE=private.pem`.
+
+On start, Restate will log out the public key in a convenient compact
+format:
+```
+INFO restate_service_client::request_identity::v1
+  Loaded request identity key
+    kid: "publickeyv1_w7YHemBctH5Ck2nQRQ47iBBqhNHy4FV7t2Usbye2A6f"
+    path: private.pem
+```
+
+You can also obtain the public key in this format without running Restate using
+the following script:
+<details className="grey-details">
+    <summary>generate.sh</summary>
+    ```shell
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    # generate private key
+    openssl genpkey -algorithm ed25519 -outform pem -out private.pem
+    echo "Wrote private key to private.pem"
+
+    base58_chars="123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+    # encode public key
+    encoded=$(openssl ec -in private.pem -inform pem -pubout -outform der -out /dev/stdout 2>/dev/null |
+        tail -c +13 |
+        basenc --base16 "${1:-/dev/stdin}" -w0 |
+        if
+          read
+          [[ $REPLY =~ ^((00)*)(([[:xdigit:]]{2})*) ]]
+          echo -n "${BASH_REMATCH[1]//00/1}" # leading 0s -> 1
+          (( ${#BASH_REMATCH[3]} > 0 ))
+        then
+          dc -e "16i0${BASH_REMATCH[3]^^} Ai[58~rd0<x]dsxx+f" | # hex bytes to indexes into the char string
+          while read -r
+          do echo -n "${base58_chars:REPLY:1}"
+          done
+        fi)
+
+    echo -n "publickeyv1_${encoded}" > public-key
+    echo "Wrote publickeyv1_${encoded} to public-key"
+    ```
+</details>
+
+The string `publickeyv1_w7YHemBctH5Ck2nQRQ47iBBqhNHy4FV7t2Usbye2A6f` does not
+need to be kept secret and even be included in your code when providing to the
+SDK. To learn how to provide the public key to the SDK, see the serving docs
+for [TypeScript](/develop/ts/serving#validating-request-identity)
+and [Java](/develop/ts/serving#validating-request-identity)
