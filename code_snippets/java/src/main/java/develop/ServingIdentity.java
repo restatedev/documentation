@@ -4,7 +4,7 @@ package develop;
 import dev.restate.sdk.auth.signing.RestateRequestIdentityVerifier;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 
-class MyApp {
+class MySecureApp {
   public static void main(String[] args) {
     RestateHttpEndpointBuilder.builder()
         .bind(new MyService())
