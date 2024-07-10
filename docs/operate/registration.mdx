@@ -170,22 +170,8 @@ This will forcefully overwrite the existing service deployment with the same URI
 Forcing a deployment registration is a feature designed to simplify local Restate service development, and should never be used in a production Restate deployment, as it potentially breaks all the in-flight invocations to that deployment.
 </Admonition>
 
-## Private services
-<CH.Section>
-    When registering an endpoint, every service is by default reachable via HTTP requests.
-
-    You can configure a service as `private`, such that you can't invoke it over HTTP, through the [Admin API](focus://1[15:28]) ([docs](/references/admin-api#tag/service/operation/modify_service)):
-
-    ```shell
-    curl -X PATCH localhost:9070/services/MyService \
-        -H 'content-type: application/json' \
-        -d '{"public": false}'
-    ```
-
-    You can revert it back to public with [`{"public": true}`](focus://3).
-
-    <Admonition type="info">
-        Private services can still be invoked by other handlers via the SDK.
-    </Admonition>
-
-</CH.Section>
+<Admonition type="info">
+    After registration, services can also be marked as 'private' to prevent them
+    from being invoked through the ingress. See the
+    [Security docs](/operate/security#private-services) for more information.
+</Admonition>
