@@ -20,6 +20,7 @@ dependencies {
     implementation("dev.restate:sdk-http-vertx:$restateVersion")
     implementation("dev.restate:sdk-lambda:$restateVersion")
     implementation("dev.restate:sdk-serde-jackson:$restateVersion")
+    implementation("dev.restate:sdk-request-identity:$restateVersion")
 
     // Jackson parameter names
     // https://github.com/FasterXML/jackson-modules-java8/tree/2.14/parameter-names

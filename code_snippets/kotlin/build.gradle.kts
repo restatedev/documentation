@@ -24,6 +24,7 @@ dependencies {
   implementation("dev.restate:sdk-common:$restateVersion")
   implementation("dev.restate:sdk-http-vertx:$restateVersion")
   implementation("dev.restate:sdk-lambda:$restateVersion")
+  implementation("dev.restate:sdk-request-identity:$restateVersion")
 
   implementation("org.apache.logging.log4j:log4j-core:2.20.0")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
