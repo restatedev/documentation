@@ -51,7 +51,7 @@ Restate pushes the events to your function.
     Functions execute with Durable Execution: their progress is tracked and they can be retried from the exact point before the crash, as if you are taking micro-checkpoints throughout the function execution.
 
     ```ts user_updates.ts
-    CODE_LOAD::ts/src/use_cases/event_processing.ts?1
+    CODE_LOAD::ts/src/use_cases/event_processing/event_processing.ts?1
     ```
 
     ---
@@ -63,7 +63,7 @@ Restate pushes the events to your function.
     <CH.Code>
 
         ```ts user_updates.ts
-        CODE_LOAD::ts/src/use_cases/event_processing.ts?1
+        CODE_LOAD::ts/src/use_cases/event_processing/event_processing.ts?1
         ```
 
         ---
@@ -88,7 +88,7 @@ Restate pushes the events to your function.
     Slow updates for one user do not block updates for other users.
 
     ```ts user_updates.ts
-    CODE_LOAD::ts/src/use_cases/event_processing.ts?1
+    CODE_LOAD::ts/src/use_cases/event_processing/event_processing.ts?1
     ```
 
     ---
@@ -102,7 +102,7 @@ Restate pushes the events to your function.
     Here, we postpone processing for 5 seconds if the user profile is not ready yet.
 
     ```ts user_updates.ts
-    CODE_LOAD::ts/src/use_cases/event_processing.ts?2
+    CODE_LOAD::ts/src/use_cases/event_processing/event_processing.ts?2
     ```
 
     ---
@@ -112,7 +112,7 @@ Restate pushes the events to your function.
     The results of interactions with external systems are tracked and recovered after failures. This simplifies writing flows that keep multiple systems in sync.
 
     ```ts user_updates.ts
-    CODE_LOAD::ts/src/use_cases/event_processing.ts?3
+    CODE_LOAD::ts/src/use_cases/event_processing/event_processing.ts?3
     ```
 
     ---
@@ -124,7 +124,7 @@ Restate pushes the events to your function.
     and builds up its own recovery log.
 
     ```ts user_updates.ts
-    CODE_LOAD::ts/src/use_cases/event_processing.ts?4
+    CODE_LOAD::ts/src/use_cases/event_processing/event_processing.ts?4
     ```
 
 </CH.Scrollycoding>
@@ -154,7 +154,7 @@ Implement stateful event handlers with Restate.
     The state gets delivered together with the request, so you operate on local state.
 
     ```ts profile_service.ts
-    CODE_LOAD::ts/src/use_cases/events_state.ts?1
+    CODE_LOAD::ts/src/use_cases/event_processing/events_state.ts?1
     ```
 
     ---
@@ -164,7 +164,7 @@ Implement stateful event handlers with Restate.
     Enrich events with data from multiple sources by storing it in state and eventually exposing it via other functions.
 
     ```ts profile_service.ts
-    CODE_LOAD::ts/src/use_cases/events_state.ts?2
+    CODE_LOAD::ts/src/use_cases/event_processing/events_state.ts?2
     ```
 
     ---
@@ -176,7 +176,7 @@ Implement stateful event handlers with Restate.
     Here, we wait one second for other user features to arrive before sending the event to downstream processing.
 
     ```ts profile_service.ts
-    CODE_LOAD::ts/src/use_cases/events_state.ts?3
+    CODE_LOAD::ts/src/use_cases/event_processing/events_state.ts?3
     ```
 
     ---
@@ -187,7 +187,7 @@ Implement stateful event handlers with Restate.
     In the example, the registration can come over Kafka, while the email gets called via HTTP.
 
     ```ts profile_service.ts
-    CODE_LOAD::ts/src/use_cases/events_state.ts?2
+    CODE_LOAD::ts/src/use_cases/event_processing/events_state.ts?2
     ```
 
 </CH.Scrollycoding>
