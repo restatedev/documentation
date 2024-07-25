@@ -36,5 +36,5 @@ namespace Bun {
   export function serve(_: object): void {}
 }
 namespace Deno {
-  export function serve(_: object, _: object): void {}
+  export function serve(a: object, b: object): void {}
 }
