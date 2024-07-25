@@ -1,4 +1,4 @@
-package use_cases;
+package use_cases.workflows;
 
 import static use_cases.utils.Utils.createUserEntry;
 import static use_cases.utils.Utils.sendEmailWithLink;

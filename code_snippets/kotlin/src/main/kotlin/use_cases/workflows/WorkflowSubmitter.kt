@@ -1,4 +1,4 @@
-package use_cases
+package use_cases.workflows
 
 import dev.restate.sdk.client.Client
 

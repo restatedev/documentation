@@ -8,6 +8,7 @@ import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import use_cases.utils.Permission;
 
 /**
  * WARNING: The Services page relies on the line numbers for the code animations Make sure you adapt
@@ -38,7 +39,7 @@ public class RoleUpdateService {
     // </mark_3>
 
     // <mark_3>
-    for (String permission : req.getPermissions()) {
+    for (Permission permission : req.getPermissions()) {
       // </mark_3>
       // <mark_1>
       ctx.run(

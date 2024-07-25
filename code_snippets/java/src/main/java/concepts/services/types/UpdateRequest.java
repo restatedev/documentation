@@ -1,11 +1,14 @@
 package concepts.services.types;
 
+import use_cases.utils.Permission;
+import use_cases.utils.UserRole;
+
 public class UpdateRequest {
   private String userId;
-  private String role;
-  private String[] permissions;
+  private UserRole role;
+  private Permission[] permissions;
 
-  public UpdateRequest(String userId, String role, String[] permissions) {
+  public UpdateRequest(String userId, UserRole role, Permission[] permissions) {
     this.userId = userId;
     this.role = role;
     this.permissions = permissions;
@@ -15,11 +18,11 @@ public class UpdateRequest {
     return userId;
   }
 
-  public String getRole() {
+  public UserRole getRole() {
     return role;
   }
 
-  public String[] getPermissions() {
+  public Permission[] getPermissions() {
     return permissions;
   }
 }
