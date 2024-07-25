@@ -1,7 +1,7 @@
 package concepts.services.types;
 
-import use_cases.utils.Permission;
-import use_cases.utils.UserRole;
+import usecases.utils.Permission;
+import usecases.utils.UserRole;
 
 public class UpdateRequest {
   private String userId;

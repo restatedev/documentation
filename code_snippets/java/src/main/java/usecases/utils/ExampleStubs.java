@@ -8,7 +8,7 @@
  * in the root directory of this repository or package or at
  * https://github.com/restatedev/examples/blob/main/LICENSE
  */
-package use_cases.utils;
+package usecases.utils;
 
 import dev.restate.sdk.Context;
 import java.util.List;

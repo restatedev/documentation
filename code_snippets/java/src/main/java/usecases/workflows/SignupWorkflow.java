@@ -1,7 +1,7 @@
-package use_cases.workflows;
+package usecases.workflows;
 
-import static use_cases.utils.Utils.createUserEntry;
-import static use_cases.utils.Utils.sendEmailWithLink;
+import static usecases.utils.Utils.createUserEntry;
+import static usecases.utils.Utils.sendEmailWithLink;
 
 import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.SharedWorkflowContext;
@@ -11,7 +11,7 @@ import dev.restate.sdk.annotation.Workflow;
 import dev.restate.sdk.common.DurablePromiseKey;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
-import use_cases.utils.User;
+import usecases.utils.User;
 
 // <start_here>
 @Workflow

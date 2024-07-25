@@ -8,7 +8,7 @@ import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
-import use_cases.utils.Permission;
+import usecases.utils.Permission;
 
 /**
  * WARNING: The Services page relies on the line numbers for the code animations Make sure you adapt

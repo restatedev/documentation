@@ -1,6 +1,4 @@
-package use_cases.microservices;
-
-import static use_cases.utils.ExampleStubs.*;
+package usecases.microservices;
 
 import concepts.services.types.UpdateRequest;
 import dev.restate.sdk.Context;
@@ -12,8 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import use_cases.utils.Permission;
-import use_cases.utils.UserRole;
+import usecases.utils.Permission;
+import usecases.utils.UserRole;
+import usecases.utils.ExampleStubs;
 
 // <start_here>
 // <mark_1>
@@ -32,8 +31,8 @@ public class RoleUpdateService {
 
     // <mark_3>
     UserRole previousRole =
-        ctx.run(JacksonSerdes.of(UserRole.class), () -> getCurrentRole(update.getUserId()));
-    ctx.run(() -> tryApplyUserRole(update.getUserId(), update.getRole()));
+        ctx.run(JacksonSerdes.of(UserRole.class), () -> ExampleStubs.getCurrentRole(update.getUserId()));
+    ctx.run(() -> ExampleStubs.tryApplyUserRole(update.getUserId(), update.getRole()));
     // </mark_3>
 
     List<Permission> previousPermissions = new ArrayList<>();
@@ -44,11 +43,11 @@ public class RoleUpdateService {
         Permission previous =
             ctx.run(
                 JacksonSerdes.of(Permission.class),
-                () -> tryApplyPermission(update.getUserId(), permission));
+                () -> ExampleStubs.tryApplyPermission(update.getUserId(), permission));
         // </mark_3>
         previousPermissions.add(previous); // remember the previous setting
       } catch (TerminalException err) {
-        rollback(ctx, update.getUserId(), previousRole, previousPermissions);
+        ExampleStubs.rollback(ctx, update.getUserId(), previousRole, previousPermissions);
         throw err;
       }
       // </mark_4>

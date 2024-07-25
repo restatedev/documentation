@@ -1,4 +1,4 @@
-package use_cases.microservices;
+package usecases.microservices;
 
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
