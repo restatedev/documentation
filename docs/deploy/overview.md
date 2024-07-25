@@ -18,7 +18,7 @@ This page describes how to deploy Restate and Restate services.
 The Restate Server is a single binary that contains everything you need to host an environment. See the [Get Restate](https://restate.dev/get-restate/) page for various ways of obtaining it.
 
 There are a few options for hosting the Restate Server:
-- [Self-host on AWS](/deploy/lambda/self-hosted)
+- [Self-host on AWS](/deploy/faas/lambda/self-hosted)
 - [Self-host on Kubernetes](/deploy/kubernetes)
 - [Use the early access of Restate Cloud](/deploy/cloud)
 - [Running locally](/develop/local_dev)
