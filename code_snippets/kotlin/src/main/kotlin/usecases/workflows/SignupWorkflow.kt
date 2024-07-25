@@ -1,4 +1,4 @@
-package use_cases.workflows
+package usecases.workflows
 
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Workflow
