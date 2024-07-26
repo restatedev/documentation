@@ -63,13 +63,13 @@ const plugin = (options) => {
             lines.forEach(function (line, index) {
                 if(line.includes(markStartTag)){
                     if(needToMark){
-                        throw new Error(`Mark start tag found before mark end tag in file ${filePath}`)
+                        throw new Error(`Mark start tag ${markStartTag} found before mark end tag in file ${filePath}`)
                     }
                     needToMark = true;
                 }
                 if(line.includes(markEndTag)){
                     if(!needToMark){
-                        throw new Error(`Mark end tag found before mark start tag in file ${filePath}`)
+                        throw new Error(`Mark end tag ${markEndTag} found before mark start tag in file ${filePath}`)
                     }
                     needToMark = false;
                 }

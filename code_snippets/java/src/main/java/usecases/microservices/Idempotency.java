@@ -3,7 +3,6 @@ package usecases.microservices;
 import static dev.restate.sdk.client.CallRequestOptions.*;
 
 import dev.restate.sdk.client.Client;
-import use_cases.microservices.ProductServiceClient;
 
 class Config {
   public static String RESTATE_URL = "http://localhost:8080";

@@ -19,18 +19,6 @@ public class ExampleStubs {
 
   private static final Logger logger = LogManager.getLogger(ExampleStubs.class);
 
-  public static boolean applyUserRole(String userId, UserRole role) {
-    logger.info(String.format(">>> Applying role %s to user %s", role, userId));
-    return true;
-  }
-
-  public static void applyPermission(String userId, Permission permission) {
-    logger.info(
-        String.format(
-            ">>> Applying permission %s:%s for user %s",
-            permission.getPermissionKey(), permission.getSetting(), userId));
-  }
-
   public static UserRole getCurrentRole(String userId) {
     return new UserRole("viewer", "User cannot do much");
   }
@@ -60,10 +48,8 @@ public class ExampleStubs {
 
   public static void provisionResources(String userId, String role, String resources) {}
 
-  public static void createUserEntry(User user) {}
-
-  public static void sendEmailWithLink(String email, String secret) {}
-
   public static void rollback(
       Context ctx, String userId, UserRole previousRole, List<Permission> previousPermissions) {}
+
+  public static void send(String key, UserProfile user) {}
 }

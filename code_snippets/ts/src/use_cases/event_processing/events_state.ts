@@ -43,7 +43,10 @@ const eventEnricher = restate.object({
     emit: async (ctx: ObjectContext) => {
       // </mark_2>
       // <mark_1>
-      send(ctx.key, await ctx.get("user"));
+      const user = await ctx.get<UserProfile>("user")
+      // </mark_1>
+      send(ctx.key, user);
+      // <mark_1>
       ctx.clearAll();
       // </mark_1>
     },
