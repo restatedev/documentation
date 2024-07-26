@@ -18,7 +18,8 @@ public class UserUpdatesService {
   public void updateUserEvent(ObjectContext ctx, UserUpdate event) {
     // </mark_1>
     // <mark_3>
-    String userId = ctx.run(JsonSerdes.STRING, () -> updateUserProfile(event.getProfile()));
+    String userId = ctx.run(JsonSerdes.STRING,
+            () -> updateUserProfile(event.getProfile()));
     // </mark_3>
 
     // <mark_4>
@@ -27,14 +28,15 @@ public class UserUpdatesService {
       ctx.sleep(Duration.ofMillis(5000));
       // </mark_2>
       // <mark_3>
-      userId = ctx.run(JsonSerdes.STRING, () -> updateUserProfile(event.getProfile()));
+      userId = ctx.run(JsonSerdes.STRING,
+              () -> updateUserProfile(event.getProfile()));
       // </mark_3>
     }
 
     String finalUserId = userId;
     // <mark_3>
-    String roleId =
-        ctx.run(JsonSerdes.STRING, () -> setUserPermissions(finalUserId, event.getPermissions()));
+    String roleId = ctx.run(JsonSerdes.STRING,
+                () -> setUserPermissions(finalUserId, event.getPermissions()));
     ctx.run(() -> provisionResources(finalUserId, roleId, event.getResources()));
     // </mark_3>
     // </mark_4>

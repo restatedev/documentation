@@ -14,7 +14,9 @@ class UserUpdatesService {
     suspend fun updateUserEvent(ctx: ObjectContext, event: UserUpdate) {
         // </mark_1>
         // <mark_3>
-        var userId: String = ctx.runBlock(KtSerdes.json<String>()) { updateUserProfile(event.profile) }
+        var userId: String = ctx.runBlock(KtSerdes.json<String>()) {
+            updateUserProfile(event.profile)
+        }
 
         // </mark_3>
 
@@ -24,15 +26,20 @@ class UserUpdatesService {
             ctx.sleep(5000.milliseconds)
             // </mark_2>
             // <mark_3>
-            userId = ctx.runBlock(KtSerdes.json<String>()) { updateUserProfile(event.profile) }
+            userId = ctx.runBlock(KtSerdes.json<String>()) {
+                updateUserProfile(event.profile)
+            }
             // </mark_3>
         }
 
         val finalUserId = userId
         // <mark_3>
-        val roleId: String =
-            ctx.runBlock (KtSerdes.json<String>()) { setUserPermissions(finalUserId, event.permissions) }
-        ctx.runBlock (KtSerdes.json<String>()) { provisionResources(finalUserId, roleId, event.resources) }
+        val roleId: String = ctx.runBlock (KtSerdes.json<String>()) {
+                setUserPermissions(finalUserId, event.permissions)
+            }
+        ctx.runBlock (KtSerdes.json<String>()) {
+            provisionResources(finalUserId, roleId, event.resources)
+        }
         // </mark_3>
     }
 // </mark_4>
