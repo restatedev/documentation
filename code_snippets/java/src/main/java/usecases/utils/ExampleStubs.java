@@ -11,6 +11,7 @@
 package usecases.utils;
 
 import dev.restate.sdk.Context;
+import develop.workflows.Email;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,4 +53,24 @@ public class ExampleStubs {
       Context ctx, String userId, UserRole previousRole, List<Permission> previousPermissions) {}
 
   public static void send(String key, UserProfile user) {}
+
+  public static SubTask[] split(Task task) {
+    return new SubTask[0];
+  }
+
+  public static Result aggregate(SubTaskResult[] subResults) {
+    return new Result();
+  }
+
+  public static URL createS3Bucket() {
+    return new URL();
+  }
+
+  public static void uploadData(URL url) {}
+
+  public static void sendEmail(URL url, Email email) {}
+
+  public static String someHeavyWork(TaskOpts params) {
+    return "";
+  }
 }

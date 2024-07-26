@@ -18,6 +18,7 @@ public class ProfileService {
   // <mark_1>
   private static final StateKey<UserProfile> USER =
       StateKey.of("user", JacksonSerdes.of(UserProfile.class));
+
   // </mark_1>
 
   // <mark_2>
@@ -30,10 +31,7 @@ public class ProfileService {
     // </mark_1>
 
     // <mark_3>
-    ProfileServiceClient
-            .fromContext(ctx, ctx.key())
-            .send(Duration.ofSeconds(1))
-            .emit();
+    ProfileServiceClient.fromContext(ctx, ctx.key()).send(Duration.ofSeconds(1)).emit();
     // </mark_3>
   }
 
@@ -42,7 +40,8 @@ public class ProfileService {
   public void featureEvent(ObjectContext ctx, String email) {
     // </mark_2>
     // <mark_1>
-    UserProfile user = ctx.get(USER)
+    UserProfile user =
+        ctx.get(USER)
             // </mark_1>
             .orElseThrow(() -> new TerminalException("No user found"));
     user.setEmail(email);
@@ -56,7 +55,8 @@ public class ProfileService {
   public void emit(ObjectContext ctx) {
     // </mark_2>
     // <mark_1>
-    UserProfile user = ctx.get(USER)
+    UserProfile user =
+        ctx.get(USER)
             // </mark_1>
             .orElseThrow(() -> new TerminalException("No user found"));
 
