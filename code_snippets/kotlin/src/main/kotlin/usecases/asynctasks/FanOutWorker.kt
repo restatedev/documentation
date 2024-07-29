@@ -27,9 +27,9 @@ class FanOutWorker {
             resultFutures.add(subResultFuture)
         }
 
-        // <mark_1>
+        // <mark_2>
         val results = resultFutures.awaitAll()
-        // </mark_1>
+        // </mark_2>
         return aggregate(results)
     }
 

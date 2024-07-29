@@ -22,7 +22,7 @@ public class FanOutWorker {
 
   @Handler
   public Result run(Context ctx, Task task) {
-
+    // Split the task in subtasks
     SubTask[] subTasks = ctx.run(JacksonSerdes.of(new TypeReference<>() {}), () -> split(task));
 
     List<Awaitable<?>> resultFutures = new ArrayList<>();
@@ -35,12 +35,12 @@ public class FanOutWorker {
       resultFutures.add(subResultFuture);
     }
 
-    // <mark_1>
+    // <mark_2>
     Awaitable.all(resultFutures).await();
 
     SubTaskResult[] results =
         (SubTaskResult[]) resultFutures.stream().map(Awaitable::await).toArray();
-    // </mark_1>
+    // </mark_2>
 
     return aggregate(results);
   }

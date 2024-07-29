@@ -24,7 +24,12 @@ class TaskSubmitter {
 
         // await the handler's result
         // <mark_3>
-        val result: String = rs.invocationHandle(handle.invocationId, KtSerdes.json<String>()).attach()
+        val result: String = rs
+            .invocationHandle(
+                handle.invocationId,
+                KtSerdes.json<String>()
+            )
+            .attach()
         // </mark_3>
     }
 }

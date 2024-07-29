@@ -27,6 +27,7 @@ public class TaskSubmitter {
     // await the handler's result
     // <mark_3>
     String result = rs.invocationHandle(handle.getInvocationId(), JsonSerdes.STRING).attach();
+
     // </mark_3>
   }
 }
