@@ -6,7 +6,7 @@ description: "Learn how to run Restate TypeScript services on Deno Deploy."
 
 # Deno Deploy
 
-You can run your Restate services as serverless functions on [Cloudflare Workers](https://workers.cloudflare.com/).
+You can run your Restate services as serverless functions on [Deno Deploy](https://deno.com/deploy).
 
 You can easily get started using the
 [Deno+Restate template](https://github.com/restatedev/examples/tree/main/templates/deno):
