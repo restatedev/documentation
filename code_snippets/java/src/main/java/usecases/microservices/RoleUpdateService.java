@@ -12,6 +12,8 @@ import usecases.utils.ExampleStubs;
 import usecases.utils.Permission;
 import usecases.utils.UserRole;
 
+import static usecases.utils.ExampleStubs.*;
+
 // <start_here>
 // <mark_1>
 @Service
@@ -29,8 +31,8 @@ public class RoleUpdateService {
     UserRole previousRole =
         ctx.run(
             JacksonSerdes.of(UserRole.class),
-            () -> ExampleStubs.getCurrentRole(update.getUserId()));
-    ctx.run(() -> ExampleStubs.tryApplyUserRole(update.getUserId(), update.getRole()));
+            () -> getCurrentRole(update.getUserId()));
+    ctx.run(() -> tryApplyUserRole(update.getUserId(), update.getRole()));
     // </mark_3>
 
     List<Permission> previousPermissions = new ArrayList<>();
@@ -41,11 +43,11 @@ public class RoleUpdateService {
         Permission previous =
             ctx.run(
                 JacksonSerdes.of(Permission.class),
-                () -> ExampleStubs.tryApplyPermission(update.getUserId(), permission));
+                () -> tryApplyPermission(update.getUserId(), permission));
         // </mark_3>
         previousPermissions.add(previous); // remember the previous setting
       } catch (TerminalException err) {
-        ExampleStubs.rollback(ctx, update.getUserId(), previousRole, previousPermissions);
+        rollback(ctx, update.getUserId(), previousRole, previousPermissions);
         throw err;
       }
       // </mark_4>

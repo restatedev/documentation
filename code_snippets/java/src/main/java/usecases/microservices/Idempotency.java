@@ -1,7 +1,6 @@
 package usecases.microservices;
 
-import static dev.restate.sdk.client.CallRequestOptions.*;
-
+import dev.restate.sdk.client.CallRequestOptions;
 import dev.restate.sdk.client.Client;
 
 class Config {
@@ -17,7 +16,7 @@ public class Idempotency {
     // <mark_1>
     ProductServiceClient.fromClient(rs, productId)
         .send()
-        .reserve(DEFAULT.withIdempotency(reservationId));
+        .reserve(CallRequestOptions.DEFAULT.withIdempotency(reservationId));
     // </mark_1>
   }
   // <end_here>

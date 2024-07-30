@@ -29,12 +29,12 @@ class SignupWorkflow {
         ctx.set(STAGE, "Email verification")
         // </mark_3>
         // <mark_2>
-        val secret: String = ctx.random().nextUUID().toString()
+        val secret = ctx.random().nextUUID().toString()
         ctx.runBlock { sendEmailWithLink(user.email, secret) }
         // </mark_2>
 
         // <mark_5>
-        val clickSecret: String = ctx.promise(EMAIL_LINK).awaitable().await()
+        val clickSecret = ctx.promise(EMAIL_LINK).awaitable().await()
         // </mark_5>
         // <mark_7>
         if (clickSecret != secret) {

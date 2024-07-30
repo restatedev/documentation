@@ -5,6 +5,7 @@ import develop.workflows.Email
 import usecases.asynctasks.synctoasync.DataPreparationServiceClient.IngressClient
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.seconds
 
 // <start_here>
 class MyClient {
@@ -15,7 +16,7 @@ class MyClient {
 
     suspend fun downloadData(userId: String, email: Email) {
         // <mark_1>
-        val client: IngressClient = DataPreparationServiceClient.fromClient(rs, userId)
+        val client = DataPreparationServiceClient.fromClient(rs, userId)
         // </mark_1>
 
         // <mark_2>
@@ -24,7 +25,8 @@ class MyClient {
 
         try {
             // <mark_3>
-            CompletableFuture.anyOf(client.workflowHandle().attachAsync())
+            client.workflowHandle()
+                .attachAsync()
                 .orTimeout(30, TimeUnit.SECONDS)
                 .join()
             // </mark_3>

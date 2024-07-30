@@ -4,6 +4,7 @@ import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.VirtualObject
 import dev.restate.sdk.kotlin.KtSerdes
 import dev.restate.sdk.kotlin.ObjectContext
+import dev.restate.sdk.kotlin.runBlock
 import kotlin.time.Duration.Companion.milliseconds
 
 // <start_here>
@@ -14,9 +15,7 @@ class UserUpdatesService {
     suspend fun updateUserEvent(ctx: ObjectContext, event: UserUpdate) {
         // </mark_1>
         // <mark_3>
-        var userId: String = ctx.runBlock(KtSerdes.json<String>()) {
-            updateUserProfile(event.profile)
-        }
+        var userId = ctx.runBlock { updateUserProfile(event.profile) }
 
         // </mark_3>
 
@@ -26,18 +25,16 @@ class UserUpdatesService {
             ctx.sleep(5000.milliseconds)
             // </mark_2>
             // <mark_3>
-            userId = ctx.runBlock(KtSerdes.json<String>()) {
-                updateUserProfile(event.profile)
-            }
+            userId = ctx.runBlock { updateUserProfile(event.profile) }
             // </mark_3>
         }
 
         val finalUserId = userId
         // <mark_3>
-        val roleId: String = ctx.runBlock (KtSerdes.json<String>()) {
-                setUserPermissions(finalUserId, event.permissions)
-            }
-        ctx.runBlock (KtSerdes.json<String>()) {
+        val roleId = ctx.runBlock {
+            setUserPermissions(finalUserId, event.permissions)
+        }
+        ctx.runBlock {
             provisionResources(finalUserId, roleId, event.resources)
         }
         // </mark_3>

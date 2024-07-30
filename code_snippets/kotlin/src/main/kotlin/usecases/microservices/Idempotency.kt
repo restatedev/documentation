@@ -5,14 +5,14 @@ import dev.restate.sdk.client.Client
 
 class Config {
     companion object {
-        var RESTATE_URL: String = "http://localhost:8080"
+        var RESTATE_URL = "http://localhost:8080"
     }
 }
 
 class Idempotency {
 
     // <start_here>
-    val rs: Client = Client.connect(Config.RESTATE_URL)
+    val rs = Client.connect(Config.RESTATE_URL)
 
     suspend fun reserveProduct(productId: String, reservationId: String) {
         // <mark_1>

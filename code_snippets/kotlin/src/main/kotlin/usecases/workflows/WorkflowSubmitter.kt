@@ -16,7 +16,7 @@ class WorkflowSubmitter {
 
         // attach back to the workflow
         // mark
-        val result: Boolean = SignupWorkflowClient.fromClient(rs, user.id)
+        val result = SignupWorkflowClient.fromClient(rs, user.id)
             // mark
             .workflowHandle()
             // mark

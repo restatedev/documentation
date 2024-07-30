@@ -4,7 +4,6 @@ import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Service
 import dev.restate.sdk.common.TerminalException
 import dev.restate.sdk.kotlin.Context
-import dev.restate.sdk.kotlin.KtSerdes
 import dev.restate.sdk.kotlin.runBlock
 import kotlinx.serialization.Serializable
 
@@ -22,20 +21,18 @@ class RoleUpdateService {
     // </mark_1>
 
     // <mark_3>
-        val previousRole: UserRole = ctx.runBlock(
-            KtSerdes.json<UserRole>()
-        ) { getCurrentRole(update.userId) }
+        val previousRole = ctx.runBlock { getCurrentRole(update.userId) }
         ctx.runBlock { tryApplyUserRole(update.userId, update.role) }
     // </mark_3>
 
-        val previousPermissions = ArrayList<Permission>()
+        val previousPermissions = mutableListOf<Permission>()
         for (permission in update.permissions) {
             // <mark_4>
             try {
                 // <mark_3>
-                val previous: Permission = ctx.runBlock (
-                    KtSerdes.json<Permission>()
-                ) { tryApplyPermission(update.userId, permission) }
+                val previous: Permission = ctx.runBlock {
+                    tryApplyPermission(update.userId, permission)
+                }
                 // </mark_3>
                 previousPermissions.add(previous) // remember the previous setting
             } catch (err: TerminalException) {
@@ -60,7 +57,7 @@ fun tryApplyUserRole(name: String?, role: String?): UserRole {
     return UserRole("", "")
 }
 
-fun rollback(ctx: Context, user: String, role: UserRole, previousPermissions: ArrayList<Permission>) {
+fun rollback(ctx: Context, user: String, role: UserRole, previousPermissions: MutableList<Permission>) {
 }
 
 @Serializable

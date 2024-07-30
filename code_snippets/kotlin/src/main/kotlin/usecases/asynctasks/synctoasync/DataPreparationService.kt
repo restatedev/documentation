@@ -6,6 +6,7 @@ import dev.restate.sdk.common.DurablePromiseKey
 import dev.restate.sdk.kotlin.KtSerdes
 import dev.restate.sdk.kotlin.SharedWorkflowContext
 import dev.restate.sdk.kotlin.WorkflowContext
+import dev.restate.sdk.kotlin.runBlock
 import develop.workflows.Email
 
 // <start_here>
@@ -18,8 +19,8 @@ class DataPreparationService {
 
     @Workflow
     suspend fun run(ctx: WorkflowContext, userId: String): URL {
-        val url: URL = ctx.runBlock (KtSerdes.json<URL>()) { createS3Bucket() }
-        ctx.run { uploadData(url) }
+        val url: URL = ctx.runBlock { createS3Bucket() }
+        ctx.runBlock { uploadData(url) }
 
         ctx.promiseHandle(URL_PROMISE).resolve(url)
         return url
@@ -28,7 +29,7 @@ class DataPreparationService {
     @Shared
     suspend fun resultAsEmail(ctx: SharedWorkflowContext, email: Email) {
         val url: URL = ctx.promise(URL_PROMISE).awaitable().await()
-        ctx.run { sendEmail(url, email) }
+        ctx.runBlock { sendEmail(url, email) }
     }
 }
 // <end_here>

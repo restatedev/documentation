@@ -22,7 +22,7 @@ class ProfileService {
     @Handler
     suspend fun userEvent(ctx: ObjectContext, name: String) {
         // </mark_2>
-        val profile: UserProfile = UserProfile(ctx.key(), name)
+        val profile = UserProfile(ctx.key(), name)
         // <mark_1>
         ctx.set(USER, profile)
         // </mark_1>
@@ -40,7 +40,7 @@ class ProfileService {
     suspend fun featureEvent(ctx: ObjectContext, email: String) {
         // </mark_2>
         // <mark_1>
-        val user: UserProfile = ctx.get(USER) ?: throw TerminalException("No user found")
+        val user = ctx.get(USER) ?: throw TerminalException("No user found")
         // </mark_1>
         user.email = email
 
@@ -54,11 +54,10 @@ class ProfileService {
     suspend fun emit(ctx: ObjectContext) {
         // </mark_2>
         // <mark_1>
-        val user: UserProfile = ctx.get(USER) ?: throw TerminalException("No user found")
+        val user = ctx.get(USER) ?: throw TerminalException("No user found")
         // </mark_1>
 
         send(ctx.key(), user)
-
 
         // <mark_1>
         ctx.clearAll()

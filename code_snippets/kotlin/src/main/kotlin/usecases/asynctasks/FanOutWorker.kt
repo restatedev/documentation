@@ -2,22 +2,16 @@ package usecases.asynctasks
 
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Service
-import dev.restate.sdk.kotlin.Awaitable
-import dev.restate.sdk.kotlin.Context
-import dev.restate.sdk.kotlin.KtSerdes
-import dev.restate.sdk.kotlin.awaitAll
+import dev.restate.sdk.kotlin.*
 
 // <start_here>
 @Service
 class FanOutWorker {
     @Handler
     suspend fun run(ctx: Context, task: Task): Result {
-        val subTasks: Array<SubTask> =
-            ctx.runBlock (KtSerdes.json<Array<SubTask>>()) {
-                split(task)
-            }
+        val subTasks = ctx.runBlock { split(task) }
 
-        val resultFutures: MutableList<Awaitable<SubTaskResult>> = ArrayList()
+        val resultFutures: MutableList<Awaitable<SubTaskResult>> = mutableListOf()
         // <mark_1>
         for (subTask in subTasks) {
             val subResultFuture = FanOutWorkerClient.fromContext(ctx)
