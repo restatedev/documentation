@@ -11,22 +11,18 @@ import dev.restate.sdk.kotlin.SharedObjectContext
 @VirtualObject
 class MyVirtualObject {
 
-    @Handler
-    suspend fun myHandler(ctx: ObjectContext, input: String): String {
-        return "my-output"
-    }
+  @Handler
+  suspend fun myHandler(ctx: ObjectContext, input: String): String {
+    return "my-output"
+  }
 
-
-    @Shared
-    suspend fun myConcurrentHandler(ctx: SharedObjectContext, input: String): String {
-        return "my-output"
-    }
+  @Shared
+  suspend fun myConcurrentHandler(ctx: SharedObjectContext, input: String): String {
+    return "my-output"
+  }
 }
 
 fun main() {
-    RestateHttpEndpointBuilder
-        .builder()
-        .bind(MyVirtualObject())
-        .buildAndListen()
+  RestateHttpEndpointBuilder.builder().bind(MyVirtualObject()).buildAndListen()
 }
 // <end_here>

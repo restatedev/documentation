@@ -11,60 +11,60 @@ import kotlinx.serialization.Serializable
 // <mark_1>
 @Service
 class RoleUpdateService {
-    // </mark_1>
+  // </mark_1>
 
-// <mark_1>
-// <mark_2>
-    @Handler
-    suspend fun applyRoleUpdate(ctx: Context, update: UpdateRequest) {
+  // <mark_1>
+  // <mark_2>
+  @Handler
+  suspend fun applyRoleUpdate(ctx: Context, update: UpdateRequest) {
     // </mark_2>
     // </mark_1>
 
     // <mark_3>
-        val previousRole = ctx.runBlock { getCurrentRole(update.userId) }
-        ctx.runBlock { tryApplyUserRole(update.userId, update.role) }
+    val previousRole = ctx.runBlock { getCurrentRole(update.userId) }
+    ctx.runBlock { tryApplyUserRole(update.userId, update.role) }
     // </mark_3>
 
-        val previousPermissions = mutableListOf<Permission>()
-        for (permission in update.permissions) {
-            // <mark_4>
-            try {
-                // <mark_3>
-                val previous: Permission = ctx.runBlock {
-                    tryApplyPermission(update.userId, permission)
-                }
-                // </mark_3>
-                previousPermissions.add(previous) // remember the previous setting
-            } catch (err: TerminalException) {
-                rollback(ctx, update.userId, previousRole, previousPermissions)
-                throw err
-            }
-            // </mark_4>
-        }
+    val previousPermissions = mutableListOf<Permission>()
+    for (permission in update.permissions) {
+      // <mark_4>
+      try {
+        // <mark_3>
+        val previous: Permission = ctx.runBlock { tryApplyPermission(update.userId, permission) }
+        // </mark_3>
+        previousPermissions.add(previous) // remember the previous setting
+      } catch (err: TerminalException) {
+        rollback(ctx, update.userId, previousRole, previousPermissions)
+        throw err
+      }
+      // </mark_4>
     }
+  }
 }
 // <end_here>
 
 fun tryApplyPermission(id: String?, permission: Permission): Permission {
-    return Permission("", "")
+  return Permission("", "")
 }
 
 fun getCurrentRole(name: String?): UserRole {
-    return UserRole("", "")
+  return UserRole("", "")
 }
 
 fun tryApplyUserRole(name: String?, role: String?): UserRole {
-    return UserRole("", "")
+  return UserRole("", "")
 }
 
-fun rollback(ctx: Context, user: String, role: UserRole, previousPermissions: MutableList<Permission>) {
-}
+fun rollback(
+    ctx: Context,
+    user: String,
+    role: UserRole,
+    previousPermissions: MutableList<Permission>,
+) {}
 
 @Serializable
 data class UpdateRequest(val userId: String, val role: String, val permissions: Array<Permission>)
 
-@Serializable
-data class UserRole(val roleKey: String, val roleDescription: String)
+@Serializable data class UserRole(val roleKey: String, val roleDescription: String)
 
-@Serializable
-data class Permission(val permissionKey: String, val setting: String)
+@Serializable data class Permission(val permissionKey: String, val setting: String)

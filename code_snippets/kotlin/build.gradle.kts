@@ -1,5 +1,3 @@
-import java.net.URI
-
 plugins {
   application
   kotlin("jvm") version "2.0.0"
@@ -10,9 +8,7 @@ plugins {
   id("com.diffplug.spotless") version "6.25.0"
 }
 
-repositories {
-  mavenCentral()
-}
+repositories { mavenCentral() }
 
 val restateVersion = "1.0.1"
 
@@ -32,22 +28,15 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
 }
 
-kotlin {
-  jvmToolchain(21)
-}
-
+kotlin { jvmToolchain(21) }
 
 // Set main class
-application {
-  mainClass.set("develop.Greeter")
-}
+application { mainClass.set("develop.Greeter") }
 
 spotless {
-  java {
-    googleJavaFormat()
-    importOrder()
-    removeUnusedImports()
-    formatAnnotations()
-    toggleOffOn("//", "/n")
+  kotlin {
+    targetExclude("build/generated/**/*.kt")
+    ktfmt()
   }
+  kotlinGradle { ktfmt() }
 }

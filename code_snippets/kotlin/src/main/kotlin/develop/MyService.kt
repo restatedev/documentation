@@ -8,16 +8,13 @@ import dev.restate.sdk.kotlin.Context
 // <start_here>
 @Service
 class MyService {
-    @Handler
-    suspend fun myHandler(ctx: Context, input: String): String {
-        return "my-output"
-    }
+  @Handler
+  suspend fun myHandler(ctx: Context, input: String): String {
+    return "my-output"
+  }
 }
 
 fun main() {
-    RestateHttpEndpointBuilder
-        .builder()
-        .bind(MyService())
-        .buildAndListen()
+  RestateHttpEndpointBuilder.builder().bind(MyService()).buildAndListen()
 }
 // <end_here>
