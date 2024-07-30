@@ -2,7 +2,6 @@ package usecases.microservices
 
 import dev.restate.sdk.client.CallRequestOptions
 import dev.restate.sdk.client.Client
-import develop.usecases.microservices.ProductServiceClient
 
 class Config {
   companion object {

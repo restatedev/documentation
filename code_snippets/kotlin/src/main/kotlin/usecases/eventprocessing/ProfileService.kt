@@ -6,7 +6,6 @@ import dev.restate.sdk.common.StateKey
 import dev.restate.sdk.common.TerminalException
 import dev.restate.sdk.kotlin.KtSerdes
 import dev.restate.sdk.kotlin.ObjectContext
-import develop.usecases.eventprocessing.ProfileServiceClient
 import kotlin.time.Duration.Companion.seconds
 
 // <start_here>

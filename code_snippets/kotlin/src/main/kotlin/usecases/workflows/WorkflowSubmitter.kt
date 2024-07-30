@@ -1,7 +1,6 @@
 package usecases.workflows
 
 import dev.restate.sdk.client.Client
-import develop.usecases.workflows.SignupWorkflowClient
 
 class WorkflowSubmitter {
   suspend fun submit(user: User) {

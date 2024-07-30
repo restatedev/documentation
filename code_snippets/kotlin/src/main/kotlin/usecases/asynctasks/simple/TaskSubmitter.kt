@@ -3,7 +3,6 @@ package usecases.asynctasks.simple
 import dev.restate.sdk.client.CallRequestOptions
 import dev.restate.sdk.client.Client
 import dev.restate.sdk.kotlin.KtSerdes
-import develop.usecases.asynctasks.simple.AsyncTaskServiceClient
 
 // <start_here>
 class TaskSubmitter {

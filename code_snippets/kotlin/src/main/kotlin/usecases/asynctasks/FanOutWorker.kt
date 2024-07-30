@@ -6,7 +6,6 @@ import dev.restate.sdk.kotlin.Awaitable
 import dev.restate.sdk.kotlin.Context
 import dev.restate.sdk.kotlin.awaitAll
 import dev.restate.sdk.kotlin.runBlock
-import develop.usecases.asynctasks.FanOutWorkerClient
 
 // <start_here>
 @Service

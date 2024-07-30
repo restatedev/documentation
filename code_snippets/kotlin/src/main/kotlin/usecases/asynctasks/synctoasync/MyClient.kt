@@ -1,7 +1,6 @@
 package usecases.asynctasks.synctoasync
 
 import dev.restate.sdk.client.Client
-import develop.usecases.asynctasks.synctoasync.DataPreparationServiceClient
 import develop.workflows.Email
 import java.util.concurrent.TimeUnit
 
