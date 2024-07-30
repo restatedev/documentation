@@ -1,4 +1,4 @@
-package use_cases.utils;
+package usecases.utils;
 
 public class User {
   private String id;

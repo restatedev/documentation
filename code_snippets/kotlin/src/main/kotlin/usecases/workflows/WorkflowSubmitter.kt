@@ -1,4 +1,4 @@
-package use_cases
+package usecases.workflows
 
 import dev.restate.sdk.client.Client
 
@@ -16,7 +16,7 @@ class WorkflowSubmitter {
 
         // attach back to the workflow
         // mark
-        val result: Boolean = SignupWorkflowClient.fromClient(rs, user.id)
+        val result = SignupWorkflowClient.fromClient(rs, user.id)
             // mark
             .workflowHandle()
             // mark

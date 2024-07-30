@@ -11,6 +11,8 @@ import FeatureSpotlight from "../../src/components/FeatureSpotlight"
 import ExampleWidget from "../../src/components/ExampleWidget"
 import FeatureList from "../../src/components/FeatureList"
 import SpotlightCard from "../../src/components/SpotlightCard"
+import Tabs from "@theme/Tabs"
+import TabItem from "@theme/TabItem"
 
 <h1 className={"padding-top--lg text--left"}>Microservice Orchestration</h1>
 <h1 className={"use-case-subtitle text--left"}>The simplest way to build resilient applications.</h1>
@@ -41,6 +43,8 @@ import SpotlightCard from "../../src/components/SpotlightCard"
 
 Turn functions into durable handlers with the Restate SDK.
 
+<Tabs groupId="sdk" queryString>
+<TabItem value="ts" label="TypeScript">
 <CH.Scrollycoding className="workflows-scroller">
 
     ### Distributed, durable building blocks
@@ -48,7 +52,7 @@ Turn functions into durable handlers with the Restate SDK.
     Restate makes them distributed and durable out-of-the-box.
 
     ```ts role_updater.ts
-    CODE_LOAD::ts/src/use_cases/role_updater.ts?1
+    CODE_LOAD::ts/src/use_cases/microservices/role_updater.ts?1
     ```
 
     ---
@@ -63,7 +67,7 @@ Turn functions into durable handlers with the Restate SDK.
     Updates either succeed or fail, but never leave the user in an inconsistent state.
 
     ```ts role_updater.ts
-    CODE_LOAD::ts/src/use_cases/role_updater.ts?2
+    CODE_LOAD::ts/src/use_cases/microservices/role_updater.ts?2
     ```
 
     ---
@@ -74,7 +78,7 @@ Turn functions into durable handlers with the Restate SDK.
     On retries, the action does not get re-executed but the previous result will be returned.
 
     ```ts role_updater.ts
-    CODE_LOAD::ts/src/use_cases/role_updater.ts?3
+    CODE_LOAD::ts/src/use_cases/microservices/role_updater.ts?3
     ```
 
     ---
@@ -86,13 +90,120 @@ Turn functions into durable handlers with the Restate SDK.
     Here, we update the user’s role in multiple systems. If one fails, we rollback the changes in the other systems.
 
     ```ts role_updater.ts
-    CODE_LOAD::ts/src/use_cases/role_updater.ts?4
+    CODE_LOAD::ts/src/use_cases/microservices/role_updater.ts?4
     ```
 
 </CH.Scrollycoding>
+</TabItem>
+<TabItem value="java" label="Java">
+    <CH.Scrollycoding className="workflows-scroller">
+
+    ### Distributed, durable building blocks
+    Work with objects, functions, and promises as if failures don’t happen.
+    Restate makes them distributed and durable out-of-the-box.
+
+    ```java RoleUpdateService.java
+    CODE_LOAD::java/src/main/java/usecases/microservices/RoleUpdateService.java?1
+    ```
+
+    ---
+
+    ### Scalability, concurrency, consistency
+
+    Restate sequences requests per key, if desired.
+    Scale out without fearing issues such as race conditions, multiple writers to state, etc.
+
+    This handler updates a user’s role in set of systems.
+    Other updates to the same user are queued and processed in order.
+    Updates either succeed or fail, but never leave the user in an inconsistent state.
+
+    ```java RoleUpdateService.java
+    CODE_LOAD::java/src/main/java/usecases/microservices/RoleUpdateService.java?2
+    ```
+
+    ---
+
+    ### Persist progress
+
+    Store results of interaction with external systems or non-deterministic actions.
+    On retries, the action does not get re-executed but the previous result will be returned.
+
+    ```java RoleUpdateService.java
+    CODE_LOAD::java/src/main/java/usecases/microservices/RoleUpdateService.java?3
+    ```
+
+    ---
+
+    ### Sagas and rollbacks
+
+    Implement compensation logic with Restate’s durable building blocks and Restate takes care of running it till completion.
+
+    Here, we update the user’s role in multiple systems. If one fails, we rollback the changes in the other systems.
+
+    ```java RoleUpdateService.java
+    CODE_LOAD::java/src/main/java/usecases/microservices/RoleUpdateService.java?4
+    ```
+
+    </CH.Scrollycoding>
+</TabItem>
+<TabItem value="kotlin" label={"Kotlin"}>
+    <CH.Scrollycoding className="workflows-scroller">
+
+    ### Distributed, durable building blocks
+    Work with objects, functions, and promises as if failures don’t happen.
+    Restate makes them distributed and durable out-of-the-box.
+
+    ```kotlin RoleUpdateService.kt
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/RoleUpdateService.kt?1
+    ```
+
+    ---
+
+    ### Scalability, concurrency, consistency
+
+    Restate sequences requests per key, if desired.
+    Scale out without fearing issues such as race conditions, multiple writers to state, etc.
+
+    This handler updates a user’s role in set of systems.
+    Other updates to the same user are queued and processed in order.
+    Updates either succeed or fail, but never leave the user in an inconsistent state.
+
+    ```kotlin RoleUpdateService.kt
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/RoleUpdateService.kt?2
+    ```
+
+    ---
+
+    ### Persist progress
+
+    Store results of interaction with external systems or non-deterministic actions.
+    On retries, the action does not get re-executed but the previous result will be returned.
+
+    ```kotlin RoleUpdateService.kt
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/RoleUpdateService.kt?3
+    ```
+
+    ---
+
+    ### Sagas and rollbacks
+
+    Implement compensation logic with Restate’s durable building blocks and Restate takes care of running it till completion.
+
+    Here, we update the user’s role in multiple systems. If one fails, we rollback the changes in the other systems.
+
+    ```kotlin RoleUpdateService.kt
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/RoleUpdateService.kt?4
+    ```
+
+    </CH.Scrollycoding>
+</TabItem>
+</Tabs>
+
 
 <p className={"padding-top--lg"}>Proxy RPC calls to other services via Restate and get durability and idempotency for free.</p>
 
+<Tabs groupId="sdk" queryString>
+<TabItem value="ts" label="TypeScript">
 <CH.Scrollycoding>
 
     ### Durable RPC
@@ -100,7 +211,7 @@ Turn functions into durable handlers with the Restate SDK.
     Requests can be done as request-response, as message, or delayed action.
 
     ```ts product_reservation.ts
-    CODE_LOAD::ts/src/use_cases/idempotency.ts
+    CODE_LOAD::ts/src/use_cases/microservices/idempotency.ts
     ```
 
     ---
@@ -113,10 +224,62 @@ Turn functions into durable handlers with the Restate SDK.
     Here, we reserve a product for a user. We connect to Restate and send a `reserve` request with an idempotency key so retries wouldn't lead to double reservations.
 
     ```ts product_reservation.ts
-    CODE_LOAD::ts/src/use_cases/idempotency.ts
+    CODE_LOAD::ts/src/use_cases/microservices/idempotency.ts
     ```
 
 </CH.Scrollycoding>
+</TabItem>
+<TabItem value="java" label="Java">
+<CH.Scrollycoding>
+    ### Durable RPC
+    Send requests to other services and Restate ensures they are delivered and processed.
+    Requests can be done as request-response, as message, or delayed action.
+
+    ```java ProductReservation.java
+    CODE_LOAD::java/src/main/java/usecases/microservices/Idempotency.java?1
+    ```
+
+    ---
+
+    ### Idempotency for free
+
+    Add an idempotency token to your request and let Restate take care of deduplication for you.
+    Duplicate requests latch on to the previous one and see the same response.
+
+    Here, we reserve a product for a user. We connect to Restate and send a `reserve` request with an idempotency key so retries wouldn't lead to double reservations.
+
+    ```java ProductReservation.java
+    CODE_LOAD::java/src/main/java/usecases/microservices/Idempotency.java?1
+    ```
+
+</CH.Scrollycoding>
+</TabItem>
+<TabItem value="kotlin" label={"Kotlin"}>
+<CH.Scrollycoding>
+    ### Durable RPC
+    Send requests to other services and Restate ensures they are delivered and processed.
+    Requests can be done as request-response, as message, or delayed action.
+
+    ```kotlin ProductReservation.kt
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/Idempotency.kt?1
+    ```
+
+    ---
+
+    ### Idempotency for free
+
+    Add an idempotency token to your request and let Restate take care of deduplication for you.
+    Duplicate requests latch on to the previous one and see the same response.
+
+    Here, we reserve a product for a user. We connect to Restate and send a `reserve` request with an idempotency key so retries wouldn't lead to double reservations.
+
+    ```kotlin ProductReservation.kt
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/Idempotency.kt?1
+    ```
+
+</CH.Scrollycoding>
+</TabItem>
+</Tabs>
 
 <SpotlightCard>
     <FeatureSpotlight

@@ -1,7 +1,7 @@
-package use_cases;
+package usecases.workflows;
 
 import dev.restate.sdk.client.Client;
-import use_cases.utils.User;
+import usecases.utils.User;
 
 public class WorkflowSubmitter {
   public void submit(User user) {
