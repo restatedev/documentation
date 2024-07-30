@@ -1,5 +1,7 @@
 package usecases.microservices;
 
+import static usecases.utils.ExampleStubs.*;
+
 import concepts.services.types.UpdateRequest;
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
@@ -8,11 +10,8 @@ import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
 import java.util.ArrayList;
 import java.util.List;
-import usecases.utils.ExampleStubs;
 import usecases.utils.Permission;
 import usecases.utils.UserRole;
-
-import static usecases.utils.ExampleStubs.*;
 
 // <start_here>
 // <mark_1>
@@ -29,9 +28,7 @@ public class RoleUpdateService {
 
     // <mark_3>
     UserRole previousRole =
-        ctx.run(
-            JacksonSerdes.of(UserRole.class),
-            () -> getCurrentRole(update.getUserId()));
+        ctx.run(JacksonSerdes.of(UserRole.class), () -> getCurrentRole(update.getUserId()));
     ctx.run(() -> tryApplyUserRole(update.getUserId(), update.getRole()));
     // </mark_3>
 
