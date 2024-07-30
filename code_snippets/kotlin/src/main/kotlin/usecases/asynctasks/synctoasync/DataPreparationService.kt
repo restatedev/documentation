@@ -13,34 +13,33 @@ import develop.workflows.Email
 @Workflow
 class DataPreparationService {
 
-    companion object {
-        private val URL_PROMISE = DurablePromiseKey.of("url", KtSerdes.json<URL>())
-    }
+  companion object {
+    private val URL_PROMISE = DurablePromiseKey.of("url", KtSerdes.json<URL>())
+  }
 
-    @Workflow
-    suspend fun run(ctx: WorkflowContext, userId: String): URL {
-        val url: URL = ctx.runBlock { createS3Bucket() }
-        ctx.runBlock { uploadData(url) }
+  @Workflow
+  suspend fun run(ctx: WorkflowContext, userId: String): URL {
+    val url: URL = ctx.runBlock { createS3Bucket() }
+    ctx.runBlock { uploadData(url) }
 
-        ctx.promiseHandle(URL_PROMISE).resolve(url)
-        return url
-    }
+    ctx.promiseHandle(URL_PROMISE).resolve(url)
+    return url
+  }
 
-    @Shared
-    suspend fun resultAsEmail(ctx: SharedWorkflowContext, email: Email) {
-        val url: URL = ctx.promise(URL_PROMISE).awaitable().await()
-        ctx.runBlock { sendEmail(url, email) }
-    }
+  @Shared
+  suspend fun resultAsEmail(ctx: SharedWorkflowContext, email: Email) {
+    val url: URL = ctx.promise(URL_PROMISE).awaitable().await()
+    ctx.runBlock { sendEmail(url, email) }
+  }
 }
 // <end_here>
 
-class URL{}
+class URL
 
 fun createS3Bucket(): URL {
-    return URL()
+  return URL()
 }
 
-fun uploadData(url: URL){}
+fun uploadData(url: URL) {}
 
 fun sendEmail(url: URL, email: Email) {}
-
