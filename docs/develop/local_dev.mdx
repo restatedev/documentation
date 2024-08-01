@@ -117,10 +117,10 @@ import clsx from "clsx";
 <details>
     <summary> Wiping Restate </summary>
 
-    To start the Restate Server from a clean slate and wipe ongoing invocations and K/V state:
+    To start the Restate Server from a clean slate, stop the server then wipe ongoing invocations and K/V state:
 
     ```shell
-    restate-server --wipe all
+    rm -rf <BASE_DIR>/${HOST}
     ```
 
 </details>
@@ -146,7 +146,7 @@ import clsx from "clsx";
 
     [Cancel](/operate/invocation#cancelling-invocations) a single invocation or a batch of invocations.
     Use `--kill` to [kill](/operate/invocation#killing-invocations) the invocation.
-    To remove all invocations, restart the server with `--wipe all`.
+    To remove all invocations, stop the server then do `rm -rf <BASE_DIR>/${HOST}`.
 
     ```shell
     restate invocation cancel <INVOCATION_ID>
@@ -167,7 +167,7 @@ import clsx from "clsx";
 <CH.Scrollycoding className={clsx("single-item", "short-code")}>
 
     Clear the K/V state of a Virtual Object or Workflows.
-    To clear all state, restart the server with `--wipe all`.
+    To clear all state, stop the server then do  `rm -rf <BASE_DIR>/${HOST}`.
 
     ```shell
     restate kv clear <OBJECT_OR_WORKFLOW_NAME>
