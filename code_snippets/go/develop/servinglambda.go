@@ -9,6 +9,9 @@ import (
 	server "github.com/restatedev/sdk-go/server"
 )
 
+type MyService struct{}
+type MyVirtualObject struct{}
+
 func serveLambda() {
 	// <start_lambda>
 	handler, err := server.NewRestate().
