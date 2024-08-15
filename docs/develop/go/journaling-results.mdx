@@ -1,0 +1,85 @@
+---
+sidebar_position: 4
+description: "Learn how to store the results of non-deterministic operations."
+---
+
+import Admonition from '@theme/Admonition';
+import clsx from "clsx";
+
+# Journaling Results
+
+Restate uses an execution log for replay after failures and suspensions.
+This means that non-deterministic results (e.g. database responses, UUID generation) need to be stored in the execution log.
+The SDK offers some functionalities to help you with this:
+1. **[Journaled actions](/develop/go/journaling-results#journaled-actions)**: Run any block of code and store the result in Restate. Restate replays the result instead of re-executing the block on retries.
+2. **[Selectors](/develop/go/journaling-results#selectors)**: Log the order in which asynchronous actions are completed, to ensure deterministic replay.
+3. **[Random generators](/develop/go/journaling-results#generating-randoms)**: Built-in helpers for generating stable UUIDs and random numbers.
+
+## Journaled actions
+You can store the result of a (non-deterministic) operation in the Restate execution log (e.g. database requests, HTTP calls, etc).
+Restate replays the result instead of re-executing the operation on retries.
+
+Here is an example of a database request for which the string response is stored in Restate:
+```go
+CODE_LOAD::go/develop/journalingresults.go#side_effect
+```
+
+You cannot invoke any methods on the Restate context within a side effect.
+This includes actions such as getting state, calling another service, and
+nesting other journaled actions. You should only use methods available on the
+[`RunContext`](https://pkg.go.dev/github.com/restatedev/sdk-go#RunContext)
+provided to your function.
+
+You can return any payload that can be serialized. By default, serialization is
+done with
+[`JSONCodec`](https://pkg.go.dev/github.com/restatedev/sdk-go/encoding#PayloadCodec)
+which uses `encoding/json`. If you don't need to return anything, you can use
+`restate.Void{}` which serialises to a nil byte slice.
+
+
+## Selectors
+Operations such as calls, awakeables, and `ctx.After` return futures which can
+be safely selected over using `ctx.Select`. Restate will log the order in which they complete, to make this deterministic on replay.
+
+```go
+CODE_LOAD::go/develop/journalingresults.go#race
+```
+
+<Admonition type="caution" title={"Avoid using Goroutines"}>
+Do not try to combine blocking Restate operations using goroutines, channels
+or `select` statements. These cannot be used deterministically, and will likely
+lead to non-determinism errors upon replay. The only place it is safe to use
+these types is inside of a `ctx.Run` function.
+</Admonition>
+
+## Generating randoms
+The SDK provides helper functions for the deterministic generation of UUIDs and random numbers. Restate seeds the random number generator with the invocation ID, so it always returns the same value on retries.
+
+<CH.Scrollycoding className={clsx("single-item", "durable-promises-short")}>
+    ### Generating UUIDs
+
+    You can use these UUIDs to generate stable idempotency keys, to deduplicate operations. For example, you can use this to let a payment service avoid duplicate payments during retries.
+
+    Do not use this in cryptographic contexts.
+
+    ```go
+    CODE_LOAD::go/develop/journalingresults.go#uuid
+    ```
+
+</CH.Scrollycoding>
+<CH.Scrollycoding className={clsx("single-item", "durable-promises-short")}>
+
+    ### Generating random numbers
+
+    Methods exist on `ctx.Rand()` for generating `float64` and `uint64`, or
+    otherwise `ctx.Rand().Source()` can be provided to `math/rand/v2` as a
+    source for any random operation.
+
+    Once the SDK is upgraded to rely on Go 1.22, `math/rand/v2` will be embedded
+    into the struct returned by `ctx.Rand()` and will be usable directly. Use of
+    the older `math/rand` package is not recommended.
+
+    ```go
+    CODE_LOAD::go/develop/journalingresults.go#random_nb
+    ```
+</CH.Scrollycoding>

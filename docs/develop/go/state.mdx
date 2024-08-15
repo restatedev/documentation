@@ -1,0 +1,66 @@
+---
+sidebar_position: 5
+description: "Explore interacting with Restate's state store."
+---
+
+import Admonition from '@theme/Admonition';
+
+# State
+You can store key-value state in Restate.
+Restate makes sure the state is consistent with the processing of the code execution.
+
+**This feature is only available for Virtual Objects:**
+- For **Virtual Objects**, the state is isolated per Virtual Object.
+
+<Admonition type="info" title="Command-line introspection">
+    You can inspect and edit the K/V state stored in Restate via `psql` and the CLI.
+    Have a look at the [introspection docs](/operate/introspection#inspecting-application-state) for more information.
+</Admonition>
+
+<Admonition type="info" title={"Serializing state"}>
+    You can return any type of value that can be serialized. By default, serialization is done with
+    [`JSONCodec`](https://pkg.go.dev/github.com/restatedev/sdk-go/encoding#PayloadCodec)
+    which uses `encoding/json`.
+</Admonition>
+
+### Listing state keys
+For a single Virtual Object, you can list all the state keys that have entries in the state store via:
+
+```go
+CODE_LOAD::go/develop/state.go#statekeys
+```
+
+### Retrieving state
+Use `restate.GetAs` (a generic [facilitator](https://rakyll.org/generics-facilititators/) for `ctx.Get`)
+to retrieve the state for a key:
+
+```go
+CODE_LOAD::go/develop/state.go#get
+```
+
+`restate.ErrKeyNotFound` will be returned if a state value does not exist for the provided key. Otherwise
+this function only returns errors in the case of failed deserialization.
+
+### Setting state
+Use `ctx.Set` to set a new value for a key:
+
+```go
+CODE_LOAD::go/develop/state.go#set
+```
+
+This function will only return errors in the case of failed serialization.
+
+### Clearing state
+Use `ctx.Clear` to delete the value of a key:
+
+```go
+CODE_LOAD::go/develop/state.go#clear
+```
+
+### Clearing all state
+
+Delete all the state stored in Restate for a Virtual Object via:
+
+```go
+CODE_LOAD::go/develop/state.go#clear_all
+```
