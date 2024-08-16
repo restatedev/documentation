@@ -5,8 +5,8 @@ go 1.22.5
 require (
 	github.com/aws/aws-lambda-go v1.47.0
 	github.com/awslabs/aws-lambda-go-api-proxy v0.16.2
-	github.com/restatedev/sdk-go v0.9.2-0.20240814122230-b816ace2562d
-	google.golang.org/protobuf v1.33.0
+	github.com/restatedev/sdk-go v0.10.0
+	google.golang.org/protobuf v1.34.2
 )
 
 require (
