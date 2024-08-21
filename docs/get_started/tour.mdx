@@ -18,6 +18,8 @@ import CliAnimation from "../../src/components/CliAnimation";
 </TabItem>
 <TabItem value="go" label="Go">
 </TabItem>
+<TabItem value="python" label="Python">
+</TabItem>
 </Tabs>
 
 This tutorial guides you through the development of an end-to-end Restate application, and covers all the essential features.
@@ -71,6 +73,16 @@ This guide is written for:
 - Restate runtime Docker image: `docker.io/restatedev/restate:VAR::RESTATE_VERSION`
 
 </TabItem>
+<TabItem value="python" label="Python">
+- Python >= 3.11
+- Restate CLI: [Installation instructions](/develop/local_dev#running-restate-server--cli-locally)
+- Optional: [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation), if you want to run the Restate Server with Docker. And to run Jaeger.
+
+This guide is written for:
+- Python SDK version: `VAR::PYTHON_SDK_VERSION`
+- Restate runtime Docker image: `docker.io/restatedev/restate:VAR::RESTATE_VERSION`
+
+</TabItem>
 </Tabs>
 </Admonition>
 
@@ -103,6 +115,9 @@ Run the services
 npm run app-dev
 ```
 
+This [GitHub repository](https://github.com/restatedev/examples/tree/main/tutorials/tour-of-restate-typescript) contains the basic skeleton of the TypeScript services that you develop in this tutorial.
+
+
 </TabItem>
 <TabItem value="java" label="Java">
 
@@ -122,6 +137,9 @@ Run the services
 ```shell
 ./gradlew run
 ```
+
+This [GitHub repository](https://github.com/restatedev/examples/tree/main/tutorials/tour-of-restate-java) contains the basic skeleton of the Java services that you develop in this tutorial.
+
 
 </TabItem>
 <TabItem value="go" label="Go">
@@ -144,9 +162,43 @@ go run ./app
 ```
 
 </TabItem>
-</Tabs>
+<TabItem value="python" label="Python">
+        Download the example and run locally with an IDE:
+        <CH.Code>
+            ```shell CLI
+            restate example python-tour-of-restate && cd python-tour-of-restate
+            ```
 
-This [GitHub repository](https://github.com/restatedev/examples/tree/main/tutorials/tour-of-restate-go) contains the basic skeleton of the Go services that you develop in this tutorial.
+            ```shell wget
+            wget https://github.com/restatedev/examples/releases/latest/download/python-tour-of-restate.zip &&
+            unzip python-tour-of-restate.zip -d python-tour-of-restate &&
+            rm python-tour-of-restate.zip
+            ```
+        </CH.Code>
+
+        Setup your virtual environment:
+
+        ```shell
+        python3 -m venv .venv
+        source .venv/bin/activate
+        ```
+
+        Install the requirements:
+
+        ```shell
+        pip install -r requirements.txt
+        ```
+
+        Run the services:
+
+        ```shell
+        python3 -m hypercorn -b localhost:9080 tour/app/app:app
+        ```
+
+        This [GitHub repository](https://github.com/restatedev/examples/tree/main/tutorials/tour-of-restate-python) contains the basic skeleton of the Python services that you develop in this tutorial.
+
+</TabItem>
+</Tabs>
 
 </SubtleStep>
 
@@ -170,7 +222,7 @@ This [GitHub repository](https://github.com/restatedev/examples/tree/main/tutori
 </CH.Code>
 
 <Admonition type="tip" icon="💡" title="Single binary">
-    Restate is a single self-contained binary. No external dependencies needed. Check out our [download page](https://restate.dev/get-restate/) for other ways to run Restate.
+    Restate is a single self-contained binary. No external dependencies needed. Check out our [Local Dev page](https://docs.restate.dev/develop/local_dev#running-restate-server--cli-locally) for other ways to run Restate.
 </Admonition>
 
 </SubtleStep>
@@ -355,6 +407,62 @@ CartObject       1
 ```
 </CH.Code>
 </TabItem>
+    <TabItem value="python" label="Python">
+        <CH.Code>
+            ```shell CLI
+            Deployment ID:  dp_15dw4eEnr7AOatMJOv2gmJ3
+
+            ❯ SERVICES THAT WILL BE ADDED:
+            - TicketObject
+            Type: VirtualObject ⬅️ 🚶🚶🚶
+            HANDLER     INPUT                                                        OUTPUT
+            unreserve   one of ["none", "value of content-type 'application/json'"]  value of content-type 'application/json'
+            markAsSold  one of ["none", "value of content-type 'application/json'"]  value of content-type 'application/json'
+            reserve     one of ["none", "value of content-type 'application/json'"]  value of content-type 'application/json'
+
+
+            - CartObject
+            Type: VirtualObject ⬅️ 🚶🚶🚶
+            HANDLER       INPUT                                                        OUTPUT
+            addTicket     one of ["none", "value of content-type 'application/json'"]  value of content-type 'application/json'
+            checkout      one of ["none", "value of content-type 'application/json'"]  value of content-type 'application/json'
+            expireTicket  one of ["none", "value of content-type 'application/json'"]  value of content-type 'application/json'
+
+            - CheckoutService
+            Type: Service
+            HANDLER  INPUT                                                        OUTPUT
+            handle   one of ["none", "value of content-type 'application/json'"]  value of content-type 'application/json'
+
+
+            ✔ Are you sure you want to apply those changes? · yes
+            ✅ DEPLOYMENT:
+            SERVICE          REV
+            TicketObject     1
+            CartObject       1
+            CheckoutService  1
+            ```
+
+            ```json curl
+            {
+                "id": "dp_11pXug0mWsff2NOoRBZbOcV",
+                "services": [
+                    {
+                        "name": "TicketObject",
+                        /* ... Additional information on registered methods ...*/
+                    },
+                    {
+                        "name": "CartObject",
+                        /* ... Additional information on registered methods ...*/
+                    },
+                    {
+                        "name": "CheckoutService",
+                        /* ... Additional information on registered methods ...*/
+                    }
+                ]
+            }
+            ```
+        </CH.Code>
+    </TabItem>
 </Tabs>
 
 </details>
@@ -404,6 +512,19 @@ In `app` you will find the skeletons of the various services to help you start i
 
     The `main.go` file contains the definition of the endpoint that hosts the services.
 
+
+</TabItem>
+<TabItem value="python" label="Python">
+    In `tour/app` you will find the skeletons of the various services to help you start implementing the app.
+    For example:
+    ```python checkout_service.py
+    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_python/tutorials/tour-of-restate-python/tour/part1/checkout_service.py#checkout
+    ```
+
+    Restate handlers have the Restate Context supplied as the first argument.
+    This is the entrypoint to the SDK.
+
+    The `app.py` file contains the definition of the endpoint that hosts the services.
 
 </TabItem>
 </Tabs>
@@ -463,6 +584,21 @@ When Mary wants to proceed with the purchase, call the `Checkout` handler of the
 ```shell
 curl -X POST localhost:8080/CartObject/Mary/Checkout
 ```
+</TabItem>
+<TabItem value="py" label="Python">
+        For example, add a ticket `seat2B` to the cart of Mary by calling the `addTicket` handler of the `CartObject`:
+
+        ```shell
+        curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2B"'
+        ```
+
+        If this prints out `true`, then you have a working setup.
+
+        When Mary wants to proceed with the purchase, call the `checkout` handler of the `CartObject`:
+
+        ```shell
+        curl -X POST localhost:8080/CartObject/Mary/checkout
+        ```
 </TabItem>
 </Tabs>
 
@@ -591,6 +727,21 @@ Let's try this out!
         3. **Specify what type of call you want to make** - in this case we want a synchronous request-response call so we use `Request()`, passing `restate.Void{}` as this handler needs no input type.
 
         Send a request to `CartObject/AddTicket` as we did [previously](#request-response-calls-over-http), and have a look at the service logs.
+
+    </TabItem>
+    <TabItem value="python" label="Python">
+        When we add a ticket to the cart, the `CartObject/addTicket` handler first needs to reserve the ticket for the user.
+        It does that by calling the `TicketObject/reserve` handler:
+
+        ```python cart_object.py
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_python/tutorials/tour-of-restate-python/tour/part1/cart_object.py#add_ticket
+        ```
+
+        1. **Create the client** via `ctx.serviceClient` or `ctx.objectClient` (for Virtual Objects). Specify the service definition (`TicketObject`) and optionally the Virtual Object key (`ticketId`).
+        2. **Specify the handler** you want to call and supply the request. Here `reserve()`.
+        3. **Await the response** of the call.
+
+        Send a request to `CartObject/addTicket` as we did [previously](#request-response-calls-over-http), and have a look at the service logs.
 
     </TabItem>
 </Tabs>
