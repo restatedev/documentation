@@ -23,7 +23,7 @@ This is what a Restate application looks like from a helicopter view:
 
 As you can see, handlers are bundled into services.
 Services run like regular RPC services (e.g. a NodeJS app in a Docker container).
-Services can be written in any language for which there is an SDK available (currently [TypeScript](/category/typescript-sdk) and [Java/Kotlin](/category/javakotlin-sdk)).
+Services can be written in any language for which there is an SDK available.
 
 There are three types of services in Restate:
 
@@ -110,6 +110,44 @@ Services expose a collection of handlers:
 
         </CH.Scrollycoding>
     </TabItem>
+    <TabItem value="go" label="Go">
+
+        <CH.Scrollycoding className={"spotlight-long-code"}>
+
+            Restate makes sure that **handlers run to completion**, even in the presence of failures.
+            Restate logs the **results of actions** in the system.
+            Restate takes care of retries and recovers the handler to the point where it failed.
+
+            ```go
+            CODE_LOAD::go/concepts/services/main.go?1
+            ```
+
+            ---
+
+            The handlers of services are **independent** and can be **invoked concurrently**.
+
+            ```go
+            CODE_LOAD::go/concepts/services/main.go?2
+            ```
+
+            ---
+
+            Handlers use the regular code and control flow, no custom DSLs.
+
+            ```go
+            CODE_LOAD::go/concepts/services/main.go?3
+            ```
+
+            ---
+
+            Service handlers **don't have access to Restate's K/V store**.
+
+            ```go
+            CODE_LOAD::go/concepts/services/main.go
+            ```
+
+        </CH.Scrollycoding>
+    </TabItem>
 </Tabs>
 
 In the example, we use a Restate service to update different systems and to make sure all updates are applied.
@@ -178,6 +216,37 @@ Virtual objects expose a set of handlers with access to K/V state stored in Rest
 
             ```java
             CODE_LOAD::java/src/main/java/concepts/services/Greeter.java?3
+            ```
+
+        </CH.Scrollycoding>
+    </TabItem>
+    <TabItem value="go" label="Go">
+        <CH.Scrollycoding className={"spotlight-long-code"}>
+
+            A virtual object is **uniquely identified and accessed by its key**.
+
+            ```go
+            CODE_LOAD::go/concepts/virtualobjects/main.go?1
+            ```
+
+            ---
+
+            Each virtual object has access to its own **isolated K/V state**, stored in Restate.
+            The handlers of a virtual object can read and write to the state of the object.
+            Restate delivers the state together with the request to the virtual object, so virtual objects have their state locally accessible without requiring any database connection or lookup.
+            State is exclusive, and atomically committed with the method execution.
+
+            ```go
+            CODE_LOAD::go/concepts/virtualobjects/main.go?2
+            ```
+
+            ---
+
+            To ensure consistent writes to the state, Restate provides **concurrency guarantees**: at most one handler can execute at a time for a given virtual object.
+            This can also be used for example to implement a locking mechanism or to ensure single writer to a database row.
+
+            ```go
+            CODE_LOAD::go/concepts/virtualobjects/main.go?3
             ```
 
         </CH.Scrollycoding>
