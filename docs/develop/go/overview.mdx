@@ -38,11 +38,12 @@ CODE_LOAD::go/develop/myservice/main.go
 - The handler input parameters and return type can be of any type, as long as
   they can be serialized. By default, serialization is done with
   [`JSONCodec`](https://pkg.go.dev/github.com/restatedev/sdk-go/encoding#PayloadCodec)
-  which uses `encoding/json`. If you don't need to accept or return anything,
-  you can use `restate.Void{}` which skips (de)serialisation.
-- Pass the `MyService` struct to `restate.Service` which uses reflection to turn
+  which uses `encoding/json`. Input types, output types, and even errors are not mandatory
+  and can be omitted if your handler doesn't need them.
+- Pass the `MyService` struct to `restate.Reflect` which uses reflection to turn
   the methods into handlers. It will skip unexported methods and those that
-  don't have the expected signature.
+  don't have the expected signature - see the [package documentation](https://pkg.go.dev/github.com/restatedev/sdk-go#Reflect)
+  for a list of allowed signatures.
 - Finally, create a server listening on the specified address and bind the
   service(s) to it.
 
@@ -54,7 +55,6 @@ CODE_LOAD::go/develop/myservice/main.go
 CODE_LOAD::go/develop/myvirtualobject/main.go
 ```
 
-- We pass the struct to `restate.Object` instead of `restate.Service`.
 - The first argument of each handler must be the `ObjectContext` parameter.
 Handlers with the `ObjectContext` parameter can write to the K/V state store.
 Only one handler can be active at a time, to ensure consistency.

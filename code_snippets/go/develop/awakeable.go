@@ -8,15 +8,15 @@ import (
 
 type Awakeable struct{}
 
-func (Awakeable) Greet(ctx restate.Context, name string) (restate.Void, error) {
+func (Awakeable) Greet(ctx restate.Context, name string) error {
 	// <start_here>
 	// <mark_1>
-	awakeable := restate.AwakeableAs[string](ctx)
+	awakeable := restate.Awakeable[string](ctx)
 	awakeableId := awakeable.Id()
 	// </mark_1>
 
 	// <mark_2>
-	restate.RunAs(ctx, func(ctx restate.RunContext) (string, error) {
+	restate.Run(ctx, func(ctx restate.RunContext) (string, error) {
 		return triggerTaskAndDeliverId(awakeableId)
 	})
 	// </mark_2>
@@ -24,7 +24,7 @@ func (Awakeable) Greet(ctx restate.Context, name string) (restate.Void, error) {
 	// <mark_3>
 	payload, err := awakeable.Result()
 	if err != nil {
-		return restate.Void{}, err
+		return err
 	}
 	// </mark_3>
 	// <end_here>
@@ -32,16 +32,14 @@ func (Awakeable) Greet(ctx restate.Context, name string) (restate.Void, error) {
 	_ = payload
 
 	// <start_resolve>
-	if err := ctx.ResolveAwakeable(awakeableId, "hello"); err != nil {
-		return restate.Void{}, err
-	}
+	restate.ResolveAwakeable(ctx, awakeableId, "hello")
 	// <end_resolve>
 
 	// <start_reject>
-	ctx.RejectAwakeable(awakeableId, fmt.Errorf("my error reason"))
+	restate.RejectAwakeable(ctx, awakeableId, fmt.Errorf("my error reason"))
 	// <end_reject>
 
-	return restate.Void{}, nil
+	return nil
 }
 
 func triggerTaskAndDeliverId(awakeableId string) (string, error) {

@@ -8,60 +8,48 @@ import (
 
 type Router struct{}
 
-func (Router) Greet(ctx restate.Context, name string) (restate.Void, error) {
+func (Router) Greet(ctx restate.Context, name string) error {
 	// <start_request_response_service>
-	response, err := restate.CallAs[string](ctx.Service("MyService", "MyHandler")).Request("Hi")
+	response, err := restate.Service[string](ctx, "MyService", "MyHandler").Request("Hi")
 	if err != nil {
-		return restate.Void{}, err
+		return err
 	}
 	// <end_request_response_service>
 
 	_ = response
-	return restate.Void{}, nil
+	return nil
 }
 
-func (Router) Greet2(ctx restate.Context, name string) (restate.Void, error) {
+func (Router) Greet2(ctx restate.Context, name string) error {
 	// <start_request_response_object>
-	response, err := restate.CallAs[string](ctx.Object("MyVirtualObject", "Mary", "MyHandler")).Request("Hi")
+	response, err := restate.Object[string](ctx, "MyVirtualObject", "Mary", "MyHandler").Request("Hi")
 	if err != nil {
-		return restate.Void{}, err
+		return err
 	}
 	// <end_request_response_object>
 
 	_ = response
 
 	// <start_one_way_service>
-	if err := ctx.Service("MyService", "MyHandler").Send("Hi", 0); err != nil {
-		return restate.Void{}, err
-	}
+	restate.ServiceSend(ctx, "MyService", "MyHandler").Send("Hi")
 	// <end_one_way_service>
 
 	// <start_one_way_object>
-	if err := ctx.Object("MyService", "Mary", "MyHandler").Send("Hi", 0); err != nil {
-		return restate.Void{}, err
-	}
+	restate.ObjectSend(ctx, "MyService", "Mary", "MyHandler").Send("Hi")
 	// <end_one_way_object>
 
 	// <start_delayed_service>
-	if err := ctx.Service("MyService", "MyHandler").Send("Hi", 5*time.Second); err != nil {
-		return restate.Void{}, err
-	}
+	restate.ServiceSend(ctx, "MyService", "MyHandler").Send("Hi", restate.WithDelay(5*time.Second))
 	// <end_delayed_service>
 
 	// <start_delayed_object>
-	if err := ctx.Object("MyService", "Mary", "MyHandler").Send("Hi", 5*time.Second); err != nil {
-		return restate.Void{}, err
-	}
+	restate.ObjectSend(ctx, "MyService", "Mary", "MyHandler").Send("Hi", restate.WithDelay(5*time.Second))
 	// <end_delayed_object>
 
 	// <start_ordering>
-	if err := ctx.Object("MyService", "Mary", "MyHandler").Send("I'm call A", 0); err != nil {
-		return restate.Void{}, err
-	}
-	if err := ctx.Object("MyService", "Mary", "MyHandler").Send("I'm call B", 0); err != nil {
-		return restate.Void{}, err
-	}
+	restate.ObjectSend(ctx, "MyService", "Mary", "MyHandler").Send("I'm call A")
+	restate.ObjectSend(ctx, "MyService", "Mary", "MyHandler").Send("I'm call B")
 	// <end_ordering>
 
-	return restate.Void{}, nil
+	return nil
 }
