@@ -33,12 +33,12 @@ func main() {
 
 type GreeterClient struct{}
 
-func (GreeterClient) CallGreeter(ctx restate.Context, _ restate.Void) (restate.Void, error) {
+func (GreeterClient) CallGreeter(ctx restate.Context) error {
 	// <start_client>
 	client := proto.NewGreeterClient(ctx)
 	resp, err := client.SayHello().Request(&proto.HelloRequest{Name: "world"})
 	if err != nil {
-		return restate.Void{}, err
+		return err
 	}
 	// <end_client>
 	_ = resp
@@ -48,11 +48,11 @@ func (GreeterClient) CallGreeter(ctx restate.Context, _ restate.Void) (restate.V
 		client := proto.NewCounterClient(ctx, "key-1")
 		resp, err := client.Add().Request(&proto.AddRequest{Delta: 1})
 		if err != nil {
-			return restate.Void{}, err
+			return err
 		}
 		// <end_virtual_object_client>
 		_ = resp
 	}
 
-	return restate.Void{}, nil
+	return nil
 }

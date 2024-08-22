@@ -1,49 +1,48 @@
 package develop
 
 import (
-	"errors"
-
 	restate "github.com/restatedev/sdk-go"
 )
 
 type State struct{}
 
-func (State) Greet(ctx restate.ObjectContext, greeting string) (restate.Void, error) {
+func (State) Greet(ctx restate.ObjectContext, greeting string) error {
 	// <start_statekeys>
-	stateKeys := ctx.Keys()
+	stateKeys, err := restate.Keys(ctx)
+	if err != nil {
+		return err
+	}
 	// <end_statekeys>
 	_ = stateKeys
 
 	// <start_get>
-	myString, err := restate.GetAs[string](ctx, "my-string-key")
+	myString, err := restate.Get[string](ctx, "my-string-key")
 	if err != nil {
-		if errors.Is(restate.ErrKeyNotFound, err) {
-			myString = "my-default"
-		} else {
-			return restate.Void{}, err
-		}
+		return err
 	}
-	myNumber, err := restate.GetAs[int](ctx, "my-number-key")
-	if err != nil && !errors.Is(restate.ErrKeyNotFound, err) {
-		return restate.Void{}, err
+	if myString == "" {
+		myString = "my-default"
+	}
+
+	myNumber, err := restate.Get[int](ctx, "my-number-key")
+	if err != nil {
+		return err
 	}
 	// <end_get>
 	_ = myString
 	_ = myNumber
 
 	// <start_set>
-	if err := ctx.Set("my-key", "my-new-value"); err != nil {
-		return restate.Void{}, err
-	}
+	restate.Set(ctx, "my-key", "my-new-value")
 	// <end_set>
 
 	// <start_clear>
-	ctx.Clear("my-key")
+	restate.Clear(ctx, "my-key")
 	// <end_clear>
 
 	// <start_clear_all>
-	ctx.ClearAll()
+	restate.ClearAll(ctx)
 	// <end_clear_all>
 
-	return restate.Void{}, nil
+	return nil
 }

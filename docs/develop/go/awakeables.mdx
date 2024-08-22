@@ -16,7 +16,7 @@ This pattern is also known as the callback (task token) pattern.
 
 <CH.Scrollycoding className={"spotlight-medium"}>
 
-    1. The handler **creates an awakeable**. This contains a String identifier and a Promise.
+    1. The handler **creates an awakeable**. This contains a String identifier and a handle on the future result.
 
     ```go
     CODE_LOAD::go/develop/awakeable.go?1
@@ -26,7 +26,7 @@ This pattern is also known as the callback (task token) pattern.
 
     2. The handler **triggers a task/process** and attaches the awakeable ID  (e.g. over Kafka, via HTTP,...).
     For example, send an HTTP request to a service that executes the task, and attach the ID to the payload.
-    You use `ctx.run` to avoid re-triggering the task on retries.
+    You use `restate.Run` to avoid re-triggering the task on retries.
 
     ```go
     CODE_LOAD::go/develop/awakeable.go?2
@@ -82,11 +82,11 @@ with its ID and a reason for the failure. This throws [a terminal error](/develo
 </CH.Scrollycoding>
 
 
-<Admonition type="info" title={"Payload serialization"}>
-    You can return any payload that can be serialized. By default,
+<Admonition type="info" title={"Result serialization"}>
+    You can resolve an awakeable with any payload that can be serialized. By default,
     serialization is done with
     [`JSONCodec`](https://pkg.go.dev/github.com/restatedev/sdk-go/encoding#PayloadCodec)
-    which uses `encoding/json`. If you don't need to return anything, you can
+    which uses `encoding/json`. If you don't need to provide anything, you can
     use `restate.Void{}` which serializes to a nil byte slice.
 </Admonition>
 

@@ -5,7 +5,8 @@ go 1.22.5
 require (
 	github.com/aws/aws-lambda-go v1.47.0
 	github.com/awslabs/aws-lambda-go-api-proxy v0.16.2
-	github.com/restatedev/sdk-go v0.10.0
+	github.com/restatedev/examples/tutorials/tour-of-restate-go v0.0.0-20240822081842-d36fec58c6cf
+	github.com/restatedev/sdk-go v0.10.1-0.20240822083433-0d57a0aef17b
 	google.golang.org/protobuf v1.34.2
 )
 

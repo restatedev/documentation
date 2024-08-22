@@ -11,13 +11,13 @@ import (
 
 type Monitoring struct{}
 
-func (Monitoring) Greet(ctx restate.Context, name string) (restate.Void, error) {
+func (Monitoring) Greet(ctx restate.Context, name string) error {
 	// <start_logger>
 	ctx.Log().Info("This will not be printed again during replays")
 	ctx.Log().Debug("This will not be printed again during replays")
 	// <end_logger>
 
-	return restate.Void{}, nil
+	return nil
 }
 
 func main() {
