@@ -16,9 +16,11 @@ func (Awakeable) Greet(ctx restate.Context, name string) error {
 	// </mark_1>
 
 	// <mark_2>
-	restate.Run(ctx, func(ctx restate.RunContext) (string, error) {
+	if _, err := restate.Run(ctx, func(ctx restate.RunContext) (string, error) {
 		return triggerTaskAndDeliverId(awakeableId)
-	})
+	}); err != nil {
+		return err
+	}
 	// </mark_2>
 
 	// <mark_3>

@@ -43,9 +43,11 @@ func (OrderProcessor) Process(ctx restate.ObjectContext, order Order) error {
 	// <mark_3>
 	preparationAwakeable := restate.Awakeable[restate.Void](ctx)
 	// <mark_5>
-	restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
+	if _, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
 		return restate.Void{}, restaurant.Prepare(order.Id, preparationAwakeable.Id())
-	})
+	}); err != nil {
+		return err
+	}
 	// </mark_5>
 	// </mark_3>
 	// <mark_4>
