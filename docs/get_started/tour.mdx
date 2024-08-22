@@ -2566,6 +2566,9 @@ For example, if the caller of the `addTicket` handler didn't receive the success
 <TabItem value="go" label="Go">
 For example, if the caller of the `AddTicket` handler didn't receive the success response of its first request, it might retry the request.
 </TabItem>
+<TabItem value="python" label="Python">
+        For example, if the caller of the `addTicket` handler didn't receive the success response of its first request, it might retry the request.
+    </TabItem>
 </Tabs>
 The second request will return `false` because the ticket already got reserved the first time, but the caller won't know about this.
 
@@ -2601,6 +2604,16 @@ curl localhost:8080/CartObject/Mary/AddTicket -H 'content-type: application/json
     -H 'idempotency-key: ad5472esg4dsg525dssdfa5loi'  \
     -d '"seat2C"'
 ```
+</TabItem>
+<TabItem value="python" label="Python">
+    In our example, when we call the `CartObject/addTicket` handler, the first time the response is `true` and the second time it's `false`.
+    However, if we use the same idempotency key, the second call will return `true` as well, because it will return the result of the first call:
+
+    ```shell
+    curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' \
+    -H 'idempotency-key: ad5472esg4dsg525dssdfa5loi'  \
+    -d '"seat2C"'
+    ```
 </TabItem>
 </Tabs>
 
@@ -2679,6 +2692,17 @@ docker run -d --name jaeger -e COLLECTOR_OTLP_ENABLED=true \
         ```
     </CH.Code>
   </TabItem>
+  <TabItem value="python" label="Python">
+    <CH.Code>
+
+        ```shell
+        curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2A"'
+        curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2B"'
+        curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2C"'
+        curl -X POST localhost:8080/CartObject/Mary/checkout
+        ```
+    </CH.Code>
+  </TabItem>
   </Tabs>
 
 </SubtleStep>
@@ -2700,6 +2724,10 @@ Have a look at the traces of the `checkout` call:
 <TabItem value="go" label="Go">
 You should see the `AddTicket` and `Checkout` requests listed.
 Have a look at the traces of the `Checkout` call:
+</TabItem>
+<TabItem value="python" label="Python">
+    You should see the `addTicket` and `checkout` requests listed.
+    Have a look at the traces of the `checkout` call:
 </TabItem>
 </Tabs>
 
