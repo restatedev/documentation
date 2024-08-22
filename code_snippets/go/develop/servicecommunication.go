@@ -10,7 +10,8 @@ type Router struct{}
 
 func (Router) Greet(ctx restate.Context, name string) error {
 	// <start_request_response_service>
-	response, err := restate.Service[string](ctx, "MyService", "MyHandler").Request("Hi")
+	response, err := restate.Service[string](ctx, "MyService", "MyHandler").
+		Request("Hi")
 	if err != nil {
 		return err
 	}
@@ -22,7 +23,8 @@ func (Router) Greet(ctx restate.Context, name string) error {
 
 func (Router) Greet2(ctx restate.Context, name string) error {
 	// <start_request_response_object>
-	response, err := restate.Object[string](ctx, "MyVirtualObject", "Mary", "MyHandler").Request("Hi")
+	response, err := restate.Object[string](ctx, "MyVirtualObject", "Mary", "MyHandler").
+		Request("Hi")
 	if err != nil {
 		return err
 	}
@@ -39,11 +41,13 @@ func (Router) Greet2(ctx restate.Context, name string) error {
 	// <end_one_way_object>
 
 	// <start_delayed_service>
-	restate.ServiceSend(ctx, "MyService", "MyHandler").Send("Hi", restate.WithDelay(5*time.Second))
+	restate.ServiceSend(ctx, "MyService", "MyHandler").
+		Send("Hi", restate.WithDelay(5*time.Second))
 	// <end_delayed_service>
 
 	// <start_delayed_object>
-	restate.ObjectSend(ctx, "MyService", "Mary", "MyHandler").Send("Hi", restate.WithDelay(5*time.Second))
+	restate.ObjectSend(ctx, "MyService", "Mary", "MyHandler").
+		Send("Hi", restate.WithDelay(5*time.Second))
 	// <end_delayed_object>
 
 	// <start_ordering>
