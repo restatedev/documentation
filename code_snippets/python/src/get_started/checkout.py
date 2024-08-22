@@ -18,7 +18,7 @@ async def handle(ctx: ObjectContext, order: Order) -> bool:
     # withClass highlight-line
     total_price = len(order['tickets']) * 40
 
-    idempotency_key: str = await ctx.run("idempotency_key", lambda: str(uuid.uuid4()))
+    idempotency_key = await ctx.run("idempotency_key", lambda: str(uuid.uuid4()))
 
     # withClass(1:3) highlight-line
     async def pay():

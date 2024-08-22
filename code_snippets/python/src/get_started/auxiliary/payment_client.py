@@ -12,7 +12,7 @@ class PaymentClient:
     def __init__(self):
         self.i = 0
 
-    async def call(self, idempotency_key: str, amount: float) -> bool:
+    async def call(self, idempotency_key: str | None, amount: float) -> bool:
         print(f"Payment call succeeded for idempotency key {idempotency_key} and amount {amount}")
         # do the call
         return True
