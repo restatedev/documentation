@@ -16,12 +16,11 @@ func (State) Greet(ctx restate.ObjectContext, greeting string) error {
 	_ = stateKeys
 
 	// <start_get>
-	myString, err := restate.Get[string](ctx, "my-string-key")
-	if err != nil {
+	myString := "my-default"
+	if s, err := restate.Get[*string](ctx, "my-string-key"); err != nil {
 		return err
-	}
-	if myString == "" {
-		myString = "my-default"
+	} else if s != nil {
+		myString = *s
 	}
 
 	myNumber, err := restate.Get[int](ctx, "my-number-key")
