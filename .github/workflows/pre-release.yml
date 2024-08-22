@@ -11,6 +11,10 @@ on:
         description: "sdk-typescript version (without prepending v)."
         required: false
         type: string
+      sdkPythonVersion:
+        description: "sdk-python version (without prepending v)."
+        required: false
+        type: string
       sdkJavaVersion:
         description: "sdk-java version (without prepending v)."
         required: false
@@ -85,6 +89,14 @@ jobs:
           field: TYPESCRIPT_SDK_VERSION
           value: ${{ inputs.sdkTypescriptVersion }}
 
+      - name: Update restate.config.json with new Python sdk version
+        uses: jossef/action-set-json-field@v2.1
+        if: ${{ inputs.sdkPythonVersion != '' }}
+        with:
+          file: restate.config.json
+          field: PYTHON_SDK_VERSION
+          value: ${{ inputs.sdkPythonVersion }}
+
       - name: Update restate.config.json with new Java sdk version
         uses: jossef/action-set-json-field@v2.1
         if: ${{ inputs.sdkJavaVersion != '' }}
@@ -104,6 +116,26 @@ jobs:
       # Test if TS code snippets compile and build
       - name: Compile TypeScript code snippets
         run: npm install --prefix code_snippets/ts && npm run build --prefix code_snippets/ts
+
+      # Upgrade Python code snippets if new version is provided
+      - name: Upgrade Python Restate SDK
+        if: github.event.inputs.sdkPythonVersion != ''
+        run: sed -i 's/restate_sdk==[0-9A-Za-z.-]*/restate_sdk=="${{ inputs.sdkPythonVersion }}"/' "code_snippets/python/requirements.txt"
+
+      # Test if Python code snippets compile and build
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies and check Python code snippets
+        run: |
+          cd code_snippets/python
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
+          pip install mypy
+          python3 -m mypy .
+          deactivate
 
       # Upgrade Java code snippets if new version is provided
       - name: Find and replace restateVersion in build.gradle.kts for Java code snippets

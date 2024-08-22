@@ -14,14 +14,14 @@ from restate import VirtualObject
 from restate.context import ObjectContext, Serde
 from restate.service import Service
 
-from src.get_started.auxiliary.email_client import EmailClient
-from src.get_started.auxiliary.payment_client import PaymentClient
+from auxiliary.email_client import EmailClient
+from auxiliary.payment_client import PaymentClient
 
 cart = VirtualObject("CartObject")
 
 
 @cart.handler()
-async def handle(ctx: ObjectContext, order: str) -> bool:
+async def my_handler(ctx: ObjectContext, order: str) -> bool:
     ticket_id = ""
 
     # <start_sleep>
@@ -64,22 +64,4 @@ async def handle(ctx: ObjectContext, order: Order) -> bool:
 # <end_uuid>
 
 
-payment_client = PaymentClient()
-email_client = EmailClient()
 
-
-# <start_checkout>
-@checkout.handler()
-async def handle(ctx: ObjectContext, order: Order) -> bool:
-    # withClass highlight-line
-    total_price = len(order['tickets']) * 40
-
-    idempotency_key = await ctx.run("idempotency_key", lambda: str(uuid.uuid4()))
-
-    # withClass(1:3) highlight-line
-    async def pay():
-        return await payment_client.call(idempotency_key, total_price)
-    success = await ctx.run("payment", pay)
-
-    return success
-# <end_checkout>
