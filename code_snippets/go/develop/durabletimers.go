@@ -10,7 +10,9 @@ type DurableTimers struct{}
 
 func (DurableTimers) Greet(ctx restate.Context, name string) error {
 	// <start_here>
-	restate.Sleep(ctx, 10*time.Second)
+	if err := restate.Sleep(ctx, 10*time.Second); err != nil {
+		return err
+	}
 	// <end_here>
 	return nil
 }

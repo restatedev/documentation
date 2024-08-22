@@ -84,7 +84,7 @@ Restate pushes the events to your function.
     ---
 
     ### Queue per key
-    Events get send to objects based on the Kafka key.
+    Events get sent to objects based on the Kafka key.
     For each key, Restate ensures that events are processed sequentially and in order.
     Slow events on other keys do not block processing.
 
@@ -124,7 +124,7 @@ Restate pushes the events to your function.
     ### Flexible control flow
 
     As opposed to many stream processing systems, Restate does not put any restrictions on the control flow (e.g. DAG).
-    Each event craft its own path through the code
+    Each event crafts its own path through the code
     and builds up its own recovery log.
 
     ```ts user_updates.ts
@@ -170,7 +170,7 @@ Restate pushes the events to your function.
         ---
 
         ### Queue per key
-        Events get send to objects based on the Kafka key.
+        Events get sent to objects based on the Kafka key.
         For each key, Restate ensures that events are processed sequentially and in order.
         Slow events on other keys do not block processing.
 
@@ -210,7 +210,7 @@ Restate pushes the events to your function.
         ### Flexible control flow
 
         As opposed to many stream processing systems, Restate does not put any restrictions on the control flow (e.g. DAG).
-        Each event craft its own path through the code
+        Each event crafts its own path through the code
         and builds up its own recovery log.
 
         ```java UserUpdatesService.java
@@ -256,7 +256,7 @@ Restate pushes the events to your function.
             ---
 
             ### Queue per key
-            Events get send to objects based on the Kafka key.
+            Events get sent to objects based on the Kafka key.
             For each key, Restate ensures that events are processed sequentially and in order.
             Slow events on other keys do not block processing.
 
@@ -296,7 +296,7 @@ Restate pushes the events to your function.
             ### Flexible control flow
 
             As opposed to many stream processing systems, Restate does not put any restrictions on the control flow (e.g. DAG).
-            Each event craft its own path through the code
+            Each event crafts its own path through the code
             and builds up its own recovery log.
 
             ```kotlin UserUpdatesService.kt
@@ -305,6 +305,92 @@ Restate pushes the events to your function.
 
         </CH.Scrollycoding>
     </TabItem>
+    <TabItem value="go" label="Go">
+      <CH.Scrollycoding className="workflows-scroller">
+
+        ### Lightweight Durable Functions
+        Write functions that take Kafka events as inputs.
+        Functions execute with Durable Execution: their progress is tracked and they can be retried from the exact point before the crash, as if you are taking micro-checkpoints throughout the function execution.
+
+        ```go userupdates.go
+        CODE_LOAD::go/usecases/eventprocessing/eventprocessing.go?1
+        ```
+
+        ---
+
+        ### Push events to functions
+        Let Restate subscribe to a Kafka topic and specify to which function to push the events.
+        Restate will take care of the event plumbing: polling for records, committing offsets, recovering...
+
+        <CH.Code>
+
+            ```go userupdates.go
+            CODE_LOAD::go/usecases/eventprocessing/eventprocessing.go?1
+            ```
+
+            ---
+
+            ```shell subscribe.sh mark=2:3
+            curl restate:9070/subscriptions --json '{
+                "source": "kafka://my-cluster/user-events",
+                "sink": "service://userUpdates/updateUserEvent"
+            }'
+            ```
+
+        </CH.Code>
+
+        ---
+
+        ### Queue per key
+        Events get sent to objects based on the Kafka key.
+        For each key, Restate ensures that events are processed sequentially and in order.
+        Slow events on other keys do not block processing.
+
+        In the example, we process user updates in a queue per user.
+        Slow updates for one user do not block updates for other users.
+
+        ```go userupdates.go
+        CODE_LOAD::go/usecases/eventprocessing/eventprocessing.go?1
+        ```
+
+        ---
+
+        ### Postpone processing
+
+        Flexibly postpone processing of events until later.
+        Restate tracks the timers and re-invokes.
+        When sleeping, other events for that key are enqueued.
+
+        Here, we postpone processing for 5 seconds if the user profile is not ready yet.
+
+        ```go userupdates.go
+        CODE_LOAD::go/usecases/eventprocessing/eventprocessing.go?2
+        ```
+
+        ---
+
+        ### Durable side effects
+
+        The results of interactions with external systems are tracked and recovered after failures. This simplifies writing flows that keep multiple systems in sync.
+
+        ```go userupdates.go
+        CODE_LOAD::go/usecases/eventprocessing/eventprocessing.go?3
+        ```
+
+        ---
+
+        ### Flexible control flow
+
+        As opposed to many stream processing systems, Restate does not put any restrictions on the control flow (e.g. DAG).
+        Each event crafts its own path through the code
+        and builds up its own recovery log.
+
+        ```go userupdates.go
+        CODE_LOAD::go/usecases/eventprocessing/eventprocessing.go?4
+        ```
+
+  </CH.Scrollycoding>
+</TabItem>
 </Tabs>
 
 <SpotlightCard>
@@ -466,13 +552,60 @@ Implement stateful event handlers with Restate.
 
         </CH.Scrollycoding>
 </TabItem>
+<TabItem value="go" label="Go">
+<CH.Scrollycoding className={"workflows-scroller"}>
+
+### K/V State
+Store state in Restate and access it from other handlers.
+Restate guarantees that it is consistent and persistent.
+The state gets delivered together with the request, so you operate on local state.
+
+```go profileservice.go
+CODE_LOAD::go/usecases/eventprocessing/eventsstate.go?1
+```
+
+---
+
+### Event Enrichment
+
+Enrich events with data from multiple sources by storing it in state and eventually exposing it via other functions.
+
+```go profileservice.go
+CODE_LOAD::go/usecases/eventprocessing/eventsstate.go?2
+```
+
+---
+
+### Delayed actions
+Schedule async follow-up tasks for now or for later.
+Restate tracks the timers and triggers them when the time comes.
+
+Here, we wait one second for other user features to arrive before sending the event to downstream processing.
+
+```go profileservice.go
+CODE_LOAD::go/usecases/eventprocessing/eventsstate.go?3
+```
+
+---
+
+### Combine Kafka and RPC
+
+Functions can be called over RPC or Kafka without changing the code.
+In the example, the registration can come over Kafka, while the email gets called via HTTP.
+
+```go profileservice.go
+CODE_LOAD::go/usecases/eventprocessing/eventsstate.go?2
+```
+
+</CH.Scrollycoding>
+</TabItem>
 </Tabs>
 
 <SpotlightCard>
     <FeatureSpotlight
         title={"Event handlers as regular, lightweight functions"}
         description={<p>Let Restate subscribe to a Kafka topic and push events to your functions. <br/>
-            Your functions run as normal Java or NodeJS services in your existing infra.
+            Your functions run as normal services in your existing infra.
         </p>}
         imgPath={"/img/use_cases/event_processing-white.svg"}
     />

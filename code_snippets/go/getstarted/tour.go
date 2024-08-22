@@ -13,11 +13,15 @@ func (MyService) Greet(ctx restate.Context, name string) error {
 	ticketId := ""
 
 	// <start_sleep>
-	restate.Sleep(ctx, 15*time.Minute)
+	if err := restate.Sleep(ctx, 15*time.Minute); err != nil {
+		return err
+	}
 	// <end_sleep>
 
 	// <start_sleep_and_send>
-	restate.Sleep(ctx, 15*time.Minute)
+	if err := restate.Sleep(ctx, 15*time.Minute); err != nil {
+		return err
+	}
 	restate.ObjectSend(ctx, "TicketObject", ticketId, "unreserve").Send(restate.Void{})
 	// <end_sleep_and_send>
 

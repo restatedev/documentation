@@ -35,7 +35,9 @@ func (OrderProcessor) Process(ctx restate.ObjectContext, order Order) error {
 	// <mark_4>
 	restate.Set(ctx, "status", Status_SCHEDULED)
 	// </mark_4>
-	restate.Sleep(ctx, order.DeliveryDelay)
+	if err := restate.Sleep(ctx, order.DeliveryDelay); err != nil {
+		return err
+	}
 
 	// 4. Trigger preparation
 	// <mark_3>
