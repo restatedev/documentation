@@ -15,6 +15,10 @@ on:
         description: "sdk-java version (without prepending v)."
         required: false
         type: string
+      sdkGoVersion:
+        description: "sdk-go version (WITH the prepending v)."
+        required: false
+        type: string
 
 jobs:
   updates:
@@ -49,8 +53,8 @@ jobs:
       - uses: actions/setup-java@v4
         if: ${{ inputs.sdkJavaVersion != '' }}
         with:
-          distribution: 'temurin'
-          java-version: '21'
+          distribution: "temurin"
+          java-version: "21"
       - name: Setup Gradle
         if: ${{ inputs.sdkJavaVersion != '' }}
         uses: gradle/actions/setup-gradle@v3
@@ -132,6 +136,26 @@ jobs:
           repository: restatedev/sdk-java
           ref: v${{ inputs.sdkJavaVersion }}
           path: temp-sdk-java
+
+      # Setup Go
+      - uses: actions/setup-go@v5
+        if: ${{ inputs.sdkGoVersion != '' }}
+        with:
+          go-version: "1.21"
+
+      # Upgrade Go code snippets if new version is provided
+      - name: Bump sdk-go
+        if: github.event.inputs.sdkGoVersion != ''
+        working-directory: code_snippets/go
+        run: |
+          go get github.com/restatedev/sdk-go@${{ github.event.inputs.sdkGoVersion }}
+          go mod tidy
+
+      # Check Go code snippets
+      - name: Test Go code snippets
+        working-directory: code_snippets/go
+        run: go test ./...
+
       - name: Run the runtime generate script
         if: ${{ inputs.sdkJavaVersion != '' }}
         run: |
