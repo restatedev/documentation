@@ -2,10 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
-	"math/rand"
-	"os"
 
 	restate "github.com/restatedev/sdk-go"
 	"github.com/restatedev/sdk-go/server"
@@ -75,29 +72,10 @@ type UpdateRequest struct {
 	Permissions []Permission
 }
 
-var killProcess = os.Getenv("CRASH_PROCESS") == "true"
-
-func maybeCrash(probability float64) error {
-	if rand.Float64() < probability {
-		log.Println("A failure happened!")
-
-		if killProcess {
-			log.Fatal("--- CRASHING THE PROCESS ---")
-		} else {
-			return fmt.Errorf("A failure happened!")
-		}
-	}
-	return nil
-}
-
 func applyUserRole(
 	userId string,
 	userRole UserRole,
 ) (bool, error) {
-	if err := maybeCrash(0.3); err != nil {
-		return false, err
-	}
-	log.Printf(`>>> Applied role %s for user %s\n`, userRole.RoleKey, userId)
 	return true, nil
 }
 
@@ -105,11 +83,5 @@ func applyPermission(
 	userId string,
 	permission Permission,
 ) error {
-	if err := maybeCrash(0.2); err != nil {
-		return err
-	}
-	log.Printf(
-		">>> Applied permission %s:%2 for user %s\n", permission.PermissionKey, permission.Setting, userId,
-	)
 	return nil
 }
