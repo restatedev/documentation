@@ -30,7 +30,6 @@ public class ProfileService {
     ctx.set(USER, profile);
     // </mark_1>
 
-    ctx.get(USER).orElse(new UserProfile());
     // <mark_3>
     ProfileServiceClient.fromContext(ctx, ctx.key()).send(Duration.ofSeconds(1)).emit();
     // </mark_3>
