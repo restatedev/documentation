@@ -1,0 +1,20 @@
+---
+sidebar_position: 8
+description: "Restate's retry strategy and how to manage it from the SDK."
+---
+
+# Error Handling
+
+Restate handles retries for failed invocations.
+By default, Restate does infinite retries with an exponential backoff strategy.
+
+For failures for which you do not want retries, but instead want the invocation to end and the error message
+to be propagated back to the caller, you can throw a **terminal error**.
+
+You can throw a terminal exception with an optional HTTP status code and a message anywhere in your handler, as follows:
+
+```typescript
+CODE_LOAD::ts/src/develop/error_handling.ts
+```
+
+You can catch terminal exceptions. For example, you can catch the terminal exception that comes out of a [call to another service](/develop/ts/service-communication#request-response-calls), and build your control flow around it.
