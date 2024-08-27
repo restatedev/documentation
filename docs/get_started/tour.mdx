@@ -518,7 +518,7 @@ In `app` you will find the skeletons of the various services to help you start i
     In `tour/app` you will find the skeletons of the various services to help you start implementing the app.
     For example:
     ```python checkout_service.py
-    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_python/tutorials/tour-of-restate-python/tour/part1/checkout_service.py#checkout
+    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part1/checkout_service.py#checkout
     ```
 
     Restate handlers have the Restate Context supplied as the first argument.
@@ -734,7 +734,7 @@ Let's try this out!
         It does that by calling the `TicketObject/reserve` handler:
 
         ```python cart_object.py
-        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_python/tutorials/tour-of-restate-python/tour/part1/cart_object.py#add_ticket
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part1/cart_object.py#add_ticket
         ```
 
         1. Use **`ctx.service_call`** (for Services) or **`ctx.object_call`** (for Virtual Objects).
@@ -883,7 +883,7 @@ The call to `ExpireTicket` finishes earlier than the `Unreserve` handler because
         Let the `expireTicket` handler call the `TicketObject/unreserve` handler.
 
         ```python cart_object.py
-        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_python/tutorials/tour-of-restate-python/tour/part1/cart_object.py#expire_ticket
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part1/cart_object.py#expire_ticket
         ```
 
         Import the `unreserve` handler from the `TicketObject` and supply it to `ctx.object_send` together with the ticket ID.
@@ -1042,7 +1042,7 @@ You will fix this later on. Note that the `CheckoutService` is not a Virtual Obj
             Add the following code to the `CartObject/checkout` handler:
 
             ```python cart_object.py
-            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_python/tutorials/tour-of-restate-python/tour/part1/cart_object.py#checkout
+            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part1/cart_object.py#checkout
             ```
 
             Call `CartObject/checkout` as you did [earlier](#request-response-calls-over-http) and have a look at the Restate Server logs again to see what happened:
@@ -1216,7 +1216,7 @@ The code would fast-forward to the point where it crashed, and continue executin
 
         <CH.Code lineNumbers={true}>
         ```python cart_object.py
-        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_python/tutorials/tour-of-restate-python/tour/part1/cart_object.py#add_ticket
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part1/cart_object.py#add_ticket
         ```
         </CH.Code>
 
@@ -1468,7 +1468,7 @@ To test it out, put the delay to a lower value, for example 5 seconds, call the 
 Let the `CartObject/addTicket` handler call the `CartObject/expireTicket` handler with a delay of 15 minutes:
 
 ```python cart_object.py
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_python/tutorials/tour-of-restate-python/tour/part2/cart_object.py#add_ticket
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part2/cart_object.py#add_ticket
 ```
 
 To test it out, put the delay to a lower value, for example 5 seconds, call the `addTicket` function, and see in the Restate Server logs how the call to `CartObject/expireTicket` is executed 5 seconds later.
@@ -1678,7 +1678,7 @@ After reserving the product, you add the ticket to the shopping cart.
 Have a look at the highlighted code:
 
 ```python cart_object.py
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_python/tutorials/tour-of-restate-python/tour/part3/cart_object.py#add_ticket
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part3/cart_object.py#add_ticket
 ```
 
 To retrieve the cart, you use `ctx.get`.
@@ -1798,7 +1798,7 @@ So when you operate on the state in your function, you get access to a local cop
         Also adapt the `CartObject/checkout` function, to use the tickets:
 
         ```python cart_object.py
-        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_python/tutorials/tour-of-restate-python/tour/part3/cart_object.py#checkout
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part3/cart_object.py#checkout
         ```
 
         After the tickets are checked out, you clear the state with `ctx.clear`.
@@ -1923,7 +1923,7 @@ curl localhost:8080/CartObject/Mary/ExpireTicket -H 'content-type: application/j
     <details>
         <summary>Solution</summary>
         ```python cart_object.py
-        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_python/tutorials/tour-of-restate-python/tour/part3/cart_object.py#expire_ticket
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part3/cart_object.py#expire_ticket
         ```
 
         Call the `expireTicket` handler with:
@@ -2096,7 +2096,7 @@ This ties the final parts together.
             <details>
                 <summary>Solution</summary>
                 ```python ticket_object.py
-                CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_python/tutorials/tour-of-restate-python/tour/part3/ticket_object.py#reserve
+                CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part3/ticket_object.py#reserve
                 ```
 
                 Now, you can't reserve the same ticket multiple times anymore.
@@ -2108,7 +2108,7 @@ This ties the final parts together.
             <details>
                 <summary>Solution</summary>
                 ```python ticket_object.py
-                CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_python/tutorials/tour-of-restate-python/tour/part3/ticket_object.py#unreserve
+                CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part3/ticket_object.py#unreserve
                 ```
 
                 Now, the ticket reservation status is cleared when the delayed `expireTicket` call triggers.
@@ -2123,7 +2123,7 @@ This ties the final parts together.
             <details>
                 <summary>Solution</summary>
                 ```python ticket_object.py
-                CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_python/tutorials/tour-of-restate-python/tour/part3/ticket_object.py#mark_as_sold
+                CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part3/ticket_object.py#mark_as_sold
                 ```
                 In the next section, you implement the `CheckoutService/handle` function that calls `markAsSold`.
                 This ties the final parts together.
@@ -2496,7 +2496,7 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/
         <details>
             <summary>Solution</summary>
             ```python checkout_service.py
-            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_python/tutorials/tour-of-restate-python/tour/part4/checkout_service.py#checkout
+            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part4/checkout_service.py#checkout
             ```
         </details>
     </SubtleStep>
@@ -2506,7 +2506,7 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/
         <details>
             <summary>Solution</summary>
             ```typescript cart_object.ts
-            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/tour_python/tutorials/tour-of-restate-python/tour/part4/cart_object.py#checkout
+            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part4/cart_object.py#checkout
             ```
         </details>
 
