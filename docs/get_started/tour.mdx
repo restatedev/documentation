@@ -366,8 +366,8 @@ Handle   value of content-type 'application/json'  value of content-type 'applic
 - CartObject
 Type: VirtualObject ⬅️ 🚶🚶🚶
 HANDLER       INPUT                                     OUTPUT
-ExpireTicket  value of content-type 'application/json'  value of content-type 'application/json'
-Checkout      none                                      none
+ExpireTicket  value of content-type 'application/json'  none
+Checkout      none                                      value of content-type 'application/json'
 AddTicket     value of content-type 'application/json'  value of content-type 'application/json'
 
 - TicketObject
@@ -375,7 +375,7 @@ Type: VirtualObject ⬅️ 🚶🚶🚶
 HANDLER     INPUT  OUTPUT
 MarkAsSold  none   none
 Unreserve   none   none
-Reserve     none   none
+Reserve     none   value of content-type 'application/json'
 
 
 ✔ Are you sure you want to apply those changes? · yes
@@ -722,9 +722,8 @@ Let's try this out!
 
         </details>
 
-        1. **Specify the return type** using the `restate.CallAs` facilitator, which will wrap the underlying client and make return values type-safe.
-        2. **Create the client** via `ctx.Service` or `ctx.Object` (for Virtual Objects). Specify the service name (`TicketObject`) and method (`Reserve`) and where necessary the Virtual Object key (`ticketId`).
-        3. **Specify what type of call you want to make** - in this case we want a synchronous request-response call so we use `Request()`, passing `restate.Void{}` as this handler needs no input type.
+        1. **Create the client** via `restate.Service` or `restate.Object` (for Virtual Objects). Specify the return type (`bool`) as a type parameter, the service name (`TicketObject`) and method (`Reserve`) and where necessary the Virtual Object key (`ticketId`).
+        2. **Specify what type of call you want to make** - in this case we want a synchronous request-response call so we use `Request()`, passing `restate.Void{}` as this handler needs no input type.
 
         Send a request to `CartObject/AddTicket` as we did [previously](#request-response-calls-over-http), and have a look at the service logs.
 
@@ -849,9 +848,9 @@ Let the `ExpireTicket` handler call the `TicketObject/Unreserve` handler.
 CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-go/part1/cartobject.go#expire_ticket
 ```
 
-Specify that you want to call the `TicketObject` by supplying the service and method names to the `Object()` function.
-Then call the `Send` method on the returned client, which specifies that we don't need to wait for a response. This method
-also accepts a delay duration parameter, but we provide 0 in this case.
+Specify that you want to call the `TicketObject` by supplying the service and method names to the `ObjectSend()` function.
+This function is an alternative to `Object()` which provides a client that can only send one-way messages
+and therefore doesn't need an output type parameter. Finally call the `Send` method on the returned client.
 
 Once you have added this to the code, call the `CartObject/ExpireTicket` handler:
 
@@ -1180,7 +1179,7 @@ The code would fast-forward to the point where it crashed, and continue executin
         ```
         </CH.Code>
 
-        Add the following code to line 4 of the snippet, to let the code throw an error after the call:
+        Add the following code to line 6 of the snippet, to let the code throw an error after the call:
         ```go
         return false, fmt.Errorf("Failing")
         ```
@@ -1441,7 +1440,7 @@ To test it out, put the delay to a lower value, for example 5 seconds, call the 
 <TabItem value="go" label="Go">
 Let the `CartObject/AddTicket` handler call the `CartObject/ExpireTicket` handler with a delay of 15 minutes:
 
-```typescript cart_object.ts
+```go cartobject.go
 CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-go/part2/cartobject.go#add_ticket
 ```
 
@@ -1665,10 +1664,10 @@ Have a look at the highlighted code:
 CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-go/part3/cartobject.go#add_ticket
 ```
 
-To retrieve the cart, you use `restate.GetAs`.
-This returns `restate.ErrKeyNotFound` if the value has never been set, but we can ignore this as a nil slice in this case is fine.
+To retrieve the cart, you use `restate.Get`.
+This returns the zero value if there's no value for this key; a nil slice is a useful result in this case.
 
-After you added the ticket to the cart array, you set the state to the new value with `ctx.Set`.
+After you added the ticket to the cart array, you set the state to the new value with `restate.Set`.
 
 </TabItem>
 <TabItem value="python" label="Python">
@@ -1791,7 +1790,7 @@ So when you operate on the state in your function, you get access to a local cop
         CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-go/part3/cartobject.go#checkout
         ```
 
-        After the tickets are checked out, you clear the state with `ctx.Clear`.
+        After the tickets are checked out, you clear the state with `restate.Clear`.
 
     </TabItem>
     <TabItem value="python" label="Python">
@@ -2201,13 +2200,13 @@ So use `ctx.run` to store the result of non-deterministic operations!
 We can use this feature to do exactly-once payments in `CheckoutService/handle`:
 </TabItem>
 <TabItem value="go" label="Go">
-You can store the return value of any function in the journal, by using `ctx.Run` (and its type-safe facilitator `restate.RunAs`).
+You can store the return value of any function in the journal, by using `restate.Run`.
 This lets you capture potentially non-deterministic computation and interaction with external systems in a safe way.
 The SDK also offers helper functions for creating UUIDs and generating random numbers.
 
 <Admonition type="info" title="Handler logic needs to be deterministic">
 For the replay to work, code needs to be deterministic, otherwise the replayed entries do not line up with the code execution on retries.
-So use `ctx.Run` to store the result of non-deterministic operations!
+So use `restate.Run` to store the result of non-deterministic operations!
 </Admonition>
 
 We can use this feature to do exactly-once payments in `CheckoutService/Handle`:
@@ -2302,7 +2301,7 @@ We can use this feature to do exactly-once payments in `CheckoutService/Handle`:
         Try it out by printing the idempotency key and then throwing an error:
 
 
-        ```ts checkoutservice.go
+        ```go checkoutservice.go
         CODE_LOAD::go/getstarted/tour.go#uuid
         ```
 

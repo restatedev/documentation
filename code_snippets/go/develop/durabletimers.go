@@ -8,9 +8,11 @@ import (
 
 type DurableTimers struct{}
 
-func (DurableTimers) Greet(ctx restate.Context, name string) (restate.Void, error) {
+func (DurableTimers) Greet(ctx restate.Context, name string) error {
 	// <start_here>
-	ctx.Sleep(10 * time.Second)
+	if err := restate.Sleep(ctx, 10*time.Second); err != nil {
+		return err
+	}
 	// <end_here>
-	return restate.Void{}, nil
+	return nil
 }

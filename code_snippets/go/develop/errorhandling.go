@@ -8,8 +8,8 @@ import (
 
 type ErrorHanding struct{}
 
-func (ErrorHanding) Greet(ctx restate.Context, name string) (restate.Void, error) {
+func (ErrorHanding) Greet(ctx restate.Context, name string) error {
 	// <start_here>
-	return restate.Void{}, restate.TerminalError(fmt.Errorf("Something went wrong."), 500)
+	return restate.TerminalError(fmt.Errorf("Something went wrong."), 500)
 	// <end_here>
 }

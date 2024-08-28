@@ -18,7 +18,7 @@ Restate makes sure the state is consistent with the processing of the code execu
 </Admonition>
 
 <Admonition type="info" title={"Serializing state"}>
-    You can return any type of value that can be serialized. By default, serialization is done with
+    You can store any type of value that can be serialized. By default, serialization is done with
     [`JSONCodec`](https://pkg.go.dev/github.com/restatedev/sdk-go/encoding#PayloadCodec)
     which uses `encoding/json`.
 </Admonition>
@@ -31,18 +31,16 @@ CODE_LOAD::go/develop/state.go#statekeys
 ```
 
 ### Retrieving state
-Use `restate.GetAs` (a generic [facilitator](https://rakyll.org/generics-facilititators/) for `ctx.Get`)
-to retrieve the state for a key:
+Use `restate.Get` to retrieve the state for a key:
 
 ```go
 CODE_LOAD::go/develop/state.go#get
 ```
 
-`restate.ErrKeyNotFound` will be returned if a state value does not exist for the provided key. Otherwise
-this function only returns errors in the case of failed deserialization.
+The zero value will be returned if a state value does not exist for the provided key.
 
 ### Setting state
-Use `ctx.Set` to set a new value for a key:
+Use `restate.Set` to set a new value for a key:
 
 ```go
 CODE_LOAD::go/develop/state.go#set
@@ -51,7 +49,7 @@ CODE_LOAD::go/develop/state.go#set
 This function will only return errors in the case of failed serialization.
 
 ### Clearing state
-Use `ctx.Clear` to delete the value of a key:
+Use `restate.Clear` to delete the value of a key:
 
 ```go
 CODE_LOAD::go/develop/state.go#clear

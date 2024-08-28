@@ -27,7 +27,6 @@ jobs:
       - name: Test build website
         run: yarn build
 
-
       # Test TypeScript code snippets
       - name: Compile TypeScript code snippets
         run: npm install --prefix code_snippets/ts && npm run build --prefix code_snippets/ts
@@ -62,8 +61,8 @@ jobs:
       # Setup Java
       - uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '21'
+          distribution: "temurin"
+          java-version: "21"
 
       # Check Java code snippets
       - name: Test Java code snippets
@@ -78,3 +77,14 @@ jobs:
         with:
           arguments: check
           build-root-directory: code_snippets/kotlin
+
+      # Setup Go
+      - uses: actions/setup-go@v5
+        if: github.event.inputs.sdkGoVersion != ''
+        with:
+          go-version: "1.21"
+
+      # Check Go code snippets
+      - name: Test Go code snippets
+        working-directory: code_snippets/go
+        run: go test ./...
