@@ -12,11 +12,11 @@ import (
 type MyVirtualObject struct{}
 
 func (MyVirtualObject) MyHandler(ctx restate.ObjectContext, greeting string) (string, error) {
-	return fmt.Sprintf("%s %s!", greeting, ctx.Key()), nil
+	return fmt.Sprintf("%s %s!", greeting, restate.Key(ctx)), nil
 }
 
 func (MyVirtualObject) MyConcurrentHandler(ctx restate.ObjectSharedContext, greeting string) (string, error) {
-	return fmt.Sprintf("%s %s!", greeting, ctx.Key()), nil
+	return fmt.Sprintf("%s %s!", greeting, restate.Key(ctx)), nil
 }
 
 func main() {

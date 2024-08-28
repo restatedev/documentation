@@ -10,6 +10,7 @@ type FeatureItem = {
   java: string;
   ts: string;
   kotlin: string;
+  go: string;
   link: { icon: string; url: string };
 };
 
@@ -22,6 +23,7 @@ function Feature({
   ts,
   link,
   kotlin,
+  go,
 }: FeatureItem) {
   const colWidth = itemsPerRow ? Math.floor(12 / itemsPerRow) : 4;
   return (
@@ -72,6 +74,18 @@ function Feature({
                 role="button"
               >
                 <img className="buttonIcon" src="/img/kotlin.svg" width="28" />
+              </a>
+            </div>
+          ) : null}
+          {go ? (
+            <div id="overviewButtonDiv">
+              <a
+                className="overviewButton btn btn-primary btn-lg firstTimeButton"
+                href={go}
+                target={"_blank"}
+                role="button"
+              >
+                <img className="buttonIcon" src="/img/go.svg" width="40" />
               </a>
             </div>
           ) : null}

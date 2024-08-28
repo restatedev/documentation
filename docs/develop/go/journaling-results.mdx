@@ -24,7 +24,7 @@ Here is an example of a database request for which the string response is stored
 CODE_LOAD::go/develop/journalingresults.go#side_effect
 ```
 
-You cannot invoke any methods on the Restate context within a side effect.
+You cannot use the Restate context within a side effect.
 This includes actions such as getting state, calling another service, and
 nesting other journaled actions. You should only use methods available on the
 [`RunContext`](https://pkg.go.dev/github.com/restatedev/sdk-go#RunContext)
@@ -38,18 +38,18 @@ which uses `encoding/json`. If you don't need to return anything, you can use
 
 
 ## Selectors
-Operations such as calls, awakeables, and `ctx.After` return futures which can
-be safely selected over using `ctx.Select`. Restate will log the order in which they complete, to make this deterministic on replay.
+Operations such as calls, awakeables, and `restate.After` return futures which can
+be safely selected over using `restate.Select`. Restate will log the order in which they complete, to make this deterministic on replay.
 
 ```go
 CODE_LOAD::go/develop/journalingresults.go#race
 ```
 
-<Admonition type="caution" title={"Avoid using Goroutines"}>
+<Admonition type="caution" title={"Don't use Goroutines!"}>
 Do not try to combine blocking Restate operations using goroutines, channels
 or `select` statements. These cannot be used deterministically, and will likely
 lead to non-determinism errors upon replay. The only place it is safe to use
-these types is inside of a `ctx.Run` function.
+these types is inside of a `restate.Run` function.
 </Admonition>
 
 ## Generating randoms
@@ -71,13 +71,9 @@ The SDK provides helper functions for the deterministic generation of UUIDs and 
 
     ### Generating random numbers
 
-    Methods exist on `ctx.Rand()` for generating `float64` and `uint64`, or
-    otherwise `ctx.Rand().Source()` can be provided to `math/rand/v2` as a
+    Methods exist on `restate.Rand(ctx)` for generating `float64` and `uint64`, or
+    otherwise `restate.Rand(ctx).Source()` can be provided to `math/rand/v2` as a
     source for any random operation.
-
-    Once the SDK is upgraded to rely on Go 1.22, `math/rand/v2` will be embedded
-    into the struct returned by `ctx.Rand()` and will be usable directly. Use of
-    the older `math/rand` package is not recommended.
 
     ```go
     CODE_LOAD::go/develop/journalingresults.go#random_nb

@@ -16,27 +16,27 @@ import (
 
 // GreeterClient is the client API for Greeter service.
 type GreeterClient interface {
-	SayHello(opts ...sdk_go.CallOption) sdk_go.TypedCallClient[*HelloRequest, *HelloResponse]
+	SayHello(opts ...sdk_go.ClientOption) sdk_go.Client[*HelloRequest, *HelloResponse]
 }
 
 type greeterClient struct {
 	ctx     sdk_go.Context
-	options []sdk_go.CallOption
+	options []sdk_go.ClientOption
 }
 
-func NewGreeterClient(ctx sdk_go.Context, opts ...sdk_go.CallOption) GreeterClient {
-	cOpts := append([]sdk_go.CallOption{sdk_go.WithProtoJSON}, opts...)
+func NewGreeterClient(ctx sdk_go.Context, opts ...sdk_go.ClientOption) GreeterClient {
+	cOpts := append([]sdk_go.ClientOption{sdk_go.WithProtoJSON}, opts...)
 	return &greeterClient{
 		ctx,
 		cOpts,
 	}
 }
-func (c *greeterClient) SayHello(opts ...sdk_go.CallOption) sdk_go.TypedCallClient[*HelloRequest, *HelloResponse] {
+func (c *greeterClient) SayHello(opts ...sdk_go.ClientOption) sdk_go.Client[*HelloRequest, *HelloResponse] {
 	cOpts := c.options
 	if len(opts) > 0 {
-		cOpts = append(append([]sdk_go.CallOption{}, cOpts...), opts...)
+		cOpts = append(append([]sdk_go.ClientOption{}, cOpts...), opts...)
 	}
-	return sdk_go.NewTypedCallClient[*HelloRequest, *HelloResponse](c.ctx.Service("Greeter", "SayHello", cOpts...))
+	return sdk_go.WithRequestType[*HelloRequest](sdk_go.Service[*HelloResponse](c.ctx, "Greeter", "SayHello", cOpts...))
 }
 
 // GreeterServer is the server API for Greeter service.
@@ -81,38 +81,38 @@ func NewGreeterServer(srv GreeterServer, opts ...sdk_go.ServiceDefinitionOption)
 
 // CounterClient is the client API for Counter service.
 type CounterClient interface {
-	Add(opts ...sdk_go.CallOption) sdk_go.TypedCallClient[*AddRequest, *AddResponse]
-	Get(opts ...sdk_go.CallOption) sdk_go.TypedCallClient[*GetRequest, *GetResponse]
+	Add(opts ...sdk_go.ClientOption) sdk_go.Client[*AddRequest, *AddResponse]
+	Get(opts ...sdk_go.ClientOption) sdk_go.Client[*GetRequest, *GetResponse]
 }
 
 type counterClient struct {
 	ctx     sdk_go.Context
 	key     string
-	options []sdk_go.CallOption
+	options []sdk_go.ClientOption
 }
 
-func NewCounterClient(ctx sdk_go.Context, key string, opts ...sdk_go.CallOption) CounterClient {
-	cOpts := append([]sdk_go.CallOption{sdk_go.WithProtoJSON}, opts...)
+func NewCounterClient(ctx sdk_go.Context, key string, opts ...sdk_go.ClientOption) CounterClient {
+	cOpts := append([]sdk_go.ClientOption{sdk_go.WithProtoJSON}, opts...)
 	return &counterClient{
 		ctx,
 		key,
 		cOpts,
 	}
 }
-func (c *counterClient) Add(opts ...sdk_go.CallOption) sdk_go.TypedCallClient[*AddRequest, *AddResponse] {
+func (c *counterClient) Add(opts ...sdk_go.ClientOption) sdk_go.Client[*AddRequest, *AddResponse] {
 	cOpts := c.options
 	if len(opts) > 0 {
-		cOpts = append(append([]sdk_go.CallOption{}, cOpts...), opts...)
+		cOpts = append(append([]sdk_go.ClientOption{}, cOpts...), opts...)
 	}
-	return sdk_go.NewTypedCallClient[*AddRequest, *AddResponse](c.ctx.Object("Counter", c.key, "Add", cOpts...))
+	return sdk_go.WithRequestType[*AddRequest](sdk_go.Object[*AddResponse](c.ctx, "Counter", c.key, "Add", cOpts...))
 }
 
-func (c *counterClient) Get(opts ...sdk_go.CallOption) sdk_go.TypedCallClient[*GetRequest, *GetResponse] {
+func (c *counterClient) Get(opts ...sdk_go.ClientOption) sdk_go.Client[*GetRequest, *GetResponse] {
 	cOpts := c.options
 	if len(opts) > 0 {
-		cOpts = append(append([]sdk_go.CallOption{}, cOpts...), opts...)
+		cOpts = append(append([]sdk_go.ClientOption{}, cOpts...), opts...)
 	}
-	return sdk_go.NewTypedCallClient[*GetRequest, *GetResponse](c.ctx.Object("Counter", c.key, "Get", cOpts...))
+	return sdk_go.WithRequestType[*GetRequest](sdk_go.Object[*GetResponse](c.ctx, "Counter", c.key, "Get", cOpts...))
 }
 
 // CounterServer is the server API for Counter service.
