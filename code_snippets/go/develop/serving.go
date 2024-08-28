@@ -32,7 +32,7 @@ func serving() {
 	// <start_identity>
 	if err := server.NewRestate().
 		Bind(restate.Reflect(MyService{})).
-		Bind(restate.Reflect(MyVirtualObject{})).
+		// withClass highlight-line
 		WithIdentityV1("publickeyv1_w7YHemBctH5Ck2nQRQ47iBBqhNHy4FV7t2Usbye2A6f").
 		Start(context.Background(), ":9080"); err != nil {
 		log.Fatal(err)

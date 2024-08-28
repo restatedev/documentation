@@ -1,5 +1,6 @@
 import restate
 from restate import Workflow, WorkflowSharedContext, WorkflowContext
+from restate.serde import Serde
 
 my_workflow = Workflow("MyWorkflow")
 
@@ -16,3 +17,6 @@ async def interact_with_workflow(ctx: WorkflowSharedContext, req: str):
     return
 
 app = restate.app(services=[my_workflow])
+
+
+Serde
