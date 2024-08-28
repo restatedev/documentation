@@ -23,8 +23,8 @@ class MySerde(Serde[MyData]):
         if obj is None:
             return bytes()
         data = {
-            "some_value": obj.some_value,
-            "some_number": obj.my_number
+            "some_value": obj["some_value"],
+            "some_number": obj["my_number"]
         }
         return bytes(json.dumps(data), "utf-8")
 # <end_custom>

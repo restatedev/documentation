@@ -11,7 +11,7 @@ caller = Service("Caller")
 
 
 @caller.handler()
-async def caller(ctx: Context, arg):
+async def calling_handler(ctx: Context, arg):
     # <start_request_response_service>
     response = await ctx.service_call(my_service_handler, arg="Hi")
     # <end_request_response_service>

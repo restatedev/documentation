@@ -5,7 +5,7 @@ my_service = Service("MyService")
 
 
 @my_service.handler("myHandler")
-async def my_service_handler(ctx: Context, greeting: str) -> int:
+async def my_service_handler(ctx: Context, greeting: str) -> str:
     return f"${greeting}!"
 
 app = restate.app(services=[my_service])
