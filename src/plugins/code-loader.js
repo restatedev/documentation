@@ -7,6 +7,7 @@ const COMMENT_SYMBOL = {
     kotlin: "//",
     python: "#",
     go: "//",
+    proto: "//"
 }
 
 const plugin = (options) => {
@@ -51,6 +52,8 @@ const plugin = (options) => {
             return COMMENT_SYMBOL.python;
         } else if (filePath.includes(".go")) {
             return COMMENT_SYMBOL.go;
+        } else if (filePath.includes(".proto")) {
+            return COMMENT_SYMBOL.proto;
         } else {
             throw new Error(`language not detected for filepath ${filePath}`)
         }

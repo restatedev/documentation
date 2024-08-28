@@ -7,13 +7,13 @@ import Admonition from '@theme/Admonition';
 
 # Overview
 
-The Restate TypeScript SDK is open source and can be found on GitHub: ([sdk-typescript repo](https://github.com/restatedev/sdk-typescript)).
+The Restate Python SDK is open source and can be found on GitHub: ([sdk-python repo](https://github.com/restatedev/sdk-python)).
 
 <Admonition type="tip" icon="🚀" title="Set up your project in seconds">
-Have a look at the [TypeScript Quickstart](/get_started/quickstart?sdk=ts)!
+Have a look at the [Python Quickstart](/get_started/quickstart?sdk=python)!
 </Admonition>
 
-Add the `@restatedev/restate-sdk` dependency to your NodeJS project to start developing Restate services.
+Add the `restate_sdk` requirement to your Python project to start developing Restate services.
 
 The Restate SDK lets you implement handlers.
 Handlers can either be part of a [Service](/concepts/services#services-1), a [Virtual Object](/concepts/services#virtual-objects), or a [Workflow](/concepts/services#workflows). Let's have a look at how to define them.
@@ -22,52 +22,56 @@ Handlers can either be part of a [Service](/concepts/services#services-1), a [Vi
 
 [Services](/concepts/services#services-1) and their handlers are defined as follows:
 
-```typescript
-CODE_LOAD::ts/src/develop/my_service.ts
+```python
+CODE_LOAD::python/src/develop/my_service.py
 ```
 
-- Specify that you want to create a Service via _`restate.service`_.
-- Specify the service name. The service can then be called at `<RESTATE_INGRESS_URL>/MyService/myHandler`.
+- Initialize a `Service` and specify the service name (here `MyService`).
 - The service definition contains a list of handlers.
-  Each handler has a name (`myHandler`) and a function that implements the handler logic.
-  The function has the Restate Context as its first argument.
+  Each handler is annotated by `@service_name.handler()`, optionally you can override the name of the handler (here `myHandler`).
+  This is the name that will be used to call the handler, here you would use `<RESTATE_INGRESS_URL>/MyService/myHandler`.
+- The function has the Restate Context as its first argument.
   Within the handler, you use the `Context` to interact with Restate.
   The SDK stores the actions you do on the context in the Restate journal to make them durable.
-- The handler input parameters and return type are optional and can be of any type, as long as they can be serialized as a Buffer with _`Buffer.from(JSON.stringify(yourObject))`_ and deserialized with _`JSON.parse(result.toString()) as T`_.
-- Export the service definition `MyService` so that it can be used by other handlers to call the service. (See [Service Communication docs](/develop/ts/service-communication).)
-- Finally, create an endpoint and bind the service(s) to the Restate endpoint. Listen on the specified port (default `9080`) for connections and requests.
+- The handler input argument (at most one) and return type are optional and can be of any primitive type or a `TypedDict`.
+  They need to be serializable with `json.dumps` and deserializable with `json.loads`.
+  If not, you need to specify a [custom serializer](/develop/python/serialization).
+- Finally, initialize the app and bind the service(s) to it.
+  The SDK follows the [ASGI standard](https://asgi.readthedocs.io/en/latest/introduction.html) to serve the app.
+  The templates and examples use [Hypercorn](https://pypi.org/project/Hypercorn/) as the server.
+  Have a look at the [serving docs](/develop/python/serving) to learn more.
 
 ## Virtual Objects
 
 [Virtual Objects](/concepts/services#virtual-objects) and their handlers are defined similarly to services, with the following differences:
 
-```typescript
-CODE_LOAD::ts/src/develop/my_virtual_object.ts
+```python
+CODE_LOAD::python/src/develop/my_virtual_object.py
 ```
 
-- Specify that you want to create a Virtual Object via _`restate.object`_.
+- Initialize a `VirtualObject` and specify the object's name (here `MyVirtualObject`).
 - The first argument of each handler must be the `ObjectContext` parameter.
 Handlers with the `ObjectContext` parameter can write to the K/V state store.
 Only one handler can be active at a time, to ensure consistency.
-- If you want to have a handler that executes concurrently to the others and doesn't have write access to the K/V state, wrap the handler in `handlers.object.shared` and use the `ObjectSharedContext`.
+- If you want to have a handler that executes concurrently to the others and doesn't have write access to the K/V state, add `kind="shared"` as annotation argument and use the `ObjectSharedContext`.
 For example, you can use these handlers to read K/V state, or interact with the blocking handler.
 
 ## Workflows
 
 [Workflows](/concepts/services#workflows) are a special type of Virtual Objects, their definition is similar but with the following differences:
 
-```typescript
-CODE_LOAD::ts/src/develop/workflow.ts
+```python
+CODE_LOAD::python/src/develop/my_workflow.py
 ```
 
-- Create the workflow with _`restate.workflow`_.
-- Every workflow implementation needs to have a handler called `run` that implements the workflow logic.
+- Initialize a `Workflow` and specify its name (here `MyWorkflow`).
+- Every workflow implementation needs to have a handler annotated with `@workflow_name.main()` called `run` that implements the workflow logic.
 This handler uses the `WorkflowContext` to interact with the SDK.
 The `run` handler executes exactly one time per workflow execution/object.
 - The other handlers of the workflow are used to interact with the workflow: either query it, or signal it.
 They use the `WorkflowSharedContext` to interact with the SDK.
 These handlers can run concurrently with the `run` handler and can still be called after the `run` handler has finished.
-- [Have a look at the workflow docs to learn more.](/develop/ts/workflows)
+- [Have a look at the workflow docs to learn more.](/develop/python/workflows)
 
 
 Now that you have a high-level idea of what a Restate service might look like, let's have a look at what the Restate Context allows you to do.

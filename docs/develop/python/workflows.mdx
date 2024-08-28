@@ -11,14 +11,14 @@ import Admonition from '@theme/Admonition';
 [Workflows](/concepts/services#workflows) are a sequence of steps that gets executed durably.
 A workflow can be seen as a special type of [Virtual Object](/concepts/services#virtual-objects) with some special characteristics:
 
-- Each [workflow definition](/develop/ts/overview#workflows) has a `run` handler that implements the workflow logic.
+- Each [workflow definition](/develop/python/overview#workflows) has a `run` handler that is annotated with _`@service_name.main()`_ and implements the workflow logic.
 - The `run` handler executes exactly one time for each workflow instance (object / key).
-- A [workflow definition](/develop/ts/overview#workflows) can implement other handlers that can be called multiple times, and can interact with the workflow.
-- Workflows have access to the `WorkflowContext` and `WorkflowSharedContext`, giving them some extra functionality, for example [Durable Promises](/develop/ts/workflows#signaling-workflows) to signal workflows.
+- A [workflow definition](/develop/python/overview#workflows) can implement other handlers that can be called multiple times, and can interact with the workflow.
+- Workflows have access to the `WorkflowContext` and `WorkflowSharedContext`, giving them some extra functionality, for example [Durable Promises](/develop/python/workflows#signaling-workflows) to signal workflows.
 
 <Admonition type="note" title={"Workflow retention time"}>
     The retention time of a workflow execution is 24 hours after the finishing of the `run` handler.
-    After this timeout any [K/V state](/develop/ts/state) is cleared, the workflow's shared handlers cannot be called anymore, and the [Durable Promises](/develop/ts/workflows#signaling-workflows) are discarded.
+    After this timeout any [K/V state](/develop/python/state) is cleared, the workflow's shared handlers cannot be called anymore, and the [Durable Promises](/develop/python/workflows#signaling-workflows) are discarded.
     The retention time can be configured via the [Admin API](/references/admin-api/#tag/service/operation/modify_service) per Workflow definition by setting `workflow_completion_retention`.
 </Admonition>
 
@@ -31,23 +31,23 @@ Have a look at the code example to get a better understanding of how workflows a
 
     Every workflow needs a `run` handler.
     This handler has access to the same SDK features as Service and Virtual Object handlers.
-    For example, use [`ctx.run`](/develop/ts/journaling-results#journaled-actions) to log intermediate results in Restate and avoid re-execution on replay.
+    For example, use [`ctx.run`](/develop/v/journaling-results#journaled-actions) to log intermediate results in Restate and avoid re-execution on replay.
 
-    ```ts
-    CODE_LOAD::ts/src/develop/workflows/signup.ts?1
+    ```python
+    CODE_LOAD::python/src/develop/workflows/signup.py?1
     ```
 
     ---
 
     ### Querying workflows
 
-    Similar to Virtual Objects, you can retrieve the [K/V state](/develop/ts/state#retrieving-state) of workflows via the other handlers defined in the workflow definition,
+    Similar to Virtual Objects, you can retrieve the [K/V state](/develop/python/state#retrieving-state) of workflows via the other handlers defined in the workflow definition,
     For example, here we expose the status of the workflow to external clients.
     Every workflow execution can be seen as a new object, so the state is isolated to a single workflow execution.
     The state can only be mutated by the `run` handler of the workflow. The other handlers can only read the state.
 
-    ```ts
-    CODE_LOAD::ts/src/develop/workflows/signup.ts?2
+    ```python
+    CODE_LOAD::python/src/develop/workflows/signup.py?2
     ```
 
     ---
@@ -61,19 +61,19 @@ Have a look at the code example to get a better understanding of how workflows a
     1. Create a promise in your one handler that is durable and distributed. For example, here in the `run` handler.
     2. Resolve or reject the promise in any other handler in the workflow. This can be done at most one time.
 
-    ```ts
-    CODE_LOAD::ts/src/develop/workflows/signup.ts?3
+    ```python
+    CODE_LOAD::python/src/develop/workflows/signup.py?3
     ```
 
     ---
 
     ### Serving and registering workflows
 
-    You serve workflows in the same way as Services and Virtual Objects: by binding them to an [HTTP endpoint](/develop/ts/serving#creating-an-http-endpoint) or [AWS Lambda handler](/develop/ts/serving#creating-a-lambda-handler).
-    Make sure you [register the endpoint or Lambda handler](/operate/registration) in Restate before invoking it.
+    You serve workflows in the same way as Services and Virtual Objects: by binding them to an [HTTP endpoint](/develop/python/serving#creating-an-http-endpoint).
+    Make sure you [register the endpoint](/operate/registration) in Restate before invoking it.
 
-    ```ts
-    CODE_LOAD::ts/src/develop/workflows/signup.ts?4
+    ```python
+    CODE_LOAD::python/src/develop/workflows/signup.py?4
     ```
 </CH.Scrollycoding>
 
@@ -81,50 +81,17 @@ Have a look at the code example to get a better understanding of how workflows a
     [Check out some examples of workflows-as-code with Restate on the use case page](/use-cases/workflows).
 </Admonition>
 
-## Submitting workflows with SDK clients
-<CH.Scrollycoding className={clsx("single-item", "spotlight-medium")}>
-
-    [**Submit**](/develop/ts/clients):
-    This returns a handle to the workflow once has been registered in Restate.
-    You can only submit once per workflow ID (here `"someone"`).
-
-    ```ts
-    CODE_LOAD::ts/src/develop/workflows/submit.ts#submit
-    ```
-
-</CH.Scrollycoding>
-
-<CH.Scrollycoding className={clsx("single-item", "spotlight-medium")}>
-    [**Query/signal**](/develop/ts/clients):
-    Call the other handlers of the workflow in the same way as for Virtual Object handlers.
-    For now, you can only do request-response calls.
-
-    ```ts
-    CODE_LOAD::ts/src/develop/workflows/submit.ts#query
-    ```
-</CH.Scrollycoding>
-
-<CH.Scrollycoding className={clsx("single-item", "spotlight-medium")}>
-
-    [**Attach/peek**](/develop/ts/clients#retrieve-result-of-invocations-and-workflows):
-    This lets you retrieve the result of a workflow or check if it's finished.
-
-    ```ts
-    CODE_LOAD::ts/src/develop/workflows/submit.ts#attach
-    ```
-</CH.Scrollycoding>
-
 ## Submitting workflows from a Restate service
 <CH.Scrollycoding className={clsx("single-item", "spotlight-medium")}>
 
-    [**Submit/query/signal**](/develop/ts/service-communication):
+    [**Submit/query/signal**](/develop/python/service-communication):
     Call the workflow handlers in the same way as for Services and Virtual Objects.
     This returns the result of the workflow/handler once it has finished.
-    Use the `workflowSendClient` to call the handler without waiting for the result.
+    Use `ctx.workflow_send` to call the handler without waiting for the result.
     You can only call the `run` handler (submit) once per workflow ID (here `"someone"`).
 
-    ```ts
-    CODE_LOAD::ts/src/develop/workflows/service.ts
+    ```python
+    CODE_LOAD::python/src/develop/workflows/service.py
     ```
 </CH.Scrollycoding>
 

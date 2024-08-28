@@ -4,78 +4,21 @@ description: "Set up long-running services or Lambda handlers."
 ---
 
 
-import Admonition from '@theme/Admonition';
-
 # Serving
-Restate services can run in a few ways: as a Node.js HTTP handler, as a AWS
-Lambda handler, or on other Javascript runtimes like Bun, Deno and Cloudflare
-Workers.
+Restate services can run in a few ways: as an HTTP handler, or as an AWS Lambda handler.
+For both, you do the following:
 
-## Creating an Node.js HTTP handler
-1. Create the endpoint
+1. Create the app
 2. Bind one or multiple services to it.
-3. Listen on the specified port (default `9080`) for connections and requests.
 
-```typescript
-CODE_LOAD::ts/src/develop/serving.ts#endpoint
+```python example.py
+CODE_LOAD::python/src/develop/serving.py#endpoint
 ```
 
-<details className={"grey-details"}>
-    <summary>Customizing the HTTP2 server</summary>
+The Python SDK follows the [ASGI](https://asgi.readthedocs.io/en/latest/introduction.html) standard for the serving of the services.
+The templates and examples use [Hypercorn](https://pypi.org/project/Hypercorn/) to serve the services.
+You can run them as follows:
 
-    If you need to manually control or customize the HTTP2 server, you can call `http2Handler()` instead of `listen()`, and then use it to manually instantiate the HTTP server:
-
-    ```ts
-    CODE_LOAD::ts/src/develop/serving.ts#custom_endpoint
-    ```
-</details>
-
-## Creating a Lambda handler
-
-To register your service as a Lambda function, use the `/lambda` import
-component and change the endpoint into a Lambda handler.
-```typescript
-CODE_LOAD::ts/src/develop/serving_lambda.ts#lambda
-```
-
-Have a look at the [deployment section](/category/aws--aws-lambda)
-for guidance on how to deploy your services on AWS Lambda.
-
-<Admonition type="tip" title={"Run on Lambda without handler changes"}>
-    The implementation of your services and handlers remains the same for both deployment options.
-</Admonition>
-
-## Creating a fetch handler
-Other Javascript runtimes like Deno, Bun and Cloudflare Workers have
-build on top of the [Fetch Standard](https://github.com/whatwg/fetch) for
-defining HTTP server handlers. To register your service as a fetch handler, use
-the `/fetch` import component.
-```typescript
-CODE_LOAD::ts/src/develop/serving_fetch.ts#fetch
-```
-By default, a fetch handler will not advertise itself as working
-bidirectionally; the SDK will end the HTTP request at each suspension point,
-and the Restate runtime will re-invoke the service when there is more work to
-do.
-
-However, you can use the method `.bidirectional()` on the endpoint builder to
-change this on supported platforms, which will improve latencies once the
-service is re-registered with the runtime.
-- Deno and Deno Deploy support HTTP2 and therefore bidirectional mode can be enabled.
-- Bun does not yet support HTTP2, but its HTTP1.1 implementation does support
-bidirectional communication, as long as there is not a buffering load balancer
-between the client and the Bun server. Bun services must be discovered with
-the `--use-http1.1` CLI flag.
-- Cloudflare Workers do not support end-to-end HTTP2 or bidirectional HTTP1.1,
-and enabling bidirectional mode will cause invocations to stall and time out.
-Services running on Workers must be must be discovered with the `--use-http1.1`
-CLI flag.
-
-## Validating request identity
-
-SDKs can validate that incoming requests come from a particular Restate
-instance. You can find out more about request identity in the [Security docs](/operate/security#locking-down-service-access)
-
-```typescript
-CODE_LOAD::ts/src/develop/serving.ts#identity
+```shell
+python -m hypercorn --config hypercorn-config.toml -b localhost:9080 example:app
 ```
