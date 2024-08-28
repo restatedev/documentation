@@ -27,13 +27,13 @@ const service = restate.service({
       // <end_one_way_object>
 
       // <start_delayed_service>
-      ctx.serviceSendClient(MyService, { delay: 5000 }).myHandler("Hi");
+      ctx.serviceSendClient(MyService).myHandler("Hi", restate.rpc.sendOpts({ delay: 5000 }));
       // <end_delayed_service>
 
       // <start_delayed_object>
       ctx
-        .objectSendClient(MyVirtualObject, "Mary", { delay: 5000 })
-        .myHandler("Hi");
+        .objectSendClient(MyVirtualObject, "Mary")
+        .myHandler("Hi", restate.rpc.sendOpts({ delay: 5000 }));
       // <end_delayed_object>
 
       // <start_ordering>
