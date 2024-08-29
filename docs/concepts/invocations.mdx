@@ -219,6 +219,47 @@ Invocations get a unique identifier. This identifier is used to track the progre
 
         Learn more about [service communication](/develop/go/service-communication) in the Go SDK.
     </TabItem>
+    <TabItem value="python" label="Python">
+        <CH.Scrollycoding start={1} className="spotlight-medium">
+
+            **Request-response invocations** allow you to wait on a response from the handler.
+
+            <CH.Code>
+
+                ```python restate_service.py
+                CODE_LOAD::python/src/concepts/invocations/rpc.py#rpc_call
+                ```
+
+            </CH.Code>
+
+            ---
+
+            **One-way invocations** allow you to trigger an asynchronous action.
+
+            <CH.Code>
+
+                ```python restate_service.py
+                CODE_LOAD::python/src/concepts/invocations/one_way.py#one_way_call
+                ```
+
+            </CH.Code>
+
+            ---
+
+            **Delayed invocations** allow you to schedule an invocation for a later point in time.
+
+            <CH.Code>
+
+                ```python restate_service.py
+                CODE_LOAD::python/src/concepts/invocations/delayed.py#delayed_call
+                ```
+
+            </CH.Code>
+
+        </CH.Scrollycoding>
+
+        Learn more about [service communication](/develop/ts/service-communication) and the [SDK clients](/develop/ts/clients) in the TypeScript SDK.
+    </TabItem>
     <TabItem value="shell" label="Shell">
 
         <CH.Scrollycoding start={1} className="spotlight-medium">
@@ -227,8 +268,8 @@ Invocations get a unique identifier. This identifier is used to track the progre
 
             ```bash
             curl localhost:8080/GreeterService/greet \
-                -H 'content-type: application/json' \
-                -d '"Hi"'
+            -H 'content-type: application/json' \
+            -d '"Hi"'
             ```
 
             ---
@@ -238,8 +279,8 @@ Invocations get a unique identifier. This identifier is used to track the progre
 
             ```bash
             curl localhost:8080/GreeterService/greet/send \
-                -H 'content-type: application/json' \
-                -d '"Hi"'
+            -H 'content-type: application/json' \
+            -d '"Hi"'
             ```
 
             ---
@@ -248,8 +289,8 @@ Invocations get a unique identifier. This identifier is used to track the progre
 
             ```bash
             curl localhost:8080/GreeterService/greet/send?delay=10s \
-                -H 'content-type: application/json' \
-                -d '"Hi"'
+            -H 'content-type: application/json' \
+            -d '"Hi"'
             ```
 
         </CH.Scrollycoding>
