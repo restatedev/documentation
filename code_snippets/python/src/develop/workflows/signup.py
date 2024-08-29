@@ -45,6 +45,6 @@ async def get_status(ctx: WorkflowSharedContext):
 # </mark_2>
 
 # <mark_4>
-app = restate.app(services=[signup_workflow])
+app = restate.app([signup_workflow])
 # </mark_4>
 # <end_here>
