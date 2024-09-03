@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-const VideoPlayer = ({ src }) => {
+const VideoPlayer = ({ src, img }) => {
     const videoRef = useRef(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [progress, setProgress] = useState(0);
@@ -38,6 +38,8 @@ const VideoPlayer = ({ src }) => {
             <video
                 ref={videoRef}
                 src={src}
+                poster={img}
+                preload="none"
                 style={{ maxWidth: "100%", borderRadius: "6px" }}
                 controlsList="nodownload nofullscreen noremoteplayback"
             />
