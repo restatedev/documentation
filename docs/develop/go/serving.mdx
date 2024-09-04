@@ -1,0 +1,67 @@
+---
+sidebar_position: 11
+description: "Set up long-running services or Lambda handlers."
+---
+
+
+import Admonition from '@theme/Admonition';
+
+# Serving
+The Restate SDK is served as a HTTP handler. You can choose to run this in a
+standalone HTTP2 server, or connect the handler into a FaaS system like Lambda.
+
+## Creating a HTTP2 server
+1. Create the Restate Server
+2. Bind one or multiple services to it.
+3. Listen on the specified port for connections and requests.
+
+```go
+CODE_LOAD::go/develop/serving.go#endpoint
+```
+
+<details className={"grey-details"}>
+    <summary>Customizing the HTTP2 server</summary>
+
+    If you need to customize the HTTP2 server, or serve over HTTP1.1
+    you can call `.Handler()` instead of `Start()`, and then use the
+    handler as normal. To discover services over HTTP1.1 you must
+    provide the `--use-http1.1` CLI flag.
+
+    ```go
+    CODE_LOAD::go/develop/serving.go#custom_endpoint
+    ```
+
+    By default, this handler will advertise itself as working
+    bidirectionally; the SDK will try to get completions from the runtime
+    during execution.
+
+    However, you can use the method `.Bidirectional(false)` on the endpoint
+    builder to change this on platforms that do not support bidirectional
+    communication, such as Lambda. If you don't do this your handler may get
+    stuck.
+</details>
+
+## Creating a Lambda handler
+
+To register your service as a Lambda function change the endpoint into a Lambda handler,
+setting `.Bidirectional(false)` as Lambda does not support bidirectional streaming
+of request data.
+```go
+CODE_LOAD::go/develop/servinglambda.go#lambda
+```
+
+Have a look at the [deployment section](/category/aws--aws-lambda)
+for guidance on how to deploy your services on AWS Lambda.
+
+<Admonition type="tip" title={"Run on Lambda without handler changes"}>
+    The implementation of your services and handlers remains the same for both deployment options.
+</Admonition>
+
+## Validating request identity
+
+SDKs can validate that incoming requests come from a particular Restate
+instance. You can find out more about request identity in the [Security docs](/operate/security#locking-down-service-access)
+
+```go
+CODE_LOAD::go/develop/serving.go#identity
+```

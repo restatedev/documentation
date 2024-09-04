@@ -1,5 +1,5 @@
 ---
-sidebar_position: 6
+sidebar_position: 7
 description: "Pause invocations while waiting for an external task completion."
 ---
 
@@ -16,20 +16,20 @@ This pattern is also known as the callback (task token) pattern.
 
 <CH.Scrollycoding className={"spotlight-medium"}>
 
-    1. The handler **creates an awakeable**. This contains a String identifier and a Promise.
+    1. The handler **creates an awakeable**. This contains a String identifier and a handle on the future result.
 
-    ```ts
-    CODE_LOAD::ts/src/develop/awakeable.ts?1
+    ```go
+    CODE_LOAD::go/develop/awakeable.go?1
     ```
 
     ---
 
     2. The handler **triggers a task/process** and attaches the awakeable ID  (e.g. over Kafka, via HTTP,...).
     For example, send an HTTP request to a service that executes the task, and attach the ID to the payload.
-    You use `ctx.run` to avoid re-triggering the task on retries.
+    You use `restate.Run` to avoid re-triggering the task on retries.
 
-    ```ts
-    CODE_LOAD::ts/src/develop/awakeable.ts?2
+    ```go
+    CODE_LOAD::go/develop/awakeable.go?2
     ```
 
     ---
@@ -37,8 +37,8 @@ This pattern is also known as the callback (task token) pattern.
     3. The handler **waits** until the other process has executed the task.
     The handler **receives the payload and resumes**.
 
-    ```ts
-    CODE_LOAD::ts/src/develop/awakeable.ts?3
+    ```go
+    CODE_LOAD::go/develop/awakeable.go?3
     ```
 
 </CH.Scrollycoding>
@@ -46,7 +46,7 @@ This pattern is also known as the callback (task token) pattern.
 ## Completing awakeables
 
 The external process completes the awakeable by either resolving it with an optional payload or by rejecting it
-with its ID and a reason for the failure. This throws [a terminal error](/develop/ts/error-handling) in the waiting handler.
+with its ID and a reason for the failure. This throws [a terminal error](/develop/go/error-handling) in the waiting handler.
 
 <CH.Scrollycoding className={"single-item spotlight-medium"}>
     - Resolving over HTTP with its ID and an optional payload:
@@ -69,21 +69,25 @@ with its ID and a reason for the failure. This throws [a terminal error](/develo
 <CH.Scrollycoding className={"single-item spotlight-medium"}>
     - Resolving via the SDK with its ID and an optional payload:
 
-    ```ts
-    CODE_LOAD::ts/src/develop/awakeable.ts#resolve
+    ```go
+    CODE_LOAD::go/develop/awakeable.go#resolve
     ```
 </CH.Scrollycoding>
 <CH.Scrollycoding className={"single-item spotlight-medium"}>
     - Rejecting via the SDK with its ID and a reason:
 
-    ```ts
-    CODE_LOAD::ts/src/develop/awakeable.ts#reject
+    ```go
+    CODE_LOAD::go/develop/awakeable.go#reject
     ```
 </CH.Scrollycoding>
 
 
-<Admonition type="info" title={"Payload serialization"}>
-    You can return any payload that can be serialized as a Buffer with _`Buffer.from(JSON.stringify(yourObject))`_ and deserialized with _`JSON.parse(result.toString()) as T`_.
+<Admonition type="info" title={"Result serialization"}>
+    You can resolve an awakeable with any payload that can be serialized. By default,
+    serialization is done with
+    [`JSONCodec`](https://pkg.go.dev/github.com/restatedev/sdk-go/encoding#PayloadCodec)
+    which uses `encoding/json`. If you don't need to provide anything, you can
+    use `restate.Void{}` which serializes to a nil byte slice.
 </Admonition>
 
 <Admonition type="tip" title="Cost savings on FaaS">

@@ -403,6 +403,136 @@ You should now see printed as response: `Hi!`
 </details>
 
 </TabItem>
+<TabItem value="go" label="Go">
+
+<Admonition type="note" title="Prerequisites">
+- Go: >= 1.21.0
+- Optional but recommended: [Install the Restate Server & CLI](/develop/local_dev#running-restate-server--cli-locally)
+</Admonition>
+
+<Step stepLabel="1" title="Get the Greeter service template">
+
+    <CH.Code>
+
+        ```shell CLI
+        # link(1:2) /develop/local_dev#running-restate-server--cli-locally
+        restate example go-hello-world &&
+        cd go-hello-world
+        ```
+
+        ```shell npx
+        npx @restatedev/restate example go-hello-world &&
+        cd go-hello-world
+        ```
+
+        ```shell wget
+        wget https://github.com/restatedev/examples/releases/latest/download/go-hello-world.zip &&
+            unzip go-hello-world.zip -d go-hello-world &&
+            rm go-hello-world.zip && cd go-hello-world
+        ```
+
+    </CH.Code>
+
+</Step>
+<Step stepLabel="2" title="Run the Greeter service">
+
+Now, start developing your service in `greeter.go`. Run it with `go run .`; it will listen on port 9080 for requests.
+
+</Step>
+
+<Step stepLabel="3" title="Launch Restate">
+Restate is a single self-contained binary. No external dependencies needed. Run it locally via ([or download the binaries](/develop/local_dev#running-restate-server--cli-locally)):
+
+
+<CH.Code rows={"2"}>
+
+```shell npx
+npx @restatedev/restate-server
+```
+
+``` shell Homebrew
+brew install restatedev/tap/restate-server && restate-server
+```
+
+```shell Docker
+docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 \
+    --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
+```
+
+</CH.Code>
+
+</Step>
+
+<Step stepLabel="4" title="Register the service">
+
+Tell Restate where the service is running, so Restate can discover and register the services and handlers behind this endpoint:
+
+<CH.Code rows={"2"}>
+
+```shell CLI
+# link /develop/local_dev#running-restate-server--cli-locally
+restate deployments register http://localhost:9080
+```
+
+```shell npx
+npx @restatedev/restate deployments register http://localhost:9080
+```
+
+```shell curl
+curl localhost:9070/deployments -H 'content-type: application/json' \
+    -d '{"uri": "http://localhost:9080"}'
+```
+
+</CH.Code>
+
+If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
+
+<details className={"grey-details"}>
+
+    <summary>Output</summary>
+
+    ```shell
+    ❯ SERVICES THAT WILL BE ADDED:
+    - Greeter
+    Type: Service
+    HANDLER  INPUT                                     OUTPUT
+    Greet    value of content-type 'application/json'  value of content-type 'application/json'
+
+
+    ✔ Are you sure you want to apply those changes? · yes
+    ✅ DEPLOYMENT:
+    SERVICE  REV
+    Greeter  1
+    ```
+
+</details>
+
+</Step>
+
+<Step stepLabel="5" title="Send a request to the Greeter service">
+
+```shell
+curl localhost:8080/Greeter/Greet -H 'content-type: application/json' -d '"Hi"'
+```
+
+You should now see printed as response: `Hi!`
+
+</Step>
+<Step end={true} stepLabel="🎉" title="Congratulations, you managed to run your first Restate service!"/>
+
+<details className="grey-details">
+
+<summary>Next: Build and run the app</summary>
+
+    Once you have implemented your service, build the app with:
+
+```shell
+go build .
+```
+
+</details>
+
+</TabItem>
 </Tabs>
 
 

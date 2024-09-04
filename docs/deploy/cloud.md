@@ -219,11 +219,19 @@ RestateHttpEndpointBuilder.builder()
     .buildAndListen();
 ```
 
+```go Go
+if err := server.NewRestate().
+		Bind(restate.Reflect(MyService{})).
+		WithIdentityV1("publickeyv1_8SyC5reu2eTUwGCH4CehFntZAnADvYU6PXZtFyKiTrWy").
+		Start(context.Background(), ":9080"); err != nil {
+		log.Fatal(err)
+}
+```
+
 </CH.Code>
 
 ### Lambda
 
 If your Lambda has an appropriate trust policy as described above, you do not
 need to secure incoming requests any further. If you choose to however, the
-`withIdentityV1` (TS) and `withRequestIdentityVerifier` (Java) functions will
-work on Lambda endpoints as well.
+identity verification checks will work on Lambda endpoints as well.

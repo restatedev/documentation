@@ -130,5 +130,56 @@ Let's have a look at a handler that processes food orders:
 
 </CH.Scrollycoding>
 </TabItem>
-</Tabs>
+<TabItem value="go" label="Go">
 
+<CH.Scrollycoding className="durable-promises">
+    ### Durable <mark class="accent">functions</mark>
+    Handlers take part in durable execution, meaning that Restate keeps track of their progress and recovers them to the previously reached state in case of failures.
+
+
+    ```go orderprocessor.go
+    CODE_LOAD::go/concepts/foodordering.go?1
+    ```
+
+    ---
+
+    ### Durable <mark class="accent">RPCs</mark> and <mark class="accent">queues</mark>
+    Handlers can call other handlers in a resilient way, with or without waiting for the response.
+    When a failure happens, Restate handles retries and recovers partial progress.
+
+    ```go orderprocessor.go
+    CODE_LOAD::go/concepts/foodordering.go?2
+    ```
+
+    ---
+
+    ### Durable <mark class="accent">promises and timers</mark>
+    Register promises in Restate to make them resilient to failures (e.g. webhooks, timers).
+    Restate lets the handler suspend while awaiting the promise, and invokes it again when the result is available.
+    A great match for function-as-a-service platforms.
+
+    ```go orderprocessor.go
+    CODE_LOAD::go/concepts/foodordering.go?3
+    ```
+
+    ---
+
+    ### Consistent <mark class="accent">K/V state</mark>
+    Persist application state in Restate with a simple concurrency model and no extra setup. Restate makes sure state remains consistent amid failures.
+
+
+    ```go orderprocessor.go
+    CODE_LOAD::go/concepts/foodordering.go?4
+    ```
+    ---
+
+    ### Journaling <mark className="accent">actions</mark>
+    Store the result of an action in Restate. The result gets replayed in case of failures and the action is not executed again.
+
+    ```go orderprocessor.go
+    CODE_LOAD::go/concepts/foodordering.go?5
+    ```
+
+</CH.Scrollycoding>
+</TabItem>
+</Tabs>

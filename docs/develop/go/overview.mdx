@@ -1,0 +1,72 @@
+---
+sidebar_position: 1
+description: "Get an idea of what a Restate Go service looks like."
+---
+
+import Admonition from '@theme/Admonition';
+
+# Overview
+
+The Restate Go SDK is open source and can be found on GitHub: ([sdk-go repo](https://github.com/restatedev/sdk-go)).
+
+<Admonition type="tip" icon="🚀" title="Set up your project in seconds">
+Have a look at the [Go Quickstart](/get_started/quickstart?sdk=go)!
+</Admonition>
+
+Add the `github.com/restatedev/sdk-go` dependency to your project to start developing Restate services.
+
+The Restate SDK lets you implement handlers.
+Handlers can either be part of a [Service](/concepts/services#services-1), or a [Virtual Object](/concepts/services#virtual-objects). Let's have a look at how to define them.
+
+## Services
+
+[Services](/concepts/services#services-1) and their handlers are defined as follows:
+
+```go
+CODE_LOAD::go/develop/myservice/main.go
+```
+
+- Define a Service by implementing exported methods on any struct.
+- By default, the service name is the name of the struct, so the service can be
+  called at `<RESTATE_INGRESS_URL>/MyService/MyHandler`.
+- The service definition contains a list of handlers.
+  Each handler is just function that implements the handler logic. The handler
+  will be named the same way as the method.
+  The function has the Restate Context as its first argument.
+  Within the handler, you use the `Context` to interact with Restate.
+  The SDK stores the actions you do on the context in the Restate journal to make them durable.
+- The handler input parameters and return type can be of any type, as long as
+  they can be serialized. By default, serialization is done with
+  [`JSONCodec`](https://pkg.go.dev/github.com/restatedev/sdk-go/encoding#PayloadCodec)
+  which uses `encoding/json`. Input types, output types, and even errors are not mandatory
+  and can be omitted if your handler doesn't need them.
+- Pass the `MyService` struct to `restate.Reflect` which uses reflection to turn
+  the methods into handlers. It will skip unexported methods and those that
+  don't have the expected signature - see the [package documentation](https://pkg.go.dev/github.com/restatedev/sdk-go#Reflect)
+  for a list of allowed signatures.
+- Finally, create a server listening on the specified address and bind the
+  service(s) to it.
+
+## Virtual Objects
+
+[Virtual Objects](/concepts/services#virtual-objects) and their handlers are defined similarly to services, with the following differences:
+
+```go
+CODE_LOAD::go/develop/myvirtualobject/main.go
+```
+
+- The first argument of each handler must be the `ObjectContext` parameter.
+Handlers with the `ObjectContext` parameter can write to the K/V state store.
+Only one handler can be active at a time, to ensure consistency.
+- If you want to have a handler that executes concurrently to the others and
+doesn't have write access to the K/V state, instead use the
+`ObjectSharedContext`. For example, you can use these handlers to read K/V
+state, or interact with the blocking handler.
+
+<Admonition type="tip" title="Prefer to start with a service definition?">
+    The Go SDK also supports defining handlers and input/output types using
+    code generation from [Protocol Buffers](https://protobuf.dev/). See
+    [Code Generation](code-generation.mdx) for more details.
+</Admonition>
+
+Now that you have a high-level idea of what a Restate service might look like, let's have a look at what the Restate Context allows you to do.

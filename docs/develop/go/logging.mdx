@@ -1,0 +1,36 @@
+---
+sidebar_position: 12
+description: "Configure the log level of your services."
+---
+
+# Logging
+
+The Go SDK uses the standard library [`log/slog`](https://pkg.go.dev/log/slog)
+package for logging.
+
+By default logs will go to the slog default handler. However, you may provide
+any slog handler upon creating the Restate server instance, which allows you to
+direct the logs to other log libraries:
+
+```go
+CODE_LOAD::go/operate/monitoring.go#handler
+```
+
+**Avoiding duplicate logging**
+
+If you use the default slog logger or another logger, log statements will be
+printed over and over again during replays.
+To avoid this, you can use the Restate context logger, which is a
+`*slog.Logger` that suppresses duplicate log statements during replays:
+
+```go
+CODE_LOAD::go/operate/monitoring.go#logger
+```
+
+When providing a custom log handler using
+[`WithLogger`](https://pkg.go.dev/github.com/restatedev/sdk-go/server#Restate.WithLogger),
+you can provide `false` as the second argument, in which case logs will not be
+dropped during replay allowing you to handle them as you prefer. You can still
+determine whether they would have been dropped using
+[`rcontext.LogContextFrom`](https://pkg.go.dev/github.com/restatedev/sdk-go/rcontext#LogContextFrom)
+on the context passed to your log handler.

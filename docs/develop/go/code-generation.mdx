@@ -1,0 +1,119 @@
+---
+sidebar_position: 3
+description: "Use code generation and proto to create type-safe servers and clients."
+---
+
+import Admonition from '@theme/Admonition';
+
+# Code generation
+
+The Go SDK supports generating typed clients and server interfaces from
+[Protocol Buffer service definitions](https://protobuf.dev/programming-guides/proto3/#services).
+A full example can be found in the [SDK repository](https://github.com/restatedev/sdk-go/tree/main/examples/codegen).
+
+Code generation relies on the tool `protoc-gen-go-restate` which you can install using
+`go install github.com/restatedev/sdk-go/protoc-gen-go-restate@latest`, in addition to `protoc`
+which you can install from the [Protobuf compiler repo](https://github.com/protocolbuffers/protobuf#protobuf-compiler-installation).
+
+## Defining a service
+
+To get started, create a Protocol Buffer definition file defining a service:
+
+```proto
+CODE_LOAD::go/develop/codegen/proto/service.proto#service
+```
+
+You can compile this file into Go types and your Restate generated code with:
+
+```shell
+protoc --go_out=. --go_opt=paths=source_relative --go-restate_out=. --go-restate_opt=paths=source_relative proto/service.proto
+```
+
+This creates two files: `service.pb.go` containing Go types, and `service_restate.pb.go` which contains several useful objects:
+1. `NewGreeterClient`, which returns an interface for making type-safe calls to the Greeter service. The default serialization
+   for request and response data is the [canonical Protobuf JSON encoding](https://protobuf.dev/programming-guides/proto3/#json),
+   but this is configurable.
+2. `GreeterServer`, an interface for server code to implement. An implementor can be converted into a service definition with
+   `NewGreeterServer`.
+3. `UnimplementedGreeterServer`, an empty struct that implements `GreeterServer` by just returning 'not implemented' terminal
+   errors for each method. You can choose to embed this struct into your own implementation struct, in which case new methods
+   in the Protobuf definition will not cause compilation errors in your Go code, which can help with backwards compatibility.
+
+<Admonition type="tip" title="Want to use different serialization?">
+    Both `NewGreeterClient` and `NewGreeterServer` accept option parameters which can be used to set a different serialization codec.
+    For example, you can use Protobuf by providing `restate.WithProto` to both functions.
+</Admonition>
+
+## Implementing the server
+
+Next, you can implement the `GreeterServer` interface and bind it to your Restate server.
+
+```go
+CODE_LOAD::go/develop/codegen/codegen.go#server
+```
+
+## Using the client
+
+`NewGreeterClient` will return a similar client to what you'd get from `restate.Service`, with additional
+type safety for method names and request/response types.
+
+```go
+CODE_LOAD::go/develop/codegen/codegen.go#client
+```
+
+## Defining Virtual Objects
+
+To define a Virtual Object, you will need to provide the option `dev.restate.sdk.go.service_type` when defining the service.
+This option is defined by the Go SDK's proto file
+[`dev/restate/sdk/go.proto`](https://github.com/restatedev/sdk-go/blob/main/proto/dev/restate/sdk/go.proto) which must be imported in your own file,
+and a directory containing it must be provided to protoc eg with `-I $GOPATH/src/github.com/restatedev/sdk-go/proto`
+
+You may additionally provide the option `dev.restate.sdk.go.handler_type` to denote that a handler only needs access to the `ObjectSharedContext` and can run
+concurrently with other handlers.
+
+```proto
+CODE_LOAD::go/develop/codegen/proto/service.proto#virtual_object
+```
+
+Virtual Object clients are instantiated with a key:
+```go
+CODE_LOAD::go/develop/codegen/codegen.go#virtual_object_client
+```
+
+<details className={"grey-details"}>
+    <summary>Easier Protobuf with Buf</summary>
+
+    Instead of manually wrangling `protoc` to handle generation and proto imports,
+    it can be a lot easier to use [Buf](https://buf.build/).
+
+    Buf determines what code to generate based on a `buf.gen.yaml` file:
+    ```yaml
+    version: v2
+    managed:
+      enabled: true
+    plugins:
+      - remote: buf.build/protocolbuffers/go:v1.34.2
+        out: .
+        opt: paths=source_relative
+      - local: protoc-gen-go-restate
+        out: .
+        opt: paths=source_relative
+    inputs:
+      - directory: .
+    ```
+
+    And to allow the import of `dev/restate/sdk/go.proto`, you can specify the dependency in your `buf.yaml`:
+    ```yaml
+    version: v2
+    lint:
+      use:
+        - DEFAULT
+    breaking:
+      use:
+        - FILE
+    deps:
+      - buf.build/restatedev/sdk-go
+    ```
+
+    Then you can run `buf generate` to generate the code.
+</details>
