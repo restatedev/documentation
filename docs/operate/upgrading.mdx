@@ -1,0 +1,30 @@
+---
+sidebar_position: 7
+description: "Restate installation software version upgrades, compatibility policy, rollback strategy"
+---
+
+# Upgrading Restate
+
+Restate follows [Semantic Versioning](https://semver.org/). The server persists compatibility markers which enable it to detect incompatible data versions. However, you should be careful to follow supported version migration paths and perform [data backups](data-backup) when performing software upgardes.
+
+## Version compatibility
+
+<Admonition type="note">
+    Consult the release notes for the specific details of any new version when planning upgrades.
+</Admonition>
+
+Upgrading to the latest patch version should always be possible and is recommended to benefit from the latest bug fixes and enhancements.
+
+Incremental minor version upgrades will retain functional compatibility with the immediate prior version. That is, for any minor version update, you will be able to upgrade from `x.y` to `x.(y+1)` while retaining all persisted data and metadata. You must not skip minor version upgrades, i.e. go directly from `x.y` to `x.(y+2)`, as it may bypass necessary data store migrations required for preserving forward compatibility.
+
+We recognize that unexpected compatibility issues may arise. For this reason, you can also downgrade a Restate installation to the latest patch level of the previous minor version. For example, you can safely rollback the Restate server versionf rom `x.(y).0` to `x.(y-1).z` if you encounter compatibility issues. However, this rollback is only supported if you have not used any new opt-in features exclusive to the newer version. You cannot downgrade more than one minor version behind the most recent version used with the data store using this approach.
+
+## Service compatibility
+
+Registered Restate services must use an SDK compatible with the service protocol version(s) of the running Restate server. Note that Restate SDKs follow independent versioning from the server. You can find the latest SDK compatibility matrix in the respective SDK version documentation.
+
+* [Restate Java SDK](https://github.com/restatedev/sdk-java#versions)
+* [Restate TypeScript SDK](https://github.com/restatedev/sdk-typescript#versions)
+* [Restate Go SDK](https://github.com/restatedev/sdk-go#versions)
+* [Restate Python SDK](https://github.com/restatedev/sdk-python#versions)
+* [Restate Rust SDK](https://github.com/restatedev/sdk-rust#versions)
