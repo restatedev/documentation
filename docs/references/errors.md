@@ -62,7 +62,7 @@ Suggestions:
 
 * Up/Downgrade your Restate server to the requested version.
 * Migrate your data to the requested version by running the migration scripts.
-* Wipe your meta storage directory to start afresh via `--wipe=meta`.
+* Wipe your meta storage directory to start afresh via `rm -rf <BASE_DIR>/<NODE_NAME>/local-metadata-store`.
 * Configure a different meta storage directory via `meta.storage_path`.
 
 <h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="META0011">META0011<a href="#META0011" class="hash-link">&#8203;</a></h2>
@@ -71,7 +71,7 @@ Non-empty meta storage directory, configured via `meta.storage_path`, is missing
 
 Suggestions:
 
-* Wipe your meta storage directory to start afresh via `--wipe=meta`.
+* Wipe your meta storage directory to start afresh via `rm -rf <BASE_DIR>/<NODE_NAME>/local-metadata-store`.
 * Configure a different meta storage directory via `meta.storage_path`.
 * Downgrade your Restate server to {'<='} 0.7.
 
@@ -94,6 +94,26 @@ Suggestions:
 * Check the compatibility matrix between SDK and server versions
   * Either deploy a server version which is compatible with your SDK
   * Or use an SDK version which is compatible with your server
+
+<h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="META0014">META0014<a href="#META0014" class="hash-link">&#8203;</a></h2>
+
+Service discovery response failed, and the server may have responded in HTTP1.1.
+This can happen when discovering locally running dev servers from Faas platforms
+eg `wrangler dev`. FaaS platforms in generally will support HTTP2, however, so
+this is only a local development concern.
+
+You can try to discover the endpoint with `--use-http1.1` when working
+with these local dev servers. This should not be needed in production.
+
+<h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="META0015">META0015<a href="#META0015" class="hash-link">&#8203;</a></h2>
+
+The service discovery response suggested that the SDK is serving in
+bidirectional protocol mode, but discovery is going over a protocol that does
+not support it (currently only Lambda).
+
+Lambda endpoints do not support the bidirectional protocol mode and should be
+configured to announce themselves as being in request-response mode upon
+discovery.
 
 <h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="RT0001">RT0001<a href="#RT0001" class="hash-link">&#8203;</a></h2>
 
@@ -159,7 +179,7 @@ Trying to open worker storage directory, configured via `worker.storage_rocksdb.
 
 Suggestions:
 
-* Wipe your worker storage directory to start afresh via `--wipe=worker`.
+* Wipe your meta storage directory to start afresh via `rm -rf <BASE_DIR>/<NODE_NAME>/db`.
 * Configure a different worker storage directory via `worker.storage_rocksdb.path`.
 * Downgrade your Restate server to < 0.8.
 
