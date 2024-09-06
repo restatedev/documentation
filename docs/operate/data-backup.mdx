@@ -1,0 +1,30 @@
+---
+sidebar_position: 8
+description: "Strategies for backing up and restoring the Restate data store"
+---
+
+import Admonition from '@theme/Admonition';
+
+# Data Backup
+
+<Admonition type="note">
+    Future versions of Restate will support distributed deployment with spanning multiple machnes enhancing the availability you can achieve with your Restate cluster. This document only covers single-node Restate deployments.
+</Admonition>
+
+The Restate server persists both metadata (such as the details of deployed services, in-flight invocations) and data (e.g., virtual object and workflow state keys) in its data store, which is located in its base directory (by default, the `restate-data` path relative to the startup working directory). Restate is configured to perform write-ahead logging with fsync enabled to ensure that effects are fully persisted before being acknowledged to participating services.
+
+Backing up the full contents of the Restate base directory will ensure that you can recover this state in the event of a server failure. We recommend placing the data directory on fast block storage that supports atomic snapshots, such as Amazon EBS volume snapshots. Alternatively, you can stop the restate-server process, archive the base directory contents, and then restart the process. This ensures that the backup contains an atomic view of the persisted state.
+
+In addition to the data store, you should also make sure you have a back up of the effective Restate server configuration. Be aware that this may be spread across command line arguments, environment variables, and the server configuration file.
+
+## Restoring Backups
+
+<Admonition type={"caution"} title={"Avoid multiple instances of Restate"}>
+    Restate cannot guarantee that it is the only instance of the given node. You must ensure that only one instance of any given Restate node is running when restoring the data store from a backup. Running multiple instances could lead to a "split-brain" scenario where different servers process invocations for the same set of services, causing state divergence.
+</Admonition>
+
+To restore from backup, ensure the following:
+
+* Use a Restate server release that is compatible with the version that produced the data store snapshot. See the [Upgrading](upgrading) section.
+* Use an equivalent [Restate server configuration](/operate/configuration/server). In particular, ensure that the `cluster-name` and `node-name` attributes match those of the previous Restate server operating on this data store.
+* Exclusive access to a data store restored from the most recent atomic snapshot of the previous Restate installation.
