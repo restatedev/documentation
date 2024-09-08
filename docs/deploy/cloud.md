@@ -9,7 +9,7 @@ import Admonition from '@theme/Admonition';
 
 # Restate Cloud
 
-[Restate Cloud](https://cloud.restate.dev) is a fully managed serverless version of Restate, with a suite of tools supporting a stellar local development experience, and security features like [request signing](#securing-your-services) and [IAM roles for AWS Lambda](#aws-lambda-services). This allows you to focus on your services, which you can deploy wherever you normally do, while Restate Cloud handles all aspects of availability and durability for your invocations, workflows, and state.
+[Restate Cloud](https://restate.dev/cloud) is a fully managed serverless version of Restate, with a suite of tools supporting a stellar local development experience, and security features like [request signing](#securing-your-services) and [IAM roles for AWS Lambda](#aws-lambda-services). This allows you to focus on your services, which you can deploy wherever you normally do, while Restate Cloud handles all aspects of availability and durability for your invocations, workflows, and state.
 
 ## Creating your first environment
 
