@@ -42,8 +42,7 @@ httpServer.listen();
 restate
   .endpoint()
   .bind(myService)
-  .bind(myVirtualObject)
-  .bind(myWorkflow)
+  // withClass higlight-line
   .withIdentityV1("publickeyv1_w7YHemBctH5Ck2nQRQ47iBBqhNHy4FV7t2Usbye2A6f")
   .listen();
 // <end_identity>

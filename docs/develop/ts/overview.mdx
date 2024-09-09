@@ -13,7 +13,7 @@ The Restate TypeScript SDK is open source and can be found on GitHub: ([sdk-type
 Have a look at the [TypeScript Quickstart](/get_started/quickstart?sdk=ts)!
 </Admonition>
 
-Add the `@restatedev/restate-sdk` dependency to your NodeJS project to start developing Restate services.
+Add the `@restatedev/restate-sdk` dependency to your Python project to start developing Restate services.
 
 The Restate SDK lets you implement handlers.
 Handlers can either be part of a [Service](/concepts/services#services-1), a [Virtual Object](/concepts/services#virtual-objects), or a [Workflow](/concepts/services#workflows). Let's have a look at how to define them.
@@ -33,7 +33,7 @@ CODE_LOAD::ts/src/develop/my_service.ts
   The function has the Restate Context as its first argument.
   Within the handler, you use the `Context` to interact with Restate.
   The SDK stores the actions you do on the context in the Restate journal to make them durable.
-- The handler input parameters and return type are optional and can be of any type, as long as they can be serialized as a Buffer with _`Buffer.from(JSON.stringify(yourObject))`_ and deserialized with _`JSON.parse(result.toString()) as T`_.
+- The handler input parameter (at most one) and return type are optional and can be of any type, as long as they can be serialized as a Buffer with _`Buffer.from(JSON.stringify(yourObject))`_ and deserialized with _`JSON.parse(result.toString()) as T`_.
 - Export the service definition `MyService` so that it can be used by other handlers to call the service. (See [Service Communication docs](/develop/ts/service-communication).)
 - Finally, create an endpoint and bind the service(s) to the Restate endpoint. Listen on the specified port (default `9080`) for connections and requests.
 

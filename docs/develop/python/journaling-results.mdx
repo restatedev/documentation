@@ -1,0 +1,35 @@
+---
+sidebar_position: 3
+description: "Learn how to store the results of non-deterministic operations."
+---
+
+import Admonition from '@theme/Admonition';
+import clsx from "clsx";
+
+# Journaling Results
+
+Restate uses an execution log for replay after failures and suspensions.
+This means that non-deterministic results (e.g. database responses, UUID generation) need to be stored in the execution log.
+The SDK offers some functionalities to help you with this:
+1. **[Journaled actions](/develop/python/journaling-results#journaled-actions)**: Run any block of code and store the result in Restate. Restate replays the result instead of re-executing the block on retries.
+
+## Journaled actions
+You can store the result of a (non-deterministic) operation in the Restate execution log (e.g. database requests, HTTP calls, etc).
+Restate replays the result instead of re-executing the operation on retries.
+
+Here is an example of a database request for which the string response is stored in Restate:
+```python
+CODE_LOAD::python/src/develop/journaling_results.py#side_effect
+```
+
+You cannot invoke any methods on the Restate context within a side effect.
+This includes actions such as getting state, calling another service, and nesting other journaled actions.
+
+You can return any payload that can be serialized with _`bytes(json.dumps(obj), "utf-8")`_ and deserialized with _`json.loads(buf)`_.
+If not, you need to specify a [custom serializer](/develop/python/serialization).
+
+<Admonition type="caution" title={"Immediately await journaled actions"}>
+Always immediately await `ctx.run`, before doing any other context calls.
+If not, you might bump into non-determinism errors during replay,
+because the journaled result can get interleaved with the other context calls in the journal in a non-deterministic way.
+</Admonition>

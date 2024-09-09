@@ -14,9 +14,6 @@ from restate import VirtualObject
 from restate.context import ObjectContext, Serde
 from restate.service import Service
 
-from auxiliary.email_client import EmailClient
-from auxiliary.payment_client import PaymentClient
-
 cart = VirtualObject("CartObject")
 
 
