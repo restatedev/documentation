@@ -1,0 +1,33 @@
+---
+sidebar_position: 11
+description: "Set up long-running services or Lambda handlers."
+---
+
+
+# Serving
+Restate services can run in a few ways: as an HTTP handler, or as an AWS Lambda handler.
+For both, you do the following:
+
+1. Create the app
+2. Bind one or multiple services to it.
+
+```python example.py
+CODE_LOAD::python/src/develop/serving.py#endpoint
+```
+
+The Python SDK follows the [ASGI](https://asgi.readthedocs.io/en/latest/introduction.html) standard for the serving of the services.
+The templates and examples use [Hypercorn](https://pypi.org/project/Hypercorn/) to serve the services.
+You can run them as follows:
+
+```shell
+python -m hypercorn --config hypercorn-config.toml -b localhost:9080 example:app
+```
+
+## Validating request identity
+
+SDKs can validate that incoming requests come from a particular Restate
+instance. You can find out more about request identity in the [Security docs](/operate/security#locking-down-service-access)
+
+```python
+CODE_LOAD::python/src/develop/serving.py#identity
+```

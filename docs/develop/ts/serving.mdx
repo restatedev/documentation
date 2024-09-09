@@ -7,11 +7,11 @@ description: "Set up long-running services or Lambda handlers."
 import Admonition from '@theme/Admonition';
 
 # Serving
-Restate services can run in a few ways: as a Node.js HTTP handler, as a AWS
+Restate services can run in a few ways: as a Node.js HTTP handler, as an AWS
 Lambda handler, or on other Javascript runtimes like Bun, Deno and Cloudflare
 Workers.
 
-## Creating an Node.js HTTP handler
+## Creating a Node.js HTTP handler
 1. Create the endpoint
 2. Bind one or multiple services to it.
 3. Listen on the specified port (default `9080`) for connections and requests.
@@ -47,7 +47,7 @@ for guidance on how to deploy your services on AWS Lambda.
 
 ## Creating a fetch handler
 Other Javascript runtimes like Deno, Bun and Cloudflare Workers have
-build on top of the [Fetch Standard](https://github.com/whatwg/fetch) for
+built on top of the [Fetch Standard](https://github.com/whatwg/fetch) for
 defining HTTP server handlers. To register your service as a fetch handler, use
 the `/fetch` import component.
 ```typescript
@@ -68,7 +68,7 @@ between the client and the Bun server. Bun services must be discovered with
 the `--use-http1.1` CLI flag.
 - Cloudflare Workers do not support end-to-end HTTP2 or bidirectional HTTP1.1,
 and enabling bidirectional mode will cause invocations to stall and time out.
-Services running on Workers must be must be discovered with the `--use-http1.1`
+Services running on Workers must be discovered with the `--use-http1.1`
 CLI flag.
 
 ## Validating request identity

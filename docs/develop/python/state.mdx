@@ -19,43 +19,44 @@ Restate makes sure the state is consistent with the processing of the code execu
 </Admonition>
 
 <Admonition type="info" title={"Serializing state"}>
-    You can store any type of value that can be serialized as a Buffer with _`Buffer.from(JSON.stringify(yourObject))`_ and deserialized with _`JSON.parse(result.toString()) as T`_.
+    You can return any payload that can be serialized with _`bytes(json.dumps(obj), "utf-8")`_ and deserialized with _`json.loads(buf)`_.
+    If not, you need to specify a [custom serializer](/develop/python/serialization).
 </Admonition>
 
 ### Listing state keys
 For a single Virtual Object, you can list all the state keys that have entries in the state store via:
 
-```typescript
-CODE_LOAD::ts/src/develop/state.ts#statekeys
+```python
+CODE_LOAD::python/src/develop/state.py#statekeys
 ```
 
 ### Retrieving state
 Use `ctx.get` to retrieve the state for a key:
 
-```typescript
-CODE_LOAD::ts/src/develop/state.ts#get
+```python
+CODE_LOAD::python/src/develop/state.py#get
 ```
 
-The return value is `null` if no value was stored.
+The return value is `None` if no value was stored.
 
 ### Setting state
 Use `ctx.set` to set a new value for a key:
 
-```typescript
-CODE_LOAD::ts/src/develop/state.ts#set
+```python
+CODE_LOAD::python/src/develop/state.py#set
 ```
 
 ### Clearing state
 Use `ctx.clear` to delete the value of a key:
 
-```typescript
-CODE_LOAD::ts/src/develop/state.ts#clear
+```python
+CODE_LOAD::python/src/develop/state.py#clear
 ```
 
 ### Clearing all state
 
 Delete all the state stored in Restate for a Virtual Object via:
 
-```typescript
-CODE_LOAD::ts/src/develop/state.ts#clear_all
+```python
+CODE_LOAD::python/src/develop/state.py#clear_all
 ```

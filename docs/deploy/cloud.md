@@ -195,35 +195,9 @@ You must secure access to your service so that only Restate can call it.
 The easiest way to do this is with our native request identity feature.
 All requests to your service will be signed with a unique environment-specific private
 key. You can find the corresponding public key in the environment settings UI, under HTTP Services.
-It is safe to include this public key directly in your service code:
+It is safe to include this public key directly in your service code.
 
-<CH.Code>
-
-```typescript TypeScript
-restate
-  .endpoint()
-  .bind(myService)
-  .withIdentityV1("publickeyv1_8SyC5reu2eTUwGCH4CehFntZAnADvYU6PXZtFyKiTrWy")
-  .listen();
-```
-
-```java Java
-RestateHttpEndpointBuilder.builder()
-    .bind(new MyService())
-    .withRequestIdentityVerifier(RequestIdentityVerifier.fromKey("publickeyv1_8SyC5reu2eTUwGCH4CehFntZAnADvYU6PXZtFyKiTrWy"))
-    .buildAndListen();
-```
-
-```go Go
-if err := server.NewRestate().
-		Bind(restate.Reflect(MyService{})).
-		WithIdentityV1("publickeyv1_8SyC5reu2eTUwGCH4CehFntZAnADvYU6PXZtFyKiTrWy").
-		Start(context.Background(), ":9080"); err != nil {
-		log.Fatal(err)
-}
-```
-
-</CH.Code>
+Have a look at the SDK serving documentation to learn how for [TypeScript](/develop/ts/serving#validating-request-identity), [Java, Kotlin](/develop/java/serving#validating-request-identity), [Python](/develop/python/serving#validating-request-identity), and [Go](/develop/go/serving#validating-request-identity).
 
 ### Lambda
 

@@ -1,6 +1,15 @@
 const fs = require('fs');
 const fetch = require('node-fetch');
 
+const COMMENT_SYMBOL = {
+    ts: "//",
+    java: "//",
+    kotlin: "//",
+    python: "#",
+    go: "//",
+    proto: "//"
+}
+
 const plugin = (options) => {
     const codeLoadRegex = /^CODE_LOAD::([^#?]+)(?:#([^?]*))?(?:\?(.+))?$/g;
 
@@ -32,7 +41,27 @@ const plugin = (options) => {
         }
     }
 
+    function extractCommentSymbol(filePath) {
+        if (filePath.includes(".java")) {
+            return COMMENT_SYMBOL.java;
+        } else if (filePath.includes(".kt")) {
+            return COMMENT_SYMBOL.kotlin;
+        } else if (filePath.includes(".ts")) {
+            return COMMENT_SYMBOL.ts;
+        } else if (filePath.includes(".py")) {
+            return COMMENT_SYMBOL.python;
+        } else if (filePath.includes(".go")) {
+            return COMMENT_SYMBOL.go;
+        } else if (filePath.includes(".proto")) {
+            return COMMENT_SYMBOL.proto;
+        } else {
+            throw new Error(`language not detected for filepath ${filePath}`)
+        }
+    }
+
     function extractAndClean(fileContent, customTag, markNumber, filePath) {
+        const commentSymbol = extractCommentSymbol(filePath)
+
         const startTag = (customTag) ? `<start_${customTag}>` : "<start_here>";
         const endTag = (customTag) ? `<end_${customTag}>` : "<end_here>";
         if (customTag && !fileContent.includes(startTag)) {
@@ -47,17 +76,17 @@ const plugin = (options) => {
         if(fileContent.includes(startTag) && fileContent.includes(endTag)){
             lines = fileContent.split(startTag).pop().split(endTag).shift().split('\n').slice(1,-1)
                 // filter out the forced spotless breaks
-                .filter(line => !line.includes('// break'));
+                .filter(line => !line.includes(`${commentSymbol} break`));
         } else {
             lines = fileContent.split('\n')
                 // filter out the forced spotless breaks
-                .filter(line => !line.includes('// break'));
+                .filter(line => !line.includes(`${commentSymbol} break`));
         }
 
         let finalLines = [];
         if (markNumber) {
-            const markStartTag = `// <mark_${markNumber}>`;
-            const markEndTag = `// </mark_${markNumber}>`;
+            const markStartTag = `${commentSymbol} <mark_${markNumber}>`;
+            const markEndTag = `${commentSymbol} </mark_${markNumber}>`;
 
             let needToMark = false;
             lines.forEach(function (line, index) {
@@ -76,7 +105,7 @@ const plugin = (options) => {
 
                 if(!line.includes('<start_') && !line.includes('<end_') && !line.includes('<mark_') && !line.includes('</mark_')) {
                     if(needToMark){
-                        finalLines.push(`// mark`)
+                        finalLines.push(`${commentSymbol} mark`)
                     }
                     finalLines.push(line);
                 }

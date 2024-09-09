@@ -2,9 +2,9 @@ import uuid
 
 from restate import Service, ObjectContext
 
-from auxiliary.email_client import EmailClient
-from auxiliary.payment_client import PaymentClient
-from tour import Order
+from src.get_started.auxiliary.email_client import EmailClient
+from src.get_started.auxiliary.payment_client import PaymentClient
+from src.get_started.tour import Order
 
 payment_client = PaymentClient()
 email_client = EmailClient()
