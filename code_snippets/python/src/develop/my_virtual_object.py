@@ -13,4 +13,4 @@ async def my_object_handler(ctx: ObjectContext, greeting: str) -> str:
 async def my_concurrent_handler(ctx: ObjectSharedContext, greeting: str) -> str:
     return f"${greeting} ${ctx.key()}!"
 
-app = restate.app(services=[my_virtual_object])
+app = restate.app([my_virtual_object])
