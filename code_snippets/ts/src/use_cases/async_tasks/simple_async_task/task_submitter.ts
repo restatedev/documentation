@@ -26,7 +26,7 @@ async function submitAndAwaitTask(task: TaskOpts) {
     .runTask(
       task,
       // <mark_2>
-      restate.rpc.sendOpts({ idempotencyKey: "dQw4w9WgXcQ" })
+      SendOpts.from({ idempotencyKey: "dQw4w9WgXcQ" })
       // </mark_2>
     );
   // </mark_1>

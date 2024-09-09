@@ -30,12 +30,12 @@ CODE_LOAD::go/develop/myservice/main.go
 - By default, the service name is the name of the struct, so the service can be
   called at `<RESTATE_INGRESS_URL>/MyService/MyHandler`.
 - The service definition contains a list of handlers.
-  Each handler is just function that implements the handler logic. The handler
+  Each handler is just a function that implements the handler logic. The handler
   will be named the same way as the method.
   The function has the Restate Context as its first argument.
   Within the handler, you use the `Context` to interact with Restate.
   The SDK stores the actions you do on the context in the Restate journal to make them durable.
-- The handler input parameters and return type can be of any type, as long as
+- The handler input parameter (at most one) and return type can be of any type, as long as
   they can be serialized. By default, serialization is done with
   [`JSONCodec`](https://pkg.go.dev/github.com/restatedev/sdk-go/encoding#PayloadCodec)
   which uses `encoding/json`. Input types, output types, and even errors are not mandatory

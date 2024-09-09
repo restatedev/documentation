@@ -6,8 +6,8 @@ async function myRestateHandler(ctx: restate.Context) {
   // focus
   ctx
     // focus
-    .serviceSendClient(greeter)
+    .serviceSendClient(greeter, { delay: 1000 })
     // focus
-    .greet({ greeting: "Hi" }, restate.rpc.sendOpts({ delay: 1000 }));
+    .greet({ greeting: "Hi" });
 }
 // <end_delayed_call>

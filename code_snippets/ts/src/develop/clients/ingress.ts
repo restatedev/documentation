@@ -1,4 +1,5 @@
 import { greetCounterObject, greeterService } from "./utils";
+import { SendOpts } from "@restatedev/restate-sdk-clients";
 import { myWorkflow } from "../../concepts/invocations/utils";
 import * as clients from "@restatedev/restate-sdk-clients";
 
@@ -34,11 +35,11 @@ const myPlainTSFunction3 = async () => {
   const rs = clients.connect({ url: "http://localhost:8080" });
   await rs
     .serviceSendClient(greeterService)
-    .greet({ greeting: "Hi" }, clients.rpc.sendOpts({ delay: 1000 }));
+    .greet({ greeting: "Hi" }, SendOpts.from({ delay: 1000 }));
 
   await rs
     .objectSendClient(greetCounterObject, "Mary")
-    .greet({ greeting: "Hi" }, clients.rpc.sendOpts({ delay: 1000 }));
+    .greet({ greeting: "Hi" }, SendOpts.from({ delay: 1000 }));
   // <end_delayed_call_node>
 };
 
@@ -49,7 +50,7 @@ const servicesIdempotent = async () => {
   await rs
     .serviceSendClient(greeterService)
     // withClass highlight-line
-    .greet(request, clients.rpc.sendOpts({ idempotencyKey: "abcde" }));
+    .greet(request, SendOpts.from({ idempotencyKey: "abcde" }));
   // <end_service_idempotent>
 };
 
@@ -62,7 +63,7 @@ const servicesAttach = async () => {
   const handle = await rs
     .serviceSendClient(greeterService)
     // mark
-    .greet(request, clients.rpc.sendOpts({ idempotencyKey: "abcde" }));
+    .greet(request, SendOpts.from({ idempotencyKey: "abcde" }));
 
   // ... do something else ...
 

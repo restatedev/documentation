@@ -23,7 +23,7 @@ const eventEnricher = restate.object({
       ctx.set("user", event);
       // </mark_1>
       // <mark_3>
-      ctx.objectSendClient(EventEnricher, ctx.key).emit(restate.rpc.sendOpts({ delay: 1000 }));
+      ctx.objectSendClient(EventEnricher, ctx.key, { delay: 1000 }).emit();
       // </mark_3>
     },
 

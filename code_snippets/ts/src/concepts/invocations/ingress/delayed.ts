@@ -1,5 +1,6 @@
 import * as restate from "@restatedev/restate-sdk-clients";
-import { greeter } from "../utils";
+import { greetCounter, greeter } from "../utils";
+import { SendOpts } from "@restatedev/restate-sdk-clients";
 
 // <start_delayed_call_node>
 const myPlainTSFunction = async () => {
@@ -10,6 +11,6 @@ const myPlainTSFunction = async () => {
     // focus
     .serviceSendClient(greeter)
     // focus
-    .greet({ greeting: "Hi" }, restate.rpc.sendOpts({ delay: 1000 }));
+    .greet({ greeting: "Hi" }, SendOpts.from({ delay: 1000 }));
 };
 // <end_delayed_call_node>
