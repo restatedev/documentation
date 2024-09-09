@@ -1032,6 +1032,7 @@ You will fix this later on. Note that the `CheckoutService` is not a Virtual Obj
     2024/08/16 13:41:03 INFO Invocation completed successfully method=CartObject/Checkout invocationID=inv_1fmRNvSNVxNp3lG8MTJNCop4OwmqZXVRi9    ```
     ```
 </details>
+</TabItem>
     <TabItem value="python" label="Python">
         Make the `CartObject/checkout` handler call the `CheckoutService/handle` handler.
 
@@ -1050,8 +1051,7 @@ You will fix this later on. Note that the `CheckoutService` is not a Virtual Obj
             Call `CartObject/checkout` as you did [earlier](#request-response-calls-over-http) and have a look at the Restate Server logs again to see what happened:
         </details>
     </TabItem>
-
-</details>
+</Tabs>
 
 ## Durable Execution
 
@@ -1980,50 +1980,6 @@ Clear the `"status"`, if it's not equal to `TicketStatus.Sold`.
 <summary>Solution</summary>
 ```ts ticket_object.ts
 CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part3/ticket_object.ts#unreserve
-```
-
-Now, the ticket reservation status is cleared when the delayed `expireTicket` call triggers.
-Play around with reducing the delay of the `expireTicket` call in the `addTicket` handler.
-Try to reserve the same ticket ID multiple times, and see how you are able to reserve it again after the `unreserve` handler executed.
-
-</details>
-</SubtleStep>
-<SubtleStep stepLabel="3" title="TicketObject/markAsSold">
-Set the `"status"` to `TicketStatus.Sold` if it's reserved.
-
-<details>
-<summary>Solution</summary>
-```ts ticket_object.ts
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part3/ticket_object.ts#mark_as_sold
-```
-In the next section, you implement the `CheckoutService/handle` function that calls `markAsSold`.
-This ties the final parts together.
-</details>
-</SubtleStep>
-</TabItem>
-<TabItem value="java" label="Java">
-<SubtleStep title="TicketObject/reserve" stepLabel="1">
-1. Retrieve the value for the `"status"` state key.
-2. If the value is set to `TicketStatus.Available`, then change it to `TicketStatus.Reserved` and
-return `true` (reservation successful).
-3. If the status isn't set to `TicketStatus.Available`, then return `false`.
-
-<details>
-<summary>Solution</summary>
-```java TicketObject.java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/TicketObject.java#reserve
-```
-
-Now, you can't reserve the same ticket multiple times anymore.
-Call `addTicket` multiple times for the same ID. The first time it returns `true`, afterwards `false`.
-</details>
-</SubtleStep>
-<SubtleStep stepLabel="2" title="TicketObject/unreserve">
-Clear the `"status"`, if it's not equal to `TicketStatus.Sold`.
-<details>
-<summary>Solution</summary>
-```java TicketObject.java
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part3/TicketObject.java#unreserve
 ```
 
 Now, the ticket reservation status is cleared when the delayed `expireTicket` call triggers.
