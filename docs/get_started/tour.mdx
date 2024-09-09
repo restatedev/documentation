@@ -18,6 +18,8 @@ import CliAnimation from "../../src/components/CliAnimation";
 </TabItem>
 <TabItem value="go" label="Go">
 </TabItem>
+<TabItem value="python" label="Python">
+</TabItem>
 </Tabs>
 
 This tutorial guides you through the development of an end-to-end Restate application, and covers all the essential features.
@@ -71,6 +73,16 @@ This guide is written for:
 - Restate runtime Docker image: `docker.io/restatedev/restate:VAR::RESTATE_VERSION`
 
 </TabItem>
+<TabItem value="python" label="Python">
+- Python >= 3.11
+- Restate CLI: [Installation instructions](/develop/local_dev#running-restate-server--cli-locally)
+- Optional: [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation), if you want to run the Restate Server with Docker. And to run Jaeger.
+
+This guide is written for:
+- Python SDK version: `VAR::PYTHON_SDK_VERSION`
+- Restate runtime Docker image: `docker.io/restatedev/restate:VAR::RESTATE_VERSION`
+
+</TabItem>
 </Tabs>
 </Admonition>
 
@@ -103,6 +115,9 @@ Run the services
 npm run app-dev
 ```
 
+This [GitHub repository](https://github.com/restatedev/examples/tree/main/tutorials/tour-of-restate-typescript) contains the basic skeleton of the TypeScript services that you develop in this tutorial.
+
+
 </TabItem>
 <TabItem value="java" label="Java">
 
@@ -123,6 +138,9 @@ Run the services
 ./gradlew run
 ```
 
+This [GitHub repository](https://github.com/restatedev/examples/tree/main/tutorials/tour-of-restate-java) contains the basic skeleton of the Java services that you develop in this tutorial.
+
+
 </TabItem>
 <TabItem value="go" label="Go">
 
@@ -133,8 +151,8 @@ restate example go-tour-of-restate && cd go-tour-of-restate
 
 ```shell wget
 wget https://github.com/restatedev/examples/releases/latest/download/go-tour-of-restate.zip &&
-    unzip go-tour-of-restate.zip -d go-tour-of-restate &&
-    rm go-tour-of-restate.zip && cd go-tour-of-restate
+unzip go-tour-of-restate.zip -d go-tour-of-restate &&
+rm go-tour-of-restate.zip && cd go-tour-of-restate
 ```
 </CH.Code>
 Run the services
@@ -144,9 +162,43 @@ go run ./app
 ```
 
 </TabItem>
-</Tabs>
+<TabItem value="python" label="Python">
+        Download the example and run locally with an IDE:
+        <CH.Code>
+            ```shell CLI
+            restate example python-tour-of-restate && cd python-tour-of-restate
+            ```
 
-This [GitHub repository](https://github.com/restatedev/examples/tree/main/tutorials/tour-of-restate-go) contains the basic skeleton of the Go services that you develop in this tutorial.
+            ```shell wget
+            wget https://github.com/restatedev/examples/releases/latest/download/python-tour-of-restate.zip &&
+            unzip python-tour-of-restate.zip -d python-tour-of-restate &&
+            rm python-tour-of-restate.zip
+            ```
+        </CH.Code>
+
+        Setup your virtual environment:
+
+        ```shell
+        python3 -m venv .venv
+        source .venv/bin/activate
+        ```
+
+        Install the requirements:
+
+        ```shell
+        pip install -r requirements.txt
+        ```
+
+        Run the services:
+
+        ```shell
+        python3 -m hypercorn -b localhost:9080 tour/app/app:app
+        ```
+
+        This [GitHub repository](https://github.com/restatedev/examples/tree/main/tutorials/tour-of-restate-python) contains the basic skeleton of the Python services that you develop in this tutorial.
+
+</TabItem>
+</Tabs>
 
 </SubtleStep>
 
@@ -170,7 +222,7 @@ This [GitHub repository](https://github.com/restatedev/examples/tree/main/tutori
 </CH.Code>
 
 <Admonition type="tip" icon="💡" title="Single binary">
-    Restate is a single self-contained binary. No external dependencies needed. Check out our [download page](https://restate.dev/get-restate/) for other ways to run Restate.
+    Restate is a single self-contained binary. No external dependencies needed. Check out our [Local Dev page](https://docs.restate.dev/develop/local_dev#running-restate-server--cli-locally) for other ways to run Restate.
 </Admonition>
 
 </SubtleStep>
@@ -304,57 +356,113 @@ CartObject       1
 </TabItem>
 <TabItem value="go" label="Go">
 <CH.Code>
-```shell CLI
-❯ SERVICES THAT WILL BE ADDED:
-- CheckoutService
-Type: Service
-HANDLER  INPUT                                     OUTPUT
-Handle   value of content-type 'application/json'  value of content-type 'application/json'
+    ```shell CLI
+    ❯ SERVICES THAT WILL BE ADDED:
+    - CheckoutService
+    Type: Service
+    HANDLER  INPUT                                     OUTPUT
+    Handle   value of content-type 'application/json'  value of content-type 'application/json'
 
-- CartObject
-Type: VirtualObject ⬅️ 🚶🚶🚶
-HANDLER       INPUT                                     OUTPUT
-ExpireTicket  value of content-type 'application/json'  none
-Checkout      none                                      value of content-type 'application/json'
-AddTicket     value of content-type 'application/json'  value of content-type 'application/json'
+    - CartObject
+    Type: VirtualObject ⬅️ 🚶🚶🚶
+    HANDLER       INPUT                                     OUTPUT
+    ExpireTicket  value of content-type 'application/json'  none
+    Checkout      none                                      value of content-type 'application/json'
+    AddTicket     value of content-type 'application/json'  value of content-type 'application/json'
 
-- TicketObject
-Type: VirtualObject ⬅️ 🚶🚶🚶
-HANDLER     INPUT  OUTPUT
-MarkAsSold  none   none
-Unreserve   none   none
-Reserve     none   value of content-type 'application/json'
+    - TicketObject
+    Type: VirtualObject ⬅️ 🚶🚶🚶
+    HANDLER     INPUT  OUTPUT
+    MarkAsSold  none   none
+    Unreserve   none   none
+    Reserve     none   value of content-type 'application/json'
 
 
-✔ Are you sure you want to apply those changes? · yes
-✅ DEPLOYMENT:
-SERVICE          REV
-TicketObject     1
-CheckoutService  1
-CartObject       1
-```
+    ✔ Are you sure you want to apply those changes? · yes
+    ✅ DEPLOYMENT:
+    SERVICE          REV
+    TicketObject     1
+    CheckoutService  1
+    CartObject       1
+    ```
 
-```json curl
-{
-    "id": "dp_11pXug0mWsff2NOoRBZbOcV",
-    "services": [
-        {
-            "name": "TicketObject",
-            /* ... Additional information on registered methods ...*/
-        },
-        {
-            "name": "CartObject",
-            /* ... Additional information on registered methods ...*/
-        },
-        {
-            "name": "CheckoutService",
-            /* ... Additional information on registered methods ...*/
-        }
-    ]
-}
-```
+    ```json curl
+    {
+        "id": "dp_11pXug0mWsff2NOoRBZbOcV",
+        "services": [
+    {
+        "name": "TicketObject",
+        /* ... Additional information on registered methods ...*/
+    },
+    {
+        "name": "CartObject",
+        /* ... Additional information on registered methods ...*/
+    },
+    {
+        "name": "CheckoutService",
+        /* ... Additional information on registered methods ...*/
+    }
+        ]
+    }
+    ```
 </CH.Code>
 </TabItem>
+    <TabItem value="python" label="Python">
+        <CH.Code>
+            ```shell CLI
+            Deployment ID:  dp_15dw4eEnr7AOatMJOv2gmJ3
+
+            ❯ SERVICES THAT WILL BE ADDED:
+            - TicketObject
+            Type: VirtualObject ⬅️ 🚶🚶🚶
+            HANDLER     INPUT                                                        OUTPUT
+            unreserve   one of ["none", "value of content-type 'application/json'"]  value of content-type 'application/json'
+            markAsSold  one of ["none", "value of content-type 'application/json'"]  value of content-type 'application/json'
+            reserve     one of ["none", "value of content-type 'application/json'"]  value of content-type 'application/json'
+
+
+            - CartObject
+            Type: VirtualObject ⬅️ 🚶🚶🚶
+            HANDLER       INPUT                                                        OUTPUT
+            addTicket     one of ["none", "value of content-type 'application/json'"]  value of content-type 'application/json'
+            checkout      one of ["none", "value of content-type 'application/json'"]  value of content-type 'application/json'
+            expireTicket  one of ["none", "value of content-type 'application/json'"]  value of content-type 'application/json'
+
+            - CheckoutService
+            Type: Service
+            HANDLER  INPUT                                                        OUTPUT
+            handle   one of ["none", "value of content-type 'application/json'"]  value of content-type 'application/json'
+
+
+            ✔ Are you sure you want to apply those changes? · yes
+            ✅ DEPLOYMENT:
+            SERVICE          REV
+            TicketObject     1
+            CartObject       1
+            CheckoutService  1
+            ```
+
+            ```json curl
+            {
+                "id": "dp_11pXug0mWsff2NOoRBZbOcV",
+                "services": [
+                    {
+                        "name": "TicketObject",
+                        /* ... Additional information on registered methods ...*/
+                    },
+                    {
+                        "name": "CartObject",
+                        /* ... Additional information on registered methods ...*/
+                    },
+                    {
+                        "name": "CheckoutService",
+                        /* ... Additional information on registered methods ...*/
+                    }
+                ]
+            }
+            ```
+        </CH.Code>
+    </TabItem>
 </Tabs>
 
 </details>
@@ -393,7 +501,7 @@ This is the entrypoint to the SDK.
 The `AppMain.java` file contains the definition of the endpoint that hosts the services.
 </TabItem>
 <TabItem value="go" label="Go">
-In `app` you will find the skeletons of the various services to help you start implementing the app.
+    In `app` you will find the skeletons of the various services to help you start implementing the app.
     For example:
     ```go checkoutservice.go
     CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-go/part1/checkoutservice.go#checkout
@@ -404,6 +512,18 @@ In `app` you will find the skeletons of the various services to help you start i
 
     The `main.go` file contains the definition of the endpoint that hosts the services.
 
+</TabItem>
+<TabItem value="python" label="Python">
+    In `tour/app` you will find the skeletons of the various services to help you start implementing the app.
+    For example:
+    ```python checkout_service.py
+    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part1/checkout_service.py#checkout
+    ```
+
+    Restate handlers have the Restate Context supplied as the first argument.
+    This is the entrypoint to the SDK.
+
+    The `app.py` file contains the definition of the endpoint that hosts the services.
 
 </TabItem>
 </Tabs>
@@ -450,19 +570,34 @@ curl -X POST localhost:8080/CartObject/Mary/checkout
 ```
 </TabItem>
 <TabItem value="go" label="Go">
-For example, add a ticket `seat2B` to the cart of Mary by calling the `AddTicket` handler of the `CartObject`:
+    For example, add a ticket `seat2B` to the cart of Mary by calling the `AddTicket` handler of the `CartObject`:
 
-```shell
-curl localhost:8080/CartObject/Mary/AddTicket -H 'content-type: application/json' -d '"seat2B"'
-```
+    ```shell
+    curl localhost:8080/CartObject/Mary/AddTicket -H 'content-type: application/json' -d '"seat2B"'
+    ```
 
-If this prints out `true`, then you have a working setup.
+    If this prints out `true`, then you have a working setup.
 
-When Mary wants to proceed with the purchase, call the `Checkout` handler of the `CartObject`:
+    When Mary wants to proceed with the purchase, call the `Checkout` handler of the `CartObject`:
 
-```shell
-curl -X POST localhost:8080/CartObject/Mary/Checkout
-```
+    ```shell
+    curl -X POST localhost:8080/CartObject/Mary/Checkout
+    ```
+</TabItem>
+<TabItem value="py" label="Python">
+        For example, add a ticket `seat2B` to the cart of Mary by calling the `addTicket` handler of the `CartObject`:
+
+        ```shell
+        curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2B"'
+        ```
+
+        If this prints out `true`, then you have a working setup.
+
+        When Mary wants to proceed with the purchase, call the `checkout` handler of the `CartObject`:
+
+        ```shell
+        curl -X POST localhost:8080/CartObject/Mary/checkout
+        ```
 </TabItem>
 </Tabs>
 
@@ -592,6 +727,23 @@ Let's try this out!
         Send a request to `CartObject/AddTicket` as we did [previously](#request-response-calls-over-http), and have a look at the service logs.
 
     </TabItem>
+    <TabItem value="python" label="Python">
+        When we add a ticket to the cart, the `CartObject/addTicket` handler first needs to reserve the ticket for the user.
+        It does that by calling the `TicketObject/reserve` handler:
+
+        ```python cart_object.py
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part1/cart_object.py#add_ticket
+        ```
+
+        1. Use **`ctx.service_call`** (for Services) or **`ctx.object_call`** (for Virtual Objects).
+        2. **Specify the handler** you want to call and supply the request: Here, we supply the `reserve` method that we import from the `TicketObject`.
+        For Virtual Objects, you also need to specify the key of the Virtual Object that you want to call. Here, this is the ticket ID.
+        3. **Await the response** of the call.
+
+        Send a request to `CartObject/addTicket` as we did [previously](#request-response-calls-over-http).
+        You can see the calls to `addTicket` and `reserve` in the Restate Server logs.
+
+    </TabItem>
 </Tabs>
 
 
@@ -687,39 +839,60 @@ The call to `expireTicket` finishes earlier than the `unreserve` handler because
 </TabItem>
 <TabItem value="go" label="Go">
 
-In the example, when a seat gets added to the shopping cart, it gets reserved for 15 minutes.
-When a user didn't proceed with the payment before the timeout, the `CartObject/ExpireTicket` handler is triggered.
-Let the `ExpireTicket` handler call the `TicketObject/Unreserve` handler.
+    In the example, when a seat gets added to the shopping cart, it gets reserved for 15 minutes.
+    When a user didn't proceed with the payment before the timeout, the `CartObject/ExpireTicket` handler is triggered.
+    Let the `ExpireTicket` handler call the `TicketObject/Unreserve` handler.
 
-```go cartobject.go
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-go/part1/cartobject.go#expire_ticket
-```
-
-Specify that you want to call the `TicketObject` by supplying the service and method names to the `ObjectSend()` function.
-This function is an alternative to `Object()` which provides a client that can only send one-way messages
-and therefore doesn't need an output type parameter. Finally call the `Send` method on the returned client.
-
-Once you have added this to the code, call the `CartObject/ExpireTicket` handler:
-
-```shell
-curl localhost:8080/CartObject/Mary/ExpireTicket -H 'content-type: application/json' -d '"seat2B"'
-```
-<details className="grey-details">
-    <summary>Service logs</summary>
-
-    ```log
-    2024/08/16 13:55:31 INFO Handling invocation method=CartObject/ExpireTicket invocationID=inv_1fmRNvSNVxNp6GGSrDXviABHoq8paj5Bqp
-    // withClass highlight-line
-    2024/08/16 13:55:31 INFO Invocation completed successfully method=CartObject/ExpireTicket invocationID=inv_1fmRNvSNVxNp6GGSrDXviABHoq8paj5Bqp
-    2024/08/16 13:55:31 INFO Handling invocation method=TicketObject/Unreserve invocationID=inv_19maBIcE9uRD30z1j0kx3N3SOEPCngmSrL
-    // withClass highlight-line
-    2024/08/16 13:55:31 INFO Invocation completed successfully method=TicketObject/Unreserve invocationID=inv_19maBIcE9uRD30z1j0kx3N3SOEPCngmSrL
+    ```go cartobject.go
+    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-go/part1/cartobject.go#expire_ticket
     ```
 
-</details>
+    Specify that you want to call the `TicketObject` by supplying the service and method names to the `ObjectSend()` function.
+    This function is an alternative to `Object()` which provides a client that can only send one-way messages
+    and therefore doesn't need an output type parameter. Finally call the `Send` method on the returned client.
 
-The service logs show how the `ExpireTicket` handler gets executed and then the `Unreserve` handler.
-The call to `ExpireTicket` finishes earlier than the `Unreserve` handler because `ExpireTicket` didn't wait for the response of the `Unreserve` handler.
+    Once you have added this to the code, call the `CartObject/ExpireTicket` handler:
+
+    ```shell
+    curl localhost:8080/CartObject/Mary/ExpireTicket -H 'content-type: application/json' -d '"seat2B"'
+    ```
+    <details className="grey-details">
+        <summary>Service logs</summary>
+
+        ```log
+        2024/08/16 13:55:31 INFO Handling invocation method=CartObject/ExpireTicket invocationID=inv_1fmRNvSNVxNp6GGSrDXviABHoq8paj5Bqp
+        // withClass highlight-line
+        2024/08/16 13:55:31 INFO Invocation completed successfully method=CartObject/ExpireTicket invocationID=inv_1fmRNvSNVxNp6GGSrDXviABHoq8paj5Bqp
+        2024/08/16 13:55:31 INFO Handling invocation method=TicketObject/Unreserve invocationID=inv_19maBIcE9uRD30z1j0kx3N3SOEPCngmSrL
+        // withClass highlight-line
+        2024/08/16 13:55:31 INFO Invocation completed successfully method=TicketObject/Unreserve invocationID=inv_19maBIcE9uRD30z1j0kx3N3SOEPCngmSrL
+        ```
+
+    </details>
+
+    The service logs show how the `ExpireTicket` handler gets executed and then the `Unreserve` handler.
+    The call to `ExpireTicket` finishes earlier than the `Unreserve` handler because `ExpireTicket` didn't wait for the response of the `Unreserve` handler.
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+        In the example, when a seat gets added to the shopping cart, it gets reserved for 15 minutes.
+        When a user didn't proceed with the payment before the timeout, the `CartObject/expireTicket` handler is triggered.
+        Let the `expireTicket` handler call the `TicketObject/unreserve` handler.
+
+        ```python cart_object.py
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part1/cart_object.py#expire_ticket
+        ```
+
+        Import the `unreserve` handler from the `TicketObject` and supply it to `ctx.object_send` together with the ticket ID.
+
+        Once you have added this to the code, call the `CartObject/expireTicket` handler:
+
+        ```shell
+        curl localhost:8080/CartObject/Mary/expireTicket -H 'content-type: application/json' -d '"seat2B"'
+        ```
+
+        The Restate Server logs show how the `expireTicket` handler gets executed and then the `unreserve` handler.
 
 </TabItem>
 </Tabs>
@@ -744,6 +917,11 @@ curl localhost:8080/CartObject/Mary/addTicket/send -H 'content-type: application
 <TabItem value="go" label="Go">
 ```shell
 curl localhost:8080/CartObject/Mary/AddTicket/send -H 'content-type: application/json' -d '"seat2B"'
+```
+</TabItem>
+<TabItem value="python" label="Python">
+```shell
+curl localhost:8080/CartObject/Mary/addTicket/send -H 'content-type: application/json' -d '"seat2B"'
 ```
 </TabItem>
 </Tabs>
@@ -854,6 +1032,24 @@ You will fix this later on. Note that the `CheckoutService` is not a Virtual Obj
     2024/08/16 13:41:03 INFO Invocation completed successfully method=CartObject/Checkout invocationID=inv_1fmRNvSNVxNp3lG8MTJNCop4OwmqZXVRi9    ```
     ```
 </details>
+</TabItem>
+<TabItem value="python" label="Python">
+        Make the `CartObject/checkout` handler call the `CheckoutService/handle` handler.
+
+        For the request field, you can use a hard-coded string array for now: `["seat2B"]`.
+        You will fix this later on. Note that the `CheckoutService` is not a Virtual Object, so you don't need to specify a key.
+
+        <details>
+            <summary>Solution</summary>
+
+            Add the following code to the `CartObject/checkout` handler:
+
+            ```python cart_object.py
+            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part1/cart_object.py#checkout
+            ```
+
+            Call `CartObject/checkout` as you did [earlier](#request-response-calls-over-http) and have a look at the Restate Server logs again to see what happened:
+        </details>
 </TabItem>
 </Tabs>
 
@@ -1018,6 +1214,24 @@ The code would fast-forward to the point where it crashed, and continue executin
 
 
     </TabItem>
+    <TabItem value="python" label="Python">
+        To see the recovery of partial progress in practice, let's make the `CartObject/addTicket` handler crash right after the call.
+
+        <CH.Code lineNumbers={true}>
+            ```python cart_object.py
+            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part1/cart_object.py#add_ticket
+            ```
+        </CH.Code>
+
+        Add the following code to line 4 of the snippet, to let the code throw an error after the call:
+        ```python
+        raise Exception("Failing")
+        ```
+
+        Call `CartObject/addTicket` again and have a look at the Restate Server logs to see what happens.
+
+
+    </TabItem>
 </Tabs>
 
 You see the retries taking place. And you see that only the first time the call to the `CheckoutService` was made.
@@ -1139,6 +1353,13 @@ go run ./part1
 ```
 
 </TabItem>
+<TabItem value="python" label="Python">
+
+        ```shell
+        python3 -m hypercorn -b localhost:9080 tour/part1/app:app
+        ```
+
+    </TabItem>
 </Tabs>
 </Admonition>
 
@@ -1161,6 +1382,28 @@ Let the `CartObject/addTicket` handler call the `CartObject/expireTicket` handle
 CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part2/cart_object.ts#add_ticket
 ```
 
+To test it out, put the delay to a lower value, for example 5 seconds, call the `addTicket` function, and see in the logs how the call to `CartObject/expireTicket` is executed 5 seconds later.
+
+<details className="grey-details">
+    <summary>Service logs</summary>
+    ```log
+    ... logs from reserve call ...
+    [restate] [CartObject/addTicket][inv_1gdJBtdVEcM90xbqbDEnOzNgilf2WmjZTP][2024-03-19T08:49:43.081Z] DEBUG: Received completion message from Restate, adding to journal. ; CompletionMessage
+    // withClass highlight-line
+    [restate] [CartObject/addTicket][inv_1gdJBtdVEcM90xbqbDEnOzNgilf2WmjZTP][2024-03-19T08:49:43.081Z] DEBUG: Adding message to journal and sending to Restate ; BackgroundInvokeEntryMessage
+    [restate] [CartObject/addTicket][inv_1gdJBtdVEcM90xbqbDEnOzNgilf2WmjZTP][2024-03-19T08:49:43.081Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
+    [restate] [CartObject/addTicket][inv_1gdJBtdVEcM90xbqbDEnOzNgilf2WmjZTP][2024-03-19T08:49:43.081Z] DEBUG: Function completed successfully.
+    [restate] [CartObject/expireTicket][inv_1gdJBtdVEcM93r8tce9IfwnbiAsk8lCevD][2024-03-19T08:49:48.092Z] DEBUG: Invoking function.
+    [restate] [CartObject/expireTicket][inv_1gdJBtdVEcM93r8tce9IfwnbiAsk8lCevD][2024-03-19T08:49:48.093Z] DEBUG: Adding message to journal and sending to Restate ; BackgroundInvokeEntryMessage
+    [restate] [CartObject/expireTicket][inv_1gdJBtdVEcM93r8tce9IfwnbiAsk8lCevD][2024-03-19T08:49:48.093Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
+    [restate] [CartObject/expireTicket][inv_1gdJBtdVEcM93r8tce9IfwnbiAsk8lCevD][2024-03-19T08:49:48.093Z] DEBUG: Function completed successfully.
+    // withClass highlight-line
+    [restate] [TicketObject/unreserve][inv_1k78Krj3GqrK529L4BRmz8ntFtiw2DkahH][2024-03-19T08:49:48.141Z] DEBUG: Invoking function.
+    [restate] [TicketObject/unreserve][inv_1k78Krj3GqrK529L4BRmz8ntFtiw2DkahH][2024-03-19T08:49:48.141Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
+    [restate] [TicketObject/unreserve][inv_1k78Krj3GqrK529L4BRmz8ntFtiw2DkahH][2024-03-19T08:49:48.141Z] DEBUG: Function completed successfully.
+    ```
+</details>
+
 </TabItem>
 <TabItem value="java" label="Java">
 Let the `CartObject/addTicket` handler call the `CartObject/expireTicket` handler with a delay of 15 minutes:
@@ -1169,91 +1412,73 @@ Let the `CartObject/addTicket` handler call the `CartObject/expireTicket` handle
 CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part2/CartObject.java#add_ticket
 ```
 
+To test it out, put the delay to a lower value, for example 5 seconds, call the `addTicket` function, and see in the logs how the call to `CartObject/expireTicket` is executed 5 seconds later.
+
+<details className="grey-details">
+    <summary>Service logs</summary>
+    ```log
+    ... logs from reserve call ...
+    2024-04-17 08:08:10 DEBUG [CartObject/addTicket][inv_1aiqX0vFEFNH3fRqvARAGmeIcbyLXImG3L] dev.restate.sdk.core.InvocationStateMachine - Transitioning state machine to CLOSED
+    // withClass highlight-line
+    2024-04-17 08:08:10 INFO  [CartObject/addTicket][inv_1aiqX0vFEFNH3fRqvARAGmeIcbyLXImG3L] dev.restate.sdk.core.InvocationStateMachine - End invocation
+    // withClass highlight-line
+    2024-04-17 08:08:15 DEBUG [CartObject/expireTicket] dev.restate.sdk.http.vertx.RequestHttpServerHandler - Handling request to CartObject/expireTicket
+    2024-04-17 08:08:15 INFO  [CartObject/expireTicket] dev.restate.sdk.core.ResolvedEndpointHandlerImpl - Start processing invocation
+    2024-04-17 08:08:15 DEBUG [CartObject/expireTicket][inv_1aiqX0vFEFNH5R28lg9wg1c3CtOJOhHEM9] dev.restate.sdk.core.InvocationStateMachine - Transitioning state machine to REPLAYING
+    2024-04-17 08:08:15 DEBUG [CartObject/expireTicket][inv_1aiqX0vFEFNH5R28lg9wg1c3CtOJOhHEM9] dev.restate.sdk.core.InvocationStateMachine - Current journal entry [1](): BackgroundInvokeEntryMessage
+    2024-04-17 08:08:15 DEBUG [CartObject/expireTicket][inv_1aiqX0vFEFNH5R28lg9wg1c3CtOJOhHEM9] dev.restate.sdk.core.InvocationStateMachine - Current journal entry [2](): OutputEntryMessage
+    2024-04-17 08:08:15 INFO  [CartObject/expireTicket][inv_1aiqX0vFEFNH5R28lg9wg1c3CtOJOhHEM9] dev.restate.sdk.core.InvocationStateMachine - End invocation
+    2024-04-17 08:08:15 DEBUG [CartObject/expireTicket][inv_1aiqX0vFEFNH5R28lg9wg1c3CtOJOhHEM9] dev.restate.sdk.core.InvocationStateMachine - Transitioning state machine to CLOSED
+    2024-04-17 08:08:15 INFO  [CartObject/expireTicket][inv_1aiqX0vFEFNH5R28lg9wg1c3CtOJOhHEM9] dev.restate.sdk.core.InvocationStateMachine - End invocation
+    2024-04-17 08:08:15 DEBUG [TicketObject/unreserve] dev.restate.sdk.http.vertx.RequestHttpServerHandler - Handling request to TicketObject/unreserve
+    2024-04-17 08:08:15 INFO  [TicketObject/unreserve] dev.restate.sdk.core.ResolvedEndpointHandlerImpl - Start processing invocation
+    2024-04-17 08:08:15 DEBUG [TicketObject/unreserve][inv_1aAMfXkieWDz0btTCuaF2NHgJEdX2tXHCF] dev.restate.sdk.core.InvocationStateMachine - Transitioning state machine to REPLAYING
+    2024-04-17 08:08:15 DEBUG [TicketObject/unreserve][inv_1aAMfXkieWDz0btTCuaF2NHgJEdX2tXHCF] dev.restate.sdk.core.InvocationStateMachine - Current journal entry [1](): OutputEntryMessage
+    2024-04-17 08:08:15 INFO  [TicketObject/unreserve][inv_1aAMfXkieWDz0btTCuaF2NHgJEdX2tXHCF] dev.restate.sdk.core.InvocationStateMachine - End invocation
+    2024-04-17 08:08:15 DEBUG [TicketObject/unreserve][inv_1aAMfXkieWDz0btTCuaF2NHgJEdX2tXHCF] dev.restate.sdk.core.InvocationStateMachine - Transitioning state machine to CLOSED
+    2024-04-17 08:08:15 INFO  [TicketObject/unreserve][inv_1aAMfXkieWDz0btTCuaF2NHgJEdX2tXHCF] dev.restate.sdk.core.InvocationStateMachine - End invocation
+    ```
+</details>
+
 </TabItem>
 <TabItem value="go" label="Go">
-Let the `CartObject/AddTicket` handler call the `CartObject/ExpireTicket` handler with a delay of 15 minutes:
+    Let the `CartObject/AddTicket` handler call the `CartObject/ExpireTicket` handler with a delay of 15 minutes:
 
-```go cartobject.go
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-go/part2/cartobject.go#add_ticket
+    ```go cartobject.go
+    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-go/part2/cartobject.go#add_ticket
+    ```
+
+    To test it out, put the delay to a lower value, for example 5 seconds, call the `AddTicket` function, and see in the logs how the call to `CartObject/ExpireTicket` is executed 5 seconds later.
+
+    <details className="grey-details">
+        <summary>Service logs</summary>
+        ```log
+        2024/08/16 15:33:41 INFO Handling invocation method=CartObject/AddTicket invocationID=inv_1fmRNvSNVxNp6JdmgIQ7cfkYv1aUgCa3ER
+        2024/08/16 15:33:41 INFO Handling invocation method=TicketObject/Reserve invocationID=inv_19maBIcE9uRD3LcEEnLudAidH5TXVNerfP
+        2024/08/16 15:33:41 INFO Invocation completed successfully method=TicketObject/Reserve invocationID=inv_19maBIcE9uRD3LcEEnLudAidH5TXVNerfP
+        2024/08/16 15:33:41 INFO Invocation completed successfully method=CartObject/AddTicket invocationID=inv_1fmRNvSNVxNp6JdmgIQ7cfkYv1aUgCa3ER
+        // withClass highlight-line
+        2024/08/16 15:33:46 INFO Handling invocation method=CartObject/ExpireTicket invocationID=inv_1fmRNvSNVxNp2Je39FKxZGCuaWYqw2OvyV
+        2024/08/16 15:33:46 INFO Invocation completed successfully method=CartObject/ExpireTicket invocationID=inv_1fmRNvSNVxNp2Je39FKxZGCuaWYqw2OvyV
+        // withClass highlight-line
+        2024/08/16 15:33:46 INFO Handling invocation method=TicketObject/Unreserve invocationID=inv_19maBIcE9uRD72CK05c2mkJvQZr352Qhvr
+        2024/08/16 15:33:46 INFO Invocation completed successfully method=TicketObject/Unreserve invocationID=inv_19maBIcE9uRD72CK05c2mkJvQZr352Qhvr
+        ```
+    </details>
+
+</TabItem>
+<TabItem value="python" label="Python">
+Let the `CartObject/addTicket` handler call the `CartObject/expireTicket` handler with a delay of 15 minutes:
+
+```python cart_object.py
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part2/cart_object.py#add_ticket
 ```
+
+To test it out, put the delay to a lower value, for example 5 seconds, call the `addTicket` function, and see in the Restate Server logs how the call to `CartObject/expireTicket` is executed 5 seconds later.
 
 </TabItem>
 </Tabs>
 
-    <Tabs groupId="sdk" queryString className={"display-none"}>
-        <TabItem value="ts" label="TypeScript">
-            To test it out, put the delay to a lower value, for example 5 seconds, call the `addTicket` function, and see in the logs how the call to `CartObject/expireTicket` is executed 5 seconds later.
-
-            <details className="grey-details">
-            <summary>Service logs</summary>
-            ```log
-            ... logs from reserve call ...
-            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM90xbqbDEnOzNgilf2WmjZTP][2024-03-19T08:49:43.081Z] DEBUG: Received completion message from Restate, adding to journal. ; CompletionMessage
-            // withClass highlight-line
-            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM90xbqbDEnOzNgilf2WmjZTP][2024-03-19T08:49:43.081Z] DEBUG: Adding message to journal and sending to Restate ; BackgroundInvokeEntryMessage
-            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM90xbqbDEnOzNgilf2WmjZTP][2024-03-19T08:49:43.081Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
-            [restate] [CartObject/addTicket][inv_1gdJBtdVEcM90xbqbDEnOzNgilf2WmjZTP][2024-03-19T08:49:43.081Z] DEBUG: Function completed successfully.
-            [restate] [CartObject/expireTicket][inv_1gdJBtdVEcM93r8tce9IfwnbiAsk8lCevD][2024-03-19T08:49:48.092Z] DEBUG: Invoking function.
-            [restate] [CartObject/expireTicket][inv_1gdJBtdVEcM93r8tce9IfwnbiAsk8lCevD][2024-03-19T08:49:48.093Z] DEBUG: Adding message to journal and sending to Restate ; BackgroundInvokeEntryMessage
-            [restate] [CartObject/expireTicket][inv_1gdJBtdVEcM93r8tce9IfwnbiAsk8lCevD][2024-03-19T08:49:48.093Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
-            [restate] [CartObject/expireTicket][inv_1gdJBtdVEcM93r8tce9IfwnbiAsk8lCevD][2024-03-19T08:49:48.093Z] DEBUG: Function completed successfully.
-            // withClass highlight-line
-            [restate] [TicketObject/unreserve][inv_1k78Krj3GqrK529L4BRmz8ntFtiw2DkahH][2024-03-19T08:49:48.141Z] DEBUG: Invoking function.
-            [restate] [TicketObject/unreserve][inv_1k78Krj3GqrK529L4BRmz8ntFtiw2DkahH][2024-03-19T08:49:48.141Z] DEBUG: Journaled and sent output message ; OutputStreamEntryMessage
-            [restate] [TicketObject/unreserve][inv_1k78Krj3GqrK529L4BRmz8ntFtiw2DkahH][2024-03-19T08:49:48.141Z] DEBUG: Function completed successfully.
-            ```
-            </details>
-        </TabItem>
-        <TabItem value="java" label="Java">
-            To test it out, put the delay to a lower value, for example 5 seconds, call the `addTicket` function, and see in the logs how the call to `CartObject/expireTicket` is executed 5 seconds later.
-
-            <details className="grey-details">
-            <summary>Service logs</summary>
-            ```log
-            ... logs from reserve call ...
-            2024-04-17 08:08:10 DEBUG [CartObject/addTicket][inv_1aiqX0vFEFNH3fRqvARAGmeIcbyLXImG3L] dev.restate.sdk.core.InvocationStateMachine - Transitioning state machine to CLOSED
-            // withClass highlight-line
-            2024-04-17 08:08:10 INFO  [CartObject/addTicket][inv_1aiqX0vFEFNH3fRqvARAGmeIcbyLXImG3L] dev.restate.sdk.core.InvocationStateMachine - End invocation
-            // withClass highlight-line
-            2024-04-17 08:08:15 DEBUG [CartObject/expireTicket] dev.restate.sdk.http.vertx.RequestHttpServerHandler - Handling request to CartObject/expireTicket
-            2024-04-17 08:08:15 INFO  [CartObject/expireTicket] dev.restate.sdk.core.ResolvedEndpointHandlerImpl - Start processing invocation
-            2024-04-17 08:08:15 DEBUG [CartObject/expireTicket][inv_1aiqX0vFEFNH5R28lg9wg1c3CtOJOhHEM9] dev.restate.sdk.core.InvocationStateMachine - Transitioning state machine to REPLAYING
-            2024-04-17 08:08:15 DEBUG [CartObject/expireTicket][inv_1aiqX0vFEFNH5R28lg9wg1c3CtOJOhHEM9] dev.restate.sdk.core.InvocationStateMachine - Current journal entry [1](): BackgroundInvokeEntryMessage
-            2024-04-17 08:08:15 DEBUG [CartObject/expireTicket][inv_1aiqX0vFEFNH5R28lg9wg1c3CtOJOhHEM9] dev.restate.sdk.core.InvocationStateMachine - Current journal entry [2](): OutputEntryMessage
-            2024-04-17 08:08:15 INFO  [CartObject/expireTicket][inv_1aiqX0vFEFNH5R28lg9wg1c3CtOJOhHEM9] dev.restate.sdk.core.InvocationStateMachine - End invocation
-            2024-04-17 08:08:15 DEBUG [CartObject/expireTicket][inv_1aiqX0vFEFNH5R28lg9wg1c3CtOJOhHEM9] dev.restate.sdk.core.InvocationStateMachine - Transitioning state machine to CLOSED
-            2024-04-17 08:08:15 INFO  [CartObject/expireTicket][inv_1aiqX0vFEFNH5R28lg9wg1c3CtOJOhHEM9] dev.restate.sdk.core.InvocationStateMachine - End invocation
-            2024-04-17 08:08:15 DEBUG [TicketObject/unreserve] dev.restate.sdk.http.vertx.RequestHttpServerHandler - Handling request to TicketObject/unreserve
-            2024-04-17 08:08:15 INFO  [TicketObject/unreserve] dev.restate.sdk.core.ResolvedEndpointHandlerImpl - Start processing invocation
-            2024-04-17 08:08:15 DEBUG [TicketObject/unreserve][inv_1aAMfXkieWDz0btTCuaF2NHgJEdX2tXHCF] dev.restate.sdk.core.InvocationStateMachine - Transitioning state machine to REPLAYING
-            2024-04-17 08:08:15 DEBUG [TicketObject/unreserve][inv_1aAMfXkieWDz0btTCuaF2NHgJEdX2tXHCF] dev.restate.sdk.core.InvocationStateMachine - Current journal entry [1](): OutputEntryMessage
-            2024-04-17 08:08:15 INFO  [TicketObject/unreserve][inv_1aAMfXkieWDz0btTCuaF2NHgJEdX2tXHCF] dev.restate.sdk.core.InvocationStateMachine - End invocation
-            2024-04-17 08:08:15 DEBUG [TicketObject/unreserve][inv_1aAMfXkieWDz0btTCuaF2NHgJEdX2tXHCF] dev.restate.sdk.core.InvocationStateMachine - Transitioning state machine to CLOSED
-            2024-04-17 08:08:15 INFO  [TicketObject/unreserve][inv_1aAMfXkieWDz0btTCuaF2NHgJEdX2tXHCF] dev.restate.sdk.core.InvocationStateMachine - End invocation
-            ```
-            </details>
-
-        </TabItem>
-        <TabItem value="go" label="Go">
-            To test it out, put the delay to a lower value, for example 5 seconds, call the `AddTicket` function, and see in the logs how the call to `CartObject/ExpireTicket` is executed 5 seconds later.
-
-            <details className="grey-details">
-            <summary>Service logs</summary>
-            ```log
-            2024/08/16 15:33:41 INFO Handling invocation method=CartObject/AddTicket invocationID=inv_1fmRNvSNVxNp6JdmgIQ7cfkYv1aUgCa3ER
-            2024/08/16 15:33:41 INFO Handling invocation method=TicketObject/Reserve invocationID=inv_19maBIcE9uRD3LcEEnLudAidH5TXVNerfP
-            2024/08/16 15:33:41 INFO Invocation completed successfully method=TicketObject/Reserve invocationID=inv_19maBIcE9uRD3LcEEnLudAidH5TXVNerfP
-            2024/08/16 15:33:41 INFO Invocation completed successfully method=CartObject/AddTicket invocationID=inv_1fmRNvSNVxNp6JdmgIQ7cfkYv1aUgCa3ER
-            // withClass highlight-line
-            2024/08/16 15:33:46 INFO Handling invocation method=CartObject/ExpireTicket invocationID=inv_1fmRNvSNVxNp2Je39FKxZGCuaWYqw2OvyV
-            2024/08/16 15:33:46 INFO Invocation completed successfully method=CartObject/ExpireTicket invocationID=inv_1fmRNvSNVxNp2Je39FKxZGCuaWYqw2OvyV
-            // withClass highlight-line
-            2024/08/16 15:33:46 INFO Handling invocation method=TicketObject/Unreserve invocationID=inv_19maBIcE9uRD72CK05c2mkJvQZr352Qhvr
-            2024/08/16 15:33:46 INFO Invocation completed successfully method=TicketObject/Unreserve invocationID=inv_19maBIcE9uRD72CK05c2mkJvQZr352Qhvr
-            ```
-            </details>
-        </TabItem>
-    </Tabs>
 Don't forget to set the delay back to 15 minutes.
 
 <Admonition type="tip" title={"No workflow orchestrator or cron jobs needed!"}>
@@ -1287,6 +1512,13 @@ When running on function-as-a-service platforms, your function can suspend in th
         ```
 
     </TabItem>
+    <TabItem value="python" label="Python">
+
+        ```python
+        CODE_LOAD::python/src/get_started/tour.py#sleep
+        ```
+
+    </TabItem>
 </Tabs>
 
 </Admonition>
@@ -1317,6 +1549,13 @@ go run ./part2
 ```
 
 </TabItem>
+<TabItem value="python" label="Python">
+
+```shell
+python3 -m hypercorn -b localhost:9080 tour/part2/app:app
+```
+
+</TabItem>
 </Tabs>
 </Admonition>
 
@@ -1327,7 +1566,7 @@ go run ./part2
 At the beginning of this tutorial, we mentioned that the `TicketObject` and `CartObject` services are Virtual Objects.
 
 **Virtual Objects** are identified by a key and allow you to store K/V state in Restate.
-For each Virtual Object, only one invocation can run at a time (across all the handlers of that Virtual Object).
+For each Virtual Object (key), only one invocation can run at a time (across all the handlers of that Virtual Object).
 
 **Services**, on the other hand, do not have access to K/V state, and handlers can run concurrently.
 
@@ -1360,6 +1599,13 @@ To get this behaviour, we key the `TicketObject` on ticket ID. We now have a sin
 
             ```go
             CODE_LOAD::go/getstarted/tour.go#sleep_and_send
+            ```
+
+        </TabItem>
+        <TabItem value="python" label="Python">
+
+            ```python
+            CODE_LOAD::python/src/get_started/tour.py#sleep_and_send
             ```
 
         </TabItem>
@@ -1414,18 +1660,34 @@ After you added the ticket to the cart array, you set the state to the new value
 </TabItem>
 <TabItem value="go" label="Go">
 
-Adapt the `CartObject/AddTicket` function to keep track of the cart items.
+    Adapt the `CartObject/AddTicket` function to keep track of the cart items.
+    After reserving the product, you add the ticket to the shopping cart.
+    Have a look at the highlighted code:
+
+    ```go cartobject.go
+    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-go/part3/cartobject.go#add_ticket
+    ```
+
+    To retrieve the cart, you use `restate.Get`.
+    This returns the zero value if there's no value for this key; a nil slice is a useful result in this case.
+
+    After you added the ticket to the cart array, you set the state to the new value with `restate.Set`.
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+Adapt the `CartObject/addTicket` function to keep track of the cart items.
 After reserving the product, you add the ticket to the shopping cart.
 Have a look at the highlighted code:
 
-```go cartobject.go
-CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-go/part3/cartobject.go#add_ticket
+```python cart_object.py
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part3/cart_object.py#add_ticket
 ```
 
-To retrieve the cart, you use `restate.Get`.
-This returns the zero value if there's no value for this key; a nil slice is a useful result in this case.
+To retrieve the cart, you use `ctx.get`.
+This returns `null` if the value has never been set.
 
-After you added the ticket to the cart array, you set the state to the new value with `restate.Set`.
+After you added the ticket to the cart array, you set the state to the new value with `ctx.set`.
 
 </TabItem>
 </Tabs>
@@ -1496,6 +1758,7 @@ Run the services with TRACE loglevel (`slog.SetLogLoggerLevel(-8)` in Go >= 1.22
 ```
 </details>
 </TabItem>
+<TabItem value="python" label="Python"></TabItem>
 </Tabs>
 
 <Admonition type="tip" title="Local state access">
@@ -1532,6 +1795,16 @@ So when you operate on the state in your function, you get access to a local cop
         ```
 
         After the tickets are checked out, you clear the state with `restate.Clear`.
+
+    </TabItem>
+    <TabItem value="python" label="Python">
+        Also adapt the `CartObject/checkout` function, to use the tickets:
+
+        ```python cart_object.py
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part3/cart_object.py#checkout
+        ```
+
+        After the tickets are checked out, you clear the state with `ctx.clear`.
 
     </TabItem>
 </Tabs>
@@ -1641,14 +1914,36 @@ curl localhost:8080/CartObject/Mary/ExpireTicket -H 'content-type: application/j
 ```
 </details>
 </TabItem>
+<TabItem value="python" label="Python">
+#### Finishing `CartObject/expireTicket`
+
+You have almost fully implemented the `CartObject`. Let's finish `CartObject/expireTicket`.
+
+Before you call `unreserve`, you first need to check if the ticket is still held by the user.
+Retrieve the state and check if the ticket ID is in there.
+If this is the case, then you call `TicketObject/unreserve` and remove it from the state.
+
+<details>
+<summary>Solution</summary>
+```python cart_object.py
+CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part3/cart_object.py#expire_ticket
+```
+
+Call the `expireTicket` handler with:
+```shell
+curl localhost:8080/CartObject/Mary/expireTicket -H 'content-type: application/json' -d '"seat2B"'
+```
+</details>
+</TabItem>
 </Tabs>
 
 #### Implementing the `TicketObject`
 
-Track the status of the tickets in the `TicketObject` by storing it in the state.
+Track the status of the tickets in the `TicketObject` by storing it in the state and transitioning from one state to another, like a state machine.
+The possible states are available (default), reserved, and sold.
 Implement the handlers in the `TicketObject` to reserve, unreserve, and mark a ticket as sold.
 
-While you are developing them, you can use psql to monitor the state of the `TicketObject`:
+While you are developing them, monitor the state of the `TicketObject` via:
 
 <CH.Code>
 
@@ -1794,6 +2089,50 @@ This ties the final parts together.
 </details>
 </SubtleStep>
 </TabItem>
+<TabItem value="python" label="Python">
+        <SubtleStep title="TicketObject/reserve" stepLabel="1">
+            1. Retrieve the value for the `"status"` state key.
+            2. If the value is set to `"AVAILABLE"`, then change it to `"RESERVED"` and
+            return `true` (reservation successful).
+            3. If the status isn't set to `"AVAILABLE"`, then return `false`.
+
+            <details>
+                <summary>Solution</summary>
+                ```python ticket_object.py
+                CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part3/ticket_object.py#reserve
+                ```
+
+                Now, you can't reserve the same ticket multiple times anymore.
+                Call `addTicket` multiple times for the same ID. The first time it returns `true`, afterwards `false`.
+            </details>
+        </SubtleStep>
+        <SubtleStep stepLabel="2" title="TicketObject/unreserve">
+            Clear the `"status"`, if it's not equal to `"SOLD"`.
+            <details>
+                <summary>Solution</summary>
+                ```python ticket_object.py
+                CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part3/ticket_object.py#unreserve
+                ```
+
+                Now, the ticket reservation status is cleared when the delayed `expireTicket` call triggers.
+                Play around with reducing the delay of the `expireTicket` call in the `addTicket` handler.
+                Try to reserve the same ticket ID multiple times, and see how you are able to reserve it again after the `unreserve` handler executed.
+
+            </details>
+        </SubtleStep>
+        <SubtleStep stepLabel="3" title="TicketObject/markAsSold">
+            Set the `"status"` to `"SOLD"` if it's reserved.
+
+            <details>
+                <summary>Solution</summary>
+                ```python ticket_object.py
+                CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part3/ticket_object.py#mark_as_sold
+                ```
+                In the next section, you implement the `CheckoutService/handle` function that calls `markAsSold`.
+                This ties the final parts together.
+            </details>
+        </SubtleStep>
+</TabItem>
 </Tabs>
 
 <Admonition type="info">
@@ -1821,6 +2160,13 @@ go run ./part3
 ```
 
 </TabItem>
+    <TabItem value="python" label="Python">
+
+        ```shell
+        python3 -m hypercorn -b localhost:9080 tour/part3/app:app
+        ```
+
+    </TabItem>
 </Tabs>
 </Admonition>
 
@@ -1869,15 +2215,26 @@ So use `restate.Run` to store the result of non-deterministic operations!
 
 We can use this feature to do exactly-once payments in `CheckoutService/Handle`:
 </TabItem>
+<TabItem value="python" label="Python">
+        You can store the return value of any function in the journal, by using `ctx.run`.
+        This lets you capture potentially non-deterministic computation and interaction with external systems in a safe way.
+
+        <Admonition type="info" title="Handler logic needs to be deterministic">
+            For the replay to work, code needs to be deterministic, otherwise the replayed entries do not line up with the code execution on retries.
+            So use `ctx.run` to store the result of non-deterministic operations!
+        </Admonition>
+
+        We can use this feature to do exactly-once payments in `CheckoutService/handle`:
+</TabItem>
 </Tabs>
 
 <SubtleStep stepLabel="1" title="Generate an idempotency token">
-Let's use the SDK helper functions to generate a unique payment identifier and store it in Restate.
-Once the token is stored, it will be the same on retries.
-Try it out by printing the idempotency key and then throwing an error:
-
 <Tabs groupId="sdk" queryString className={"display-none"}>
     <TabItem value="ts" label="TypeScript">
+        Let's use the SDK helper functions to generate a unique payment identifier and store it in Restate.
+        Once the token is stored, it will be the same on retries.
+        Try it out by printing the idempotency key and then throwing an error:
+
 
         ```ts checkout_service.ts
         CODE_LOAD::ts/src/get_started/tour.ts#uuid
@@ -1906,6 +2263,10 @@ Try it out by printing the idempotency key and then throwing an error:
         </details>
     </TabItem>
     <TabItem value="java" label="Java">
+        Let's use the SDK helper functions to generate a unique payment identifier and store it in Restate.
+        Once the token is stored, it will be the same on retries.
+        Try it out by printing the idempotency key and then throwing an error:
+
 
         ```java CheckoutService.java
         CODE_LOAD::java/src/main/java/get_started/Tour.java#uuid
@@ -1939,6 +2300,10 @@ Try it out by printing the idempotency key and then throwing an error:
         </details>
     </TabItem>
     <TabItem value="go" label="Go">
+        Let's use the SDK helper functions to generate a unique payment identifier and store it in Restate.
+        Once the token is stored, it will be the same on retries.
+        Try it out by printing the idempotency key and then throwing an error:
+
 
         ```go checkoutservice.go
         CODE_LOAD::go/getstarted/tour.go#uuid
@@ -1960,13 +2325,46 @@ Try it out by printing the idempotency key and then throwing an error:
         ```
         </details>
     </TabItem>
+    <TabItem value="python" label="Python">
+        Let's use `ctx.run` to generate a unique payment identifier and store it in Restate.
+        Once the token is stored, it will be the same on retries.
+        Try it out by printing the idempotency key and then throwing an error:
+
+
+        ```python checkout_service.py
+        CODE_LOAD::python/src/get_started/tour.py#uuid
+        ```
+
+        Call `CartObject/checkout` and have a look at the logs to see what happens.
+
+        <details className="grey-details">
+        <summary>Service logs</summary>
+        ```log
+        // withClass highlight-line
+        My idempotency key is:  84452572-5d8a-48ea-91a5-e3e6f011b4eb
+        Traceback (most recent call last):
+        ... rest of trace ...
+        raise Exception("Something happened!")
+        Exception: Something happened!
+        // withClass highlight-line
+        My idempotency key is:  84452572-5d8a-48ea-91a5-e3e6f011b4eb
+        Traceback (most recent call last):
+        ... rest of trace ...
+        raise Exception("Something happened!")
+        Exception: Something happened!
+            // withClass highlight-line
+        My idempotency key is:  84452572-5d8a-48ea-91a5-e3e6f011b4eb
+        ... retries continue ...
+        ```
+        </details>
+    </TabItem>
 </Tabs>
 </SubtleStep>
 
 <SubtleStep stepLabel="2" title="Trigger the payment">
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
-Execute the payment via an external payment provider via `PaymentClient.get().call(idempotencyKey, amount)`.
+Execute the payment via an external payment provider via _`PaymentClient.get().call(idempotencyKey, amount)`_.
 The payment provider will deduplicate payments based on the idempotency token.
 We assume every ticket costs 40 dollars.
 
@@ -1976,7 +2374,7 @@ CODE_LOAD::ts/src/get_started/tour.ts#checkout
 
 </TabItem>
 <TabItem value="java" label="Java">
-Execute the payment via an external payment provider via `PaymentClient.get().call(idempotencyKey, amount)`.
+Execute the payment via an external payment provider via _`PaymentClient.get().call(idempotencyKey, amount)`_.
 The payment provider will deduplicate payments based on the idempotency token.
 We assume every ticket costs 40 dollars.
 
@@ -1993,6 +2391,15 @@ We assume every ticket costs 40 dollars.
 ```go checkoutservice.go
 CODE_LOAD::go/getstarted/tour.go#checkout
 ```
+</TabItem>
+<TabItem value="python" label="Python">
+Execute the payment via an external payment provider via _`payment_client.call(idempotency_key, total_price)`_.
+The payment provider will deduplicate payments based on the idempotency token.
+We assume every ticket costs 40 dollars.
+
+```python checkout_service.py
+CODE_LOAD::python/src/get_started/checkout.py#checkout
+```
 
 </TabItem>
 </Tabs>
@@ -2007,8 +2414,8 @@ Let's finish the checkout flow by sending the email notifications and marking th
 <TabItem value="ts" label="TypeScript">
 <SubtleStep stepLabel="1" title="Implement the email notifications">
 After the `CheckoutService/handle` handler has handled the payment, you need to notify the users of the payment status:
-- **Payment success**: notify the users via `EmailClient.get().notifyUserOfPaymentSuccess(request.getUserId())`.
-- **Payment failure**: notify the users via the `EmailClient.get().notifyUserOfPaymentFailure(request.getUserId())`.
+- **Payment success**: notify the users via _`EmailClient.get().notifyUserOfPaymentSuccess(request.getUserId())`_.
+- **Payment failure**: notify the users via the _`EmailClient.get().notifyUserOfPaymentFailure(request.getUserId())`_.
 
 <details>
 <summary>Solution</summary>
@@ -2033,8 +2440,8 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/
 <TabItem value="java" label="Java">
 <SubtleStep stepLabel="1" title="Implement the email notifications">
 After the `CheckoutService/handle` handler has handled the payment, you need to notify the users of the payment status:
-- **Payment success**: notify the users via `EmailClient.get().notifyUserOfPaymentSuccess(request.getUserId())`.
-- **Payment failure**: notify the users via the `EmailClient.get().notifyUserOfPaymentFailure(request.getUserId())`.
+- **Payment success**: notify the users via _`EmailClient.get().notifyUserOfPaymentSuccess(request.getUserId())`_.
+- **Payment failure**: notify the users via the _`EmailClient.get().notifyUserOfPaymentFailure(request.getUserId())`_.
 
 <details>
 <summary>Solution</summary>
@@ -2082,6 +2489,31 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/
 
 </SubtleStep>
 </TabItem>
+<TabItem value="python" label="Python">
+    <SubtleStep stepLabel="1" title="Implement the email notifications">
+        After the `CheckoutService/handle` handler has handled the payment, you need to notify the users of the payment status:
+        - **Payment success**: notify the users via _`email_client.notify_user_of_payment_success(order['user_id'])`_.
+        - **Payment failure**: notify the users via the _`email_client.notify_user_of_payment_failure(order['user_id'])`_.
+
+        <details>
+            <summary>Solution</summary>
+            ```python checkout_service.py
+            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part4/checkout_service.py#checkout
+            ```
+        </details>
+    </SubtleStep>
+    <SubtleStep stepLabel="2" title="Mark tickets as sold">
+        Let the `CartObject/checkout` handler mark all tickets as sold by calling `TicketObject/markAsSold` for each ticket.
+
+        <details>
+            <summary>Solution</summary>
+            ```typescript cart_object.ts
+            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part4/cart_object.py#checkout
+            ```
+        </details>
+
+    </SubtleStep>
+</TabItem>
 </Tabs>
 
 🥳 You have now fully implemented the ticket reservation system!
@@ -2112,6 +2544,13 @@ go run ./part4
 ```
 
 </TabItem>
+<TabItem value="python" label="Python">
+
+    ```shell
+    python3 -m hypercorn -b localhost:9080 tour/part4/app:app
+    ```
+
+</TabItem>
 </Tabs>
 </Admonition>
 
@@ -2128,6 +2567,9 @@ For example, if the caller of the `addTicket` handler didn't receive the success
 </TabItem>
 <TabItem value="go" label="Go">
 For example, if the caller of the `AddTicket` handler didn't receive the success response of its first request, it might retry the request.
+</TabItem>
+<TabItem value="python" label="Python">
+For example, if the caller of the `addTicket` handler didn't receive the success response of its first request, it might retry the request.
 </TabItem>
 </Tabs>
 The second request will return `false` because the ticket already got reserved the first time, but the caller won't know about this.
@@ -2161,9 +2603,19 @@ However, if we use the same idempotency key, the second call will return `true` 
 
 ```shell
 curl localhost:8080/CartObject/Mary/AddTicket -H 'content-type: application/json' \
+-H 'idempotency-key: ad5472esg4dsg525dssdfa5loi'  \
+-d '"seat2C"'
+```
+</TabItem>
+<TabItem value="python" label="Python">
+    In our example, when we call the `CartObject/addTicket` handler, the first time the response is `true` and the second time it's `false`.
+    However, if we use the same idempotency key, the second call will return `true` as well, because it will return the result of the first call:
+
+    ```shell
+    curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' \
     -H 'idempotency-key: ad5472esg4dsg525dssdfa5loi'  \
     -d '"seat2C"'
-```
+    ```
 </TabItem>
 </Tabs>
 
@@ -2242,6 +2694,17 @@ docker run -d --name jaeger -e COLLECTOR_OTLP_ENABLED=true \
         ```
     </CH.Code>
   </TabItem>
+<TabItem value="python" label="Python">
+<CH.Code>
+
+  ```shell
+  curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2A"'
+  curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2B"'
+  curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2C"'
+  curl -X POST localhost:8080/CartObject/Mary/checkout
+  ```
+</CH.Code>
+</TabItem>
   </Tabs>
 
 </SubtleStep>
@@ -2263,6 +2726,10 @@ Have a look at the traces of the `checkout` call:
 <TabItem value="go" label="Go">
 You should see the `AddTicket` and `Checkout` requests listed.
 Have a look at the traces of the `Checkout` call:
+</TabItem>
+<TabItem value="python" label="Python">
+You should see the `addTicket` and `checkout` requests listed.
+Have a look at the traces of the `checkout` call:
 </TabItem>
 </Tabs>
 

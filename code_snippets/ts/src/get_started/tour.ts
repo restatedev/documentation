@@ -49,7 +49,7 @@ const secondCheckoutService = restate.service({
       const totalPrice = request.tickets.length * 40;
 
       const idempotencyKey = ctx.rand.uuidv4();
-      // withClass highlight-line
+      // withClass(1:3) highlight-line
       const success = await ctx.run(() =>
         PaymentClient.get().call(idempotencyKey, totalPrice)
       );
