@@ -1,0 +1,43 @@
+---
+sidebar_position: 9
+description: "How to serialize and deserialize data with the Restate SDK."
+---
+
+# Serialization
+
+Restate sends data over the network for storing state, journaling actions, awakeables, etc.
+
+By default, Typescript SDK uses the built-in [JSON](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON)
+support to perform (de)serialization, but it is possible to override this behavior using the `Serde` interface.
+
+For example, to customize the `Serde` to use for the handler input and output:
+
+```typescript
+CODE_LOAD::ts/src/develop/serialization.ts#service_definition
+```
+
+To customize the serde to use on requests:
+
+```typescript
+CODE_LOAD::ts/src/develop/serialization.ts#client
+```
+
+When sending a request to a handler configured with custom serde(s) you always need to manually specify them, because the client does not automatically infer what serde(s) should be used.
+
+To customize the serde to use for state:
+
+```typescript
+CODE_LOAD::ts/src/develop/serialization.ts#state
+```
+
+For awakeables:
+
+```typescript
+CODE_LOAD::ts/src/develop/serialization.ts#awakeable
+```
+
+For `run`:
+
+```typescript
+CODE_LOAD::ts/src/develop/serialization.ts#run
+```

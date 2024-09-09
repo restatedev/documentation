@@ -9,12 +9,7 @@ import Admonition from '@theme/Admonition';
 
 # Restate Cloud
 
-<Admonition type="warning">
-    Restate Cloud free tier is in early access and we don't offer strict
-    availability or durability SLAs at this time.
-</Admonition>
-
-[Restate Cloud](https://cloud.restate.dev) is the early-access managed service of Restate, where we run an instance of the Restate server for you. This allows you to focus on your services, which you can deploy wherever you normally do - long-lived compute, or serverless platforms like Lambda.
+[Restate Cloud](https://restate.dev/cloud) is a fully managed serverless version of Restate, with a suite of tools supporting a stellar local development experience, and security features like [request signing](#securing-your-services) and [IAM roles for AWS Lambda](#aws-lambda-services). This allows you to focus on your services, which you can deploy wherever you normally do, while Restate Cloud handles all aspects of availability and durability for your invocations, workflows, and state.
 
 ## Creating your first environment
 
@@ -68,7 +63,7 @@ identity in the same account that the Lambda is deployed to. Create a new role
 that has permission to invoke your Lambda handlers, and give it the following
 trust policy.
 
-<Admonition type="warning">
+<Admonition type="info">
 The Restate Cloud role is distinct from the Lambda function's execution role.
 The execution role is assumed by your function to perform its work. A dedicated
 invoker role is needed to grant Restate Cloud permission to invoke service handler
