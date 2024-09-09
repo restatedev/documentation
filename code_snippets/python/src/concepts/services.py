@@ -24,13 +24,13 @@ class UpdateRequest(TypedDict):
     permissions: List[Permission]
 
 
-async def apply_user_role(user_id: str, user_role: UserRole) -> bool:
+def apply_user_role(user_id: str, user_role: UserRole) -> bool:
     maybe_crash(0.3)
     logging.info(f'>>> Applied role {user_role["roleKey"]} for user {user_id}')
     return True
 
 
-async def apply_permission(user_id: str, permission: Permission) -> None:
+def apply_permission(user_id: str, permission: Permission) -> None:
     maybe_crash(0.2)
     logging.info(f'>>> Applied permission {permission["permissionKey"]}:{permission["setting"]} for user {user_id}')
 
