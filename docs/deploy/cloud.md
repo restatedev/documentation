@@ -9,12 +9,7 @@ import Admonition from '@theme/Admonition';
 
 # Restate Cloud
 
-<Admonition type="warning">
-    Restate Cloud free tier is in early access and we don't offer strict
-    availability or durability SLAs at this time.
-</Admonition>
-
-[Restate Cloud](https://cloud.restate.dev) is the early-access managed service of Restate, where we run an instance of the Restate server for you. This allows you to focus on your services, which you can deploy wherever you normally do - long-lived compute, or serverless platforms like Lambda.
+[Restate Cloud](https://restate.dev/cloud) is a fully managed serverless version of Restate, with a suite of tools supporting a stellar local development experience, and security features like [request signing](#securing-your-services) and [IAM roles for AWS Lambda](#aws-lambda-services). This allows you to focus on your services, which you can deploy wherever you normally do, while Restate Cloud handles all aspects of availability and durability for your invocations, workflows, and state.
 
 ## Creating your first environment
 
@@ -68,7 +63,7 @@ identity in the same account that the Lambda is deployed to. Create a new role
 that has permission to invoke your Lambda handlers, and give it the following
 trust policy.
 
-<Admonition type="warning">
+<Admonition type="info">
 The Restate Cloud role is distinct from the Lambda function's execution role.
 The execution role is assumed by your function to perform its work. A dedicated
 invoker role is needed to grant Restate Cloud permission to invoke service handler
@@ -200,35 +195,9 @@ You must secure access to your service so that only Restate can call it.
 The easiest way to do this is with our native request identity feature.
 All requests to your service will be signed with a unique environment-specific private
 key. You can find the corresponding public key in the environment settings UI, under HTTP Services.
-It is safe to include this public key directly in your service code:
+It is safe to include this public key directly in your service code.
 
-<CH.Code>
-
-```typescript TypeScript
-restate
-  .endpoint()
-  .bind(myService)
-  .withIdentityV1("publickeyv1_8SyC5reu2eTUwGCH4CehFntZAnADvYU6PXZtFyKiTrWy")
-  .listen();
-```
-
-```java Java
-RestateHttpEndpointBuilder.builder()
-    .bind(new MyService())
-    .withRequestIdentityVerifier(RequestIdentityVerifier.fromKey("publickeyv1_8SyC5reu2eTUwGCH4CehFntZAnADvYU6PXZtFyKiTrWy"))
-    .buildAndListen();
-```
-
-```go Go
-if err := server.NewRestate().
-		Bind(restate.Reflect(MyService{})).
-		WithIdentityV1("publickeyv1_8SyC5reu2eTUwGCH4CehFntZAnADvYU6PXZtFyKiTrWy").
-		Start(context.Background(), ":9080"); err != nil {
-		log.Fatal(err)
-}
-```
-
-</CH.Code>
+Have a look at the SDK serving documentation to learn how for [TypeScript](/develop/ts/serving#validating-request-identity), [Java, Kotlin](/develop/java/serving#validating-request-identity), [Python](/develop/python/serving#validating-request-identity), and [Go](/develop/go/serving#validating-request-identity).
 
 ### Lambda
 

@@ -11,12 +11,8 @@
 
 import * as restate from "@restatedev/restate-sdk";
 import {
-  deliveryManager,
   emailClnt,
-  Order,
   paymentClnt,
-  restaurant,
-  Status,
 } from "./utils";
 
 /**

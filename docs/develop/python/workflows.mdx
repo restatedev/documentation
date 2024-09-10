@@ -1,0 +1,136 @@
+---
+sidebar_position: 7
+description: "Find out how Restate services can send requests to each other."
+---
+
+import clsx from "clsx";
+import Admonition from '@theme/Admonition';
+
+# Workflows
+
+[Workflows](/concepts/services#workflows) are a sequence of steps that gets executed durably.
+A workflow can be seen as a special type of [Virtual Object](/concepts/services#virtual-objects) with some special characteristics:
+
+- Each [workflow definition](/develop/python/overview#workflows) has a `run` handler that is annotated with _`@service_name.main()`_ and implements the workflow logic.
+- The `run` handler executes exactly one time for each workflow instance (object / key).
+- A [workflow definition](/develop/python/overview#workflows) can implement other handlers that can be called multiple times, and can interact with the workflow.
+- Workflows have access to the `WorkflowContext` and `WorkflowSharedContext`, giving them some extra functionality, for example [Durable Promises](/develop/python/workflows#signaling-workflows) to signal workflows.
+
+<Admonition type="note" title={"Workflow retention time"}>
+    The retention time of a workflow execution is 24 hours after the finishing of the `run` handler.
+    After this timeout any [K/V state](/develop/python/state) is cleared, the workflow's shared handlers cannot be called anymore, and the [Durable Promises](/develop/python/workflows#signaling-workflows) are discarded.
+    The retention time can be configured via the [Admin API](/references/admin-api/#tag/service/operation/modify_service) per Workflow definition by setting `workflow_completion_retention`.
+</Admonition>
+
+## Implementing workflows
+Have a look at the code example to get a better understanding of how workflows are implemented:
+
+<CH.Scrollycoding className={"spotlight-medium"}>
+
+    ### The `run` handler
+
+    Every workflow needs a `run` handler.
+    This handler has access to the same SDK features as Service and Virtual Object handlers.
+    For example, use [`ctx.run`](/develop/python/journaling-results#journaled-actions) to log intermediate results in Restate and avoid re-execution on replay.
+
+    ```python
+    CODE_LOAD::python/src/develop/workflows/signup.py?1
+    ```
+
+    ---
+
+    ### Querying workflows
+
+    Similar to Virtual Objects, you can retrieve the [K/V state](/develop/python/state#retrieving-state) of workflows via the other handlers defined in the workflow definition,
+    For example, here we expose the status of the workflow to external clients.
+    Every workflow execution can be seen as a new object, so the state is isolated to a single workflow execution.
+    The state can only be mutated by the `run` handler of the workflow. The other handlers can only read the state.
+
+    ```python
+    CODE_LOAD::python/src/develop/workflows/signup.py?2
+    ```
+
+    ---
+
+    ### Signaling workflows
+
+    You can use Durable Promises to interact with your running workflows: to let the workflow block until an event occurs, or to send a signal / information into or out of a running workflow.
+    These promises are durable and distributed, meaning they survive crashes and can be resolved or rejected by any handler in the workflow.
+
+    Do the following:
+    1. Create a promise in your one handler that is durable and distributed. For example, here in the `run` handler.
+    2. Resolve or reject the promise in any other handler in the workflow. This can be done at most one time.
+
+    ```python
+    CODE_LOAD::python/src/develop/workflows/signup.py?3
+    ```
+
+    ---
+
+    ### Serving and registering workflows
+
+    You serve workflows in the same way as Services and Virtual Objects: by binding them to an [HTTP endpoint](/develop/python/serving).
+    Make sure you [register the endpoint](/operate/registration) in Restate before invoking it.
+
+    ```python
+    CODE_LOAD::python/src/develop/workflows/signup.py?4
+    ```
+</CH.Scrollycoding>
+
+<Admonition type={"tip"} title={"Workflows-as-code with Restate"}>
+    [Check out some examples of workflows-as-code with Restate on the use case page](/use-cases/workflows).
+</Admonition>
+
+## Submitting workflows from a Restate service
+<CH.Scrollycoding className={clsx("single-item", "spotlight-medium")}>
+
+    [**Submit/query/signal**](/develop/python/service-communication):
+    Call the workflow handlers in the same way as for Services and Virtual Objects.
+    This returns the result of the workflow/handler once it has finished.
+    Use `ctx.workflow_send` to call the handler without waiting for the result.
+    You can only call the `run` handler (submit) once per workflow ID (here `"someone"`).
+
+    ```python
+    CODE_LOAD::python/src/develop/workflows/service.py
+    ```
+</CH.Scrollycoding>
+
+## Submitting workflows over HTTP
+<CH.Scrollycoding className={clsx("single-item", "spotlight-medium")}>
+    [**Submit/query/signal**](/invoke/http#request-response-calls-over-http):
+    Call any handler of the workflow in the same way as for Services and Virtual Objects.
+    This returns the result of the handler once it has finished.
+    Add `/send` to the path for one-way calls.
+    You can only call the `run` handler once per workflow ID (here `"someone"`).
+
+    ```shell
+    curl localhost:8080/signup/someone/run \
+        -H 'content-type: application/json' \
+        -d '{"email": "someone@restate.dev"}'
+    ```
+</CH.Scrollycoding>
+
+<CH.Scrollycoding className={clsx("single-item", "spotlight-medium")}>
+
+    [**Attach/peek**](/invoke/http#retrieve-result-of-invocations-and-workflows):
+    This lets you retrieve the result of a workflow or check if it's finished.
+
+    ```shell
+    curl localhost:8080/restate/workflow/signup/someone/attach
+    curl localhost:8080/restate/workflow/signup/someone/output
+    ```
+
+</CH.Scrollycoding>
+
+
+## Inspecting workflows
+
+Have a look at the [introspection docs](/operate/introspection) on how to inspect workflows.
+You can use this to for example:
+- [Inspect the progress of a workflow by looking at the invocation journal](/operate/introspection#inspecting-the-invocation-journal)
+- [Inspect the K/V state of a workflow](/operate/introspection#inspecting-application-state)
+
+
+
+
+
