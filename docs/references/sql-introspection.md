@@ -31,6 +31,7 @@ To learn how to access the instrospection interface, check out the [instrospecti
 | `invoked_id` | `Utf8` | If this entry represents an outbound invocation, indicates the ID of that invocation. |
 | `invoked_target` | `Utf8` | If this entry represents an outbound invocation, indicates the invocation Target. Format for plain services: `ServiceName/HandlerName`, e.g. `Greeter/greet`. Format for virtual objects/workflows: `VirtualObjectName/Key/HandlerName`, e.g. `Greeter/Francesco/greet`. |
 | `sleep_wakeup_at` | `Date64` | If this entry represents a sleep, indicates wakeup time. |
+| `promise_name` | `Utf8` | If this entry is a promise related entry (GetPromise, PeekPromise, CompletePromise), indicates the promise name. |
 | `raw` | `Binary` | Raw binary representation of the entry. Check the [service protocol](https://github.com/restatedev/service-protocol) for more details to decode it. |
 
 ## Table: `sys_keyed_service_status`
@@ -115,6 +116,10 @@ To learn how to access the instrospection interface, check out the [instrospecti
 | `journal_size` | `UInt32` | The number of journal entries durably logged for this invocation. |
 | `created_at` | `Date64` | Timestamp indicating the start of this invocation. |
 | `modified_at` | `Date64` | Timestamp indicating the last invocation status transition. For example, last time the status changed from `invoked` to `suspended`. |
+| `inboxed_at` | `Date64` | Timestamp indicating when the invocation was inboxed, if ever. |
+| `scheduled_at` | `Date64` | Timestamp indicating when the invocation was scheduled, if ever. |
+| `running_at` | `Date64` | Timestamp indicating when the invocation first transitioned to running, if ever. |
+| `completed_at` | `Date64` | Timestamp indicating when the invocation was completed, if ever. |
 | `retry_count` | `UInt64` | The number of invocation attempts since the current leader started executing it. Increments on start, so a value greater than 1 means a failure occurred. Note: the value is not a global attempt counter across invocation suspensions and leadership changes. |
 | `last_start_at` | `Date64` | Timestamp indicating the start of the most recent attempt of this invocation. |
 | `next_retry_at` | `Date64` | Timestamp indicating the start of the next attempt of this invocation. |
@@ -125,5 +130,7 @@ To learn how to access the instrospection interface, check out the [instrospecti
 | `last_failure_related_entry_index` | `UInt64` | The index of the journal entry that caused the failure, if any. It may be out-of-bound of the currently stored entries in `sys_journal`. |
 | `last_failure_related_entry_name` | `Utf8` | The name of the journal entry that caused the failure, if any. |
 | `last_failure_related_entry_type` | `Utf8` | The type of the journal entry that caused the failure, if any. You can check all the available entry types in [`entries.rs`](https://github.com/restatedev/restate/blob/main/crates/types/src/journal/entries.rs). |
-| `status` | `Utf8` | Either `pending` or `ready` or `running` or `backing-off` or `suspended` or `completed`. |
+| `status` | `Utf8` | Either `pending` or `scheduled` or `ready` or `running` or `backing-off` or `suspended` or `completed`. |
+| `completion_result` | `Utf8` | If `status = 'completed'`, this contains either `success` or `failure` |
+| `completion_failure` | `Utf8` | If `status = 'completed' AND completion_result = 'failure'`, this contains the error cause |
 
