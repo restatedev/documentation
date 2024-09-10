@@ -11,10 +11,8 @@ import {
     Tags,
     TagList,
     type Guide,
-    type Levels,
     type TagType,
 } from '../../data/guides';
-import Heading from '@theme/Heading';
 import GuideTagSelect, {
     readSearchTags,
 } from './_components/GuideTagSelect';
@@ -113,7 +111,7 @@ function useFilteredGuides() {
 function LearnCenterHeader() {
     return (
         <section className="margin-top--lg margin-bottom--lg text--center">
-            <Heading as="h1">💡{TITLE}</Heading>
+            <h1>💡{TITLE}</h1>
             <p>{DESCRIPTION}</p>
         </section>
     );
@@ -143,9 +141,9 @@ function GuideFilters() {
         <section className="container margin-top--l margin-bottom--lg">
             <div className={clsx('margin-bottom--sm', styles.filterCheckbox)}>
                 <div>
-                    <Heading as="h2">
+                    <h2>
                         <Translate id="guide.filters.title">Filters</Translate>
-                    </Heading>
+                    </h2>
                     <span>{siteCountPlural(filteredGuides.length)}</span>
                   <GuideFilterToggle/>
                   <SearchBar/>
@@ -249,9 +247,9 @@ function GuideCards() {
         return (
             <section className="margin-top--lg margin-bottom--xl">
                 <div className="container padding-vert--md text--center">
-                    <Heading as="h2">
+                    <h2>
                         <Translate id="guide.usersList.noResult">No result</Translate>
-                    </Heading>
+                    </h2>
                 </div>
             </section>
         );
@@ -268,11 +266,11 @@ function GuideCards() {
                                     'margin-bottom--md',
                                     styles.guideFavoriteHeader,
                                 )}>
-                                <Heading as="h2">
+                                <h2>
                                     <Translate id="guide.favoritesList.title">
                                         🚀 First time here?
                                     </Translate>
-                                </Heading>
+                                </h2>
                             </div>
                             <ul
                                 className={clsx(
@@ -311,9 +309,9 @@ function GuideCards() {
                                 ))}
                             </ul>
                         </details>
-                        <Heading as="h2" className={styles.guideHeader}>
+                        <h2 className={styles.guideHeader}>
                             <Translate id="guide.usersList.allUsers">All guides</Translate>
-                        </Heading>
+                        </h2>
                         <ul className={clsx('clean-list', styles.guideList)}>
                             {otherGuides.map((guide) => (
                                 <GuideCard key={guide.title} guide={guide}/>
@@ -339,7 +337,7 @@ function GuideCards() {
 
 export default function LearnCenter(): JSX.Element {
     return (
-        <Layout title={TITLE} description={DESCRIPTION}>
+        <Layout>
             <main className="margin-vert--lg">
                 <LearnCenterHeader/>
                 <GuideFilters/>

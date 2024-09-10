@@ -1,6 +1,0 @@
----
-sidebar_position: 4
-description: "How to incrementally enable Restate for existing applications."
----
-
-# Versioning

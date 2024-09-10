@@ -1,7 +1,7 @@
 /* eslint-disable global-require */
 
 import {translate} from '@docusaurus/Translate';
-import {sortBy} from '@site/src/utils/jsUtils';
+import {sortBy} from "../utils/jsUtils";
 
 /*
  * ADD YOUR GUIDE TO THE LEARN SECTION

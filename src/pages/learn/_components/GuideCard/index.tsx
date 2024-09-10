@@ -2,18 +2,11 @@ import React from 'react';
 import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import Translate from '@docusaurus/Translate';
-import {
-  Tags,
-  TagList,
-  type TagType,
-  type Guide,
-  type Tag,
-} from '@site/src/data/guides';
-import {sortBy} from '@site/src/utils/jsUtils';
-import Heading from '@theme/Heading';
 import Tooltip from '../GuideTooltip';
 import styles from './styles.module.css';
 import IdealImage from "@docusaurus/plugin-ideal-image/lib/theme/IdealImage";
+import {Guide, Tag, TagList, Tags, TagType} from "../../../../data/guides";
+import {sortBy} from "../../../../utils/jsUtils";
 
 const TagComp = React.forwardRef<HTMLLIElement, Tag>(
   ({label, color, description}, ref) => (
@@ -64,11 +57,11 @@ function GuideCard({guide}: {guide: Guide}) {
       </div>
       <div className="card__body">
         <div className={clsx(styles.guideCardHeader)}>
-          <Heading as="h4" className={styles.guideCardTitle}>
+          <h4 className={styles.guideCardTitle}>
             <Link href={guide.website} className={styles.guideCardLink}>
               {guide.title}
             </Link>
-          </Heading>
+          </h4>
           {guide.tags.includes('favorite') && (
               <a>🚀</a>
           )}
