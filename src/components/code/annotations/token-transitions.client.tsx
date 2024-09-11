@@ -1,4 +1,5 @@
-import { AnnotationHandler, InnerToken } from "codehike/code"
+"use client"
+
 import { CustomPreProps, InnerPre, getPreRef } from "codehike/code"
 import {
   TokenTransitionsSnapshot,
@@ -8,8 +9,7 @@ import {
 import React from "react"
 
 const MAX_TRANSITION_DURATION = 900 // milliseconds
-
-class SmoothPre extends React.Component<CustomPreProps> {
+export class PreWithRef extends React.Component<CustomPreProps> {
   ref: React.RefObject<HTMLPreElement>
   constructor(props: CustomPreProps) {
     super(props)
@@ -27,7 +27,7 @@ class SmoothPre extends React.Component<CustomPreProps> {
   componentDidUpdate(
     prevProps: never,
     prevState: never,
-    snapshot: TokenTransitionsSnapshot
+    snapshot: TokenTransitionsSnapshot,
   ) {
     const transitions = calculateTransitions(this.ref.current!, snapshot)
     transitions.forEach(({ element, keyframes, options }) => {
@@ -46,12 +46,4 @@ class SmoothPre extends React.Component<CustomPreProps> {
       })
     })
   }
-}
-
-export const tokenTransitions: AnnotationHandler = {
-  name: "token-transitions",
-  PreWithRef: SmoothPre,
-  Token: (props) => (
-    <InnerToken merge={props} style={{ display: "inline-block" }} />
-  ),
 }

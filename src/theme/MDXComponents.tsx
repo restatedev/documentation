@@ -1,9 +1,14 @@
-// Import the original mapper
-// import MDXComponents from "@theme/MDXComponents"
-import { MyCode } from "../components/code"
+import { useMDXComponents } from '@mdx-js/react';
+import {Code, CodeWithTabs} from "../components/code/code"
+import {Scrollycoding} from "../components/code/scrollycoding";
 
-export default {
-  // Re-use the default mapping
-  // ...MDXComponents,
-  MyCode,
-}
+
+const MDXComponents = {
+  // Define your custom MDX components here
+  Code,
+  CodeWithTabs,
+  Scrollycoding
+};
+
+export default MDXComponents;
+export { useMDXComponents };

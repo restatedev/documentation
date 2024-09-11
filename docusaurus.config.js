@@ -12,7 +12,7 @@ import { remarkCodeHike, recmaCodeHike } from "codehike/mdx"
 
 /** @type {import('codehike/mdx').CodeHikeConfig} */
 const chConfig = {
-  components: { code: "MyCode" },
+  components: { code: "Code" },
   syntaxHighlighting: {
     theme: "github-dark",
   },
@@ -80,19 +80,6 @@ const config = {
                 replacements: variablesReplacements,
               },
             ],
-
-            // [
-            //   remarkCodeHike,
-            //   {
-            //     lineNumbers: false,
-            //     showCopyButton: true,
-            //     theme: "github-light",
-            //     skipLanguages: ["mermaid"],
-            //     staticMediaQuery: "not screen, (max-width: 768px)",
-            //     autoImport: true,
-            //     autoLink: false,
-            //   },
-            // ],
             [remarkCodeHike, chConfig],
           ],
           remarkPlugins: [],
@@ -207,38 +194,38 @@ const config = {
         ],
         copyright: `Copyright © ${new Date().getFullYear()} Restate Software, Inc. Built with Docusaurus.`,
       },
-      prism: {
-        theme: lightCodeTheme,
-        darkTheme: darkCodeTheme,
-        additionalLanguages: [
-          "protobuf",
-          "log",
-          "java",
-          "kotlin",
-          "scala",
-          "bash",
-          "json",
-          "toml",
-        ], // adding scala to fix redoc from breaking (https://github.com/PrismJS/prism/issues/3458)
-        magicComments: [
-          // Remember to extend the default highlight class name as well!
-          {
-            className: "theme-code-block-highlighted-line",
-            line: "highlight-next-line",
-            block: { start: "highlight-start", end: "highlight-end" },
-          },
-          {
-            className: "bad-code-block",
-            line: "bad-code",
-            block: { start: "bad-code-start", end: "bad-code-end" },
-          },
-          {
-            className: "good-code-block",
-            line: "good-code",
-            block: { start: "good-code-start", end: "good-code-end" },
-          },
-        ],
-      },
+      // prism: {
+      //   theme: lightCodeTheme,
+      //   darkTheme: darkCodeTheme,
+      //   additionalLanguages: [
+      //     "protobuf",
+      //     "log",
+      //     "java",
+      //     "kotlin",
+      //     "scala",
+      //     "bash",
+      //     "json",
+      //     "toml",
+      //   ], // adding scala to fix redoc from breaking (https://github.com/PrismJS/prism/issues/3458)
+      //   magicComments: [
+      //     // Remember to extend the default highlight class name as well!
+      //     {
+      //       className: "theme-code-block-highlighted-line",
+      //       line: "highlight-next-line",
+      //       block: { start: "highlight-start", end: "highlight-end" },
+      //     },
+      //     {
+      //       className: "bad-code-block",
+      //       line: "bad-code",
+      //       block: { start: "bad-code-start", end: "bad-code-end" },
+      //     },
+      //     {
+      //       className: "good-code-block",
+      //       line: "good-code",
+      //       block: { start: "good-code-start", end: "good-code-end" },
+      //     },
+      //   ],
+      // },
       colorMode: {
         defaultMode: "light",
         disableSwitch: true,
