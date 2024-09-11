@@ -1,1605 +1,796 @@
 ---
 id: quickstart
-title: "Quickstart"
+[//]: # (sidebar_position: 2 --> this is now set by sidebars.js)
 description: ""
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import Admonition from '@theme/Admonition';
+import {Step} from "../../src/components/Stepper";
+import {CodeWithTabs} from "../../src/components/code/code";
 
-import {Scrollycoding} from "../../src/components/code/scrollycoding";
-
-
-
-<Scrollycoding>
-
-    ## !!steps A Game of Thrones
-
-    A Game of Thrones is the first book in the A Song of Ice and Fire series by George R.R. Martin. Set in a world where seasons last for years, it introduces a complex plot and a wide cast of characters, ranging from noble families vying for the Iron Throne to the supernatural threats in the North.
-
-    {/* prettier-ignore */}
-    ```js ! george.js
-    const houses = [
-    "Stark",
-    "Lannister",
-    "Baratheon",
-    "Targaryen",
-    ]
-
-    const winner =
-    houses[
-    Math.floor(
-    Math.random() * houses.length,
-    )
-    ]
-
-    console.log(`Iron Throne: ${winner}`)
-    ```
-
-    ## !!steps A Clash of Kings
-
-    A Clash of Kings, the second book in the series, continues the epic saga. The Seven Kingdoms are plunged into war, with kings rising and falling. Meanwhile, Daenerys Targaryen seeks to return to Westeros with her growing dragons.
-
-    {/* prettier-ignore */}
-    ```js ! george.js
-    const houses = [
-    "Stark",
-    "Lannister",
-    "Baratheon",
-    "Targaryen",
-    ]
-
-    const clash = () => {
-    const winner =
-    houses[
-    Math.floor(
-    Math.random() * houses.length,
-    )
-    ]
-    return `${winner} wins the battle!`
-}
-
-    console.log(clash())
-    ```
-
-    ## !!steps A Storm of Swords
-
-    The third book, A Storm of Swords, is known for its intense and shocking developments. Battles rage on, alliances shift, and characters face unexpected challenges and betrayals, making it one of the most thrilling books in the series.
-
-    {/* prettier-ignore */}
-    ```js ! george.js
-    const houses = [
-    "Stark",
-    "Lannister",
-    "Baratheon",
-    ]
-
-    const reveal = () => {
-    const traitor =
-    houses[
-    Math.floor(
-    Math.random() * houses.length,
-    )
-    ]
-    return `${traitor} betrays the alliance!`
-}
-
-    console.log(reveal())
-    ```
-
-    ## !!steps A Feast for Crows
-
-    A Feast for Crows, the fourth book, explores the aftermath of the wars, with a focus on the characters in the southern regions of Westeros. It delves into the politics and power struggles in a kingdom weary of battle.
-
-    {/* prettier-ignore */}
-    ```js ! george.js
-    const houses = [
-    "Martell",
-    "Lannister",
-    "Baratheon",
-    "Tyrell",
-    ]
-
-    const intrigue = () => {
-    const ally1 =
-    houses[
-    Math.floor(
-    Math.random() * houses.length,
-    )
-    ]
-    const ally2 =
-    houses[
-    Math.floor(
-    Math.random() * houses.length,
-    )
-    ]
-    return `${ally1} and ${ally2} form an alliance!`
-}
-
-    console.log(intrigue())
-    ```
-
-    ## !!steps A Dance with Dragons
-
-    A Dance with Dragons, the fifth book, runs concurrently with A Feast for Crows and focuses on the characters in the North and across the Narrow Sea. The story advances with dragons, the Night’s Watch, and the lingering threat of winter.
+# Quickstart
 
-    {/* prettier-ignore */}
-    ```js ! george.js
-    const houses = [
-    "Stark",
-    "Lannister",
-    "Baratheon",
-    "Targaryen",
-    ]
+This guide takes you through your first steps with Restate.
 
-    const dragons = () => {
-    const dragon =
-    houses[
-    Math.floor(
-    Math.random() * houses.length,
-    )
-    ]
-    return `${dragon} has a dragon!`
-}
+<Tabs groupId="sdk" queryString>
+    <TabItem value="ts" label="TypeScript" default>
 
-    console.log(dragons())
-    ```
+        <Admonition type="note" title="Prerequisites">
+            - TypeScript: Latest stable version of [NodeJS](https://nodejs.org/en/) >= v18.17.1 and [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 9.6.7
+            - Optional but recommended: [Install the Restate Server & CLI](/develop/local_dev#running-restate-server--cli-locally)
+        </Admonition>
 
-    ## !!steps The Winds of Winter
+        <Step stepLabel="1" title="Get the Greeter service template">
 
-    The Winds of Winter, the anticipated sixth book, is expected to continue the intricate storylines and bring new twists and turns to the world of Westeros. Fans eagerly await its release.
+            Download the [Node template](https://github.com/restatedev/node-template-generator) with a skeleton of a Restate service. And install its dependencies:
 
-    ```js ! george.js
-    const houses = [
-    "Stark",
-    "Lannister",
-    "Baratheon",
-    "Targaryen",
-    "Martell",
-    "Tyrell",
-    "Greyjoy",
-    ]
+            ```shell
+            npx -y @restatedev/create-app@latest && cd restate-node-template && \
+            npm install
+            ```
 
-    const winterIsComing = () => {
-    const isComing = Math.random() > 0.99
-    if (isComing) {
-    return "Winter is coming!"
-} else {
-    return "Winter is not coming."
-}
-}
+        </Step>
+        <Step stepLabel="2" title="Run the Greeter service">
 
-    console.log(winterIsComing())
-    ```
+            Now, start developing your service in `src/app.ts`. Run it with [`ts-node-dev`](https://www.npmjs.com/package/ts-node-dev), and let it listen on port `9080` for requests:
 
-    ## !!steps A Dream of Spring
+            ```shell
+            npm run app-dev
+            ```
 
-    A Dream of Spring is the proposed final book in the series, anticipated to conclude the epic saga. It remains one of the most awaited books in modern fantasy literature.
+        </Step>
 
-    ```js ! george.js
-    const houses = [
-    "Stark",
-    "Lannister",
-    "Baratheon",
-    "Targaryen",
-    "Martell",
-    "Tyrell",
-    "Greyjoy",
-    ]
+        <Step stepLabel="3" title="Launch Restate">
+            Restate is a single self-contained binary. No external dependencies needed. Run it locally via ([or download the binaries](/develop/local_dev#running-restate-server--cli-locally)):
 
-    const keepDreaming = () => {
-    return "Not gonna happen..."
-}
 
-    console.log(keepDreaming())
-    ```
+            <CodeWithTabs>
 
-</Scrollycoding>
+                ```shell !!tabs npx
+                npx @restatedev/restate-server
+                ```
 
-```shell npx
-npx @restatedev/restate-server
-```
+                ``` shell !!tabs Homebrew
+                brew install restatedev/tap/restate-server && restate-server
+                ```
 
+                ```shell !!tabs Docker
+                docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 \
+                --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
+                ```
 
-```shell npx
-npx @restatedev/restate-server
-```
+            </CodeWithTabs>
 
+        </Step>
 
-[//]: # ()
-[//]: # (``` shell Homebrew)
+        <Step stepLabel="4" title="Register the service">
 
-[//]: # (brew install restatedev/tap/restate-server && restate-server)
+            Tell Restate where the service is running, so Restate can discover and register the services and handlers behind this endpoint:
 
-[//]: # (```)
+            <CodeWithTabs>
 
-[//]: # ()
-[//]: # (```shell Docker)
+                ```shell !!tabs CLI
+                # link /develop/local_dev#running-restate-server--cli-locally
+                restate deployments register http://localhost:9080
+                ```
 
-[//]: # (docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 \)
+                ```shell !!tabs npx
+                npx @restatedev/restate deployments register http://localhost:9080
+                ```
 
-[//]: # (--add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION)
+                ```shell !!tabs curl
+                curl localhost:9070/deployments -H 'content-type: application/json' \
+                -d '{"uri": "http://localhost:9080"}'
+                ```
 
-[//]: # (```)
+            </CodeWithTabs>
 
-[//]: # (</CodeWithTabs>)
+            If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
 
-[//]: # ()
-[//]: # (import Tabs from '@theme/Tabs';)
+            <details className={"grey-details"}>
 
-[//]: # (import TabItem from '@theme/TabItem';)
+                <summary>Output</summary>
 
-[//]: # (import Admonition from '@theme/Admonition';)
+                ```shell
+                ❯ SERVICES THAT WILL BE ADDED:
+                - Greeter
+                Type: Service
+                HANDLER  INPUT                                     OUTPUT
+                greet    value of content-type 'application/json'  value of content-type 'application/json'
 
-[//]: # (import {Step} from "../../src/components/Stepper";)
 
-[//]: # (import {CodeWithTabs} from "../../src/components/codetabs";)
+                ✔ Are you sure you want to apply those changes? · yes
+                ✅ DEPLOYMENT:
+                SERVICE  REV
+                Greeter  1
+                ```
 
-[//]: # ()
-[//]: # ([//]: # &#40;import VideoPlayer from "../../src/components/VideoPlayer";&#41;)
-[//]: # ()
-[//]: # (# Quickstart)
+            </details>
 
-[//]: # ()
-[//]: # (<Tabs groupId="sdk" queryString>)
+        </Step>
 
-[//]: # (    <TabItem value="ts" label="TypeScript">)
+        <Step stepLabel="5" title="Send a request to the Greeter service">
 
-[//]: # (    </TabItem>)
+            ```shell
+            curl localhost:8080/Greeter/greet -H 'content-type: application/json' -d '"Hi"'
+            ```
 
-[//]: # (    <TabItem value="java" label="Java">)
+            You should now see printed as response: `Hi!`
 
-[//]: # (    </TabItem>)
+        </Step>
+        <Step end={true} stepLabel="🎉" title="Congratulations, you managed to run your first Restate service!"/>
 
-[//]: # (    <TabItem value="kotlin" label="Kotlin">)
+        <details className="grey-details">
 
-[//]: # (    </TabItem>)
+            <summary>Next: Build and run the app</summary>
 
-[//]: # (</Tabs>)
+            Once you have implemented your service, build the app and run it with:
 
-[//]: # ()
-[//]: # (This guide takes you through your first steps with Restate.)
+            ```shell
+            npm run build
+            npm run app
+            ```
 
-[//]: # ()
-[//]: # (It lets you run a simple Restate Greeter service that listens on port `9080` and responds with `Hi!` to a `greet` request.)
+        </details>
 
-[//]: # ()
-[//]: # (<img src="/img/quickstart/overview.svg" alt="Quickstart" className="quickstart-image" width="400rem"/>)
+    </TabItem>
+    <TabItem value="java" label="Java" default>
+        <Admonition type="note" title="Prerequisites">
+            - Java: [JDK](https://whichjdk.com/) >= 11
+            - Optional but recommended: [Install the Restate CLI](/develop/local_dev#running-restate-server--cli-locally)
+        </Admonition>
+        <Step stepLabel="1" title="Get the Greeter service template">
 
-[//]: # ()
-[//]: # (<Tabs groupId="sdk" queryString className={"display-none"}>)
+            <CodeWithTabs>
+                ```shell !!tabs CLI
+                # link(1:3) /develop/local_dev#running-restate-server--cli-locally
+                restate example java-hello-world-gradle &&
+                cd java-hello-world-gradle
+                ```
 
-[//]: # (<TabItem value="ts" label="TypeScript" default>)
+                ```shell !!tabs npx
+                npx @restatedev/restate example java-hello-world-gradle &&
+                cd java-hello-world-gradle
+                ```
 
-[//]: # ()
-[//]: # (        <Admonition type="note" title="Prerequisites">)
+                ```shell !!tabs wget
+                wget https://github.com/restatedev/examples/releases/latest/download/java-hello-world-gradle.zip &&
+                unzip java-hello-world-gradle.zip -d java-hello-world-gradle &&
+                rm java-hello-world-gradle.zip && cd java-hello-world-gradle
+                ```
 
-[//]: # (            - TypeScript: Latest stable version of [NodeJS]&#40;https://nodejs.org/en/&#41; >= v18.17.1 and [npm CLI]&#40;https://docs.npmjs.com/downloading-and-installing-node-js-and-npm&#41; >= 9.6.7)
+            </CodeWithTabs>
 
-[//]: # (            - Optional but recommended: [Install the Restate Server & CLI]&#40;/develop/local_dev#running-restate-server--cli-locally&#41;)
+        </Step>
+        <Step stepLabel="2" title="Run the Greeter service">
 
-[//]: # (        </Admonition>)
+            You are all set to start developing your service.
+            Open the project in an IDE and configure it to build with Gradle.
+            Run your service and let it listen on port `9080` for requests:
 
-[//]: # ()
-[//]: # (        <Step stepLabel="1" title="Get the Greeter service template">)
+            ```shell
+            ./gradlew run
+            ```
 
-[//]: # ()
-[//]: # (            Download the [Node template]&#40;https://github.com/restatedev/node-template-generator&#41; with a skeleton of a Restate service. And install its dependencies:)
+        </Step>
 
-[//]: # ()
-[//]: # (            ```shell)
+        <Step stepLabel="3" title="Launch Restate">
+            Restate is a single self-contained binary. No external dependencies needed. Run it locally via ([or download the binaries](/develop/local_dev#running-restate-server--cli-locally)):
 
-[//]: # (            npx -y @restatedev/create-app@latest && cd restate-node-template && \)
+            <CodeWithTabs>
 
-[//]: # (            npm install)
+                ```shell !!tabs npx
+                npx @restatedev/restate-server
+                ```
 
-[//]: # (            ```)
+                ``` shell !!tabs Homebrew
+                brew install restatedev/tap/restate-server && restate-server
+                ```
 
-[//]: # ()
-[//]: # (        </Step>)
+                ```shell !!tabs Docker
+                docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 \
+                --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
+                ```
 
-[//]: # (        <Step stepLabel="2" title="Run the Greeter service">)
+            </CodeWithTabs>
 
-[//]: # ()
-[//]: # (            Now, start developing your service in `src/app.ts`. Run it with [`ts-node-dev`]&#40;https://www.npmjs.com/package/ts-node-dev&#41;, and let it listen on port `9080` for requests:)
+        </Step>
 
-[//]: # ()
-[//]: # (            ```shell)
+        <Step stepLabel="4" title="Register the service">
 
-[//]: # (            npm run app-dev)
+            Tell Restate where the service is running, so Restate can discover and register the services and handlers behind this endpoint:
 
-[//]: # (            ```)
+            <CodeWithTabs>
 
-[//]: # ()
-[//]: # (        </Step>)
+                ```shell !!tabs CLI
+                # link /develop/local_dev#running-restate-server--cli-locally
+                restate deployments register http://localhost:9080
+                ```
 
-[//]: # ()
-[//]: # (        <Step stepLabel="3" title="Launch Restate">)
+                ```shell !!tabs npx
+                npx @restatedev/restate deployments register http://localhost:9080
+                ```
 
-[//]: # (            Restate is a single self-contained binary. No external dependencies needed. Run it locally via &#40;[or download the binaries]&#40;/develop/local_dev#running-restate-server--cli-locally&#41;&#41;:)
+                ```shell !!tabs curl
+                curl localhost:9070/deployments -H 'content-type: application/json' \
+                -d '{"uri": "http://localhost:9080"}'
+                ```
 
-[//]: # ()
-[//]: # (            <CodeWithTabs>)
+            </CodeWithTabs>
 
-[//]: # ()
-[//]: # (                ```shell !!tabs npx)
+            If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
 
-[//]: # (                npx @restatedev/restate-server)
+            <details className={"grey-details"}>
 
-[//]: # (                ```)
+                <summary>Output</summary>
 
-[//]: # ()
-[//]: # (                ``` shell !!tabs Homebrew)
+                ```shell
+                ❯ SERVICES THAT WILL BE ADDED:
+                - Greeter
+                Type: Service
+                HANDLER  INPUT                                     OUTPUT
+                greet    value of content-type 'application/json'  value of content-type 'application/json'
 
-[//]: # (                brew install restatedev/tap/restate-server && restate-server)
 
-[//]: # (                ```)
+                ✔ Are you sure you want to apply those changes? · yes
+                ✅ DEPLOYMENT:
+                SERVICE  REV
+                Greeter  1
+                ```
 
-[//]: # ()
-[//]: # (                ```shell !!tabs Docker)
+            </details>
 
-[//]: # (                docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 \)
+        </Step>
 
-[//]: # (                --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION)
+        <Step stepLabel="5" title="Send a request to the Greeter service">
 
-[//]: # (                ```)
+            ```shell
+            curl localhost:8080/Greeter/greet -H 'content-type: application/json' -d '"Hi!"'
+            ```
 
-[//]: # (            </CodeWithTabs>)
+            You should now see printed as response: `Hi!`
 
-[//]: # ()
-[//]: # (        </Step>)
+        </Step>
+        <Step end={true} stepLabel="🎉" title="Congratulations, you managed to run your first Restate service!"/>
 
-[//]: # ()
-[//]: # (        <Step stepLabel="4" title="Register the service">)
+        <details className="grey-details">
+            <summary>Next: Build the app</summary>
 
-[//]: # ()
-[//]: # (            Tell Restate where the service is running, so Restate can discover and register the services and handlers behind this endpoint:)
+            Once you have implemented your service, build the app with:
 
-[//]: # ()
-[//]: # ()
-[//]: # (                ```shell CLI)
+            ```shell
+            ./gradlew build
+            ```
 
-[//]: # (                # link /develop/local_dev#running-restate-server--cli-locally)
+        </details>
 
-[//]: # (                restate deployments register http://localhost:9080)
+    </TabItem>
+    <TabItem value="kotlin" label="Kotlin" default>
 
-[//]: # (                ```)
+        <Admonition type="note" title="Prerequisites">
+            - Java/Kotlin: [JDK](https://whichjdk.com/) >= 11
+            - Optional but recommended: [Install the Restate CLI](/develop/local_dev#running-restate-server--cli-locally)
+        </Admonition>
 
-[//]: # ()
-[//]: # (                ```shell npx)
+        <Step stepLabel="1" title="Get the Greeter service template">
 
-[//]: # (                npx @restatedev/restate deployments register http://localhost:9080)
+            <CodeWithTabs>
 
-[//]: # (                ```)
+                ```shell !!tabs CLI
+                # link(1:2) /develop/local_dev#running-restate-server--cli-locally
+                restate example kotlin-hello-world-gradle &&
+                cd kotlin-hello-world-gradle
+                ```
 
-[//]: # ()
-[//]: # (                ```shell curl)
+                ```shell !!tabs npx
+                npx @restatedev/restate example kotlin-hello-world-gradle &&
+                cd kotlin-hello-world-gradle
+                ```
 
-[//]: # (                curl localhost:9070/deployments -H 'content-type: application/json' \)
+                ```shell !!tabs wget
+                wget https://github.com/restatedev/examples/releases/latest/download/kotlin-hello-world-gradle.zip &&
+                unzip kotlin-hello-world-gradle.zip -d kotlin-hello-world-gradle &&
+                rm kotlin-hello-world-gradle.zip && cd kotlin-hello-world-gradle
+                ```
 
-[//]: # (                -d '{"uri": "http://localhost:9080"}')
+            </CodeWithTabs>
 
-[//]: # (                ```)
+        </Step>
+        <Step stepLabel="2" title="Run the Greeter service">
 
-[//]: # ()
-[//]: # ()
-[//]: # (            If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.)
+            You are all set to start developing your service.
+            Open the project in an IDE and configure it to build with Gradle.
+            Run your service and let it listen on port `9080` for requests:
 
-[//]: # ()
-[//]: # (            <details className={"grey-details"}>)
+            ```shell
+            ./gradlew run
+            ```
 
-[//]: # ()
-[//]: # (                <summary>Output</summary>)
+        </Step>
 
-[//]: # ()
-[//]: # (                ```shell)
+        <Step stepLabel="3" title="Launch Restate">
 
-[//]: # (                ❯ SERVICES THAT WILL BE ADDED:)
+            Restate is a single self-contained binary. No external dependencies needed. Run it locally via ([or download the binaries](/develop/local_dev#running-restate-server--cli-locally)):
 
-[//]: # (                - Greeter)
+            <CodeWithTabs>
 
-[//]: # (                Type: Service)
+                ```shell !!tabs npx
+                npx @restatedev/restate-server
+                ```
 
-[//]: # (                HANDLER  INPUT                                     OUTPUT)
+                ``` shell !!tabs Homebrew
+                brew install restatedev/tap/restate-server && restate-server
+                ```
 
-[//]: # (                greet    value of content-type 'application/json'  value of content-type 'application/json')
+                ```shell !!tabs Docker
+                docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 \
+                --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
+                ```
 
-[//]: # ()
-[//]: # ()
-[//]: # (                ✔ Are you sure you want to apply those changes? · yes)
+            </CodeWithTabs>
 
-[//]: # (                ✅ DEPLOYMENT:)
 
-[//]: # (                SERVICE  REV)
+        </Step>
 
-[//]: # (                Greeter  1)
+        <Step stepLabel="4" title="Register the service">
 
-[//]: # (                ```)
+            Tell Restate where the service is running, so Restate can discover and register the services and handlers behind this endpoint:
 
-[//]: # ()
-[//]: # (            </details>)
+            <CodeWithTabs>
 
-[//]: # ()
-[//]: # (        </Step>)
+                ```shell !!tabs CLI
+                # link /develop/local_dev#running-restate-server--cli-locally
+                restate deployments register http://localhost:9080
+                ```
 
-[//]: # ()
-[//]: # (        <Step stepLabel="5" title="Send a request to the Greeter service">)
+                ```shell !!tabs npx
+                npx @restatedev/restate deployments register http://localhost:9080
+                ```
 
-[//]: # ()
-[//]: # (            ```shell)
+                ```shell !!tabs curl
+                curl localhost:9070/deployments -H 'content-type: application/json' \
+                -d '{"uri": "http://localhost:9080"}'
+                ```
 
-[//]: # (            curl localhost:8080/Greeter/greet -H 'content-type: application/json' -d '"Hi"')
+            </CodeWithTabs>
 
-[//]: # (            ```)
+            If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
 
-[//]: # ()
-[//]: # (            You should now see printed as response: `Hi!`)
+            <details className={"grey-details"}>
 
-[//]: # ()
-[//]: # (        </Step>)
+                <summary>Output</summary>
 
-[//]: # (        <Step end={true} stepLabel="🎉" title="Congratulations, you managed to run your first Restate service!"/>)
+                ```shell
+                ❯ SERVICES THAT WILL BE ADDED:
+                - Greeter
+                Type: Service
+                HANDLER  INPUT                                     OUTPUT
+                greet    value of content-type 'application/json'  value of content-type 'application/json'
 
-[//]: # ()
-[//]: # (        <details className="grey-details">)
 
-[//]: # ()
-[//]: # (            <summary>Next: Build and run the app</summary>)
+                ✔ Are you sure you want to apply those changes? · yes
+                ✅ DEPLOYMENT:
+                SERVICE  REV
+                Greeter  1
+                ```
 
-[//]: # ()
-[//]: # (            Once you have implemented your service, build the app and run it with:)
+            </details>
 
-[//]: # ()
-[//]: # (            ```shell)
+        </Step>
 
-[//]: # (            npm run build)
+        <Step stepLabel="5" title="Send a request to the Greeter service">
 
-[//]: # (            npm run app)
+            ```shell
+            curl localhost:8080/Greeter/greet -H 'content-type: application/json' -d '"Hi"'
+            ```
 
-[//]: # (            ```)
+            You should now see printed as response: `Hi!`
 
-[//]: # ()
-[//]: # (        </details>)
+        </Step>
 
-[//]: # ()
-[//]: # (</TabItem>)
+        <Step end={true} stepLabel="🎉" title="Congratulations, you managed to run your first Restate service!"/>
 
-[//]: # (<TabItem value="java" label="Java" default>)
+        <details className="grey-details">
 
-[//]: # (<Admonition type="note" title="Prerequisites">)
+            <summary>Next: Build the app</summary>
 
-[//]: # (    - Java: [JDK]&#40;https://whichjdk.com/&#41; >= 11)
+            Once you have implemented your service, build the app with:
 
-[//]: # (    - Optional but recommended: [Install the Restate CLI]&#40;/develop/local_dev#running-restate-server--cli-locally&#41;)
+            ```shell
+            ./gradlew build
+            ```
 
-[//]: # (</Admonition>)
+        </details>
 
-[//]: # (<Step stepLabel="1" title="Get the Greeter service template">)
+    </TabItem>
+    <TabItem value="go" label="Go">
 
-[//]: # (    <div className="row">)
+        <Admonition type="note" title="Prerequisites">
+            - Go: >= 1.21.0
+            - Optional but recommended: [Install the Restate Server & CLI](/develop/local_dev#running-restate-server--cli-locally)
+        </Admonition>
 
-[//]: # (        <div className={"col col--6"}>)
+        <Step stepLabel="1" title="Get the Greeter service template">
 
-[//]: # (                ```shell CLI)
+            <CodeWithTabs>
 
-[//]: # (                # link&#40;1:3&#41; /develop/local_dev#running-restate-server--cli-locally)
+                ```shell !!tabs CLI
+                # link(1:2) /develop/local_dev#running-restate-server--cli-locally
+                restate example go-hello-world &&
+                cd go-hello-world
+                ```
 
-[//]: # (                restate example java-hello-world-gradle &&)
+                ```shell !!tabs npx
+                npx @restatedev/restate example go-hello-world &&
+                cd go-hello-world
+                ```
 
-[//]: # (                cd java-hello-world-gradle)
+                ```shell !!tabs wget
+                wget https://github.com/restatedev/examples/releases/latest/download/go-hello-world.zip &&
+                unzip go-hello-world.zip -d go-hello-world &&
+                rm go-hello-world.zip && cd go-hello-world
+                ```
 
-[//]: # (                ```)
+            </CodeWithTabs>
 
-[//]: # ()
-[//]: # (                ```shell npx)
+        </Step>
+        <Step stepLabel="2" title="Run the Greeter service">
 
-[//]: # (                npx @restatedev/restate example java-hello-world-gradle &&)
+            Now, start developing your service in `greeter.go`. Run it with `go run .`; it will listen on port 9080 for requests.
 
-[//]: # (                cd java-hello-world-gradle)
+        </Step>
 
-[//]: # (                ```)
+        <Step stepLabel="3" title="Launch Restate">
+            Restate is a single self-contained binary. No external dependencies needed. Run it locally via ([or download the binaries](/develop/local_dev#running-restate-server--cli-locally)):
 
-[//]: # ()
-[//]: # (                ```shell wget)
 
-[//]: # (                wget https://github.com/restatedev/examples/releases/latest/download/java-hello-world-gradle.zip &&)
+            <CodeWithTabs>
 
-[//]: # (                unzip java-hello-world-gradle.zip -d java-hello-world-gradle &&)
+                ```shell !!tabs npx
+                npx @restatedev/restate-server
+                ```
 
-[//]: # (                rm java-hello-world-gradle.zip && cd java-hello-world-gradle)
+                ``` shell !!tabs Homebrew
+                brew install restatedev/tap/restate-server && restate-server
+                ```
 
-[//]: # (                ```)
+                ```shell !!tabs Docker
+                docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 \
+                --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
+                ```
 
-[//]: # (        </div>)
+            </CodeWithTabs>
 
-[//]: # (        <div className="col col--6 quickstart">)
+        </Step>
 
-[//]: # ()
-[//]: # ([//]: # &#40;<VideoPlayer src="/img/quickstart/java_quickstart_part1.mp4" img="/img/quickstart/static_java_part1.webp" />&#41;)
-[//]: # (        </div>)
+        <Step stepLabel="4" title="Register the service">
 
-[//]: # (    </div>)
+            Tell Restate where the service is running, so Restate can discover and register the services and handlers behind this endpoint:
 
-[//]: # (</Step>)
+            <CodeWithTabs>
 
-[//]: # (<Step stepLabel="2" title="Run the Greeter service">)
+                ```shell !!tabs CLI
+                # link /develop/local_dev#running-restate-server--cli-locally
+                restate deployments register http://localhost:9080
+                ```
 
-[//]: # (    <div className="row">)
+                ```shell !!tabs npx
+                npx @restatedev/restate deployments register http://localhost:9080
+                ```
 
-[//]: # (        <div className={"col col--6"}>)
+                ```shell !!tabs curl
+                curl localhost:9070/deployments -H 'content-type: application/json' \
+                -d '{"uri": "http://localhost:9080"}'
+                ```
 
-[//]: # ()
-[//]: # (            You are all set to start developing your service.)
+            </CodeWithTabs>
 
-[//]: # (            Open the project in an IDE and configure it to build with Gradle.)
+            If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
 
-[//]: # (            Run your service and let it listen on port `9080` for requests:)
+            <details className={"grey-details"}>
 
-[//]: # ()
-[//]: # (            ```shell)
+                <summary>Output</summary>
 
-[//]: # (            ./gradlew run)
+                ```shell
+                ❯ SERVICES THAT WILL BE ADDED:
+                - Greeter
+                Type: Service
+                HANDLER  INPUT                                     OUTPUT
+                Greet    value of content-type 'application/json'  value of content-type 'application/json'
 
-[//]: # (            ```)
 
-[//]: # (        </div>)
+                ✔ Are you sure you want to apply those changes? · yes
+                ✅ DEPLOYMENT:
+                SERVICE  REV
+                Greeter  1
+                ```
 
-[//]: # (        <div className="col col--6 quickstart">)
+            </details>
 
-[//]: # ()
-[//]: # ([//]: # &#40;<VideoPlayer src="/img/quickstart/java_quickstart_part2.mp4" img="/img/quickstart/static_java_part2.webp" />&#41;)
-[//]: # (        </div>)
+        </Step>
 
-[//]: # (    </div>)
+        <Step stepLabel="5" title="Send a request to the Greeter service">
 
-[//]: # (</Step>)
+            ```shell
+            curl localhost:8080/Greeter/Greet -H 'content-type: application/json' -d '"Hi"'
+            ```
 
-[//]: # (<Step stepLabel="3" title="Launch Restate">)
+            You should now see printed as response: `Hi!`
 
-[//]: # (    <div className="row">)
+        </Step>
+        <Step end={true} stepLabel="🎉" title="Congratulations, you managed to run your first Restate service!"/>
 
-[//]: # (        <div className={"col col--6"}>)
+        <details className="grey-details">
 
-[//]: # (            Restate is a single self-contained binary. No external dependencies needed. Run it locally via &#40;[or download the binaries]&#40;/develop/local_dev#running-restate-server--cli-locally&#41;&#41;:)
+            <summary>Next: Build and run the app</summary>
 
-[//]: # ()
-[//]: # (                ```shell npx)
+            Once you have implemented your service, build the app with:
 
-[//]: # (                npx @restatedev/restate-server)
+            ```shell
+            go build .
+            ```
 
-[//]: # (                ```)
+        </details>
 
-[//]: # ()
-[//]: # (                ``` shell Homebrew)
+    </TabItem>
+    <TabItem value="python" label="Python" default>
 
-[//]: # (                brew install restatedev/tap/restate-server && restate-server)
+        <Admonition type="note" title="Prerequisites">
+            - Python >= v3.11
+            - Optional but recommended: [Install the Restate Server & CLI](/develop/local_dev#running-restate-server--cli-locally)
+        </Admonition>
 
-[//]: # (                ```)
+        <Step stepLabel="1" title="Get the Greeter service template">
 
-[//]: # ()
-[//]: # (                ```shell Docker)
+            <CodeWithTabs>
+                ```shell !!tabs CLI
+                # link(1:3) /develop/local_dev#running-restate-server--cli-locally
+                restate example python-hello-world &&
+                cd python-hello-world
+                ```
 
-[//]: # (                docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 \)
+                ```shell !!tabs npx
+                npx @restatedev/restate example python-hello-world &&
+                cd python-hello-world
+                ```
 
-[//]: # (                --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION)
+                ```shell !!tabs wget
+                wget https://github.com/restatedev/examples/releases/latest/download/python-hello-world.zip &&
+                unzip python-hello-world.zip -d python-hello-world &&
+                rm python-hello-world.zip && cd python-hello-world
+                ```
 
-[//]: # (                ```)
+            </CodeWithTabs>
 
-[//]: # ()
-[//]: # (        </div>)
+        </Step>
+        <Step stepLabel="2" title="Run the Greeter service">
 
-[//]: # (        <div className="col col--6 quickstart">)
+            Create a `venv` and install the requirements:
 
-[//]: # ()
-[//]: # ([//]: # &#40;<VideoPlayer src="/img/quickstart/java_quickstart_part3.mp4" img="/img/quickstart/static_java_part3.webp" />&#41;)
-[//]: # (        </div>)
+            ```shell
+            python3 -m venv .venv
+            source .venv/bin/activate
+            pip install -r requirements.txt
+            ```
 
-[//]: # (    </div>)
+            Now, start developing your service in `example.py`. Run it with a [Hypercorn](https://pypi.org/project/Hypercorn/) server, and let it listen on port `9080` for requests:
 
-[//]: # (</Step>)
+            ```shell
+            python -m hypercorn --config hypercorn-config.toml example:app
+            ```
 
-[//]: # ()
-[//]: # (<Step stepLabel="4" title="Register the service">)
+        </Step>
 
-[//]: # (    <div className="row">)
+        <Step stepLabel="3" title="Launch Restate">
+            Restate is a single self-contained binary. No external dependencies needed. Run it locally via ([or download the binaries](/develop/local_dev#running-restate-server--cli-locally)):
 
-[//]: # (        <div className={"col col--6"}>)
 
-[//]: # (        Tell Restate where the service is running, so Restate can discover and register the services and handlers behind this endpoint:)
+            <CodeWithTabs>
 
-[//]: # ()
-[//]: # (            ```shell CLI)
+                ```shell !!tabs npx
+                npx @restatedev/restate-server
+                ```
 
-[//]: # (            # link /develop/local_dev#running-restate-server--cli-locally)
+                ``` shell !!tabs Homebrew
+                brew install restatedev/tap/restate-server && restate-server
+                ```
 
-[//]: # (            restate deployments register http://localhost:9080)
+                ```shell !!tabs Docker
+                docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 \
+                --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
+                ```
 
-[//]: # (            ```)
+            </CodeWithTabs>
 
-[//]: # ()
-[//]: # (            ```shell npx)
+        </Step>
 
-[//]: # (            npx @restatedev/restate deployments register http://localhost:9080)
+        <Step stepLabel="4" title="Register the service">
 
-[//]: # (            ```)
+            Tell Restate where the service is running, so Restate can discover and register the services and handlers behind this endpoint:
 
-[//]: # ()
-[//]: # (            ```shell curl)
+            <CodeWithTabs>
 
-[//]: # (            curl localhost:9070/deployments -H 'content-type: application/json' \)
+                ```shell !!tabs CLI
+                # link /develop/local_dev#running-restate-server--cli-locally
+                restate deployments register http://localhost:9080
+                ```
 
-[//]: # (                -d '{"uri": "http://localhost:9080"}')
+                ```shell !!tabs npx
+                npx @restatedev/restate deployments register http://localhost:9080
+                ```
 
-[//]: # (            ```)
+                ```shell !!tabs curl
+                curl localhost:9070/deployments -H 'content-type: application/json' \
+                -d '{"uri": "http://localhost:9080"}'
+                ```
 
-[//]: # ()
-[//]: # (        If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.)
+            </CodeWithTabs>
 
-[//]: # ()
-[//]: # (        </div>)
+            If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
 
-[//]: # (        <div className="col col--6 quickstart">)
+            <details className={"grey-details"}>
 
-[//]: # ()
-[//]: # ([//]: # &#40;<VideoPlayer src="/img/quickstart/java_quickstart_part4.mp4" img="/img/quickstart/static_java_part4.webp" />&#41;)
-[//]: # (        </div>)
+                <summary>Output</summary>
 
-[//]: # (    </div>)
+                ```shell
+                ❯ SERVICES THAT WILL BE ADDED:
+                - Greeter
+                Type: Service
+                HANDLER  INPUT                                     OUTPUT
+                greet    value of content-type 'application/json'  value of content-type 'application/json'
 
-[//]: # ()
-[//]: # (        </Step>)
 
-[//]: # ()
-[//]: # (<Step stepLabel="5" title="Send a request to the Greeter service">)
+                ✔ Are you sure you want to apply those changes? · yes
+                ✅ DEPLOYMENT:
+                SERVICE  REV
+                Greeter  1
+                ```
 
-[//]: # (    <div className="row">)
+            </details>
 
-[//]: # (        <div className={"col col--6"}>)
+        </Step>
 
-[//]: # ()
-[//]: # (        ```shell)
+        <Step stepLabel="5" title="Send a request to the Greeter service">
 
-[//]: # (        curl localhost:8080/Greeter/greet \)
+            ```shell
+            curl localhost:8080/Greeter/greet -H 'content-type: application/json' -d '"Hi"'
+            ```
 
-[//]: # (            -H 'content-type: application/json' \)
+            You should now see printed as response: `Hi!`
 
-[//]: # (            -d '"Hi!"')
+        </Step>
+        <Step end={true} stepLabel="🎉" title="Congratulations, you managed to run your first Restate service!"/>
 
-[//]: # (        ```)
 
-[//]: # ()
-[//]: # (        You should now see printed as response: `Hi!`)
+    </TabItem>
+    <TabItem value="rust" label="Rust" default>
 
-[//]: # ()
-[//]: # ()
-[//]: # (        </div>)
+        <Admonition type="note" title="Prerequisites">
+            - [Rust](https://rustup.rs/)
+            - [Restate Server & CLI](/develop/local_dev#running-restate-server--cli-locally)
+        </Admonition>
 
-[//]: # (        <div className="col col--6 quickstart">)
+        <Step stepLabel="1" title="Get the Greeter service template">
 
-[//]: # ()
-[//]: # ([//]: # &#40;<VideoPlayer src="/img/quickstart/java_quickstart_part5.mp4" img="/img/quickstart/static_java_part5.webp" />&#41;)
-[//]: # (        </div>)
+            <CodeWithTabs>
+                ```shell !!tabs CLI
+                # link(1:3) /develop/local_dev#running-restate-server--cli-locally
+                restate example rust-hello-world &&
+                cd rust-hello-world
+                ```
 
-[//]: # (    </div>)
+                ```shell !!tabs wget
+                wget https://github.com/restatedev/examples/releases/latest/download/rust-hello-world.zip &&
+                unzip rust-hello-world.zip -d rust-hello-world &&
+                rm rust-hello-world.zip && cd rust-hello-world
+                ```
 
-[//]: # (</Step>)
+                ```shell !!tabs npx
+                npx @restatedev/restate example rust-hello-world &&
+                cd rust-hello-world
+                ```
 
-[//]: # (<Step end={true} stepLabel="🎉" title="Congratulations, you managed to run your first Restate service!"/>)
+            </CodeWithTabs>
 
-[//]: # ()
-[//]: # (        <details className="grey-details">)
+        </Step>
+        <Step stepLabel="2" title="Run the Greeter service">
 
-[//]: # (            <summary>Next: Build the app</summary>)
+            Use `cargo run` to build and run the example:
 
-[//]: # ()
-[//]: # (            Once you have implemented your service, build the app with:)
+            ```shell
+            cargo run
+            ```
 
-[//]: # ()
-[//]: # (            ```shell)
+        </Step>
 
-[//]: # (            ./gradlew build)
+        <Step stepLabel="3" title="Launch Restate">
+            Restate is a single self-contained binary. No external dependencies needed. Run it locally via ([or download the binaries](/develop/local_dev#running-restate-server--cli-locally)):
 
-[//]: # (            ```)
 
-[//]: # ()
-[//]: # (        </details>)
+            <CodeWithTabs>
 
-[//]: # ()
-[//]: # (    </TabItem>)
+                ``` shell !!tabs Homebrew
+                brew install restatedev/tap/restate-server && restate-server
+                ```
 
-[//]: # (    <TabItem value="kotlin" label="Kotlin" default>)
+                ```shell !!tabs Docker
+                docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 \
+                --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
+                ```
 
-[//]: # ()
-[//]: # (        <Admonition type="note" title="Prerequisites">)
+                ```shell !!tabs npx
+                npx @restatedev/restate-server
+                ```
 
-[//]: # (            - Java/Kotlin: [JDK]&#40;https://whichjdk.com/&#41; >= 11)
+            </CodeWithTabs>
 
-[//]: # (            - Optional but recommended: [Install the Restate CLI]&#40;/develop/local_dev#running-restate-server--cli-locally&#41;)
+        </Step>
 
-[//]: # (        </Admonition>)
+        <Step stepLabel="4" title="Register the service">
 
-[//]: # ()
-[//]: # (        <Step stepLabel="1" title="Get the Greeter service template">)
+            Tell Restate where the service is running, so Restate can discover and register the services and handlers behind this endpoint:
 
-[//]: # ()
-[//]: # (                ```shell CLI)
+            <CodeWithTabs>
 
-[//]: # (                # link&#40;1:2&#41; /develop/local_dev#running-restate-server--cli-locally)
+                ```shell !!tabs CLI
+                # link /develop/local_dev#running-restate-server--cli-locally
+                restate deployments register http://localhost:9080
+                ```
 
-[//]: # (                restate example kotlin-hello-world-gradle &&)
+                ```shell !!tabs curl
+                curl localhost:9070/deployments -H 'content-type: application/json' \
+                -d '{"uri": "http://localhost:9080"}'
+                ```
 
-[//]: # (                cd kotlin-hello-world-gradle)
+                ```shell !!tabs npx
+                npx @restatedev/restate deployments register http://localhost:9080
+                ```
 
-[//]: # (                ```)
+            </CodeWithTabs>
 
-[//]: # ()
-[//]: # (                ```shell npx)
+            If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
 
-[//]: # (                npx @restatedev/restate example kotlin-hello-world-gradle &&)
+            <details className={"grey-details"}>
 
-[//]: # (                cd kotlin-hello-world-gradle)
+                <summary>Output</summary>
 
-[//]: # (                ```)
+                ```shell
+                ❯ SERVICES THAT WILL BE ADDED:
+                - Greeter
+                Type: Service
+                HANDLER  INPUT                                     OUTPUT
+                greet    value of content-type 'application/json'  value of content-type 'application/json'
 
-[//]: # ()
-[//]: # (                ```shell wget)
 
-[//]: # (                wget https://github.com/restatedev/examples/releases/latest/download/kotlin-hello-world-gradle.zip &&)
+                ✔ Are you sure you want to apply those changes? · yes
+                ✅ DEPLOYMENT:
+                SERVICE  REV
+                Greeter  1
+                ```
 
-[//]: # (                unzip kotlin-hello-world-gradle.zip -d kotlin-hello-world-gradle &&)
+            </details>
 
-[//]: # (                rm kotlin-hello-world-gradle.zip && cd kotlin-hello-world-gradle)
+        </Step>
 
-[//]: # (                ```)
+        <Step stepLabel="5" title="Send a request to the Greeter service">
 
-[//]: # ()
-[//]: # (        </Step>)
+            ```shell
+            curl localhost:8080/Greeter/greet -H 'content-type: application/json' -d '"Francesco"'
+            ```
 
-[//]: # (        <Step stepLabel="2" title="Run the Greeter service">)
+            You should now see printed as response: `"Greetings Francesco"`
 
-[//]: # ()
-[//]: # (            You are all set to start developing your service.)
+        </Step>
+        <Step end={true} stepLabel="🎉" title="Congratulations, you managed to run your first Restate service!"/>
 
-[//]: # (            Open the project in an IDE and configure it to build with Gradle.)
 
-[//]: # (            Run your service and let it listen on port `9080` for requests:)
+    </TabItem>
+</Tabs>
 
-[//]: # ()
-[//]: # (            ```shell)
 
-[//]: # (            ./gradlew run)
-
-[//]: # (            ```)
-
-[//]: # ()
-[//]: # (        </Step>)
-
-[//]: # ()
-[//]: # (        <Step stepLabel="3" title="Launch Restate">)
-
-[//]: # ()
-[//]: # (            Restate is a single self-contained binary. No external dependencies needed. Run it locally via &#40;[or download the binaries]&#40;/develop/local_dev#running-restate-server--cli-locally&#41;&#41;:)
-
-[//]: # ()
-[//]: # (                ```shell npx)
-
-[//]: # (                npx @restatedev/restate-server)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (                ``` shell Homebrew)
-
-[//]: # (                brew install restatedev/tap/restate-server && restate-server)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (                ```shell Docker)
-
-[//]: # (                docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 \)
-
-[//]: # (                --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (        </Step>)
-
-[//]: # ()
-[//]: # (        <Step stepLabel="4" title="Register the service">)
-
-[//]: # ()
-[//]: # (            Tell Restate where the service is running, so Restate can discover and register the services and handlers behind this endpoint:)
-
-[//]: # ()
-[//]: # (                ```shell CLI)
-
-[//]: # (                # link /develop/local_dev#running-restate-server--cli-locally)
-
-[//]: # (                restate deployments register http://localhost:9080)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (                ```shell npx)
-
-[//]: # (                npx @restatedev/restate deployments register http://localhost:9080)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (                ```shell curl)
-
-[//]: # (                curl localhost:9070/deployments -H 'content-type: application/json' \)
-
-[//]: # (                -d '{"uri": "http://localhost:9080"}')
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (            If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.)
-
-[//]: # ()
-[//]: # (            <details className={"grey-details"}>)
-
-[//]: # ()
-[//]: # (                <summary>Output</summary>)
-
-[//]: # ()
-[//]: # (                ```shell)
-
-[//]: # (                ❯ SERVICES THAT WILL BE ADDED:)
-
-[//]: # (                - Greeter)
-
-[//]: # (                Type: Service)
-
-[//]: # (                HANDLER  INPUT                                     OUTPUT)
-
-[//]: # (                greet    value of content-type 'application/json'  value of content-type 'application/json')
-
-[//]: # ()
-[//]: # ()
-[//]: # (                ✔ Are you sure you want to apply those changes? · yes)
-
-[//]: # (                ✅ DEPLOYMENT:)
-
-[//]: # (                SERVICE  REV)
-
-[//]: # (                Greeter  1)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (            </details>)
-
-[//]: # ()
-[//]: # (        </Step>)
-
-[//]: # ()
-[//]: # (        <Step stepLabel="5" title="Send a request to the Greeter service">)
-
-[//]: # ()
-[//]: # (            ```shell)
-
-[//]: # (            curl localhost:8080/Greeter/greet -H 'content-type: application/json' -d '"Hi"')
-
-[//]: # (            ```)
-
-[//]: # ()
-[//]: # (            You should now see printed as response: `Hi!`)
-
-[//]: # ()
-[//]: # (        </Step>)
-
-[//]: # ()
-[//]: # (        <Step end={true} stepLabel="🎉" title="Congratulations, you managed to run your first Restate service!"/>)
-
-[//]: # ()
-[//]: # (        <details className="grey-details">)
-
-[//]: # ()
-[//]: # (            <summary>Next: Build the app</summary>)
-
-[//]: # ()
-[//]: # (            Once you have implemented your service, build the app with:)
-
-[//]: # ()
-[//]: # (            ```shell)
-
-[//]: # (            ./gradlew build)
-
-[//]: # (            ```)
-
-[//]: # ()
-[//]: # (        </details>)
-
-[//]: # ()
-[//]: # (    </TabItem>)
-
-[//]: # (    <TabItem value="go" label="Go">)
-
-[//]: # ()
-[//]: # (        <Admonition type="note" title="Prerequisites">)
-
-[//]: # (            - Go: >= 1.21.0)
-
-[//]: # (            - Optional but recommended: [Install the Restate Server & CLI]&#40;/develop/local_dev#running-restate-server--cli-locally&#41;)
-
-[//]: # (        </Admonition>)
-
-[//]: # ()
-[//]: # (        <Step stepLabel="1" title="Get the Greeter service template">)
-
-[//]: # ()
-[//]: # ()
-[//]: # (                ```shell CLI)
-
-[//]: # (                # link&#40;1:2&#41; /develop/local_dev#running-restate-server--cli-locally)
-
-[//]: # (                restate example go-hello-world &&)
-
-[//]: # (                cd go-hello-world)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (                ```shell npx)
-
-[//]: # (                npx @restatedev/restate example go-hello-world &&)
-
-[//]: # (                cd go-hello-world)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (                ```shell wget)
-
-[//]: # (                wget https://github.com/restatedev/examples/releases/latest/download/go-hello-world.zip &&)
-
-[//]: # (                unzip go-hello-world.zip -d go-hello-world &&)
-
-[//]: # (                rm go-hello-world.zip && cd go-hello-world)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # ()
-[//]: # (        </Step>)
-
-[//]: # (        <Step stepLabel="2" title="Run the Greeter service">)
-
-[//]: # ()
-[//]: # (            Now, start developing your service in `greeter.go`. Run it with `go run .`; it will listen on port 9080 for requests.)
-
-[//]: # ()
-[//]: # (        </Step>)
-
-[//]: # ()
-[//]: # (        <Step stepLabel="3" title="Launch Restate">)
-
-[//]: # (            Restate is a single self-contained binary. No external dependencies needed. Run it locally via &#40;[or download the binaries]&#40;/develop/local_dev#running-restate-server--cli-locally&#41;&#41;:)
-
-[//]: # ()
-[//]: # ()
-[//]: # (                ```shell npx)
-
-[//]: # (                npx @restatedev/restate-server)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (                ``` shell Homebrew)
-
-[//]: # (                brew install restatedev/tap/restate-server && restate-server)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (                ```shell Docker)
-
-[//]: # (                docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 \)
-
-[//]: # (                --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # ()
-[//]: # (        </Step>)
-
-[//]: # ()
-[//]: # (        <Step stepLabel="4" title="Register the service">)
-
-[//]: # ()
-[//]: # (            Tell Restate where the service is running, so Restate can discover and register the services and handlers behind this endpoint:)
-
-[//]: # ()
-[//]: # ()
-[//]: # (                ```shell CLI)
-
-[//]: # (                # link /develop/local_dev#running-restate-server--cli-locally)
-
-[//]: # (                restate deployments register http://localhost:9080)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (                ```shell npx)
-
-[//]: # (                npx @restatedev/restate deployments register http://localhost:9080)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (                ```shell curl)
-
-[//]: # (                curl localhost:9070/deployments -H 'content-type: application/json' \)
-
-[//]: # (                -d '{"uri": "http://localhost:9080"}')
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # ()
-[//]: # (            If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.)
-
-[//]: # ()
-[//]: # (            <details className={"grey-details"}>)
-
-[//]: # ()
-[//]: # (                <summary>Output</summary>)
-
-[//]: # ()
-[//]: # (                ```shell)
-
-[//]: # (                ❯ SERVICES THAT WILL BE ADDED:)
-
-[//]: # (                - Greeter)
-
-[//]: # (                Type: Service)
-
-[//]: # (                HANDLER  INPUT                                     OUTPUT)
-
-[//]: # (                Greet    value of content-type 'application/json'  value of content-type 'application/json')
-
-[//]: # ()
-[//]: # ()
-[//]: # (                ✔ Are you sure you want to apply those changes? · yes)
-
-[//]: # (                ✅ DEPLOYMENT:)
-
-[//]: # (                SERVICE  REV)
-
-[//]: # (                Greeter  1)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (            </details>)
-
-[//]: # ()
-[//]: # (        </Step>)
-
-[//]: # ()
-[//]: # (        <Step stepLabel="5" title="Send a request to the Greeter service">)
-
-[//]: # ()
-[//]: # (            ```shell)
-
-[//]: # (            curl localhost:8080/Greeter/Greet -H 'content-type: application/json' -d '"Hi"')
-
-[//]: # (            ```)
-
-[//]: # ()
-[//]: # (            You should now see printed as response: `Hi!`)
-
-[//]: # ()
-[//]: # (        </Step>)
-
-[//]: # (        <Step end={true} stepLabel="🎉" title="Congratulations, you managed to run your first Restate service!"/>)
-
-[//]: # ()
-[//]: # (        <details className="grey-details">)
-
-[//]: # ()
-[//]: # (            <summary>Next: Build and run the app</summary>)
-
-[//]: # ()
-[//]: # (            Once you have implemented your service, build the app with:)
-
-[//]: # ()
-[//]: # (            ```shell)
-
-[//]: # (            go build .)
-
-[//]: # (            ```)
-
-[//]: # ()
-[//]: # (        </details>)
-
-[//]: # ()
-[//]: # (    </TabItem>)
-
-[//]: # (    <TabItem value="python" label="Python" default>)
-
-[//]: # ()
-[//]: # (        <Admonition type="note" title="Prerequisites">)
-
-[//]: # (            - Python >= v3.11)
-
-[//]: # (            - Optional but recommended: [Install the Restate Server & CLI]&#40;/develop/local_dev#running-restate-server--cli-locally&#41;)
-
-[//]: # (        </Admonition>)
-
-[//]: # ()
-[//]: # (        <Step stepLabel="1" title="Get the Greeter service template">)
-
-[//]: # (                ```shell CLI)
-
-[//]: # (                # link&#40;1:3&#41; /develop/local_dev#running-restate-server--cli-locally)
-
-[//]: # (                restate example python-hello-world &&)
-
-[//]: # (                cd python-hello-world)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (                ```shell npx)
-
-[//]: # (                npx @restatedev/restate example python-hello-world &&)
-
-[//]: # (                cd python-hello-world)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (                ```shell wget)
-
-[//]: # (                wget https://github.com/restatedev/examples/releases/latest/download/python-hello-world.zip &&)
-
-[//]: # (                unzip python-hello-world.zip -d python-hello-world &&)
-
-[//]: # (                rm python-hello-world.zip && cd python-hello-world)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # ()
-[//]: # (        </Step>)
-
-[//]: # (        <Step stepLabel="2" title="Run the Greeter service">)
-
-[//]: # ()
-[//]: # (            Create a `venv` and install the requirements:)
-
-[//]: # ()
-[//]: # (            ```shell)
-
-[//]: # (            python3 -m venv .venv)
-
-[//]: # (            source .venv/bin/activate)
-
-[//]: # (            pip install -r requirements.txt)
-
-[//]: # (            ```)
-
-[//]: # ()
-[//]: # (            Now, start developing your service in `example.py`. Run it with a [Hypercorn]&#40;https://pypi.org/project/Hypercorn/&#41; server, and let it listen on port `9080` for requests:)
-
-[//]: # ()
-[//]: # (            ```shell)
-
-[//]: # (            python -m hypercorn --config hypercorn-config.toml example:app)
-
-[//]: # (            ```)
-
-[//]: # ()
-[//]: # (        </Step>)
-
-[//]: # ()
-[//]: # (        <Step stepLabel="3" title="Launch Restate">)
-
-[//]: # (            Restate is a single self-contained binary. No external dependencies needed. Run it locally via &#40;[or download the binaries]&#40;/develop/local_dev#running-restate-server--cli-locally&#41;&#41;:)
-
-[//]: # ()
-[//]: # ()
-[//]: # (                ```shell npx)
-
-[//]: # (                npx @restatedev/restate-server)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (                ``` shell Homebrew)
-
-[//]: # (                brew install restatedev/tap/restate-server && restate-server)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (                ```shell Docker)
-
-[//]: # (                docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 \)
-
-[//]: # (                --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # ()
-[//]: # (        </Step>)
-
-[//]: # ()
-[//]: # (        <Step stepLabel="4" title="Register the service">)
-
-[//]: # ()
-[//]: # (            Tell Restate where the service is running, so Restate can discover and register the services and handlers behind this endpoint:)
-
-[//]: # ()
-[//]: # ()
-[//]: # (                ```shell CLI)
-
-[//]: # (                # link /develop/local_dev#running-restate-server--cli-locally)
-
-[//]: # (                restate deployments register http://localhost:9080)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (                ```shell npx)
-
-[//]: # (                npx @restatedev/restate deployments register http://localhost:9080)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (                ```shell curl)
-
-[//]: # (                curl localhost:9070/deployments -H 'content-type: application/json' \)
-
-[//]: # (                -d '{"uri": "http://localhost:9080"}')
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (            If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.)
-
-[//]: # ()
-[//]: # (            <details className={"grey-details"}>)
-
-[//]: # ()
-[//]: # (                <summary>Output</summary>)
-
-[//]: # ()
-[//]: # (                ```shell)
-
-[//]: # (                ❯ SERVICES THAT WILL BE ADDED:)
-
-[//]: # (                - Greeter)
-
-[//]: # (                Type: Service)
-
-[//]: # (                HANDLER  INPUT                                     OUTPUT)
-
-[//]: # (                greet    value of content-type 'application/json'  value of content-type 'application/json')
-
-[//]: # ()
-[//]: # ()
-[//]: # (                ✔ Are you sure you want to apply those changes? · yes)
-
-[//]: # (                ✅ DEPLOYMENT:)
-
-[//]: # (                SERVICE  REV)
-
-[//]: # (                Greeter  1)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (            </details>)
-
-[//]: # ()
-[//]: # (        </Step>)
-
-[//]: # ()
-[//]: # (        <Step stepLabel="5" title="Send a request to the Greeter service">)
-
-[//]: # ()
-[//]: # (            ```shell)
-
-[//]: # (            curl localhost:8080/Greeter/greet -H 'content-type: application/json' -d '"Hi"')
-
-[//]: # (            ```)
-
-[//]: # ()
-[//]: # (            You should now see printed as response: `Hi!`)
-
-[//]: # ()
-[//]: # (        </Step>)
-
-[//]: # (        <Step end={true} stepLabel="🎉" title="Congratulations, you managed to run your first Restate service!"/>)
-
-[//]: # ()
-[//]: # ()
-[//]: # (    </TabItem>)
-
-[//]: # (    <TabItem value="rust" label="Rust" default>)
-
-[//]: # ()
-[//]: # (        <Admonition type="note" title="Prerequisites">)
-
-[//]: # (            - [Rust]&#40;https://rustup.rs/&#41;)
-
-[//]: # (            - [Restate Server & CLI]&#40;/develop/local_dev#running-restate-server--cli-locally&#41;)
-
-[//]: # (        </Admonition>)
-
-[//]: # ()
-[//]: # (        <Step stepLabel="1" title="Get the Greeter service template">)
-
-[//]: # ()
-[//]: # (                ```shell CLI)
-
-[//]: # (                # link&#40;1:3&#41; /develop/local_dev#running-restate-server--cli-locally)
-
-[//]: # (                restate example rust-hello-world &&)
-
-[//]: # (                cd rust-hello-world)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (                ```shell wget)
-
-[//]: # (                wget https://github.com/restatedev/examples/releases/latest/download/rust-hello-world.zip &&)
-
-[//]: # (                unzip rust-hello-world.zip -d rust-hello-world &&)
-
-[//]: # (                rm rust-hello-world.zip && cd rust-hello-world)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (                ```shell npx)
-
-[//]: # (                npx @restatedev/restate example rust-hello-world &&)
-
-[//]: # (                cd rust-hello-world)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (        </Step>)
-
-[//]: # (        <Step stepLabel="2" title="Run the Greeter service">)
-
-[//]: # ()
-[//]: # (            Use `cargo run` to build and run the example:)
-
-[//]: # ()
-[//]: # (            ```shell)
-
-[//]: # (            cargo run)
-
-[//]: # (            ```)
-
-[//]: # ()
-[//]: # (        </Step>)
-
-[//]: # ()
-[//]: # (        <Step stepLabel="3" title="Launch Restate">)
-
-[//]: # (            Restate is a single self-contained binary. No external dependencies needed. Run it locally via &#40;[or download the binaries]&#40;/develop/local_dev#running-restate-server--cli-locally&#41;&#41;:)
-
-[//]: # ()
-[//]: # ()
-[//]: # (                ``` shell Homebrew)
-
-[//]: # (                brew install restatedev/tap/restate-server && restate-server)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (                ```shell Docker)
-
-[//]: # (                docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 \)
-
-[//]: # (                --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (                ```shell npx)
-
-[//]: # (                npx @restatedev/restate-server)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (        </Step>)
-
-[//]: # ()
-[//]: # (        <Step stepLabel="4" title="Register the service">)
-
-[//]: # ()
-[//]: # (            Tell Restate where the service is running, so Restate can discover and register the services and handlers behind this endpoint:)
-
-[//]: # ()
-[//]: # (                ```shell CLI)
-
-[//]: # (                # link /develop/local_dev#running-restate-server--cli-locally)
-
-[//]: # (                restate deployments register http://localhost:9080)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (                ```shell curl)
-
-[//]: # (                curl localhost:9070/deployments -H 'content-type: application/json' \)
-
-[//]: # (                -d '{"uri": "http://localhost:9080"}')
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (                ```shell npx)
-
-[//]: # (                npx @restatedev/restate deployments register http://localhost:9080)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (            If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.)
-
-[//]: # ()
-[//]: # (            <details className={"grey-details"}>)
-
-[//]: # ()
-[//]: # (                <summary>Output</summary>)
-
-[//]: # ()
-[//]: # (                ```shell)
-
-[//]: # (                ❯ SERVICES THAT WILL BE ADDED:)
-
-[//]: # (                - Greeter)
-
-[//]: # (                Type: Service)
-
-[//]: # (                HANDLER  INPUT                                     OUTPUT)
-
-[//]: # (                greet    value of content-type 'application/json'  value of content-type 'application/json')
-
-[//]: # ()
-[//]: # ()
-[//]: # (                ✔ Are you sure you want to apply those changes? · yes)
-
-[//]: # (                ✅ DEPLOYMENT:)
-
-[//]: # (                SERVICE  REV)
-
-[//]: # (                Greeter  1)
-
-[//]: # (                ```)
-
-[//]: # ()
-[//]: # (            </details>)
-
-[//]: # ()
-[//]: # (        </Step>)
-
-[//]: # ()
-[//]: # (        <Step stepLabel="5" title="Send a request to the Greeter service">)
-
-[//]: # ()
-[//]: # (            ```shell)
-
-[//]: # (            curl localhost:8080/Greeter/greet -H 'content-type: application/json' -d '"Francesco"')
-
-[//]: # (            ```)
-
-[//]: # ()
-[//]: # (            You should now see printed as response: `"Greetings Francesco"`)
-
-[//]: # ()
-[//]: # (        </Step>)
-
-[//]: # (        <Step end={true} stepLabel="🎉" title="Congratulations, you managed to run your first Restate service!"/>)
-
-[//]: # ()
-[//]: # ()
-[//]: # (    </TabItem>)
-
-[//]: # (</Tabs>)
-
-[//]: # ()
-[//]: # (<details>)
-
-[//]: # (<summary style={{fontSize: "large"}}><strong> 💡 Optional: What does this give us?</strong></summary>)
-
-[//]: # ()
-[//]: # (At first sight, this might look like a simple REST service. But it's much more than that.)
-
-[//]: # ()
-[//]: # (The greet handler you just invoked is a durable function.)
-
-[//]: # (Meaning that whatever you implement in the handler will be executed in with retries and recovery of progress.)
-
-[//]: # ()
-[//]: # (On top of that, you just did all the setup you need to do to benefit from:)
-
-[//]: # (- ✅ Durable RPC and messaging)
-
-[//]: # (- ✅ Durable promises and timers)
-
-[//]: # (- ✅ Consistent K/V state)
-
-[//]: # (- ✅ Workflow orchestration)
-
-[//]: # (- ✅ Idempotent requests)
-
-[//]: # (- ✅ And any other feature that Restate provides.)
-
-[//]: # ()
-[//]: # (To showcase this, let's make the greet handler a bit more complex and let's see what happens when we let Restate and the service crash.)
-
-[//]: # ()
-[//]: # ()
-[//]: # ()
-[//]: # (Open the Greeter project in an IDE and modify the greet handler:)
-
-[//]: # ()
-[//]: # (<Tabs groupId="sdk" queryString className={"display-none"}>)
-
-[//]: # (<TabItem value="java" label="Java" default>)
-
-[//]: # ()
-[//]: # (    [//]: # &#40;```java&#41;)
-
-[//]: # ()
-[//]: # ([//]: # &#40;CODE_LOAD::java/src/main/java/get_started/Greeter.java&#41;)
-[//]: # ()
-[//]: # ([//]: # &#40;```&#41;)
-[//]: # ()
-[//]: # (</TabItem>)
-
-[//]: # (</Tabs>)
-
-[//]: # (<div className="row">)
-
-[//]: # (    <div className={"col col--3"}>)
-
-[//]: # (        Just like we did earlier, restart the service and send a request to the greet handler.)
-
-[//]: # ()
-[//]: # ()
-[//]: # (        Because we let the handler sleep in between doing the work, we have some time to let the service crash multiple times.)
-
-[//]: # (        We see that when the handler comes back up, it continues where it left off.)
-
-[//]: # (        We see that our request gets retries, but the tasks that were already finished are not repeated.)
-
-[//]: # ()
-[//]: # (        Cool, right? Follow the [Tour of Restate]&#40;/get_started/tour&#41; to learn more about what you can do with Restate.)
-
-[//]: # (    </div>)
-
-[//]: # (    <div className="col col--9 quickstart">)
-
-[//]: # ()
-[//]: # ([//]: # &#40;<VideoPlayer src="/img/quickstart/java_recovery.mp4" img="/img/quickstart/static_java_recovery.webp" />&#41;)
-[//]: # (    </div>)
-
-[//]: # (</div>)
-
-[//]: # (</details>)
-
-[//]: # (## Next steps)
-
-[//]: # (- Read the [Concepts]&#40;/concepts/durable_building_blocks&#41;)
-
-[//]: # (- Discover the key features of Restate in the [Tour of Restate]&#40;/get_started/tour&#41;)
-
-[//]: # (- [Run the examples]&#40;https://github.com/restatedev/examples&#41;)
+## Next steps
+- Read the [Concepts](/concepts/durable_building_blocks)
+- Discover the key features of Restate in the [Tour of Restate](/get_started/tour)
+- [Run the examples](https://github.com/restatedev/examples)

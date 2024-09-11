@@ -29,7 +29,7 @@ export function InlineCode({ codeblock }: { codeblock: HighlightedCode }) {
   return (
       <Inline
           code={codeblock}
-          style={codeblock.style}
+          // style={codeblock.style}
           className="selection:bg-editor-selectionBackground"
       />
   )
@@ -82,7 +82,7 @@ export function HighCode({
   const pre = (
       <Pre
           code={h}
-          className="m-0 py-2 px-0 bg-editor-background rounded-none group flex-1 selection:bg-editor-selectionBackground"
+          className="m-0 py-2 px-0 rounded-none group flex-1"
           handlers={handlers}
           style={{
             backgroundColor: "var(--bg-color)",
@@ -129,8 +129,8 @@ export function HighCode({
             )}
             style={
               {
-                "--border-color": "var(--ch-23)",
-                borderColor: "var(--border-color)",
+                // "--border-color": "var(--ch-23)",
+                // borderColor: "var(--border-color)",
                 ...style,
               } as any
             }
@@ -164,7 +164,7 @@ export function CodeWithTabs(props: unknown) {
 export function CodeTabs(props: { tabs: HighlightedCode[] }) {
     const { tabs } = props
     return (
-        <Tabs defaultValue={tabs[0]?.meta} className="...">
+        <Tabs defaultValue={tabs[0]?.meta} className="border border-editorGroup-border rounded overflow-hidden my-2 relative">
             <TabsList className="...">
                 {tabs.map((tab) => (
                     <TabsTrigger key={tab.meta} value={tab.meta}>
@@ -180,3 +180,4 @@ export function CodeTabs(props: { tabs: HighlightedCode[] }) {
         </Tabs>
     )
 }
+
