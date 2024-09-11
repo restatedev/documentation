@@ -53,7 +53,7 @@ function CodeSticker({ codeblock }: { codeblock: HighlightedCode }) {
         <Pre
           code={codeblock}
           handlers={[tokenTransitions, wordWrap]}
-          style={{ minHeight: "40rem", backgroundColor: "transparent" }}
+          style={{ minHeight: "40rem"}}
         />
       </div>
     </div>

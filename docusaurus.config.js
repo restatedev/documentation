@@ -6,7 +6,6 @@ const darkCodeTheme = require("prism-react-renderer").themes.dracula;
 const variableInjector = require("./src/plugins/variable-injector");
 const variablesReplacements = require("./restate.config.json");
 const codeLoaderPlugin = require("./src/plugins/code-loader");
-// const { remarkCodeHike } = require("@code-hike/mdx");
 
 import { remarkCodeHike, recmaCodeHike } from "codehike/mdx"
 
@@ -14,7 +13,7 @@ import { remarkCodeHike, recmaCodeHike } from "codehike/mdx"
 const chConfig = {
   components: { code: "Code" },
   syntaxHighlighting: {
-    theme: "github-dark",
+    theme: "github-light",
   },
 }
 
