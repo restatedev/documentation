@@ -1,5 +1,5 @@
 import React from "react";
-import { MiniTerminalTransitions } from "@code-hike/mini-terminal";
+// import { MiniTerminalTransitions } from "@code-hike/mini-terminal";
 import styles from "./styles.module.css";
 
 export default function CliAnimation({listOfSteps}) {
@@ -16,13 +16,13 @@ export default function CliAnimation({listOfSteps}) {
                     value={progress}
                 />
             </div>
-            <MiniTerminalTransitions
-                title="terminal"
-                height={"auto"}
-                progress={progress}
-                steps={listOfSteps}
-                className="terminal"
-            />
+            {/*<MiniTerminalTransitions*/}
+            {/*    title="terminal"*/}
+            {/*    height={"auto"}*/}
+            {/*    progress={progress}*/}
+            {/*    steps={listOfSteps}*/}
+            {/*    className="terminal"*/}
+            {/*/>*/}
         </div>
     );
 }

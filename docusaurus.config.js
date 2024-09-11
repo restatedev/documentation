@@ -6,8 +6,17 @@ const darkCodeTheme = require("prism-react-renderer").themes.dracula;
 const variableInjector = require("./src/plugins/variable-injector");
 const variablesReplacements = require("./restate.config.json");
 const codeLoaderPlugin = require("./src/plugins/code-loader");
+// const { remarkCodeHike } = require("@code-hike/mdx");
 
-const { remarkCodeHike } = require("@code-hike/mdx");
+import { remarkCodeHike, recmaCodeHike } from "codehike/mdx"
+
+/** @type {import('codehike/mdx').CodeHikeConfig} */
+const chConfig = {
+  components: { code: "MyCode" },
+  syntaxHighlighting: {
+    theme: "github-dark",
+  },
+}
 
 const redocusaurus = [
   "redocusaurus",
@@ -39,6 +48,8 @@ const config = {
   organizationName: "restatedev", // Usually your GitHub org/user name.
   projectName: "documentation", // Usually your repo name.
 
+  plugins: ['docusaurus-tailwindcss-loader'],
+
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
 
@@ -69,20 +80,23 @@ const config = {
                 replacements: variablesReplacements,
               },
             ],
-            [
-              remarkCodeHike,
-              {
-                lineNumbers: false,
-                showCopyButton: true,
-                theme: "github-light",
-                skipLanguages: ["mermaid"],
-                staticMediaQuery: "not screen, (max-width: 768px)",
-                autoImport: true,
-                autoLink: false,
-              },
-            ],
+
+            // [
+            //   remarkCodeHike,
+            //   {
+            //     lineNumbers: false,
+            //     showCopyButton: true,
+            //     theme: "github-light",
+            //     skipLanguages: ["mermaid"],
+            //     staticMediaQuery: "not screen, (max-width: 768px)",
+            //     autoImport: true,
+            //     autoLink: false,
+            //   },
+            // ],
+            [remarkCodeHike, chConfig],
           ],
           remarkPlugins: [],
+          recmaPlugins: [[recmaCodeHike, chConfig]],
           routeBasePath: "/", // Set this value to '/'.
           sidebarPath: require.resolve("./sidebars.js"),
           // Please change this to your repo.
@@ -90,7 +104,6 @@ const config = {
         },
         theme: {
           customCss: [
-            require.resolve("@code-hike/mdx/styles.css"),
             require.resolve("./src/css/custom.css"),
             require.resolve("./src/css/new-design.css"),
           ],
