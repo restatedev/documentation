@@ -10,6 +10,7 @@ import Admonition from '@theme/Admonition';
 import {SubtleStep} from "../../src/components/Stepper";
 import TourAnimation from "../../src/components/TourAnimation";
 import CliAnimation from "../../src/components/CliAnimation";
+import {CodeWithTabs} from "../../src/components/code/code";
 
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
@@ -92,17 +93,17 @@ This guide is written for:
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
 Download the example and run locally with an IDE:
-<CH.Code>
-    ```shell CLI
+<CodeWithTabs>
+    ```shell !!tabs CLI
     restate example typescript-tour-of-restate && cd typescript-tour-of-restate
     ```
 
-    ```shell wget
+    ```shell !!tabs wget
     wget https://github.com/restatedev/examples/releases/latest/download/typescript-tour-of-restate.zip &&
         unzip typescript-tour-of-restate.zip -d typescript-tour-of-restate &&
         rm typescript-tour-of-restate.zip
     ```
-</CH.Code>
+</CodeWithTabs>
 
 Install the dependencies and build the app:
 ```shell
@@ -121,17 +122,17 @@ This [GitHub repository](https://github.com/restatedev/examples/tree/main/tutori
 </TabItem>
 <TabItem value="java" label="Java">
 
-<CH.Code>
-```shell CLI
+<CodeWithTabs>
+```shell !!tabs CLI
 restate example java-tour-of-restate && cd java-tour-of-restate
 ```
 
-```shell wget
+```shell !!tabs wget
 wget https://github.com/restatedev/examples/releases/latest/download/java-tour-of-restate.zip &&
     unzip java-tour-of-restate.zip -d java-tour-of-restate &&
     rm java-tour-of-restate.zip && cd java-tour-of-restate
 ```
-</CH.Code>
+</CodeWithTabs>
 Run the services
 
 ```shell
@@ -144,17 +145,17 @@ This [GitHub repository](https://github.com/restatedev/examples/tree/main/tutori
 </TabItem>
 <TabItem value="go" label="Go">
 
-<CH.Code>
-```shell CLI
+<CodeWithTabs>
+```shell !!tabs CLI
 restate example go-tour-of-restate && cd go-tour-of-restate
 ```
 
-```shell wget
+```shell !!tabs wget
 wget https://github.com/restatedev/examples/releases/latest/download/go-tour-of-restate.zip &&
 unzip go-tour-of-restate.zip -d go-tour-of-restate &&
 rm go-tour-of-restate.zip && cd go-tour-of-restate
 ```
-</CH.Code>
+</CodeWithTabs>
 Run the services
 
 ```shell
@@ -164,17 +165,17 @@ go run ./app
 </TabItem>
 <TabItem value="python" label="Python">
         Download the example and run locally with an IDE:
-        <CH.Code>
-            ```shell CLI
+        <CodeWithTabs>
+            ```shell !!tabs CLI
             restate example python-tour-of-restate && cd python-tour-of-restate
             ```
 
-            ```shell wget
+            ```shell !!tabs wget
             wget https://github.com/restatedev/examples/releases/latest/download/python-tour-of-restate.zip &&
             unzip python-tour-of-restate.zip -d python-tour-of-restate &&
             rm python-tour-of-restate.zip
             ```
-        </CH.Code>
+        </CodeWithTabs>
 
         Setup your virtual environment:
 
@@ -204,22 +205,22 @@ go run ./app
 
 <SubtleStep stepLabel="2" title="Launch Restate">
 
-<CH.Code rows={"2"}>
+<CodeWithTabs rows={"2"}>
 
-    ```shell npx
+    ```shell !!tabs npx
     npx @restatedev/restate-server
     ```
 
-    ``` shell Homebrew
+    ``` shell !!tabs Homebrew
     brew install restatedev/tap/restate-server && restate-server
     ```
 
-    ```shell Docker
+    ```shell !!tabs Docker
     docker run --name restate_dev -p 8080:8080 -p 9070:9070 -p 9071:9071 \
         --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
     ```
 
-</CH.Code>
+</CodeWithTabs>
 
 <Admonition type="tip" icon="💡" title="Single binary">
     Restate is a single self-contained binary. No external dependencies needed. Check out our [Local Dev page](https://docs.restate.dev/develop/local_dev#running-restate-server--cli-locally) for other ways to run Restate.
@@ -232,25 +233,25 @@ go run ./app
 Now, we need to tell Restate where our services are running.
 You can register services by calling the Restate Admin API (default port `9070`) and supplying it the service endpoint URI:
 
-<CH.Code rows={"2"}>
+<CodeWithTabs rows={"2"}>
 
-    ```shell CLI
+    ```shell !!tabs CLI
     restate deployments register http://localhost:9080
     ```
 
-    ```shell curl
+    ```shell !!tabs curl
     curl localhost:9070/deployments -H 'content-type: application/json' \
         -d '{"uri": "http://localhost:9080"}'
     ```
-</CH.Code>
+</CodeWithTabs>
 
 <details className="grey-details">
 <summary>Output</summary>
 
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="Typescript">
-<CH.Code>
-```shell CLI
+<CodeWithTabs>
+```shell !!tabs CLI
 ❯ SERVICES THAT WILL BE ADDED:
 - CheckoutService
 Type: Service
@@ -280,7 +281,7 @@ CheckoutService  1
 CartObject       1
 ```
 
-```json curl
+```json !!tabs curl
 {
     "id": "dp_11pXug0mWsff2NOoRBZbOcV",
     "services": [
@@ -299,11 +300,11 @@ CartObject       1
     ]
 }
 ```
-</CH.Code>
+</CodeWithTabs>
 </TabItem>
 <TabItem value="java" label="Java">
-<CH.Code>
-```shell CLI
+<CodeWithTabs>
+```shell !!tabs CLI
 ❯ SERVICES THAT WILL BE ADDED:
 - CheckoutService
 Type: Service
@@ -333,7 +334,7 @@ CheckoutService  1
 CartObject       1
 ```
 
-```json curl
+```json !!tabs curl
 {
     "id": "dp_11pXug0mWsff2NOoRBZbOcV",
     "services": [
@@ -352,11 +353,11 @@ CartObject       1
     ]
 }
 ```
-</CH.Code>
+</CodeWithTabs>
 </TabItem>
 <TabItem value="go" label="Go">
-<CH.Code>
-    ```shell CLI
+<CodeWithTabs>
+    ```shell !!tabs CLI
     ❯ SERVICES THAT WILL BE ADDED:
     - CheckoutService
     Type: Service
@@ -386,7 +387,7 @@ CartObject       1
     CartObject       1
     ```
 
-    ```json curl
+    ```json !!tabs curl
     {
         "id": "dp_11pXug0mWsff2NOoRBZbOcV",
         "services": [
@@ -405,11 +406,11 @@ CartObject       1
         ]
     }
     ```
-</CH.Code>
+</CodeWithTabs>
 </TabItem>
     <TabItem value="python" label="Python">
-        <CH.Code>
-            ```shell CLI
+        <CodeWithTabs>
+            ```shell !!tabs CLI
             Deployment ID:  dp_15dw4eEnr7AOatMJOv2gmJ3
 
             ❯ SERVICES THAT WILL BE ADDED:
@@ -442,7 +443,7 @@ CartObject       1
             CheckoutService  1
             ```
 
-            ```json curl
+            ```json !!tabs curl
             {
                 "id": "dp_11pXug0mWsff2NOoRBZbOcV",
                 "services": [
@@ -461,7 +462,7 @@ CartObject       1
                 ]
             }
             ```
-        </CH.Code>
+        </CodeWithTabs>
     </TabItem>
 </Tabs>
 
@@ -1073,13 +1074,11 @@ The code would fast-forward to the point where it crashed, and continue executin
     <TabItem value="ts" label="TypeScript">
         To see the recovery of partial progress in practice, let's make the `CartObject/addTicket` handler crash right after the call.
 
-        <CH.Code lineNumbers={true}>
         ```typescript cart_object.ts
         CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part1/cart_object.ts#add_ticket
         ```
-        </CH.Code>
 
-        Add the following code to line 4 of the snippet, to let the code throw an error after the call:
+        Add the following code after the reservation call, to let the code throw an error after the call:
         ```typescript
         throw new Error("Failing");
         ```
@@ -1119,11 +1118,9 @@ The code would fast-forward to the point where it crashed, and continue executin
     <TabItem value="java" label="Java">
         To see the recovery of partial progress in practice, let's make the `CartObject/addTicket` handler crash right after the call.
 
-        <CH.Code lineNumbers={true}>
-            ```java CartObject.java
-            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/CartObject.java#add_ticket
-            ```
-        </CH.Code>
+        ```java CartObject.java
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/CartObject.java#add_ticket
+        ```
 
         Instead of returning true, let the code fail after the call:
 
@@ -1177,13 +1174,11 @@ The code would fast-forward to the point where it crashed, and continue executin
     <TabItem value="go" label="Go">
         To see the recovery of partial progress in practice, let's make the `CartObject/AddTicket` handler crash right after the call.
 
-        <CH.Code lineNumbers={true}>
         ```go cartobject.go
         CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-go/part1/cartobject.go#add_ticket
         ```
-        </CH.Code>
 
-        Add the following code to line 6 of the snippet, to let the code throw an error after the call:
+        Add the following code after the reservation call, to let the code throw an error after the call:
         ```go
         return false, fmt.Errorf("Failing")
         ```
@@ -1217,13 +1212,11 @@ The code would fast-forward to the point where it crashed, and continue executin
     <TabItem value="python" label="Python">
         To see the recovery of partial progress in practice, let's make the `CartObject/addTicket` handler crash right after the call.
 
-        <CH.Code lineNumbers={true}>
-            ```python cart_object.py
-            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part1/cart_object.py#add_ticket
-            ```
-        </CH.Code>
+        ```python cart_object.py
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part1/cart_object.py#add_ticket
+        ```
 
-        Add the following code to line 4 of the snippet, to let the code throw an error after the call:
+        Add the following code after the reservation call, to let the code throw an error after the call:
         ```python
         raise Exception("Failing")
         ```
@@ -1814,16 +1807,16 @@ So when you operate on the state in your function, you get access to a local cop
 Restate exposes information on invocations and application state.
 You can watch the state of the `CartObject` service, via:
 
-<CH.Code>
+<CodeWithTabs>
 
-    ```shell CLI
+    ```shell !!tabs CLI
     restate kv get -w -n 1 CartObject Mary
     ```
 
-    ```shell psql
+    ```shell !!tabs psql
     watch -n 1 'psql -h localhost -p 9071 -c "SELECT * FROM state WHERE service_name like '\''%CartObject%'\''";'
     ```
-</CH.Code>
+</CodeWithTabs>
 
 <details className="grey-details">
     <summary>Output</summary>
@@ -1945,16 +1938,16 @@ Implement the handlers in the `TicketObject` to reserve, unreserve, and mark a t
 
 While you are developing them, monitor the state of the `TicketObject` via:
 
-<CH.Code>
+<CodeWithTabs>
 
-    ```shell CLI
+    ```shell !!tabs CLI
     restate kv get -w -n 1 TicketObject seat2B
     ```
 
-    ```shell psql
+    ```shell !!tabs psql
     watch -n 1 'psql -h localhost -p 9071 -c "select * from state where service_name like '\''%TicketObject%'\''";'
     ```
-</CH.Code>
+</CodeWithTabs>
 
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
@@ -2644,27 +2637,26 @@ docker run -d --name jaeger -e COLLECTOR_OTLP_ENABLED=true \
 </SubtleStep>
 <SubtleStep stepLabel="2" title="Relaunch Restate with tracing enabled">
 
-    <CH.Code>
-    ```shell npx
+    <CodeWithTabs>
+    ```shell !!tabs npx
     npx @restatedev/restate-server --tracing-endpoint http://localhost:4317
     ```
 
-    ``` shell Homebrew
+    ``` shell !!tabs Homebrew
     brew install restatedev/tap/restate-server &&
         restate-server --tracing-endpoint http://localhost:4317
     ```
 
-    ```shell Docker
+    ```shell !!tabs Docker
     docker run --name restate_dev -p 8080:8080 -p 9070:9070 -p 9071:9071 \
         -e RESTATE_TRACING_ENDPOINT=http://host.docker.internal:4317 \
         --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
     ```
-    </CH.Code>
+    </CodeWithTabs>
 </SubtleStep>
 <SubtleStep stepLabel="3" title="Send a few requests">
   <Tabs groupId="sdk" queryString className={"display-none"}>
   <TabItem value="ts" label="TypeScript">
-    <CH.Code>
 
         ```shell
         curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2A"'
@@ -2672,30 +2664,24 @@ docker run -d --name jaeger -e COLLECTOR_OTLP_ENABLED=true \
         curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2C"'
         curl -X POST localhost:8080/CartObject/Mary/checkout
         ```
-    </CH.Code>
   </TabItem>
   <TabItem value="java" label="Java">
-    <CH.Code>
         ```shell
         curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2A"'
         curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2B"'
         curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2C"'
         curl -X POST localhost:8080/CartObject/Mary/checkout
         ```
-    </CH.Code>
   </TabItem>
   <TabItem value="go" label="Go">
-    <CH.Code>
         ```shell
         curl localhost:8080/CartObject/Mary/AddTicket -H 'content-type: application/json' -d '"seat2A"'
         curl localhost:8080/CartObject/Mary/AddTicket -H 'content-type: application/json' -d '"seat2B"'
         curl localhost:8080/CartObject/Mary/AddTicket -H 'content-type: application/json' -d '"seat2C"'
         curl -X POST localhost:8080/CartObject/Mary/Checkout
         ```
-    </CH.Code>
   </TabItem>
 <TabItem value="python" label="Python">
-<CH.Code>
 
   ```shell
   curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2A"'
@@ -2703,7 +2689,6 @@ docker run -d --name jaeger -e COLLECTOR_OTLP_ENABLED=true \
   curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2C"'
   curl -X POST localhost:8080/CartObject/Mary/checkout
   ```
-</CH.Code>
 </TabItem>
   </Tabs>
 
