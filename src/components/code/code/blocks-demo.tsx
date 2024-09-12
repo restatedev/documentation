@@ -13,7 +13,7 @@ import { z } from "zod"
 import { HighCode } from "../code"
 import React from "react"
 
-export async function BlocksDemo(props: unknown) {
+export function BlocksDemo(props: unknown) {
   const { content, component, result, caption } = parseProps(
     props,
     Block.extend({
