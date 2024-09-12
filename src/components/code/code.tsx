@@ -29,7 +29,7 @@ export function InlineCode({ codeblock }: { codeblock: HighlightedCode }) {
   return (
       <Inline
           code={codeblock}
-          // style={codeblock.style}
+          style={codeblock.style}
           className="selection:bg-editor-selectionBackground"
       />
   )
@@ -113,9 +113,7 @@ export function HighCode({
               <CodeIcon title={title} />
               <span>{title}</span>
             </div>
-            {flags.includes("c") && (
-                <CopyButton text={h.code} className="ml-auto" />
-            )}
+            <CopyButton text={h.code} className="ml-auto" />
           </div>
           {pre}
         </div>
@@ -135,9 +133,7 @@ export function HighCode({
               } as any
             }
         >
-          {flags.includes("c") && (
-              <CopyButton text={h.code} className="absolute right-4 my-0 top-2" />
-          )}
+          <CopyButton text={h.code} className="absolute right-4 my-0 top-2" />
           {pre}
         </div>
     )
@@ -174,6 +170,7 @@ export function CodeTabs(props: { tabs: HighlightedCode[] }) {
             </TabsList>
             {tabs.map((tab, i) => (
                 <TabsContent key={tab.meta} value={tab.meta} className="...">
+                    <CopyButton text={tab.code} className="absolute right-4 my-0 top-2" />
                     <Pre code={tabs[i]} className="..." />
                 </TabsContent>
             ))}
