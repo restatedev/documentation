@@ -5,6 +5,7 @@ description: "Learn how to store the results of non-deterministic operations."
 
 import Admonition from '@theme/Admonition';
 import clsx from "clsx";
+import {Scrollycoding} from "../../../src/components/code/scrollycoding";
 
 # Journaling Results
 
@@ -35,7 +36,6 @@ If not, you might bump into non-determinism errors during replay,
 because the journaled result can get interleaved with the other context calls in the journal in a non-deterministic way.
 </Admonition>
 
-
 ## Combineable Promise combinators
 Operations such as calls, awakeables, and sleep return a `CombineablePromise`.
 The SDK provides combinators for working with `CombineablePromise`.
@@ -54,27 +54,29 @@ Restate provides the following deterministic combinators:
 ## Generating randoms
 The SDK provides helper functions for the deterministic generation of UUIDs and random numbers. Restate seeds the random number generator with the invocation ID, so it always returns the same value on retries.
 
-<CH.Scrollycoding className={clsx("single-item", "durable-promises-short")}>
-    ### Generating UUIDs
+[//]: # (<Scrollycoding className={clsx&#40;"single-item", "durable-promises-short"&#41;}>)
 
-    You can use these UUIDs to generate stable idempotency keys, to deduplicate operations. For example, you can use this to let a payment service avoid duplicate payments during retries.
+### Generating UUIDs
 
-    Do not use this in cryptographic contexts.
+You can use these UUIDs to generate stable idempotency keys, to deduplicate operations. For example, you can use this to let a payment service avoid duplicate payments during retries.
 
-    ```typescript
-    CODE_LOAD::ts/src/develop/journaling_results.ts#uuid
-    ```
+Do not use this in cryptographic contexts.
 
-</CH.Scrollycoding>
-<CH.Scrollycoding className={clsx("single-item", "durable-promises-short")}>
+```typescript
+CODE_LOAD::ts/src/develop/journaling_results.ts#uuid
+```
 
-    ### Generating random numbers
+[//]: # (</Scrollycoding>)
+[//]: # (<Scrollycoding className={clsx&#40;"single-item", "durable-promises-short"&#41;}>)
+
+### Generating random numbers
 
 
-    This returns a new pseudorandom float within the range `[0,1]`.
-    This is the equivalent of JS `Math.random()` but deterministically replayable.
+This returns a new pseudorandom float within the range `[0,1]`.
+This is the equivalent of JS `Math.random()` but deterministically replayable.
 
-    ```typescript
-    CODE_LOAD::ts/src/develop/journaling_results.ts#random_nb
-    ```
-</CH.Scrollycoding>
+```typescript
+CODE_LOAD::ts/src/develop/journaling_results.ts#random_nb
+```
+
+[//]: # (</Scrollycoding>)

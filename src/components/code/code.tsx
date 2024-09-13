@@ -1,8 +1,8 @@
 import {
-    AnnotationHandler, highlight,
+    AnnotationHandler,
     HighlightedCode,
     Inline,
-    Pre, RawCode,
+    Pre,
 } from "codehike/code"
 import { cn } from "../../lib/utils"
 import { CopyButton } from "./copy-button"
@@ -22,7 +22,7 @@ import { diff } from "./annotations/diff"
 import { tooltip } from "./annotations/tooltip"
 import {Tabs, TabsList, TabsTrigger, TabsContent} from "./ui/tabs";
 import React from "react"
-import {Block, CodeBlock, HighlightedCodeBlock, parseProps} from "codehike/blocks";
+import {Block, HighlightedCodeBlock, parseProps} from "codehike/blocks";
 import { z } from "zod"
 
 export function InlineCode({ codeblock }: { codeblock: HighlightedCode }) {
@@ -99,15 +99,15 @@ export function HighCode({
             )}
             style={
               {
-                "--border-color": "var(--ch-23)",
-                borderColor: "var(--border-color)",
+                // "--border-color": "var(--ch-23)",
+                // borderColor: "var(--border-color)",
                 ...style,
               } as any
             }
         >
           <div
               className="px-3 py-2 border-b border-editorGroup-border bg-editorGroupHeader-tabsBackground text-sm text-tab-activeForeground flex"
-              style={{ borderColor: "var(--border-color)" }}
+              // style={{ borderColor: "var(--border-color)" }}
           >
             <div className="text-tab-activeForeground text-sm flex items-center gap-3">
               <CodeIcon title={title} />

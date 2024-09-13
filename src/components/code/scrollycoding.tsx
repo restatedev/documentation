@@ -5,12 +5,9 @@ import {
   SelectionProvider,
 } from "codehike/utils/selection"
 import { Block, HighlightedCodeBlock, parseProps } from "codehike/blocks"
-import { HighlightedCode, Pre } from "codehike/code"
-
-import { tokenTransitions } from "./annotations/token-transitions"
-import { wordWrap } from "./annotations/word-wrap"
 import styles from "./scrollycoding.module.css"
 import React from "react"
+import {Code, extractFlags} from "./code";
 
 const Schema = Block.extend({
   steps: z.array(
@@ -39,23 +36,14 @@ export function Scrollycoding(props: unknown) {
       </div>
       <Selection
         from={steps.map((step) => (
-          <CodeSticker codeblock={step.code} />
+            <div className={styles.sticker}>
+                <div className={styles.stickyCode}>
+                    <Code codeblock={step.code}
+                        style={{ minHeight: "20rem", maxHeight:"50rem"}}/>
+                </div>
+            </div>
         ))}
       />
     </SelectionProvider>
-  )
-}
-
-function CodeSticker({ codeblock }: { codeblock: HighlightedCode }) {
-  return (
-    <div className={styles.sticker}>
-      <div className={styles.stickyCode}>
-        <Pre
-          code={codeblock}
-          handlers={[tokenTransitions, wordWrap]}
-          style={{ minHeight: "40rem"}}
-        />
-      </div>
-    </div>
   )
 }
