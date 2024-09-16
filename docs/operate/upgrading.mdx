@@ -12,14 +12,16 @@ Restate follows [Semantic Versioning](https://semver.org/). The server persists 
 ## Version compatibility
 
 <Admonition type="note">
-    Consult the release notes for the specific details of any new version when planning upgrades.
+    Consult the release notes for the specific details of any new version when planning upgrades. As with all critical infrastructure changes, we recommend that you always test the upgrade path in an isolated environment.
 </Admonition>
 
 Upgrading to the latest patch version should always be possible and is recommended to benefit from the latest bug fixes and enhancements.
 
 Incremental minor version upgrades will retain functional compatibility with the immediate prior version. That is, for any minor version update, you will be able to upgrade from `x.y` to `x.(y+1)` while retaining all persisted data and metadata. You must not skip minor version upgrades, i.e. go directly from `x.y` to `x.(y+2)`, as it may bypass necessary data store migrations required for preserving forward compatibility.
 
-If you encounter any issues with a new version, you can downgrade a Restate installation to the latest patch level of the previous minor version. For example, you can safely rollback the Restate server version from `x.(y).0` to `x.(y-1).z` if you encounter compatibility issues. However, this rollback is only supported if you have not used any new opt-in features exclusive to the newer version. You cannot downgrade more than one minor version behind the most recent version used with the data store using this approach.
+Since later versions may introduce new functionality that is on by default, it's crucial that you baseline your configuration on the release from which you will be upgrading. If you haven't done so already, be sure to capture the [effective runtime configuration](/operate/configuration/server/#configuration-introspection) of your existing Restate cluster on the original version, and use this configuration initially when you upgrade.
+
+If you encounter any issues with a new version, you can downgrade a Restate installation to the latest patch level of the previous minor version. For example, you can safely rollback the Restate server version from `x.y.0` to `x.(y-1).z` if you encounter any issues. However, rollback is only supported as long as you have not used any new features exclusive to the newer version. You should enable new features in the server configuration only after you have verified the overall system behaviour on the new version. Going back to more than one minor version behind to the most recent version used with the data store is not supported.
 
 ## Service compatibility
 
