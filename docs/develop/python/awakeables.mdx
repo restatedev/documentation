@@ -4,6 +4,7 @@ description: "Pause invocations while waiting for an external task completion."
 ---
 
 import Admonition from '@theme/Admonition';
+import {Scrollycoding} from "../../../src/components/code/scrollycoding";
 
 
 # Awakeables
@@ -14,72 +15,79 @@ This pattern is also known as the callback (task token) pattern.
 
 ## Creating awakeables
 
-<CH.Scrollycoding className={"spotlight-medium"}>
+<Scrollycoding>
 
+    # !!steps
     1. The handler **creates an awakeable**. This contains a String identifier and a Promise.
 
-    ```python
+    ```python !
     CODE_LOAD::python/src/develop/awakeables.py?1
     ```
 
     ---
 
+    # !!steps
     2. The handler **triggers a task/process** and attaches the awakeable ID  (e.g. over Kafka, via HTTP,...).
     For example, send an HTTP request to a service that executes the task, and attach the ID to the payload.
     You use `ctx.run` to avoid re-triggering the task on retries.
 
-    ```python
+    ```python !
     CODE_LOAD::python/src/develop/awakeables.py?2
     ```
 
     ---
 
+    # !!steps
     3. The handler **waits** until the other process has executed the task.
     The handler **receives the payload and resumes**.
 
-    ```python
+    ```python !
     CODE_LOAD::python/src/develop/awakeables.py?3
     ```
 
-</CH.Scrollycoding>
+</Scrollycoding>
 
 ## Completing awakeables
 
 The external process completes the awakeable by either resolving it with an optional payload or by rejecting it
 with its ID and a reason for the failure. This throws [a terminal error](/develop/python/error-handling) in the waiting handler.
 
-<CH.Scrollycoding className={"single-item spotlight-medium"}>
+<Scrollycoding>
+    ## !!steps
     - Resolving over HTTP with its ID and an optional payload:
 
-    ```shell
+    ```shell !
     curl localhost:8080/restate/awakeables/prom_1PePOqp/resolve
         -H 'content-type: application/json'
         -d '{"hello": "world"}'
     ```
-</CH.Scrollycoding>
-<CH.Scrollycoding className={"single-item spotlight-medium"}>
+</Scrollycoding>
+<Scrollycoding>
+    ## !!steps
     - Rejecting over HTTP with its ID and a reason:
 
-    ```shell
+    ```shell !
     curl localhost:8080/restate/awakeables/prom_1PePOqp/reject
         -H 'content-type: text/plain' \
         -d 'Very bad error!'
     ```
-</CH.Scrollycoding>
-<CH.Scrollycoding className={"single-item spotlight-medium"}>
+</Scrollycoding>
+<Scrollycoding>
+    ## !!steps
     - Resolving via the SDK with its ID and an optional payload:
 
-    ```python
+    ```python !
     CODE_LOAD::python/src/develop/awakeables.py#resolve
     ```
-</CH.Scrollycoding>
-<CH.Scrollycoding className={"single-item spotlight-medium"}>
+</Scrollycoding>
+<Scrollycoding>
+    # !!steps
     - Rejecting via the SDK with its ID and a reason:
 
-    ```python
+    ```python !
     CODE_LOAD::python/src/develop/awakeables.py#reject
     ```
-</CH.Scrollycoding>
+</Scrollycoding>
 
 
 <Admonition type="info" title={"Payload serialization"}>

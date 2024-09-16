@@ -3,10 +3,11 @@ sidebar_position: 2
 description: "Learn how to set up your local dev environment"
 ---
 
+import {CodeWithTabs} from "../../src/components/code/code";
 import Admonition from '@theme/Admonition';
 import TabItem from "@theme/TabItem";
 import Tabs from "@theme/Tabs";
-import clsx from "clsx";
+import {Scrollycoding} from "../../src/components/code/scrollycoding";
 
 # Local Dev
 
@@ -15,51 +16,61 @@ import clsx from "clsx";
 
 <Tabs groupId={"running-restate"}>
     <TabItem value={"npm"} label={"npm"}>
-        <CH.Scrollycoding className={clsx("single-item", "short-code")}>
-        Install Restate Server and run it:
-            ```shell
+        <Scrollycoding>
+            ## !!steps
+            Install Restate Server and run it:
+
+            ```shell !
             npm install --global @restatedev/restate-server@latest &&
             restate-server
             ```
-        </CH.Scrollycoding>
-        <CH.Scrollycoding className={clsx("single-item", "short-code")}>
-        Or use npx, without installation:
-            ```shell
+        </Scrollycoding>
+        <Scrollycoding>
+            ## !!steps
+            Or use npx, without installation:
+
+            ```shell !
             npx @restatedev/restate-server
             ```
-        </CH.Scrollycoding>
-        <CH.Scrollycoding className={clsx("single-item", "short-code")}>
-        Install the Restate CLI via:
-            ```shell
+        </Scrollycoding>
+        <Scrollycoding>
+            ## !!steps
+            Install the Restate CLI via:
+
+            ```shell !
             npm install --global @restatedev/restate@latest
             ```
-        </CH.Scrollycoding>
+        </Scrollycoding>
 
     </TabItem>
     <TabItem value={"Homebrew"}  label={"Homebrew"}>
-        <CH.Scrollycoding className={clsx("single-item", "short-code")}>
+        <Scrollycoding>
+
+            ## !!steps
 
         Install Restate Server and run it with:
-        ```shell
+
+        ```shell !
         brew install restatedev/tap/restate-server &&
         restate-server
         ```
-        </CH.Scrollycoding>
+        </Scrollycoding>
 
-        <CH.Scrollycoding className={clsx("single-item", "short-code")}>
+        <Scrollycoding>
+            ## !!steps
         Install the CLI via:
-        ```shell
+        ```shell !
         brew install restatedev/tap/restate
         ```
-        </CH.Scrollycoding>
+        </Scrollycoding>
 
     </TabItem>
     <TabItem value={"bin"} label={"Download binaries"}>
         Install the Restate Server and CLI by downloading the binaries with `curl` from the [releases page](https://github.com/restatedev/restate/releases/latest), and make them executable:
 
-        <CH.Code>
+        <CodeWithTabs>
 
-            ```shell MacOS-x64
+            ```shell !!tabs MacOS-x64
             BIN=/usr/local/bin && RESTATE_PLATFORM=x86_64-apple-darwin && \
             curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
             tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
@@ -68,7 +79,7 @@ import clsx from "clsx";
             mv restate-server $BIN
             ```
 
-            ```shell MacOS-arm64
+            ```shell !!tabs MacOS-arm64
             BIN=/usr/local/bin && RESTATE_PLATFORM=aarch64-apple-darwin && \
             curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
             tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
@@ -77,7 +88,7 @@ import clsx from "clsx";
             mv restate-server $BIN
             ```
 
-            ```shell Linux-x64
+            ```shell !!tabs Linux-x64
             BIN=/usr/local/bin && RESTATE_PLATFORM=x86_64-unknown-linux-musl && \
             curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
             tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
@@ -86,7 +97,7 @@ import clsx from "clsx";
             mv restate-server $BIN
             ```
 
-            ```shell Linux-arm64
+            ```shell !!tabs Linux-arm64
             BIN=/usr/local/bin && RESTATE_PLATFORM=aarch64-unknown-linux-musl && \
             curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
             tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
@@ -94,7 +105,7 @@ import clsx from "clsx";
             mv restate $BIN && \
             mv restate-server $BIN
             ```
-        </CH.Code>
+        </CodeWithTabs>
 
         Then run it with:
         ```shell
@@ -127,65 +138,71 @@ import clsx from "clsx";
 
 ## Useful dev CLI commands
 
-<CH.Scrollycoding className={clsx("single-item", "short-code")}>
+<Scrollycoding>
+    ## !!steps
     Check if the CLI is installed correctly and can find the server:
 
-    ```shell
+    ```shell !
     restate whoami
     ```
-</CH.Scrollycoding>
-<CH.Scrollycoding className={clsx("single-item", "short-code")}>
+</Scrollycoding>
+<Scrollycoding>
+    ## !!steps
     Register a new service deployment. <br/>
     When running Restate in a Docker, replace localhost with host.docker.internal.
 
-    ```shell
+    ```shell !
     restate deployments register localhost:9080
     ```
-</CH.Scrollycoding>
-<CH.Scrollycoding className={clsx("single-item", "short-code")}>
+</Scrollycoding>
+<Scrollycoding>
 
+    ## !!steps
     [Cancel](/operate/invocation#cancelling-invocations) a single invocation or a batch of invocations.
     Use `--kill` to [kill](/operate/invocation#killing-invocations) the invocation.
     To remove all invocations, stop the server then do `rm -rf <BASE_DIR>/<NODE_NAME>`, which will effectively delete all state/data of the Restate server.
 
-    ```shell
+    ```shell !
     restate invocation cancel <INVOCATION_ID>
     # also works with <SERVICE>/<SERVICE_KEY>/<HANDLER> or a subset of it
     ```
 
-</CH.Scrollycoding>
-<CH.Scrollycoding className={clsx("single-item", "short-code")}>
+</Scrollycoding>
+<Scrollycoding>
 
+    ## !!steps
     Purge completed invocations from the state:
 
-    ```shell
+    ```shell !
     restate invocation purge <INVOCATION_ID>
     # also works with <SERVICE>/<SERVICE_KEY>/<HANDLER> or a subset of it
     ```
 
-</CH.Scrollycoding>
-<CH.Scrollycoding className={clsx("single-item", "short-code")}>
+</Scrollycoding>
+<Scrollycoding>
 
+    ## !!steps
     Clear the K/V state of a Virtual Object or Workflows.
     To clear all state, stop the server then do  `rm -rf <BASE_DIR>/<NODE_NAME>`, which will effectively delete all state/data of the Restate server.
 
-    ```shell
+    ```shell !
     restate kv clear <OBJECT_OR_WORKFLOW_NAME>
     restate kv clear <OBJECT_OR_WORKFLOW_NAME>/<SERVICE_KEY>
     ```
 
-</CH.Scrollycoding>
-<CH.Scrollycoding className={clsx("single-item", "short-code")}>
+</Scrollycoding>
+<Scrollycoding>
 
+    ## !!steps
     Execute a SQL query on the invocation or application state.
     See [SQL introspection docs](/operate/introspection?interface=psql#inspecting-invocations) for example queries.
     Use `--json` to get the output in json format.
 
-    ```shell
+    ```shell !
     restate sql "query"
     ```
 
-</CH.Scrollycoding>
+</Scrollycoding>
 
 <Admonition type="tip" title={"Debugging and troubleshooting with the CLI"}>
     Have a look at the [introspection page](/operate/introspection) for a list of useful commands.

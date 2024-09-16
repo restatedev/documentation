@@ -30,62 +30,68 @@ Invoke a handler programmatically with the SDK clients as follows:
 <Step stepLabel="3" title="Connect to Restate and invoke the handler with your preferred semantics">
     <Tabs groupId="sdk" queryString>
     <TabItem value="java" label="Java">
-        <CH.Scrollycoding className={"single-item"}>
+        <Scrollycoding>
 
+            ## !!steps
             **Request-response invocations** allow you to wait on a response from the handler.
 
-            ```java
+            ```java !
             CODE_LOAD::java/src/main/java/develop/clients/Ingress.java#rpc_java
             ```
 
-        </CH.Scrollycoding>
-        <CH.Scrollycoding className={"single-item"}>
+        </Scrollycoding>
+        <Scrollycoding>
 
+            ## !!steps
             **One-way invocations** allow you to send a message without waiting for a response.
 
-            ```java
+            ```java !
             CODE_LOAD::java/src/main/java/develop/clients/Ingress.java#one_way_call_java
             ```
 
-        </CH.Scrollycoding>
-        <CH.Scrollycoding className={"single-item"}>
+        </Scrollycoding>
+        <Scrollycoding>
 
+            ## !!steps
             **Delayed invocations** allow you to schedule an invocation for a later point in time.
 
-            ```java
+            ```java !
             CODE_LOAD::java/src/main/java/develop/clients/Ingress.java#delayed_call_java
             ```
 
-        </CH.Scrollycoding>
+        </Scrollycoding>
     </TabItem>
         <TabItem value="kotlin" label="Kotlin">
-            <CH.Scrollycoding className={"single-item"}>
+            <Scrollycoding>
 
+                ## !!steps
                 **Request-response invocations** allow you to wait on a response from the handler.
 
-                ```kotlin
+                ```kotlin !
                 CODE_LOAD::kotlin/src/main/kotlin/develop/clients/Ingress.kt#rpc_kotlin
                 ```
 
-            </CH.Scrollycoding>
-            <CH.Scrollycoding className={"single-item"}>
+            </Scrollycoding>
+            <Scrollycoding>
 
+                ## !!steps
                 **One-way invocations** allow you to send a message without waiting for a response.
 
-                ```kotlin
+                ```kotlin !
                 CODE_LOAD::kotlin/src/main/kotlin/develop/clients/Ingress.kt#one_way_call_kotlin
                 ```
 
-            </CH.Scrollycoding>
-            <CH.Scrollycoding className={"single-item"}>
+            </Scrollycoding>
+            <Scrollycoding>
 
+                 ## !!steps
                 **Delayed invocations** allow you to schedule an invocation for a later point in time.
 
-                ```kotlin
+                ```kotlin !
                 CODE_LOAD::kotlin/src/main/kotlin/develop/clients/Ingress.kt#delayed_call_kotlin
                 ```
 
-            </CH.Scrollycoding>
+            </Scrollycoding>
         </TabItem>
     </Tabs>
 </Step>
@@ -127,15 +133,13 @@ If you re-invoke the service with the same idempotency key within 24 hours, Rest
 <details className={"grey-details"}>
     <summary> Tuning retention time</summary>
 
-    <CH.Section>
-        You can tune the retention time on a service-level by using the [Admin API](/references/admin-api#tag/service/operation/modify_service)):
-        ```shell
-        curl -X PATCH localhost:9070/services/MyService \
-            -H 'content-type: application/json' \
-            -d '{"idempotency_retention": "2days"}'
-        ```
-        The retention time is in [humantime format](https://docs.rs/humantime/latest/humantime/).
-    </CH.Section>
+    You can tune the retention time on a service-level by using the [Admin API](/references/admin-api#tag/service/operation/modify_service)):
+    ```shell
+    curl -X PATCH localhost:9070/services/MyService \
+        -H 'content-type: application/json' \
+        -d '{"idempotency_retention": "2days"}'
+    ```
+    The retention time is in [humantime format](https://docs.rs/humantime/latest/humantime/).
 
 </details>
 
