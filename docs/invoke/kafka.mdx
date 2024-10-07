@@ -70,8 +70,65 @@ You can invoke handlers via Kafka events, by doing the following:
     Have a look at the [invocation docs](/operate/invocation#managing-kafka-subscriptions) for more commands to manage subscriptions.
 </Admonition>
 
+<details className="grey-details">
+    <summary>Kafka connection configuration</summary>
+
+    You can pass arbitrary Kafka cluster options in the `restate.toml`, and those options will be applied for all the subscriptions to that cluster, for example:
+
+    ```toml restate.toml
+    [[ingress.kafka-clusters]]
+    name = "my-cluster"
+    brokers = ["PLAINTEXT://broker:9092"]
+    sasl.username = "me"
+    sasl.password = "pass"
+    ```
+
+    For the full list of options, check [librdkafka configuration](https://github.com/confluentinc/librdkafka/blob/master/CONFIGURATION.md).
+</details>
+
+<details className="grey-details">
+    <summary>Multiple Kafka clusters support</summary>
+
+    You can configure multiple kafka clusters in the `restate.toml` file:
+
+    ```toml restate.toml
+    [[ingress.kafka-clusters]]
+    name = "my-cluster-1"
+    brokers = ["PLAINTEXT://localhost:9092"]
+
+    [[ingress.kafka-clusters]]
+    name = "my-cluster-2"
+    brokers = ["PLAINTEXT://localhost:9093"]
+    ```
+
+    And then, when creating the subscriptions, you refer to the specific cluster by `name`:
+
+    ```bash
+    # Subscription to my-cluster-1
+    curl localhost:9070/subscriptions -H 'content-type: application/json' \
+        -d '{
+            "source": "kafka://my-cluster-1/topic-1",
+            "sink": "service://MyService/handleCluster1"
+        }'
+
+    # Subscription to my-cluster-2
+    curl localhost:9070/subscriptions -H 'content-type: application/json' \
+        -d '{
+            "source": "kafka://my-cluster-2/topic-2",
+            "sink": "service://MyService/handleCluster2"
+        }'
+    ```
+</details>
+
 <Tabs groupId="sdk" queryString>
     <TabItem value="ts" label="TypeScript">
+
+<details className="grey-details">
+    <summary>Raw event support</summary>
+
+    By default handlers will deserialize the event payload as JSON.
+    By using serdes `restate.serde.binary` you can override this behaviour. Check [Typescript SDK > Serialization](../develop/ts/serialization) for more details.
+</details>
 
 <details className="grey-details">
     <summary>Event metadata</summary>
@@ -92,8 +149,8 @@ You can invoke handlers via Kafka events, by doing the following:
 <details className="grey-details">
     <summary>Raw event support</summary>
 
-    If you use annotations for your services and handlers, the event payload will be (de)serialized as JSON.
-    If you need to access the raw Kafka payload, you can do this by doing manual service definition.
+    By default handlers will deserialize the event payload as JSON.
+    By declaring the handler input parameter as `byte[]` and annotating it `@Raw` the JSON deserialization will be skipped, and the event payload will be passed as is.
 </details>
 
 <details className="grey-details">
