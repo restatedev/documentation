@@ -44,6 +44,16 @@ You can invoke handlers via Kafka events, by doing the following:
     And make sure the Restate Server uses it via _`restate-server --config-file restate.toml`_.
 
     Check the [configuration docs](/operate/configuration/server) for more details.
+
+    <details className={"grey-details"}>
+        <summary>Configuring Kafka clusters via environment variables</summary>
+
+        You can also configure the Kafka clusters via the `RESTATE_INGRESS__KAFKA_CLUSTERS` environment variable:
+
+        ```bash
+        RESTATE_INGRESS__KAFKA_CLUSTERS=[{name="my-cluster",brokers=["PLAINTEXT://broker:9092"]}]
+        ```
+    </details>
 </SubtleStep>
 <SubtleStep stepLabel="3" title={<span><a href={"/operate/registration"}>Register the service</a> you want to invoke.</span>}/>
 
