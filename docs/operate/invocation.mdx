@@ -6,6 +6,8 @@ description: "Explore the different ways to invoke Restate services."
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
+import {CodeWithTabs} from "../../src/components/code/code";
+
 
 # Managing Invocations
 
@@ -49,28 +51,19 @@ restate invocations list
 If an invocation takes too long to complete or is no longer of interest, you can cancel it.
 Canceling an invocation allows it to free any resources it is holding and roll back any changes it has made so far.
 
-<Tabs groupId="interface" queryString>
-<TabItem value="cli" label="CLI">
+You can cancel the invocation with [its ID](/operate/invocation?interface=curl#invocation-identifier) via the CLI or [Admin API](/references/admin-api):
 
-You can cancel the invocation with [its ID](/operate/invocation?interface=curl#invocation-identifier)) using the CLI:
+<CodeWithTabs>
 
-```shell
+```shell !!tabs CLI
 restate invocations cancel inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz
 ```
 
-You can also use the abbreviation `rm` instead of `cancel`.
-
-
-</TabItem>
-<TabItem value="curl" label="curl">
-You can cancel the invocation with [its ID](/operate/invocation?interface=curl#invocation-identifier)) using [the Admin API](/references/admin-api)):
-
-```shell
+```shell !!tabs curl
 curl -X DELETE http://localhost:9070/invocations/inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz
 ```
 
-</TabItem>
-</Tabs>
+</CodeWithTabs>
 
 <Admonition type="info" title={"Implement compensation logic"}>
 To roll back correctly, the handlers need to contain the necessary compensation logic.
@@ -99,28 +92,20 @@ Have a look at [this blog post](https://restate.dev/blog/graceful-cancellations-
 Sometimes Restate cannot cancel an invocation.
 For example, when an endpoint is permanently unavailable, Restate can't invoke the handler to run its compensation logic, so it can't complete the cancellation.
 For these cases, you can kill invocations.
-<Tabs groupId="interface" queryString>
-<TabItem value="cli" label="CLI">
 
-Kill the invocation by using [cancel](/operate/invocation?interface=cli#cancelling-invocations) with the `--kill` flag:
+To kill an invocation:
 
-```shell
+<CodeWithTabs>
+
+```shell !!tabs CLI
 restate invocations cancel --kill inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz
 ```
 
-You can also use the abbreviation `rm` instead of `cancel`.
-
-</TabItem>
-<TabItem value="curl" label="curl">
-
-To kill an invocation, add `?mode=kill` to the [cancel request](/operate/invocation?interface=curl#cancelling-invocations):
-
-```shell
-# focus[88:97]
+```shell !!tabs curl
 curl -X DELETE http://localhost:9070/invocations/inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz?mode=kill
 ```
-</TabItem>
-</Tabs>
+
+</CodeWithTabs>
 
 
 <Admonition type="warning">
