@@ -42,25 +42,22 @@ import {TextAndCode} from "../../src/components/code/code/text-and-code";
 
     </TabItem>
     <TabItem value={"Homebrew"}  label={"Homebrew"}>
-        <Scrollycoding>
-
-        ## !!steps
-
+        <TextAndCode>
         Install Restate Server and run it with:
 
-        ```shell !
+        ```shell !result
         brew install restatedev/tap/restate-server &&
         restate-server
         ```
-        </Scrollycoding>
+        </TextAndCode>
 
-        <Scrollycoding>
-            ## !!steps
+        <TextAndCode>
         Install the CLI via:
-        ```shell !
+
+        ```shell !result
         brew install restatedev/tap/restate
         ```
-        </Scrollycoding>
+        </TextAndCode>
 
     </TabItem>
     <TabItem value={"bin"} label={"Download binaries"}>
@@ -136,71 +133,61 @@ import {TextAndCode} from "../../src/components/code/code/text-and-code";
 
 ## Useful dev CLI commands
 
-<Scrollycoding>
-    ## !!steps
-    Check if the CLI is installed correctly and can find the server:
+<TextAndCode>
+    - Check if the CLI is installed correctly and can find the server:
 
-    ```shell !
+    ```shell !result
     restate whoami
     ```
-</Scrollycoding>
-<Scrollycoding>
-    ## !!steps
-    Register a new service deployment. <br/>
-    When running Restate in a Docker, replace localhost with host.docker.internal.
+</TextAndCode>
+<TextAndCode>
+    - Register a new service deployment.
+    When running Restate in a Docker, replace localhost with `host.docker.internal`.
 
-    ```shell !
+    ```shell !result
     restate deployments register localhost:9080
     ```
-</Scrollycoding>
-<Scrollycoding>
-
-    ## !!steps
+</TextAndCode>
+<TextAndCode>
     [Cancel](/operate/invocation#cancelling-invocations) a single invocation or a batch of invocations.
     Use `--kill` to [kill](/operate/invocation#killing-invocations) the invocation.
     To remove all invocations, stop the server then do `rm -rf <BASE_DIR>/<NODE_NAME>`, which will effectively delete all state/data of the Restate server.
 
-    ```shell !
+    ```shell !result
     restate invocation cancel <INVOCATION_ID>
     # also works with <SERVICE>/<SERVICE_KEY>/<HANDLER> or a subset of it
     ```
 
-</Scrollycoding>
-<Scrollycoding>
-
-    ## !!steps
+</TextAndCode>
+<TextAndCode>
     Purge completed invocations from the state:
 
-    ```shell !
+    ```shell !result
     restate invocation purge <INVOCATION_ID>
     # also works with <SERVICE>/<SERVICE_KEY>/<HANDLER> or a subset of it
     ```
 
-</Scrollycoding>
-<Scrollycoding>
-
-    ## !!steps
+</TextAndCode>
+<TextAndCode>
     Clear the K/V state of a Virtual Object or Workflows.
     To clear all state, stop the server then do  `rm -rf <BASE_DIR>/<NODE_NAME>`, which will effectively delete all state/data of the Restate server.
 
-    ```shell !
+    ```shell !result
     restate kv clear <OBJECT_OR_WORKFLOW_NAME>
     restate kv clear <OBJECT_OR_WORKFLOW_NAME>/<SERVICE_KEY>
     ```
 
-</Scrollycoding>
-<Scrollycoding>
-
-    ## !!steps
+</TextAndCode>
+<TextAndCode>
     Execute a SQL query on the invocation or application state.
     See [SQL introspection docs](/operate/introspection?interface=psql#inspecting-invocations) for example queries.
     Use `--json` to get the output in json format.
 
-    ```shell !
+    ```shell !result
     restate sql "query"
     ```
 
-</Scrollycoding>
+</TextAndCode>
 
 <Admonition type="tip" title={"Debugging and troubleshooting with the CLI"}>
     Have a look at the [introspection page](/operate/introspection) for a list of useful commands.

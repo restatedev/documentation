@@ -57,7 +57,7 @@ export function CodeWithNotes({
     }
   })
 
-  return <HighCode className="min-h-full" highlighted={code} />
+  return <HighCode highlighted={code} />
 }
 
 function CalloutCode({ code }: { code: HighlightedCode }) {

@@ -86,6 +86,7 @@ export function HighCode({
           handlers={handlers}
           style={{
             backgroundColor: "var(--bg-color)",
+            fontSize: "14px"
           }}
       />
   )

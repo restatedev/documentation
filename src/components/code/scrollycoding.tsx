@@ -22,7 +22,7 @@ export function Scrollycoding(props: unknown) {
     const { steps } = parseProps(props, Schema)
 
     return (
-        <SelectionProvider className={styles.container}>
+        <SelectionProvider className={styles.scrollycodingContainer}>
             <div className={styles.stepsContainer}>
                 {steps.map((step, i) => (
                     <Selectable
@@ -43,7 +43,7 @@ export function Scrollycoding(props: unknown) {
                             {"code" in step ? (
                                 <Code
                                     codeblock={step.code}
-                                    style={{ minHeight: "20rem", maxHeight: "50rem" }}
+                                    style={{ maxHeight: "50rem" }}
                                 />
                             ) : (
                                 <CodeTabs tabs={step.tabs} />

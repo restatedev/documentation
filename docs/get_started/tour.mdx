@@ -2357,7 +2357,7 @@ We can use this feature to do exactly-once payments in `CheckoutService/Handle`:
 <SubtleStep stepLabel="2" title="Trigger the payment">
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
-Execute the payment via an external payment provider via _`PaymentClient.get().call(idempotencyKey, amount)`_.
+Execute the payment via an external payment provider via `PaymentClient.get().call(idempotencyKey, amount)`.
 The payment provider will deduplicate payments based on the idempotency token.
 We assume every ticket costs 40 dollars.
 
@@ -2367,7 +2367,7 @@ CODE_LOAD::ts/src/get_started/tour.ts#checkout
 
 </TabItem>
 <TabItem value="java" label="Java">
-Execute the payment via an external payment provider via _`PaymentClient.get().call(idempotencyKey, amount)`_.
+Execute the payment via an external payment provider via `PaymentClient.get().call(idempotencyKey, amount)`.
 The payment provider will deduplicate payments based on the idempotency token.
 We assume every ticket costs 40 dollars.
 
@@ -2386,7 +2386,7 @@ CODE_LOAD::go/getstarted/tour.go#checkout
 ```
 </TabItem>
 <TabItem value="python" label="Python">
-Execute the payment via an external payment provider via _`payment_client.call(idempotency_key, total_price)`_.
+Execute the payment via an external payment provider via `payment_client.call(idempotency_key, total_price)`.
 The payment provider will deduplicate payments based on the idempotency token.
 We assume every ticket costs 40 dollars.
 
@@ -2407,8 +2407,8 @@ Let's finish the checkout flow by sending the email notifications and marking th
 <TabItem value="ts" label="TypeScript">
 <SubtleStep stepLabel="1" title="Implement the email notifications">
 After the `CheckoutService/handle` handler has handled the payment, you need to notify the users of the payment status:
-- **Payment success**: notify the users via _`EmailClient.get().notifyUserOfPaymentSuccess(request.getUserId())`_.
-- **Payment failure**: notify the users via the _`EmailClient.get().notifyUserOfPaymentFailure(request.getUserId())`_.
+- **Payment success**: notify the users via `EmailClient.get().notifyUserOfPaymentSuccess(request.getUserId())`.
+- **Payment failure**: notify the users via the `EmailClient.get().notifyUserOfPaymentFailure(request.getUserId())`.
 
 <details>
 <summary>Solution</summary>
@@ -2433,8 +2433,8 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/
 <TabItem value="java" label="Java">
 <SubtleStep stepLabel="1" title="Implement the email notifications">
 After the `CheckoutService/handle` handler has handled the payment, you need to notify the users of the payment status:
-- **Payment success**: notify the users via _`EmailClient.get().notifyUserOfPaymentSuccess(request.getUserId())`_.
-- **Payment failure**: notify the users via the _`EmailClient.get().notifyUserOfPaymentFailure(request.getUserId())`_.
+- **Payment success**: notify the users via `EmailClient.get().notifyUserOfPaymentSuccess(request.getUserId())`.
+- **Payment failure**: notify the users via the `EmailClient.get().notifyUserOfPaymentFailure(request.getUserId())`.
 
 <details>
 <summary>Solution</summary>
@@ -2485,8 +2485,8 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/
 <TabItem value="python" label="Python">
     <SubtleStep stepLabel="1" title="Implement the email notifications">
         After the `CheckoutService/handle` handler has handled the payment, you need to notify the users of the payment status:
-        - **Payment success**: notify the users via _`email_client.notify_user_of_payment_success(order['user_id'])`_.
-        - **Payment failure**: notify the users via the _`email_client.notify_user_of_payment_failure(order['user_id'])`_.
+        - **Payment success**: notify the users via `email_client.notify_user_of_payment_success(order['user_id'])`.
+        - **Payment failure**: notify the users via the `email_client.notify_user_of_payment_failure(order['user_id'])`.
 
         <details>
             <summary>Solution</summary>
