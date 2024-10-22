@@ -6,7 +6,7 @@ hide_table_of_contents: true
 hide_title: true
 ---
 
-import clsx from "clsx";
+import {TextAndCode} from "../../src/components/code/code/text-and-code";import clsx from "clsx";
 import FeatureWidget from "../../src/components/FeatureWidget"
 import ExampleWidget from "../../src/components/ExampleWidget"
 import FeatureList from "../../src/components/FeatureList"
@@ -15,6 +15,8 @@ import SpotlightCard from "../../src/components/SpotlightCard"
 import TwoColumnText from "../../src/components/TwoColumnText"
 import Tabs from "@theme/Tabs"
 import TabItem from "@theme/TabItem"
+import {Scrollycoding} from "../../src/components/code/scrollycoding";
+
 
 <h1 className={"padding-top--lg text--left"}>Workflows-as-code</h1>
 <h1 className={"use-case-subtitle text--left"}>Lightweight, flexible, durable.</h1>
@@ -48,238 +50,238 @@ Implement the `run` function of your workflow, using the Restate SDK.
 
 <Tabs groupId="sdk" queryString>
     <TabItem value="ts" label="TypeScript">
-        <CH.Scrollycoding className="workflows-scroller">
+        <Scrollycoding className="durable-promises">
 
-            ### Run once, idempotently
+            ### !!steps Run once, idempotently
             A workflow runs exactly one time.
             Restate makes sure that duplicate requests do not lead to duplicate execution.
 
-            ```ts user_sign_up_flow.ts
+            ```ts ! user_sign_up_flow.ts
             CODE_LOAD::ts/src/use_cases/workflows/signup_workflow.ts?1
             ```
 
             ---
 
-            ### Persist progress
+            ### !!steps Persist progress
 
             Store results of intermediate steps, interaction with external systems, or non-deterministic actions.
             Restate makes sure that on retries, the code does not get re-executed and the previous result is returned.
             This lets you execute the steps of your workflows durably.
 
-            ```ts user_sign_up_flow.ts
+            ```ts ! user_sign_up_flow.ts
             CODE_LOAD::ts/src/use_cases/workflows/signup_workflow.ts?2
             ```
 
             ---
 
-            ### Workflow state
+            ### !!steps Workflow state
 
             Use Restate’s built-in key-value store to store workflow state.
             Restate guarantees that it is consistent and persistent, since state updates are tracked together with the rest of the execution progress.
 
-            ```ts user_sign_up_flow.ts
+            ```ts ! user_sign_up_flow.ts
             CODE_LOAD::ts/src/use_cases/workflows/signup_workflow.ts?3
             ```
 
             ---
 
-            ### Query workflow state
+            ### !!steps Query workflow state
 
             Retrieve the current state of the workflow from within other handlers and expose it to external clients.
 
-            ```ts user_sign_up_flow.ts
+            ```ts ! user_sign_up_flow.ts
             CODE_LOAD::ts/src/use_cases/workflows/signup_workflow.ts?4
             ```
 
             ---
 
-            ### Wait on external signals
+            ### !!steps Wait on external signals
 
             Make Promises/Futures resilient by registering them in Restate.
             Share them and wait until other functions resolve them.
 
-            ```ts user_sign_up_flow.ts
+            ```ts ! user_sign_up_flow.ts
             CODE_LOAD::ts/src/use_cases/workflows/signup_workflow.ts?5
             ```
 
             ---
 
-            ### Signal in-flight workflows
+            ### !!steps Signal in-flight workflows
 
             Notify the workflow of external signals, callbacks or Kafka events.
             Resolve or reject shared promises on which the workflow is waiting.  The workflow handles the outcome.
 
-            ```ts user_sign_up_flow.ts
+            ```ts ! user_sign_up_flow.ts
             CODE_LOAD::ts/src/use_cases/workflows/signup_workflow.ts?6
             ```
 
             ---
 
-            ### Flexible failure handling
+            ### !!steps Flexible failure handling
 
             Implement sagas and compensations in code, as per your requirements.
 
-            ```ts user_sign_up_flow.ts
+            ```ts ! user_sign_up_flow.ts
             CODE_LOAD::ts/src/use_cases/workflows/signup_workflow.ts?7
             ```
 
-        </CH.Scrollycoding>
+        </Scrollycoding>
     </TabItem>
     <TabItem value="java" label="Java">
-        <CH.Scrollycoding className="workflows-scroller">
+        <Scrollycoding className="workflows-scroller">
 
-            ### Run once, idempotently
+            ### !!steps Run once, idempotently
             A workflow runs exactly one time.
             Restate makes sure that duplicate requests do not lead to duplicate execution.
 
-            ```java SignupWorkflow.java
+            ```java ! SignupWorkflow.java
             CODE_LOAD::java/src/main/java/usecases/workflows/SignupWorkflow.java?1
             ```
 
             ---
 
-            ### Persist progress
+            ### !!steps Persist progress
 
             Store results of intermediate steps, interaction with external systems, or non-deterministic actions.
             Restate makes sure that on retries, the code does not get re-executed and the previous result is returned.
             This lets you execute the steps of your workflows durably.
 
-            ```java SignupWorkflow.java
+            ```java ! SignupWorkflow.java
             CODE_LOAD::java/src/main/java/usecases/workflows/SignupWorkflow.java?2
             ```
 
             ---
 
-            ### Workflow state
+            ### !!steps Workflow state
 
             Use Restate’s built-in key-value store to store workflow state.
             Restate guarantees that it is consistent and persistent, since state updates are tracked together with the rest of the execution progress.
 
-            ```java SignupWorkflow.java
+            ```java ! SignupWorkflow.java
             CODE_LOAD::java/src/main/java/usecases/workflows/SignupWorkflow.java?3
             ```
 
             ---
 
-            ### Query workflow state
+            ### !!steps Query workflow state
 
             Retrieve the current state of the workflow from within other handlers and expose it to external clients.
 
-            ```java SignupWorkflow.java
+            ```java ! SignupWorkflow.java
             CODE_LOAD::java/src/main/java/usecases/workflows/SignupWorkflow.java?4
             ```
 
             ---
 
-            ### Wait on external signals
+            ### !!steps Wait on external signals
 
             Make Promises/Futures resilient by registering them in Restate.
             Share them and wait until other functions resolve them.
 
-            ```java SignupWorkflow.java
+            ```java ! SignupWorkflow.java
             CODE_LOAD::java/src/main/java/usecases/workflows/SignupWorkflow.java?5
             ```
 
             ---
 
-            ### Signal in-flight workflows
+            ### !!steps Signal in-flight workflows
 
             Notify the workflow of external signals, callbacks or Kafka events.
             Resolve or reject shared promises on which the workflow is waiting.  The workflow handles the outcome.
 
-            ```java SignupWorkflow.java
+            ```java ! SignupWorkflow.java
             CODE_LOAD::java/src/main/java/usecases/workflows/SignupWorkflow.java?6
             ```
 
             ---
 
-            ### Flexible failure handling
+            ### !!steps Flexible failure handling
 
             Implement sagas and compensations in code, as per your requirements.
 
-            ```java SignupWorkflow.java
+            ```java ! SignupWorkflow.java
             CODE_LOAD::java/src/main/java/usecases/workflows/SignupWorkflow.java?7
             ```
 
-        </CH.Scrollycoding>
+        </Scrollycoding>
     </TabItem>
     <TabItem value="kotlin" label={"Kotlin"}>
-        <CH.Scrollycoding className="workflows-scroller">
+        <Scrollycoding className="workflows-scroller">
 
-            ### Run once, idempotently
+            ### !!steps Run once, idempotently
             A workflow runs exactly one time.
             Restate makes sure that duplicate requests do not lead to duplicate execution.
 
-            ```kotlin SignupWorkflow.kt
+            ```kotlin ! SignupWorkflow.kt
             CODE_LOAD::kotlin/src/main/kotlin/usecases/workflows/SignupWorkflow.kt?1
             ```
 
             ---
 
-            ### Persist progress
+            ### !!steps Persist progress
 
             Store results of intermediate steps, interaction with external systems, or non-deterministic actions.
             Restate makes sure that on retries, the code does not get re-executed and the previous result is returned.
             This lets you execute the steps of your workflows durably.
 
-            ```kotlin SignupWorkflow.kt
+            ```kotlin ! SignupWorkflow.kt
             CODE_LOAD::kotlin/src/main/kotlin/usecases/workflows/SignupWorkflow.kt?2
             ```
 
             ---
 
-            ### Workflow state
+            ### !!steps Workflow state
 
             Use Restate’s built-in key-value store to store workflow state.
             Restate guarantees that it is consistent and persistent, since state updates are tracked together with the rest of the execution progress.
 
-            ```kotlin SignupWorkflow.kt
+            ```kotlin ! SignupWorkflow.kt
             CODE_LOAD::kotlin/src/main/kotlin/usecases/workflows/SignupWorkflow.kt?3
             ```
 
             ---
 
-            ### Query workflow state
+            ### !!steps Query workflow state
 
             Retrieve the current state of the workflow from within other handlers and expose it to external clients.
 
-            ```kotlin SignupWorkflow.kt
+            ```kotlin ! SignupWorkflow.kt
             CODE_LOAD::kotlin/src/main/kotlin/usecases/workflows/SignupWorkflow.kt?4
             ```
 
             ---
 
-            ### Wait on external signals
+            ### !!steps Wait on external signals
 
             Make Promises/Futures resilient by registering them in Restate.
             Share them and wait until other functions resolve them.
 
-            ```kotlin SignupWorkflow.kt
+            ```kotlin ! SignupWorkflow.kt
             CODE_LOAD::kotlin/src/main/kotlin/usecases/workflows/SignupWorkflow.kt?5
             ```
 
             ---
 
-            ### Signal in-flight workflows
+            ### !!steps Signal in-flight workflows
 
             Notify the workflow of external signals, callbacks or Kafka events.
             Resolve or reject shared promises on which the workflow is waiting.  The workflow handles the outcome.
 
-            ```kotlin SignupWorkflow.kt
+            ```kotlin ! SignupWorkflow.kt
             CODE_LOAD::kotlin/src/main/kotlin/usecases/workflows/SignupWorkflow.kt?6
             ```
 
             ---
 
-            ### Flexible failure handling
+            ### !!steps Flexible failure handling
 
             Implement sagas and compensations in code, as per your requirements.
 
-            ```kotlin SignupWorkflow.kt
+            ```kotlin ! SignupWorkflow.kt
             CODE_LOAD::kotlin/src/main/kotlin/usecases/workflows/SignupWorkflow.kt?7
             ```
 
-        </CH.Scrollycoding>
+        </Scrollycoding>
     </TabItem>
 </Tabs>
 
@@ -298,44 +300,42 @@ Implement the `run` function of your workflow, using the Restate SDK.
 
 <Tabs groupId="sdk" queryString>
     <TabItem value="ts" label="TypeScript">
-        <CH.Scrollycoding className={clsx("single-item", "durable-promises")}>
+        <TextAndCode className={clsx("single-item", "durable-promises")}>
 
             ### Latch on to a workflow
             A workflow runs exactly one time.
             If the caller loses the connection to the workflow, he can latch on again to retrieve the result.
 
-            ```ts submit.ts
+            ```ts !result submit.ts
             CODE_LOAD::ts/src/use_cases/workflows/submit.ts
             ```
-        </CH.Scrollycoding>
+        </TextAndCode>
     </TabItem>
     <TabItem value="java" label="Java">
-        <CH.Scrollycoding className={clsx("single-item", "durable-promises")}>
+        <TextAndCode className={clsx("single-item", "durable-promises")}>
 
             ### Latch on to a workflow
             A workflow runs exactly one time.
             If the caller loses the connection to the workflow, he can latch on again to retrieve the result.
 
-            ```java WorkflowSubmitter.java
+            ```java !result WorkflowSubmitter.java
             CODE_LOAD::java/src/main/java/usecases/workflows/WorkflowSubmitter.java
             ```
-        </CH.Scrollycoding>
+        </TextAndCode>
     </TabItem>
     <TabItem value={"kotlin"} label={"Kotlin"}>
-        <CH.Scrollycoding className={clsx("single-item", "durable-promises")}>
+        <TextAndCode className={clsx("single-item", "durable-promises")}>
             ### Latch on to a workflow
             A workflow runs exactly one time.
             If the caller loses the connection to the workflow, he can latch on again to retrieve the result.
 
-            ```kotlin WorkflowSubmitter.kt
+            ```kotlin !result WorkflowSubmitter.kt
             CODE_LOAD::kotlin/src/main/kotlin/usecases/workflows/WorkflowSubmitter.kt
             ```
             
-        </CH.Scrollycoding>
+        </TextAndCode>
     </TabItem>
 </Tabs>
-
-
 
 <SpotlightCard>
     <FeatureSpotlight

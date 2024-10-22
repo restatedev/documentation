@@ -13,24 +13,18 @@ A handler can call another handler and wait for the response (request-response),
 
 Request-response calls are requests where the client waits for the response.
 
-<CH.Scrollycoding className={"single-item"}>
+To a Service:
 
-    To a Service:
+```go
+CODE_LOAD::go/develop/servicecommunication.go#request_response_service
+```
 
-    ```go
-    CODE_LOAD::go/develop/servicecommunication.go#request_response_service
-    ```
+To a Virtual Object:
 
-</CH.Scrollycoding>
-<CH.Scrollycoding className={"single-item"}>
+```go
+CODE_LOAD::go/develop/servicecommunication.go#request_response_object
+```
 
-    To a Virtual Object:
-
-    ```go
-    CODE_LOAD::go/develop/servicecommunication.go#request_response_object
-    ```
-
-</CH.Scrollycoding>
 
 1. **Create a service client** and supply the name of the service and method you want to call, as well
   as a type parameter for the output type.
@@ -61,25 +55,18 @@ Request-response calls are requests where the client waits for the response.
 
 Handlers can send messages (a.k.a. one-way calls, or fire-and-forget calls), as follows:
 
-<CH.Scrollycoding className={"single-item"}>
+To a Service:
 
-    To a Service:
+```go
+CODE_LOAD::go/develop/servicecommunication.go#one_way_service
+```
 
-    ```go
-    CODE_LOAD::go/develop/servicecommunication.go#one_way_service
-    ```
+To a Virtual Object:
 
-</CH.Scrollycoding>
+```go
+CODE_LOAD::go/develop/servicecommunication.go#one_way_object
+```
 
-<CH.Scrollycoding className={"single-item"}>
-
-    To a Virtual Object:
-
-    ```go
-    CODE_LOAD::go/develop/servicecommunication.go#one_way_object
-    ```
-
-</CH.Scrollycoding>
 
 <Admonition type="tip" title="No need for message queues">
     Without Restate, you would usually put a message queue in between the two services, to guarantee the message delivery.
@@ -92,24 +79,17 @@ A delayed call is a one-way call that gets executed after a specified delay.
 
 To schedule a delayed call, send a message with a delay parameter, as follows:
 
-<CH.Scrollycoding className={"single-item"}>
+To a Service:
 
-    To a Service:
+```go
+CODE_LOAD::go/develop/servicecommunication.go#delayed_service
+```
 
-    ```go
-    CODE_LOAD::go/develop/servicecommunication.go#delayed_service
-    ```
+To a Virtual Object:
 
-</CH.Scrollycoding>
-<CH.Scrollycoding className={"single-item"}>
-
-    To a Virtual Object:
-
-    ```go
-    CODE_LOAD::go/develop/servicecommunication.go#delayed_object
-    ```
-
-</CH.Scrollycoding>
+```go
+CODE_LOAD::go/develop/servicecommunication.go#delayed_object
+```
 
 <Admonition type="tip" title="Scheduling async tasks">
     You can also use this functionality to schedule async tasks.
