@@ -11,23 +11,21 @@ import Admonition from '@theme/Admonition';
 # Security
 
 ## Private services
-<CH.Section>
-    When registering an endpoint, every service is by default reachable via HTTP requests to the ingress.
+When registering an endpoint, every service is by default reachable via HTTP requests to the ingress.
 
-    You can configure a service as `private`, such that you can't invoke it over HTTP, through the Admin API ([docs](/references/admin-api#tag/service/operation/modify_service)):
+You can configure a service as `private`, such that you can't invoke it over HTTP, through the Admin API ([docs](/references/admin-api#tag/service/operation/modify_service)):
 
-    ```shell
-    curl -X PATCH localhost:9070/services/MyService \
-        -H 'content-type: application/json' \
-        -d '{"public": false}'
-    ```
+```shell
+curl -X PATCH localhost:9070/services/MyService \
+    -H 'content-type: application/json' \
+    -d '{"public": false}'
+```
 
-    You can revert it back to public with `{"public": true}`.
+You can revert it back to public with `{"public": true}`.
 
-    <Admonition type="info">
-        Private services can still be invoked by other handlers via the SDK.
-    </Admonition>
-</CH.Section>
+<Admonition type="info">
+    Private services can still be invoked by other handlers via the SDK.
+</Admonition>
 
 ## Locking down service access
 Only Restate needs to be able to make requests to your services - requests from

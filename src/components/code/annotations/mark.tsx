@@ -1,4 +1,4 @@
-import { AnnotationHandler, BlockAnnotation, InnerLine } from "codehike/code"
+import { AnnotationHandler, InnerLine } from "codehike/code"
 
 export const mark: AnnotationHandler = {
   name: "mark",
@@ -9,7 +9,7 @@ export const mark: AnnotationHandler = {
         style={{
           borderLeft: "solid 2px transparent",
           borderLeftColor: annotation && color,
-          backgroundColor: annotation && `rgb(from ${color} r g b / 0.13)`,
+          backgroundColor: annotation && `rgb(from ${color} r g b / 0.08)`,
         }}
         className="flex"
       >
@@ -23,7 +23,7 @@ export const mark: AnnotationHandler = {
       <span
         style={{
           outline: `solid 1px rgb(from ${color} r g b / 0.5)`,
-          backgroundColor: `rgb(from ${color} r g b / 0.13)`,
+          backgroundColor: `rgb(from ${color} r g b / 0.08)`,
         }}
         className="rounded px-0.5 py-0 -mx-0.5"
       >
@@ -34,15 +34,16 @@ export const mark: AnnotationHandler = {
 }
 
 function getColor(annotation?: { query?: string }) {
-  const n = Number(annotation?.query || "2") % colors.length
-  return colors[n] || annotation?.query
+    const n = Number(annotation?.query || "0") % colors.length
+    return colors[n] || annotation?.query
 }
 
 const colors = [
-  "#22c55e",
-  "#14b8a6",
-  "#0ea5e9",
-  "#8b5cf6",
-  "#d946ef",
-  "#ec4899",
+    "#4552CC",
+    "#22c55e",
+    "#14b8a6",
+    "#0ea5e9",
+    "#8b5cf6",
+    "#d946ef",
+    "#ec4899",
 ]

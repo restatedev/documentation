@@ -20,17 +20,9 @@ Restate assigns an identifier to every invocation, the Invocation ID. You can us
 
 The invocation ID starts with `inv_`, and can be found in the logs and traces (`restate.invocation.id`), for example:
 
-<CH.Code>
-    ```log TypeScript
-    // focus[37:74]
-    [restate] [CartObject/expireTicket][inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz][2024-03-18T16:14:24.671Z] DEBUG: Invoking function.
-    ```
-
-    ```log Java
-    // focus[53:90]
-    2024-04-16 17:27:45 INFO  [CartObject/expireTicket][inv_1aiqX0vFEFNH0T0mRlvCk7xTVSB5xQIaKR] dev.restate.sdk.core.ResolvedEndpointHandlerImpl - Start invocation
-    ```
-</CH.Code>
+```log
+[restate] [CartObject/expireTicket][inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz][2024-03-18T16:14:24.671Z] DEBUG: Invoking function.
+```
 
 Or you can use the CLI to list the invocations and retrieve the ID from there:
 ```shell
@@ -60,27 +52,22 @@ Canceling an invocation allows it to free any resources it is holding and roll b
 <Tabs groupId="interface" queryString>
 <TabItem value="cli" label="CLI">
 
-<CH.Section>
 You can cancel the invocation with [its ID](/operate/invocation?interface=curl#invocation-identifier)) using the CLI:
 
 ```shell
 restate invocations cancel inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz
 ```
-</CH.Section>
 
 You can also use the abbreviation `rm` instead of `cancel`.
 
 
 </TabItem>
 <TabItem value="curl" label="curl">
-<CH.Section>
 You can cancel the invocation with [its ID](/operate/invocation?interface=curl#invocation-identifier)) using [the Admin API](/references/admin-api)):
 
 ```shell
 curl -X DELETE http://localhost:9070/invocations/inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz
 ```
-
-</CH.Section>
 
 </TabItem>
 </Tabs>
@@ -152,18 +139,16 @@ curl -X DELETE http://localhost:9070/invocations/inv_1gdJBtdVEcM942bjcDmb1c1khoa
 
 Restate can trigger handlers via Kafka events.
 
-<CH.Section>
-    - **Create subscriptions** for a handler on a topic via:
-    ```bash
-    curl localhost:9070/subscriptions -H 'content-type: application/json' \
-        -d '{
-            "source": "kafka://my-cluster/my-topic",
-            "sink": "service://MyService/Handle",
-            "options": {"auto.offset.reset": "earliest"}
-        }'
-    ```
-    The options field is optional and accepts any configuration parameter from [librdkafka configuration](https://github.com/confluentinc/librdkafka/blob/master/CONFIGURATION.md).
-</CH.Section>
+- **Create subscriptions** for a handler on a topic via:
+```bash
+curl localhost:9070/subscriptions -H 'content-type: application/json' \
+    -d '{
+        "source": "kafka://my-cluster/my-topic",
+        "sink": "service://MyService/Handle",
+        "options": {"auto.offset.reset": "earliest"}
+    }'
+```
+The options field is optional and accepts any configuration parameter from [librdkafka configuration](https://github.com/confluentinc/librdkafka/blob/master/CONFIGURATION.md).
 - **List** the current subscriptions via:
 ```bash
 curl localhost:9070/subscriptions
@@ -191,14 +176,12 @@ curl localhost:9070/subscriptions
 
 </details>
 
-    The creation and listing of subscriptions returns an identifier.
-<CH.Section>
-    - **Delete** a subscription with its identifier (starting with `sub_`) via:
-    ```bash
-    curl -X DELETE localhost:9070/subscriptions/sub_11XHoawrCiWtv8kzhEyGtsR
-    ```
+The creation and listing of subscriptions returns an identifier.
+- **Delete** a subscription with its identifier (starting with `sub_`) via:
+```bash
+curl -X DELETE localhost:9070/subscriptions/sub_11XHoawrCiWtv8kzhEyGtsR
+```
 
-    <Admonition type="info">
-        When you delete a subscription, Restate stops the consumer group associated to it. Any messages that were already enqueued by Restate will still be processed.
-    </Admonition>
-</CH.Section>
+<Admonition type="info">
+    When you delete a subscription, Restate stops the consumer group associated to it. Any messages that were already enqueued by Restate will still be processed.
+</Admonition>
