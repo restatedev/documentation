@@ -14,26 +14,60 @@ import clsx from "clsx";
 
 
 <Tabs groupId={"running-restate"}>
-    <TabItem value={"npm"} label={"npm"}>
-        <CH.Scrollycoding className={clsx("single-item", "short-code")}>
-        Install Restate Server and run it:
-            ```shell
-            npm install --global @restatedev/restate-server@latest &&
-            restate-server
+    <TabItem value={"bin"} label={"Download binaries"}>
+        Install the Restate Server and CLI by downloading the binaries with `curl` from the [releases page](https://github.com/restatedev/restate/releases/latest), and make them executable:
+
+        <CH.Code>
+
+            ```shell MacOS-x64
+            BIN=/usr/local/bin && RESTATE_PLATFORM=x86_64-apple-darwin && \
+            curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
+            tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+            chmod +x restate restate-server && \
+
+            # Move the binaries to a directory in your PATH, for example /usr/local/bin (needs sudo):
+            sudo mv restate $BIN && \
+            sudo mv restate-server $BIN
             ```
-        </CH.Scrollycoding>
-        <CH.Scrollycoding className={clsx("single-item", "short-code")}>
-        Or use npx, without installation:
-            ```shell
-            npx @restatedev/restate-server
+
+            ```shell MacOS-arm64
+            BIN=/usr/local/bin && RESTATE_PLATFORM=aarch64-apple-darwin && \
+            curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
+            tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+            chmod +x restate restate-server && \
+
+            # Move the binaries to a directory in your PATH, for example /usr/local/bin (needs sudo):
+            sudo mv restate $BIN && \
+            sudo mv restate-server $BIN
             ```
-        </CH.Scrollycoding>
-        <CH.Scrollycoding className={clsx("single-item", "short-code")}>
-        Install the Restate CLI via:
-            ```shell
-            npm install --global @restatedev/restate@latest
+
+            ```shell Linux-x64
+            BIN=$HOME/.local/bin && RESTATE_PLATFORM=x86_64-unknown-linux-musl && \
+            curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
+            tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+            chmod +x restate restate-server && \
+
+            # Move the binaries to a directory in your PATH, for example ~/.local/bin:
+            mv restate $BIN && \
+            mv restate-server $BIN
             ```
-        </CH.Scrollycoding>
+
+            ```shell Linux-arm64
+            BIN=$HOME/.local/bin && RESTATE_PLATFORM=aarch64-unknown-linux-musl && \
+            curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
+            tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+            chmod +x restate restate-server && \
+
+            # Move the binaries to a directory in your PATH, for example ~/.local/bin:
+            mv restate $BIN && \
+            mv restate-server $BIN
+            ```
+        </CH.Code>
+
+        Then run the Restate Server with:
+        ```shell
+        restate-server
+        ```
 
     </TabItem>
     <TabItem value={"Homebrew"}  label={"Homebrew"}>
@@ -54,59 +88,45 @@ import clsx from "clsx";
         </CH.Scrollycoding>
 
     </TabItem>
-    <TabItem value={"bin"} label={"Download binaries"}>
-        Install the Restate Server and CLI by downloading the binaries with `curl` from the [releases page](https://github.com/restatedev/restate/releases/latest), and make them executable:
-
-        <CH.Code>
-
-            ```shell MacOS-x64
-            BIN=/usr/local/bin && RESTATE_PLATFORM=x86_64-apple-darwin && \
-            curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
-            tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
-            chmod +x restate restate-server && \
-            mv restate $BIN && \
-            mv restate-server $BIN
+    <TabItem value={"npm"} label={"npm"}>
+        <CH.Scrollycoding className={clsx("single-item", "short-code")}>
+            Install Restate Server and run it:
+            ```shell
+            npm install --global @restatedev/restate-server@latest &&
+            restate-server
             ```
-
-            ```shell MacOS-arm64
-            BIN=/usr/local/bin && RESTATE_PLATFORM=aarch64-apple-darwin && \
-            curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
-            tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
-            chmod +x restate restate-server && \
-            mv restate $BIN && \
-            mv restate-server $BIN
+        </CH.Scrollycoding>
+        <CH.Scrollycoding className={clsx("single-item", "short-code")}>
+            Or use npx, without installation:
+            ```shell
+            npx @restatedev/restate-server
             ```
-
-            ```shell Linux-x64
-            BIN=/usr/local/bin && RESTATE_PLATFORM=x86_64-unknown-linux-musl && \
-            curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
-            tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
-            chmod +x restate restate-server && \
-            mv restate $BIN && \
-            mv restate-server $BIN
+        </CH.Scrollycoding>
+        <CH.Scrollycoding className={clsx("single-item", "short-code")}>
+            Install the Restate CLI via:
+            ```shell
+            npm install --global @restatedev/restate@latest
             ```
-
-            ```shell Linux-arm64
-            BIN=/usr/local/bin && RESTATE_PLATFORM=aarch64-unknown-linux-musl && \
-            curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
-            tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
-            chmod +x restate restate-server && \
-            mv restate $BIN && \
-            mv restate-server $BIN
-            ```
-        </CH.Code>
-
-        Then run it with:
-        ```shell
-        restate-server
-        ```
+        </CH.Scrollycoding>
 
     </TabItem>
     <TabItem value={"Docker"} label={"Docker"}>
+
+        To run the Restate Server:
+
         ```shell
         docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 \
         --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
         ```
+
+        To run commands with the Restate CLI, use the following command:
+
+        ```shell
+        docker run -it --network=host docker.io/restatedev/restate-cli:VAR::RESTATE_VERSION invocations ls
+        ```
+
+        Replace `invocations ls` by the CLI command you want to run.
+
     </TabItem>
 </Tabs>
 
