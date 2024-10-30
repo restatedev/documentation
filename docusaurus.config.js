@@ -1,8 +1,6 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
-const lightCodeTheme = require("prism-react-renderer").themes.github;
-const darkCodeTheme = require("prism-react-renderer").themes.dracula;
 const variableInjector = require("./src/plugins/variable-injector");
 const variablesReplacements = require("./restate.config.json");
 const codeLoaderPlugin = require("./src/plugins/code-loader");
@@ -46,8 +44,6 @@ const config = {
   // If you aren't using GitHub pages, you don't need these.
   organizationName: "restatedev", // Usually your GitHub org/user name.
   projectName: "documentation", // Usually your repo name.
-
-  // plugins: ['docusaurus-tailwindcss-loader'],
 
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
@@ -194,38 +190,6 @@ const config = {
         ],
         copyright: `Copyright © ${new Date().getFullYear()} Restate Software, Inc. Built with Docusaurus.`,
       },
-      // prism: {
-      //   theme: lightCodeTheme,
-      //   darkTheme: darkCodeTheme,
-      //   additionalLanguages: [
-      //     "protobuf",
-      //     "log",
-      //     "java",
-      //     "kotlin",
-      //     "scala",
-      //     "bash",
-      //     "json",
-      //     "toml",
-      //   ], // adding scala to fix redoc from breaking (https://github.com/PrismJS/prism/issues/3458)
-      //   magicComments: [
-      //     // Remember to extend the default highlight class name as well!
-      //     {
-      //       className: "theme-code-block-highlighted-line",
-      //       line: "highlight-next-line",
-      //       block: { start: "highlight-start", end: "highlight-end" },
-      //     },
-      //     {
-      //       className: "bad-code-block",
-      //       line: "bad-code",
-      //       block: { start: "bad-code-start", end: "bad-code-end" },
-      //     },
-      //     {
-      //       className: "good-code-block",
-      //       line: "good-code",
-      //       block: { start: "good-code-start", end: "good-code-end" },
-      //     },
-      //   ],
-      // },
       colorMode: {
         defaultMode: "light",
         disableSwitch: true,

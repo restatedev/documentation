@@ -4,7 +4,6 @@ import {
     Inline,
     Pre,
 } from "codehike/code"
-import { cn } from "../../lib/utils"
 import { CopyButton } from "./copy-button"
 import { fold } from "./annotations/fold"
 import { link } from "./annotations/link"
@@ -29,6 +28,7 @@ import {Block, HighlightedCodeBlock, parseProps} from "codehike/blocks";
 import {z} from "zod"
 // @ts-ignore
 import styles from "./code-styling.module.css"
+import clsx from "clsx";
 
 export function InlineCode({ codeblock }: { codeblock: HighlightedCode }) {
   return (
@@ -94,7 +94,7 @@ export function HighCode({
   if (title) {
     return (
         <div
-            className={cn(
+            className={clsx(
                 className,
             )}
             style={
@@ -159,9 +159,9 @@ export function CodeTabs(props: { groupId?: string, tabs: HighlightedCode[] }) {
     const { groupId, tabs } = props
     return (
 
-        <Tabs className={cn(styles.codetablist, "ch-codetablist")} {...(groupId ? { groupId, queryString: true } : {})}>
+        <Tabs className={clsx(styles.codetablist, "ch-codetablist")} {...(groupId ? { groupId, queryString: true } : {})}>
             {tabs.map((tab, i) => (
-                <TabItem className={cn(styles.codetab)} label={tab.meta} value={tab.meta}>
+                <TabItem className={clsx(styles.codetab)} label={tab.meta} value={tab.meta}>
                     <div className={"ch-code-wrapper ch-code"}>
                         <Pre code={tab} className="..."/>
                         <CopyButton text={tab.code} className="ch-code-button"/>

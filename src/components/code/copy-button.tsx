@@ -2,7 +2,7 @@
 
 import { Copy, Check } from "lucide-react"
 import * as React from "react"
-import {cn} from "../../lib/utils";
+import clsx from "clsx";
 
 export function CopyButton({
   text,
@@ -15,7 +15,7 @@ export function CopyButton({
 
   return (
     <button
-      className={cn(
+      className={clsx(
         // `hover:bg-gray-400/20 -m-1 p-1 rounded hidden sm:block`,
         className,
       )}
