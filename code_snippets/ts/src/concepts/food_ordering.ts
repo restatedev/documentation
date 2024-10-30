@@ -16,9 +16,6 @@ async function process(ctx: ObjectContext, order: Order) {
   ctx.set("status", Status.CREATED);
   // </mark_4>
 
-
-  // Hello
-
   // 2. Handle payment
   // <mark_5>
   const token = ctx.rand.uuidv4();

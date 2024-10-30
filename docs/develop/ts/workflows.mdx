@@ -4,7 +4,7 @@ description: "Find out how Restate services can send requests to each other."
 ---
 
 import Admonition from '@theme/Admonition';
-import {Scrollycoding} from "../../../src/components/code/scrollycoding";
+import {TextAndCode} from "../../../src/components/code/code/text-and-code";
 
 # Workflows
 
@@ -37,8 +37,6 @@ Have a look at the code example to get a better understanding of how workflows a
     CODE_LOAD::ts/src/develop/workflows/signup.ts?1
     ```
 
-    ---
-
     ### !!steps Querying workflows
 
     Similar to Virtual Objects, you can retrieve the [K/V state](/develop/ts/state#retrieving-state) of workflows via the other handlers defined in the workflow definition,
@@ -49,8 +47,6 @@ Have a look at the code example to get a better understanding of how workflows a
     ```ts !
     CODE_LOAD::ts/src/develop/workflows/signup.ts?2
     ```
-
-    ---
 
     ### !!steps Signaling workflows
 
@@ -64,8 +60,6 @@ Have a look at the code example to get a better understanding of how workflows a
     ```ts !
     CODE_LOAD::ts/src/develop/workflows/signup.ts?3
     ```
-
-    ---
 
     ### !!steps Serving and registering workflows
 
@@ -82,82 +76,74 @@ Have a look at the code example to get a better understanding of how workflows a
 </Admonition>
 
 ## Submitting workflows with SDK clients
-<Scrollycoding>
-    ## !!steps
+<TextAndCode>
     [**Submit**](/develop/ts/clients):
     This returns a handle to the workflow once has been registered in Restate.
     You can only submit once per workflow ID (here `"someone"`).
 
-    ```ts !
+    ```ts !result
     CODE_LOAD::ts/src/develop/workflows/submit.ts#submit
     ```
 
-</Scrollycoding>
+</TextAndCode>
 
-<Scrollycoding>
-    ## !!steps
+<TextAndCode>
     [**Query/signal**](/develop/ts/clients):
     Call the other handlers of the workflow in the same way as for Virtual Object handlers.
     For now, you can only do request-response calls.
 
-    ```ts !
+    ```ts !result
     CODE_LOAD::ts/src/develop/workflows/submit.ts#query
     ```
-</Scrollycoding>
+</TextAndCode>
 
-<Scrollycoding>
-
-    ## !!steps
+<TextAndCode>
     [**Attach/peek**](/develop/ts/clients#retrieve-result-of-invocations-and-workflows):
     This lets you retrieve the result of a workflow or check if it's finished.
 
-    ```ts !
+    ```ts !result
     CODE_LOAD::ts/src/develop/workflows/submit.ts#attach
     ```
-</Scrollycoding>
+</TextAndCode>
 
 ## Submitting workflows from a Restate service
-<Scrollycoding>
-
-    ## !!steps
+<TextAndCode>
     [**Submit/query/signal**](/develop/ts/service-communication):
     Call the workflow handlers in the same way as for Services and Virtual Objects.
     This returns the result of the workflow/handler once it has finished.
     Use the `workflowSendClient` to call the handler without waiting for the result.
     You can only call the `run` handler (submit) once per workflow ID (here `"someone"`).
 
-    ```ts !
+    ```ts !result
     CODE_LOAD::ts/src/develop/workflows/service.ts
     ```
-</Scrollycoding>
+</TextAndCode>
 
 ## Submitting workflows over HTTP
-<Scrollycoding>
-    ## !!steps
+<TextAndCode>
     [**Submit/query/signal**](/invoke/http#request-response-calls-over-http):
     Call any handler of the workflow in the same way as for Services and Virtual Objects.
     This returns the result of the handler once it has finished.
     Add `/send` to the path for one-way calls.
     You can only call the `run` handler once per workflow ID (here `"someone"`).
 
-    ```shell !
+    ```shell !result
     curl localhost:8080/signup/someone/run \
         -H 'content-type: application/json' \
         -d '{"email": "someone@restate.dev"}'
     ```
-</Scrollycoding>
+</TextAndCode>
 
-<Scrollycoding>
-    ## !!steps
+<TextAndCode>
     [**Attach/peek**](/invoke/http#retrieve-result-of-invocations-and-workflows):
     This lets you retrieve the result of a workflow or check if it's finished.
 
-    ```shell !
+    ```shell !result
     curl localhost:8080/restate/workflow/signup/someone/attach
     curl localhost:8080/restate/workflow/signup/someone/output
     ```
 
-</Scrollycoding>
+</TextAndCode>
 
 
 ## Inspecting workflows

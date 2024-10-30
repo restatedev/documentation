@@ -20,10 +20,15 @@ import { tokenTransitions } from "./annotations/token-transitions"
 import { focus } from "./annotations/focus"
 import { diff } from "./annotations/diff"
 import { tooltip } from "./annotations/tooltip"
-import {Tabs, TabsList, TabsTrigger, TabsContent} from "./ui/tabs";
+// @ts-ignore
+import Tabs from '@theme/Tabs';
+// @ts-ignore
+import TabItem from '@theme/TabItem';
 import React from "react"
 import {Block, HighlightedCodeBlock, parseProps} from "codehike/blocks";
-import { z } from "zod"
+import {z} from "zod"
+// @ts-ignore
+import styles from "./code-styling.module.css"
 
 export function InlineCode({ codeblock }: { codeblock: HighlightedCode }) {
   return (
@@ -82,12 +87,7 @@ export function HighCode({
   const pre = (
       <Pre
           code={h}
-          className="m-0 py-2 px-0 rounded-none group flex-1"
           handlers={handlers}
-          style={{
-            backgroundColor: "var(--bg-color)",
-            fontSize: "14px"
-          }}
       />
   )
 
@@ -95,47 +95,44 @@ export function HighCode({
     return (
         <div
             className={cn(
-                "border border-editorGroup-border rounded overflow-hidden my-2",
                 className,
             )}
             style={
               {
-                // "--border-color": "var(--ch-23)",
-                // borderColor: "var(--border-color)",
                 ...style,
               } as any
             }
         >
-          <div
-              className="px-3 py-2 border-b border-editorGroup-border bg-editorGroupHeader-tabsBackground text-sm text-tab-activeForeground flex"
-              // style={{ borderColor: "var(--border-color)" }}
-          >
-            <div className="text-tab-activeForeground text-sm flex items-center gap-3">
-              <CodeIcon title={title} />
-              <span>{title}</span>
+
+
+            <div className="ch-codeblock">
+                <div className="ch-code-wrapper ch-code">
+                    <div className={"code-file-name"}>
+                        <CodeIcon title={title}/>
+                        <span className={"code-file-name-title"}>{title}</span>
+                    </div>
+                    <CopyButton text={h.code} className="ch-code-button"/>
+                    {pre}
+                </div>
             </div>
-            <CopyButton text={h.code} className="ml-auto" />
-          </div>
-          {pre}
         </div>
     )
   } else {
-    return (
-        <div
-            className={cn(
-                "border border-editorGroup-border rounded overflow-hidden my-2 relative",
-                className,
-            )}
-            style={
+      return (
+          <div
+              className={className}
+              style={
               {
-                // "--border-color": "var(--ch-23)",
-                // borderColor: "var(--border-color)",
                 ...style,
               } as any
             }
         >
-          <CopyButton text={h.code} className="absolute right-4 my-0 top-2" />
-          {pre}
+            <div className="ch-codeblock">
+                <div className="ch-code-wrapper ch-code">
+                  <CopyButton text={h.code} className="ch-code-button" />
+                  {pre}
+                </div>
+            </div>
         </div>
     )
   }
@@ -152,30 +149,27 @@ export function extractFlags(codeblock: HighlightedCode) {
 }
 
 
-const Schema = Block.extend({ tabs: z.array(HighlightedCodeBlock) })
+const Schema = Block.extend({ groupId: z.optional(z.string()), tabs: z.array(HighlightedCodeBlock) })
 export function CodeWithTabs(props: unknown) {
-    const { tabs } = parseProps(props, Schema)
-    return <CodeTabs tabs={tabs} />
+    const { groupId, tabs } = parseProps(props, Schema)
+    return <CodeTabs groupId={groupId} tabs={tabs} />
 }
 
-export function CodeTabs(props: { tabs: HighlightedCode[] }) {
-    const { tabs } = props
+export function CodeTabs(props: { groupId?: string, tabs: HighlightedCode[] }) {
+    const { groupId, tabs } = props
     return (
-        <Tabs defaultValue={tabs[0]?.meta} className="border border-editorGroup-border rounded overflow-hidden my-2 relative">
-            <TabsList className="...">
-                {tabs.map((tab) => (
-                    <TabsTrigger key={tab.meta} value={tab.meta}>
-                        {tab.meta}
-                    </TabsTrigger>
-                ))}
-            </TabsList>
+
+        <Tabs className={cn(styles.codetablist, "ch-codetablist")} {...(groupId ? { groupId, queryString: true } : {})}>
             {tabs.map((tab, i) => (
-                <TabsContent key={tab.meta} value={tab.meta} className="...">
-                    <CopyButton text={tab.code} className="absolute right-4 my-0 top-2" />
-                    <Pre code={tabs[i]} className="..." />
-                </TabsContent>
-            ))}
+                <TabItem className={cn(styles.codetab)} label={tab.meta} value={tab.meta}>
+                    <div className={"ch-code-wrapper ch-code"}>
+                        <Pre code={tab} className="..."/>
+                        <CopyButton text={tab.code} className="ch-code-button"/>
+                    </div>
+                </TabItem>
+                ))}
         </Tabs>
     )
 }
+
 

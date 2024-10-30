@@ -5,6 +5,7 @@ import {
     SelectionProvider,
 } from "codehike/utils/selection"
 import { Block, HighlightedCodeBlock, parseProps } from "codehike/blocks"
+// @ts-ignore
 import styles from "./scrollycoding.module.css"
 import React from "react"
 import { Code, CodeTabs, extractFlags } from "./code"
@@ -31,7 +32,7 @@ export function Scrollycoding(props: unknown) {
                         selectOn={["click", "scroll"]}
                         className={styles.step}
                     >
-                        <h2 className={styles.stepTitle}>{step.title}</h2>
+                        <p className={styles.stepTitle}>{step.title}</p>
                         <div>{step.children}</div>
                     </Selectable>
                 ))}

@@ -47,7 +47,7 @@ const config = {
   organizationName: "restatedev", // Usually your GitHub org/user name.
   projectName: "documentation", // Usually your repo name.
 
-  plugins: ['docusaurus-tailwindcss-loader'],
+  // plugins: ['docusaurus-tailwindcss-loader'],
 
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
@@ -92,6 +92,7 @@ const config = {
           customCss: [
             require.resolve("./src/css/custom.css"),
             require.resolve("./src/css/new-design.css"),
+            require.resolve("./src/css/codehike-styling.css"),
           ],
         },
       }),

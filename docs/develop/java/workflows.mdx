@@ -6,7 +6,7 @@ description: "Find out how you can implement workflows with the Restate SDK."
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 import Admonition from '@theme/Admonition';
-import {Scrollycoding} from "../../../src/components/code/scrollycoding";
+import {TextAndCode} from "../../../src/components/code/code/text-and-code";
 
 # Workflows
 
@@ -42,8 +42,6 @@ Have a look at the code example to get a better understanding of how workflows a
     CODE_LOAD::java/src/main/java/develop/workflows/SignupWorkflow.java?1
     ```
 
-    ---
-
     ### !!steps Querying workflows
 
     Similar to Virtual Objects, you can retrieve the [K/V state](/develop/java/state#retrieving-state) of workflows via the other handlers defined in the workflow definition,
@@ -54,8 +52,6 @@ Have a look at the code example to get a better understanding of how workflows a
     ```java !
     CODE_LOAD::java/src/main/java/develop/workflows/SignupWorkflow.java?2
     ```
-
-    ---
 
     ### !!steps Signaling workflows
 
@@ -69,8 +65,6 @@ Have a look at the code example to get a better understanding of how workflows a
     ```java !
     CODE_LOAD::java/src/main/java/develop/workflows/SignupWorkflow.java?3
     ```
-
-    ---
 
     ### !!steps Serving and registering workflows
 
@@ -96,8 +90,6 @@ Have a look at the code example to get a better understanding of how workflows a
             CODE_LOAD::kotlin/src/main/kotlin/develop/workflows/SignupWorkflow.kt?1
             ```
 
-            ---
-
             ### !!steps Querying workflows
 
             Similar to Virtual Objects, you can retrieve the [K/V state](/develop/java/state#retrieving-state) of workflows via the other handlers defined in the workflow definition,
@@ -108,8 +100,6 @@ Have a look at the code example to get a better understanding of how workflows a
             ```kotlin !
             CODE_LOAD::kotlin/src/main/kotlin/develop/workflows/SignupWorkflow.kt?2
             ```
-
-            ---
 
             ### !!steps Signaling workflows
 
@@ -123,8 +113,6 @@ Have a look at the code example to get a better understanding of how workflows a
             ```kotlin !
             CODE_LOAD::kotlin/src/main/kotlin/develop/workflows/SignupWorkflow.kt?3
             ```
-
-            ---
 
             ### !!steps Serving and registering workflows
 
@@ -146,137 +134,123 @@ Have a look at the code example to get a better understanding of how workflows a
 ## Submitting workflows with SDK clients
 <Tabs groupId="sdk" queryString>
 <TabItem value="java" label="Java">
-<Scrollycoding>
-    ## !!steps
+<TextAndCode>
     [**Submit**](/develop/java/clients):
     This returns a handle to the workflow once it has been registered in Restate.
     You can only submit once per workflow ID (here `"someone"`).
 
-    ```java !
+    ```java !result
     CODE_LOAD::java/src/main/java/develop/workflows/WorkflowSubmitter.java#submit
     ```
-</Scrollycoding>
+</TextAndCode>
 
-<Scrollycoding>
-    ## !!steps
+<TextAndCode>
     [**Query/signal**](/develop/java/clients):
     Call the other handlers of the workflow in the same way as for Virtual Object handlers.
     Use `send()` for one-way calls.
 
-    ```java !
+    ```java !result
     CODE_LOAD::java/src/main/java/develop/workflows/WorkflowSubmitter.java#query
     ```
-</Scrollycoding>
+</TextAndCode>
 
-<Scrollycoding>
-
-    ## !!steps
+<TextAndCode>
     [**Attach/peek**](/develop/java/clients#retrieve-result-of-invocations-and-workflows):
     This lets you attach to a workflow and wait for it to finish, or to peek whether the result is ready.
 
-    ```java !
+    ```java !result
     CODE_LOAD::java/src/main/java/develop/workflows/WorkflowSubmitter.java#interact
     ```
-</Scrollycoding>
+</TextAndCode>
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
-    <Scrollycoding>
-        ## !!steps
+    <TextAndCode>
         [**Submit**](/develop/java/clients):
         This returns a handle to the workflow once it has been registered in Restate.
         You can only submit once per workflow ID (here `"someone"`).
 
-        ```kotlin !
+        ```kotlin !result
         CODE_LOAD::kotlin/src/main/kotlin/develop/workflows/WorkflowSubmitter.kt#submit
         ```
-    </Scrollycoding>
+    </TextAndCode>
 
-    <Scrollycoding>
-        ## !!steps
+    <TextAndCode>
         [**Query/signal**](/develop/java/clients):
         Call the other handlers of the workflow in the same way as for Virtual Object handlers.
         Use `send()` for one-way calls.
 
-        ```kotlin !
+        ```kotlin !result
         CODE_LOAD::kotlin/src/main/kotlin/develop/workflows/WorkflowSubmitter.kt#query
         ```
-    </Scrollycoding>
+    </TextAndCode>
 
-    <Scrollycoding>
-
-        ## !!steps
+    <TextAndCode>
         [**Attach/peek**](/develop/java/clients#retrieve-result-of-invocations-and-workflows):
         This lets you attach to a workflow and wait for it to finish, or to peek whether the result is ready.
 
-        ```kotlin !
+        ```kotlin !result
         CODE_LOAD::kotlin/src/main/kotlin/develop/workflows/WorkflowSubmitter.kt#interact
         ```
-    </Scrollycoding>
+    </TextAndCode>
 </TabItem>
 </Tabs>
 
 ## Submitting workflows from a Restate service
 <Tabs groupId="sdk" queryString>
 <TabItem value="java" label="Java">
-<Scrollycoding>
-
-    ## !!steps
+<TextAndCode>
     [**Submit/query/signal**](/develop/java/service-communication):
     Use the generated client to call any workflow handler in the same way as for Services and Virtual Objects.
     This returns the result of the workflow/handler once it has finished.
     Use `.send()` for to call the handler without waiting for the result.
     You can only call the `run` handler (submit) once per workflow ID (here `"someone"`).
 
-    ```kotlin !
+    ```kotlin !result
     CODE_LOAD::java/src/main/java/develop/workflows/UserManagementService.java
     ```
-</Scrollycoding>
+</TextAndCode>
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
-    <Scrollycoding>
-
-        ## !!steps
+    <TextAndCode>
         [**Submit/query/signal**](/develop/java/service-communication):
         Use the generated client to call any workflow handler in the same way as for Services and Virtual Objects.
         This returns the result of the workflow/handler once it has finished.
         Use `.send()` for to call the handler without waiting for the result.
         You can only call the `run` handler (submit) once per workflow ID (here `"someone"`).
 
-        ```kotlin !
+        ```kotlin !result
         CODE_LOAD::kotlin/src/main/kotlin/develop/workflows/UserManagementService.kt
         ```
-    </Scrollycoding>
+    </TextAndCode>
 </TabItem>
 </Tabs>
 
 ## Submitting workflows over HTTP
 
-<Scrollycoding>
-    ## !!steps
+<TextAndCode>
     [**Submit/query/signal**](/invoke/http):
     Call any handler of the workflow in the same way as for Services and Virtual Objects.
     This returns the result of the handler once it has finished.
     Add `/send` to the path for one-way calls.
     You can only call the `run` handler once per workflow ID (here `"someone"`).
 
-    ```shell !
+    ```shell !result
     curl localhost:8080/SignupWorkflow/someone/run \
         -H 'content-type: application/json' \
         -d '{"email": "someone@restate.dev"}'
     ```
-</Scrollycoding>
+</TextAndCode>
 
-<Scrollycoding>
-    ## !!steps
+<TextAndCode>
     [**Attach/peek**](/invoke/http#retrieve-result-of-invocations-and-workflows):
     This lets you retrieve the result of a workflow or check if it's finished.
 
-    ```shell !
+    ```shell !result
     curl localhost:8080/restate/workflow/SignupWorkflow/someone/attach
     curl localhost:8080/restate/workflow/SignupWorkflow/someone/output
     ```
 
-</Scrollycoding>
+</TextAndCode>
 
 ## Inspecting workflows
 

@@ -16,7 +16,7 @@ export function CopyButton({
   return (
     <button
       className={cn(
-        `hover:bg-gray-400/20 -m-1 p-1 rounded hidden sm:block`,
+        // `hover:bg-gray-400/20 -m-1 p-1 rounded hidden sm:block`,
         className,
       )}
       onClick={() => {

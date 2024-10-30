@@ -1,4 +1,4 @@
-import { RawCode } from "codehike/code"
+import React from "react"
 import { themeIcons } from "seti-icons"
 
 export function CodeIcon({ title }: { title: string }) {

@@ -10,6 +10,7 @@ import { pill } from "../annotations/pill"
 import { ruler } from "../annotations/ruler"
 import { HighCode } from "../code"
 import React from "react"
+// @ts-ignore
 import styles from "./text-and-code.module.css"
 
 export function TextAndCode(props: unknown) {
