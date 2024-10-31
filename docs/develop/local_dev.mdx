@@ -3,14 +3,138 @@ sidebar_position: 2
 description: "Learn how to set up your local dev environment"
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
 import {TextAndCode} from "../../src/components/code/code/text-and-code";
-import {DownloadRestate} from "../shared/DownloadRestate.mdx";
 
 # Local Dev
 
 ## Running Restate Server & CLI locally
-<DownloadRestate/>
+<Tabs groupId={"running-restate"}>
+    <TabItem value={"Homebrew"} label={"Homebrew"}>
+        <TextAndCode>
+            Install Restate Server and CLI via:
+
+            ```shell !result
+            brew install restatedev/tap/restate-server &&
+            brew install restatedev/tap/restate
+            ```
+        </TextAndCode>
+        <TextAndCode>
+            Then run the Restate Server with:
+            ```shell !result
+            restate-server
+            ```
+        </TextAndCode>
+    </TabItem>
+    <TabItem value={"bin"} label={"Download binaries"}>
+        Install the Restate Server and CLI by downloading the binaries with `curl`
+        from the [releases
+        page](https://github.com/restatedev/restate/releases/latest), and make them
+        executable:
+
+        <CodeWithTabs>
+
+            ```shell !!tabs Linux-x64
+            BIN=$HOME/.local/bin && RESTATE_PLATFORM=x86_64-unknown-linux-musl && \
+            curl -LO
+            https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz
+            && \
+            tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+            chmod +x restate restate-server && \
+
+            # Move the binaries to a directory in your PATH, for example ~/.local/bin:
+            mv restate $BIN && \
+            mv restate-server $BIN
+            ```
+
+            ```shell !!tabs Linux-arm64
+            BIN=$HOME/.local/bin && RESTATE_PLATFORM=aarch64-unknown-linux-musl && \
+            curl -LO
+            https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz
+            && \
+            tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+            chmod +x restate restate-server && \
+
+            # Move the binaries to a directory in your PATH, for example ~/.local/bin:
+            mv restate $BIN && \
+            mv restate-server $BIN
+            ```
+
+            ```shell !!tabs MacOS-x64
+            BIN=/usr/local/bin && RESTATE_PLATFORM=x86_64-apple-darwin && \
+            curl -LO
+            https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz
+            && \
+            tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+            chmod +x restate restate-server && \
+
+            # Move the binaries to a directory in your PATH, for example
+            /usr/local/bin (needs sudo):
+            sudo mv restate $BIN && \
+            sudo mv restate-server $BIN
+            ```
+
+            ```shell !!tabs MacOS-arm64
+            BIN=/usr/local/bin && RESTATE_PLATFORM=aarch64-apple-darwin && \
+            curl -LO
+            https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz
+            && \
+            tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+            chmod +x restate restate-server && \
+
+            # Move the binaries to a directory in your PATH, for example
+            /usr/local/bin (needs sudo):
+            sudo mv restate $BIN && \
+            sudo mv restate-server $BIN
+            ```
+
+        </CodeWithTabs>
+
+        Then run the Restate Server with:
+        ```shell
+        restate-server
+        ```
+
+    </TabItem>
+    <TabItem value={"npm"} label={"npm"}>
+        <TextAndCode>
+            Install Restate Server and CLI via:
+
+            ```shell !result
+            npm install --global @restatedev/restate-server@latest &&
+            npm install --global @restatedev/restate@latest &&
+            ```
+        </TextAndCode>
+        <TextAndCode>
+            Then run the Restate Server with:
+            ```shell !result
+            restate-server
+            ```
+        </TextAndCode>
+    </TabItem>
+    <TabItem value={"Docker"} label={"Docker"}>
+
+        To run the Restate Server:
+
+        ```shell
+        docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 \
+        --add-host=host.docker.internal:host-gateway
+        docker.io/restatedev/restate:VAR::RESTATE_VERSION
+        ```
+
+        To run commands with the Restate CLI, use the following command:
+
+        ```shell
+        docker run -it --network=host
+        docker.io/restatedev/restate-cli:VAR::RESTATE_VERSION invocations ls
+        ```
+
+        Replace `invocations ls` by the CLI command you want to run.
+
+    </TabItem>
+</Tabs>
 
 <Admonition type="note" title="Server and CLI configuration">
     Have a look at the [CLI configuration docs](/operate/configuration/cli) or [Server configuration docs](/operate/configuration/server) for more configuration options.
