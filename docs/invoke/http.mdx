@@ -61,7 +61,6 @@ Follow the same pattern for calling the other handlers of the workflow.
 If you do not want to wait for the response, you can also send a message by adding `/send` to the URL path:
 
 ```shell
-# focus[40:44]
 curl localhost:8080/MyService/myHandler/send \
     -H 'content-type: application/json' \
     -d '{"name": "Mary", "age": 25}'
@@ -85,14 +84,12 @@ You can **delay the message** by adding a delay request parameter in ISO8601 not
 <CodeWithTabs>
 
     ```shell !!tabs humantime
-    # focus[40:56]
     curl localhost:8080/MyService/myHandler/send?delay=10s \
         -H 'content-type: application/json' \
         -d '{"name": "Mary", "age": 25}'
     ```
 
     ```shell !!tabs ISO8601
-    # focus[40:56]
     curl localhost:8080/MyService/myHandler/send?delay=PT10S \
         -H 'content-type: application/json' \
         -d '{"name": "Mary", "age": 25}'
@@ -112,7 +109,7 @@ You can send requests to Restate providing an idempotency key, through the [`Ide
 
 ```shell
 curl localhost:8080/MyService/myHandler \
-# focus
+# !focus
   -H 'idempotency-key: ad5472esg4dsg525dssdfa5loi' \
   -H 'content-type: application/json' \
   -d '{"name": "Mary", "age": 25}'

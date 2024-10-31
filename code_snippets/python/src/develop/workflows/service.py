@@ -8,12 +8,12 @@ user_management_object = VirtualObject("UserManagementObject")
 # <start_here>
 @user_management_object.handler()
 async def signup_user(ctx: ObjectContext, email: str):
-    # focus
+    # !focus
     result = await ctx.workflow_call(run, key="someone", arg=email)
 
 
 @user_management_object.handler()
 async def query_status(ctx: ObjectContext):
-    # focus
+    # !focus
     status = await ctx.workflow_call(get_status, key="someone", arg=None)
 # <end_here>

@@ -22,6 +22,7 @@ const Schema = Block.extend({
 export function Scrollycoding(props: unknown) {
     const { steps } = parseProps(props, Schema)
 
+    console.log(steps[0])
     return (
         <SelectionProvider className={styles.scrollycodingContainer}>
             <div className={styles.stepsContainer}>

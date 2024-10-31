@@ -11,27 +11,27 @@ public class RpcCalls {
   // <start_rpc>
   @Handler
   public void myRestateHandler(Context ctx) {
-    // focus
+    // !focus
     String greet =
-        // focus
+        // !focus
         GreeterServiceClient.fromContext(ctx)
-            // focus
+            // !focus
             .greet("Hi")
-            // focus
+            // !focus
             .await();
   }
 
   // <end_rpc>
 
   // <start_rpc_java>
-  public void myJavaHandler(Context ctx) {
-    // focus
+  public void myJavaHandler() {
+    // !focus
     Client restate = Client.connect("http://localhost:8080");
-    // focus
+    // !focus
     String greet =
-        // focus
+        // !focus
         GreeterServiceClient.fromClient(restate)
-            // focus
+            // !focus
             .greet("Hi");
   }
   // <end_rpc_java>

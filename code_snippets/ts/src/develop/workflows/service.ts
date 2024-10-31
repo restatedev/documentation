@@ -7,13 +7,13 @@ export default restate.object({
   handlers: {
     // <start_here>
     signUpUser: async (ctx: ObjectContext, email: string) => {
-      // focus(1:3)
+      // !focus(1:3)
       const result = await ctx
         .workflowClient<SignUpWorkflow>({ name: "signup" }, "someone")
         .run({ email });
     },
     queryStatus: async (ctx: ObjectContext) => {
-      // focus(1:3)
+      // !focus(1:3)
       const status = await ctx
         .workflowClient<SignUpWorkflow>({ name: "signup" }, "someone")
         .getStatus();

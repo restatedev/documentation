@@ -59,7 +59,7 @@ public class ServiceCommunication {
 
     // <start_one_way>
     MyServiceClient.fromContext(ctx)
-        // mark
+        // !mark
         .send()
         .myHandler(request);
     // <end_one_way>
@@ -70,7 +70,7 @@ public class ServiceCommunication {
 
     // <start_delayed>
     MyServiceClient.fromContext(ctx)
-        // mark
+        // !mark
         .send(Duration.ofSeconds(1))
         .myHandler(request);
     // <end_delayed>

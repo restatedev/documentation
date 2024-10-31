@@ -25,7 +25,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import React from "react"
 import {Block, HighlightedCodeBlock, parseProps} from "codehike/blocks";
-import {z} from "zod"
+import {unknown, z} from "zod"
 // @ts-ignore
 import styles from "./code-styling.module.css"
 import clsx from "clsx";
@@ -49,17 +49,18 @@ export function Code({
   style?: React.CSSProperties
   extraHandlers?: AnnotationHandler[]
 }) {
-  const { flags } = extractFlags(codeblock)
   return <HighCode highlighted={codeblock} {...rest} />
 }
 
 export function HighCode({
                            highlighted,
+                             isTab,
                            className,
                            style,
                            extraHandlers = [],
                          }: {
   highlighted: HighlightedCode
+  isTab?: boolean
   className?: string
   style?: React.CSSProperties
   extraHandlers?: AnnotationHandler[]
@@ -91,7 +92,7 @@ export function HighCode({
       />
   )
 
-  if (title) {
+  if (title && !isTab) {
     return (
         <div
             className={clsx(
@@ -103,8 +104,6 @@ export function HighCode({
               } as any
             }
         >
-
-
             <div className="ch-codeblock">
                 <div className="ch-code-wrapper ch-code">
                     <div className={"code-file-name"}>
@@ -127,7 +126,7 @@ export function HighCode({
               } as any
             }
         >
-            <div className="ch-codeblock">
+            <div className={clsx("ch-codeblock", (isTab) ? "no-border" : undefined)}>
                 <div className="ch-code-wrapper ch-code">
                   <CopyButton text={h.code} className="ch-code-button" />
                   {pre}
@@ -162,10 +161,7 @@ export function CodeTabs(props: { groupId?: string, tabs: HighlightedCode[] }) {
         <Tabs className={clsx(styles.codetablist, "ch-codetablist")} {...(groupId ? { groupId, queryString: true } : {})}>
             {tabs.map((tab, i) => (
                 <TabItem className={clsx(styles.codetab)} label={tab.meta} value={tab.meta}>
-                    <div className={"ch-code-wrapper ch-code"}>
-                        <Pre code={tab} className="..."/>
-                        <CopyButton text={tab.code} className="ch-code-button"/>
-                    </div>
+                    <HighCode isTab={true} highlighted={tab} />
                 </TabItem>
                 ))}
         </Tabs>

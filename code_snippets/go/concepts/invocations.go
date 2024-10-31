@@ -11,11 +11,11 @@ type MyService struct{}
 /*
 // <start_rpc_call>
 func (MyService) MyRestateHandler(ctx restate.Context) error {
-	// focus
+	// !focus
 	greet, err := restate.
-		// focus
+		// !focus
 		Service[string](ctx, "Greeter", "Greet").
-		// focus
+		// !focus
 		Request("Hi")
 	return err
 }
@@ -24,11 +24,11 @@ func (MyService) MyRestateHandler(ctx restate.Context) error {
 
 // <start_one_way_call>
 func (MyService) MyRestateHandler(ctx restate.Context) error {
-	// focus
+	// !focus
 	restate.
-		// focus
+		// !focus
 		ServiceSend(ctx, "Greeter", "Greet").
-		// focus
+		// !focus
 		Send("Hi")
 	return nil
 }
@@ -38,11 +38,11 @@ func (MyService) MyRestateHandler(ctx restate.Context) error {
 
 // <start_delayed_call>
 func (MyService) MyRestateHandler(ctx restate.Context) error {
-	// focus
+	// !focus
 	restate.
-		// focus
+		// !focus
 		ServiceSend(ctx, "Greeter", "Greet").
-		// focus
+		// !focus
 		Send("Hi", restate.WithDelay(1*time.Second))
 	return nil
 }

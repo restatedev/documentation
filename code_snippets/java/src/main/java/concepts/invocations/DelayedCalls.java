@@ -12,25 +12,25 @@ public class DelayedCalls {
   // <start_delayed_call>
   @Handler
   public void myRestateHandler(Context ctx) {
-    // focus
+    // !focus
     GreeterServiceClient.fromContext(ctx)
-        // focus
+        // !focus
         .send(Duration.ofMillis(1000))
-        // focus
+        // !focus
         .greet("Hi");
   }
 
   // <end_delayed_call>
 
   // <start_delayed_call_java>
-  public void myJavaHandler(Context ctx) {
-    // focus
+  public void myJavaHandler() {
+    // !focus
     Client restate = Client.connect("http://localhost:8080");
-    // focus
+    // !focus
     GreeterServiceClient.fromClient(restate)
-        // focus
+        // !focus
         .send(Duration.ofMillis(1000))
-        // focus
+        // !focus
         .greet("Hi");
   }
   // <end_delayed_call_java>
