@@ -17,6 +17,7 @@ This guide takes you through your first steps with Restate.
 <Tabs groupId="sdk" queryString>
     <TabItem value="ts" label="TypeScript" default>
 
+
         <Admonition type="note" title="Prerequisites">
             - TypeScript: Latest stable version of [NodeJS](https://nodejs.org/en/) >= v18.17.1 and [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 9.6.7
         </Admonition>
@@ -62,11 +63,7 @@ This guide takes you through your first steps with Restate.
                 ```
 
             </CodeWithTabs>
-
-            If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
-
             <details className={"grey-details"}>
-
                 <summary>Output</summary>
 
                 ```shell
@@ -84,7 +81,7 @@ This guide takes you through your first steps with Restate.
                 ```
 
             </details>
-
+            If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
         </Step>
 
         <Step stepLabel="5" title="Send a request to the Greeter service">
@@ -122,21 +119,75 @@ This guide takes you through your first steps with Restate.
             <DownloadRestate/>
         </Step>
         <Step stepLabel="2" title="Get the Greeter service template">
+            Build tool:
+            <Tabs groupId={"build-tool"} className={"selection-button"}>
+                <TabItem value={"maven"} label={<><img src='/img/quickstart/maven.svg' alt="Maven" className="icon" />Maven</>}>
+                    Architecture:
+                    <Tabs groupId={"architecture"} className={"selection-button"}>
+                        <TabItem value={"spring"} label={<><img src='/img/quickstart/spring.svg' alt="Spring Boot" className="icon" />Spring Boot</>}>
+                            <CodeWithTabs>
+                                ```shell !!tabs CLI
+                                restate example java-hello-world-maven-spring-boot &&
+                                cd java-hello-world-maven-spring-boot
+                                ```
 
-            <CodeWithTabs>
-                ```shell !!tabs CLI
-                restate example java-hello-world-gradle &&
-                cd java-hello-world-gradle
-                ```
+                                ```shell !!tabs wget
+                                wget https://github.com/restatedev/examples/releases/latest/download/java-hello-world-maven-spring-boot.zip &&
+                                unzip java-hello-world-maven-spring-boot.zip -d java-hello-world-maven-spring-boot &&
+                                rm java-hello-world-maven-spring-boot.zip && cd java-hello-world-maven-spring-boot
+                                ```
+                            </CodeWithTabs>
+                        </TabItem>
+                        <TabItem value={"quarkus"} label={<><img src='/img/quickstart/quarkus.svg' alt="Quarkus" className="icon" />Quarkus</>}>
+                            <CodeWithTabs>
+                                ```shell !!tabs CLI
+                                restate example java-hello-world-maven-quarkus &&
+                                cd java-hello-world-maven-quarkus
+                                ```
 
-                ```shell !!tabs wget
-                wget https://github.com/restatedev/examples/releases/latest/download/java-hello-world-gradle.zip &&
-                unzip java-hello-world-gradle.zip -d java-hello-world-gradle &&
-                rm java-hello-world-gradle.zip && cd java-hello-world-gradle
-                ```
+                                ```shell !!tabs wget
+                                wget https://github.com/restatedev/examples/releases/latest/download/java-hello-world-maven-quarkus.zip &&
+                                unzip java-hello-world-maven-quarkus.zip -d java-hello-world-maven-quarkus &&
+                                rm java-hello-world-maven-quarkus.zip && cd java-hello-world-maven-quarkus
+                                ```
+                            </CodeWithTabs>
+                        </TabItem>
+                        <TabItem value={"vanilla"} label={<><img src='/img/quickstart/java.svg' alt="Vanilla" className="icon" />Vanilla</>}>
+                            <CodeWithTabs>
+                                ```shell !!tabs CLI
+                                restate example java-hello-world-maven &&
+                                cd java-hello-world-maven
+                                ```
 
-            </CodeWithTabs>
+                                ```shell !!tabs wget
+                                wget https://github.com/restatedev/examples/releases/latest/download/java-hello-world-maven.zip &&
+                                unzip java-hello-world-maven.zip -d java-hello-world-maven &&
+                                rm java-hello-world-maven.zip && cd java-hello-world-maven
+                                ```
+                            </CodeWithTabs>
+                        </TabItem>
+                    </Tabs>
+                </TabItem>
+                <TabItem value={"gradle"} label={<><img src='/img/quickstart/gradle.svg' alt="Gradle" className="icon" />Gradle</>}>
+                    Architecture:
+                    <Tabs groupId={"architecture"} className={"selection-button"}>
+                        <TabItem value={"vanilla"} label={<><img src='/img/quickstart/java.svg' alt="Vanilla" className="icon" />Vanilla</>}>
+                            <CodeWithTabs>
+                                ```shell !!tabs CLI
+                                restate example java-hello-world-gradle &&
+                                cd java-hello-world-gradle
+                                ```
 
+                                ```shell !!tabs wget
+                                wget https://github.com/restatedev/examples/releases/latest/download/java-hello-world-gradle.zip &&
+                                unzip java-hello-world-gradle.zip -d java-hello-world-gradle &&
+                                rm java-hello-world-gradle.zip && cd java-hello-world-gradle
+                                ```
+                            </CodeWithTabs>
+                        </TabItem>
+                    </Tabs>
+                </TabItem>
+            </Tabs>
         </Step>
         <Step stepLabel="3" title="Run the Greeter service">
 
@@ -167,8 +218,6 @@ This guide takes you through your first steps with Restate.
 
             </CodeWithTabs>
 
-            If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
-
             <details className={"grey-details"}>
 
                 <summary>Output</summary>
@@ -188,6 +237,8 @@ This guide takes you through your first steps with Restate.
                 ```
 
             </details>
+
+            If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
 
         </Step>
 
@@ -270,8 +321,6 @@ This guide takes you through your first steps with Restate.
 
             </CodeWithTabs>
 
-            If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
-
             <details className={"grey-details"}>
 
                 <summary>Output</summary>
@@ -291,6 +340,8 @@ This guide takes you through your first steps with Restate.
                 ```
 
             </details>
+
+            If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
 
         </Step>
 
@@ -375,8 +426,6 @@ This guide takes you through your first steps with Restate.
 
             </CodeWithTabs>
 
-            If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
-
             <details className={"grey-details"}>
 
                 <summary>Output</summary>
@@ -396,6 +445,8 @@ This guide takes you through your first steps with Restate.
                 ```
 
             </details>
+
+            If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
 
         </Step>
 
@@ -576,8 +627,6 @@ This guide takes you through your first steps with Restate.
 
             </CodeWithTabs>
 
-            If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
-
             <details className={"grey-details"}>
 
                 <summary>Output</summary>
@@ -597,6 +646,8 @@ This guide takes you through your first steps with Restate.
                 ```
 
             </details>
+
+            If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
 
         </Step>
 
