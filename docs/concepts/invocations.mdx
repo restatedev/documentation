@@ -260,7 +260,12 @@ This makes it a great source of observability data for your application.
 You can inspect invocations via the CLI.
 
 ```shell
-$ restate services list
+restate services list
+```
+
+<details className={"grey-details"}>
+<summary>Output</summary>
+```
      NAME             REVISION  FLAVOR    DEPLOYMENT TYPE  DEPLOYMENT ID
  🌎  CartObject       1         ⬅️ 🚶🚶🚶  HTTP 2           dp_11pXug0mWsff2NOoRBZbOcV
  🌎  CheckoutService  1                   HTTP 2           dp_11pXug0mWsff2NOoRBZbOcV
@@ -289,8 +294,15 @@ $ restate services list
  expireTicket  one of "empty or value of  value with content-type "application/json"
                content-type */*"
 ```
+</details>
+
 ```shell
-$ restate invocations list
+restate invocations list
+```
+
+<details className={"grey-details"}>
+<summary>Output</summary>
+```shell
   ❯ [2024-04-23 14:41:59.365 +02:00] inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
      Target:      CartObject/Mary/addTicket
      Status:      backing-off  (18 seconds and 284 ms. Retried 9 time(s). Next
@@ -300,8 +312,15 @@ $ restate invocations list
                   [500] Failing
      Caused by:   UNKNOWN
 ```
+</details>
+
 ```shell
-$ restate invocations describe inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
+restate invocations describe inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
+```
+
+<details className={"grey-details"}>
+<summary>Output</summary>
+```shell
 📜 Invocation Information:
 ――――――――――――――――――――――――――
  Created at:   2024-04-23 14:41:59.365 +02:00 (a minute ago)
@@ -326,8 +345,14 @@ $ restate invocations describe inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
      ├──── ☑️  #1 Call TicketObject/seat2B/reserve inv_19maBIcE9uRD1CrHgpGXZ7FcXPsz4bzkbL
      └────>> backing-off
 ```
+</details>
+
 ```shell
-$ restate invocations cancel --kill inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
+restate invocations cancel --kill inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
+```
+<details className={"grey-details"}>
+<summary>Output</summary>
+```shell
   ❯ [2024-04-23 14:41:59.365 +02:00] inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
      Target:      CartObject/Mary/addTicket
      Status:      backing-off  (25 minutes, 29 seconds and 200 ms. Retried 141
@@ -341,6 +366,7 @@ $ restate invocations cancel --kill inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
 
     ✅ Request was sent successfully
 ```
+</details>
 
 Restate also exposes traces via OpenTelemetry, which can be sent to your observability platform of choice (e.g. Jaeger).
 Have a look at the [tracing documentation](/operate/monitoring/tracing) for more information.

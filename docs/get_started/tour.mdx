@@ -1241,87 +1241,113 @@ You can use it to boostrap a new project, but also to get information about the 
 Have a look at some useful commands and try them out yourself:
 
 ```shell
-$ restate services list
-     NAME             REVISION  FLAVOR    DEPLOYMENT TYPE  DEPLOYMENT ID
- 🌎  CartObject       1         ⬅️ 🚶🚶🚶  HTTP 2           dp_11pXug0mWsff2NOoRBZbOcV
- 🌎  CheckoutService  1                   HTTP 2           dp_11pXug0mWsff2NOoRBZbOcV
- 🌎  TicketObject     1         ⬅️ 🚶🚶🚶  HTTP 2           dp_11pXug0mWsff2NOoRBZbOcV`,
-`$ restate services describe CartObject
-📜 Service Information:
-―――――――――――――――――――――――
- Name:             CartObject
- Service type:     VirtualObject
- Revision:         1
- Public:           true
- Deployment ID:    dp_11pXug0mWsff2NOoRBZbOcV
- Deployment Type:  HTTP 2
- Protocol Style:   Streaming
- Endpoint:         http://localhost:9080/
- Created at:       2024-04-23T12:32:16.691000000Z
-
-
-🔌 Handlers:
-――――――――――――
- HANDLER       INPUT TYPE                 OUTPUT TYPE
- addTicket     one of "empty or value of  value with content-type "application/json"
-               content-type */*"
- checkout      one of "empty or value of  value with content-type "application/json"
-               content-type */*"
- expireTicket  one of "empty or value of  value with content-type "application/json"
-               content-type */*"
+restate services list
 ```
+
+<details className={"grey-details"}>
+    <summary>Output</summary>
+    ```
+    NAME             REVISION  FLAVOR    DEPLOYMENT TYPE  DEPLOYMENT ID
+    🌎  CartObject       1         ⬅️ 🚶🚶🚶  HTTP 2           dp_11pXug0mWsff2NOoRBZbOcV
+    🌎  CheckoutService  1                   HTTP 2           dp_11pXug0mWsff2NOoRBZbOcV
+    🌎  TicketObject     1         ⬅️ 🚶🚶🚶  HTTP 2           dp_11pXug0mWsff2NOoRBZbOcV`,
+    `$ restate services describe CartObject
+    📜 Service Information:
+    ―――――――――――――――――――――――
+    Name:             CartObject
+    Service type:     VirtualObject
+    Revision:         1
+    Public:           true
+    Deployment ID:    dp_11pXug0mWsff2NOoRBZbOcV
+    Deployment Type:  HTTP 2
+    Protocol Style:   Streaming
+    Endpoint:         http://localhost:9080/
+    Created at:       2024-04-23T12:32:16.691000000Z
+
+
+    🔌 Handlers:
+    ――――――――――――
+    HANDLER       INPUT TYPE                 OUTPUT TYPE
+    addTicket     one of "empty or value of  value with content-type "application/json"
+    content-type */*"
+    checkout      one of "empty or value of  value with content-type "application/json"
+    content-type */*"
+    expireTicket  one of "empty or value of  value with content-type "application/json"
+    content-type */*"
+    ```
+</details>
+
 ```shell
-$ restate invocations list
-  ❯ [2024-04-23 14:41:59.365 +02:00] inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
-     Target:      CartObject/Mary/addTicket
-     Status:      backing-off  (18 seconds and 284 ms. Retried 9 time(s). Next
-                  retry in in 8 seconds and 220 ms))
-     Deployment:  dp_11pXug0mWsff2NOoRBZbOcV [required]
-     Error:       [2024-04-23 14:42:13.706 +02:00]
-                  [500] Failing
-     Caused by:   UNKNOWN
+restate invocations list
 ```
+
+<details className={"grey-details"}>
+    <summary>Output</summary>
+    ```shell
+    ❯ [2024-04-23 14:41:59.365 +02:00] inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
+    Target:      CartObject/Mary/addTicket
+    Status:      backing-off  (18 seconds and 284 ms. Retried 9 time(s). Next
+    retry in in 8 seconds and 220 ms))
+    Deployment:  dp_11pXug0mWsff2NOoRBZbOcV [required]
+    Error:       [2024-04-23 14:42:13.706 +02:00]
+    [500] Failing
+    Caused by:   UNKNOWN
+    ```
+</details>
+
 ```shell
-$ restate invocations describe inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
-📜 Invocation Information:
-――――――――――――――――――――――――――
- Created at:   2024-04-23 14:41:59.365 +02:00 (a minute ago)
- Target:       CartObject/Mary/addTicket
- Status:       backing-off  (1 minute, 23 seconds and 937 ms. Retried 14
-               time(s). Next retry in in 991 ms))
- Deployment:   dp_11pXug0mWsff2NOoRBZbOcV [required]
- Error:        [2024-04-23 14:43:13.248 +02:00]
-               [500] Failing
- Caused by:    UNKNOWN
- Modified at:  2024-04-23 14:41:59.388 +02:00
-
-  💡   This invocation is bound to run on deployment 'dp_11pXug0mWsff2NOoRBZbOcV'. To guarantee
-       safety and correctness, invocations that made progress on a deployment
-       cannot move to newer deployments automatically.
-
-🚂 Invocation Progress:
-―――――――――――――――――――――――
-[Ingress]
- └──(this)─> CartObject/Mary/addTicket
-     ▸
-     ├──── ☑️  #1 Call TicketObject/seat2B/reserve inv_19maBIcE9uRD1CrHgpGXZ7FcXPsz4bzkbL
-     └────>> backing-off
+restate invocations describe inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
 ```
+
+<details className={"grey-details"}>
+    <summary>Output</summary>
+    ```shell
+    📜 Invocation Information:
+    ――――――――――――――――――――――――――
+    Created at:   2024-04-23 14:41:59.365 +02:00 (a minute ago)
+    Target:       CartObject/Mary/addTicket
+    Status:       backing-off  (1 minute, 23 seconds and 937 ms. Retried 14
+    time(s). Next retry in in 991 ms))
+    Deployment:   dp_11pXug0mWsff2NOoRBZbOcV [required]
+    Error:        [2024-04-23 14:43:13.248 +02:00]
+    [500] Failing
+    Caused by:    UNKNOWN
+    Modified at:  2024-04-23 14:41:59.388 +02:00
+
+    💡   This invocation is bound to run on deployment 'dp_11pXug0mWsff2NOoRBZbOcV'. To guarantee
+    safety and correctness, invocations that made progress on a deployment
+    cannot move to newer deployments automatically.
+
+    🚂 Invocation Progress:
+    ―――――――――――――――――――――――
+    [Ingress]
+    └──(this)─> CartObject/Mary/addTicket
+    ▸
+    ├──── ☑️  #1 Call TicketObject/seat2B/reserve inv_19maBIcE9uRD1CrHgpGXZ7FcXPsz4bzkbL
+    └────>> backing-off
+    ```
+</details>
+
 ```shell
-$ restate invocations cancel --kill inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
-  ❯ [2024-04-23 14:41:59.365 +02:00] inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
-     Target:      CartObject/Mary/addTicket
-     Status:      backing-off  (25 minutes, 29 seconds and 200 ms. Retried 141
-                  time(s). Next retry in in 12 seconds and 94 ms))
-     Deployment:  dp_11pXug0mWsff2NOoRBZbOcV [required]
-     Error:       [2024-04-23 15:07:27.860 +02:00]
-                  [500] Failing
-     Caused by:   UNKNOWN
-
-✔ Are you sure you want to kill this invocation · yes
-
-✅ Request was sent successfully
+restate invocations cancel --kill inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
 ```
+<details className={"grey-details"}>
+    <summary>Output</summary>
+    ```shell
+    ❯ [2024-04-23 14:41:59.365 +02:00] inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
+    Target:      CartObject/Mary/addTicket
+    Status:      backing-off  (25 minutes, 29 seconds and 200 ms. Retried 141
+    time(s). Next retry in in 12 seconds and 94 ms))
+    Deployment:  dp_11pXug0mWsff2NOoRBZbOcV [required]
+    Error:       [2024-04-23 15:07:27.860 +02:00]
+    [500] Failing
+    Caused by:   UNKNOWN
+
+    ✔ Are you sure you want to kill this invocation · yes
+
+    ✅ Request was sent successfully
+    ```
+</details>
 
 
 <Admonition type="note">
