@@ -45,42 +45,42 @@ As we go, you will discover how Restate can help you with some intricacies in th
 <TabItem value="ts" label="TypeScript">
 
 - Latest stable version of [NodeJS](https://nodejs.org/en/) >= v18.17.1 and [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 9.6.7 installed.
-- Restate CLI: [Installation instructions](/develop/local_dev#running-restate-server--cli-locally)
+- [Install Restate Server and CLI](/develop/local_dev#running-restate-server--cli-locally)
 - Optional: [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation), if you want to run the Restate Server with Docker. And to run Jaeger.
 
 This guide is written for:
 - TypeScript SDK version: `VAR::TYPESCRIPT_SDK_VERSION`
-- Restate runtime Docker image: `docker.io/restatedev/restate:VAR::RESTATE_VERSION`
+- Restate Server Docker image: `docker.io/restatedev/restate:VAR::RESTATE_VERSION`
 
 </TabItem>
 <TabItem value="java" label="Java">
 - JDK >= 11
-- Restate CLI: [Installation instructions](/develop/local_dev#running-restate-server--cli-locally)
+- [Install Restate Server and CLI](/develop/local_dev#running-restate-server--cli-locally)
 - Optional: [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation), if you want to run the Restate Server with Docker. And to run Jaeger.
 
 This guide is written for:
 - Java SDK version: `VAR::JAVA_SDK_VERSION`
-- Restate runtime Docker image: `docker.io/restatedev/restate:VAR::RESTATE_VERSION`
+- Restate Server Docker image: `docker.io/restatedev/restate:VAR::RESTATE_VERSION`
 
 </TabItem>
 <TabItem value="go" label="Go">
 - Go >= 1.21.0
-- Restate CLI: [Installation instructions](/develop/local_dev#running-restate-server--cli-locally)
+- [Install Restate Server and CLI](/develop/local_dev#running-restate-server--cli-locally)
 - Optional: [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation), if you want to run the Restate Server with Docker. And to run Jaeger.
 
 This guide is written for:
 - Go SDK version: `VAR::GO_SDK_VERSION`
-- Restate runtime Docker image: `docker.io/restatedev/restate:VAR::RESTATE_VERSION`
+- Restate Server Docker image: `docker.io/restatedev/restate:VAR::RESTATE_VERSION`
 
 </TabItem>
 <TabItem value="python" label="Python">
 - Python >= 3.11
-- Restate CLI: [Installation instructions](/develop/local_dev#running-restate-server--cli-locally)
+- [Install Restate Server and CLI](/develop/local_dev#running-restate-server--cli-locally)
 - Optional: [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation), if you want to run the Restate Server with Docker. And to run Jaeger.
 
 This guide is written for:
 - Python SDK version: `VAR::PYTHON_SDK_VERSION`
-- Restate runtime Docker image: `docker.io/restatedev/restate:VAR::RESTATE_VERSION`
+- Restate Server Docker image: `docker.io/restatedev/restate:VAR::RESTATE_VERSION`
 
 </TabItem>
 </Tabs>
@@ -192,7 +192,7 @@ go run ./app
         Run the services:
 
         ```shell
-        python3 -m hypercorn -b localhost:9080 tour/app/app:app
+        python -m hypercorn --config hypercorn-config.toml tour/app/app:app
         ```
 
         This [GitHub repository](https://github.com/restatedev/examples/tree/main/tutorials/tour-of-restate-python) contains the basic skeleton of the Python services that you develop in this tutorial.
@@ -204,26 +204,11 @@ go run ./app
 
 <SubtleStep stepLabel="2" title="Launch Restate">
 
-<CodeWithTabs rows={"2"}>
+Restate is a single self-contained binary. No external dependencies needed. Check out our [Local Dev page](https://docs.restate.dev/develop/local_dev#running-restate-server--cli-locally) for instructions on how to install Restate Server, then do:
 
-    ```shell !!tabs npx
-    npx @restatedev/restate-server
-    ```
-
-    ``` shell !!tabs Homebrew
-    brew install restatedev/tap/restate-server && restate-server
-    ```
-
-    ```shell !!tabs Docker
-    docker run --name restate_dev -p 8080:8080 -p 9070:9070 -p 9071:9071 \
-        --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
-    ```
-
-</CodeWithTabs>
-
-<Admonition type="tip" icon="💡" title="Single binary">
-    Restate is a single self-contained binary. No external dependencies needed. Check out our [Local Dev page](https://docs.restate.dev/develop/local_dev#running-restate-server--cli-locally) for other ways to run Restate.
-</Admonition>
+```shell
+restate-server
+```
 
 </SubtleStep>
 
@@ -2671,13 +2656,8 @@ docker run -d --name jaeger -e COLLECTOR_OTLP_ENABLED=true \
 <SubtleStep stepLabel="2" title="Relaunch Restate with tracing enabled">
 
     <CodeWithTabs>
-    ```shell !!tabs npx
-    npx @restatedev/restate-server --tracing-endpoint http://localhost:4317
-    ```
-
-    ``` shell !!tabs Homebrew
-    brew install restatedev/tap/restate-server &&
-        restate-server --tracing-endpoint http://localhost:4317
+    ```shell !!tabs binary
+    restate-server --tracing-endpoint http://localhost:4317
     ```
 
     ```shell !!tabs Docker
