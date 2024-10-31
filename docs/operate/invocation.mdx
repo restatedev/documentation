@@ -6,6 +6,8 @@ description: "Explore the different ways to invoke Restate services."
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
+import {CodeWithTabs} from "../../src/components/code/code";
+
 
 # Managing Invocations
 
@@ -20,17 +22,9 @@ Restate assigns an identifier to every invocation, the Invocation ID. You can us
 
 The invocation ID starts with `inv_`, and can be found in the logs and traces (`restate.invocation.id`), for example:
 
-<CH.Code>
-    ```log TypeScript
-    // focus[37:74]
-    [restate] [CartObject/expireTicket][inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz][2024-03-18T16:14:24.671Z] DEBUG: Invoking function.
-    ```
-
-    ```log Java
-    // focus[53:90]
-    2024-04-16 17:27:45 INFO  [CartObject/expireTicket][inv_1aiqX0vFEFNH0T0mRlvCk7xTVSB5xQIaKR] dev.restate.sdk.core.ResolvedEndpointHandlerImpl - Start invocation
-    ```
-</CH.Code>
+```log
+[restate] [CartObject/expireTicket][inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz][2024-03-18T16:14:24.671Z] DEBUG: Invoking function.
+```
 
 Or you can use the CLI to list the invocations and retrieve the ID from there:
 ```shell
@@ -40,7 +34,7 @@ restate invocations list
     <summary>Output</summary>
 
     ```shell
-    # focus[36:74]
+    # !focus
     ❯ [2024-04-16 15:28:20.237 +02:00] inv_1aiqX0vFEFNH0TF1pLRFBDFosQCCTAN1M5 [CartObject @ Mary]::addTicket
     Status:      backing-off  (4 minutes, 42 seconds and 653 ms. Retried 32 time(s). Next
     retry in in 9 seconds and 469 ms))
@@ -57,33 +51,19 @@ restate invocations list
 If an invocation takes too long to complete or is no longer of interest, you can cancel it.
 Canceling an invocation allows it to free any resources it is holding and roll back any changes it has made so far.
 
-<Tabs groupId="interface" queryString>
-<TabItem value="cli" label="CLI">
+You can cancel the invocation with [its ID](/operate/invocation?interface=curl#invocation-identifier) via the CLI or [Admin API](/references/admin-api):
 
-<CH.Section>
-You can cancel the invocation with [its ID](focus://1[19:58]) ([docs](/operate/invocation?interface=curl#invocation-identifier)) using the CLI:
+<CodeWithTabs>
 
-```shell
+```shell !!tabs CLI
 restate invocations cancel inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz
 ```
-</CH.Section>
 
-You can also use the abbreviation `rm` instead of `cancel`.
-
-
-</TabItem>
-<TabItem value="curl" label="curl">
-<CH.Section>
-You can cancel the invocation with [its ID](focus://1[50:90]) ([docs](/operate/invocation?interface=curl#invocation-identifier)) using [the Admin API](focus://1[23:36]) ([docs](/references/admin-api)):
-
-```shell
+```shell !!tabs curl
 curl -X DELETE http://localhost:9070/invocations/inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz
 ```
 
-</CH.Section>
-
-</TabItem>
-</Tabs>
+</CodeWithTabs>
 
 <Admonition type="info" title={"Implement compensation logic"}>
 To roll back correctly, the handlers need to contain the necessary compensation logic.
@@ -112,28 +92,20 @@ Have a look at [this blog post](https://restate.dev/blog/graceful-cancellations-
 Sometimes Restate cannot cancel an invocation.
 For example, when an endpoint is permanently unavailable, Restate can't invoke the handler to run its compensation logic, so it can't complete the cancellation.
 For these cases, you can kill invocations.
-<Tabs groupId="interface" queryString>
-<TabItem value="cli" label="CLI">
 
-Kill the invocation by using [cancel](/operate/invocation?interface=cli#cancelling-invocations) with the `--kill` flag:
+To kill an invocation:
 
-```shell
+<CodeWithTabs>
+
+```shell !!tabs CLI
 restate invocations cancel --kill inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz
 ```
 
-You can also use the abbreviation `rm` instead of `cancel`.
-
-</TabItem>
-<TabItem value="curl" label="curl">
-
-To kill an invocation, add `?mode=kill` to the [cancel request](/operate/invocation?interface=curl#cancelling-invocations):
-
-```shell
-# focus[88:97]
+```shell !!tabs curl
 curl -X DELETE http://localhost:9070/invocations/inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz?mode=kill
 ```
-</TabItem>
-</Tabs>
+
+</CodeWithTabs>
 
 
 <Admonition type="warning">
@@ -152,18 +124,16 @@ curl -X DELETE http://localhost:9070/invocations/inv_1gdJBtdVEcM942bjcDmb1c1khoa
 
 Restate can trigger handlers via Kafka events.
 
-<CH.Section>
-    - **Create subscriptions** for [a handler](focus://4) on [a topic](focus://3) via:
-    ```bash
-    curl localhost:9070/subscriptions -H 'content-type: application/json' \
-        -d '{
-            "source": "kafka://my-cluster/my-topic",
-            "sink": "service://MyService/Handle",
-            "options": {"auto.offset.reset": "earliest"}
-        }'
-    ```
-    The [options field](focus://5) is optional and accepts any configuration parameter from [librdkafka configuration](https://github.com/confluentinc/librdkafka/blob/master/CONFIGURATION.md).
-</CH.Section>
+- **Create subscriptions** for a handler on a topic via:
+```bash
+curl localhost:9070/subscriptions -H 'content-type: application/json' \
+    -d '{
+        "source": "kafka://my-cluster/my-topic",
+        "sink": "service://MyService/Handle",
+        "options": {"auto.offset.reset": "earliest"}
+    }'
+```
+The options field is optional and accepts any configuration parameter from [librdkafka configuration](https://github.com/confluentinc/librdkafka/blob/master/CONFIGURATION.md).
 - **List** the current subscriptions via:
 ```bash
 curl localhost:9070/subscriptions
@@ -191,14 +161,12 @@ curl localhost:9070/subscriptions
 
 </details>
 
-    The creation and listing of subscriptions returns an identifier.
-<CH.Section>
-    - **Delete** a subscription with [its identifier (starting with `sub_`)](focus://1[45:78]) via:
-    ```bash
-    curl -X DELETE localhost:9070/subscriptions/sub_11XHoawrCiWtv8kzhEyGtsR
-    ```
+The creation and listing of subscriptions returns an identifier.
+- **Delete** a subscription with its identifier (starting with `sub_`) via:
+```bash
+curl -X DELETE localhost:9070/subscriptions/sub_11XHoawrCiWtv8kzhEyGtsR
+```
 
-    <Admonition type="info">
-        When you delete a subscription, Restate stops the consumer group associated to it. Any messages that were already enqueued by Restate will still be processed.
-    </Admonition>
-</CH.Section>
+<Admonition type="info">
+    When you delete a subscription, Restate stops the consumer group associated to it. Any messages that were already enqueued by Restate will still be processed.
+</Admonition>

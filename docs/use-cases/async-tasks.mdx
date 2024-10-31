@@ -14,6 +14,7 @@ import FeatureList from "../../src/components/FeatureList"
 import SpotlightCard from "../../src/components/SpotlightCard"
 import Tabs from "@theme/Tabs"
 import TabItem from "@theme/TabItem"
+import {Scrollycoding} from "../../src/components/code/scrollycoding";
 
 <h1 className={"padding-top--lg text--left"}>Async tasks</h1>
 <h1 className={"use-case-subtitle text--left"}>Flexible, durable scheduling across processes and time.</h1>
@@ -48,28 +49,20 @@ Schedule tasks for now or later with the Restate SDK.
 
 <Tabs groupId="sdk" queryString>
     <TabItem value="ts" label="TypeScript">
-        <CH.Scrollycoding className="workflows-scroller-large">
+        <Scrollycoding className="workflows-scroller-large">
 
-    ### Execute any handler async
+    ### !!steps Execute any handler async
 
     Every handler in Restate is executed asynchronously and can be treated
     as a reliable asynchronous task. No matter whether it is a simple function, or a complex workflow.
     Restate persists the requests to this handler and makes sure they run to completion.
     Restate handles retries and recovery upon failures.
 
-    <CH.Code>
-        ```ts task_submitter.ts
-        CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/task_submitter.ts
-        ```
+    ```ts ! async_task_service.ts
+    CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/async_task_service.ts?1
+    ```
 
-        ```ts async_task_service.ts active
-        CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/async_task_service.ts?1
-        ```
-    </CH.Code>
-
-    ---
-
-    ### Schedule tasks reliably
+    ### !!steps Schedule tasks reliably
 
     Schedule tasks asynchronously, by using Restate as message queue.
     Restate reliably queues them, also under backpressure/load.
@@ -77,65 +70,51 @@ Schedule tasks for now or later with the Restate SDK.
     Handlers can be called asynchronously from anywhere.
     This returns a task handle once the call in enqueued.
 
-    ```ts task_submitter.ts
+    ```ts ! task_submitter.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/task_submitter.ts?1
     ```
 
-    ---
-
-    ### Idempotent task submission
+    ### !!steps Idempotent task submission
 
     Use an idempotency key to ensure that the task is only scheduled once.
     Restate will deduplicate the request and return the previous response.
 
-
-    ```ts task_submitter.ts
+    ```ts ! task_submitter.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/task_submitter.ts?2
     ```
 
-    ---
-
-    ### Latch on to the task
+    ### !!steps Latch on to the task
 
     For requests with an idempotency key, you can use this task handle to latch on to the task later and retrieve the result, or wait for it to finish.
 
-    ```ts task_submitter.ts
+    ```ts ! task_submitter.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/task_submitter.ts?3
     ```
 
-    ---
-
+    ### !!steps
     This works across processes, so you can have a separate process latch on to the task later.
 
-    ```ts task_submitter.ts
+    ```ts ! task_submitter.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/task_submitter.ts?4
     ```
 
-</CH.Scrollycoding>
+</Scrollycoding>
     </TabItem>
     <TabItem value="java" label="Java">
-        <CH.Scrollycoding className="workflows-scroller-large">
+        <Scrollycoding className="workflows-scroller-large">
 
-            ### Execute any handler async
+            ### !!steps Execute any handler async
 
             Every handler in Restate is executed asynchronously and can be treated
             as a reliable asynchronous task. No matter whether it is a simple function, or a complex workflow.
             Restate persists the requests to this handler and makes sure they run to completion.
             Restate handles retries and recovery upon failures.
 
-            <CH.Code>
-                ```java TaskSubmitter.java
-                CODE_LOAD::java/src/main/java/usecases/asynctasks/simple/TaskSubmitter.java
-                ```
+            ```java ! AsyncTaskService.java
+            CODE_LOAD::java/src/main/java/usecases/asynctasks/simple/AsyncTaskService.java?1
+            ```
 
-                ```java AsyncTaskService.java active
-                CODE_LOAD::java/src/main/java/usecases/asynctasks/simple/AsyncTaskService.java?1
-                ```
-            </CH.Code>
-
-            ---
-
-            ### Schedule tasks reliably
+            ### !!steps Schedule tasks reliably
 
             Schedule tasks asynchronously, by using Restate as message queue.
             Restate reliably queues them, also under backpressure/load.
@@ -143,59 +122,46 @@ Schedule tasks for now or later with the Restate SDK.
             Handlers can be called asynchronously from anywhere.
             This returns a task handle once the call in enqueued.
 
-            ```java TaskSubmitter.java
+            ```java ! TaskSubmitter.java
             CODE_LOAD::java/src/main/java/usecases/asynctasks/simple/TaskSubmitter.java?1
             ```
 
-            ---
-
-            ### Idempotent task submission
+            ### !!steps Idempotent task submission
 
             Use an idempotency key to ensure that the task is only scheduled once.
             Restate will deduplicate the request and return the previous response.
 
-
-            ```java TaskSubmitter.java
+            ```java ! TaskSubmitter.java
             CODE_LOAD::java/src/main/java/usecases/asynctasks/simple/TaskSubmitter.java?2
             ```
 
-            ---
-
-            ### Latch on to the task
+            ### !!steps Latch on to the task
 
             For requests with an idempotency key, you can use this task handle to latch on to the task later and retrieve the result, or wait for it to finish.
 
             This works across processes, so you can have a separate process latch on to the task later.
 
-            ```java TaskSubmitter.java
+            ```java ! TaskSubmitter.java
             CODE_LOAD::java/src/main/java/usecases/asynctasks/simple/TaskSubmitter.java?3
             ```
 
-        </CH.Scrollycoding>
+        </Scrollycoding>
     </TabItem>
     <TabItem value="kotlin" label={"Kotlin"}>
-        <CH.Scrollycoding className="workflows-scroller-large">
+        <Scrollycoding className="workflows-scroller-large">
 
-            ### Execute any handler async
+            ### !!steps Execute any handler async
 
             Every handler in Restate is executed asynchronously and can be treated
             as a reliable asynchronous task. No matter whether it is a simple function, or a complex workflow.
             Restate persists the requests to this handler and makes sure they run to completion.
             Restate handles retries and recovery upon failures.
 
-            <CH.Code>
-                ```kotlin TaskSubmitter.kt
-                CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/simple/TaskSubmitter.kt
-                ```
+            ```kotlin ! AsyncTaskService.kt
+            CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/simple/AsyncTaskService.kt?1
+            ```
 
-                ```kotlin AsyncTaskService.kt active
-                CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/simple/AsyncTaskService.kt?1
-                ```
-            </CH.Code>
-
-            ---
-
-            ### Schedule tasks reliably
+            ### !!steps Schedule tasks reliably
 
             Schedule tasks asynchronously, by using Restate as message queue.
             Restate reliably queues them, also under backpressure/load.
@@ -203,34 +169,30 @@ Schedule tasks for now or later with the Restate SDK.
             Handlers can be called asynchronously from anywhere.
             This returns a task handle once the call in enqueued.
 
-            ```kotlin TaskSubmitter.kt
+            ```kotlin ! TaskSubmitter.kt
             CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/simple/TaskSubmitter.kt?1
             ```
 
-            ---
-
-            ### Idempotent task submission
+            ### !!steps Idempotent task submission
 
             Use an idempotency key to ensure that the task is only scheduled once.
             Restate will deduplicate the request and return the previous response.
 
-            ```kotlin TaskSubmitter.kt
+            ```kotlin ! TaskSubmitter.kt
             CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/simple/TaskSubmitter.kt?2
             ```
 
-            ---
-
-            ### Latch on to the task
+            ### !!steps Latch on to the task
 
             For requests with an idempotency key, you can use this task handle to latch on to the task later and retrieve the result, or wait for it to finish.
 
             This works across processes, so you can have a separate process latch on to the task later.
 
-            ```kotlin TaskSubmitter.kt
+            ```kotlin ! TaskSubmitter.kt
             CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/simple/TaskSubmitter.kt?3
             ```
 
-        </CH.Scrollycoding>
+        </Scrollycoding>
     </TabItem>
 </Tabs>
 
@@ -253,148 +215,132 @@ Write flexible scheduling logic via durable building blocks.
 
 <Tabs groupId="sdk" queryString>
     <TabItem value="ts" label="TypeScript">
-        <CH.Scrollycoding className={"workflows-scroller"}>
+        <Scrollycoding className={"workflows-scroller"}>
 
+    ### !!steps
     Restate makes it easy to parallelize async work by fanning out tasks.
     Afterwards, you can collect the result by fanning in the partial results.
     Durable Execution ensures that the fan-out and fan-in steps happen
       reliably exactly once.
 
-    ```ts fan_out_worker.ts
+    ```ts ! fan_out_worker.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/fan_out_worker.ts
     ```
 
-    ---
-
-    ### Fan out
+    ### !!steps Fan out
 
     Fan out tasks by calling the subtask handler for each subtask.
     Every handler is an asynchronous task, for which Restate serves as the queue.
 
     The subtasks might run in different processes, if this is deployed in a parallel setup.
 
-    ```ts fan_out_worker.ts
+    ```ts ! fan_out_worker.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/fan_out_worker.ts?1
     ```
 
-    ---
-
-    ### Fan in
+    ### !!steps Fan in
     Invocations produce durable promises that can be awaited and combined.
     Fan in by simply awaiting the combined promise.
     Invocation promises recover from failures, re-connect to running subtasks.
 
-    ```ts fan_out_worker.ts
+    ```ts ! fan_out_worker.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/fan_out_worker.ts?2
     ```
 
-    ---
-
-    ### Server(less)
+    ### !!steps Server(less)
     Deploy this service on an platform like Kubernetes or AWS Lambda to
     automatically get parallel scale out.
 
-    ```ts fan_out_worker.ts
+    ```ts ! fan_out_worker.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/fan_out_worker.ts?3
     ```
 
-</CH.Scrollycoding>
+</Scrollycoding>
     </TabItem>
     <TabItem value="java" label="Java">
-        <CH.Scrollycoding className={"workflows-scroller"}>
+        <Scrollycoding className={"workflows-scroller"}>
 
             Restate makes it easy to parallelize async work by fanning out tasks.
             Afterwards, you can collect the result by fanning in the partial results.
             Durable Execution ensures that the fan-out and fan-in steps happen
             reliably exactly once.
 
-            ```java FanOutWorker.java
+            ```java ! FanOutWorker.java
             CODE_LOAD::java/src/main/java/usecases/asynctasks/FanOutWorker.java
             ```
 
-            ---
-
-            ### Fan out
+            ### !!steps Fan out
 
             Fan out tasks by calling the subtask handler for each subtask.
             Every handler is an asynchronous task, for which Restate serves as the queue.
 
             The subtasks might run in different processes, if this is deployed in a parallel setup.
 
-            ```java FanOutWorker.java
+            ```java ! FanOutWorker.java
             CODE_LOAD::java/src/main/java/usecases/asynctasks/FanOutWorker.java?1
             ```
 
-            ---
-
-            ### Fan in
+            ### !!steps Fan in
             Invocations produce durable promises that can be awaited and combined.
             Fan in by simply awaiting the combined promise.
             Invocation promises recover from failures, re-connect to running subtasks.
 
-            ```java FanOutWorker.java
+            ```java ! FanOutWorker.java
             CODE_LOAD::java/src/main/java/usecases/asynctasks/FanOutWorker.java?2
             ```
 
-            ---
-
-            ### Server(less)
+            ### !!steps Server(less)
             Deploy this service on an platform like Kubernetes or AWS Lambda to
             automatically get parallel scale out.
 
-            ```java FanOutWorker.java
+            ```java ! FanOutWorker.java
             CODE_LOAD::java/src/main/java/usecases/asynctasks/FanOutWorker.java?3
             ```
 
-        </CH.Scrollycoding>
+        </Scrollycoding>
     </TabItem>
     <TabItem value="kotlin" label={"Kotlin"}>
-        <CH.Scrollycoding className={"workflows-scroller"}>
+        <Scrollycoding className={"workflows-scroller"}>
 
+            ### !!steps
             Restate makes it easy to parallelize async work by fanning out tasks.
             Afterwards, you can collect the result by fanning in the partial results.
             Durable Execution ensures that the fan-out and fan-in steps happen
             reliably exactly once.
 
-            ```kotlin FanOutWorker.kt
+            ```kotlin ! FanOutWorker.kt
             CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/FanOutWorker.kt
             ```
 
-            ---
-
-            ### Fan out
+            ### !!steps Fan out
 
             Fan out tasks by calling the subtask handler for each subtask.
             Every handler is an asynchronous task, for which Restate serves as the queue.
 
             The subtasks might run in different processes, if this is deployed in a parallel setup.
 
-            ```kotlin FanOutWorker.kt
+            ```kotlin ! FanOutWorker.kt
             CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/FanOutWorker.kt?1
             ```
 
-            ---
-
-            ### Fan in
+            ### !!steps Fan in
             Invocations produce durable promises that can be awaited and combined.
             Fan in by simply awaiting the combined promise.
             Invocation promises recover from failures, re-connect to running subtasks.
 
-            ```kotlin FanOutWorker.kt
+            ```kotlin ! FanOutWorker.kt
             CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/FanOutWorker.kt?2
             ```
 
-            ---
-
-            ### Server(less)
+            ### !!steps Server(less)
             Deploy this service on an platform like Kubernetes or AWS Lambda to
             automatically get parallel scale out.
 
-            ```kotlin FanOutWorker.kt
+            ```kotlin ! FanOutWorker.kt
             CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/FanOutWorker.kt?3
             ```
 
-        </CH.Scrollycoding>
+        </Scrollycoding>
     </TabItem>
 </Tabs>
 
@@ -410,187 +356,170 @@ Write flexible scheduling logic via durable building blocks.
 
 <Tabs groupId="sdk" queryString>
     <TabItem value="ts" label="TypeScript">
-        <CH.Scrollycoding className={"workflows-scroller-large"}>
+        <Scrollycoding className={"workflows-scroller-large"}>
+            ### !!steps
     Imagine a data preparation workflow that creates an S3 bucket, uploads a file to it, and then returns the URL.
 
     Let's now kick off this workflow from another process.
 
-    <CH.Code>
+    ```ts ! data_preparation_service.ts
+    CODE_LOAD::ts/src/use_cases/async_tasks/sync_to_async/data_preparation_service.ts?1
+    ```
 
-        ```ts data_preparation_service.ts
-        CODE_LOAD::ts/src/use_cases/async_tasks/sync_to_async/data_preparation_service.ts?1
-        ```
-
-        ```ts client.ts
-        CODE_LOAD::ts/src/use_cases/async_tasks/sync_to_async/client.ts
-        ```
-    </CH.Code>
-
-    ---
+    ### !!steps
 
     1. Connect to the Restate server and create a client for the data preparation workflow.
 
-    ```ts client.ts
+    ```ts ! client.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/sync_to_async/client.ts?1
     ```
 
-    ---
+    ### !!steps
 
     2. Kick off a new data preparation workflow. This is idempotent per workflow ID.
 
-    ```ts client.ts
+    ```ts ! client.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/sync_to_async/client.ts?2
     ```
 
-    ---
+    ### !!steps
 
     3. Wait for the result for 30 seconds.
 
-    ```ts client.ts
+    ```ts ! client.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/sync_to_async/client.ts?3
     ```
 
-    ---
+    ### !!steps
 
     4. If it takes longer, rewire the workflow to send an email instead.
     If returns within 30 seconds, process the URL directly.
 
-    ```ts client.ts
+    ```ts ! client.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/sync_to_async/client.ts?4
     ```
 
-    ---
+    ### !!steps
 
     5. This is implemented in the data preparation workflow by letting the workflow signal our handler when it's done.
     It does this by resolving a shared Durable Promise that we then retrieve in our handler to send the email.
 
-    ```ts data_preparation_service.ts
+    ```ts ! data_preparation_service.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/sync_to_async/data_preparation_service.ts?2
     ```
 
-</CH.Scrollycoding>
+</Scrollycoding>
     </TabItem>
     <TabItem value="java" label="Java">
-        <CH.Scrollycoding className={"workflows-scroller-large"}>
+        <Scrollycoding className={"workflows-scroller-large"}>
+            ### !!steps
             Imagine a data preparation workflow that creates an S3 bucket, uploads a file to it, and then returns the URL.
 
             Let's now kick off this workflow from another process.
 
-            <CH.Code>
+            ```java ! DataPreparationService.java
+            CODE_LOAD::java/src/main/java/usecases/asynctasks/synctoasync/DataPreparationService.java?1
+            ```
 
-                ```java DataPreparationService.java
-                CODE_LOAD::java/src/main/java/usecases/asynctasks/synctoasync/DataPreparationService.java?1
-                ```
-
-                ```java MyClient.java
-                CODE_LOAD::java/src/main/java/usecases/asynctasks/synctoasync/MyClient.java
-                ```
-            </CH.Code>
-
-            ---
+            ### !!steps
 
             1. Connect to the Restate server and create a client for the data preparation workflow.
 
-            ```java MyClient.java
+            ```java ! MyClient.java
             CODE_LOAD::java/src/main/java/usecases/asynctasks/synctoasync/MyClient.java?1
             ```
 
-            ---
+            ### !!steps
 
             2. Kick off a new data preparation workflow. This is idempotent per workflow ID.
 
-            ```java MyClient.java
+            ```java ! MyClient.java
             CODE_LOAD::java/src/main/java/usecases/asynctasks/synctoasync/MyClient.java?2
             ```
 
-            ---
+            ### !!steps
 
             3. Wait for the result for 30 seconds.
 
-            ```java MyClient.java
+            ```java ! MyClient.java
             CODE_LOAD::java/src/main/java/usecases/asynctasks/synctoasync/MyClient.java?3
             ```
 
-            ---
+            ### !!steps
 
             4. If it takes longer, rewire the workflow to send an email instead.
             If returns within 30 seconds, process the URL directly.
 
-            ```java MyClient.java
+            ```java ! MyClient.java
             CODE_LOAD::java/src/main/java/usecases/asynctasks/synctoasync/MyClient.java?4
             ```
 
-            ---
+            ### !!steps
 
             5. This is implemented in the data preparation workflow by letting the workflow signal our handler when it's done.
             It does this by resolving a shared Durable Promise that we then retrieve in our handler to send the email.
 
-            ```java DataPreparationService.java
+            ```java ! DataPreparationService.java
             CODE_LOAD::java/src/main/java/usecases/asynctasks/synctoasync/DataPreparationService.java?2
             ```
 
-        </CH.Scrollycoding>
+        </Scrollycoding>
     </TabItem>
     <TabItem value="kotlin" label={"Kotlin"}>
-        <CH.Scrollycoding className={"workflows-scroller-large"}>
+        <Scrollycoding className={"workflows-scroller-large"}>
+            ### !!steps
             Imagine a data preparation workflow that creates an S3 bucket, uploads a file to it, and then returns the URL.
 
             Let's now kick off this workflow from another process.
 
-            <CH.Code>
 
-                ```kotlin DataPreparationService.kt
-                CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/synctoasync/DataPreparationService.kt?1
-                ```
+            ```kotlin ! DataPreparationService.kt
+            CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/synctoasync/DataPreparationService.kt?1
+            ```
 
-                ```kotlin MyClient.kt
-                CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/synctoasync/MyClient.kt
-                ```
-            </CH.Code>
-
-            ---
+            ### !!steps
 
             1. Connect to the Restate server and create a client for the data preparation workflow.
 
-            ```kotlin MyClient.kt
+            ```kotlin ! MyClient.kt
             CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/synctoasync/MyClient.kt?1
             ```
 
-            ---
+            ### !!steps
 
             2. Kick off a new data preparation workflow. This is idempotent per workflow ID.
 
-            ```kotlin MyClient.kt
+            ```kotlin ! MyClient.kt
             CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/synctoasync/MyClient.kt?2
             ```
 
-            ---
+            ### !!steps
 
             3. Wait for the result for 30 seconds.
 
-            ```kotlin MyClient.kt
+            ```kotlin ! MyClient.kt
             CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/synctoasync/MyClient.kt?3
             ```
 
-            ---
+            ### !!steps
 
             4. If it takes longer, rewire the workflow to send an email instead.
             If returns within 30 seconds, process the URL directly.
 
-            ```kotlin MyClient.kt
+            ```kotlin ! MyClient.kt
             CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/synctoasync/MyClient.kt?4
             ```
 
-            ---
+            ### !!steps
 
             5. This is implemented in the data preparation workflow by letting the workflow signal our handler when it's done.
             It does this by resolving a shared Durable Promise that we then retrieve in our handler to send the email.
 
-            ```kotlin DataPreparationService.kt
+            ```kotlin ! DataPreparationService.kt
             CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/synctoasync/DataPreparationService.kt?2
             ```
 
-        </CH.Scrollycoding>
+        </Scrollycoding>
     </TabItem>
 </Tabs>
 

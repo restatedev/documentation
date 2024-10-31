@@ -32,19 +32,11 @@ docker run -d --name jaeger \
 
 Configure the tracing endpoint in Restate as a fully specified URL:
 
-<CH.Code rows={"3"}>
+```shell
+restate-server --tracing-endpoint http://localhost:4317
+```
 
-    ```shell binary
-    restate-server --tracing-endpoint http://localhost:4317
-    ```
-
-    ```shell Docker
-    docker run --name restate_dev -p 8080:8080 -p 9070:9070 -p 9071:9071 \
-        -e RESTATE_TRACING_ENDPOINT=http://host.docker.internal:4317 \
-        --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
-    ```
-
-</CH.Code>
+If you run Restate in Docker, then instead add the environment variable `-e RESTATE_TRACING_ENDPOINT=http://host.docker.internal:4317`.
 
 <details className={"grey-details"}>
     <summary>Specifying additional tracing headers</summary>

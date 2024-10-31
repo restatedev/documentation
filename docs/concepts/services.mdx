@@ -6,6 +6,7 @@ description: ""
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import FeatureWidget from "../../src/components/FeatureWidget";
+import {Scrollycoding} from "../../src/components/code/scrollycoding";
 
 # Services
 
@@ -37,154 +38,145 @@ Services expose a collection of handlers:
 <Tabs groupId="sdk" queryString>
     <TabItem value="ts" label="TypeScript">
 
-        <CH.Scrollycoding className={"spotlight-long-code"}>
-
+        <Scrollycoding>
+            ## !!steps
             Restate makes sure that **handlers run to completion**, even in the presence of failures.
             Restate logs the **results of actions** in the system.
             Restate takes care of retries and recovers the handler to the point where it failed.
 
-            ```ts
+            ```ts !
             CODE_LOAD::ts/src/concepts/services.ts?1
             ```
 
-            ---
-
+            ## !!steps
             The handlers of services are **independent** and can be **invoked concurrently**.
 
-            ```ts
+            ```ts !
             CODE_LOAD::ts/src/concepts/services.ts?2
             ```
 
-            ---
-
+            ## !!steps
             Handlers use the regular code and control flow, no custom DSLs.
 
-            ```ts
+            ```ts !
             CODE_LOAD::ts/src/concepts/services.ts?3
             ```
 
-            ---
-
+            ## !!steps
             Service handlers **don't have access to Restate's K/V store**.
 
-            ```ts
+            ```ts !
             CODE_LOAD::ts/src/concepts/services.ts
             ```
 
-        </CH.Scrollycoding>
+        </Scrollycoding>
     </TabItem>
     <TabItem value="java" label="Java">
-        <CH.Scrollycoding className={"spotlight-long-code"}>
+        <Scrollycoding>
 
+            ## !!steps
             Restate makes sure that **handlers run to completion**, even in the presence of failures.
             Restate logs the **results of actions** in the system.
             Restate takes care of retries and recovers the handler to the point where it failed.
 
-            ```java
+            ```java !
             CODE_LOAD::java/src/main/java/concepts/services/RoleUpdateService.java?1
             ```
 
-            ---
-
+            ## !!steps
             The handlers of services are **independent** and can be **invoked concurrently**.
 
-            ```java
+            ```java !
             CODE_LOAD::java/src/main/java/concepts/services/RoleUpdateService.java?2
             ```
 
-            ---
-
+            ## !!steps
             Handlers use the regular code and control flow, no custom DSLs.
 
-            ```java
+            ```java !
             CODE_LOAD::java/src/main/java/concepts/services/RoleUpdateService.java?3
             ```
 
-            ---
-
+            ## !!steps
             Service handlers **don't have access to Restate's K/V store**.
 
-            ```java
+            ```java !
             CODE_LOAD::java/src/main/java/concepts/services/RoleUpdateService.java
             ```
 
-        </CH.Scrollycoding>
+        </Scrollycoding>
     </TabItem>
     <TabItem value="go" label="Go">
 
-        <CH.Scrollycoding className={"spotlight-long-code"}>
+        <Scrollycoding>
 
+            ## !!steps
             Restate makes sure that **handlers run to completion**, even in the presence of failures.
             Restate logs the **results of actions** in the system.
             Restate takes care of retries and recovers the handler to the point where it failed.
 
-            ```go
+            ```go !
             CODE_LOAD::go/concepts/services/main.go?1
             ```
 
-            ---
-
+            ## !!steps
             The handlers of services are **independent** and can be **invoked concurrently**.
 
-            ```go
+            ```go !
             CODE_LOAD::go/concepts/services/main.go?2
             ```
 
-            ---
-
+            ## !!steps
             Handlers use the regular code and control flow, no custom DSLs.
 
-            ```go
+            ```go !
             CODE_LOAD::go/concepts/services/main.go?3
             ```
 
-            ---
-
+            ## !!steps
             Service handlers **don't have access to Restate's K/V store**.
 
-            ```go
+            ```go !
             CODE_LOAD::go/concepts/services/main.go
             ```
 
-        </CH.Scrollycoding>
+        </Scrollycoding>
     </TabItem>
     <TabItem value="python" label="Python">
 
-        <CH.Scrollycoding className={"spotlight-long-code"}>
+        <Scrollycoding>
 
+            ## !!steps
             Restate makes sure that **handlers run to completion**, even in the presence of failures.
             Restate logs the **results of actions** in the system.
             Restate takes care of retries and recovers the handler to the point where it failed.
 
-            ```python
+            ```python !
             CODE_LOAD::python/src/concepts/services.py?1
             ```
 
-            ---
-
+            ## !!steps
             The handlers of services are **independent** and can be **invoked concurrently**.
 
-            ```python
+            ```python !
             CODE_LOAD::python/src/concepts/services.py?2
             ```
 
-            ---
-
+            ## !!steps
             Handlers use the regular code and control flow, no custom DSLs.
 
-            ```python
+            ```python !
             CODE_LOAD::python/src/concepts/services.py?3
             ```
 
-            ---
-
+            ## !!steps
             Service handlers **don't have access to Restate's K/V store**.
 
-            ```python
+            ```python !
             CODE_LOAD::python/src/concepts/services.py
             ```
 
-        </CH.Scrollycoding>
+        </Scrollycoding>
     </TabItem>
 </Tabs>
 
@@ -197,128 +189,124 @@ Virtual objects expose a set of handlers with access to K/V state stored in Rest
 
 <Tabs groupId="sdk" queryString>
     <TabItem value="ts" label="TypeScript">
-        <CH.Scrollycoding className={"spotlight-long-code"}>
+        <Scrollycoding>
 
+            ## !!steps
             A virtual object is **uniquely identified and accessed by its key**.
 
-            ```ts
+            ```ts !
             CODE_LOAD::ts/src/concepts/virtual_objects.ts?1
             ```
 
-            ---
-
+            ## !!steps
             Each virtual object has access to its own **isolated K/V state**, stored in Restate.
             The handlers of a virtual object can read and write to the state of the object.
             Restate delivers the state together with the request to the virtual object, so virtual objects have their state locally accessible without requiring any database connection or lookup.
             State is exclusive, and atomically committed with the method execution.
 
-            ```ts
+            ```ts !
             CODE_LOAD::ts/src/concepts/virtual_objects.ts?2
             ```
 
-            ---
-
+            ## !!steps
             To ensure consistent writes to the state, Restate provides **concurrency guarantees**: at most one handler can execute at a time for a given virtual object.
             This can also be used for example to implement a locking mechanism or to ensure single writer to a database row.
 
-            ```ts
+            ```ts !
             CODE_LOAD::ts/src/concepts/virtual_objects.ts?3
             ```
 
-        </CH.Scrollycoding>
+        </Scrollycoding>
     </TabItem>
     <TabItem value="java" label="Java">
-        <CH.Scrollycoding className={"spotlight-long-code"}>
+        <Scrollycoding>
 
+            ## !!steps
             A virtual object is **uniquely identified and accessed by its key**.
 
-            ```java
+            ```java !
             CODE_LOAD::java/src/main/java/concepts/services/Greeter.java?1
             ```
 
-            ---
-
+            ## !!steps
             Each virtual object has access to its own **isolated K/V state**, stored in Restate.
             The handlers of a virtual object can read and write to the state of the object.
             Restate delivers the state together with the request to the virtual object, so virtual objects have their state locally accessible without requiring any database connection or lookup.
             State is exclusive, and atomically committed with the method execution.
 
-            ```java
+            ```java !
             CODE_LOAD::java/src/main/java/concepts/services/Greeter.java?2
             ```
 
-            ---
-
+            ## !!steps
             **Concurrency guarantees**: to ensure consistent writes to the state, at most one handler can execute at a time for a given virtual object.
             This can also be used, for example, to implement a locking mechanism or to ensure single writer to a database row.
 
-            ```java
+            ```java !
             CODE_LOAD::java/src/main/java/concepts/services/Greeter.java?3
             ```
 
-        </CH.Scrollycoding>
+        </Scrollycoding>
     </TabItem>
     <TabItem value="go" label="Go">
-        <CH.Scrollycoding className={"spotlight-long-code"}>
+        <Scrollycoding>
 
+            ## !!steps
             A virtual object is **uniquely identified and accessed by its key**.
 
-            ```go
+            ```go !
             CODE_LOAD::go/concepts/virtualobjects/main.go?1
             ```
 
-            ---
-
+            ## !!steps
             Each virtual object has access to its own **isolated K/V state**, stored in Restate.
             The handlers of a virtual object can read and write to the state of the object.
             Restate delivers the state together with the request to the virtual object, so virtual objects have their state locally accessible without requiring any database connection or lookup.
             State is exclusive, and atomically committed with the method execution.
 
-            ```go
+            ```go !
             CODE_LOAD::go/concepts/virtualobjects/main.go?2
             ```
 
-            ---
-
+            ## !!steps
             To ensure consistent writes to the state, Restate provides **concurrency guarantees**: at most one handler can execute at a time for a given virtual object.
             This can also be used for example to implement a locking mechanism or to ensure single writer to a database row.
 
-            ```go
+            ```go !
             CODE_LOAD::go/concepts/virtualobjects/main.go?3
             ```
 
-        </CH.Scrollycoding>
+        </Scrollycoding>
     </TabItem>
     <TabItem value="python" label="Python">
-        <CH.Scrollycoding className={"spotlight-long-code"}>
+        <Scrollycoding>
 
+            ## !!steps
             A virtual object is **uniquely identified and accessed by its key**.
 
-            ```python
+            ```python !
             CODE_LOAD::python/src/concepts/virtual_objects.py?1
             ```
 
-            ---
-
+            ## !!steps
             Each virtual object has access to its own **isolated K/V state**, stored in Restate.
             The handlers of a virtual object can read and write to the state of the object.
             Restate delivers the state together with the request to the virtual object, so virtual objects have their state locally accessible without requiring any database connection or lookup.
             State is exclusive, and atomically committed with the method execution.
 
-            ```python
+            ```python !
             CODE_LOAD::python/src/concepts/virtual_objects.py?2
             ```
 
-            ---
-
+            ## !!steps
             To ensure consistent writes to the state, Restate provides **concurrency guarantees**: at most one handler can execute at a time for a given virtual object.
             This can also be used for example to implement a locking mechanism or to ensure single writer to a database row.
 
-            ```python
+            ```python !
             CODE_LOAD::python/src/concepts/virtual_objects.py?3
             ```
 
-        </CH.Scrollycoding>
+        </Scrollycoding>
     </TabItem>
 </Tabs>
 
@@ -329,94 +317,91 @@ Workflows have additional capabilities such as signaling, querying, additional i
 
 <Tabs groupId="sdk" queryString>
     <TabItem value="ts" label="TypeScript">
-        <CH.Scrollycoding className={"spotlight-long-code"}>
+        <Scrollycoding>
 
+            ## !!steps
             A workflow has a **`run` handler** that implements the **workflow logic**.
             The `run` handler runs exactly once per workflow ID (object).
 
-            ```ts
+            ```ts !
             CODE_LOAD::ts/src/concepts/workflow.ts?1
             ```
 
-            ---
-
+            ## !!steps
             You can **query the workflow** by defining other handlers in the same object.
             For example, you can store state in the workflow object, and query it from other handlers.
 
-            ```ts
+            ```ts !
             CODE_LOAD::ts/src/concepts/workflow.ts?2
             ```
 
-            ---
-
+            ## !!steps
             You can **signal the workflow**, to send information to it, via [Durable Promises](/develop/ts/workflows#signaling-workflows).
             For example, the payment provider signals the workflow that the payment was successful by calling the `paymentWebhook`.
 
-            ```ts
+            ```ts !
             CODE_LOAD::ts/src/concepts/workflow.ts?3
             ```
 
-        </CH.Scrollycoding>
+        </Scrollycoding>
     </TabItem>
     <TabItem value="java" label="Java">
-        <CH.Scrollycoding className={"spotlight-long-code"}>
+        <Scrollycoding>
 
+            ## !!steps
             A workflow has a **`run` handler** that implements the **workflow logic**.
             The `run` handler runs exactly once per workflow ID (object).
 
-            ```java
+            ```java !
             CODE_LOAD::java/src/main/java/concepts/services/Payment.java?1
             ```
 
-            ---
-
+            ## !!steps
             You can **query the workflow** by defining other handlers in the same object.
             For example, you can store state in the workflow object, and query it from other handlers.
 
-            ```java
+            ```java !
             CODE_LOAD::java/src/main/java/concepts/services/Payment.java?2
             ```
 
-            ---
-
+            ## !!steps
             You can **signal the workflow**, to send information to it, via [Durable Promises](/develop/ts/workflows#signaling-workflows).
             For example, the payment provider signals the workflow that the payment was successful by calling the `paymentWebhook`.
 
-            ```java
+            ```java !
             CODE_LOAD::java/src/main/java/concepts/services/Payment.java?3
             ```
 
-        </CH.Scrollycoding>
+        </Scrollycoding>
     </TabItem>
     <TabItem value="python" label="Python">
-        <CH.Scrollycoding className={"spotlight-long-code"}>
+        <Scrollycoding>
 
+            ## !!steps
             A workflow has a **`run` handler** that implements the **workflow logic**.
             The `run` handler runs exactly once per workflow ID (object).
 
-            ```python
+            ```python !
             CODE_LOAD::python/src/concepts/workflows.py?1
             ```
 
-            ---
-
+            ## !!steps
             You can **query the workflow** by defining other handlers in the same object.
             For example, you can store state in the workflow object, and query it from other handlers.
 
-            ```python
+            ```python !
             CODE_LOAD::python/src/concepts/workflows.py?2
             ```
 
-            ---
-
+            ## !!steps
             You can **signal the workflow**, to send information to it, via [Durable Promises](/develop/ts/workflows#signaling-workflows).
             For example, the payment provider signals the workflow that the payment was successful by calling the `paymentWebhook`.
 
-            ```python
+            ```python !
             CODE_LOAD::python/src/concepts/workflows.py?3
             ```
 
-        </CH.Scrollycoding>
+        </Scrollycoding>
     </TabItem>
 </Tabs>
 

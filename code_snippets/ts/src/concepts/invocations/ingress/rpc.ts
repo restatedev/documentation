@@ -3,13 +3,13 @@ import { greetCounter, greeter, myWorkflow } from "../utils";
 
 // <start_rpc_call_node>
 const myPlainTSFunction = async () => {
-  // focus
+  // !focus
   const rs = restate.connect({ url: "http://localhost:8080" });
-  // focus
+  // !focus
   const greet = await rs
-    // focus
+    // !focus
     .serviceClient(greeter)
-    // focus
+    // !focus
     .greet({ greeting: "Hi" });
 };
 // <end_rpc_call_node>

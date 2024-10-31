@@ -8,20 +8,20 @@ public class WorkflowSubmitter {
     // <start_here>
     // import dev.restate.sdk.client.Client;
     Client rs = Client.connect("http://localhost:8080");
-    // mark
+    // !mark
     SignupWorkflowClient.fromClient(rs, user.getId())
-        // mark
+        // !mark
         .submit(user);
 
     // do something else, with workflow running in the background
 
     // attach back to the workflow
-    // mark
+    // !mark
     boolean result =
         SignupWorkflowClient.fromClient(rs, user.getId())
-            // mark
+            // !mark
             .workflowHandle()
-            // mark
+            // !mark
             .attach();
     // <end_here>
   }

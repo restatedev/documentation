@@ -3,13 +3,13 @@ import { greeter } from "../utils";
 
 // <start_delayed_call_node>
 const myPlainTSFunction = async () => {
-  // focus
+  // !focus
   const rs = restate.connect({ url: "http://localhost:8080" });
-  // focus
+  // !focus
   await rs
-    // focus
+    // !focus
     .serviceSendClient(greeter)
-    // focus
+    // !focus
     .greet({ greeting: "Hi" }, restate.rpc.sendOpts({ delay: 1000 }));
 };
 // <end_delayed_call_node>

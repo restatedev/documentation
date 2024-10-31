@@ -13,33 +13,25 @@ A handler can call another handler and wait for the response (request-response),
 
 Request-response calls are requests where the client waits for the response.
 
-<CH.Scrollycoding className={"single-item"}>
+To a Service:
 
-    To a Service:
+```python
+CODE_LOAD::python/src/develop/service_communication.py#request_response_service
+```
 
-    ```python
-    CODE_LOAD::python/src/develop/service_communication.py#request_response_service
-    ```
 
-</CH.Scrollycoding>
-<CH.Scrollycoding className={"single-item"}>
+To a Virtual Object:
 
-    To a Virtual Object:
+```python
+CODE_LOAD::python/src/develop/service_communication.py#request_response_object
+```
 
-    ```python
-    CODE_LOAD::python/src/develop/service_communication.py#request_response_object
-    ```
 
-</CH.Scrollycoding>
-<CH.Scrollycoding className={"single-item"}>
+To a Workflow:
 
-    To a Workflow:
-
-    ```python
-    CODE_LOAD::python/src/develop/service_communication.py#request_response_workflow
-    ```
-
-</CH.Scrollycoding>
+```python
+CODE_LOAD::python/src/develop/service_communication.py#request_response_workflow
+```
 
 1. Use `ctx.service_call` to call Services, and `ctx.object_call` to call Virtual Objects.
 2. **Specify the handler** you want to call and supply the request.
@@ -70,35 +62,23 @@ Request-response calls are requests where the client waits for the response.
 
 Handlers can send messages (a.k.a. one-way calls, or fire-and-forget calls), as follows:
 
-<CH.Scrollycoding className={"single-item"}>
+To a Service:
 
-    To a Service:
+```python
+CODE_LOAD::python/src/develop/service_communication.py#one_way_service
+```
 
-    ```python
-    CODE_LOAD::python/src/develop/service_communication.py#one_way_service
-    ```
+To a Virtual Object:
 
-</CH.Scrollycoding>
+```python
+CODE_LOAD::python/src/develop/service_communication.py#one_way_object
+```
 
-<CH.Scrollycoding className={"single-item"}>
+To a Workflow:
 
-    To a Virtual Object:
-
-    ```python
-    CODE_LOAD::python/src/develop/service_communication.py#one_way_object
-    ```
-
-</CH.Scrollycoding>
-
-<CH.Scrollycoding className={"single-item"}>
-
-    To a Workflow:
-
-    ```python
-    CODE_LOAD::python/src/develop/service_communication.py#one_way_workflow
-    ```
-
-</CH.Scrollycoding>
+```python
+CODE_LOAD::python/src/develop/service_communication.py#one_way_workflow
+```
 
 <Admonition type="tip" title="No need for message queues">
     Without Restate, you would usually put a message queue in between the two services, to guarantee the message delivery.
@@ -111,24 +91,17 @@ A delayed call is a one-way call that gets executed after a specified delay.
 
 To schedule a delayed call, send a message with a delay parameter, as follows:
 
-<CH.Scrollycoding className={"single-item"}>
+To a Service:
 
-    To a Service:
+```python
+CODE_LOAD::python/src/develop/service_communication.py#delayed_service
+```
 
-    ```python
-    CODE_LOAD::python/src/develop/service_communication.py#delayed_service
-    ```
+To a Virtual Object:
 
-</CH.Scrollycoding>
-<CH.Scrollycoding className={"single-item"}>
-
-    To a Virtual Object:
-
-    ```python
-    CODE_LOAD::python/src/develop/service_communication.py#delayed_object
-    ```
-
-</CH.Scrollycoding>
+```python
+CODE_LOAD::python/src/develop/service_communication.py#delayed_object
+```
 
 <Admonition type="tip" title="Scheduling async tasks">
     You can also use this functionality to schedule async tasks.

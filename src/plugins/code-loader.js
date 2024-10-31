@@ -105,7 +105,7 @@ const plugin = (options) => {
 
                 if(!line.includes('<start_') && !line.includes('<end_') && !line.includes('<mark_') && !line.includes('</mark_')) {
                     if(needToMark){
-                        finalLines.push(`${commentSymbol} mark`)
+                        finalLines.push(`${commentSymbol} !mark`)
                     }
                     finalLines.push(line);
                 }

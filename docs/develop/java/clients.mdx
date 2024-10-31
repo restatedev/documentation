@@ -7,6 +7,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
 import {Step} from "../../../src/components/Stepper";
+import {TextAndCode} from "../../../src/components/code/code/text-and-code";
 
 # Clients
 The Restate SDK client library lets you invoke Restate handlers from anywhere in your application.
@@ -30,62 +31,56 @@ Invoke a handler programmatically with the SDK clients as follows:
 <Step stepLabel="3" title="Connect to Restate and invoke the handler with your preferred semantics">
     <Tabs groupId="sdk" queryString>
     <TabItem value="java" label="Java">
-        <CH.Scrollycoding className={"single-item"}>
-
+        <TextAndCode>
             **Request-response invocations** allow you to wait on a response from the handler.
 
-            ```java
+            ```java !result
             CODE_LOAD::java/src/main/java/develop/clients/Ingress.java#rpc_java
             ```
 
-        </CH.Scrollycoding>
-        <CH.Scrollycoding className={"single-item"}>
-
+        </TextAndCode>
+        <TextAndCode>
             **One-way invocations** allow you to send a message without waiting for a response.
 
-            ```java
+            ```java !result
             CODE_LOAD::java/src/main/java/develop/clients/Ingress.java#one_way_call_java
             ```
 
-        </CH.Scrollycoding>
-        <CH.Scrollycoding className={"single-item"}>
-
+        </TextAndCode>
+        <TextAndCode>
             **Delayed invocations** allow you to schedule an invocation for a later point in time.
 
-            ```java
+            ```java !result
             CODE_LOAD::java/src/main/java/develop/clients/Ingress.java#delayed_call_java
             ```
 
-        </CH.Scrollycoding>
+        </TextAndCode>
     </TabItem>
         <TabItem value="kotlin" label="Kotlin">
-            <CH.Scrollycoding className={"single-item"}>
-
+            <TextAndCode>
                 **Request-response invocations** allow you to wait on a response from the handler.
 
-                ```kotlin
+                ```kotlin !result
                 CODE_LOAD::kotlin/src/main/kotlin/develop/clients/Ingress.kt#rpc_kotlin
                 ```
 
-            </CH.Scrollycoding>
-            <CH.Scrollycoding className={"single-item"}>
-
+            </TextAndCode>
+            <TextAndCode>
                 **One-way invocations** allow you to send a message without waiting for a response.
 
-                ```kotlin
+                ```kotlin !result
                 CODE_LOAD::kotlin/src/main/kotlin/develop/clients/Ingress.kt#one_way_call_kotlin
                 ```
 
-            </CH.Scrollycoding>
-            <CH.Scrollycoding className={"single-item"}>
-
+            </TextAndCode>
+            <TextAndCode>
                 **Delayed invocations** allow you to schedule an invocation for a later point in time.
 
-                ```kotlin
+                ```kotlin !result
                 CODE_LOAD::kotlin/src/main/kotlin/develop/clients/Ingress.kt#delayed_call_kotlin
                 ```
 
-            </CH.Scrollycoding>
+            </TextAndCode>
         </TabItem>
     </Tabs>
 </Step>
@@ -127,15 +122,13 @@ If you re-invoke the service with the same idempotency key within 24 hours, Rest
 <details className={"grey-details"}>
     <summary> Tuning retention time</summary>
 
-    <CH.Section>
-        You can tune the [retention time](focus://3) on a service-level by using the [Admin API](focus://1[15:28]) ([docs](/references/admin-api#tag/service/operation/modify_service)):
-        ```shell
-        curl -X PATCH localhost:9070/services/MyService \
-            -H 'content-type: application/json' \
-            -d '{"idempotency_retention": "2days"}'
-        ```
-        The [retention time](focus://3) is in [humantime format](https://docs.rs/humantime/latest/humantime/).
-    </CH.Section>
+    You can tune the retention time on a service-level by using the [Admin API](/references/admin-api#tag/service/operation/modify_service)):
+    ```shell
+    curl -X PATCH localhost:9070/services/MyService \
+        -H 'content-type: application/json' \
+        -d '{"idempotency_retention": "2days"}'
+    ```
+    The retention time is in [humantime format](https://docs.rs/humantime/latest/humantime/).
 
 </details>
 

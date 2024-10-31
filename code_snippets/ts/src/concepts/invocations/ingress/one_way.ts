@@ -3,13 +3,13 @@ import { greetCounter, greeter } from "../utils";
 
 // <start_one_way_call_node>
 const myPlainTSFunction = async () => {
-  // focus
+  // !focus
   const rs = restate.connect({ url: "http://localhost:8080" });
-  // focus
+  // !focus
   await rs
-    // focus
+    // !focus
     .serviceSendClient(greeter)
-    // focus
+    // !focus
     .greet({ greeting: "Hi" });
 };
 // <end_one_way_call_node>
