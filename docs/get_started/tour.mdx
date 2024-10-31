@@ -9,7 +9,6 @@ import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
 import {SubtleStep} from "../../src/components/Stepper";
 import TourAnimation from "../../src/components/TourAnimation";
-import CliAnimation from "../../src/components/CliAnimation";
 import {CodeWithTabs} from "../../src/components/code/code";
 
 <Tabs groupId="sdk" queryString>
@@ -1241,7 +1240,8 @@ You can use it to boostrap a new project, but also to get information about the 
 
 Have a look at some useful commands and try them out yourself:
 
-<CliAnimation listOfSteps={[`$ restate services list
+```shell
+$ restate services list
      NAME             REVISION  FLAVOR    DEPLOYMENT TYPE  DEPLOYMENT ID
  🌎  CartObject       1         ⬅️ 🚶🚶🚶  HTTP 2           dp_11pXug0mWsff2NOoRBZbOcV
  🌎  CheckoutService  1                   HTTP 2           dp_11pXug0mWsff2NOoRBZbOcV
@@ -1268,8 +1268,10 @@ Have a look at some useful commands and try them out yourself:
  checkout      one of "empty or value of  value with content-type "application/json"
                content-type */*"
  expireTicket  one of "empty or value of  value with content-type "application/json"
-               content-type */*"`,
-`$ restate invocations list
+               content-type */*"
+```
+```shell
+$ restate invocations list
   ❯ [2024-04-23 14:41:59.365 +02:00] inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
      Target:      CartObject/Mary/addTicket
      Status:      backing-off  (18 seconds and 284 ms. Retried 9 time(s). Next
@@ -1277,8 +1279,10 @@ Have a look at some useful commands and try them out yourself:
      Deployment:  dp_11pXug0mWsff2NOoRBZbOcV [required]
      Error:       [2024-04-23 14:42:13.706 +02:00]
                   [500] Failing
-     Caused by:   UNKNOWN`,
-`$ restate invocations describe inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
+     Caused by:   UNKNOWN
+```
+```shell
+$ restate invocations describe inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
 📜 Invocation Information:
 ――――――――――――――――――――――――――
  Created at:   2024-04-23 14:41:59.365 +02:00 (a minute ago)
@@ -1301,8 +1305,10 @@ Have a look at some useful commands and try them out yourself:
  └──(this)─> CartObject/Mary/addTicket
      ▸
      ├──── ☑️  #1 Call TicketObject/seat2B/reserve inv_19maBIcE9uRD1CrHgpGXZ7FcXPsz4bzkbL
-     └────>> backing-off`,
-`$ restate invocations cancel --kill inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
+     └────>> backing-off
+```
+```shell
+$ restate invocations cancel --kill inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
   ❯ [2024-04-23 14:41:59.365 +02:00] inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
      Target:      CartObject/Mary/addTicket
      Status:      backing-off  (25 minutes, 29 seconds and 200 ms. Retried 141
@@ -1314,8 +1320,9 @@ Have a look at some useful commands and try them out yourself:
 
 ✔ Are you sure you want to kill this invocation · yes
 
-✅ Request was sent successfully`]}
-/>
+✅ Request was sent successfully
+```
+
 
 <Admonition type="note">
 Remove the throwing of the exception from your code before you continue.

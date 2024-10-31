@@ -3,12 +3,10 @@ sidebar_position: 3
 description: ""
 ---
 
-import CliAnimation from "../../src/components/CliAnimation";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import FeatureList from "../../src/components/FeatureList"
 import {Scrollycoding} from "../../src/components/code/scrollycoding";
-import {CodeWithTabs} from "../../src/components/code/code";
 
 # Invocations
 
@@ -261,7 +259,8 @@ Restate proxies and manages inbound as well as service-to-service invocations.
 This makes it a great source of observability data for your application.
 You can inspect invocations via the CLI.
 
-<CliAnimation listOfSteps={[`$ restate services list
+```shell
+$ restate services list
      NAME             REVISION  FLAVOR    DEPLOYMENT TYPE  DEPLOYMENT ID
  🌎  CartObject       1         ⬅️ 🚶🚶🚶  HTTP 2           dp_11pXug0mWsff2NOoRBZbOcV
  🌎  CheckoutService  1                   HTTP 2           dp_11pXug0mWsff2NOoRBZbOcV
@@ -280,16 +279,18 @@ You can inspect invocations via the CLI.
  Created at:       2024-04-23T12:32:16.691000000Z
 
 
-    🔌 Handlers:
-    ――――――――――――
-     HANDLER       INPUT TYPE                 OUTPUT TYPE
-     addTicket     one of "empty or value of  value with content-type "application/json"
-                   content-type */*"
-     checkout      one of "empty or value of  value with content-type "application/json"
-                   content-type */*"
-     expireTicket  one of "empty or value of  value with content-type "application/json"
-                   content-type */*"`,
-    `$ restate invocations list
+🔌 Handlers:
+――――――――――――
+ HANDLER       INPUT TYPE                 OUTPUT TYPE
+ addTicket     one of "empty or value of  value with content-type "application/json"
+               content-type */*"
+ checkout      one of "empty or value of  value with content-type "application/json"
+               content-type */*"
+ expireTicket  one of "empty or value of  value with content-type "application/json"
+               content-type */*"
+```
+```shell
+$ restate invocations list
   ❯ [2024-04-23 14:41:59.365 +02:00] inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
      Target:      CartObject/Mary/addTicket
      Status:      backing-off  (18 seconds and 284 ms. Retried 9 time(s). Next
@@ -297,8 +298,10 @@ You can inspect invocations via the CLI.
      Deployment:  dp_11pXug0mWsff2NOoRBZbOcV [required]
      Error:       [2024-04-23 14:42:13.706 +02:00]
                   [500] Failing
-     Caused by:   UNKNOWN`,
-    `$ restate invocations describe inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
+     Caused by:   UNKNOWN
+```
+```shell
+$ restate invocations describe inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
 📜 Invocation Information:
 ――――――――――――――――――――――――――
  Created at:   2024-04-23 14:41:59.365 +02:00 (a minute ago)
@@ -311,18 +314,20 @@ You can inspect invocations via the CLI.
  Caused by:    UNKNOWN
  Modified at:  2024-04-23 14:41:59.388 +02:00
 
-      💡   This invocation is bound to run on deployment 'dp_11pXug0mWsff2NOoRBZbOcV'. To guarantee
-           safety and correctness, invocations that made progress on a deployment
-           cannot move to newer deployments automatically.
+  💡   This invocation is bound to run on deployment 'dp_11pXug0mWsff2NOoRBZbOcV'. To guarantee
+       safety and correctness, invocations that made progress on a deployment
+       cannot move to newer deployments automatically.
 
-    🚂 Invocation Progress:
-    ―――――――――――――――――――――――
-    [Ingress]
-     └──(this)─> CartObject/Mary/addTicket
-         ▸
-         ├──── ☑️  #1 Call TicketObject/seat2B/reserve inv_19maBIcE9uRD1CrHgpGXZ7FcXPsz4bzkbL
-         └────>> backing-off`,
-    `$ restate invocations cancel --kill inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
+🚂 Invocation Progress:
+―――――――――――――――――――――――
+[Ingress]
+ └──(this)─> CartObject/Mary/addTicket
+     ▸
+     ├──── ☑️  #1 Call TicketObject/seat2B/reserve inv_19maBIcE9uRD1CrHgpGXZ7FcXPsz4bzkbL
+     └────>> backing-off
+```
+```shell
+$ restate invocations cancel --kill inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
   ❯ [2024-04-23 14:41:59.365 +02:00] inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
      Target:      CartObject/Mary/addTicket
      Status:      backing-off  (25 minutes, 29 seconds and 200 ms. Retried 141
@@ -334,8 +339,8 @@ You can inspect invocations via the CLI.
 
     ✔ Are you sure you want to kill this invocation · yes
 
-    ✅ Request was sent successfully`]}
-/>
+    ✅ Request was sent successfully
+```
 
 Restate also exposes traces via OpenTelemetry, which can be sent to your observability platform of choice (e.g. Jaeger).
 Have a look at the [tracing documentation](/operate/monitoring/tracing) for more information.
