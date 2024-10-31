@@ -4,9 +4,7 @@ import {Scrollycoding} from "../components/code/scrollycoding";
 
 
 const MDXComponents = {
-  // Define your custom MDX components here
   Code,
-  CodeWithTabs,
   Scrollycoding
 };
 

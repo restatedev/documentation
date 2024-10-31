@@ -8,13 +8,14 @@ import { Block, HighlightedCodeBlock, parseProps } from "codehike/blocks"
 // @ts-ignore
 import styles from "./scrollycoding.module.css"
 import React from "react"
-import { Code, CodeTabs, extractFlags } from "./code"
+import { Code, CodeTabs } from "./code"
 
 const Schema = Block.extend({
     steps: z.array(
         Block.extend({
             code: z.optional(HighlightedCodeBlock),
             tabs: z.optional(z.array(HighlightedCodeBlock)),
+            activeTabIndex: z.optional(z.number()),
         })
     ),
 })

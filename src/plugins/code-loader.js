@@ -109,7 +109,6 @@ const plugin = (options) => {
                     }
                     finalLines.push(line);
                 }
-                console.log(JSON.stringify(finalLines))
             });
         } else {
             finalLines = lines;

@@ -59,24 +59,16 @@ Restate pushes the events to your function.
     CODE_LOAD::ts/src/use_cases/event_processing/event_processing.ts?1
     ```
 
-
-
     ### !!steps Push events to functions
     Let Restate subscribe to a Kafka topic and specify to which function to push the events.
     Restate will take care of the event plumbing: polling for records, committing offsets, recovering...
 
-    ```shell
+    ```shell ! curl
     curl restate:9070/subscriptions --json '{
-      "source": "kafka://my-cluster/user-events",
-      "sink": "service://userUpdates/updateUserEvent"
+        "source": "kafka://my-cluster/user-events",
+        "sink": "service://userUpdates/updateUserEvent"
     }'
     ```
-
-    ```ts ! user_updates.ts
-    CODE_LOAD::ts/src/use_cases/event_processing/event_processing.ts?1
-    ```
-
-
 
     ### !!steps Queue per key
     Events get sent to objects based on the Kafka key.
@@ -90,8 +82,6 @@ Restate pushes the events to your function.
     CODE_LOAD::ts/src/use_cases/event_processing/event_processing.ts?1
     ```
 
-
-
     ### !!steps Postpone processing
 
     Flexibly postpone processing of events until later.
@@ -104,8 +94,6 @@ Restate pushes the events to your function.
     CODE_LOAD::ts/src/use_cases/event_processing/event_processing.ts?2
     ```
 
-
-
     ### !!steps Durable side effects
 
     The results of interactions with external systems are tracked and recovered after failures. This simplifies writing flows that keep multiple systems in sync.
@@ -113,8 +101,6 @@ Restate pushes the events to your function.
     ```ts ! user_updates.ts
     CODE_LOAD::ts/src/use_cases/event_processing/event_processing.ts?3
     ```
-
-
 
     ### !!steps Flexible control flow
 
@@ -139,24 +125,16 @@ Restate pushes the events to your function.
         CODE_LOAD::java/src/main/java/usecases/eventprocessing/UserUpdatesService.java?1
         ```
 
-
-
         ### !!steps Push events to functions
         Let Restate subscribe to a Kafka topic and specify to which function to push the events.
         Restate will take care of the event plumbing: polling for records, committing offsets, recovering...
 
-        ```shell
+        ```shell ! curl
         curl restate:9070/subscriptions --json '{
           "source": "kafka://my-cluster/user-events",
           "sink": "service://UserUpdatesService/updateUserEvent"
         }'
         ```
-
-        ```java ! UserUpdatesService.java
-        CODE_LOAD::java/src/main/java/usecases/eventprocessing/UserUpdatesService.java?1
-        ```
-
-
 
         ### !!steps Queue per key
         Events get sent to objects based on the Kafka key.
@@ -170,8 +148,6 @@ Restate pushes the events to your function.
         CODE_LOAD::java/src/main/java/usecases/eventprocessing/UserUpdatesService.java?1
         ```
 
-
-
         ### !!steps Postpone processing
 
         Flexibly postpone processing of events until later.
@@ -184,8 +160,6 @@ Restate pushes the events to your function.
         CODE_LOAD::java/src/main/java/usecases/eventprocessing/UserUpdatesService.java?2
         ```
 
-
-
         ### !!steps Durable side effects
 
         The results of interactions with external systems are tracked and recovered after failures. This simplifies writing flows that keep multiple systems in sync.
@@ -193,8 +167,6 @@ Restate pushes the events to your function.
         ```java ! UserUpdatesService.java
         CODE_LOAD::java/src/main/java/usecases/eventprocessing/UserUpdatesService.java?3
         ```
-
-
 
         ### !!steps Flexible control flow
 
@@ -219,24 +191,16 @@ Restate pushes the events to your function.
             CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/UserUpdatesService.kt?1
             ```
 
-
-
             ### !!steps Push events to functions
             Let Restate subscribe to a Kafka topic and specify to which function to push the events.
             Restate will take care of the event plumbing: polling for records, committing offsets, recovering...
 
-            ```shell
+            ```shell ! curl
             curl restate:9070/subscriptions --json '{
               "source": "kafka://my-cluster/user-events",
               "sink": "service://UserUpdatesService/updateUserEvent"
             }'
             ```
-
-            ```kotlin ! UserUpdatesService.kt
-            CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/UserUpdatesService.kt?1
-            ```
-
-
 
             ### !!steps Queue per key
             Events get sent to objects based on the Kafka key.
@@ -299,26 +263,16 @@ Restate pushes the events to your function.
         CODE_LOAD::go/usecases/eventprocessing/eventprocessing.go?1
         ```
 
-
-
         ### !!steps Push events to functions
         Let Restate subscribe to a Kafka topic and specify to which function to push the events.
         Restate will take care of the event plumbing: polling for records, committing offsets, recovering...
 
-
-        ```shell
+        ```shell ! curl
         curl restate:9070/subscriptions --json '{
           "source": "kafka://my-cluster/user-events",
           "sink": "service://userUpdates/updateUserEvent"
         }'
         ```
-
-        ```go ! userupdates.go
-        CODE_LOAD::go/usecases/eventprocessing/eventprocessing.go?1
-        ```
-
-
-
 
         ### !!steps Queue per key
         Events get sent to objects based on the Kafka key.
@@ -332,8 +286,6 @@ Restate pushes the events to your function.
         CODE_LOAD::go/usecases/eventprocessing/eventprocessing.go?1
         ```
 
-
-
         ### !!steps Postpone processing
 
         Flexibly postpone processing of events until later.
@@ -346,8 +298,6 @@ Restate pushes the events to your function.
         CODE_LOAD::go/usecases/eventprocessing/eventprocessing.go?2
         ```
 
-
-
         ### !!steps Durable side effects
 
         The results of interactions with external systems are tracked and recovered after failures. This simplifies writing flows that keep multiple systems in sync.
@@ -355,8 +305,6 @@ Restate pushes the events to your function.
         ```go ! userupdates.go
         CODE_LOAD::go/usecases/eventprocessing/eventprocessing.go?3
         ```
-
-
 
         ### !!steps Flexible control flow
 

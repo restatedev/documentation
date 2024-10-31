@@ -9,13 +9,13 @@ class UserManagementService {
   // <start_here>
   @Handler
   suspend fun setup(ctx: ObjectContext, email: Email) {
-    // !focus(1:3)
+    // !focus
     val result = SignupWorkflowClient.fromContext(ctx, "someone").run(email).await()
   }
 
   @Handler
   suspend fun queryStatus(ctx: ObjectContext) {
-    // !focus(1:3)
+    // !focus
     val status = SignupWorkflowClient.fromContext(ctx, "someone").getStatus().await()
   }
   // <end_here>
