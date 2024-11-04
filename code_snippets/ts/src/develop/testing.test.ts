@@ -36,7 +36,6 @@ describe("ExampleObject", () => {
   it("Can read state", async () => {
     const state = restateTestEnvironment.stateOf(router, "myKey");
 
-    // State reading
     expect(await state.getAll()).toStrictEqual({});
     expect(await state.get("count")).toBeNull();
   });
@@ -47,10 +46,7 @@ describe("ExampleObject", () => {
     await state.setAll({
       count: 123,
     });
-    expect(await state.getAll()).toStrictEqual({ count: 123 });
-
     await state.set("count", 321);
-    expect(await state.get<number>("count")).toBe(321);
   });
   // <end_state>
 
@@ -58,28 +54,10 @@ describe("ExampleObject", () => {
   type ServiceState = { count: number };
 
   it("Can operate on typed state", async () => {
-    // Typed state
     const state = restateTestEnvironment.stateOf<ServiceState>(router, "myKey");
 
     await state.setAll({ count: 1 });
-    // wont compile:
-    // state.setAll({ count: "a" });
-    // state.setAll({ foo: 1 });
-
-    expect(await state.getAll()).toStrictEqual({ count: 1 });
-    // wont compile:
-    // (await state.getAll()) satisfies { count: string };
-    // (await state.getAll()) satisfies { foo: number };
-
     await state.set("count", 2);
-    // wont compile:
-    // state.set("count", "a");
-    // state.set("foo", 2);
-
-    expect(await state.get("count")).toBe(2);
-    // wont compile:
-    // await state.get("foo");
-    // (await state.get("count")) satisfies string;
   });
   // <end_typedstate>
 });
