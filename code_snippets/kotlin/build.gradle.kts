@@ -10,7 +10,7 @@ plugins {
 
 repositories { mavenCentral() }
 
-val restateVersion = "1.0.1"
+val restateVersion = "1.1.1"
 
 dependencies {
   // Annotation processor
@@ -22,6 +22,10 @@ dependencies {
   implementation("dev.restate:sdk-http-vertx:$restateVersion")
   implementation("dev.restate:sdk-lambda:$restateVersion")
   implementation("dev.restate:sdk-request-identity:$restateVersion")
+  implementation("dev.restate:sdk-testing:$restateVersion")
+
+  implementation("org.junit.jupiter:junit-jupiter-api:5.11.3")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
 
   implementation("org.apache.logging.log4j:log4j-core:2.20.0")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")

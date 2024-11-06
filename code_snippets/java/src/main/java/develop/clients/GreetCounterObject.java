@@ -1,4 +1,4 @@
-package operate.invocations;
+package develop.clients;
 
 import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.ObjectContext;

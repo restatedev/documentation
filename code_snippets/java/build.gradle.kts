@@ -10,7 +10,7 @@ repositories {
     mavenCentral()
 }
 
-val restateVersion = "1.0.1"
+val restateVersion = "1.1.1"
 
 dependencies {
     // Restate SDK
@@ -21,6 +21,7 @@ dependencies {
     implementation("dev.restate:sdk-lambda:$restateVersion")
     implementation("dev.restate:sdk-serde-jackson:$restateVersion")
     implementation("dev.restate:sdk-request-identity:$restateVersion")
+    implementation("dev.restate:sdk-testing:$restateVersion")
 
     // Jackson parameter names
     // https://github.com/FasterXML/jackson-modules-java8/tree/2.14/parameter-names
@@ -28,6 +29,8 @@ dependencies {
     // Jackson java8 types
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.16.1")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.16.1")
+
+    implementation("org.junit.jupiter:junit-jupiter-api:5.11.3")
 
     implementation("dev.restate:sdk-serde-protobuf:$restateVersion")
     implementation("org.apache.logging.log4j:log4j-core:2.20.0")
