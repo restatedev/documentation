@@ -13,7 +13,7 @@ import {CodeWithTabs} from "../../src/components/code/code";
 import {Terminal} from "../../src/components/code/terminal";
 import {TextAndCode} from "../../src/components/code/code/text-and-code";
 
-# New Quickstart
+# Quickstart
 This guide takes you through your first steps with Restate.
 Let's first get our setup working.
 We will run a simple Restate Greeter service that listens on port `9080` and responds with `Hi!` to a `greet` request.
@@ -257,8 +257,7 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
 </details>
 
-
-## Restate's key features
+## Quick Exploration of Restate
 
 The greeter is a template service that returns the input string.
 At first sight, this might look like a simple REST service. But it's much more than that.
@@ -271,7 +270,7 @@ Let's compare the two:
 
 <div className="row">
     <div className={"col col--6"}>
-        ### Without Restate
+        **Without Restate**
 
         ```ts
         CODE_LOAD::ts/src/get_started/express.ts
@@ -282,25 +281,27 @@ Let's compare the two:
         ❌ **No retries**: To make this resilient, you would have to implement retries yourself.
         You would need retry logic in the upstream caller of this handler, and within the handler for the payment and subscription API calls.
 
-        ❌ **Loss of intermediate results**: If the handler would fail halfway, we would lose the payment identifier, unless we store it in a database and write the logic to recover it on retry.
+        ❌ **Loss of intermediate results**: If the handler would fail halfway, we would lose the payment identifier, unless we store it in a database and write the logic to recover it on retries.
+        And we would need to write the logic to retrieve the payment identifier and the payment reference.
 
         ❌ **No recovery of progress**: If this handler would fail halfway, we would have to implement logic to recover the progress.
         For example, we would need to store the payment identifier in a database to be able to retry the payment without creating a duplicate payment.
 
-        ❌ **No deduplication**: We could end up with multiple payments or subscriptions for the same user.
+        ❌ **No deduplication**: If the upstream caller loses the connection and retries the request, we could end up with multiple payments or subscriptions for the same user.
 
     </div>
     <div className={"col col--6"}>
-        ### With Restate
+        **With Restate**
 
         ```ts
         CODE_LOAD::ts/src/get_started/app.ts
         ```
-        
+
         Restate makes code resilient and idempotent with just a few changes.
         Restate enables the following features:
 
-        ✅ **Built-in retries**: If the APIs  down or the network fails, Restate makes sure this gets retried until it succeeds.
+        ✅ **Built-in retries**: Restate registers incoming requests and makes sure they are retried until they run till completion.
+        If the service itself crashes or if the API requests time out, Restate will retry the handler until it succeeds.
 
         ✅ **Persisted progress**: The Restate Context `ctx` lets us persist actions throughout our handler.
         For example, the generation of the payment identifier is wrapped in `ctx.run`, to store it in Restate.
@@ -308,24 +309,33 @@ Let's compare the two:
 
         ✅ **Recovery of progress**: If the API is down or the network fails, Restate retries only the failed step without retrying the previously succeeded steps.
 
-        We also get **idempotency for requests** to this handler for free. By calling this handler with an idempotency key, Restate will ensure that the handler is only executed once for that key.
-        Guarding against duplicate requests and concurrent retries.
+        ✅ **Idempotency for requests**: Restate lets you add an idempotency key to the header of your request.
+        Restate will make sure each request is processed only once, and returns the previous result on retries.
 
         ```shell
         curl localhost:8080/SubscriptionService/add \
         # !focus
-            -H 'idempotency-key: ad5472esg4dsg525dssdfa5loi' \
-            -H 'content-type: application/json' \
-            -d '{"userId": "s45dyb3", "creditCard": "1234 1234 1234", "subscriptions": ["Netflix", "Disney+"]}'
+        -H 'idempotency-key: ad5472esg4dsg525dssdfa5loi' \
+        -H 'content-type: application/json' \
+        -d '{"userId": "s45dyb3", "creditCard": "1234 1234 1234", "subscriptions": ["Netflix", "Disney+"]}'
         ```
 
     </div>
 </div>
 
-Feel free to copy the Restate version into your template project and run it:
+Copy the Restate version into your template project and run it:
+
+
+But you can go even further with Restate:
+
+- **Durable RPC**: let services call each other in a resilient way
+- **Durable messaging**: let services communicate via messages, without deploying a message broker
+- **Durable promises and timers**: let services wait for external events, like webhooks or timers. Restate makes sure promises are recoverable after failures.
+- **Consistent K/V state**: persist application state in Restate with a simple concurrency model and no extra setup. Restate makes sure state remains consistent in case of failures.
 
 
 ## Next steps
 - Read the [Concepts](/concepts/durable_building_blocks)
 - Discover the key features of Restate in the [Tour of Restate](/get_started/tour)
 - [Run the examples](https://github.com/restatedev/examples)
+
