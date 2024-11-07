@@ -1,0 +1,331 @@
+---
+id: new-quickstart
+[//]: # (sidebar_position: 2 --> this is now set by sidebars.js)
+description: ""
+toc: false
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import Admonition from '@theme/Admonition';
+import {Step} from "../../src/components/Stepper";
+import {CodeWithTabs} from "../../src/components/code/code";
+import {Terminal} from "../../src/components/code/terminal";
+import {TextAndCode} from "../../src/components/code/code/text-and-code";
+
+# New Quickstart
+This guide takes you through your first steps with Restate.
+Let's first get our setup working.
+We will run a simple Restate Greeter service that listens on port `9080` and responds with `Hi!` to a `greet` request.
+
+<img src="/img/quickstart/overview.svg" alt="Quickstart" className="quickstart-image" width="400rem"/>
+
+<Admonition type="note" title="Prerequisites">
+    - [NodeJS](https://nodejs.org/en/) >= v18.17.1
+    - [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 9.6.7
+</Admonition>
+
+<Step stepLabel="1" title="Install Restate Server & CLI">
+    Restate is a single self-contained binary. No external dependencies needed.
+    <Tabs groupId={"running-restate"}>
+        <TabItem value={"Homebrew"} label={"Homebrew"}>
+            <TextAndCode>
+                Install Restate Server and CLI via:
+
+                ```shell !result
+                brew install restatedev/tap/restate-server &&
+                brew install restatedev/tap/restate
+                ```
+            </TextAndCode>
+            <TextAndCode>
+                Then run the Restate Server with:
+                ```shell !result
+                restate-server
+                ```
+            </TextAndCode>
+        </TabItem>
+        <TabItem value={"bin"} label={"Download binaries"}>
+            Install the Restate Server and CLI by downloading the binaries with `curl` from the [releases page](https://github.com/restatedev/restate/releases/latest), and make them executable:
+
+
+            <CodeWithTabs>
+                ```shell !!tabs Linux-x64
+                BIN=$HOME/.local/bin && RESTATE_PLATFORM=x86_64-unknown-linux-musl && \
+                curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
+                tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+                chmod +x restate restate-server && \
+
+                # Move the binaries to a directory in your PATH, for example ~/.local/bin:
+                mv restate $BIN && \
+                mv restate-server $BIN
+                ```
+
+                ```shell !!tabs Linux-arm64
+                BIN=$HOME/.local/bin && RESTATE_PLATFORM=aarch64-unknown-linux-musl && \
+                curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
+                tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+                chmod +x restate restate-server && \
+
+                # Move the binaries to a directory in your PATH, for example ~/.local/bin:
+                mv restate $BIN && \
+                mv restate-server $BIN
+                ```
+
+                ```shell !!tabs MacOS-x64
+                BIN=/usr/local/bin && RESTATE_PLATFORM=x86_64-apple-darwin && \
+                curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
+                tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+                chmod +x restate restate-server && \
+
+                # Move the binaries to a directory in your PATH, for example /usr/local/bin (needs sudo):
+                sudo mv restate $BIN && \
+                sudo mv restate-server $BIN
+                ```
+
+                ```shell !!tabs MacOS-arm64
+                BIN=/usr/local/bin && RESTATE_PLATFORM=aarch64-apple-darwin && \
+                curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
+                tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+                chmod +x restate restate-server && \
+
+                # Move the binaries to a directory in your PATH, for example /usr/local/bin (needs sudo):
+                sudo mv restate $BIN && \
+                sudo mv restate-server $BIN
+                ```
+
+            </CodeWithTabs>
+
+            Then run the Restate Server with:
+            ```shell
+            restate-server
+            ```
+
+        </TabItem>
+        <TabItem value={"npm"} label={"npm"}>
+            <TextAndCode>
+                Install Restate Server and CLI via:
+
+                ```shell !result
+                npm install --global @restatedev/restate-server@latest &&
+                npm install --global @restatedev/restate@latest
+                ```
+            </TextAndCode>
+            <TextAndCode>
+                Then run the Restate Server with:
+                ```shell !result
+                restate-server
+                ```
+            </TextAndCode>
+        </TabItem>
+        <TabItem value={"Docker"} label={"Docker"}>
+
+            To run the Restate Server:
+
+            ```shell
+            docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 \
+            --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
+            ```
+
+            To run commands with the Restate CLI, use the following command:
+
+            ```shell
+            docker run -it --network=host docker.io/restatedev/restate-cli:VAR::RESTATE_VERSION invocations ls
+            ```
+
+            Replace `invocations ls` by the CLI command you want to run.
+
+        </TabItem>
+    </Tabs>
+</Step>
+<Step stepLabel="2" title="Get the Greeter service template">
+
+    Select your favorite runtime:
+    <Tabs groupId={"ts-runtime"} className={"selection-button"}>
+        <TabItem value={"Node.js"} label={<><img src='/img/quickstart/nodejs.svg' alt="Node.js" className="icon" />Node.js</>}>
+            <CodeWithTabs>
+                ```shell !!tabs CLI
+                restate example typescript-hello-world &&
+                cd typescript-hello-world &&
+                npm install
+                ```
+
+                ```shell !!tabs npx
+                npx -y @restatedev/create-app@latest && cd restate-node-template &&
+                npm install
+                ```
+            </CodeWithTabs>
+        </TabItem>
+        <TabItem value={"Bun"} label={<><img src='/img/quickstart/bun.svg' alt="bun" className="icon" />bun</>}>
+            ```shell
+            restate example typescript-bun-hello-world &&
+            cd typescript-bun-hello-world &&
+            npm install
+            ```
+        </TabItem>
+        <TabItem value={"Deno"} label={<><img src='/img/quickstart/deno.svg' alt="deno" className="icon" />Deno</>}>
+            ```shell
+            restate example typescript-deno-hello-world &&
+            cd typescript-deno-hello-world &&
+            npm install
+            ```
+        </TabItem>
+        <TabItem value={"CloudflareWorkers"} label={<><img src='/img/quickstart/cloudflare_workers.svg' alt="Cloudflare Workers" className="icon" />Cloudflare Workers</>}>
+            ```shell
+            restate example typescript-cloudflare-worker-hello-world &&
+            cd typescript-cloudflare-worker-hello-world &&
+            npm install
+            ```
+        </TabItem>
+    </Tabs>
+
+</Step>
+<Step stepLabel="3" title="Run the Greeter service">
+
+    Now, start developing your service in `src/app.ts`. Run it with [`ts-node-dev`](https://www.npmjs.com/package/ts-node-dev), and let it listen on port `9080` for requests:
+
+    ```shell
+    npm run app-dev
+    ```
+
+</Step>
+
+<Step stepLabel="4" title="Register the service">
+
+    Tell Restate where the service is running, so Restate can discover and register the services and handlers behind this endpoint:
+
+
+    <CodeWithTabs>
+
+        ```shell !!tabs CLI
+        restate deployments register http://localhost:9080
+        ```
+
+        ```shell !!tabs curl
+        curl localhost:9070/deployments -H 'content-type: application/json' \
+        -d '{"uri": "http://localhost:9080"}'
+        ```
+
+    </CodeWithTabs>
+    <details className={"grey-details"}>
+        <summary>Output</summary>
+
+        ```shell
+        ❯ SERVICES THAT WILL BE ADDED:
+        - Greeter
+        Type: Service
+        HANDLER  INPUT                                     OUTPUT
+        greet    value of content-type 'application/json'  value of content-type 'application/json'
+
+
+        ✔ Are you sure you want to apply those changes? · yes
+        ✅ DEPLOYMENT:
+        SERVICE  REV
+        Greeter  1
+        ```
+
+    </details>
+    If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
+</Step>
+
+<Step stepLabel="5" title="Send a request to the Greeter service">
+
+    <Terminal>
+
+        ```shell !command
+        curl localhost:8080/Greeter/greet -H 'content-type: application/json' -d '"Hi"'
+        ```
+
+        ```shell !output
+        Hi!
+        ```
+
+    </Terminal>
+
+</Step>
+<Step end={true} stepLabel="🎉" title="Congratulations, you managed to run your first Restate service!"/>
+
+<details className="grey-details">
+
+    <summary>Next: Build and run the app</summary>
+
+    Once you have implemented your service, build the app and run it with:
+
+    ```shell
+    npm run build
+    npm run app
+    ```
+
+</details>
+
+
+## Restate's key features
+
+The greeter is a template service that returns the input string.
+At first sight, this might look like a simple REST service. But it's much more than that.
+
+Let's have a look at what Restate actually brings to the table here.
+
+Imagine we have a handler which adds a user to a subscription service by first setting up a recurring payment and then creating the subscription.
+Below, this is one time implemented as a simple express app and one time as a Restate service.
+Let's compare the two:
+
+<div className="row">
+    <div className={"col col--6"}>
+        ### Without Restate
+
+        ```ts
+        CODE_LOAD::ts/src/get_started/express.ts
+        ```
+
+        This function would not be resilient against infrastructure failures, API downtime or timeouts, concurrent retries, network failures, etc.
+
+        ❌ **No retries**: To make this resilient, you would have to implement retries yourself.
+        You would need retry logic in the upstream caller of this handler, and within the handler for the payment and subscription API calls.
+
+        ❌ **Loss of intermediate results**: If the handler would fail halfway, we would lose the payment identifier, unless we store it in a database and write the logic to recover it on retry.
+
+        ❌ **No recovery of progress**: If this handler would fail halfway, we would have to implement logic to recover the progress.
+        For example, we would need to store the payment identifier in a database to be able to retry the payment without creating a duplicate payment.
+
+        ❌ **No deduplication**: We could end up with multiple payments or subscriptions for the same user.
+
+    </div>
+    <div className={"col col--6"}>
+        ### With Restate
+
+        ```ts
+        CODE_LOAD::ts/src/get_started/app.ts
+        ```
+        
+        Restate makes code resilient and idempotent with just a few changes.
+        Restate enables the following features:
+
+        ✅ **Built-in retries**: If the APIs  down or the network fails, Restate makes sure this gets retried until it succeeds.
+
+        ✅ **Persisted progress**: The Restate Context `ctx` lets us persist actions throughout our handler.
+        For example, the generation of the payment identifier is wrapped in `ctx.run`, to store it in Restate.
+        On retries, we will now always get the same payment identifier.
+
+        ✅ **Recovery of progress**: If the API is down or the network fails, Restate retries only the failed step without retrying the previously succeeded steps.
+
+        We also get **idempotency for requests** to this handler for free. By calling this handler with an idempotency key, Restate will ensure that the handler is only executed once for that key.
+        Guarding against duplicate requests and concurrent retries.
+
+        ```shell
+        curl localhost:8080/SubscriptionService/add \
+        # !focus
+            -H 'idempotency-key: ad5472esg4dsg525dssdfa5loi' \
+            -H 'content-type: application/json' \
+            -d '{"userId": "s45dyb3", "creditCard": "1234 1234 1234", "subscriptions": ["Netflix", "Disney+"]}'
+        ```
+
+    </div>
+</div>
+
+Feel free to copy the Restate version into your template project and run it:
+
+
+## Next steps
+- Read the [Concepts](/concepts/durable_building_blocks)
+- Discover the key features of Restate in the [Tour of Restate](/get_started/tour)
+- [Run the examples](https://github.com/restatedev/examples)

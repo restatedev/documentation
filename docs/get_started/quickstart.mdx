@@ -9,10 +9,15 @@ import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
 import {Step} from "../../src/components/Stepper";
 import {CodeWithTabs} from "../../src/components/code/code";
+import {Terminal} from "../../src/components/code/terminal";
 import {TextAndCode} from "../../src/components/code/code/text-and-code";
 
 # Quickstart
 This guide takes you through your first steps with Restate.
+Let's first get our setup working.
+We will run a simple Restate Greeter service that listens on port `9080` and responds with `Hi!` to a `greet` request.
+
+<img src="/img/quickstart/overview.svg" alt="Quickstart" className="quickstart-image" width="400rem"/>
 
 <Tabs groupId="sdk" queryString>
     <TabItem value="ts" label="TypeScript">
@@ -191,6 +196,7 @@ This guide takes you through your first steps with Restate.
 
             Tell Restate where the service is running, so Restate can discover and register the services and handlers behind this endpoint:
 
+
             <CodeWithTabs>
 
                 ```shell !!tabs CLI
@@ -226,11 +232,17 @@ This guide takes you through your first steps with Restate.
 
         <Step stepLabel="5" title="Send a request to the Greeter service">
 
-            ```shell
-            curl localhost:8080/Greeter/greet -H 'content-type: application/json' -d '"Hi"'
-            ```
+            <Terminal>
 
-            You should now see printed as response: `Hi!`
+                ```shell !command
+                curl localhost:8080/Greeter/greet -H 'content-type: application/json' -d '"Hi"'
+                ```
+
+                ```shell !output
+                Hi!
+                ```
+
+            </Terminal>
 
         </Step>
         <Step end={true} stepLabel="🎉" title="Congratulations, you managed to run your first Restate service!"/>
@@ -1284,6 +1296,8 @@ This guide takes you through your first steps with Restate.
 
     </TabItem>
 </Tabs>
+
+## Restate's key features
 
 
 ## Next steps

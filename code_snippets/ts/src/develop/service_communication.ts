@@ -27,7 +27,9 @@ const service = restate.service({
       // <end_one_way_object>
 
       // <start_delayed_service>
-      ctx.serviceSendClient(MyService).myHandler("Hi", restate.rpc.sendOpts({ delay: 5000 }));
+      ctx
+        .serviceSendClient(MyService)
+        .myHandler("Hi", restate.rpc.sendOpts({ delay: 5000 }));
       // <end_delayed_service>
 
       // <start_delayed_object>

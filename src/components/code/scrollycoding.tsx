@@ -9,12 +9,15 @@ import { Block, HighlightedCodeBlock, parseProps } from "codehike/blocks"
 import styles from "./scrollycoding.module.css"
 import React from "react"
 import { Code, CodeTabs } from "./code"
+import {Terminal, TerminalView} from "./terminal";
 
 const Schema = Block.extend({
     steps: z.array(
         Block.extend({
             code: z.optional(HighlightedCodeBlock),
             tabs: z.optional(z.array(HighlightedCodeBlock)),
+            command: z.optional(HighlightedCodeBlock),
+            output: z.optional(HighlightedCodeBlock),
             activeTabIndex: z.optional(z.number()),
         })
     ),
@@ -23,7 +26,6 @@ const Schema = Block.extend({
 export function Scrollycoding(props: unknown) {
     const { steps } = parseProps(props, Schema)
 
-    console.log(steps[0])
     return (
         <SelectionProvider className={styles.scrollycodingContainer}>
             <div className={styles.stepsContainer}>
@@ -43,7 +45,9 @@ export function Scrollycoding(props: unknown) {
                 from={steps.map((step) => (
                     <div className={styles.sticker}>
                         <div className={styles.stickyCode}>
-                            {"code" in step ? (
+                            {"command" in step && "output" in step ? (
+                                TerminalView(step.command, step.output)
+                            ) : "code" in step ? (
                                 <Code
                                     codeblock={step.code}
                                     style={{ maxHeight: "50rem" }}

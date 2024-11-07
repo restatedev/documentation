@@ -54,13 +54,17 @@ export function Code({
 
 export function HighCode({
                            highlighted,
-                             isTab,
+                           isTab,
+                           noBorder,
+                           noCopyButton,
                            className,
                            style,
                            extraHandlers = [],
                          }: {
   highlighted: HighlightedCode
   isTab?: boolean
+  noBorder?: boolean
+  noCopyButton?: boolean
   className?: string
   style?: React.CSSProperties
   extraHandlers?: AnnotationHandler[]
@@ -110,7 +114,7 @@ export function HighCode({
                         <CodeIcon title={title}/>
                         <span className={"code-file-name-title"}>{title}</span>
                     </div>
-                    <CopyButton text={h.code} className="ch-code-button"/>
+                    {(!noCopyButton) ? <CopyButton text={h.code} className="ch-code-button"/>: null}
                     {pre}
                 </div>
             </div>
@@ -126,9 +130,9 @@ export function HighCode({
               } as any
             }
         >
-            <div className={clsx("ch-codeblock", (isTab) ? "no-border" : undefined)}>
+            <div className={clsx("ch-codeblock", (isTab || noBorder) ? "no-border" : undefined)}>
                 <div className="ch-code-wrapper ch-code">
-                  <CopyButton text={h.code} className="ch-code-button" />
+                    {(!noCopyButton) ? <CopyButton text={h.code} className="ch-code-button" />: null}
                   {pre}
                 </div>
             </div>
