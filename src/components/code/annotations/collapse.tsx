@@ -4,8 +4,8 @@ import {
   CollapsibleTrigger,
 } from "../ui/collapsible"
 import { ChevronDownIcon } from "lucide-react"
-import { BlockAnnotation, AnnotationHandler, InnerLine } from "codehike/code"
-import React from "react"
+import {AnnotationHandler, BlockAnnotation, InnerLine} from "codehike/code";
+import React from "react";
 
 const collapseRoot: AnnotationHandler = {
   name: "collapse",
@@ -34,29 +34,31 @@ const collapseRoot: AnnotationHandler = {
     )
   },
 }
+
 const icon = (
-  <ChevronDownIcon
-    className="inline-block group-data-[state=closed]:-rotate-90 transition select-none opacity-30 group-data-[state=closed]:opacity-80 group-hover:!opacity-100 mb-0.5 ml-1 -mr-1 "
-    size={15}
-  />
+    <ChevronDownIcon
+        className="inline-block group-data-[state=closed]:-rotate-90 transition select-none opacity-30 group-data-[state=closed]:opacity-80 group-hover:!opacity-100 mb-0.5"
+        size={15}
+    />
 )
 const collapseTrigger: AnnotationHandler = {
   name: "CollapseTrigger",
   onlyIfAnnotated: true,
   AnnotatedLine: ({ annotation, ...props }) => (
-    <CollapsibleTrigger className="group contents">
-      <InnerLine merge={props} data={{ icon }} />
-    </CollapsibleTrigger>
+      <CollapsibleTrigger className="group contents">
+        <InnerLine merge={props} data={{icon}}/>
+        {/*<span >...</span>*/}
+      </CollapsibleTrigger>
   ),
   Line: (props) => {
     const icon = props.data?.icon as React.ReactNode
     return (
-      <div className="table-row">
-        <span className="w-4 text-center table-cell">{icon}</span>
-        <div className="table-cell">
-          <InnerLine merge={props} />
+        <div className="table-row">
+          <span className="w-5 text-center table-cell">{icon}</span>
+          <div className="table-cell">
+            <InnerLine merge={props} />
+          </div>
         </div>
-      </div>
     )
   },
 }
