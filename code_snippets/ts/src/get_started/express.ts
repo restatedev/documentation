@@ -8,7 +8,6 @@ const app = express();
 app.use(express.json());
 
 
-
 app.post("/add", async (req, res) => {
   const { userId, creditCard, subscriptions } = req.body;
 
