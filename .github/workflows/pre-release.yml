@@ -143,11 +143,11 @@ jobs:
 
       # Upgrade Java code snippets if new version is provided
       - name: Find and replace restateVersion in build.gradle.kts for Java code snippets
-        if: ${{ inputs.sdkJavaVersion != '' }}
+        if: github.event.inputs.sdkJavaVersion != ''
         run: sed -i 's/val restateVersion = "[0-9A-Z.-]*"/val restateVersion = "${{ inputs.sdkJavaVersion }}"/' code_snippets/java/build.gradle.kts
       # Upgrade Kotlin code snippets if new version is provided
       - name: Find and replace restateVersion in build.gradle.kts for Kotlin code snippets
-        if: ${{ inputs.sdkJavaVersion != '' }}
+        if: github.event.inputs.sdkJavaVersion != ''
         run: sed -i 's/val restateVersion = "[0-9A-Z.-]*"/val restateVersion = "${{ inputs.sdkJavaVersion }}"/' code_snippets/kotlin/build.gradle.kts
 
       # Check Java code snippets
