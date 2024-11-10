@@ -7,8 +7,7 @@ export const mark: AnnotationHandler = {
     return (
       <div
         style={{
-          borderLeft: "solid 2px transparent",
-          borderLeftColor: annotation && color,
+          borderLeft:  annotation && `solid 2px ${color}`,
           backgroundColor: annotation && `rgb(from ${color} r g b / 0.08)`,
         }}
         className="flex"

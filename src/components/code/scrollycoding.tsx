@@ -33,10 +33,10 @@ export function Scrollycoding(props: unknown) {
                     <Selectable
                         key={i}
                         index={i}
-                        selectOn={["click", "scroll"]}
+                        selectOn={["hover", "scroll", "click"]}
                         className={styles.step}
                     >
-                        <p className={styles.stepTitle}>{step.title}</p>
+                        {(step.title.length > 0) ? <p className={styles.stepTitle}>{step.title}</p> : null}
                         <div>{step.children}</div>
                     </Selectable>
                 ))}
