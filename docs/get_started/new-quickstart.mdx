@@ -10,7 +10,11 @@ import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
 import {Step} from "../../src/components/Stepper";
 import {CodeWithTabs} from "../../src/components/code/code";
-import {Terminal} from "../../src/components/code/terminal";
+import {
+    Terminal,
+    TerminalView,
+    TerminalWithTabs
+} from "../../src/components/code/terminal";
 import {TextAndCode} from "../../src/components/code/code/text-and-code";
 
 # Getting Started
@@ -197,22 +201,15 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
     Tell Restate where the service is running, so Restate can discover and register the services and handlers behind this endpoint:
 
 
-    <CodeWithTabs>
+    <TerminalWithTabs>
 
-        ```shell !!tabs CLI
+        # !!terminals
+
+        ```shell !command CLI
         restate deployments register http://localhost:9080
         ```
 
-        ```shell !!tabs curl
-        curl localhost:9070/deployments -H 'content-type: application/json' \
-        -d '{"uri": "http://localhost:9080"}'
-        ```
-
-    </CodeWithTabs>
-    <details className={"grey-details"}>
-        <summary>Output</summary>
-
-        ```shell
+        ```shell !output
         ❯ SERVICES THAT WILL BE ADDED:
         - Greeter
         Type: Service
@@ -226,7 +223,19 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
         Greeter  1
         ```
 
-    </details>
+        # !!terminals
+
+        ```shell !command curl
+        curl localhost:9070/deployments -H 'content-type: application/json' \
+        -d '{"uri": "http://localhost:9080"}'
+        ```
+
+        ```shell !output
+        Hi!
+        ```
+
+    </TerminalWithTabs>
+
     If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
 </Step>
 
