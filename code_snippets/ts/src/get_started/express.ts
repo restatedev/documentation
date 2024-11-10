@@ -1,12 +1,13 @@
 import express from "express";
 import { randomUUID } from "node:crypto";
 
-const PAYMENT_API = 'https://pvd5p37t6zz5hpsetbqda2bzra0fwqkx.lambda-url.eu-central-1.on.aws';
-const SUBSCRIPTION_API = 'https://z2bo2pifnqgfscdzinm6szme5u0fajja.lambda-url.eu-central-1.on.aws';
+const PAYMENT_API =
+  "https://pvd5p37t6zz5hpsetbqda2bzra0fwqkx.lambda-url.eu-central-1.on.aws";
+const SUBSCRIPTION_API =
+  "https://z2bo2pifnqgfscdzinm6szme5u0fajja.lambda-url.eu-central-1.on.aws";
 
 const app = express();
 app.use(express.json());
-
 
 app.post("/add", async (req, res) => {
   const { userId, creditCard, subscriptions } = req.body;
@@ -16,21 +17,19 @@ app.post("/add", async (req, res) => {
   // !mark 0
   const idempotencyKey = randomUUID();
 
-
   // 2. Create a recurring payment
   // No retries in case of timeouts, API downtime, etc.
   // !mark(1:10) 1
   const paymentResp =
-  // !collapse(1:9) collapsed
+    // !collapse(1:9) collapsed
     await fetch(`${PAYMENT_API}/createRecurringPayment`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Idempotency-Key": idempotencyKey,
-        },
-        body: JSON.stringify({ userId, creditCard }),
-      }
-    );
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Idempotency-Key": idempotencyKey,
+      },
+      body: JSON.stringify({ userId, creditCard }),
+    });
 
   const paymentRef = await paymentResp.json();
 
@@ -48,7 +47,5 @@ app.post("/add", async (req, res) => {
 
   res.status(200).send();
 });
-
-
 
 app.listen();

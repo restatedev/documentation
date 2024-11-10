@@ -13,9 +13,12 @@ import {CodeWithTabs} from "../../src/components/code/code";
 import {Terminal} from "../../src/components/code/terminal";
 import {TextAndCode} from "../../src/components/code/code/text-and-code";
 
-# Quickstart
+# Getting Started
 This guide takes you through your first steps with Restate.
+
+## Quickstart
 Let's first get our setup working.
+
 We will run a simple Restate Greeter service that listens on port `9080` and responds with `Hi!` to a `greet` request.
 
 <img src="/img/quickstart/overview.svg" alt="Quickstart" className="quickstart-image" width="400rem"/>
@@ -27,10 +30,11 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
 <Step stepLabel="1" title="Install Restate Server & CLI">
     Restate is a single self-contained binary. No external dependencies needed.
+
     <Tabs groupId={"running-restate"}>
         <TabItem value={"Homebrew"} label={"Homebrew"}>
             <TextAndCode>
-                Install Restate Server and CLI via:
+                Install Restate Server and CLI.
 
                 ```shell !result
                 brew install restatedev/tap/restate-server &&
@@ -46,7 +50,6 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
         </TabItem>
         <TabItem value={"bin"} label={"Download binaries"}>
             Install the Restate Server and CLI by downloading the binaries with `curl` from the [releases page](https://github.com/restatedev/restate/releases/latest), and make them executable:
-
 
             <CodeWithTabs>
                 ```shell !!tabs Linux-x64
@@ -257,17 +260,20 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
 </details>
 
-## 10-minute Exploration of Restate
+## 5-minute Exploration of Restate
 
 The `greet` handler is a template. When you call it, it just returns the input string.
 At first sight, this might look like a simple REST service. But it's much more than that.
 
-Restate makes code resilient against infrastructure failures, API downtime or timeouts, concurrent retries, network failures, etc.
+**Restate makes code resilient against infrastructure failures, API downtime and timeouts, concurrent retries, network failures, etc.
 Restate proxies requests to your service, and persists the progress the handlers make.
+This way, it can make sure that requests run till completion by retrying failed requests and recovering the progress of the handler.**
 
-Imagine we have a handler which adds a user to a subscription service by first setting up a recurring payment and then creating the subscription.
-Below, this is one time implemented as a simple express app and one time as a Restate service.
+Imagine we have a handler which adds a user to a subscription service by first setting up a recurring payment and then creating the subscriptions.
+Below, this is one time implemented as an express app and one time as a Restate service.
 Let's compare their behaviour under failures.
+
+You can run the Restate service yourself by copying over the code into your template, and running `npm run app-dev`.
 
 <div className="row">
     <div className={"col col--6 padding-right--lg"}>
@@ -291,31 +297,67 @@ Let's compare their behaviour under failures.
 |-----------------|--------------|
 | ❌ **No retries**: To make this resilient, you would have to implement retries yourself. You would need retry logic in the upstream caller of this handler, and within the handler for the payment and subscription API calls. | ✅ **Built-in retries**: Restate registers incoming requests and makes sure they are retried until they run till completion. If the service itself crashes or if the API requests time out, Restate will retry the handler until it succeeds. |
 | ❌ **No recovery of progress**: If this handler would fail halfway, we would have to implement logic to recover the progress. For example, we would need to store the payment identifier in a database to be able to retry the payment without creating a duplicate payment. We would need to make sure we don't re-execute steps we already did. | ✅ **Recovery of progress**: The Restate Context \`ctx\` lets us persist actions throughout our handler. For example, the generation of the payment identifier is wrapped in \`ctx.run\`, to store it in Restate. On retries, we will now always get the same payment identifier. If the API is down or the network fails, Restate retries only the failed step without retrying the previously succeeded steps. |
-| ❌ **No deduplication**: If the upstream caller loses the connection and retries the request, we could end up with multiple payments or subscriptions for the same user. | ✅ **Idempotency for requests**: Restate lets you add an idempotency key to the header of your request. Restate will make sure each request is processed only once, and returns the previous result on retries. |
+| ❌ **No deduplication**: If the upstream caller loses the connection to the handler and retries the request, we could end up with multiple payments or subscriptions for the same user. | ✅ **Idempotency for requests**: Restate lets you add an idempotency key to the header of your request. Restate will make sure each request is processed only once, and returns the previous result on retries. |
 
-Copy the Restate version into your template project and run it:
+<div className="row">
+    <div className={"col col--6 padding-right--lg"}>
 
+        Imagine a flaky payment API, where half of the requests fail.
+        When the express app crashes, we lose the request, payment idempotency key, and progress.
+        When we retry the request, we might end up with multiple payments for the same user.
+
+    </div>
+    <div className={"col col--6 padding-left--none"}>
+
+        Imagine a flaky payment API, where half of the requests fail.
+        In the case of Restate, the request is persisted, and the payment identifier is persisted.
+        Restate retries the payment until it succeeds:
+
+    </div>
+</div>
 
 <video controls autoplay loop className="quickstart-video">
     <source src="/img/quickstart/resiliency_quickstart.mp4" type="video/mp4" />
     Your browser does not support the video tag.
 </video>
 
-## Going the next mile
 
-Restate does not only provide resiliency to executing a single handler, but also to the communication between services, and to the state of your application.
+## Towards Fully Resilient Applications
 
-- **Durable RPC**: let services call each other in a resilient way
-   - `const response = await ctx.serviceClient(MyService).myHandler("Hi");`
-- **Durable messaging**: let services communicate via messages, without deploying a message broker
-   - `ctx.serviceClient(MyService).send().myHandler("Hi");`
-- **Durable promises and timers**: let services wait for external events, like webhooks or timers. Restate makes sure promises are recoverable after failures.
-    - `await ctx.promise(HUMAN_CONFIRMATION)`
-    - `await ctx.sleep(24*60*60*1000);`
-    - `ctx.serviceSendClient(MyService).myHandler("Hi", restate.rpc.sendOpts({ delay: 5000 }));`
-- **Consistent K/V state**: persist application state in Restate with a simple concurrency model and no extra setup. Restate makes sure state remains consistent in case of failures.
-    - `ctx.get("my-key")`
-    - `ctx.set("my-key", "my-value")`
+Restate does not only provide resiliency to executing a single handler, but also to the communication between services, and to the state of your application:
+
+- **[Durable RPC](/develop/ts/service-communication)**: let services call each other in a resilient way
+- **[Durable messaging](/develop/ts/service-communication#sending-messages)**: let services communicate via messages, without deploying a message broker. Implement async tasks, optionally with a delay.
+- **Durable [promises](/develop/ts/awakeables) and [timers](/develop/ts/durable-timers)**: let services wait for external events, like webhooks or timers. Restate makes sure promises are recoverable after failures.
+- **[Consistent K/V state](/develop/ts/state)**: persist application state in Restate with a simple concurrency model and no extra setup. Restate makes sure state remains consistent in case of failures.
+
+These durable coding constructs make it very easy to implement more complex patterns.
+
+For example, you can implement a file processing workflow with Restate.
+The workflow waits for human approval, and then and processes the file in parallel.
+Restate will remember which steps got executed, so that it can recover our workflow after a failure, similar to a workflow orchestrator.
+
+<TextAndCode>
+1. **Durable messaging:** We send a notification to the employee that needs to approve this file upload.
+The effect of this is similar to publishing an event to a queue.
+Restate is the queue and makes sure the event is processed exactly once.
+You can use this to schedule async tasks, optionally with a delay.
+
+2. **Durable Promises:** We wait for the employee to confirm the upload.
+Restate will register the promise, wait for its resolution, and makes sure the promise is recoverable after a failure.
+
+3. **Durable timers:** If no confirmation is received within 24 hours, we send a reminder to the employee.
+This is implemented with Restate's Durable Timers.
+Restate will register the timer, wait for the timer to expire, and makes sure the timer is recoverable after a failure.
+
+```ts !result
+CODE_LOAD::ts/src/get_started/file_workflow.ts
+```
+
+</TextAndCode>
+
+Now that you have a basic understanding of Restate, you can start building your own services.
+
 
 ## Next steps
 - Read the [Concepts](/concepts/durable_building_blocks)
