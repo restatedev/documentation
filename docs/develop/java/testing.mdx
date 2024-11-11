@@ -1,0 +1,54 @@
+---
+sidebar_position: 14
+description: "Test your services."
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Testing
+
+The Java SDK comes with the module `sdk-testing` that integrates with JUnit 5 and TestContainers to start up a Restate container together with your services code and automatically register them.
+
+```kotlin
+implementation("dev.restate:sdk-testing:VAR::JAVA_SDK_VERSION")
+```
+
+## Using the JUnit 5 Extension
+
+Given the service to test `GreeterService`, register the JUnit 5 extension that will start Restate along with the service:
+
+<Tabs groupId="sdk" queryString>
+    <TabItem value="java" label="Java">
+        ```java
+        CODE_LOAD::java/src/main/java/develop/GreeterTest.java#extension
+        ```
+    </TabItem>
+    <TabItem value="kotlin" label="Kotlin">
+        ```kotlin
+        CODE_LOAD::kotlin/src/main/kotlin/develop/GreeterTest.kt#extension
+        ```
+    </TabItem>
+</Tabs>
+
+Note that the extension will start one Restate server for the whole test class. For more details, checkout [`RestateRunner` Javadocs](/javadocs/dev/restate/sdk/testing/RestateRunner.html).
+
+Once the extension is set, you can implement your test methods as usual, and inject a [`Client`](/javadocs/dev/restate/sdk/client/Client.html) using [`@RestateClient`](/javadocs/dev/restate/sdk/testing/RestateClient.html) to interact with Restate and the registered services:
+
+<Tabs groupId="sdk" queryString>
+    <TabItem value="java" label="Java">
+        ```java
+        CODE_LOAD::java/src/main/java/develop/GreeterTest.java#test
+        ```
+    </TabItem>
+    <TabItem value="kotlin" label="Kotlin">
+        ```kotlin
+        CODE_LOAD::kotlin/src/main/kotlin/develop/GreeterTest.kt#test
+        ```
+    </TabItem>
+</Tabs>
+
+## Usage without JUnit 5
+
+You can use the testing tools without JUnit 5 by creating a [`ManualRestateRunner`](/javadocs/dev/restate/sdk/testing/ManualRestateRunner.html) with [`RestateRunnerBuilder#buildManualRunner`](/javadocs/dev/restate/sdk/testing/RestateRunnerBuilder.html#buildManualRunner()).
+For more details, refer to the Javadocs.
