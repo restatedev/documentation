@@ -12,10 +12,10 @@ import {Step} from "../../src/components/Stepper";
 import {CodeWithTabs} from "../../src/components/code/code";
 import {
     Terminal,
-    TerminalView,
     TerminalWithTabs
 } from "../../src/components/code/terminal";
 import {TextAndCode} from "../../src/components/code/code/text-and-code";
+import {Scrollycoding} from "../../src/components/code/scrollycoding";
 
 # Getting Started
 This guide takes you through your first steps with Restate.
@@ -190,9 +190,22 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
     Now, start developing your service in `src/app.ts`. Run it with [`ts-node-dev`](https://www.npmjs.com/package/ts-node-dev), and let it listen on port `9080` for requests:
 
-    ```shell
-    npm run app-dev
-    ```
+    <Terminal>
+
+        ```shell !command
+        npm run app-dev
+        ```
+
+        ```log !output
+        > restate-ts-template@0.0.1 app-dev
+        > ts-node-dev --watch ./src --respawn --transpile-only ./src/app.ts
+
+        [INFO] 00:44:54 ts-node-dev ver. 2.0.0 (using ts-node ver. 10.9.2, typescript ver. 5.6.3)
+        [restate] [2024-11-12T23:44:54.955Z] INFO:  Listening on 9080...
+        [restate] [2024-11-12T23:44:54.957Z] WARN:  Accepting requests without validating request signatures; handler access must be restricted
+        ```
+
+    </Terminal>
 
 </Step>
 
@@ -231,7 +244,28 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
         ```
 
         ```shell !output
-        Hi!
+        {
+            "id": "dp_17sztQp4gnEC1L0OCFM9aEh",
+            "services": [
+        {
+            "name": "Greeter",
+            "handlers": [
+        {
+            "name": "greet",
+            "ty": "Shared",
+            "input_description": "one of [\"none\", \"value of content-type 'application/json'\"]",
+            "output_description": "value of content-type 'application/json'"
+        }
+            ],
+            "ty": "Service",
+            "deployment_id": "dp_17sztQp4gnEC1L0OCFM9aEh",
+            "revision": 1,
+            "public": true,
+            "idempotency_retention": "1day"
+        }
+            ]
+        }
+
         ```
 
     </TerminalWithTabs>
@@ -254,7 +288,7 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
     </Terminal>
 
 </Step>
-<Step end={true} stepLabel="🎉" title="Congratulations, you managed to run your first Restate service!"/>
+<Step end={true} stepLabel="🎉" title="Congratulations, you now have working setup!"/>
 
 <details className="grey-details">
 
@@ -268,6 +302,8 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
     ```
 
 </details>
+
+Want to understand what Restate is about? Continue reading below.
 
 ## 5-minute Exploration of Restate
 
@@ -346,24 +382,133 @@ For example, you can implement a file processing workflow with Restate.
 The workflow waits for human approval, and then and processes the file in parallel.
 Restate will remember which steps got executed, so that it can recover our workflow after a failure, similar to a workflow orchestrator.
 
-<TextAndCode>
-1. **Durable messaging:** We send a notification to the employee that needs to approve this file upload.
-The effect of this is similar to publishing an event to a queue.
-Restate is the queue and makes sure the event is processed exactly once.
-You can use this to schedule async tasks, optionally with a delay.
+<Scrollycoding>
+    # !!steps
+    1. **Durable messaging:** We send a notification to the employee that needs to approve this file upload.
+    The effect of this is similar to publishing an event to a queue.
+    Restate is the queue and makes sure the event is processed exactly once.
+    You can use this to schedule async tasks, optionally with a delay.
 
-2. **Durable Promises:** We wait for the employee to confirm the upload.
-Restate will register the promise, wait for its resolution, and makes sure the promise is recoverable after a failure.
+    ```ts !
+    CODE_LOAD::ts/src/get_started/file_workflow.ts?1
+    ```
 
-3. **Durable timers:** If no confirmation is received within 24 hours, we send a reminder to the employee.
-This is implemented with Restate's Durable Timers.
-Restate will register the timer, wait for the timer to expire, and makes sure the timer is recoverable after a failure.
+    # !!steps
+    2. **Durable Promises:** We wait for the employee to confirm the upload.
+    Restate will register the promise, wait for its resolution, and makes sure the promise is recoverable after a failure.
 
-```ts !result
-CODE_LOAD::ts/src/get_started/file_workflow.ts
-```
+    ```ts !
+    CODE_LOAD::ts/src/get_started/file_workflow.ts?2
+    ```
+    # !!steps
+    3. **Durable timers:** If no confirmation is received within 24 hours, we send a reminder to the employee.
+    This is implemented with Restate's Durable Timers.
+    Restate will register the timer, wait for the timer to expire, and makes sure the timer is recoverable after a failure.
 
-</TextAndCode>
+    ```ts !
+    CODE_LOAD::ts/src/get_started/file_workflow.ts?3
+    ```
+
+</Scrollycoding>
+
+<details className={"grey-details"}>
+<summary>Running the file workflow locally</summary>
+
+    1. Copy the full code (including stubs) into your project
+
+    ```ts app.ts
+    CODE_LOAD::ts/src/get_started/file_workflow.ts#full
+    ```
+
+    2. Run the service
+
+    ```shell
+    npm run app-dev
+    ```
+
+    3. Register the service with Restate. Use `force` to overwrite the existing deployment (only use this for development).
+    ```shell
+    restate deployments register http://localhost:9080 --force
+    ```
+
+    4. Send a request to the service:
+
+    ```shell
+    curl -X POST http://localhost:8080/FileWorkflow/file488/run \
+        -H "Content-Type: application/json" \
+        -d '{
+            "userId": "employee123",
+            "fileUrl": "file488.txt"
+        }
+    ```
+
+    5. Optional: The invocation will now be blocking on the promise.
+    You can now use the Restate CLI to inspect the invocation and see what it is stuck on.
+
+    First list the running invocations to find the invocation ID:
+
+    <Terminal>
+        ```shell !command
+        restate inv ls
+        ```
+        ```shell !output
+        ❯ [2024-11-12 20:40:08.149 +01:00] inv_1lww6dToghwj3jShyf2z5j91EWKm6OnRgB
+        Target:      FileWorkflow/23/run
+        Status:      running  (4 seconds and 765 ms)
+        Deployment:  dp_14DypPEJ9kZcklM7zwdBs2J [required] using
+        restate-sdk-typescript/1.4.0
+        ```
+    </Terminal>
+
+    Then use the invocation ID to see the progress:
+
+    <Terminal>
+
+    ```shell !command
+    restate invocations describe inv_1lww6dToghwj3jShyf2z5j91EWKm6OnRgB
+    ```
+
+    ```shell !output
+    📜 Invocation Information:
+    ――――――――――――――――――――――――――
+    Created at:   2024-11-12 20:40:08.149 +01:00 (11 seconds ago)
+    Target:       FileWorkflow/23/run
+    Status:       running  (11 seconds and 169 ms)
+    Deployment:   dp_14DypPEJ9kZcklM7zwdBs2J [required] using
+    restate-sdk-typescript/1.4.0
+    Modified at:  2024-11-12 20:40:18.173 +01:00
+
+    💡   This invocation is bound to run on deployment 'dp_14DypPEJ9kZcklM7zwdBs2J'. To guarantee
+    safety and correctness, invocations that made progress on a deployment
+    cannot move to newer deployments automatically.
+
+    🚂 Invocation Progress:
+    ―――――――――――――――――――――――
+    [Ingress]
+    └──(this)─> FileWorkflow/23/run
+    ▸
+    ├──── ☑️  #1 Send NotificationService/notify inv_1ai7U4M25kAK317XiCwqn4cbqOgb2TSjTz
+    ├──── ⏸️  #2 Promise approval
+    ├──── ☑️  #3 Sleep until 2024-11-12 20:40:18.159 +01:00
+    ├──── ☑️  #6 Send NotificationService/remind inv_1c0ewogz3NG95fXBsEJkJrLQZkIjhxb6LL
+    ├──── ⏸️  #7 Promise approval
+    ├──── ⏰ #8 Sleep until 2024-11-12 20:40:28.172 +01:00 (8 seconds and 768 ms left)
+    └────>> running
+    ```
+    </Terminal>
+
+    6.  You can resolve the promise by sending a POST request to the promise endpoint:
+
+    ```shell
+    curl -X POST http://localhost:8080/FileWorkflow/file488/evaluate \
+        -H "Content-Type: application/json" \
+        -d 'true'
+    ```
+
+    Now the invocation will complete.
+
+</details>
+
 
 Now that you have a basic understanding of Restate, you can start building your own services.
 

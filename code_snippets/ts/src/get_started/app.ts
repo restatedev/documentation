@@ -12,7 +12,7 @@ const subscriptions = restate.service({
     // Use the restate.Context to persist results in Restate
     add: async (
       ctx: restate.Context,
-      req: { userId: string; creditCard: string; subscriptions: string[] }
+      req: { userId: any; creditCard: any; subscriptions: any; }
     ) => {
       const { userId, creditCard, subscriptions } = req;
 
@@ -30,15 +30,14 @@ const subscriptions = restate.service({
       // !mark[/await ctx.run\(async \(\) =>/g] 1
       const paymentRef = await ctx.run(async () => {
         // !collapse(1:8) collapsed
-        const resp = await fetch(`${PAYMENT_API}/createRecurringPayment`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Idempotency-Key": idempotencyKey,
-          },
-          body: JSON.stringify({ userId, creditCard }),
-        });
-        return resp.json();
+        return (await fetch(`${PAYMENT_API}/createRecurringPayment`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Idempotency-Key": idempotencyKey,
+            },
+            body: JSON.stringify({ userId, creditCard }),
+          })).json();
       });
 
       // 3. Create subscriptions
@@ -50,10 +49,10 @@ const subscriptions = restate.service({
         await ctx.run(() =>
           // !collapse(1:5) collapsed
           fetch(`${SUBSCRIPTION_API}/create`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userId, subscription, paymentRef }),
-          })
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ userId, subscription, paymentRef }),
+            })
         );
       }
     },

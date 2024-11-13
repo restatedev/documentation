@@ -1,3 +1,4 @@
+// <start_full>
 import * as restate from "@restatedev/restate-sdk";
 import { randomUUID } from "node:crypto";
 import { CombineablePromise } from "@restatedev/restate-sdk";
@@ -11,57 +12,70 @@ const fileWorkflow = restate.workflow({
       req: { employeeId: string; fileUrl: string }
     ) => {
       // Let the notification service request a file review
-      ctx
-        .serviceSendClient(NotificationService)
-        .sendNotification({
+      // <mark_1>
+      ctx.serviceSendClient(NotificationService).notify({
           employeeId: req.employeeId,
           message: "Please approve",
         });
+      // </mark_1>
 
       // Wait for approval or timeout. On timeout, send reminder.
-      const approvalPromise = ctx.promise("approval");
+      // <mark_2>
+      const approvalPromise = ctx.promise("approval").get();
+      // </mark_2>
+      let approval = undefined;
       while (true) {
-        const outcome = await CombineablePromise.any([
-          approvalPromise.get(),
-          ctx.sleep(24 * 60 * 60 * 1000),
+        // <mark_2>
+        approval = await CombineablePromise.any([
+          approvalPromise,
+          // <mark_3>
+          ctx.sleep(10 * 1000),
+          // </mark_3>
         ]);
+        // </mark_2>
 
-        if (await approvalPromise.peek() == undefined) {
-          // Send a reminder
-          ctx
-            .serviceSendClient(NotificationService)
-            .sendNotification({
-              employeeId: req.employeeId,
-              message: "Reminder: Please approve",
-            });
-        } else if (await approvalPromise.peek() == true) {
-          processFile(req.fileUrl)
-          return
+        if ( approval == undefined) {
+          ctx.serviceSendClient(NotificationService).remind({
+            employeeId: req.employeeId,
+          });
+        } else {
+          return (approval == true) ? processFile(req.fileUrl) : "Rejected";
         }
       }
     },
 
     evaluate: async (ctx: restate.WorkflowSharedContext, approved: boolean) => {
+      // <mark_2>
       await ctx.promise("approval").resolve(approved);
+      // </mark_2>
     },
   },
 });
-
-restate.endpoint().bind(fileWorkflow).listen();
 // <end_here>
 
 function processFile(task: any) {
-  return [];
+  // Do the processing
 }
 
-const NotificationService = restate.service({
+const notificationService = restate.service({
   name: "NotificationService",
   handlers: {
-    sendNotification: async (
+    notify: async (
       ctx: restate.Context,
       req: { employeeId: string; message: string }
     ) => {
       // Send a notification to the user
     },
+    remind: async (
+      ctx: restate.Context,
+      req: { employeeId: string;}
+    ) => {
+      // Send a notification to the user
+    },
   },
 });
+
+export const NotificationService: typeof notificationService = { name: "NotificationService" };
+
+restate.endpoint().bind(fileWorkflow).bind(notificationService).listen();
+// <end_full>

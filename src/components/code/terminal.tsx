@@ -21,7 +21,7 @@ export function Terminal(props: unknown) {
 
 export function TerminalView(command, output, isTab?) {
     return (
-        <div className={styles.terminal}>
+        <div className={clsx(styles.terminal, (!isTab) ? styles.terminalBorder: null)}>
             <HighCode noBorder={true} highlighted={command} isTab={isTab ?? false} className={styles.terminalCommand}/>
             <HighCode noBorder={true} noCopyButton={true} highlighted={output} className={styles.terminalOutput}/>
         </div>
