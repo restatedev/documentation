@@ -1,103 +1,89 @@
 package get_started;
 
-import dev.restate.sdk.Context;
-import dev.restate.sdk.JsonSerdes;
-import dev.restate.sdk.annotation.Handler;
-import dev.restate.sdk.annotation.Service;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.UUID;
 
-@Service
-public class SubscriptionService {
-
-    @Handler
-    public void add(Context ctx, SubscriptionRequest req) {
-
-        String idempotencyKey = ctx.run(JsonSerdes.STRING, () -> UUID.randomUUID().toString());
-
-        ctx.run(() -> {
-            var recurringPaymentReq = HttpRequest.newBuilder()
-                    .
-                    .build();
-
-            HttpClient.newHttpClient()
-                    .send(recurringPaymentReq);
-        });
-
-
-    }
-
-
-
-
-}
-
-
-import java.util.UUID;
-import java.util.List;
-import java.util.Map;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
+import static java.net.http.HttpResponse.BodyHandlers;
 
 public class SubscriptionService {
 
     private static final String PAYMENT_API = "https://pvd5p37t6zz5hpsetbqda2bzra0fwqkx.lambda-url.eu-central-1.on.aws";
     private static final String SUBSCRIPTION_API = "https://z2bo2pifnqgfscdzinm6szme5u0fajja.lambda-url.eu-central-1.on.aws";
 
-    public void add(Map<String, Object> ctx, Map<String, Object> req) throws Exception {
-        String userId = (String) req.get("userId");
-        String creditCard = (String) req.get("creditCard");
-        List<String> subscriptions = (List<String>) req.get("subscriptions");
+    static class AddHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange t) throws IOException {
+            ObjectMapper mapper = new ObjectMapper();
+            var req = mapper.readValue(t.getRequestBody(), SubscriptionRequest.class);
 
-        // 1. Generate an idempotency key
-        String idempotencyKey = UUID.randomUUID().toString();
+            // 1. Generate an idempotency key
+            String idempotencyKey = UUID.randomUUID().toString();
 
-        // 2. Create a recurring payment
-        String paymentRef = createRecurringPayment(userId, creditCard, idempotencyKey);
+            try {
+                // 2. Create a recurring payment
+                String paymentRef = createRecurringPayment(req.getUserId(), req.getCreditCard(), idempotencyKey);
 
-        // 3. Create subscriptions
-        for (String subscription : subscriptions) {
-            createSubscription(userId, subscription, paymentRef);
+                // 3. Create subscriptions
+                for (String subscription : req.getSubscriptions()) {
+                    createSubscription(req.getUserId(), subscription, paymentRef);
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        private String createRecurringPayment(String userId, String creditCard, String idempotencyKey) throws IOException, InterruptedException {
+            HttpClient httpClient = HttpClient.newHttpClient();
+            URI uri = URI.create(PAYMENT_API + "/createRecurringPayment");
+            String requestBody = String.format("{\"userId\": \"%s\", \"creditCard\": \"%s\"}", userId, creditCard);
+            HttpRequest request =
+                    HttpRequest.newBuilder()
+                            .uri(uri)
+                            .header("Content-Type", "application/json")
+                            .header("Idempotency-Key", idempotencyKey)
+                            .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                            .build();
+
+            HttpResponse<String> response = httpClient.send(request, BodyHandlers.ofString());
+            if (response.statusCode() != 200) {
+                throw new RuntimeException("Creating recurring payment failed with status code: " + response.statusCode());
+            }
+            return response.body();
+        }
+
+        private String createSubscription(String userId, String subscription, String paymentRef) throws IOException, InterruptedException {
+            HttpClient httpClient = HttpClient.newHttpClient();
+            URI uri = URI.create(SUBSCRIPTION_API + "/create");
+            String requestBody = String.format("{\"userId\": \"%s\", \"subscription\": \"%s\", \"paymentRef\": \"%s\"}", userId, subscription, paymentRef);
+            HttpRequest request =
+                    HttpRequest.newBuilder()
+                            .uri(uri)
+                            .header("Content-Type", "application/json")
+                            .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                            .build();
+
+            HttpResponse<String> response = httpClient.send(request, BodyHandlers.ofString());
+            if (response.statusCode() != 200) {
+                throw new RuntimeException("Creating subscription failed with status code: " + response.statusCode());
+            }
+            return response.body();
         }
     }
 
-    private String createRecurringPayment(String userId, String creditCard, String idempotencyKey) throws Exception {
-        URL url = new URL(PAYMENT_API + "/createRecurringPayment");
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/json");
-        conn.setRequestProperty("Idempotency-Key", idempotencyKey);
-        conn.setDoOutput(true);
-
-        String jsonInputString = String.format("{\"userId\": \"%s\", \"creditCard\": \"%s\"}", userId, creditCard);
-        try (OutputStream os = conn.getOutputStream()) {
-            byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
-            os.write(input, 0, input.length);
-        }
-
-        // Assuming the response is a JSON object with a field "paymentRef"
-        // Parse the response to get the paymentRef
-        // For simplicity, returning a dummy paymentRef
-        return "dummyPaymentRef";
-    }
-
-    private void createSubscription(String userId, String subscription, String paymentRef) throws Exception {
-        URL url = new URL(SUBSCRIPTION_API + "/create");
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/json");
-        conn.setDoOutput(true);
-
-        String jsonInputString = String.format("{\"userId\": \"%s\", \"subscription\": \"%s\", \"paymentRef\": \"%s\"}", userId, subscription, paymentRef);
-        try (OutputStream os = conn.getOutputStream()) {
-            byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
-            os.write(input, 0, input.length);
-        }
-
-        // Handle the response if needed
+    public static void main(String[] args) throws IOException, InterruptedException {
+        HttpServer server = HttpServer.create(new InetSocketAddress(5000), 0);
+        server.createContext("/add", new AddHandler());
+        server.setExecutor(null);
+        server.start();
     }
 }

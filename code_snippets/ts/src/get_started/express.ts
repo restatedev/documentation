@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json());
 
 app.post("/add", async (req, res) => {
-  const { userId, creditCard, subscriptions } = req.body;
+  const { email, creditCard, subscriptions } = req.body;
 
   // 1. Generate an idempotency key
   // This value is lost after a failure
@@ -28,7 +28,7 @@ app.post("/add", async (req, res) => {
         "Content-Type": "application/json",
         "Idempotency-Key": idempotencyKey,
       },
-      body: JSON.stringify({ userId, creditCard }),
+      body: JSON.stringify({ email, creditCard }),
     });
 
   const paymentRef = await paymentResp.json();
@@ -41,7 +41,7 @@ app.post("/add", async (req, res) => {
     await fetch(`${SUBSCRIPTION_API}/create`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId, subscription, paymentRef }),
+      body: JSON.stringify({ email, subscription, paymentRef }),
     });
   }
 

@@ -161,12 +161,22 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
                 npm install
                 ```
             </CodeWithTabs>
+
+            This gives you the following template:
+            ```ts src/app.ts
+            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/templates/typescript/src/app.ts
+            ```
         </TabItem>
         <TabItem value={"Bun"} label={<><img src='/img/quickstart/bun.svg' alt="bun" className="icon" />bun</>}>
             ```shell
             restate example typescript-bun-hello-world &&
             cd typescript-bun-hello-world &&
             npm install
+            ```
+
+            This gives you the following template:
+            ```ts src/index.ts
+            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/templates/bun/src/index.ts
             ```
         </TabItem>
         <TabItem value={"Deno"} label={<><img src='/img/quickstart/deno.svg' alt="deno" className="icon" />Deno</>}>
@@ -175,6 +185,11 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
             cd typescript-deno-hello-world &&
             npm install
             ```
+
+            This gives you the following template:
+            ```ts deno/main.ts
+            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/templates/deno/main.ts
+            ```
         </TabItem>
         <TabItem value={"CloudflareWorkers"} label={<><img src='/img/quickstart/cloudflare_workers.svg' alt="Cloudflare Workers" className="icon" />Cloudflare Workers</>}>
             ```shell
@@ -182,13 +197,20 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
             cd typescript-cloudflare-worker-hello-world &&
             npm install
             ```
+
+            This gives you the following template:
+            ```ts src/index.ts
+            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/templates/cloudflare-worker/src/index.ts
+            ```
         </TabItem>
     </Tabs>
+
+
 
 </Step>
 <Step stepLabel="3" title="Run the Greeter service">
 
-    Now, start developing your service in `src/app.ts`. Run it with [`ts-node-dev`](https://www.npmjs.com/package/ts-node-dev), and let it listen on port `9080` for requests:
+    Run it with [`ts-node-dev`](https://www.npmjs.com/package/ts-node-dev), and let it listen on port `9080` for requests:
 
     <Terminal>
 
@@ -318,8 +340,6 @@ Imagine we have a handler which adds a user to a subscription service by first s
 Below, this is one time implemented as an express app and one time as a Restate service.
 Let's compare their behaviour under failures.
 
-You can run the Restate service yourself by copying over the code into your template, and running `npm run app-dev`.
-
 <div className="row">
     <div className={"col col--6 padding-right--lg"}>
         **Without Restate**
@@ -366,6 +386,27 @@ You can run the Restate service yourself by copying over the code into your temp
     Your browser does not support the video tag.
 </video>
 
+<details className={"grey-details"}>
+
+    <summary>Running the subscription service locally</summary>
+
+You can run the Restate service yourself by copying over the code into your template, and running `npm run app-dev`.
+
+Register the service with Restate by running `restate deployments register http://localhost:9080 --force`.
+    You need to use `--force` to overwrite the existing deployment (only use this for development).
+
+Then send a request to the service:
+```shell
+curl -X POST http://localhost:8080/SubscriptionService/add \
+    -H "Content-Type: application/json" \
+    -d '{
+      "userId": "user123",
+      "creditCard": "4111111111111111",
+      "subscriptions": ["Netflix", "Hulu", "Disney+"]
+    }'
+```
+
+</details>
 
 ## Towards Fully Resilient Applications
 
@@ -390,7 +431,7 @@ Restate will remember which steps got executed, so that it can recover our workf
     You can use this to schedule async tasks, optionally with a delay.
 
     ```ts !
-    CODE_LOAD::ts/src/get_started/file_workflow.ts?1
+    CODE_LOAD::ts/src/get_started/app_2.ts?1
     ```
 
     # !!steps
@@ -398,7 +439,7 @@ Restate will remember which steps got executed, so that it can recover our workf
     Restate will register the promise, wait for its resolution, and makes sure the promise is recoverable after a failure.
 
     ```ts !
-    CODE_LOAD::ts/src/get_started/file_workflow.ts?2
+    CODE_LOAD::ts/src/get_started/email_verification.ts?1
     ```
     # !!steps
     3. **Durable timers:** If no confirmation is received within 24 hours, we send a reminder to the employee.
@@ -406,7 +447,7 @@ Restate will remember which steps got executed, so that it can recover our workf
     Restate will register the timer, wait for the timer to expire, and makes sure the timer is recoverable after a failure.
 
     ```ts !
-    CODE_LOAD::ts/src/get_started/file_workflow.ts?3
+    CODE_LOAD::ts/src/get_started/email_verification.ts?2
     ```
 
 </Scrollycoding>
@@ -417,7 +458,11 @@ Restate will remember which steps got executed, so that it can recover our workf
     1. Copy the full code (including stubs) into your project
 
     ```ts app.ts
-    CODE_LOAD::ts/src/get_started/file_workflow.ts#full
+    CODE_LOAD::ts/src/get_started/app_2.ts
+    ```
+
+    ```ts email_verification.ts
+    CODE_LOAD::ts/src/get_started/email_verification.ts#full
     ```
 
     2. Run the service
@@ -434,12 +479,14 @@ Restate will remember which steps got executed, so that it can recover our workf
     4. Send a request to the service:
 
     ```shell
-    curl -X POST http://localhost:8080/FileWorkflow/file488/run \
+    curl -X POST http://localhost:8080/SubscriptionService/add \
         -H "Content-Type: application/json" \
         -d '{
-            "userId": "employee123",
-            "fileUrl": "file488.txt"
-        }
+            "userId": "user123",
+            "email": "user123@user.com",
+            "creditCard": "4111111111111111",
+            "subscriptions": ["Netflix", "Hulu", "Disney+"]
+        }'
     ```
 
     5. Optional: The invocation will now be blocking on the promise.

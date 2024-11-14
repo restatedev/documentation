@@ -7,8 +7,10 @@ import dev.restate.sdk.WorkflowContext;
 import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.Workflow;
 import dev.restate.sdk.common.DurablePromiseKey;
+import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
 import develop.workflows.Email;
+import get_started.SubscriptionServiceRestate;
 import usecases.utils.URL;
 
 // <start_here>
@@ -31,6 +33,12 @@ public class DataPreparationService {
   public void resultAsEmail(SharedWorkflowContext ctx, Email email) {
     URL url = ctx.promise(URL_PROMISE).awaitable().await();
     ctx.run(() -> sendEmail(url, email));
+  }
+
+  public static void main(String[] args){
+        RestateHttpEndpointBuilder.builder()
+                .bind(new SubscriptionServiceRestate())
+                .buildAndListen();
   }
 }
 // <end_here>
