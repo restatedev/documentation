@@ -10,7 +10,7 @@
 <link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
 <link rel="stylesheet" type="text/css" href="../../../../script-dir/jquery-ui.min.css" title="Style">
 <script type="text/javascript" src="../../../../script.js"></script>
-<script type="text/javascript" src="../../../../script-dir/jquery-3.6.1.min.js"></script>
+<script type="text/javascript" src="../../../../script-dir/jquery-3.7.1.min.js"></script>
 <script type="text/javascript" src="../../../../script-dir/jquery-ui.min.js"></script>
 </head>
 <body class="class-declaration-page">
@@ -94,34 +94,39 @@ loadScripts(document, 'script');</script>
 <dd><code>org.junit.jupiter.api.extension.BeforeAllCallback</code>, <code>org.junit.jupiter.api.extension.Extension</code>, <code>org.junit.jupiter.api.extension.ParameterResolver</code></dd>
 </dl>
 <hr>
-<div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">RestateRunner</span>
+<div class="type-signature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Deprecated.html" title="class or interface in java.lang" class="external-link">@Deprecated</a>
+</span><span class="modifiers">public class </span><span class="element-name type-name-label">RestateRunner</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
-implements org.junit.jupiter.api.extension.BeforeAllCallback</span></div>
+implements org.junit.jupiter.api.extension.BeforeAllCallback, org.junit.jupiter.api.extension.ParameterResolver</span></div>
+<div class="deprecation-block"><span class="deprecated-label">Deprecated.</span>
+<div class="deprecation-comment">We now recommend using <a href="RestateTest.html" title="annotation interface in dev.restate.sdk.testing"><code>RestateTest</code></a>.</div>
+</div>
 <div class="block">Restate runner for JUnit 5. Example:
 
- <pre><code>
- {@literal @}RegisterExtension
+ <pre>
+ <code>@RegisterExtension</code>
  private final static RestateRunner restateRunner = RestateRunnerBuilder.create()
          .withService(new MyService())
          .buildRunner();
- </code></pre>
+ </pre>
 
- <p>The runner will deploy the services locally, execute Restate as container using
- testcontainers, and register the services.
+ <p>The runner will deploy the services locally, execute Restate as container using <a href="https://java.testcontainers.org/">Testcontainers</a>, and register the services.
 
  <p>This extension is scoped per test class, meaning that the restate runner will be shared among
  test methods.
 
  <p>Use the annotations <a href="RestateClient.html" title="annotation interface in dev.restate.sdk.testing"><code>RestateClient</code></a>, <a href="RestateURL.html" title="annotation interface in dev.restate.sdk.testing"><code>RestateURL</code></a> and <a href="RestateAdminClient.html" title="annotation interface in dev.restate.sdk.testing"><code>RestateAdminClient</code></a>
- to interact with the deployed runtime:
+ to interact with the deployed server:
 
- <pre><code>
- {@literal @}Test
- void testGreet({@literal @}RestateGrpcChannel ManagedChannel channel) {
-     CounterGrpc.CounterBlockingStub client = CounterGrpc.newBlockingStub(channel);
-     // Use client
- }
- </code></pre></div>
+ <pre>
+ <code>@Test</code>
+ void initialCountIsZero(<code>@RestateClient</code> Client client) {
+     var client = CounterClient.fromClient(ingressClient, "my-counter");
+
+     // Use client as usual
+     long response = client.get();
+     assertThat(response).isEqualTo(0L);
+ }</pre></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -130,23 +135,29 @@ implements org.junit.jupiter.api.extension.BeforeAllCallback</span></div>
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button><button id="method-summary-table-tab6" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab6', 3)" class="table-tab">Deprecated Methods</button></div>
 <div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#beforeAll(org.junit.jupiter.api.extension.ExtensionContext)" class="member-name-link">beforeAll</a><wbr>(org.junit.jupiter.api.extension.ExtensionContext&nbsp;context)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveParameter(org.junit.jupiter.api.extension.ParameterContext,org.junit.jupiter.api.extension.ExtensionContext)" class="member-name-link">resolveParameter</a><wbr>(org.junit.jupiter.api.extension.ParameterContext&nbsp;parameterContext,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#beforeAll(org.junit.jupiter.api.extension.ExtensionContext)" class="member-name-link">beforeAll</a><wbr>(org.junit.jupiter.api.extension.ExtensionContext&nbsp;context)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
+<div class="block"><span class="deprecated-label">Deprecated.</span></div>
+&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#resolveParameter(org.junit.jupiter.api.extension.ParameterContext,org.junit.jupiter.api.extension.ExtensionContext)" class="member-name-link">resolveParameter</a><wbr>(org.junit.jupiter.api.extension.ParameterContext&nbsp;parameterContext,
  org.junit.jupiter.api.extension.ExtensionContext&nbsp;extensionContext)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#supportsParameter(org.junit.jupiter.api.extension.ParameterContext,org.junit.jupiter.api.extension.ExtensionContext)" class="member-name-link">supportsParameter</a><wbr>(org.junit.jupiter.api.extension.ParameterContext&nbsp;parameterContext,
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
+<div class="block"><span class="deprecated-label">Deprecated.</span></div>
+&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#supportsParameter(org.junit.jupiter.api.extension.ParameterContext,org.junit.jupiter.api.extension.ExtensionContext)" class="member-name-link">supportsParameter</a><wbr>(org.junit.jupiter.api.extension.ParameterContext&nbsp;parameterContext,
  org.junit.jupiter.api.extension.ExtensionContext&nbsp;extensionContext)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
+<div class="block"><span class="deprecated-label">Deprecated.</span></div>
+&nbsp;</div>
 </div>
 </div>
 </div>
@@ -168,6 +179,7 @@ implements org.junit.jupiter.api.extension.BeforeAllCallback</span></div>
 <section class="detail" id="beforeAll(org.junit.jupiter.api.extension.ExtensionContext)">
 <h3>beforeAll</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">beforeAll</span><wbr><span class="parameters">(org.junit.jupiter.api.extension.ExtensionContext&nbsp;context)</span></div>
+<div class="deprecation-block"><span class="deprecated-label">Deprecated.</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code>beforeAll</code>&nbsp;in interface&nbsp;<code>org.junit.jupiter.api.extension.BeforeAllCallback</code></dd>
@@ -180,6 +192,7 @@ implements org.junit.jupiter.api.extension.BeforeAllCallback</span></div>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">supportsParameter</span><wbr><span class="parameters">(org.junit.jupiter.api.extension.ParameterContext&nbsp;parameterContext,
  org.junit.jupiter.api.extension.ExtensionContext&nbsp;extensionContext)</span>
                           throws <span class="exceptions">org.junit.jupiter.api.extension.ParameterResolutionException</span></div>
+<div class="deprecation-block"><span class="deprecated-label">Deprecated.</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code>supportsParameter</code>&nbsp;in interface&nbsp;<code>org.junit.jupiter.api.extension.ParameterResolver</code></dd>
@@ -194,6 +207,7 @@ implements org.junit.jupiter.api.extension.BeforeAllCallback</span></div>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span>&nbsp;<span class="element-name">resolveParameter</span><wbr><span class="parameters">(org.junit.jupiter.api.extension.ParameterContext&nbsp;parameterContext,
  org.junit.jupiter.api.extension.ExtensionContext&nbsp;extensionContext)</span>
                         throws <span class="exceptions">org.junit.jupiter.api.extension.ParameterResolutionException</span></div>
+<div class="deprecation-block"><span class="deprecated-label">Deprecated.</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code>resolveParameter</code>&nbsp;in interface&nbsp;<code>org.junit.jupiter.api.extension.ParameterResolver</code></dd>
