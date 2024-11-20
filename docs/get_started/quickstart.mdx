@@ -9,31 +9,56 @@ import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
 import {Step} from "../../src/components/Stepper";
 import {CodeWithTabs} from "../../src/components/code/code";
-import {Terminal} from "../../src/components/code/terminal";
+import {
+    Terminal,
+    TerminalWithTabs
+} from "../../src/components/code/terminal";
 import {TextAndCode} from "../../src/components/code/code/text-and-code";
 
 # Quickstart
 This guide takes you through your first steps with Restate.
-Let's first get our setup working.
+
 We will run a simple Restate Greeter service that listens on port `9080` and responds with `Hi!` to a `greet` request.
 
 <img src="/img/quickstart/overview.svg" alt="Quickstart" className="quickstart-image" width="400rem"/>
 
 <Tabs groupId="sdk" queryString>
     <TabItem value="ts" label="TypeScript">
-
-
-        <Admonition type="note" title="Prerequisites">
-            - [NodeJS](https://nodejs.org/en/) >= v18.17.1
-            - [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 9.6.7
-        </Admonition>
+        Select your favorite runtime:
+        <Tabs groupId={"ts-runtime"} className={"selection-button"}>
+            <TabItem value={"Node.js"} label={<><img src='/img/quickstart/nodejs.svg' alt="Node.js" className="icon" />Node.js</>}>
+                <Admonition type="note" title="Prerequisites">
+                    - [NodeJS](https://nodejs.org/en/) >= v18.17.1
+                    - [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 9.6.7
+                </Admonition>
+            </TabItem>
+            <TabItem value={"Bun"} label={<><img src='/img/quickstart/bun.svg' alt="bun" className="icon" />bun</>}>
+                <Admonition type="note" title="Prerequisites">
+                    - [Bun](https://bun.sh/docs/installation)
+                    - [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 9.6.7
+                </Admonition>
+            </TabItem>
+            <TabItem value={"Deno"} label={<><img src='/img/quickstart/deno.svg' alt="deno" className="icon" />Deno</>}>
+                <Admonition type="note" title="Prerequisites">
+                    - [Deno](https://deno.land/#installation)
+                    - [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 9.6.7
+                </Admonition>
+            </TabItem>
+            <TabItem value={"CloudflareWorkers"} label={<><img src='/img/quickstart/cloudflare_workers.svg' alt="Cloudflare Workers" className="icon" />Cloudflare Workers</>}>
+                <Admonition type="note" title="Prerequisites">
+                    - [NodeJS](https://nodejs.org/en/) >= v18.17.1
+                    - [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 9.6.7
+                </Admonition>
+            </TabItem>
+        </Tabs>
 
         <Step stepLabel="1" title="Install Restate Server & CLI">
             Restate is a single self-contained binary. No external dependencies needed.
+
             <Tabs groupId={"running-restate"}>
                 <TabItem value={"Homebrew"} label={"Homebrew"}>
                     <TextAndCode>
-                        Install Restate Server and CLI via:
+                        Install Restate Server and CLI.
 
                         ```shell !result
                         brew install restatedev/tap/restate-server &&
@@ -51,7 +76,6 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
                     Install the Restate Server and CLI by downloading the binaries with `curl` from the [releases page](https://github.com/restatedev/restate/releases/latest), and make them executable:
 
                     <CodeWithTabs>
-
                         ```shell !!tabs Linux-x64
                         BIN=$HOME/.local/bin && RESTATE_PLATFORM=x86_64-unknown-linux-musl && \
                         curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
@@ -142,9 +166,8 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
         </Step>
         <Step stepLabel="2" title="Get the Greeter service template">
 
-            Select your favorite runtime:
-            <Tabs groupId={"ts-runtime"} className={"selection-button"}>
-                <TabItem value={"Node.js"} label={<><img src='/img/quickstart/nodejs.svg' alt="Node.js" className="icon" />Node.js</>}>
+            <Tabs groupId={"ts-runtime"} className={"display-none"}>
+                <TabItem value={"Node.js"}>
                     <CodeWithTabs>
                         ```shell !!tabs CLI
                         restate example typescript-hello-world &&
@@ -158,21 +181,21 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
                         ```
                     </CodeWithTabs>
                 </TabItem>
-                <TabItem value={"Bun"} label={<><img src='/img/quickstart/bun.svg' alt="bun" className="icon" />bun</>}>
+                <TabItem value={"Bun"}>
                     ```shell
                     restate example typescript-bun-hello-world &&
                     cd typescript-bun-hello-world &&
                     npm install
                     ```
                 </TabItem>
-                <TabItem value={"Deno"} label={<><img src='/img/quickstart/deno.svg' alt="deno" className="icon" />Deno</>}>
+                <TabItem value={"Deno"} >
                     ```shell
                     restate example typescript-deno-hello-world &&
                     cd typescript-deno-hello-world &&
                     npm install
                     ```
                 </TabItem>
-                <TabItem value={"CloudflareWorkers"} label={<><img src='/img/quickstart/cloudflare_workers.svg' alt="Cloudflare Workers" className="icon" />Cloudflare Workers</>}>
+                <TabItem value={"CloudflareWorkers"}>
                     ```shell
                     restate example typescript-cloudflare-worker-hello-world &&
                     cd typescript-cloudflare-worker-hello-world &&
@@ -184,11 +207,74 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
         </Step>
         <Step stepLabel="3" title="Run the Greeter service">
 
-            Now, start developing your service in `src/app.ts`. Run it with [`ts-node-dev`](https://www.npmjs.com/package/ts-node-dev), and let it listen on port `9080` for requests:
+            Run it and let it listen on port `9080` for requests:
 
-            ```shell
-            npm run app-dev
-            ```
+            <Tabs groupId={"ts-runtime"} className={"display-none"}>
+                <TabItem value={"Node.js"}>
+
+                    <Terminal>
+                    ```shell !command
+                    npm run app-dev
+                    ```
+
+                    ```log !output
+                    > restate-ts-template@0.0.1 app-dev
+                    > ts-node-dev --watch ./src --respawn --transpile-only ./src/app.ts
+
+                    [INFO] 00:44:54 ts-node-dev ver. 2.0.0 (using ts-node ver. 10.9.2, typescript ver. 5.6.3)
+                    [restate] [2024-11-12T23:44:54.955Z] INFO:  Listening on 9080...
+                    ```
+
+                    </Terminal>
+                </TabItem>
+                <TabItem value={"Bun"}>
+                    <Terminal>
+                        ```shell !command
+                        npm run dev
+                        ```
+
+                        ```log !output
+                        > restate-bun-template@0.0.1 dev
+                        > bun run --watch src/index.ts
+
+                        Listening on http://localhost:9080/
+                        ```
+                    </Terminal>
+                </TabItem>
+                <TabItem value={"Deno"}>
+                    <Terminal>
+                        ```shell !command
+                        deno task dev
+                        ```
+
+                        ```log !output
+                        Task dev deno run --allow-net --allow-env --watch main.ts
+                        Watcher Process started.
+                        Listening on http://0.0.0.0:9080/
+                        ```
+                    </Terminal>
+                </TabItem>
+                <TabItem value={"CloudflareWorkers"} >
+                    <Terminal>
+                        ```shell !command
+                        npm run dev
+                        ```
+
+                        ```log !output
+                        restate-cloudflare-worker-template@0.0.1 dev
+                        > wrangler dev --port 9080
+
+
+                        ⛅️ wrangler 3.88.0
+                        -------------------
+
+                        ╭────────────────────────────────────────────────────────────────────────────────────────⎔ Starting local server...
+                        [wrangler:inf] Ready on http://localhost:9080
+                        ```
+                    </Terminal>
+
+                </TabItem>
+            </Tabs>
 
         </Step>
 
@@ -196,37 +282,236 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
             Tell Restate where the service is running, so Restate can discover and register the services and handlers behind this endpoint:
 
+            <Tabs groupId={"ts-runtime"} className={"display-none"}>
+                <TabItem value={"Node.js"}>
+                    <TerminalWithTabs>
 
-            <CodeWithTabs>
+                        # !!terminals
 
-                ```shell !!tabs CLI
-                restate deployments register http://localhost:9080
-                ```
+                        ```shell !command CLI
+                        restate deployments register http://localhost:9080
+                        ```
 
-                ```shell !!tabs curl
-                curl localhost:9070/deployments -H 'content-type: application/json' \
-                    -d '{"uri": "http://localhost:9080"}'
-                ```
-
-            </CodeWithTabs>
-            <details className={"grey-details"}>
-                <summary>Output</summary>
-
-                ```shell
-                ❯ SERVICES THAT WILL BE ADDED:
-                - Greeter
-                Type: Service
-                HANDLER  INPUT                                     OUTPUT
-                greet    value of content-type 'application/json'  value of content-type 'application/json'
+                        ```shell !output
+                        ❯ SERVICES THAT WILL BE ADDED:
+                        - Greeter
+                        Type: Service
+                        HANDLER  INPUT                                     OUTPUT
+                        greet    value of content-type 'application/json'  value of content-type 'application/json'
 
 
-                ✔ Are you sure you want to apply those changes? · yes
-                ✅ DEPLOYMENT:
-                SERVICE  REV
-                Greeter  1
-                ```
+                        ✔ Are you sure you want to apply those changes? · yes
+                        ✅ DEPLOYMENT:
+                        SERVICE  REV
+                        Greeter  1
+                        ```
 
-            </details>
+                        # !!terminals
+
+                        ```shell !command curl
+                        curl localhost:9070/deployments -H 'content-type: application/json' \
+                        -d '{"uri": "http://localhost:9080"}'
+                        ```
+
+                        ```shell !output
+                        {
+                            "id": "dp_17sztQp4gnEC1L0OCFM9aEh",
+                            "services": [
+                                {
+                                    "name": "Greeter",
+                                    "handlers": [
+                                        {
+                                            "name": "greet",
+                                            "ty": "Shared",
+                                            "input_description": "one of [\"none\", \"value of content-type 'application/json'\"]",
+                                            "output_description": "value of content-type 'application/json'"
+                                        }
+                                    ],
+                                    "ty": "Service",
+                                    "deployment_id": "dp_17sztQp4gnEC1L0OCFM9aEh",
+                                    "revision": 1,
+                                    "public": true,
+                                    "idempotency_retention": "1day"
+                                }
+                            ]
+                        }
+                        ```
+
+                    </TerminalWithTabs>
+                </TabItem>
+                <TabItem value={"Bun"}>
+                    <TerminalWithTabs>
+
+                        # !!terminals
+
+                        ```shell !command CLI
+                        restate dep add http://localhost:9080 --use-http1.1
+                        ```
+
+                        ```shell !output
+                        ❯ SERVICES THAT WILL BE ADDED:
+                        - Greeter
+                        Type: Service
+                        HANDLER  INPUT                                     OUTPUT
+                        greet    value of content-type 'application/json'  value of content-type 'application/json'
+
+
+                        ✔ Are you sure you want to apply those changes? · yes
+                        ✅ DEPLOYMENT:
+                        SERVICE  REV
+                        Greeter  1
+                        ```
+
+                        # !!terminals
+
+                        ```shell !command curl
+                        curl localhost:9070/deployments -H 'content-type: application/json' \
+                        -d '{"uri": "http://localhost:9080", "use_http_11": true}'
+                        ```
+
+                        ```shell !output
+                        {
+                            "id": "dp_17sztQp4gnEC1L0OCFM9aEh",
+                            "services": [
+                                {
+                                    "name": "Greeter",
+                                    "handlers": [
+                                        {
+                                            "name": "greet",
+                                            "ty": "Shared",
+                                            "input_description": "one of [\"none\", \"value of content-type 'application/json'\"]",
+                                            "output_description": "value of content-type 'application/json'"
+                                        }
+                                    ],
+                                    "ty": "Service",
+                                    "deployment_id": "dp_17sztQp4gnEC1L0OCFM9aEh",
+                                    "revision": 1,
+                                    "public": true,
+                                    "idempotency_retention": "1day"
+                                }
+                            ]
+                        }
+                        ```
+
+                    </TerminalWithTabs>
+
+                    Bun does not support HTTP2, so we need to tell Restate to use HTTP1.1.
+                </TabItem>
+                <TabItem value={"Deno"}>
+                    <TerminalWithTabs>
+
+                        # !!terminals
+
+                        ```shell !command CLI
+                        restate deployments register http://localhost:9080
+                        ```
+
+                        ```shell !output
+                        ❯ SERVICES THAT WILL BE ADDED:
+                        - Greeter
+                        Type: Service
+                        HANDLER  INPUT                                     OUTPUT
+                        greet    value of content-type 'application/json'  value of content-type 'application/json'
+
+
+                        ✔ Are you sure you want to apply those changes? · yes
+                        ✅ DEPLOYMENT:
+                        SERVICE  REV
+                        Greeter  1
+                        ```
+
+                        # !!terminals
+
+                        ```shell !command curl
+                        curl localhost:9070/deployments -H 'content-type: application/json' \
+                        -d '{"uri": "http://localhost:9080"}'
+                        ```
+
+                        ```shell !output
+                        {
+                            "id": "dp_17sztQp4gnEC1L0OCFM9aEh",
+                            "services": [
+                                {
+                                    "name": "Greeter",
+                                    "handlers": [
+                                        {
+                                            "name": "greet",
+                                            "ty": "Shared",
+                                            "input_description": "one of [\"none\", \"value of content-type 'application/json'\"]",
+                                            "output_description": "value of content-type 'application/json'"
+                                        }
+                                    ],
+                                    "ty": "Service",
+                                    "deployment_id": "dp_17sztQp4gnEC1L0OCFM9aEh",
+                                    "revision": 1,
+                                    "public": true,
+                                    "idempotency_retention": "1day"
+                                }
+                            ]
+                        }
+                        ```
+
+                    </TerminalWithTabs>
+                </TabItem>
+                <TabItem value={"CloudflareWorkers"}>
+                    <TerminalWithTabs>
+
+                        # !!terminals
+
+                        ```shell !command CLI
+                        restate dep add http://localhost:9080 --use-http1.1
+                        ```
+
+                        ```shell !output
+                        ❯ SERVICES THAT WILL BE ADDED:
+                        - Greeter
+                        Type: Service
+                        HANDLER  INPUT                                     OUTPUT
+                        greet    value of content-type 'application/json'  value of content-type 'application/json'
+
+
+                        ✔ Are you sure you want to apply those changes? · yes
+                        ✅ DEPLOYMENT:
+                        SERVICE  REV
+                        Greeter  1
+                        ```
+
+                        # !!terminals
+
+                        ```shell !command curl
+                        curl localhost:9070/deployments -H 'content-type: application/json' \
+                        -d '{"uri": "http://localhost:9080", "use_http_11": true}'
+                        ```
+
+                        ```shell !output
+                        {
+                            "id": "dp_17sztQp4gnEC1L0OCFM9aEh",
+                            "services": [
+                                {
+                                    "name": "Greeter",
+                                    "handlers": [
+                                        {
+                                            "name": "greet",
+                                            "ty": "Shared",
+                                            "input_description": "one of [\"none\", \"value of content-type 'application/json'\"]",
+                                            "output_description": "value of content-type 'application/json'"
+                                        }
+                                    ],
+                                    "ty": "Service",
+                                    "deployment_id": "dp_17sztQp4gnEC1L0OCFM9aEh",
+                                    "revision": 1,
+                                    "public": true,
+                                    "idempotency_retention": "1day"
+                                }
+                            ]
+                        }
+                        ```
+
+                    </TerminalWithTabs>
+                    The local Workers dev server does not support HTTP2, so we need to tell Restate to use HTTP1.1.
+                </TabItem>
+            </Tabs>
+
             If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
         </Step>
 
@@ -235,17 +520,54 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
             <Terminal>
 
                 ```shell !command
-                curl localhost:8080/Greeter/greet -H 'content-type: application/json' -d '"Hi"'
+                curl localhost:8080/Greeter/greet -H 'content-type: application/json' -d '"Sarah"'
                 ```
 
                 ```shell !output
-                Hi!
+                You said hi to Sarah!
                 ```
 
             </Terminal>
 
         </Step>
-        <Step end={true} stepLabel="🎉" title="Congratulations, you managed to run your first Restate service!"/>
+        <Step stepLabel="🎉" title="Congratulations, you just ran Durable Execution!">
+
+            The invocation you just sent used Durable Execution to make sure the request ran till completion.
+            For each request, it sent a notification, slept for a second, and then sent a reminder.
+            <Tabs groupId={"ts-runtime"} className={"display-none"}>
+                <TabItem value={"Node.js"}>
+                    ```ts
+                    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/new_quickstart/templates/typescript/src/app.ts
+                    ```
+                </TabItem>
+                <TabItem value={"Bun"}>
+                    ```ts
+                    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/new_quickstart/templates/bun/src/index.ts
+                    ```
+                </TabItem>
+                <TabItem value={"Deno"}>
+                    ```ts
+                    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/new_quickstart/templates/deno/main.ts
+                    ```
+                </TabItem>
+                <TabItem value={"CloudflareWorkers"} >
+                    ```ts
+                    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/new_quickstart/templates/cloudflare-worker/src/index.ts
+                    ```
+                </TabItem>
+            </Tabs>
+
+
+            It sometimes failed to send the notification and the reminder.
+            You can see in the log how Restate retried the request.
+            On a retry, it skipped the steps that already succeeded.
+            Even the sleep is durable and tracked by Restate.
+            If you kill/restart the service halfway through, the sleep will only last for what remained.
+
+            Restate does this by persisting the progress of the handler.
+            Letting you write code that is resilient to failures out of the box.
+
+        </Step>
 
         <details className="grey-details">
 
