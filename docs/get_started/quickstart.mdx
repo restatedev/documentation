@@ -277,7 +277,6 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
             </Tabs>
 
         </Step>
-
         <Step stepLabel="4" title="Register the service">
 
             Tell Restate where the service is running, so Restate can discover and register the services and handlers behind this endpoint:
@@ -584,9 +583,40 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
     </TabItem>
     <TabItem value="java" label="Java">
-        <Admonition type="note" title="Prerequisites">
-            - Java: [JDK](https://whichjdk.com/) >= 11
-        </Admonition>
+        Build tool:
+        <Tabs groupId={"build-tool"} className={"selection-button"}>
+            <TabItem value={"maven"} label={<><img src='/img/quickstart/maven.svg' alt="Maven" className="icon" />Maven</>}>
+                Architecture:
+                <Tabs groupId={"architecture"} className={"selection-button"}>
+                    <TabItem value={"spring"} label={<><img src='/img/quickstart/spring.svg' alt="Spring Boot" className="icon" />Spring Boot</>}>
+                        <Admonition type="note" title="Prerequisites">
+                            - Java: [JDK](https://whichjdk.com/) >= 17
+                        </Admonition>
+                    </TabItem>
+                    <TabItem value={"quarkus"} label={<><img src='/img/quickstart/quarkus.svg' alt="Quarkus" className="icon" />Quarkus</>}>
+                        <Admonition type="note" title="Prerequisites">
+                            - Java: [JDK](https://whichjdk.com/) >= 17
+                            - [Quarkus](https://quarkus.io/get-started/)
+                        </Admonition>
+                    </TabItem>
+                    <TabItem value={"vanilla"} label={<><img src='/img/quickstart/java.svg' alt="Vanilla" className="icon" />Vanilla</>}>
+                        <Admonition type="note" title="Prerequisites">
+                            - Java: [JDK](https://whichjdk.com/) >= 17
+                        </Admonition>
+                    </TabItem>
+                </Tabs>
+            </TabItem>
+            <TabItem value={"gradle"} label={<><img src='/img/quickstart/gradle.svg' alt="Gradle" className="icon" />Gradle</>}>
+                Architecture:
+                <Tabs groupId={"architecture"} className={"selection-button"}>
+                    <TabItem value={"vanilla"} label={<><img src='/img/quickstart/java.svg' alt="Vanilla" className="icon" />Vanilla</>}>
+                        <Admonition type="note" title="Prerequisites">
+                            - Java: [JDK](https://whichjdk.com/) >= 17
+                        </Admonition>
+                    </TabItem>
+                </Tabs>
+            </TabItem>
+        </Tabs>
 
         <Step stepLabel="1" title="Install Restate Server & CLI">
             Restate is a single self-contained binary. No external dependencies needed.
@@ -685,12 +715,10 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
             </Tabs>
         </Step>
         <Step stepLabel="2" title="Get the Greeter service template">
-            Build tool:
-            <Tabs groupId={"build-tool"} className={"selection-button"}>
-                <TabItem value={"maven"} label={<><img src='/img/quickstart/maven.svg' alt="Maven" className="icon" />Maven</>}>
-                    Architecture:
-                    <Tabs groupId={"architecture"} className={"selection-button"}>
-                        <TabItem value={"spring"} label={<><img src='/img/quickstart/spring.svg' alt="Spring Boot" className="icon" />Spring Boot</>}>
+            <Tabs groupId={"build-tool"} className={"display-none"}>
+                <TabItem value={"maven"}>
+                    <Tabs groupId={"architecture"} className={"display-none"}>
+                        <TabItem value={"spring"}>
                             <CodeWithTabs>
                                 ```shell !!tabs CLI
                                 restate example java-hello-world-maven-spring-boot &&
@@ -704,7 +732,7 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
                                 ```
                             </CodeWithTabs>
                         </TabItem>
-                        <TabItem value={"quarkus"} label={<><img src='/img/quickstart/quarkus.svg' alt="Quarkus" className="icon" />Quarkus</>}>
+                        <TabItem value={"quarkus"}>
                             <CodeWithTabs>
                                 ```shell !!tabs CLI
                                 restate example java-hello-world-maven-quarkus &&
@@ -718,7 +746,7 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
                                 ```
                             </CodeWithTabs>
                         </TabItem>
-                        <TabItem value={"vanilla"} label={<><img src='/img/quickstart/java.svg' alt="Vanilla" className="icon" />Vanilla</>}>
+                        <TabItem value={"vanilla"}>
                             <CodeWithTabs>
                                 ```shell !!tabs CLI
                                 restate example java-hello-world-maven &&
@@ -734,9 +762,8 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
                         </TabItem>
                     </Tabs>
                 </TabItem>
-                <TabItem value={"gradle"} label={<><img src='/img/quickstart/gradle.svg' alt="Gradle" className="icon" />Gradle</>}>
-                    Architecture:
-                    <Tabs groupId={"architecture"} className={"selection-button"}>
+                <TabItem value={"gradle"}>
+                    <Tabs groupId={"architecture"} className={"display-none"}>
                         <TabItem value={"vanilla"} label={<><img src='/img/quickstart/java.svg' alt="Vanilla" className="icon" />Vanilla</>}>
                             <CodeWithTabs>
                                 ```shell !!tabs CLI
@@ -756,14 +783,48 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
             </Tabs>
         </Step>
         <Step stepLabel="3" title="Run the Greeter service">
+            <Tabs groupId={"build-tool"} className={"display-none"}>
+                <TabItem value={"maven"}>
+                    <Tabs groupId={"architecture"} className={"display-none"}>
+                        <TabItem value={"spring"}>
+                            You are all set to start developing your service.
+                            Open the project in an IDE, run your service and let it listen on port `9080` for requests:
 
-            You are all set to start developing your service.
-            Open the project in an IDE and configure it to build with Gradle.
-            Run your service and let it listen on port `9080` for requests:
+                            ```shell
+                            mvn compile spring-boot:run
+                            ```
+                        </TabItem>
+                        <TabItem value={"quarkus"}>
+                            You are all set to start developing your service.
+                            Open the project in an IDE, run your service and let it listen on port `9080` for requests:
 
-            ```shell
-            ./gradlew run
-            ```
+                            ```shell
+                            quarkus dev
+                            ```
+                        </TabItem>
+                        <TabItem value={"vanilla"}>
+                            You are all set to start developing your service.
+                            Open the project in an IDE, run your service and let it listen on port `9080` for requests:
+
+                            ```shell
+                            mvn compile exec:java
+                            ```
+                        </TabItem>
+                    </Tabs>
+                </TabItem>
+                <TabItem value={"gradle"}>
+                    <Tabs groupId={"architecture"} className={"display-none"}>
+                        <TabItem value={"vanilla"} label={<><img src='/img/quickstart/java.svg' alt="Vanilla" className="icon" />Vanilla</>}>
+                            You are all set to start developing your service.
+                            Open the project in an IDE, run your service and let it listen on port `9080` for requests:
+
+                            ```shell
+                            ./gradlew run
+                            ```
+                        </TabItem>
+                    </Tabs>
+                </TabItem>
+            </Tabs>
 
         </Step>
 
@@ -771,24 +832,15 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
             Tell Restate where the service is running, so Restate can discover and register the services and handlers behind this endpoint:
 
-            <CodeWithTabs>
+            <TerminalWithTabs>
 
-                ```shell !!tabs CLI
+                # !!terminals
+
+                ```shell !command CLI
                 restate deployments register http://localhost:9080
                 ```
 
-                ```shell !!tabs curl
-                curl localhost:9070/deployments -H 'content-type: application/json' \
-                -d '{"uri": "http://localhost:9080"}'
-                ```
-
-            </CodeWithTabs>
-
-            <details className={"grey-details"}>
-
-                <summary>Output</summary>
-
-                ```shell
+                ```shell !output
                 ❯ SERVICES THAT WILL BE ADDED:
                 - Greeter
                 Type: Service
@@ -802,23 +854,104 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
                 Greeter  1
                 ```
 
-            </details>
+                # !!terminals
+
+                ```shell !command curl
+                curl localhost:9070/deployments -H 'content-type: application/json' \
+                    -d '{"uri": "http://localhost:9080"}'
+                ```
+
+                ```shell !output
+                {
+                    "id": "dp_17sztQp4gnEC1L0OCFM9aEh",
+                    "services": [
+                        {
+                            "name": "Greeter",
+                            "handlers": [
+                                {
+                                    "name": "greet",
+                                    "ty": "Shared",
+                                    "input_description": "one of [\"none\", \"value of content-type 'application/json'\"]",
+                                    "output_description": "value of content-type 'application/json'"
+                                }
+                            ],
+                            "ty": "Service",
+                            "deployment_id": "dp_17sztQp4gnEC1L0OCFM9aEh",
+                            "revision": 1,
+                            "public": true,
+                            "idempotency_retention": "1day"
+                        }
+                    ]
+                }
+                ```
+
+            </TerminalWithTabs>
 
             If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
-
         </Step>
 
         <Step stepLabel="5" title="Send a request to the Greeter service">
 
-            ```shell
-            curl localhost:8080/Greeter/greet -H 'content-type: application/json' -d '"Hi!"'
-            ```
+            <Terminal>
 
-            You should now see printed as response: `Hi!`
+                ```shell !command
+                curl localhost:8080/Greeter/greet -H 'content-type: application/json' -d '"Sarah"'
+                ```
+
+                ```log !output
+                You said hi to Sarah!
+                ```
+
+            </Terminal>
 
         </Step>
-        <Step end={true} stepLabel="🎉" title="Congratulations, you managed to run your first Restate service!"/>
 
+        <Step stepLabel="🎉" title="Congratulations, you just ran Durable Execution!">
+
+            The invocation you just sent used Durable Execution to make sure the request ran till completion.
+            For each request, it sent a notification, slept for a second, and then sent a reminder.
+
+            <Tabs groupId={"build-tool"} className={"display-none"}>
+                <TabItem value={"maven"}>
+                    <Tabs groupId={"architecture"} className={"display-none"}>
+                        <TabItem value={"spring"}>
+                            ```java
+                            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/new_quickstart/templates/java-maven-spring-boot/src/main/java/com/example/restatestarter/Greeter.java
+                            ```
+                        </TabItem>
+                        <TabItem value={"quarkus"}>
+                            ```java
+                            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/new_quickstart/templates/java-maven-quarkus/src/main/java/org/acme/Greeter.java
+                            ```
+                        </TabItem>
+                        <TabItem value={"vanilla"}>
+                            ```java
+                            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/new_quickstart/templates/java-maven/src/main/java/my/example/Greeter.java
+                            ```
+                        </TabItem>
+                    </Tabs>
+                </TabItem>
+                <TabItem value={"gradle"}>
+                    <Tabs groupId={"architecture"} className={"display-none"}>
+                        <TabItem value={"vanilla"}>
+                            ```java
+                            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/new_quickstart/templates/java-gradle/src/main/java/my/example/Greeter.java
+                            ```
+                        </TabItem>
+                    </Tabs>
+                </TabItem>
+            </Tabs>
+
+            It sometimes failed to send the notification and the reminder.
+            You can see in the log how Restate retried the request.
+            On a retry, it skipped the steps that already succeeded.
+            Even the sleep is durable and tracked by Restate.
+            If you kill/restart the service halfway through, the sleep will only last for what remained.
+
+            Restate does this by persisting the progress of the handler.
+            Letting you write code that is resilient to failures out of the box.
+
+        </Step>
         <details className="grey-details">
             <summary>Next: Build the app</summary>
 
@@ -966,24 +1099,15 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
             Tell Restate where the service is running, so Restate can discover and register the services and handlers behind this endpoint:
 
-            <CodeWithTabs>
+            <TerminalWithTabs>
 
-                ```shell !!tabs CLI
+                # !!terminals
+
+                ```shell !command CLI
                 restate deployments register http://localhost:9080
                 ```
 
-                ```shell !!tabs curl
-                curl localhost:9070/deployments -H 'content-type: application/json' \
-                    -d '{"uri": "http://localhost:9080"}'
-                ```
-
-            </CodeWithTabs>
-
-            <details className={"grey-details"}>
-
-                <summary>Output</summary>
-
-                ```shell
+                ```shell !output
                 ❯ SERVICES THAT WILL BE ADDED:
                 - Greeter
                 Type: Service
@@ -997,19 +1121,55 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
                 Greeter  1
                 ```
 
-            </details>
+                # !!terminals
+
+                ```shell !command curl
+                curl localhost:9070/deployments -H 'content-type: application/json' \
+                    -d '{"uri": "http://localhost:9080"}'
+                ```
+
+                ```shell !output
+                {
+                    "id": "dp_17sztQp4gnEC1L0OCFM9aEh",
+                    "services": [
+                        {
+                            "name": "Greeter",
+                            "handlers": [
+                                {
+                                    "name": "greet",
+                                    "ty": "Shared",
+                                    "input_description": "one of [\"none\", \"value of content-type 'application/json'\"]",
+                                    "output_description": "value of content-type 'application/json'"
+                                }
+                            ],
+                            "ty": "Service",
+                            "deployment_id": "dp_17sztQp4gnEC1L0OCFM9aEh",
+                            "revision": 1,
+                            "public": true,
+                            "idempotency_retention": "1day"
+                        }
+                    ]
+                }
+                ```
+
+            </TerminalWithTabs>
 
             If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
-
         </Step>
 
         <Step stepLabel="5" title="Send a request to the Greeter service">
 
-            ```shell
-            curl localhost:8080/Greeter/greet -H 'content-type: application/json' -d '"Hi"'
-            ```
+            <Terminal>
 
-            You should now see printed as response: `Hi!`
+                ```shell !command
+                curl localhost:8080/Greeter/greet -H 'content-type: application/json' -d '"Sarah"'
+                ```
+
+                ```log !output
+                You said hi to Sarah!
+                ```
+
+            </Terminal>
 
         </Step>
 
@@ -1163,24 +1323,15 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
             Tell Restate where the service is running, so Restate can discover and register the services and handlers behind this endpoint:
 
-            <CodeWithTabs>
+            <TerminalWithTabs>
 
-                ```shell !!tabs CLI
+                # !!terminals
+
+                ```shell !command CLI
                 restate deployments register http://localhost:9080
                 ```
 
-                ```shell !!tabs curl
-                curl localhost:9070/deployments -H 'content-type: application/json' \
-                -d '{"uri": "http://localhost:9080"}'
-                ```
-
-            </CodeWithTabs>
-
-            <details className={"grey-details"}>
-
-                <summary>Output</summary>
-
-                ```shell
+                ```shell !output
                 ❯ SERVICES THAT WILL BE ADDED:
                 - Greeter
                 Type: Service
@@ -1194,19 +1345,55 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
                 Greeter  1
                 ```
 
-            </details>
+                # !!terminals
+
+                ```shell !command curl
+                curl localhost:9070/deployments -H 'content-type: application/json' \
+                    -d '{"uri": "http://localhost:9080"}'
+                ```
+
+                ```shell !output
+                {
+                    "id": "dp_17sztQp4gnEC1L0OCFM9aEh",
+                    "services": [
+                        {
+                            "name": "Greeter",
+                            "handlers": [
+                                {
+                                    "name": "Greet",
+                                    "ty": "Shared",
+                                    "input_description": "one of [\"none\", \"value of content-type 'application/json'\"]",
+                                    "output_description": "value of content-type 'application/json'"
+                                }
+                            ],
+                            "ty": "Service",
+                            "deployment_id": "dp_17sztQp4gnEC1L0OCFM9aEh",
+                            "revision": 1,
+                            "public": true,
+                            "idempotency_retention": "1day"
+                        }
+                    ]
+                }
+                ```
+
+            </TerminalWithTabs>
 
             If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
-
         </Step>
 
         <Step stepLabel="5" title="Send a request to the Greeter service">
 
-            ```shell
-            curl localhost:8080/Greeter/Greet -H 'content-type: application/json' -d '"Hi"'
-            ```
+            <Terminal>
 
-            You should now see printed as response: `Hi!`
+                ```shell !command
+                curl localhost:8080/Greeter/Greet -H 'content-type: application/json' -d '"Sarah"'
+                ```
+
+                ```shell !output
+                You said hi to Sarah!
+                ```
+
+            </Terminal>
 
         </Step>
         <Step end={true} stepLabel="🎉" title="Congratulations, you managed to run your first Restate service!"/>
@@ -1364,26 +1551,15 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
             Tell Restate where the service is running, so Restate can discover and register the services and handlers behind this endpoint:
 
-            <CodeWithTabs>
+            <TerminalWithTabs>
 
-                ```shell !!tabs CLI
+                # !!terminals
+
+                ```shell !command CLI
                 restate deployments register http://localhost:9080
                 ```
 
-                ```shell !!tabs curl
-                curl localhost:9070/deployments -H 'content-type: application/json' \
-                    -d '{"uri": "http://localhost:9080"}'
-                ```
-
-            </CodeWithTabs>
-
-            If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
-
-            <details className={"grey-details"}>
-
-                <summary>Output</summary>
-
-                ```shell
+                ```shell !output
                 ❯ SERVICES THAT WILL BE ADDED:
                 - Greeter
                 Type: Service
@@ -1397,17 +1573,55 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
                 Greeter  1
                 ```
 
-            </details>
+                # !!terminals
 
+                ```shell !command curl
+                curl localhost:9070/deployments -H 'content-type: application/json' \
+                    -d '{"uri": "http://localhost:9080"}'
+                ```
+
+                ```shell !output
+                {
+                    "id": "dp_17sztQp4gnEC1L0OCFM9aEh",
+                    "services": [
+                        {
+                            "name": "Greeter",
+                            "handlers": [
+                                {
+                                    "name": "greet",
+                                    "ty": "Shared",
+                                    "input_description": "one of [\"none\", \"value of content-type 'application/json'\"]",
+                                    "output_description": "value of content-type 'application/json'"
+                                }
+                            ],
+                            "ty": "Service",
+                            "deployment_id": "dp_17sztQp4gnEC1L0OCFM9aEh",
+                            "revision": 1,
+                            "public": true,
+                            "idempotency_retention": "1day"
+                        }
+                    ]
+                }
+                ```
+
+            </TerminalWithTabs>
+
+            If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
         </Step>
 
         <Step stepLabel="5" title="Send a request to the Greeter service">
 
-            ```shell
-            curl localhost:8080/Greeter/greet -H 'content-type: application/json' -d '"Hi"'
-            ```
+            <Terminal>
 
-            You should now see printed as response: `Hi!`
+                ```shell !command
+                curl localhost:8080/Greeter/greet -H 'content-type: application/json' -d '"Sarah"'
+                ```
+
+                ```shell !output
+                You said hi to Sarah!
+                ```
+
+            </Terminal>
 
         </Step>
         <Step end={true} stepLabel="🎉" title="Congratulations, you managed to run your first Restate service!"/>
@@ -1705,11 +1919,17 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
         <Step stepLabel="5" title="Send a request to the Greeter service">
 
-            ```shell
-            curl localhost:8080/Greeter/greet -H 'content-type: application/json' -d '"Francesco"'
-            ```
+            <Terminal>
 
-            You should now see printed as response: `"Greetings Francesco"`
+                ```shell !command
+                curl localhost:8080/Greeter/greet -H 'content-type: application/json' -d '"Sarah"'
+                ```
+
+                ```log !output
+                You said hi to Sarah!
+                ```
+
+            </Terminal>
 
         </Step>
         <Step stepLabel="🎉" title="Congratulations, you just ran Durable Execution!">
@@ -1740,8 +1960,6 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
             Letting you write code that is resilient to failures out of the box.
 
         </Step>
-
-
     </TabItem>
 </Tabs>
 
