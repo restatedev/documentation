@@ -366,7 +366,7 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                         ```shell !command curl
                         curl localhost:9070/deployments -H 'content-type: application/json' \
-                        -d '{"uri": "http://localhost:9080", "use_http_11": true}'
+                            -d '{"uri": "http://localhost:9080", "use_http_11": true}'
                         ```
 
                         ```shell !output
@@ -1416,9 +1416,20 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
     </TabItem>
     <TabItem value="rust" label="Rust">
 
-        <Admonition type="note" title="Prerequisites">
-            - [Rust](https://rustup.rs/)
-        </Admonition>
+        Select your favorite runtime:
+        <Tabs groupId={"rust-runtime"} className={"selection-button"}>
+            <TabItem value={"Tokio"} label={<><img src='/img/quickstart/tokio.svg' alt="Tokio" className="icon" />Tokio</>}>
+                <Admonition type="note" title="Prerequisites">
+                    - [Rust](https://rustup.rs/)
+                </Admonition>
+            </TabItem>
+            <TabItem value={"Shuttle"} label={<><img src='/img/quickstart/shuttle-rust.png' alt="Shuttle" className="icon" />Shuttle</>}>
+                <Admonition type="note" title="Prerequisites">
+                    - [Rust](https://rustup.rs/)
+                    - [Shuttle](https://docs.shuttle.dev/getting-started/installation)
+                </Admonition>
+            </TabItem>
+        </Tabs>
 
         <Step stepLabel="1" title="Install Restate Server & CLI">
             Restate is a single self-contained binary. No external dependencies needed.
@@ -1517,10 +1528,8 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
             </Tabs>
         </Step>
         <Step stepLabel="2" title="Get the Greeter service template">
-
-            Select your favorite runtime:
-            <Tabs groupId={"rust-runtime"} className={"selection-button"}>
-                <TabItem value={"Tokio"} label={<><img src='/img/quickstart/tokio.svg' alt="Tokio" className="icon" />Tokio</>}>
+            <Tabs groupId={"rust-runtime"} className={"display-none"}>
+                <TabItem value={"Tokio"}>
                     <CodeWithTabs>
                         ```shell !!tabs CLI
                         restate example rust-hello-world &&
@@ -1535,7 +1544,7 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                     </CodeWithTabs>
                 </TabItem>
-                <TabItem value={"Shuttle"} label={<><img src='/img/quickstart/shuttle-rust.png' alt="Shuttle" className="icon" />Shuttle</>}>
+                <TabItem value={"Shuttle"}>
                     <CodeWithTabs>
                         ```shell !!tabs CLI
                         restate example rust-shuttle-hello-world &&
@@ -1554,51 +1563,141 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
         </Step>
         <Step stepLabel="3" title="Run the Greeter service">
-
-            Use `cargo run` to build and run the example:
-
-            ```shell
-            cargo run
-            ```
-
+            <Tabs groupId={"rust-runtime"} className={"display-none"}>
+                <TabItem value={"Tokio"}>
+                    ```shell
+                    cargo run
+                    ```
+                </TabItem>
+                <TabItem value={"Shuttle"}>
+                    ```shell
+                    cargo shuttle run --port 9080
+                    ```
+                </TabItem>
+            </Tabs>
         </Step>
 
         <Step stepLabel="4" title="Register the service">
 
-            Tell Restate where the service is running, so Restate can discover and register the services and handlers behind this endpoint:
+            Tell Restate where the service is running, so Restate can register the services and handlers behind this endpoint:
 
-            <CodeWithTabs>
+            <Tabs groupId={"rust-runtime"} className={"display-none"}>
+                <TabItem value={"Tokio"}>
 
-                ```shell !!tabs CLI
-                restate deployments register http://localhost:9080
-                ```
+            <TerminalWithTabs>
 
-                ```shell !!tabs curl
-                curl localhost:9070/deployments -H 'content-type: application/json' \
-                -d '{"uri": "http://localhost:9080"}'
-                ```
+                        # !!terminals
 
-            </CodeWithTabs>
+                        ```shell !command CLI
+                        restate deployments register http://localhost:9080
+                        ```
 
-            <details className={"grey-details"}>
-
-                <summary>Output</summary>
-
-                ```shell
-                ❯ SERVICES THAT WILL BE ADDED:
-                - Greeter
-                Type: Service
-                HANDLER  INPUT                                     OUTPUT
-                greet    value of content-type 'application/json'  value of content-type 'application/json'
+                        ```shell !output
+                        ❯ SERVICES THAT WILL BE ADDED:
+                        - Greeter
+                        Type: Service
+                        HANDLER  INPUT                                     OUTPUT
+                        greet    value of content-type 'application/json'  value of content-type 'application/json'
 
 
-                ✔ Are you sure you want to apply those changes? · yes
-                ✅ DEPLOYMENT:
-                SERVICE  REV
-                Greeter  1
-                ```
+                        ✔ Are you sure you want to apply those changes? · yes
+                        ✅ DEPLOYMENT:
+                        SERVICE  REV
+                        Greeter  1
+                        ```
 
-            </details>
+                        # !!terminals
+
+                        ```shell !command curl
+                        curl localhost:9070/deployments -H 'content-type: application/json' \
+                        -d '{"uri": "http://localhost:9080"}'
+                        ```
+
+                        ```shell !output
+                        {
+                            "id": "dp_17sztQp4gnEC1L0OCFM9aEh",
+                            "services": [
+                                {
+                                    "name": "Greeter",
+                                    "handlers": [
+                                        {
+                                            "name": "greet",
+                                            "ty": "Shared",
+                                            "input_description": "one of [\"none\", \"value of content-type 'application/json'\"]",
+                                            "output_description": "value of content-type 'application/json'"
+                                        }
+                                    ],
+                                    "ty": "Service",
+                                    "deployment_id": "dp_17sztQp4gnEC1L0OCFM9aEh",
+                                    "revision": 1,
+                                    "public": true,
+                                    "idempotency_retention": "1day"
+                                }
+                            ]
+                        }
+                        ```
+
+                    </TerminalWithTabs>
+                </TabItem>
+                <TabItem value={"Shuttle"}>
+
+                    <TerminalWithTabs>
+
+                        # !!terminals
+
+                        ```shell !command CLI
+                        restate deployments register http://localhost:9080 --use-http1.1
+                        ```
+
+                        ```shell !output
+                        ❯ SERVICES THAT WILL BE ADDED:
+                        - Greeter
+                        Type: Service
+                        HANDLER  INPUT                                     OUTPUT
+                        greet    value of content-type 'application/json'  value of content-type 'application/json'
+
+
+                        ✔ Are you sure you want to apply those changes? · yes
+                        ✅ DEPLOYMENT:
+                        SERVICE  REV
+                        Greeter  1
+                        ```
+
+                        # !!terminals
+
+                        ```shell !command curl
+                        curl localhost:9070/deployments -H 'content-type: application/json' \
+                            -d '{"uri": "http://localhost:9080", "use_http_11": true}'
+                        ```
+
+                        ```shell !output
+                        {
+                            "id": "dp_17sztQp4gnEC1L0OCFM9aEh",
+                            "services": [
+                                {
+                                    "name": "Greeter",
+                                    "handlers": [
+                                        {
+                                            "name": "greet",
+                                            "ty": "Shared",
+                                            "input_description": "one of [\"none\", \"value of content-type 'application/json'\"]",
+                                            "output_description": "value of content-type 'application/json'"
+                                        }
+                                    ],
+                                    "ty": "Service",
+                                    "deployment_id": "dp_17sztQp4gnEC1L0OCFM9aEh",
+                                    "revision": 1,
+                                    "public": true,
+                                    "idempotency_retention": "1day"
+                                }
+                            ]
+                        }
+                        ```
+
+                    </TerminalWithTabs>
+                </TabItem>
+            </Tabs>
+
 
             If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
 
@@ -1613,7 +1712,34 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
             You should now see printed as response: `"Greetings Francesco"`
 
         </Step>
-        <Step end={true} stepLabel="🎉" title="Congratulations, you managed to run your first Restate service!"/>
+        <Step stepLabel="🎉" title="Congratulations, you just ran Durable Execution!">
+
+            The invocation you just sent used Durable Execution to make sure the request ran till completion.
+            For each request, it sent a notification, slept for a second, and then sent a reminder.
+            <Tabs groupId={"rust-runtime"} className={"display-none"}>
+                <TabItem value={"Tokio"}>
+                    ```rust
+                    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/new_quickstart/templates/rust/src/main.rs
+                    ```
+                </TabItem>
+                <TabItem value={"Shuttle"}>
+                    ```rust
+                    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/new_quickstart/templates/rust-shuttle/src/main.rs
+                    ```
+                </TabItem>
+            </Tabs>
+
+
+            It sometimes failed to send the notification and the reminder.
+            You can see in the log how Restate retried the request.
+            On a retry, it skipped the steps that already succeeded.
+            Even the sleep is durable and tracked by Restate.
+            If you kill/restart the service halfway through, the sleep will only last for what remained.
+
+            Restate does this by persisting the progress of the handler.
+            Letting you write code that is resilient to failures out of the box.
+
+        </Step>
 
 
     </TabItem>
