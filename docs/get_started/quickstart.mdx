@@ -1173,7 +1173,25 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
         </Step>
 
-        <Step end={true} stepLabel="🎉" title="Congratulations, you managed to run your first Restate service!"/>
+        <Step stepLabel="🎉" title="Congratulations, you just ran Durable Execution!">
+
+            The invocation you just sent used Durable Execution to make sure the request ran till completion.
+            For each request, it sent a notification, slept for a second, and then sent a reminder.
+
+            ```kotlin
+            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/new_quickstart/templates/kotlin-gradle/src/main/kotlin/my/example/Greeter.kt
+            ```
+
+            It sometimes failed to send the notification and the reminder.
+            You can see in the log how Restate retried the request.
+            On a retry, it skipped the steps that already succeeded.
+            Even the sleep is durable and tracked by Restate.
+            If you kill/restart the service halfway through, the sleep will only last for what remained.
+
+            Restate does this by persisting the progress of the handler.
+            Letting you write code that is resilient to failures out of the box.
+
+        </Step>
 
         <details className="grey-details">
 
@@ -1396,7 +1414,26 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
             </Terminal>
 
         </Step>
-        <Step end={true} stepLabel="🎉" title="Congratulations, you managed to run your first Restate service!"/>
+        <Step stepLabel="🎉" title="Congratulations, you just ran Durable Execution!">
+
+            The invocation you just sent used Durable Execution to make sure the request ran till completion.
+            For each request, it sent a notification, slept for a second, and then sent a reminder.
+
+            ```go
+            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/new_quickstart/templates/go/greeter.go
+            ```
+
+            It sometimes failed to send the notification and the reminder.
+            You can see in the log how Restate retried the request.
+            On a retry, it skipped the steps that already succeeded.
+            Even the sleep is durable and tracked by Restate.
+            If you kill/restart the service halfway through, the sleep will only last for what remained.
+
+            Restate does this by persisting the progress of the handler.
+            Letting you write code that is resilient to failures out of the box.
+
+        </Step>
+
 
         <details className="grey-details">
 
@@ -1624,7 +1661,25 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
             </Terminal>
 
         </Step>
-        <Step end={true} stepLabel="🎉" title="Congratulations, you managed to run your first Restate service!"/>
+        <Step stepLabel="🎉" title="Congratulations, you just ran Durable Execution!">
+
+            The invocation you just sent used Durable Execution to make sure the request ran till completion.
+            For each request, it sent a notification, slept for a second, and then sent a reminder.
+
+            ```python
+            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/new_quickstart/templates/python/example.py
+            ```
+
+            It sometimes failed to send the notification and the reminder.
+            You can see in the log how Restate retried the request.
+            On a retry, it skipped the steps that already succeeded.
+            Even the sleep is durable and tracked by Restate.
+            If you kill/restart the service halfway through, the sleep will only last for what remained.
+
+            Restate does this by persisting the progress of the handler.
+            Letting you write code that is resilient to failures out of the box.
+
+        </Step>
 
 
     </TabItem>
