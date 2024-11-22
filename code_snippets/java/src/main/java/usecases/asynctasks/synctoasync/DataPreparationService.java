@@ -34,10 +34,8 @@ public class DataPreparationService {
     ctx.run(() -> sendEmail(url, email));
   }
 
-  public static void main(String[] args){
-        RestateHttpEndpointBuilder.builder()
-                .bind(new DataPreparationService())
-                .buildAndListen();
+  public static void main(String[] args) {
+    RestateHttpEndpointBuilder.builder().bind(new DataPreparationService()).buildAndListen();
   }
 }
 // <end_here>
