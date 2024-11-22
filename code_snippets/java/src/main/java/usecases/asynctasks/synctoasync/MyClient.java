@@ -4,7 +4,6 @@ import dev.restate.sdk.client.Client;
 import develop.workflows.Email;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-
 import usecases.asynctasks.synctoasync.DataPreparationServiceClient.IngressClient;
 
 // <start_here>
