@@ -12,7 +12,7 @@ const COMMENT_SYMBOL = {
 }
 
 const plugin = (options) => {
-    const codeLoadRegex = /^CODE_LOAD::([^#?]+)(?:#([^?]*))?(?:\?(.+))?$/g;
+    const codeLoadRegex = /.*CODE_LOAD::([^#?]+)(?:#([^?]*))?(?:\?(.+))?$/g;
 
     const injectCode = async (str) => {
         let fileData = null;
@@ -27,7 +27,7 @@ const plugin = (options) => {
 
         const fileContent = await readFileOrFetch(fileData.filePath);
         const data = extractAndClean(fileContent, fileData.customTag, fileData.markNumber, fileData.filePath);
-        return str.replace(codeLoadRegex, () => data);
+        return str.replace(codeLoadRegex, (match) => match.replace(/.*CODE_LOAD::[^#?]+(?:#([^?]*))?(?:\?(.+))?$/, data));
     };
 
     async function readFileOrFetch(filepath) {
