@@ -7,8 +7,7 @@ export const mark: AnnotationHandler = {
     return (
       <div
         style={{
-          borderLeft: "solid 2px transparent",
-          borderLeftColor: annotation && color,
+          borderLeft:  annotation && `solid 2px ${color}`,
           backgroundColor: annotation && `rgb(from ${color} r g b / 0.08)`,
         }}
         className="flex"
@@ -22,7 +21,6 @@ export const mark: AnnotationHandler = {
     return (
       <span
         style={{
-          outline: `solid 1px rgb(from ${color} r g b / 0.5)`,
           backgroundColor: `rgb(from ${color} r g b / 0.08)`,
         }}
         className="rounded px-0.5 py-0 -mx-0.5"

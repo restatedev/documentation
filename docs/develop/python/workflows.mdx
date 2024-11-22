@@ -5,6 +5,7 @@ description: "Find out how Restate services can send requests to each other."
 
 import Admonition from '@theme/Admonition';
 import {TextAndCode} from "../../../src/components/code/code/text-and-code";
+import {Scrollycoding} from "../../../src/components/code/scrollycoding";
 
 # Workflows
 
@@ -27,7 +28,7 @@ Have a look at the code example to get a better understanding of how workflows a
 
 <Scrollycoding>
 
-    ### !!steps The `run` handler
+    ### !!steps The run handler
 
     Every workflow needs a `run` handler.
     This handler has access to the same SDK features as Service and Virtual Object handlers.
@@ -54,8 +55,11 @@ Have a look at the code example to get a better understanding of how workflows a
     These promises are durable and distributed, meaning they survive crashes and can be resolved or rejected by any handler in the workflow.
 
     Do the following:
-    1. Create a promise in your one handler that is durable and distributed. For example, here in the `run` handler.
-    2. Resolve or reject the promise in any other handler in the workflow. This can be done at most one time.
+    1. Create a promise that is durable and distributed in the `run` handler.
+    2. Resolve or reject the promise in another handler in the workflow. This can be done at most one time.
+
+    You can also use this pattern in reverse and let the `run` handler resolve promises that other handlers are waiting on.
+    For example, the `run` handler could resolve a promise when it finishes a step of the workflow, so that other handlers can request whether this step has been completed.
 
     ```python !
     CODE_LOAD::python/src/develop/workflows/signup.py?3

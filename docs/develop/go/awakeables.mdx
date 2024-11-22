@@ -16,33 +16,16 @@ This pattern is also known as the callback (task token) pattern.
 
 ## Creating awakeables
 
-<Scrollycoding>
+1. **Create an awakeable**. This contains a String identifier and a handle on the future result.
+2. **Trigger a task/process** and attach the awakeable ID  (e.g. over Kafka, via HTTP,...).
+For example, send an HTTP request to a service that executes the task, and attach the ID to the payload.
+You use `restate.Run` to avoid re-triggering the task on retries.
+3. **Wait** until the other process has executed the task.
+The handler **receives the payload and resumes**.
 
-    ## !!steps
-    1. The handler **creates an awakeable**. This contains a String identifier and a handle on the future result.
-
-    ```go !
-    CODE_LOAD::go/develop/awakeable.go?1
-    ```
-
-    ## !!steps
-    2. The handler **triggers a task/process** and attaches the awakeable ID  (e.g. over Kafka, via HTTP,...).
-    For example, send an HTTP request to a service that executes the task, and attach the ID to the payload.
-    You use `restate.Run` to avoid re-triggering the task on retries.
-
-    ```go !
-    CODE_LOAD::go/develop/awakeable.go?2
-    ```
-
-    ## !!steps
-    3. The handler **waits** until the other process has executed the task.
-    The handler **receives the payload and resumes**.
-
-    ```go !
-    CODE_LOAD::go/develop/awakeable.go?3
-    ```
-
-</Scrollycoding>
+```go
+CODE_LOAD::go/develop/awakeable.go
+```
 
 ## Completing awakeables
 

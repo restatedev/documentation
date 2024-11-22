@@ -6,7 +6,7 @@ const service = restate.service({
     greet: async (ctx: restate.Context, name: string) => {
       // <start_here>
       // <mark_1>
-      const {id, promise} = ctx.awakeable<string>();
+      const { id, promise } = ctx.awakeable<string>();
       // </mark_1>
 
       // <mark_2>

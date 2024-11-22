@@ -5,7 +5,6 @@ description: "Pause invocations while waiting for an external task completion."
 
 import {TextAndCode} from "../../../src/components/code/code/text-and-code";
 import Admonition from '@theme/Admonition';
-import {Scrollycoding} from "../../../src/components/code/scrollycoding";
 
 # Awakeables
 
@@ -15,33 +14,16 @@ This pattern is also known as the callback (task token) pattern.
 
 ## Creating awakeables
 
-<Scrollycoding>
+1. **Create an awakeable**. This contains a String identifier and a Promise.
+2. **Trigger a task/process** and attaches the awakeable ID  (e.g. over Kafka, via HTTP,...).
+For example, send an HTTP request to a service that executes the task, and attach the ID to the payload.
+You use `ctx.run` to avoid re-triggering the task on retries.
+3. **Wait** until the other process has executed the task.
+The handler **receives the payload and resumes**.
 
-    # !!steps
-    1. The handler **creates an awakeable**. This contains a String identifier and a Promise.
-
-    ```ts !
-    CODE_LOAD::ts/src/develop/awakeable.ts?1
-    ```
-
-    # !!steps
-    2. The handler **triggers a task/process** and attaches the awakeable ID  (e.g. over Kafka, via HTTP,...).
-    For example, send an HTTP request to a service that executes the task, and attach the ID to the payload.
-    You use `ctx.run` to avoid re-triggering the task on retries.
-
-    ```ts !
-    CODE_LOAD::ts/src/develop/awakeable.ts?2
-    ```
-
-    # !!steps
-    3. The handler **waits** until the other process has executed the task.
-    The handler **receives the payload and resumes**.
-
-    ```ts !
-    CODE_LOAD::ts/src/develop/awakeable.ts?3
-    ```
-
-</Scrollycoding>
+```ts
+CODE_LOAD::ts/src/develop/awakeable.ts
+```
 
 ## Completing awakeables
 
