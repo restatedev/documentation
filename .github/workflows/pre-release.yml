@@ -124,7 +124,7 @@ jobs:
       # Upgrade Python code snippets if new version is provided
       - name: Upgrade Python Restate SDK
         if: github.event.inputs.sdkPythonVersion != ''
-        run: sed -i 's/restate_sdk==[0-9A-Za-z.-]*/restate_sdk=="${{ inputs.sdkPythonVersion }}"/' "code_snippets/python/requirements.txt"
+        run: sed -i 's/restate_sdk==[0-9A-Za-z.-]*/restate_sdk=='"${{ inputs.sdkPythonVersion }}"'/' "code_snippets/python/requirements.txt"
 
       # Test if Python code snippets compile
       - name: Set up Python
