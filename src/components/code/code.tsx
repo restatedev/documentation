@@ -25,8 +25,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import React from "react"
 import {Block, HighlightedCodeBlock, parseProps} from "codehike/blocks";
-import {unknown, z} from "zod"
-// @ts-ignore
+import {z} from "zod"
 import styles from "./code-styling.module.css"
 import clsx from "clsx";
 
@@ -110,9 +109,9 @@ export function HighCode({
         >
             <div className="ch-codeblock">
                 <div className="ch-code-wrapper ch-code">
-                    <div className={"code-file-name"}>
+                    <div className={styles.codeFileName}>
                         <CodeIcon title={title}/>
-                        <span className={"code-file-name-title"}>{title}</span>
+                        <span className={styles.codeFileNameTitle}>{title}</span>
                     </div>
                     {(!noCopyButton) ? <CopyButton text={h.code} className="ch-code-button"/>: null}
                     {pre}
