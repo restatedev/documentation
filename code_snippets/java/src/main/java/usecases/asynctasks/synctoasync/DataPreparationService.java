@@ -10,7 +10,6 @@ import dev.restate.sdk.common.DurablePromiseKey;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
 import develop.workflows.Email;
-import get_started.SubscriptionServiceRestate;
 import usecases.utils.URL;
 
 // <start_here>
@@ -37,7 +36,7 @@ public class DataPreparationService {
 
   public static void main(String[] args){
         RestateHttpEndpointBuilder.builder()
-                .bind(new SubscriptionServiceRestate())
+                .bind(new DataPreparationService())
                 .buildAndListen();
   }
 }
