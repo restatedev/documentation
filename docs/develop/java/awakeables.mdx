@@ -19,35 +19,29 @@ This pattern is also known as the callback (task token) pattern.
 ## Creating awakeables
 <Tabs groupId="sdk" queryString>
 <TabItem value="java" label="Java">
-    <TextAndCode>
-    1. **Create an awakeable**. This contains a String identifier and a Promise/Awaitable.
-    2. **Trigger a task/process** and attaches the awakeable ID  (e.g. over Kafka, via HTTP,...).
-    For example, send an HTTP request to a service that executes the task, and attach the ID to the payload.
-    You use `ctx.run` to avoid re-triggering the task on retries.
-    3. **Wait** until the other process has executed the task.
-    The handler **receives the payload and resumes**.
+1. **Create an awakeable**. This contains a String identifier and a Promise/Awaitable.
+2. **Trigger a task/process** and attach the awakeable ID  (e.g. over Kafka, via HTTP,...).
+For example, send an HTTP request to a service that executes the task, and attach the ID to the payload.
+You use `ctx.run` to avoid re-triggering the task on retries.
+3. **Wait** until the other process has executed the task.
+The handler **receives the payload and resumes**.
 
-    ```java !result
-    CODE_LOAD::java/src/main/java/develop/Awakeables.java
-    ```
+```java
+CODE_LOAD::java/src/main/java/develop/Awakeables.java
+```
 
-    </TextAndCode>
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+1. **Create an awakeable**. This contains a String identifier and a Promise/Awaitable.
+2. **Trigger a task/process** and attach the awakeable ID  (e.g. over Kafka, via HTTP,...).
+For example, send an HTTP request to a service that executes the task, and attach the ID to the payload.
+You use `ctx.runBlock` to avoid re-triggering the task on retries.
+3. **Wait** until the other process has executed the task.
+The handler **receives the payload and resumes**.
 
-    </TabItem>
-    <TabItem value="kotlin" label="Kotlin">
-        <TextAndCode>
-            1. **Create an awakeable**. This contains a String identifier and a Promise/Awaitable.
-            2. **Trigger a task/process** and attaches the awakeable ID  (e.g. over Kafka, via HTTP,...).
-            For example, send an HTTP request to a service that executes the task, and attach the ID to the payload.
-            You use `ctx.runBlock` to avoid re-triggering the task on retries.
-            3. **Wait** until the other process has executed the task.
-            The handler **receives the payload and resumes**.
-
-            ```kotlin !result
-            CODE_LOAD::kotlin/src/main/kotlin/develop/Awakeables.kt
-            ```
-
-        </TextAndCode>
+```kotlin
+CODE_LOAD::kotlin/src/main/kotlin/develop/Awakeables.kt
+```
 </TabItem>
 </Tabs>
 

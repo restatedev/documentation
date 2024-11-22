@@ -14,20 +14,17 @@ This pattern is also known as the callback (task token) pattern.
 
 ## Creating awakeables
 
-<TextAndCode>
+1. **Create an awakeable**. This contains a String identifier and a Promise.
+2. **Trigger a task/process** and attach the awakeable ID  (e.g. over Kafka, via HTTP,...).
+For example, send an HTTP request to a service that executes the task, and attach the ID to the payload.
+You use `ctx.run` to avoid re-triggering the task on retries.
+3. **Wait** until the other process has executed the task.
+The handler **receives the payload and resumes**.
 
-    1. **Create an awakeable**. This contains a String identifier and a Promise.
-    2. **Trigger a task/process** and attaches the awakeable ID  (e.g. over Kafka, via HTTP,...).
-    For example, send an HTTP request to a service that executes the task, and attach the ID to the payload.
-    You use `ctx.run` to avoid re-triggering the task on retries.
-    3. **Wait** until the other process has executed the task.
-    The handler **receives the payload and resumes**.
+```py
+CODE_LOAD::python/src/develop/awakeables.py
+```
 
-    ```py !result
-    CODE_LOAD::python/src/develop/awakeables.py
-    ```
-
-</TextAndCode>
 
 ## Completing awakeables
 
