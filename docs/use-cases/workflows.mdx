@@ -60,8 +60,6 @@ Implement the `run` function of your workflow, using the Restate SDK.
             CODE_LOAD::ts/src/use_cases/workflows/signup_workflow.ts?1
             ```
 
-
-
             ### !!steps Persist progress
 
             Store results of intermediate steps, interaction with external systems, or non-deterministic actions.
@@ -72,8 +70,6 @@ Implement the `run` function of your workflow, using the Restate SDK.
             CODE_LOAD::ts/src/use_cases/workflows/signup_workflow.ts?2
             ```
 
-
-
             ### !!steps Workflow state
 
             Use Restate’s built-in key-value store to store workflow state.
@@ -83,8 +79,6 @@ Implement the `run` function of your workflow, using the Restate SDK.
             CODE_LOAD::ts/src/use_cases/workflows/signup_workflow.ts?3
             ```
 
-
-
             ### !!steps Query workflow state
 
             Retrieve the current state of the workflow from within other handlers and expose it to external clients.
@@ -92,8 +86,6 @@ Implement the `run` function of your workflow, using the Restate SDK.
             ```ts ! user_sign_up_flow.ts
             CODE_LOAD::ts/src/use_cases/workflows/signup_workflow.ts?4
             ```
-
-
 
             ### !!steps Wait on external signals
 
@@ -104,8 +96,6 @@ Implement the `run` function of your workflow, using the Restate SDK.
             CODE_LOAD::ts/src/use_cases/workflows/signup_workflow.ts?5
             ```
 
-
-
             ### !!steps Signal in-flight workflows
 
             Notify the workflow of external signals, callbacks or Kafka events.
@@ -114,8 +104,6 @@ Implement the `run` function of your workflow, using the Restate SDK.
             ```ts ! user_sign_up_flow.ts
             CODE_LOAD::ts/src/use_cases/workflows/signup_workflow.ts?6
             ```
-
-
 
             ### !!steps Flexible failure handling
 
@@ -138,8 +126,6 @@ Implement the `run` function of your workflow, using the Restate SDK.
             CODE_LOAD::java/src/main/java/usecases/workflows/SignupWorkflow.java?1
             ```
 
-
-
             ### !!steps Persist progress
 
             Store results of intermediate steps, interaction with external systems, or non-deterministic actions.
@@ -150,8 +136,6 @@ Implement the `run` function of your workflow, using the Restate SDK.
             CODE_LOAD::java/src/main/java/usecases/workflows/SignupWorkflow.java?2
             ```
 
-
-
             ### !!steps Workflow state
 
             Use Restate’s built-in key-value store to store workflow state.
@@ -161,8 +145,6 @@ Implement the `run` function of your workflow, using the Restate SDK.
             CODE_LOAD::java/src/main/java/usecases/workflows/SignupWorkflow.java?3
             ```
 
-
-
             ### !!steps Query workflow state
 
             Retrieve the current state of the workflow from within other handlers and expose it to external clients.
@@ -170,8 +152,6 @@ Implement the `run` function of your workflow, using the Restate SDK.
             ```java ! SignupWorkflow.java
             CODE_LOAD::java/src/main/java/usecases/workflows/SignupWorkflow.java?4
             ```
-
-
 
             ### !!steps Wait on external signals
 
@@ -182,8 +162,6 @@ Implement the `run` function of your workflow, using the Restate SDK.
             CODE_LOAD::java/src/main/java/usecases/workflows/SignupWorkflow.java?5
             ```
 
-
-
             ### !!steps Signal in-flight workflows
 
             Notify the workflow of external signals, callbacks or Kafka events.
@@ -192,8 +170,6 @@ Implement the `run` function of your workflow, using the Restate SDK.
             ```java ! SignupWorkflow.java
             CODE_LOAD::java/src/main/java/usecases/workflows/SignupWorkflow.java?6
             ```
-
-
 
             ### !!steps Flexible failure handling
 
@@ -283,6 +259,72 @@ Implement the `run` function of your workflow, using the Restate SDK.
 
         </Scrollycoding>
     </TabItem>
+    <TabItem value="python" label="Python">
+        <Scrollycoding className="durable-promises">
+
+            ### !!steps Run once, idempotently
+            A workflow runs exactly one time.
+            Restate makes sure that duplicate requests do not lead to duplicate execution.
+
+            ```python ! user_sign_up_flow.py
+            CODE_LOAD::python/src/use_cases/workflows/signup_workflow.py?1
+            ```
+
+            ### !!steps Persist progress
+
+            Store results of intermediate steps, interaction with external systems, or non-deterministic actions.
+            Restate makes sure that on retries, the code does not get re-executed and the previous result is returned.
+            This lets you execute the steps of your workflows durably.
+
+            ```python ! user_sign_up_flow.py
+            CODE_LOAD::python/src/use_cases/workflows/signup_workflow.py?2
+            ```
+
+            ### !!steps Workflow state
+
+            Use Restate’s built-in key-value store to store workflow state.
+            Restate guarantees that it is consistent and persistent, since state updates are tracked together with the rest of the execution progress.
+
+            ```python ! user_sign_up_flow.py
+            CODE_LOAD::python/src/use_cases/workflows/signup_workflow.py?3
+            ```
+
+            ### !!steps Query workflow state
+
+            Retrieve the current state of the workflow from within other handlers and expose it to external clients.
+
+            ```python ! user_sign_up_flow.py
+            CODE_LOAD::python/src/use_cases/workflows/signup_workflow.py?4
+            ```
+
+            ### !!steps Wait on external signals
+
+            Make Promises/Futures resilient by registering them in Restate.
+            Share them and wait until other functions resolve them.
+
+            ```python ! user_sign_up_flow.py
+            CODE_LOAD::python/src/use_cases/workflows/signup_workflow.py?5
+            ```
+
+            ### !!steps Signal in-flight workflows
+
+            Notify the workflow of external signals, callbacks or Kafka events.
+            Resolve or reject shared promises on which the workflow is waiting.  The workflow handles the outcome.
+
+            ```python ! user_sign_up_flow.py
+            CODE_LOAD::python/src/use_cases/workflows/signup_workflow.py?6
+            ```
+
+            ### !!steps Flexible failure handling
+
+            Implement sagas and compensations in code, as per your requirements.
+
+            ```python ! user_sign_up_flow.py
+            CODE_LOAD::python/src/use_cases/workflows/signup_workflow.py?7
+            ```
+
+        </Scrollycoding>
+    </TabItem>
 </Tabs>
 
 <SpotlightCard>
@@ -333,6 +375,18 @@ Implement the `run` function of your workflow, using the Restate SDK.
             CODE_LOAD::kotlin/src/main/kotlin/usecases/workflows/WorkflowSubmitter.kt
             ```
             
+        </TextAndCode>
+    </TabItem>
+    <TabItem value={"python"} label={"Python"}>
+        <TextAndCode className={clsx("single-item", "durable-promises")}>
+            ### Latch on to a workflow
+            A workflow runs exactly one time.
+            If the caller loses the connection to the workflow, he can latch on again to retrieve the result.
+
+            ```python !result workflow_submitter.py
+            CODE_LOAD::python/src/use_cases/workflows/submit.py
+            ```
+
         </TextAndCode>
     </TabItem>
 </Tabs>

@@ -67,11 +67,6 @@ class SignupWorkflow {
   suspend fun approveEmail(ctx: SharedWorkflowContext, secret: String) {
     ctx.promiseHandle(EMAIL_LINK).resolve(secret)
   }
-
-  @Handler
-  suspend fun rejectEmail(ctx: SharedWorkflowContext) {
-    ctx.promiseHandle(EMAIL_LINK).reject("Abort verification")
-  }
   // </mark_6>
 }
 // <end_here>
