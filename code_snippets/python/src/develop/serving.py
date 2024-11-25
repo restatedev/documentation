@@ -10,7 +10,7 @@ app = restate.app(services=[my_service, my_virtual_object])
 # <start_identity>
 app = restate.app(
     services=[my_service],
-    # withClass highlight-line
+    # !mark
     identity_keys=["publickeyv1_w7YHemBctH5Ck2nQRQ47iBBqhNHy4FV7t2Usbye2A6f"]
 )
 # <end_identity>

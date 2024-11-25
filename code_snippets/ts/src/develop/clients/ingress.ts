@@ -48,7 +48,7 @@ const servicesIdempotent = async () => {
   // <start_service_idempotent>
   await rs
     .serviceSendClient(greeterService)
-    // withClass highlight-line
+      // !mark
     .greet(request, clients.rpc.sendOpts({ idempotencyKey: "abcde" }));
   // <end_service_idempotent>
 };

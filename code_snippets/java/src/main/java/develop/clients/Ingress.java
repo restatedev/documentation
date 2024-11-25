@@ -55,7 +55,7 @@ public class Ingress {
     Client rs = Client.connect("http://localhost:8080");
     GreetCounterObjectClient.fromClient(rs, "Mary")
         .send()
-        // withClass highlight-line
+        // !mark
         .greet("Hi", CallRequestOptions.DEFAULT.withIdempotency("abcde"));
     // <end_service_idempotent>
   }

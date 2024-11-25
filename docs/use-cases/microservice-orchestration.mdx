@@ -249,6 +249,51 @@ Turn functions into durable handlers with the Restate SDK.
 
 </Scrollycoding>
 </TabItem>
+<TabItem value="python" label="Python">
+    <Scrollycoding className="workflows-scroller">
+
+        ### !!steps Distributed, durable building blocks
+        Work with objects, functions, and promises as if failures don’t happen.
+        Restate makes them distributed and durable out-of-the-box.
+
+        ```py ! role_updater.py
+        CODE_LOAD::python/src/use_cases/microservices/role_updater.py?1
+        ```
+
+        ### !!steps Scalability, concurrency, consistency
+
+        Restate sequences requests per key, if desired.
+        Scale out without fearing issues such as race conditions, multiple writers to state, etc.
+
+        This handler updates a user’s role in set of systems.
+        Other updates to the same user are queued and processed in order.
+        Updates either succeed or fail, but never leave the user in an inconsistent state.
+
+        ```py ! role_updater.py
+        CODE_LOAD::python/src/use_cases/microservices/role_updater.py?2
+        ```
+
+        ### !!steps Persist progress
+
+        Store results of interaction with external systems or non-deterministic actions.
+        On retries, the action does not get re-executed but the previous result will be returned.
+
+        ```py ! role_updater.py
+        CODE_LOAD::python/src/use_cases/microservices/role_updater.py?3
+        ```
+
+        ### !!steps Sagas and rollbacks
+
+        Implement compensation logic with Restate’s durable building blocks and Restate takes care of running it till completion.
+
+        Here, we update the user’s role in multiple systems. If one fails, we rollback the changes in the other systems.
+
+        ```py ! role_updater.py
+        CODE_LOAD::python/src/use_cases/microservices/role_updater.py?4
+        ```
+
+    </Scrollycoding>
+</TabItem>
 </Tabs>
 
 
