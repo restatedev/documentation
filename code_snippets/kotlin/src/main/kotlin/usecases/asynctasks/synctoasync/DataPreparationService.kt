@@ -18,7 +18,7 @@ class DataPreparationService {
   }
 
   @Workflow
-  suspend fun run(ctx: WorkflowContext, userId: String): URL {
+  suspend fun run(ctx: WorkflowContext): URL {
     val url: URL = ctx.runBlock { createS3Bucket() }
     ctx.runBlock { uploadData(url) }
 

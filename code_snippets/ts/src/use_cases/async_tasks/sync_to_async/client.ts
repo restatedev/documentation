@@ -13,13 +13,13 @@ const RESTATE_URL = process.env.RESTATE_URL ?? "http://localhost:8080";
 const rs = restate.connect({ url: RESTATE_URL });
 const dataPrepService: DataPrepService = { name: "dataPrep" };
 
-async function downloadData(userId: string) {
+async function downloadData(user: { id: string, email: string }) {
   // <mark_1>
-  const dataPrep = rs.workflowClient(dataPrepService, userId);
+  const dataPrep = rs.workflowClient(dataPrepService, user.id);
   // </mark_1>
 
   // <mark_2>
-  await dataPrep.workflowSubmit({ userId });
+  await dataPrep.workflowSubmit();
   // </mark_2>
 
   // <mark_3>
@@ -28,8 +28,8 @@ async function downloadData(userId: string) {
 
   // <mark_4>
   if (result === Timeout) {
-    const email = await readLine("This takes long... Mail us the link later");
-    await dataPrep.resultAsEmail({ email });
+    // Hit timeout... Mail us the link later
+    await dataPrep.resultAsEmail({ email: user.email });
     return;
   }
   // </mark_4>
@@ -47,15 +47,4 @@ function withTimeout<T>(
     setTimeout(resolve, millis, Timeout)
   );
   return Promise.race([promise, timeoutPromise]);
-}
-
-async function readLine(prompt: string): Promise<string> {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-
-  return new Promise<string>((resolve) => rl.question(prompt, resolve)).finally(
-    () => rl.close()
-  );
 }

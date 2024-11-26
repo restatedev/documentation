@@ -20,7 +20,7 @@ public class DataPreparationService {
       DurablePromiseKey.of("url", JacksonSerdes.of(URL.class));
 
   @Workflow
-  public URL run(WorkflowContext ctx, String userId) {
+  public URL run(WorkflowContext ctx) {
     URL url = ctx.run(JacksonSerdes.of(URL.class), () -> createS3Bucket());
     ctx.run(() -> uploadData(url));
 

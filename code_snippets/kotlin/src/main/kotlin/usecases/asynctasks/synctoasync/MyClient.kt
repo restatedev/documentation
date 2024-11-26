@@ -17,7 +17,7 @@ class MyClient {
     // </mark_1>
 
     // <mark_2>
-    client.submit(userId)
+    client.submit()
     // </mark_2>
 
     try {
