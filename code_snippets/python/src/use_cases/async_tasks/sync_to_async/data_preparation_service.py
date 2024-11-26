@@ -37,7 +37,7 @@ async def run(ctx: WorkflowContext) -> str:
     # </mark_1>
 
 
-@data_preparation.handler()
+@data_preparation.handler("resultAsEmail")
 async def result_as_email(ctx: WorkflowSharedContext, email: str):
     # <mark_2>
     url = await ctx.promise("url").value()

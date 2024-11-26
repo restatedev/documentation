@@ -19,6 +19,7 @@ const Schema = Block.extend({
             command: z.optional(HighlightedCodeBlock),
             output: z.optional(HighlightedCodeBlock),
             activeTabIndex: z.optional(z.number()),
+            windows: z.optional(z.array(HighlightedCodeBlock)),
         })
     ),
 })
@@ -52,8 +53,12 @@ export function Scrollycoding(props: unknown) {
                                     codeblock={step.code}
                                     style={{ maxHeight: "50rem" }}
                                 />
-                            ) : (
+                            ) : "tabs" in step ? (
                                 <CodeTabs tabs={step.tabs} />
+                            ) : /* "windows" in step ?*/ (
+                                step.windows.map((window) => (
+                                    <Code codeblock={window} />
+                                ))
                             )}
                         </div>
                     </div>
