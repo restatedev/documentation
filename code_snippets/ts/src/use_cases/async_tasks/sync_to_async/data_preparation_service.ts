@@ -16,7 +16,6 @@ const dataPreparationService = restate.workflow({
       // <mark_2>
       await ctx.promise<URL>("url").resolve(url);
       // </mark_2>
-
       return url;
       // </mark_1>
     },

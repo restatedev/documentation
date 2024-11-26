@@ -19,16 +19,22 @@ class DataPreparationService {
 
   @Workflow
   suspend fun run(ctx: WorkflowContext): URL {
+    // <mark_1>
     val url: URL = ctx.runBlock { createS3Bucket() }
     ctx.runBlock { uploadData(url) }
 
+    // <mark_2>
     ctx.promiseHandle(URL_PROMISE).resolve(url)
+    // </mark_2>
     return url
+    // </mark_1>
   }
 
   @Shared
   suspend fun resultAsEmail(ctx: SharedWorkflowContext, email: Email) {
+    // <mark_2>
     val url: URL = ctx.promise(URL_PROMISE).awaitable().await()
+    // </mark_2>
     ctx.runBlock { sendEmail(url, email) }
   }
 }

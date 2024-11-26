@@ -4,15 +4,12 @@ import dev.restate.sdk.client.Client
 import develop.workflows.Email
 import java.util.concurrent.TimeUnit
 
-// <start_here>
 class MyClient {
 
-  companion object {
-    private val rs: Client = Client.connect("http://localhost:8080")
-  }
-
+  // <start_here>
   suspend fun downloadData(userId: String, email: Email) {
     // <mark_1>
+    val rs: Client = Client.connect("http://localhost:8080")
     val client = DataPreparationServiceClient.fromClient(rs, userId)
     // </mark_1>
 
@@ -32,5 +29,5 @@ class MyClient {
     // </mark_4>
     // ... process directly ...
   }
+  // <end_here>
 }
-// <end_here>

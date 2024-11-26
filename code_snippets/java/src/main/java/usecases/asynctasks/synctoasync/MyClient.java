@@ -7,16 +7,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import usecases.asynctasks.synctoasync.DataPreparationServiceClient.IngressClient;
 
-// <start_here>
 public class MyClient {
-
-  private static final Client rs = Client.connect("http://localhost:8080");
-
+  // <start_here>
   public void downloadData(String userId, Email email) {
     // <mark_1>
+    Client rs = Client.connect("http://localhost:8080");
     IngressClient client = DataPreparationServiceClient.fromClient(rs, userId);
     // </mark_1>
-
     // <mark_2>
     client.submit();
     // </mark_2>
@@ -35,5 +32,5 @@ public class MyClient {
     // </mark_4>
     // ... process directly ...
   }
+  // <end_here>
 }
-// <end_here>
