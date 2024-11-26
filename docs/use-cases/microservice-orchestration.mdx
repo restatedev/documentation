@@ -198,58 +198,7 @@ Turn functions into durable handlers with the Restate SDK.
 
     </Scrollycoding>
 </TabItem>
-<TabItem value="go" label="Go">
-<Scrollycoding className="workflows-scroller">
-
-    ### !!steps Distributed, durable building blocks
-    Work with objects, functions, and promises as if failures don’t happen.
-    Restate makes them distributed and durable out-of-the-box.
-
-    ```go ! roleupdater.go
-    CODE_LOAD::go/usecases/microservices/roleupdater.go?1
-    ```
-
-
-
-    ### !!steps Scalability, concurrency, consistency
-
-    Restate sequences requests per key, if desired.
-    Scale out without fearing issues such as race conditions, multiple writers to state, etc.
-
-    This handler updates a user’s role in set of systems.
-    Other updates to the same user are queued and processed in order.
-    Updates either succeed or fail, but never leave the user in an inconsistent state.
-
-    ```go ! roleupdater.go
-    CODE_LOAD::go/usecases/microservices/roleupdater.go?2
-    ```
-
-
-
-    ### !!steps Persist progress
-
-    Store results of interaction with external systems or non-deterministic actions.
-    On retries, the action does not get re-executed but the previous result will be returned.
-
-    ```go ! roleupdater.go
-    CODE_LOAD::go/usecases/microservices/roleupdater.go?3
-    ```
-
-
-
-    ### !!steps Sagas and rollbacks
-
-    Implement compensation logic with Restate’s durable building blocks and Restate takes care of running it till completion.
-
-    Here, we update the user’s role in multiple systems. If one fails, we rollback the changes in the other systems.
-
-    ```go ! roleupdater.go
-    CODE_LOAD::go/usecases/microservices/roleupdater.go?4
-    ```
-
-</Scrollycoding>
-</TabItem>
-<TabItem value="python" label="Python">
+    <TabItem value="python" label="Python">
     <Scrollycoding className="workflows-scroller">
 
         ### !!steps Distributed, durable building blocks
@@ -372,6 +321,30 @@ Turn functions into durable handlers with the Restate SDK.
 
     ```kotlin ! ProductReservation.kt
     CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/Idempotency.kt?1
+    ```
+
+</Scrollycoding>
+</TabItem>
+<TabItem value="python" label="Python">
+<Scrollycoding>
+
+    ### !!steps Durable RPC
+    Send requests to other services and Restate ensures they are delivered and processed.
+    Requests can be done as request-response, as message, or delayed action.
+
+    ```py ! product_reservation.py
+    CODE_LOAD::python/src/use_cases/microservices/idempotency.py
+    ```
+
+    ### !!steps Idempotency for free
+
+    Add an idempotency token to your request and let Restate take care of deduplication for you.
+    Duplicate requests latch on to the previous one and see the same response.
+
+    Here, we reserve a product for a user. We connect to Restate and send a `reserve` request with an idempotency key so retries wouldn't lead to double reservations.
+
+    ```py ! product_reservation.py
+    CODE_LOAD::python/src/use_cases/microservices/idempotency.py?1
     ```
 
 </Scrollycoding>

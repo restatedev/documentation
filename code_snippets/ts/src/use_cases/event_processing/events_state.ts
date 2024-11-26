@@ -11,6 +11,7 @@
 
 import * as restate from "@restatedev/restate-sdk";
 import { ObjectContext } from "@restatedev/restate-sdk";
+import { TerminalError } from "@restatedev/restate-sdk";
 
 // <start_here>
 const eventEnricher = restate.object({
@@ -35,7 +36,11 @@ const eventEnricher = restate.object({
       // <mark_1>
       const userEvent = await ctx.get<UserProfile>("user");
       // </mark_1>
-      (userEvent!.features ??= []).push(featureEvent);
+      if(!userEvent) {
+        throw new TerminalError("User not found");
+      }
+
+      userEvent.features.push(featureEvent);
       // <mark_1>
       ctx.set("user", userEvent);
       // </mark_1>
@@ -54,10 +59,10 @@ const eventEnricher = restate.object({
     },
   },
 });
+// <end_here>
 
 type EventEnricherType = typeof eventEnricher;
 const EventEnricher: EventEnricherType = { name: "profile" };
-// <end_here>
 
 type UserProfile = {
   id: string;
