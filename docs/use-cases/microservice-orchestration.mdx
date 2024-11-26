@@ -15,6 +15,14 @@ import Tabs from "@theme/Tabs"
 import TabItem from "@theme/TabItem"
 import {Scrollycoding} from "../../src/components/code/scrollycoding";
 
+<Tabs groupId="sdk" queryString>
+    <TabItem value="ts" label="TypeScript"/>
+    <TabItem value="java" label="Java"/>
+    <TabItem value="kotlin" label="Kotlin"/>
+    <TabItem value="go" label="Go"/>
+    <TabItem value="python" label="Python"/>
+</Tabs>
+
 <h1 className={"padding-top--lg text--left"}>Microservice Orchestration</h1>
 <h1 className={"use-case-subtitle text--left"}>The simplest way to build resilient applications.</h1>
 <p className={"use-case-description padding-bottom--lg text--left"}>Regular functions and services, but now resilient, consistent, and scalable.<br/>
@@ -44,160 +52,205 @@ import {Scrollycoding} from "../../src/components/code/scrollycoding";
 
 Turn functions into durable handlers with the Restate SDK.
 
-<Tabs groupId="sdk" queryString>
-<TabItem value="ts" label="TypeScript">
-<Scrollycoding className="workflows-scroller">
-
-    ### !!steps Distributed, durable building blocks
-    Work with objects, functions, and promises as if failures don’t happen.
-    Restate makes them distributed and durable out-of-the-box.
-
-    ```ts ! role_updater.ts
-    CODE_LOAD::ts/src/use_cases/microservices/role_updater.ts?1
-    ```
-
-
-
-    ### !!steps Scalability, concurrency, consistency
-
-    Restate sequences requests per key, if desired.
-    Scale out without fearing issues such as race conditions, multiple writers to state, etc.
-
-    This handler updates a user’s role in set of systems.
-    Other updates to the same user are queued and processed in order.
-    Updates either succeed or fail, but never leave the user in an inconsistent state.
-
-    ```ts ! role_updater.ts
-    CODE_LOAD::ts/src/use_cases/microservices/role_updater.ts?2
-    ```
-
-
-
-    ### !!steps Persist progress
-
-    Store results of interaction with external systems or non-deterministic actions.
-    On retries, the action does not get re-executed but the previous result will be returned.
-
-    ```ts ! role_updater.ts
-    CODE_LOAD::ts/src/use_cases/microservices/role_updater.ts?3
-    ```
-
-
-
-    ### !!steps Sagas and rollbacks
-
-    Implement compensation logic with Restate’s durable building blocks and Restate takes care of running it till completion.
-
-    Here, we update the user’s role in multiple systems. If one fails, we rollback the changes in the other systems.
-
-    ```ts ! role_updater.ts
-    CODE_LOAD::ts/src/use_cases/microservices/role_updater.ts?4
-    ```
-
-</Scrollycoding>
-</TabItem>
-<TabItem value="java" label="Java">
+<Tabs groupId="sdk" className={"display-none"}>
+    <TabItem value="ts" label="TypeScript">
     <Scrollycoding className="workflows-scroller">
 
-    ### !!steps Distributed, durable building blocks
-    Work with objects, functions, and promises as if failures don’t happen.
-    Restate makes them distributed and durable out-of-the-box.
+        ### !!steps Distributed, durable building blocks
+        Work with objects, functions, and promises as if failures don’t happen.
+        Restate makes them distributed and durable out-of-the-box.
 
-    ```java ! RoleUpdateService.java
-    CODE_LOAD::java/src/main/java/usecases/microservices/RoleUpdateService.java?1
-    ```
-
-
-
-    ### !!steps Scalability, concurrency, consistency
-
-    Restate sequences requests per key, if desired.
-    Scale out without fearing issues such as race conditions, multiple writers to state, etc.
-
-    This handler updates a user’s role in set of systems.
-    Other updates to the same user are queued and processed in order.
-    Updates either succeed or fail, but never leave the user in an inconsistent state.
-
-    ```java ! RoleUpdateService.java
-    CODE_LOAD::java/src/main/java/usecases/microservices/RoleUpdateService.java?2
-    ```
+        ```ts ! role_updater.ts
+        CODE_LOAD::ts/src/use_cases/microservices/role_updater.ts?1
+        ```
 
 
 
-    ### !!steps Persist progress
+        ### !!steps Scalability, concurrency, consistency
 
-    Store results of interaction with external systems or non-deterministic actions.
-    On retries, the action does not get re-executed but the previous result will be returned.
+        Restate sequences requests per key, if desired.
+        Scale out without fearing issues such as race conditions, multiple writers to state, etc.
 
-    ```java ! RoleUpdateService.java
-    CODE_LOAD::java/src/main/java/usecases/microservices/RoleUpdateService.java?3
-    ```
+        This handler updates a user’s role in set of systems.
+        Other updates to the same user are queued and processed in order.
+        Updates either succeed or fail, but never leave the user in an inconsistent state.
 
-
-
-    ### !!steps Sagas and rollbacks
-
-    Implement compensation logic with Restate’s durable building blocks and Restate takes care of running it till completion.
-
-    Here, we update the user’s role in multiple systems. If one fails, we rollback the changes in the other systems.
-
-    ```java ! RoleUpdateService.java
-    CODE_LOAD::java/src/main/java/usecases/microservices/RoleUpdateService.java?4
-    ```
-
-    </Scrollycoding>
-</TabItem>
-<TabItem value="kotlin" label={"Kotlin"}>
-    <Scrollycoding className="workflows-scroller">
-
-    ### !!steps Distributed, durable building blocks
-    Work with objects, functions, and promises as if failures don’t happen.
-    Restate makes them distributed and durable out-of-the-box.
-
-    ```kotlin ! RoleUpdateService.kt
-    CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/RoleUpdateService.kt?1
-    ```
+        ```ts ! role_updater.ts
+        CODE_LOAD::ts/src/use_cases/microservices/role_updater.ts?2
+        ```
 
 
 
-    ### !!steps Scalability, concurrency, consistency
+        ### !!steps Persist progress
 
-    Restate sequences requests per key, if desired.
-    Scale out without fearing issues such as race conditions, multiple writers to state, etc.
+        Store results of interaction with external systems or non-deterministic actions.
+        On retries, the action does not get re-executed but the previous result will be returned.
 
-    This handler updates a user’s role in set of systems.
-    Other updates to the same user are queued and processed in order.
-    Updates either succeed or fail, but never leave the user in an inconsistent state.
-
-    ```kotlin ! RoleUpdateService.kt
-    CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/RoleUpdateService.kt?2
-    ```
+        ```ts ! role_updater.ts
+        CODE_LOAD::ts/src/use_cases/microservices/role_updater.ts?3
+        ```
 
 
 
-    ### !!steps Persist progress
+        ### !!steps Sagas and rollbacks
 
-    Store results of interaction with external systems or non-deterministic actions.
-    On retries, the action does not get re-executed but the previous result will be returned.
+        Implement compensation logic with Restate’s durable building blocks and Restate takes care of running it till completion.
 
-    ```kotlin ! RoleUpdateService.kt
-    CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/RoleUpdateService.kt?3
-    ```
+        Here, we update the user’s role in multiple systems. If one fails, we rollback the changes in the other systems.
 
-
-
-    ### !!steps Sagas and rollbacks
-
-    Implement compensation logic with Restate’s durable building blocks and Restate takes care of running it till completion.
-
-    Here, we update the user’s role in multiple systems. If one fails, we rollback the changes in the other systems.
-
-    ```kotlin ! RoleUpdateService.kt
-    CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/RoleUpdateService.kt?4
-    ```
+        ```ts ! role_updater.ts
+        CODE_LOAD::ts/src/use_cases/microservices/role_updater.ts?4
+        ```
 
     </Scrollycoding>
-</TabItem>
+    </TabItem>
+    <TabItem value="java" label="Java">
+        <Scrollycoding className="workflows-scroller">
+
+        ### !!steps Distributed, durable building blocks
+        Work with objects, functions, and promises as if failures don’t happen.
+        Restate makes them distributed and durable out-of-the-box.
+
+        ```java ! RoleUpdateService.java
+        CODE_LOAD::java/src/main/java/usecases/microservices/RoleUpdateService.java?1
+        ```
+
+
+
+        ### !!steps Scalability, concurrency, consistency
+
+        Restate sequences requests per key, if desired.
+        Scale out without fearing issues such as race conditions, multiple writers to state, etc.
+
+        This handler updates a user’s role in set of systems.
+        Other updates to the same user are queued and processed in order.
+        Updates either succeed or fail, but never leave the user in an inconsistent state.
+
+        ```java ! RoleUpdateService.java
+        CODE_LOAD::java/src/main/java/usecases/microservices/RoleUpdateService.java?2
+        ```
+
+
+
+        ### !!steps Persist progress
+
+        Store results of interaction with external systems or non-deterministic actions.
+        On retries, the action does not get re-executed but the previous result will be returned.
+
+        ```java ! RoleUpdateService.java
+        CODE_LOAD::java/src/main/java/usecases/microservices/RoleUpdateService.java?3
+        ```
+
+
+
+        ### !!steps Sagas and rollbacks
+
+        Implement compensation logic with Restate’s durable building blocks and Restate takes care of running it till completion.
+
+        Here, we update the user’s role in multiple systems. If one fails, we rollback the changes in the other systems.
+
+        ```java ! RoleUpdateService.java
+        CODE_LOAD::java/src/main/java/usecases/microservices/RoleUpdateService.java?4
+        ```
+
+        </Scrollycoding>
+    </TabItem>
+    <TabItem value="kotlin" label={"Kotlin"}>
+        <Scrollycoding className="workflows-scroller">
+
+        ### !!steps Distributed, durable building blocks
+        Work with objects, functions, and promises as if failures don’t happen.
+        Restate makes them distributed and durable out-of-the-box.
+
+        ```kotlin ! RoleUpdateService.kt
+        CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/RoleUpdateService.kt?1
+        ```
+
+
+
+        ### !!steps Scalability, concurrency, consistency
+
+        Restate sequences requests per key, if desired.
+        Scale out without fearing issues such as race conditions, multiple writers to state, etc.
+
+        This handler updates a user’s role in set of systems.
+        Other updates to the same user are queued and processed in order.
+        Updates either succeed or fail, but never leave the user in an inconsistent state.
+
+        ```kotlin ! RoleUpdateService.kt
+        CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/RoleUpdateService.kt?2
+        ```
+
+
+
+        ### !!steps Persist progress
+
+        Store results of interaction with external systems or non-deterministic actions.
+        On retries, the action does not get re-executed but the previous result will be returned.
+
+        ```kotlin ! RoleUpdateService.kt
+        CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/RoleUpdateService.kt?3
+        ```
+
+
+
+        ### !!steps Sagas and rollbacks
+
+        Implement compensation logic with Restate’s durable building blocks and Restate takes care of running it till completion.
+
+        Here, we update the user’s role in multiple systems. If one fails, we rollback the changes in the other systems.
+
+        ```kotlin ! RoleUpdateService.kt
+        CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/RoleUpdateService.kt?4
+        ```
+
+        </Scrollycoding>
+    </TabItem>
+    <TabItem value="go" label="Go">
+        <Scrollycoding className="workflows-scroller">
+
+            ### !!steps Distributed, durable building blocks
+            Work with objects, functions, and promises as if failures don’t happen.
+            Restate makes them distributed and durable out-of-the-box.
+
+            ```go ! roleupdater.go
+            CODE_LOAD::go/usecases/microservices/roleupdater.go?1
+            ```
+
+            ### !!steps Scalability, concurrency, consistency
+
+            Restate sequences requests per key, if desired.
+            Scale out without fearing issues such as race conditions, multiple writers to state, etc.
+
+            This handler updates a user’s role in set of systems.
+            Other updates to the same user are queued and processed in order.
+            Updates either succeed or fail, but never leave the user in an inconsistent state.
+
+            ```go ! roleupdater.go
+            CODE_LOAD::go/usecases/microservices/roleupdater.go?2
+            ```
+
+            ### !!steps Persist progress
+
+            Store results of interaction with external systems or non-deterministic actions.
+            On retries, the action does not get re-executed but the previous result will be returned.
+
+            ```go ! roleupdater.go
+            CODE_LOAD::go/usecases/microservices/roleupdater.go?3
+            ```
+
+            ### !!steps Sagas and rollbacks
+
+            Implement compensation logic with Restate’s durable building blocks and Restate takes care of running it till completion.
+
+            Here, we update the user’s role in multiple systems. If one fails, we rollback the changes in the other systems.
+
+            ```go ! roleupdater.go
+            CODE_LOAD::go/usecases/microservices/roleupdater.go?4
+            ```
+
+        </Scrollycoding>
+    </TabItem>
     <TabItem value="python" label="Python">
     <Scrollycoding className="workflows-scroller">
 
@@ -248,7 +301,7 @@ Turn functions into durable handlers with the Restate SDK.
 
 <p className={"padding-top--lg"}>Proxy RPC calls to other services via Restate and get durability and idempotency for free.</p>
 
-<Tabs groupId="sdk" queryString>
+<Tabs groupId="sdk" className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
 <Scrollycoding>
 
