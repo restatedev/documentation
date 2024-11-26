@@ -63,7 +63,12 @@ Restate pushes the events to your function.
     Let Restate subscribe to a Kafka topic and specify to which function to push the events.
     Restate will take care of the event plumbing: polling for records, committing offsets, recovering...
 
-    ```shell ! curl
+    ```ts !!windows user_updates.ts
+    CODE_LOAD::ts/src/use_cases/event_processing/event_processing.ts
+    ```
+
+    ```shell !!windows curl
+    # !mark(1:5)
     curl restate:9070/subscriptions --json '{
         "source": "kafka://my-cluster/user-events",
         "sink": "service://userUpdates/updateUserEvent"
@@ -129,7 +134,12 @@ Restate pushes the events to your function.
         Let Restate subscribe to a Kafka topic and specify to which function to push the events.
         Restate will take care of the event plumbing: polling for records, committing offsets, recovering...
 
-        ```shell ! curl
+        ```java !!windows UserUpdatesService.java
+        CODE_LOAD::java/src/main/java/usecases/eventprocessing/UserUpdatesService.java
+        ```
+
+        ```shell !!windows curl
+        # !mark(1:5)
         curl restate:9070/subscriptions --json '{
           "source": "kafka://my-cluster/user-events",
           "sink": "service://UserUpdatesService/updateUserEvent"
@@ -195,7 +205,12 @@ Restate pushes the events to your function.
             Let Restate subscribe to a Kafka topic and specify to which function to push the events.
             Restate will take care of the event plumbing: polling for records, committing offsets, recovering...
 
-            ```shell ! curl
+            ```kotlin !!windows UserUpdatesService.kt
+            CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/UserUpdatesService.kt
+            ```
+
+            ```shell !!windows curl
+            # !mark(1:5)
             curl restate:9070/subscriptions --json '{
               "source": "kafka://my-cluster/user-events",
               "sink": "service://UserUpdatesService/updateUserEvent"
@@ -214,8 +229,6 @@ Restate pushes the events to your function.
             CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/UserUpdatesService.kt?1
             ```
 
-
-
             ### !!steps Postpone processing
 
             Flexibly postpone processing of events until later.
@@ -228,8 +241,6 @@ Restate pushes the events to your function.
             CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/UserUpdatesService.kt?2
             ```
 
-
-
             ### !!steps Durable side effects
 
             The results of interactions with external systems are tracked and recovered after failures. This simplifies writing flows that keep multiple systems in sync.
@@ -237,8 +248,6 @@ Restate pushes the events to your function.
             ```kotlin ! UserUpdatesService.kt
             CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/UserUpdatesService.kt?3
             ```
-
-
 
             ### !!steps Flexible control flow
 
@@ -267,7 +276,12 @@ Restate pushes the events to your function.
         Let Restate subscribe to a Kafka topic and specify to which function to push the events.
         Restate will take care of the event plumbing: polling for records, committing offsets, recovering...
 
-        ```shell ! curl
+        ```go !!windows userupdates.go
+        CODE_LOAD::go/usecases/eventprocessing/eventprocessing.go?1
+        ```
+
+        ```shell !!windows curl
+        # !mark(1:5)
         curl restate:9070/subscriptions --json '{
           "source": "kafka://my-cluster/user-events",
           "sink": "service://userUpdates/updateUserEvent"
@@ -333,7 +347,12 @@ Restate pushes the events to your function.
         Let Restate subscribe to a Kafka topic and specify to which function to push the events.
         Restate will take care of the event plumbing: polling for records, committing offsets, recovering...
 
-        ```shell ! curl
+        ```python !!windows user_updates.py
+        CODE_LOAD::python/src/use_cases/event_processing/event_processing.py
+        ```
+
+        ```shell !!windows curl
+        # !mark(1:5)
         curl restate:9070/subscriptions --json '{
             "source": "kafka://my-cluster/user-events",
             "sink": "service://userUpdates/update"
