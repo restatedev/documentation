@@ -4,7 +4,6 @@ import dev.restate.sdk.Awaitable;
 import dev.restate.sdk.Awakeable;
 import dev.restate.sdk.Context;
 import dev.restate.sdk.JsonSerdes;
-import dev.restate.sdk.common.TerminalException;
 import java.util.UUID;
 
 class JournalingResults {

@@ -1,6 +1,5 @@
 package usecases.asynctasks.synctoasync;
 
-import dev.restate.sdk.Awaitable;
 import dev.restate.sdk.client.Client;
 import develop.workflows.Email;
 import java.util.concurrent.CompletableFuture;

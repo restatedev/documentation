@@ -7,7 +7,6 @@ import dev.restate.sdk.WorkflowContext;
 import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.Workflow;
 import dev.restate.sdk.common.DurablePromiseKey;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
 import develop.workflows.Email;
 import usecases.utils.URL;
