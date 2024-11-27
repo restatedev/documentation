@@ -14,11 +14,11 @@ class UserUpdateEvent(BaseModel):
 NOT_READY = "NOT_READY"
 
 
-async def update_profile(profile: str, token: str = None) -> str:
+async def update_profile(profile: str) -> str:
     return profile + "-id" if random.random() >= 0.8 else NOT_READY
 
 
-async def set_permissions(user_id: str, permissions: str, token: str = None) -> str:
+async def set_permissions(user_id: str, permissions: str) -> str:
     return permissions
 
 
@@ -27,10 +27,7 @@ async def provision_resources(user: str, role: str, resources: str):
 
 
 def verify_event(request: UserUpdateEvent) -> UserUpdateEvent:
-    if request.get("profile") and request.get("permissions") and request.get("resources"):
-        return request
-    else:
-        raise TerminalError("Incomplete event")
+    return request
 
 
 # <start_here>

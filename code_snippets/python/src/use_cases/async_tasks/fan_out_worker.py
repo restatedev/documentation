@@ -13,11 +13,11 @@ class Subtask(BaseModel):
 
 
 def split(task) -> list[Subtask]:
-    pass
+    return list()
 
 
 def aggregate(results) -> list[Task]:
-    pass
+    return list()
 
 
 # <start_here>

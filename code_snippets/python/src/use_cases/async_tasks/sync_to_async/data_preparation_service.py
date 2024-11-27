@@ -8,7 +8,7 @@ class DataPrepService(TypedDict):
 
 
 def create_s3_bucket() -> str:
-    pass
+    return ""
 
 
 def upload_data(target: str):

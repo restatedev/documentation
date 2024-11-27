@@ -1,9 +1,8 @@
 import json
-import uuid
 
 import requests
 
-from async_task_service import TaskOpts
+from src.use_cases.async_tasks.simple_async_task.async_task_service import TaskOpts
 
 RESTATE_URL = "http://localhost:8080"
 
@@ -34,4 +33,4 @@ def submit_and_await_task(task: TaskOpts):
 # <end_here>
 
 
-submit_and_await_task(TaskOpts(task_id="myTask123"))
+submit_and_await_task(TaskOpts(id="myTask123"))

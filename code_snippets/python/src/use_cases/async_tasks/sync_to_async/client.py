@@ -1,13 +1,6 @@
 import asyncio
-import json
-from datetime import timedelta
-
 import requests
 from pydantic import BaseModel
-from restate import Service, Context
-
-from data_preparation_service import data_preparation
-
 
 class User(BaseModel):
     id: str
