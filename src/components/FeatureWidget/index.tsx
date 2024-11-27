@@ -14,6 +14,7 @@ type FeatureItem = {
   go: string;
   rust: string;
   link: { icon: string; url: string };
+  links: [{ icon: string; url: string }];
 };
 
 function Feature({
@@ -27,7 +28,8 @@ function Feature({
   kotlin,
   go,
   python,
-  rust
+  rust,
+  links,
 }: FeatureItem) {
   const colWidth = itemsPerRow ? Math.floor(12 / itemsPerRow) : 4;
   return (
@@ -131,6 +133,24 @@ function Feature({
                   width="24"
                 />
               </a>
+            </div>
+          ) : null}
+          {links ? (
+            <div id="overviewButtonDiv">
+              {links.map((link) => (
+                <a
+                  className="overviewButton btn btn-primary btn-lg firstTimeButton"
+                  href={link.url}
+                  target={"_blank"}
+                  role="button"
+                >
+                  <img
+                    className="buttonIcon"
+                    src={link.icon ? link.icon : "/img/arrow-right.svg"}
+                    width="24"
+                  />
+                </a>
+              ))}
             </div>
           ) : null}
         </div>

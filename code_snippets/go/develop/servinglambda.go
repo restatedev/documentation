@@ -4,7 +4,6 @@ import (
 	"log"
 
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/awslabs/aws-lambda-go-api-proxy/httpadapter"
 	restate "github.com/restatedev/sdk-go"
 	server "github.com/restatedev/sdk-go/server"
 )
@@ -18,11 +17,11 @@ func serveLambda() {
 		Bind(restate.Reflect(MyService{})).
 		Bind(restate.Reflect(MyVirtualObject{})).
 		Bidirectional(false).
-		Handler()
+		LambdaHandler()
 	if err != nil {
 		log.Fatal(err)
 	}
-	lambda.Start(httpadapter.New(handler).ProxyWithContext)
+	lambda.Start(handler)
 	// <end_lambda>
 
 }
