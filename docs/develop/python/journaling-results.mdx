@@ -22,7 +22,7 @@ Here is an example of a database request for which the string response is stored
 CODE_LOAD::python/src/develop/journaling_results.py#side_effect
 ```
 
-You cannot invoke any methods on the Restate context within a side effect.
+You cannot use the Restate context within `ctx.run`.
 This includes actions such as getting state, calling another service, and nesting other journaled actions.
 
 You can return any payload that can be serialized with `bytes(json.dumps(obj), "utf-8")` and deserialized with `json.loads(buf)`.
