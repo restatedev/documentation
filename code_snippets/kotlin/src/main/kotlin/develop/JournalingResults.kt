@@ -1,6 +1,5 @@
 package develop
 
-import dev.restate.sdk.common.TerminalException
 import dev.restate.sdk.kotlin.*
 import java.util.UUID
 
