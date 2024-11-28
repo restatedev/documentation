@@ -26,7 +26,7 @@ const checkoutService = restate.service({
       ctx: restate.Context,
       request: { userId: string; tickets: string[] }
     ) {
-      // withClass(1:3) highlight-line
+      // !mark(1:3)
       const idempotencyKey = ctx.rand.uuidv4();
       console.info("My idempotency key: " + idempotencyKey);
       throw new Error("Something happened!");
@@ -45,11 +45,11 @@ const secondCheckoutService = restate.service({
       ctx: restate.Context,
       request: { userId: string; tickets: string[] }
     ) {
-      // withClass highlight-line
+      // !mark
       const totalPrice = request.tickets.length * 40;
 
       const idempotencyKey = ctx.rand.uuidv4();
-      // withClass(1:3) highlight-line
+      // !mark(1:3)
       const success = await ctx.run(() =>
         PaymentClient.get().call(idempotencyKey, totalPrice)
       );

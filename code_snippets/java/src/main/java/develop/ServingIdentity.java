@@ -8,7 +8,7 @@ class MySecureApp {
   public static void main(String[] args) {
     RestateHttpEndpointBuilder.builder()
         .bind(new MyService())
-        // withClass(1:3) highlight-line
+        // !mark
         .withRequestIdentityVerifier(
             RestateRequestIdentityVerifier.fromKeys(
                 "publickeyv1_w7YHemBctH5Ck2nQRQ47iBBqhNHy4FV7t2Usbye2A6f"))

@@ -71,11 +71,6 @@ public class SignupWorkflow {
   public void approveEmail(SharedWorkflowContext ctx, String secret) {
     ctx.promiseHandle(EMAIL_LINK).resolve(secret);
   }
-
-  @Handler
-  public void rejectEmail(SharedWorkflowContext ctx) {
-    ctx.promiseHandle(EMAIL_LINK).reject("Abort verification");
-  }
   // </mark_6>
 }
 // <end_here>

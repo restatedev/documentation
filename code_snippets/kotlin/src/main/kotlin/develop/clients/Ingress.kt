@@ -39,12 +39,12 @@ class Ingress {
     // <start_delayed_call_kotlin>
     val rs = Client.connect("http://localhost:8080")
     GreeterServiceClient.fromClient(rs)
-        // withClass highlight-line
+        // !mark
         .send(1.seconds)
         .greet("Hi")
 
     GreetCounterObjectClient.fromClient(rs, "Mary")
-        // withClass highlight-line
+        // !mark
         .send(1000.milliseconds)
         .greet("Hi")
     // <end_delayed_call_kotlin>
@@ -55,7 +55,7 @@ class Ingress {
     val rs = Client.connect("http://localhost:8080")
     GreetCounterObjectClient.fromClient(rs, "Mary")
         .send()
-        // withClass highlight-line
+        // !mark
         .greet("Hi", CallRequestOptions.DEFAULT.withIdempotency("abcde"))
     // <end_service_idempotent>
   }

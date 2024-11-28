@@ -52,10 +52,7 @@ const signUpWorkflow = restate.workflow({
 
     // <mark_6>
     approveEmail: (ctx: WorkflowSharedContext, secret: string) =>
-      ctx.promise<string>("email-link").resolve(secret),
-
-    rejectEmail: (ctx: WorkflowSharedContext) =>
-      ctx.promise<string>("email-link").reject("Abort verification"),
+      ctx.promise<string>("email-link").resolve(secret)
     // </mark_6>
   },
 });

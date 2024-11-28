@@ -14,7 +14,7 @@ const productService: ProductService = { name: "product" };
 app.get("/reserve/:product/:reservationId", async (req, res) => {
   const { product, reservationId } = req.params;
 
-  // withClass(1:5) highlight-line
+  // !mark(1:5)
   const products = rs.serviceClient(productService);
   const reservation = await products.reserve(
     product,
