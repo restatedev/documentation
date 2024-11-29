@@ -229,7 +229,10 @@ const config = {
       },
     },
   themes: ["docusaurus-json-schema-plugin", "mdx-v2"],
-  scripts: ["/js/store-query-parameter.js"],
+  scripts: ["/js/store-query-parameter.js", {
+      src: 'js/matomo.js',
+      async: false,
+  }],
 };
 
 module.exports = config;
