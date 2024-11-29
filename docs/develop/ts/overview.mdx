@@ -48,7 +48,8 @@ CODE_LOAD::ts/src/develop/my_virtual_object.ts
 - Specify that you want to create a Virtual Object via `restate.object`.
 - The first argument of each handler must be the `ObjectContext` parameter.
 Handlers with the `ObjectContext` parameter can write to the K/V state store.
-Only one handler can be active at a time, to ensure consistency.
+Only one handler can be active at a time per object, to ensure consistency.
+- You can retrieve the key of the object you are in via `ctx.key`.
 - If you want to have a handler that executes concurrently to the others and doesn't have write access to the K/V state, wrap the handler in `handlers.object.shared` and use the `ObjectSharedContext`.
 For example, you can use these handlers to read K/V state, or interact with the blocking handler.
 

@@ -12,8 +12,10 @@ import dev.restate.sdk.kotlin.SharedObjectContext
 class MyVirtualObject {
 
   @Handler
-  suspend fun myHandler(ctx: ObjectContext, input: String): String {
-    return "my-output"
+  suspend fun myHandler(ctx: ObjectContext, greeting: String): String {
+    val objectKey = ctx.key()
+
+    return "$greeting $objectKey!"
   }
 
   @Shared

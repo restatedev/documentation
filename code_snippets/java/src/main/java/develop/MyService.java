@@ -9,8 +9,8 @@ import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 @Service
 public class MyService {
   @Handler
-  public String myHandler(Context ctx, String input) {
-    return "my-output";
+  public String myHandler(Context ctx, String greeting) {
+    return greeting + "!";
   }
 
   public static void main(String[] args) {
