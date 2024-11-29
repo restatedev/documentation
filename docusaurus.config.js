@@ -231,6 +231,7 @@ const config = {
       },
     },
   themes: ["docusaurus-json-schema-plugin", "mdx-v2"],
+  scripts: ["/js/store-query-parameter.js"],
 };
 
 module.exports = config;
