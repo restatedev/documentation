@@ -27,6 +27,7 @@ const myWorkflow = restate.workflow({
 
     interactWithWorkflow: async (ctx: WorkflowSharedContext) => {
       // implement interaction logic here
+      // e.g. resolve a promise that the workflow is waiting on
     },
   },
 });
