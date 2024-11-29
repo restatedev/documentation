@@ -56,6 +56,8 @@ const config = {
     locales: ["en"],
   },
 
+  clientModules: ['./matomo.js'],
+
   presets: [
     [
       "classic",
