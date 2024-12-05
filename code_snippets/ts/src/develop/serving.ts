@@ -31,9 +31,9 @@ const http2Handler = restate
   .bind(myService)
   .bind(myVirtualObject)
   .bind(myWorkflow)
-  // withClass highlight-line
+  // !mark
   .http2Handler();
-// withClass highlight-line
+// !mark
 const httpServer = http2.createServer(http2Handler);
 httpServer.listen();
 // <end_custom_endpoint>
@@ -42,7 +42,7 @@ httpServer.listen();
 restate
   .endpoint()
   .bind(myService)
-  // withClass higlight-line
+    // !mark
   .withIdentityV1("publickeyv1_w7YHemBctH5Ck2nQRQ47iBBqhNHy4FV7t2Usbye2A6f")
   .listen();
 // <end_identity>

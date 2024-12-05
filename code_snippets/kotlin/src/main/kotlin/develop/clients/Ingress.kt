@@ -24,12 +24,12 @@ class Ingress {
     // <start_one_way_call_kotlin>
     val rs = Client.connect("http://localhost:8080")
     GreeterServiceClient.fromClient(rs)
-        // mark
+        // !mark
         .send()
         .greet("Hi")
 
     GreetCounterObjectClient.fromClient(rs, "Mary")
-        // mark
+        // !mark
         .send()
         .greet("Hi")
     // <end_one_way_call_kotlin>
@@ -39,12 +39,12 @@ class Ingress {
     // <start_delayed_call_kotlin>
     val rs = Client.connect("http://localhost:8080")
     GreeterServiceClient.fromClient(rs)
-        // withClass highlight-line
+        // !mark
         .send(1.seconds)
         .greet("Hi")
 
     GreetCounterObjectClient.fromClient(rs, "Mary")
-        // withClass highlight-line
+        // !mark
         .send(1000.milliseconds)
         .greet("Hi")
     // <end_delayed_call_kotlin>
@@ -55,7 +55,7 @@ class Ingress {
     val rs = Client.connect("http://localhost:8080")
     GreetCounterObjectClient.fromClient(rs, "Mary")
         .send()
-        // withClass highlight-line
+        // !mark
         .greet("Hi", CallRequestOptions.DEFAULT.withIdempotency("abcde"))
     // <end_service_idempotent>
   }
@@ -66,18 +66,18 @@ class Ingress {
     val handle: SendResponse =
         GreeterServiceClient.fromClient(rs)
             .send()
-            // mark
+            // !mark
             .greet("Hi", CallRequestOptions.DEFAULT.withIdempotency("abcde"))
 
     // ... do something else ...
 
     // Option 1: Attach later to retrieve the result
-    // mark(1:3)
+    // !mark(1:2)
     val greeting: String =
         rs.invocationHandle(handle.invocationId, KtSerdes.json<String>()).attach()
 
     // Option 2: Peek to see if the result is ready
-    // mark(1:3)
+    // !mark(1:2)
     val output: Output<String> =
         rs.invocationHandle(handle.invocationId, KtSerdes.json<String>()).output
     if (output.isReady) {

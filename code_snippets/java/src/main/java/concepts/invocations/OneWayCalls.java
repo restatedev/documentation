@@ -11,25 +11,25 @@ public class OneWayCalls {
   // <start_one_way_call>
   @Handler
   public void myRestateHandler(Context ctx) {
-    // focus
+    // !focus
     GreeterServiceClient.fromContext(ctx)
-        // focus
+        // !focus
         .send()
-        // focus
+        // !focus
         .greet("Hi");
   }
 
   // <end_one_way_call>
 
   // <start_one_way_call_java>
-  public void myJavaHandler(Context ctx) {
-    // focus
+  public void myJavaHandler() {
+    // !focus
     Client restate = Client.connect("http://localhost:8080");
-    // focus
+    // !focus
     GreeterServiceClient.fromClient(restate)
-        // focus
+        // !focus
         .send()
-        // focus
+        // !focus
         .greet("Hi");
   }
   // <end_one_way_call_java>

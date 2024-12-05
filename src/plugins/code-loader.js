@@ -7,11 +7,12 @@ const COMMENT_SYMBOL = {
     kotlin: "//",
     python: "#",
     go: "//",
-    proto: "//"
+    proto: "//",
+    rust: "//"
 }
 
 const plugin = (options) => {
-    const codeLoadRegex = /^CODE_LOAD::([^#?]+)(?:#([^?]*))?(?:\?(.+))?$/g;
+    const codeLoadRegex = /.*CODE_LOAD::([^#?]+)(?:#([^?]*))?(?:\?(.+))?$/g;
 
     const injectCode = async (str) => {
         let fileData = null;
@@ -26,7 +27,7 @@ const plugin = (options) => {
 
         const fileContent = await readFileOrFetch(fileData.filePath);
         const data = extractAndClean(fileContent, fileData.customTag, fileData.markNumber, fileData.filePath);
-        return str.replace(codeLoadRegex, () => data);
+        return str.replace(codeLoadRegex, (match) => match.replace(/.*CODE_LOAD::[^#?]+(?:#([^?]*))?(?:\?(.+))?$/, data));
     };
 
     async function readFileOrFetch(filepath) {
@@ -52,6 +53,8 @@ const plugin = (options) => {
             return COMMENT_SYMBOL.python;
         } else if (filePath.includes(".go")) {
             return COMMENT_SYMBOL.go;
+        } else if (filePath.includes(".rs")) {
+            return COMMENT_SYMBOL.rust;
         } else if (filePath.includes(".proto")) {
             return COMMENT_SYMBOL.proto;
         } else {
@@ -105,7 +108,7 @@ const plugin = (options) => {
 
                 if(!line.includes('<start_') && !line.includes('<end_') && !line.includes('<mark_') && !line.includes('</mark_')) {
                     if(needToMark){
-                        finalLines.push(`${commentSymbol} mark`)
+                        finalLines.push(`${commentSymbol} !mark`)
                     }
                     finalLines.push(line);
                 }

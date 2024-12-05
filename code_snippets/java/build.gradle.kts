@@ -10,27 +10,25 @@ repositories {
     mavenCentral()
 }
 
-val restateVersion = "1.0.1"
-
 dependencies {
     // Restate SDK
-    annotationProcessor("dev.restate:sdk-api-gen:$restateVersion")
-    implementation("dev.restate:sdk-api:$restateVersion")
-    implementation("dev.restate:sdk-common:$restateVersion")
-    implementation("dev.restate:sdk-http-vertx:$restateVersion")
-    implementation("dev.restate:sdk-lambda:$restateVersion")
-    implementation("dev.restate:sdk-serde-jackson:$restateVersion")
-    implementation("dev.restate:sdk-request-identity:$restateVersion")
+    annotationProcessor(libs.restate.sdk.api.gen)
+    implementation(libs.restate.sdk.api)
+    implementation(libs.restate.sdk.common)
+    implementation(libs.restate.sdk.http.vertx)
+    implementation(libs.restate.sdk.lambda)
+    implementation(libs.restate.sdk.request.identity)
+    implementation(libs.restate.sdk.serde.jackson)
+    implementation(libs.restate.sdk.serde.protobuf)
+    implementation(libs.restate.sdk.testing)
 
-    // Jackson parameter names
-    // https://github.com/FasterXML/jackson-modules-java8/tree/2.14/parameter-names
-    implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:2.16.1")
-    // Jackson java8 types
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.16.1")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.16.1")
+    implementation(libs.jackson.parameter.names)
+    implementation(libs.jackson.datatype.jdk8)
+    implementation(libs.jackson.datatype.jsr310)
 
-    implementation("dev.restate:sdk-serde-protobuf:$restateVersion")
-    implementation("org.apache.logging.log4j:log4j-core:2.20.0")
+    implementation(libs.junit.jupiter.api)
+
+    implementation(libs.log4j.core)
 }
 
 java {

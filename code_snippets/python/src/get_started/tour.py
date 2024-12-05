@@ -52,7 +52,7 @@ checkout = Service("CheckoutService")
 # <start_uuid>
 @checkout.handler()
 async def handle(ctx: ObjectContext, order: Order) -> bool:
-    # withClass(1:3) highlight-line
+    # !mark(1:3)
     idempotency_key = await ctx.run("idempotency_key", lambda: str(uuid.uuid4()))
     print("My idempotency key is: ", idempotency_key)
     raise Exception("Something happened!")

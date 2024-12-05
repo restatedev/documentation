@@ -9,7 +9,7 @@ import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
 import {SubtleStep} from "../../src/components/Stepper";
 import TourAnimation from "../../src/components/TourAnimation";
-import CliAnimation from "../../src/components/CliAnimation";
+import {CodeWithTabs} from "../../src/components/code/code";
 
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
@@ -45,42 +45,42 @@ As we go, you will discover how Restate can help you with some intricacies in th
 <TabItem value="ts" label="TypeScript">
 
 - Latest stable version of [NodeJS](https://nodejs.org/en/) >= v18.17.1 and [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 9.6.7 installed.
-- Restate CLI: [Installation instructions](/develop/local_dev#running-restate-server--cli-locally)
+- [Install Restate Server and CLI](/develop/local_dev#running-restate-server--cli-locally)
 - Optional: [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation), if you want to run the Restate Server with Docker. And to run Jaeger.
 
 This guide is written for:
 - TypeScript SDK version: `VAR::TYPESCRIPT_SDK_VERSION`
-- Restate runtime Docker image: `docker.io/restatedev/restate:VAR::RESTATE_VERSION`
+- Restate Server Docker image: `docker.io/restatedev/restate:VAR::RESTATE_VERSION`
 
 </TabItem>
 <TabItem value="java" label="Java">
 - JDK >= 11
-- Restate CLI: [Installation instructions](/develop/local_dev#running-restate-server--cli-locally)
+- [Install Restate Server and CLI](/develop/local_dev#running-restate-server--cli-locally)
 - Optional: [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation), if you want to run the Restate Server with Docker. And to run Jaeger.
 
 This guide is written for:
 - Java SDK version: `VAR::JAVA_SDK_VERSION`
-- Restate runtime Docker image: `docker.io/restatedev/restate:VAR::RESTATE_VERSION`
+- Restate Server Docker image: `docker.io/restatedev/restate:VAR::RESTATE_VERSION`
 
 </TabItem>
 <TabItem value="go" label="Go">
 - Go >= 1.21.0
-- Restate CLI: [Installation instructions](/develop/local_dev#running-restate-server--cli-locally)
+- [Install Restate Server and CLI](/develop/local_dev#running-restate-server--cli-locally)
 - Optional: [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation), if you want to run the Restate Server with Docker. And to run Jaeger.
 
 This guide is written for:
 - Go SDK version: `VAR::GO_SDK_VERSION`
-- Restate runtime Docker image: `docker.io/restatedev/restate:VAR::RESTATE_VERSION`
+- Restate Server Docker image: `docker.io/restatedev/restate:VAR::RESTATE_VERSION`
 
 </TabItem>
 <TabItem value="python" label="Python">
 - Python >= 3.11
-- Restate CLI: [Installation instructions](/develop/local_dev#running-restate-server--cli-locally)
+- [Install Restate Server and CLI](/develop/local_dev#running-restate-server--cli-locally)
 - Optional: [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation), if you want to run the Restate Server with Docker. And to run Jaeger.
 
 This guide is written for:
 - Python SDK version: `VAR::PYTHON_SDK_VERSION`
-- Restate runtime Docker image: `docker.io/restatedev/restate:VAR::RESTATE_VERSION`
+- Restate Server Docker image: `docker.io/restatedev/restate:VAR::RESTATE_VERSION`
 
 </TabItem>
 </Tabs>
@@ -92,17 +92,17 @@ This guide is written for:
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
 Download the example and run locally with an IDE:
-<CH.Code>
-    ```shell CLI
+<CodeWithTabs>
+    ```shell !!tabs CLI
     restate example typescript-tour-of-restate && cd typescript-tour-of-restate
     ```
 
-    ```shell wget
+    ```shell !!tabs wget
     wget https://github.com/restatedev/examples/releases/latest/download/typescript-tour-of-restate.zip &&
         unzip typescript-tour-of-restate.zip -d typescript-tour-of-restate &&
         rm typescript-tour-of-restate.zip
     ```
-</CH.Code>
+</CodeWithTabs>
 
 Install the dependencies and build the app:
 ```shell
@@ -121,17 +121,17 @@ This [GitHub repository](https://github.com/restatedev/examples/tree/main/tutori
 </TabItem>
 <TabItem value="java" label="Java">
 
-<CH.Code>
-```shell CLI
+<CodeWithTabs>
+```shell !!tabs CLI
 restate example java-tour-of-restate && cd java-tour-of-restate
 ```
 
-```shell wget
+```shell !!tabs wget
 wget https://github.com/restatedev/examples/releases/latest/download/java-tour-of-restate.zip &&
     unzip java-tour-of-restate.zip -d java-tour-of-restate &&
     rm java-tour-of-restate.zip && cd java-tour-of-restate
 ```
-</CH.Code>
+</CodeWithTabs>
 Run the services
 
 ```shell
@@ -144,17 +144,17 @@ This [GitHub repository](https://github.com/restatedev/examples/tree/main/tutori
 </TabItem>
 <TabItem value="go" label="Go">
 
-<CH.Code>
-```shell CLI
+<CodeWithTabs>
+```shell !!tabs CLI
 restate example go-tour-of-restate && cd go-tour-of-restate
 ```
 
-```shell wget
+```shell !!tabs wget
 wget https://github.com/restatedev/examples/releases/latest/download/go-tour-of-restate.zip &&
 unzip go-tour-of-restate.zip -d go-tour-of-restate &&
 rm go-tour-of-restate.zip && cd go-tour-of-restate
 ```
-</CH.Code>
+</CodeWithTabs>
 Run the services
 
 ```shell
@@ -164,17 +164,17 @@ go run ./app
 </TabItem>
 <TabItem value="python" label="Python">
         Download the example and run locally with an IDE:
-        <CH.Code>
-            ```shell CLI
+        <CodeWithTabs>
+            ```shell !!tabs CLI
             restate example python-tour-of-restate && cd python-tour-of-restate
             ```
 
-            ```shell wget
+            ```shell !!tabs wget
             wget https://github.com/restatedev/examples/releases/latest/download/python-tour-of-restate.zip &&
             unzip python-tour-of-restate.zip -d python-tour-of-restate &&
             rm python-tour-of-restate.zip
             ```
-        </CH.Code>
+        </CodeWithTabs>
 
         Setup your virtual environment:
 
@@ -192,7 +192,7 @@ go run ./app
         Run the services:
 
         ```shell
-        python3 -m hypercorn -b localhost:9080 tour/app/app:app
+        python -m hypercorn --config hypercorn-config.toml tour/app/app:app
         ```
 
         This [GitHub repository](https://github.com/restatedev/examples/tree/main/tutorials/tour-of-restate-python) contains the basic skeleton of the Python services that you develop in this tutorial.
@@ -204,26 +204,11 @@ go run ./app
 
 <SubtleStep stepLabel="2" title="Launch Restate">
 
-<CH.Code rows={"2"}>
+Restate is a single self-contained binary. No external dependencies needed. Check out our [Local Dev page](https://docs.restate.dev/develop/local_dev#running-restate-server--cli-locally) for instructions on how to install Restate Server, then do:
 
-    ```shell npx
-    npx @restatedev/restate-server
-    ```
-
-    ``` shell Homebrew
-    brew install restatedev/tap/restate-server && restate-server
-    ```
-
-    ```shell Docker
-    docker run --name restate_dev -p 8080:8080 -p 9070:9070 -p 9071:9071 \
-        --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
-    ```
-
-</CH.Code>
-
-<Admonition type="tip" icon="💡" title="Single binary">
-    Restate is a single self-contained binary. No external dependencies needed. Check out our [Local Dev page](https://docs.restate.dev/develop/local_dev#running-restate-server--cli-locally) for other ways to run Restate.
-</Admonition>
+```shell
+restate-server
+```
 
 </SubtleStep>
 
@@ -232,25 +217,25 @@ go run ./app
 Now, we need to tell Restate where our services are running.
 You can register services by calling the Restate Admin API (default port `9070`) and supplying it the service endpoint URI:
 
-<CH.Code rows={"2"}>
+<CodeWithTabs rows={"2"}>
 
-    ```shell CLI
+    ```shell !!tabs CLI
     restate deployments register http://localhost:9080
     ```
 
-    ```shell curl
+    ```shell !!tabs curl
     curl localhost:9070/deployments -H 'content-type: application/json' \
         -d '{"uri": "http://localhost:9080"}'
     ```
-</CH.Code>
+</CodeWithTabs>
 
 <details className="grey-details">
 <summary>Output</summary>
 
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="Typescript">
-<CH.Code>
-```shell CLI
+<CodeWithTabs>
+```shell !!tabs CLI
 ❯ SERVICES THAT WILL BE ADDED:
 - CheckoutService
 Type: Service
@@ -280,7 +265,7 @@ CheckoutService  1
 CartObject       1
 ```
 
-```json curl
+```json !!tabs curl
 {
     "id": "dp_11pXug0mWsff2NOoRBZbOcV",
     "services": [
@@ -299,11 +284,11 @@ CartObject       1
     ]
 }
 ```
-</CH.Code>
+</CodeWithTabs>
 </TabItem>
 <TabItem value="java" label="Java">
-<CH.Code>
-```shell CLI
+<CodeWithTabs>
+```shell !!tabs CLI
 ❯ SERVICES THAT WILL BE ADDED:
 - CheckoutService
 Type: Service
@@ -333,7 +318,7 @@ CheckoutService  1
 CartObject       1
 ```
 
-```json curl
+```json !!tabs curl
 {
     "id": "dp_11pXug0mWsff2NOoRBZbOcV",
     "services": [
@@ -352,11 +337,11 @@ CartObject       1
     ]
 }
 ```
-</CH.Code>
+</CodeWithTabs>
 </TabItem>
 <TabItem value="go" label="Go">
-<CH.Code>
-    ```shell CLI
+<CodeWithTabs>
+    ```shell !!tabs CLI
     ❯ SERVICES THAT WILL BE ADDED:
     - CheckoutService
     Type: Service
@@ -386,7 +371,7 @@ CartObject       1
     CartObject       1
     ```
 
-    ```json curl
+    ```json !!tabs curl
     {
         "id": "dp_11pXug0mWsff2NOoRBZbOcV",
         "services": [
@@ -405,11 +390,11 @@ CartObject       1
         ]
     }
     ```
-</CH.Code>
+</CodeWithTabs>
 </TabItem>
     <TabItem value="python" label="Python">
-        <CH.Code>
-            ```shell CLI
+        <CodeWithTabs>
+            ```shell !!tabs CLI
             Deployment ID:  dp_15dw4eEnr7AOatMJOv2gmJ3
 
             ❯ SERVICES THAT WILL BE ADDED:
@@ -442,7 +427,7 @@ CartObject       1
             CheckoutService  1
             ```
 
-            ```json curl
+            ```json !!tabs curl
             {
                 "id": "dp_11pXug0mWsff2NOoRBZbOcV",
                 "services": [
@@ -461,7 +446,7 @@ CartObject       1
                 ]
             }
             ```
-        </CH.Code>
+        </CodeWithTabs>
     </TabItem>
 </Tabs>
 
@@ -1073,13 +1058,11 @@ The code would fast-forward to the point where it crashed, and continue executin
     <TabItem value="ts" label="TypeScript">
         To see the recovery of partial progress in practice, let's make the `CartObject/addTicket` handler crash right after the call.
 
-        <CH.Code lineNumbers={true}>
         ```typescript cart_object.ts
         CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-typescript/src/part1/cart_object.ts#add_ticket
         ```
-        </CH.Code>
 
-        Add the following code to line 4 of the snippet, to let the code throw an error after the call:
+        Add the following code after the reservation call, to let the code throw an error after the call:
         ```typescript
         throw new Error("Failing");
         ```
@@ -1119,11 +1102,9 @@ The code would fast-forward to the point where it crashed, and continue executin
     <TabItem value="java" label="Java">
         To see the recovery of partial progress in practice, let's make the `CartObject/addTicket` handler crash right after the call.
 
-        <CH.Code lineNumbers={true}>
-            ```java CartObject.java
-            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/CartObject.java#add_ticket
-            ```
-        </CH.Code>
+        ```java CartObject.java
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-java/src/main/java/dev/restate/tour/part1/CartObject.java#add_ticket
+        ```
 
         Instead of returning true, let the code fail after the call:
 
@@ -1177,13 +1158,11 @@ The code would fast-forward to the point where it crashed, and continue executin
     <TabItem value="go" label="Go">
         To see the recovery of partial progress in practice, let's make the `CartObject/AddTicket` handler crash right after the call.
 
-        <CH.Code lineNumbers={true}>
         ```go cartobject.go
         CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-go/part1/cartobject.go#add_ticket
         ```
-        </CH.Code>
 
-        Add the following code to line 6 of the snippet, to let the code throw an error after the call:
+        Add the following code after the reservation call, to let the code throw an error after the call:
         ```go
         return false, fmt.Errorf("Failing")
         ```
@@ -1217,13 +1196,11 @@ The code would fast-forward to the point where it crashed, and continue executin
     <TabItem value="python" label="Python">
         To see the recovery of partial progress in practice, let's make the `CartObject/addTicket` handler crash right after the call.
 
-        <CH.Code lineNumbers={true}>
-            ```python cart_object.py
-            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part1/cart_object.py#add_ticket
-            ```
-        </CH.Code>
+        ```python cart_object.py
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-python/tour/part1/cart_object.py#add_ticket
+        ```
 
-        Add the following code to line 4 of the snippet, to let the code throw an error after the call:
+        Add the following code after the reservation call, to let the code throw an error after the call:
         ```python
         raise Exception("Failing")
         ```
@@ -1248,81 +1225,115 @@ You can use it to boostrap a new project, but also to get information about the 
 
 Have a look at some useful commands and try them out yourself:
 
-<CliAnimation listOfSteps={[`$ restate services list
-     NAME             REVISION  FLAVOR    DEPLOYMENT TYPE  DEPLOYMENT ID
- 🌎  CartObject       1         ⬅️ 🚶🚶🚶  HTTP 2           dp_11pXug0mWsff2NOoRBZbOcV
- 🌎  CheckoutService  1                   HTTP 2           dp_11pXug0mWsff2NOoRBZbOcV
- 🌎  TicketObject     1         ⬅️ 🚶🚶🚶  HTTP 2           dp_11pXug0mWsff2NOoRBZbOcV`,
-`$ restate services describe CartObject
-📜 Service Information:
-―――――――――――――――――――――――
- Name:             CartObject
- Service type:     VirtualObject
- Revision:         1
- Public:           true
- Deployment ID:    dp_11pXug0mWsff2NOoRBZbOcV
- Deployment Type:  HTTP 2
- Protocol Style:   Streaming
- Endpoint:         http://localhost:9080/
- Created at:       2024-04-23T12:32:16.691000000Z
+```shell
+restate services list
+```
+
+<details className={"grey-details"}>
+    <summary>Output</summary>
+    ```
+    NAME             REVISION  FLAVOR    DEPLOYMENT TYPE  DEPLOYMENT ID
+    🌎  CartObject       1         ⬅️ 🚶🚶🚶  HTTP 2           dp_11pXug0mWsff2NOoRBZbOcV
+    🌎  CheckoutService  1                   HTTP 2           dp_11pXug0mWsff2NOoRBZbOcV
+    🌎  TicketObject     1         ⬅️ 🚶🚶🚶  HTTP 2           dp_11pXug0mWsff2NOoRBZbOcV`,
+    `$ restate services describe CartObject
+    📜 Service Information:
+    ―――――――――――――――――――――――
+    Name:             CartObject
+    Service type:     VirtualObject
+    Revision:         1
+    Public:           true
+    Deployment ID:    dp_11pXug0mWsff2NOoRBZbOcV
+    Deployment Type:  HTTP 2
+    Protocol Style:   Streaming
+    Endpoint:         http://localhost:9080/
+    Created at:       2024-04-23T12:32:16.691000000Z
 
 
-🔌 Handlers:
-――――――――――――
- HANDLER       INPUT TYPE                 OUTPUT TYPE
- addTicket     one of "empty or value of  value with content-type "application/json"
-               content-type */*"
- checkout      one of "empty or value of  value with content-type "application/json"
-               content-type */*"
- expireTicket  one of "empty or value of  value with content-type "application/json"
-               content-type */*"`,
-`$ restate invocations list
-  ❯ [2024-04-23 14:41:59.365 +02:00] inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
-     Target:      CartObject/Mary/addTicket
-     Status:      backing-off  (18 seconds and 284 ms. Retried 9 time(s). Next
-                  retry in in 8 seconds and 220 ms))
-     Deployment:  dp_11pXug0mWsff2NOoRBZbOcV [required]
-     Error:       [2024-04-23 14:42:13.706 +02:00]
-                  [500] Failing
-     Caused by:   UNKNOWN`,
-`$ restate invocations describe inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
-📜 Invocation Information:
-――――――――――――――――――――――――――
- Created at:   2024-04-23 14:41:59.365 +02:00 (a minute ago)
- Target:       CartObject/Mary/addTicket
- Status:       backing-off  (1 minute, 23 seconds and 937 ms. Retried 14
-               time(s). Next retry in in 991 ms))
- Deployment:   dp_11pXug0mWsff2NOoRBZbOcV [required]
- Error:        [2024-04-23 14:43:13.248 +02:00]
-               [500] Failing
- Caused by:    UNKNOWN
- Modified at:  2024-04-23 14:41:59.388 +02:00
+    🔌 Handlers:
+    ――――――――――――
+    HANDLER       INPUT TYPE                 OUTPUT TYPE
+    addTicket     one of "empty or value of  value with content-type "application/json"
+    content-type */*"
+    checkout      one of "empty or value of  value with content-type "application/json"
+    content-type */*"
+    expireTicket  one of "empty or value of  value with content-type "application/json"
+    content-type */*"
+    ```
+</details>
 
-  💡   This invocation is bound to run on deployment 'dp_11pXug0mWsff2NOoRBZbOcV'. To guarantee
-       safety and correctness, invocations that made progress on a deployment
-       cannot move to newer deployments automatically.
+```shell
+restate invocations list
+```
 
-🚂 Invocation Progress:
-―――――――――――――――――――――――
-[Ingress]
- └──(this)─> CartObject/Mary/addTicket
-     ▸
-     ├──── ☑️  #1 Call TicketObject/seat2B/reserve inv_19maBIcE9uRD1CrHgpGXZ7FcXPsz4bzkbL
-     └────>> backing-off`,
-`$ restate invocations cancel --kill inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
-  ❯ [2024-04-23 14:41:59.365 +02:00] inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
-     Target:      CartObject/Mary/addTicket
-     Status:      backing-off  (25 minutes, 29 seconds and 200 ms. Retried 141
-                  time(s). Next retry in in 12 seconds and 94 ms))
-     Deployment:  dp_11pXug0mWsff2NOoRBZbOcV [required]
-     Error:       [2024-04-23 15:07:27.860 +02:00]
-                  [500] Failing
-     Caused by:   UNKNOWN
+<details className={"grey-details"}>
+    <summary>Output</summary>
+    ```shell
+    ❯ [2024-04-23 14:41:59.365 +02:00] inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
+    Target:      CartObject/Mary/addTicket
+    Status:      backing-off  (18 seconds and 284 ms. Retried 9 time(s). Next
+    retry in in 8 seconds and 220 ms))
+    Deployment:  dp_11pXug0mWsff2NOoRBZbOcV [required]
+    Error:       [2024-04-23 14:42:13.706 +02:00]
+    [500] Failing
+    Caused by:   UNKNOWN
+    ```
+</details>
 
-✔ Are you sure you want to kill this invocation · yes
+```shell
+restate invocations describe inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
+```
 
-✅ Request was sent successfully`]}
-/>
+<details className={"grey-details"}>
+    <summary>Output</summary>
+    ```shell
+    📜 Invocation Information:
+    ――――――――――――――――――――――――――
+    Created at:   2024-04-23 14:41:59.365 +02:00 (a minute ago)
+    Target:       CartObject/Mary/addTicket
+    Status:       backing-off  (1 minute, 23 seconds and 937 ms. Retried 14
+    time(s). Next retry in in 991 ms))
+    Deployment:   dp_11pXug0mWsff2NOoRBZbOcV [required]
+    Error:        [2024-04-23 14:43:13.248 +02:00]
+    [500] Failing
+    Caused by:    UNKNOWN
+    Modified at:  2024-04-23 14:41:59.388 +02:00
+
+    💡   This invocation is bound to run on deployment 'dp_11pXug0mWsff2NOoRBZbOcV'. To guarantee
+    safety and correctness, invocations that made progress on a deployment
+    cannot move to newer deployments automatically.
+
+    🚂 Invocation Progress:
+    ―――――――――――――――――――――――
+    [Ingress]
+    └──(this)─> CartObject/Mary/addTicket
+    ▸
+    ├──── ☑️  #1 Call TicketObject/seat2B/reserve inv_19maBIcE9uRD1CrHgpGXZ7FcXPsz4bzkbL
+    └────>> backing-off
+    ```
+</details>
+
+```shell
+restate invocations cancel --kill inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
+```
+<details className={"grey-details"}>
+    <summary>Output</summary>
+    ```shell
+    ❯ [2024-04-23 14:41:59.365 +02:00] inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
+    Target:      CartObject/Mary/addTicket
+    Status:      backing-off  (25 minutes, 29 seconds and 200 ms. Retried 141
+    time(s). Next retry in in 12 seconds and 94 ms))
+    Deployment:  dp_11pXug0mWsff2NOoRBZbOcV [required]
+    Error:       [2024-04-23 15:07:27.860 +02:00]
+    [500] Failing
+    Caused by:   UNKNOWN
+
+    ✔ Are you sure you want to kill this invocation · yes
+
+    ✅ Request was sent successfully
+    ```
+</details>
+
 
 <Admonition type="note">
 Remove the throwing of the exception from your code before you continue.
@@ -1814,16 +1825,16 @@ So when you operate on the state in your function, you get access to a local cop
 Restate exposes information on invocations and application state.
 You can watch the state of the `CartObject` service, via:
 
-<CH.Code>
+<CodeWithTabs>
 
-    ```shell CLI
+    ```shell !!tabs CLI
     restate kv get -w -n 1 CartObject Mary
     ```
 
-    ```shell psql
+    ```shell !!tabs psql
     watch -n 1 'psql -h localhost -p 9071 -c "SELECT * FROM state WHERE service_name like '\''%CartObject%'\''";'
     ```
-</CH.Code>
+</CodeWithTabs>
 
 <details className="grey-details">
     <summary>Output</summary>
@@ -1945,16 +1956,16 @@ Implement the handlers in the `TicketObject` to reserve, unreserve, and mark a t
 
 While you are developing them, monitor the state of the `TicketObject` via:
 
-<CH.Code>
+<CodeWithTabs>
 
-    ```shell CLI
+    ```shell !!tabs CLI
     restate kv get -w -n 1 TicketObject seat2B
     ```
 
-    ```shell psql
+    ```shell !!tabs psql
     watch -n 1 'psql -h localhost -p 9071 -c "select * from state where service_name like '\''%TicketObject%'\''";'
     ```
-</CH.Code>
+</CodeWithTabs>
 
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
@@ -2364,7 +2375,7 @@ We can use this feature to do exactly-once payments in `CheckoutService/Handle`:
 <SubtleStep stepLabel="2" title="Trigger the payment">
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
-Execute the payment via an external payment provider via _`PaymentClient.get().call(idempotencyKey, amount)`_.
+Execute the payment via an external payment provider via `PaymentClient.get().call(idempotencyKey, amount)`.
 The payment provider will deduplicate payments based on the idempotency token.
 We assume every ticket costs 40 dollars.
 
@@ -2374,7 +2385,7 @@ CODE_LOAD::ts/src/get_started/tour.ts#checkout
 
 </TabItem>
 <TabItem value="java" label="Java">
-Execute the payment via an external payment provider via _`PaymentClient.get().call(idempotencyKey, amount)`_.
+Execute the payment via an external payment provider via `PaymentClient.get().call(idempotencyKey, amount)`.
 The payment provider will deduplicate payments based on the idempotency token.
 We assume every ticket costs 40 dollars.
 
@@ -2393,7 +2404,7 @@ CODE_LOAD::go/getstarted/tour.go#checkout
 ```
 </TabItem>
 <TabItem value="python" label="Python">
-Execute the payment via an external payment provider via _`payment_client.call(idempotency_key, total_price)`_.
+Execute the payment via an external payment provider via `payment_client.call(idempotency_key, total_price)`.
 The payment provider will deduplicate payments based on the idempotency token.
 We assume every ticket costs 40 dollars.
 
@@ -2414,8 +2425,8 @@ Let's finish the checkout flow by sending the email notifications and marking th
 <TabItem value="ts" label="TypeScript">
 <SubtleStep stepLabel="1" title="Implement the email notifications">
 After the `CheckoutService/handle` handler has handled the payment, you need to notify the users of the payment status:
-- **Payment success**: notify the users via _`EmailClient.get().notifyUserOfPaymentSuccess(request.getUserId())`_.
-- **Payment failure**: notify the users via the _`EmailClient.get().notifyUserOfPaymentFailure(request.getUserId())`_.
+- **Payment success**: notify the users via `EmailClient.get().notifyUserOfPaymentSuccess(request.getUserId())`.
+- **Payment failure**: notify the users via the `EmailClient.get().notifyUserOfPaymentFailure(request.getUserId())`.
 
 <details>
 <summary>Solution</summary>
@@ -2440,8 +2451,8 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/
 <TabItem value="java" label="Java">
 <SubtleStep stepLabel="1" title="Implement the email notifications">
 After the `CheckoutService/handle` handler has handled the payment, you need to notify the users of the payment status:
-- **Payment success**: notify the users via _`EmailClient.get().notifyUserOfPaymentSuccess(request.getUserId())`_.
-- **Payment failure**: notify the users via the _`EmailClient.get().notifyUserOfPaymentFailure(request.getUserId())`_.
+- **Payment success**: notify the users via `EmailClient.get().notifyUserOfPaymentSuccess(request.getUserId())`.
+- **Payment failure**: notify the users via the `EmailClient.get().notifyUserOfPaymentFailure(request.getUserId())`.
 
 <details>
 <summary>Solution</summary>
@@ -2492,8 +2503,8 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/
 <TabItem value="python" label="Python">
     <SubtleStep stepLabel="1" title="Implement the email notifications">
         After the `CheckoutService/handle` handler has handled the payment, you need to notify the users of the payment status:
-        - **Payment success**: notify the users via _`email_client.notify_user_of_payment_success(order['user_id'])`_.
-        - **Payment failure**: notify the users via the _`email_client.notify_user_of_payment_failure(order['user_id'])`_.
+        - **Payment success**: notify the users via `email_client.notify_user_of_payment_success(order['user_id'])`.
+        - **Payment failure**: notify the users via the `email_client.notify_user_of_payment_failure(order['user_id'])`.
 
         <details>
             <summary>Solution</summary>
@@ -2644,27 +2655,21 @@ docker run -d --name jaeger -e COLLECTOR_OTLP_ENABLED=true \
 </SubtleStep>
 <SubtleStep stepLabel="2" title="Relaunch Restate with tracing enabled">
 
-    <CH.Code>
-    ```shell npx
-    npx @restatedev/restate-server --tracing-endpoint http://localhost:4317
+    <CodeWithTabs>
+    ```shell !!tabs binary
+    restate-server --tracing-endpoint http://localhost:4317
     ```
 
-    ``` shell Homebrew
-    brew install restatedev/tap/restate-server &&
-        restate-server --tracing-endpoint http://localhost:4317
-    ```
-
-    ```shell Docker
+    ```shell !!tabs Docker
     docker run --name restate_dev -p 8080:8080 -p 9070:9070 -p 9071:9071 \
         -e RESTATE_TRACING_ENDPOINT=http://host.docker.internal:4317 \
         --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
     ```
-    </CH.Code>
+    </CodeWithTabs>
 </SubtleStep>
 <SubtleStep stepLabel="3" title="Send a few requests">
   <Tabs groupId="sdk" queryString className={"display-none"}>
   <TabItem value="ts" label="TypeScript">
-    <CH.Code>
 
         ```shell
         curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2A"'
@@ -2672,30 +2677,24 @@ docker run -d --name jaeger -e COLLECTOR_OTLP_ENABLED=true \
         curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2C"'
         curl -X POST localhost:8080/CartObject/Mary/checkout
         ```
-    </CH.Code>
   </TabItem>
   <TabItem value="java" label="Java">
-    <CH.Code>
         ```shell
         curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2A"'
         curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2B"'
         curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2C"'
         curl -X POST localhost:8080/CartObject/Mary/checkout
         ```
-    </CH.Code>
   </TabItem>
   <TabItem value="go" label="Go">
-    <CH.Code>
         ```shell
         curl localhost:8080/CartObject/Mary/AddTicket -H 'content-type: application/json' -d '"seat2A"'
         curl localhost:8080/CartObject/Mary/AddTicket -H 'content-type: application/json' -d '"seat2B"'
         curl localhost:8080/CartObject/Mary/AddTicket -H 'content-type: application/json' -d '"seat2C"'
         curl -X POST localhost:8080/CartObject/Mary/Checkout
         ```
-    </CH.Code>
   </TabItem>
 <TabItem value="python" label="Python">
-<CH.Code>
 
   ```shell
   curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2A"'
@@ -2703,7 +2702,6 @@ docker run -d --name jaeger -e COLLECTOR_OTLP_ENABLED=true \
   curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2C"'
   curl -X POST localhost:8080/CartObject/Mary/checkout
   ```
-</CH.Code>
 </TabItem>
   </Tabs>
 

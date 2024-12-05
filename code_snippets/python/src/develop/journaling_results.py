@@ -10,6 +10,6 @@ async def my_handler(ctx: Context, arg):
         # ... implement ...
         return "my_result"
 
-    # withClass highlight-line
+    # !mark
     result = await ctx.run("database request", do_db_request)
     # <end_side_effect>

@@ -10,8 +10,11 @@ type FeatureItem = {
   java: string;
   ts: string;
   kotlin: string;
+  python: string;
   go: string;
+  rust: string;
   link: { icon: string; url: string };
+  links: [{ icon: string; url: string }];
 };
 
 function Feature({
@@ -24,6 +27,9 @@ function Feature({
   link,
   kotlin,
   go,
+  python,
+  rust,
+  links,
 }: FeatureItem) {
   const colWidth = itemsPerRow ? Math.floor(12 / itemsPerRow) : 4;
   return (
@@ -89,6 +95,30 @@ function Feature({
               </a>
             </div>
           ) : null}
+          {python ? (
+            <div id="overviewButtonDiv">
+              <a
+                className="overviewButton btn btn-primary btn-lg firstTimeButton"
+                href={python}
+                target={"_blank"}
+                role="button"
+              >
+                <img className="buttonIcon" src="/img/python.svg" width="28" />
+              </a>
+            </div>
+          ) : null}
+          {rust ? (
+            <div id="overviewButtonDiv">
+              <a
+                className="overviewButton btn btn-primary btn-lg firstTimeButton"
+                href={rust}
+                target={"_blank"}
+                role="button"
+              >
+                <img className="buttonIcon" src="/img/rust.svg" width="28" />
+              </a>
+            </div>
+          ) : null}
           {link ? (
             <div id="overviewButtonDiv">
               <a
@@ -103,6 +133,24 @@ function Feature({
                   width="24"
                 />
               </a>
+            </div>
+          ) : null}
+          {links ? (
+            <div id="overviewButtonDiv">
+              {links.map((link) => (
+                <a
+                  className="overviewButton btn btn-primary btn-lg firstTimeButton"
+                  href={link.url}
+                  target={"_blank"}
+                  role="button"
+                >
+                  <img
+                    className="buttonIcon"
+                    src={link.icon ? link.icon : "/img/arrow-right.svg"}
+                    width="24"
+                  />
+                </a>
+              ))}
             </div>
           ) : null}
         </div>

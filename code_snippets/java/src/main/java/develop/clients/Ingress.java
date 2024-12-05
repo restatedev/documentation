@@ -1,4 +1,4 @@
-package operate.invocations;
+package develop.clients;
 
 import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.client.CallRequestOptions;
@@ -23,12 +23,12 @@ public class Ingress {
     // <start_one_way_call_java>
     Client rs = Client.connect("http://localhost:8080");
     GreeterServiceClient.fromClient(rs)
-        // mark
+        // !mark
         .send()
         .greet("Hi");
 
     GreetCounterObjectClient.fromClient(rs, "Mary")
-        // mark
+        // !mark
         .send()
         .greet("Hi");
     // <end_one_way_call_java>
@@ -38,12 +38,12 @@ public class Ingress {
     // <start_delayed_call_java>
     Client rs = Client.connect("http://localhost:8080");
     GreeterServiceClient.fromClient(rs)
-        // mark
+        // !mark
         .send(Duration.ofMillis(1000))
         .greet("Hi");
 
     GreetCounterObjectClient.fromClient(rs, "Mary")
-        // mark
+        // !mark
         .send(Duration.ofMillis(1000))
         .greet("Hi");
     // <end_delayed_call_java>
@@ -55,7 +55,7 @@ public class Ingress {
     Client rs = Client.connect("http://localhost:8080");
     GreetCounterObjectClient.fromClient(rs, "Mary")
         .send()
-        // withClass highlight-line
+        // !mark
         .greet("Hi", CallRequestOptions.DEFAULT.withIdempotency("abcde"));
     // <end_service_idempotent>
   }
@@ -67,21 +67,21 @@ public class Ingress {
     SendResponse handle =
         GreeterServiceClient.fromClient(rs)
             .send()
-            // mark
+            // !mark
             .greet("Hi", CallRequestOptions.DEFAULT.withIdempotency("abcde"));
 
     // ... do something else ...
 
     // Option 1: Attach later to retrieve the result
-    // mark
+    // !mark
     String greeting =
-        // mark
+        // !mark
         rs.invocationHandle(handle.getInvocationId(), JsonSerdes.STRING).attach();
 
     // Option 2: Peek to see if the result is ready
-    // mark
+    // !mark
     Output<String> output =
-        // mark
+        // !mark
         rs.invocationHandle(handle.getInvocationId(), JsonSerdes.STRING).getOutput();
     if (output.isReady()) {
       String result = output.getValue();

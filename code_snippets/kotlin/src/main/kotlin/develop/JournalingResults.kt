@@ -1,6 +1,5 @@
 package develop
 
-import dev.restate.sdk.common.TerminalException
 import dev.restate.sdk.kotlin.*
 import java.util.UUID
 
@@ -13,34 +12,6 @@ internal class SideEffects {
     val paymentClient = PaymentClient()
     val txId = ""
     val amount = 1
-
-    // <start_retry_settings>
-    ctx.runBlock {
-      val result = paymentClient.call(txId, amount)
-      if (result) {
-        // withClass highlight-line
-        throw IllegalStateException("Payment failed")
-      } else {
-        result
-      }
-    }
-    // <end_retry_settings>
-
-    // <start_terminal>
-    try {
-      ctx.runBlock {
-        val result = paymentClient.call(txId, amount)
-        if (result) {
-          // withClass highlight-line
-          throw TerminalException(TerminalException.INTERNAL_SERVER_ERROR_CODE, "Payment failed")
-        } else {
-          result
-        }
-      }
-    } catch (e: TerminalException) {
-      // handle terminal error
-    }
-    // <end_terminal>
 
     val a1 = ctx.awakeable<Boolean>()
     val a2 = ctx.awakeable<Boolean>()

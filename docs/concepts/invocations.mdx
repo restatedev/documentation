@@ -3,10 +3,10 @@ sidebar_position: 3
 description: ""
 ---
 
-import CliAnimation from "../../src/components/CliAnimation";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import FeatureList from "../../src/components/FeatureList"
+import {Scrollycoding} from "../../src/components/code/scrollycoding";
 
 # Invocations
 
@@ -58,246 +58,186 @@ Invocations get a unique identifier. This identifier is used to track the progre
 
 <Tabs groupId="sdk" queryString>
     <TabItem value="ts" label="TypeScript">
-        <CH.Scrollycoding start={1} className="spotlight-medium">
+        <Scrollycoding>
 
+            ## !!steps
             **Request-response invocations** allow you to wait on a response from the handler.
 
-            <CH.Code>
+            ```typescript !!tabs restate_service.ts
+            CODE_LOAD::ts/src/concepts/invocations/rpc.ts#rpc_call
+            ```
 
-                ```typescript restate_service.ts
-                CODE_LOAD::ts/src/concepts/invocations/rpc.ts#rpc_call
-                ```
+            ```typescript !!tabs plain_node_app.ts
+            CODE_LOAD::ts/src/concepts/invocations/ingress/rpc.ts#rpc_call_node
+            ```
 
-                ---
-
-                ```typescript plain_node_app.ts
-                CODE_LOAD::ts/src/concepts/invocations/ingress/rpc.ts#rpc_call_node
-                ```
-
-            </CH.Code>
-
-            ---
-
+            ## !!steps
             **One-way invocations** allow you to trigger an asynchronous action.
 
-            <CH.Code>
+            ```typescript !!tabs restate_service.ts
+            CODE_LOAD::ts/src/concepts/invocations/one_way.ts#one_way_call
+            ```
 
-                ```typescript restate_service.ts
-                CODE_LOAD::ts/src/concepts/invocations/one_way.ts#one_way_call
-                ```
+            ```typescript !!tabs plain_node_app.ts
+            CODE_LOAD::ts/src/concepts/invocations/ingress/one_way.ts#one_way_call_node
+            ```
 
-                ---
-
-                ```typescript plain_node_app.ts
-                CODE_LOAD::ts/src/concepts/invocations/ingress/one_way.ts#one_way_call_node
-                ```
-
-            </CH.Code>
-
-            ---
-
+            ## !!steps
             **Delayed invocations** allow you to schedule an invocation for a later point in time.
 
-            <CH.Code>
+            ```typescript !!tabs restate_service.ts
+            CODE_LOAD::ts/src/concepts/invocations/delayed.ts#delayed_call
+            ```
 
-                ```typescript restate_service.ts
-                CODE_LOAD::ts/src/concepts/invocations/delayed.ts#delayed_call
-                ```
+            ```typescript !!tabs plain_node_app.ts
+            CODE_LOAD::ts/src/concepts/invocations/ingress/delayed.ts#delayed_call_node
+            ```
 
-                ---
-
-                ```typescript plain_node_app.ts
-                CODE_LOAD::ts/src/concepts/invocations/ingress/delayed.ts#delayed_call_node
-                ```
-
-            </CH.Code>
-
-        </CH.Scrollycoding>
+        </Scrollycoding>
 
         Learn more about [service communication](/develop/ts/service-communication) and the [SDK clients](/develop/ts/clients) in the TypeScript SDK.
     </TabItem>
     <TabItem value="java" label="Java">
 
-        <CH.Scrollycoding className="spotlight-medium">
+        <Scrollycoding>
 
+            ## !!steps
             **Request-response invocations** allow you to wait on a response from the handler.
 
-            <CH.Code>
+            ```java !!tabs RestateService.java
+            CODE_LOAD::java/src/main/java/concepts/invocations/RpcCalls.java#rpc
+            ```
 
-                ```java RestateService.java
-                CODE_LOAD::java/src/main/java/concepts/invocations/RpcCalls.java#rpc
-                ```
+            ```java !!tabs PlainJavaService.java
+            CODE_LOAD::java/src/main/java/concepts/invocations/RpcCalls.java#rpc_java
+            ```
 
-                ---
-
-                ```java PlainJavaService.java
-                CODE_LOAD::java/src/main/java/concepts/invocations/RpcCalls.java#rpc_java
-                ```
-
-            </CH.Code>
-
-            ---
-
+            ## !!steps
             **One-way invocations** allow you to trigger an asynchronous action.
             This returns an invocation ID with which you can retrieve the result of the invocation later, if desired.
 
-            <CH.Code>
-
-                ```java RestateService.java
-                CODE_LOAD::java/src/main/java/concepts/invocations/OneWayCalls.java#one_way_call
-                ```
-
-                ---
-
-                ```java PlainJavaService.java
-                CODE_LOAD::java/src/main/java/concepts/invocations/OneWayCalls.java#one_way_call_java
-                ```
+            ```java !!tabs RestateService.java
+            CODE_LOAD::java/src/main/java/concepts/invocations/OneWayCalls.java#one_way_call
+            ```
 
 
-            </CH.Code>
+            ```java !!tabs PlainJavaService.java
+            CODE_LOAD::java/src/main/java/concepts/invocations/OneWayCalls.java#one_way_call_java
+            ```
 
-            ---
-
+            ## !!steps
             **Delayed invocations** allow you to schedule an invocation for a later point in time.
 
-            <CH.Code>
 
-                ```java RestateService.java
-                CODE_LOAD::java/src/main/java/concepts/invocations/DelayedCalls.java#delayed_call
-                ```
-                ---
+            ```java !!tabs RestateService.java
+            CODE_LOAD::java/src/main/java/concepts/invocations/DelayedCalls.java#delayed_call
+            ```
 
-                ```java PlainJavaService.java
-                CODE_LOAD::java/src/main/java/concepts/invocations/DelayedCalls.java#delayed_call_java
-                ```
+            ```java !!tabs PlainJavaService.java
+            CODE_LOAD::java/src/main/java/concepts/invocations/DelayedCalls.java#delayed_call_java
+            ```
 
-            </CH.Code>
 
-        </CH.Scrollycoding>
+        </Scrollycoding>
 
         Learn more about [service communication](/develop/java/service-communication) and the [SDK clients](/develop/java/clients) in the TypeScript SDK.
 
     </TabItem>
     <TabItem value="go" label="Go">
-        <CH.Scrollycoding start={1} className="spotlight-medium">
+        <Scrollycoding>
 
+            ## !!steps
             **Request-response invocations** allow you to wait on a response from the handler.
 
-            <CH.Code>
+            ```go ! restateservice.go
+            CODE_LOAD::go/concepts/invocations.go#rpc_call
+            ```
 
-                ```go restateservice.go
-                CODE_LOAD::go/concepts/invocations.go#rpc_call
-                ```
-
-            </CH.Code>
-
-            ---
-
+            ## !!steps
             **One-way invocations** allow you to trigger an asynchronous action.
 
-            <CH.Code>
+            ```go ! restateservice.go
+            CODE_LOAD::go/concepts/invocations.go#one_way_call
+            ```
 
-                ```go restateservice.go
-                CODE_LOAD::go/concepts/invocations.go#one_way_call
-                ```
-
-            </CH.Code>
-
-            ---
-
+            ## !!steps
             **Delayed invocations** allow you to schedule an invocation for a later point in time.
 
-            <CH.Code>
+            ```go ! restateservice.go
+            CODE_LOAD::go/concepts/invocations.go#delayed_call
+            ```
 
-                ```go restateservice.go
-                CODE_LOAD::go/concepts/invocations.go#delayed_call
-                ```
-
-            </CH.Code>
-
-        </CH.Scrollycoding>
+        </Scrollycoding>
 
         Learn more about [service communication](/develop/go/service-communication) in the Go SDK.
     </TabItem>
     <TabItem value="python" label="Python">
-        <CH.Scrollycoding start={1} className="spotlight-medium">
+        <Scrollycoding>
 
+            ## !!steps
             **Request-response invocations** allow you to wait on a response from the handler.
 
-            <CH.Code>
+            ```python ! restate_service.py
+            CODE_LOAD::python/src/concepts/invocations/rpc.py#rpc_call
+            ```
 
-                ```python restate_service.py
-                CODE_LOAD::python/src/concepts/invocations/rpc.py#rpc_call
-                ```
-
-            </CH.Code>
-
-            ---
-
+            ## !!steps
             **One-way invocations** allow you to trigger an asynchronous action.
 
-            <CH.Code>
+            ```python ! restate_service.py
+            CODE_LOAD::python/src/concepts/invocations/one_way.py#one_way_call
+            ```
 
-                ```python restate_service.py
-                CODE_LOAD::python/src/concepts/invocations/one_way.py#one_way_call
-                ```
-
-            </CH.Code>
-
-            ---
-
+            ## !!steps
             **Delayed invocations** allow you to schedule an invocation for a later point in time.
 
-            <CH.Code>
+            ```python ! restate_service.py
+            CODE_LOAD::python/src/concepts/invocations/delayed.py#delayed_call
+            ```
 
-                ```python restate_service.py
-                CODE_LOAD::python/src/concepts/invocations/delayed.py#delayed_call
-                ```
 
-            </CH.Code>
-
-        </CH.Scrollycoding>
+        </Scrollycoding>
 
         Learn more about [service communication](/develop/ts/service-communication) and the [SDK clients](/develop/ts/clients) in the TypeScript SDK.
     </TabItem>
     <TabItem value="shell" label="Shell">
 
-        <CH.Scrollycoding start={1} className="spotlight-medium">
+        <Scrollycoding>
 
+            ## !!steps
             **Request-response invocations** allow you to wait on a response from the handler.
 
-            ```bash
+            ```bash !
             curl localhost:8080/GreeterService/greet \
             -H 'content-type: application/json' \
             -d '"Hi"'
             ```
 
-            ---
-
+            ## !!steps
             **One-way invocations** allow you to trigger an asynchronous action.
             This returns an invocation ID with which you can retrieve the result of the invocation later, if desired.
 
-            ```bash
+            ```bash !
             curl localhost:8080/GreeterService/greet/send \
             -H 'content-type: application/json' \
             -d '"Hi"'
             ```
 
-            ---
-
+            ## !!steps
             **Delayed invocations** allow you to schedule an invocation for a later point in time.
 
-            ```bash
+            ```bash !
             curl localhost:8080/GreeterService/greet/send?delay=10s \
             -H 'content-type: application/json' \
             -d '"Hi"'
             ```
 
-        </CH.Scrollycoding>
+        </Scrollycoding>
 
         Learn more about [invoking services over HTTP](/invoke/http).
     </TabItem>
 </Tabs>
+
 
 ## Idempotent invocations
 For HTTP requests, you can add an idempotency key to the header to make the invocation idempotent.
@@ -306,7 +246,7 @@ Duplicate requests will get the same response as the first request, or will latc
 
 ```bash
 curl localhost:8080/GreeterService/greet \
-# focus
+# !focus
   -H 'idempotency-key: ad5472esg4dsg525dssdfa5loi' \
   -H 'content-type: application/json' \
   -d '"Hi"'
@@ -319,7 +259,13 @@ Restate proxies and manages inbound as well as service-to-service invocations.
 This makes it a great source of observability data for your application.
 You can inspect invocations via the CLI.
 
-<CliAnimation listOfSteps={[`$ restate services list
+```shell
+restate services list
+```
+
+<details className={"grey-details"}>
+<summary>Output</summary>
+```
      NAME             REVISION  FLAVOR    DEPLOYMENT TYPE  DEPLOYMENT ID
  🌎  CartObject       1         ⬅️ 🚶🚶🚶  HTTP 2           dp_11pXug0mWsff2NOoRBZbOcV
  🌎  CheckoutService  1                   HTTP 2           dp_11pXug0mWsff2NOoRBZbOcV
@@ -338,16 +284,25 @@ You can inspect invocations via the CLI.
  Created at:       2024-04-23T12:32:16.691000000Z
 
 
-    🔌 Handlers:
-    ――――――――――――
-     HANDLER       INPUT TYPE                 OUTPUT TYPE
-     addTicket     one of "empty or value of  value with content-type "application/json"
-                   content-type */*"
-     checkout      one of "empty or value of  value with content-type "application/json"
-                   content-type */*"
-     expireTicket  one of "empty or value of  value with content-type "application/json"
-                   content-type */*"`,
-    `$ restate invocations list
+🔌 Handlers:
+――――――――――――
+ HANDLER       INPUT TYPE                 OUTPUT TYPE
+ addTicket     one of "empty or value of  value with content-type "application/json"
+               content-type */*"
+ checkout      one of "empty or value of  value with content-type "application/json"
+               content-type */*"
+ expireTicket  one of "empty or value of  value with content-type "application/json"
+               content-type */*"
+```
+</details>
+
+```shell
+restate invocations list
+```
+
+<details className={"grey-details"}>
+<summary>Output</summary>
+```shell
   ❯ [2024-04-23 14:41:59.365 +02:00] inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
      Target:      CartObject/Mary/addTicket
      Status:      backing-off  (18 seconds and 284 ms. Retried 9 time(s). Next
@@ -355,8 +310,17 @@ You can inspect invocations via the CLI.
      Deployment:  dp_11pXug0mWsff2NOoRBZbOcV [required]
      Error:       [2024-04-23 14:42:13.706 +02:00]
                   [500] Failing
-     Caused by:   UNKNOWN`,
-    `$ restate invocations describe inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
+     Caused by:   UNKNOWN
+```
+</details>
+
+```shell
+restate invocations describe inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
+```
+
+<details className={"grey-details"}>
+<summary>Output</summary>
+```shell
 📜 Invocation Information:
 ――――――――――――――――――――――――――
  Created at:   2024-04-23 14:41:59.365 +02:00 (a minute ago)
@@ -369,18 +333,26 @@ You can inspect invocations via the CLI.
  Caused by:    UNKNOWN
  Modified at:  2024-04-23 14:41:59.388 +02:00
 
-      💡   This invocation is bound to run on deployment 'dp_11pXug0mWsff2NOoRBZbOcV'. To guarantee
-           safety and correctness, invocations that made progress on a deployment
-           cannot move to newer deployments automatically.
+  💡   This invocation is bound to run on deployment 'dp_11pXug0mWsff2NOoRBZbOcV'. To guarantee
+       safety and correctness, invocations that made progress on a deployment
+       cannot move to newer deployments automatically.
 
-    🚂 Invocation Progress:
-    ―――――――――――――――――――――――
-    [Ingress]
-     └──(this)─> CartObject/Mary/addTicket
-         ▸
-         ├──── ☑️  #1 Call TicketObject/seat2B/reserve inv_19maBIcE9uRD1CrHgpGXZ7FcXPsz4bzkbL
-         └────>> backing-off`,
-    `$ restate invocations cancel --kill inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
+🚂 Invocation Progress:
+―――――――――――――――――――――――
+[Ingress]
+ └──(this)─> CartObject/Mary/addTicket
+     ▸
+     ├──── ☑️  #1 Call TicketObject/seat2B/reserve inv_19maBIcE9uRD1CrHgpGXZ7FcXPsz4bzkbL
+     └────>> backing-off
+```
+</details>
+
+```shell
+restate invocations cancel --kill inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
+```
+<details className={"grey-details"}>
+<summary>Output</summary>
+```shell
   ❯ [2024-04-23 14:41:59.365 +02:00] inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
      Target:      CartObject/Mary/addTicket
      Status:      backing-off  (25 minutes, 29 seconds and 200 ms. Retried 141
@@ -392,8 +364,9 @@ You can inspect invocations via the CLI.
 
     ✔ Are you sure you want to kill this invocation · yes
 
-    ✅ Request was sent successfully`]}
-/>
+    ✅ Request was sent successfully
+```
+</details>
 
 Restate also exposes traces via OpenTelemetry, which can be sent to your observability platform of choice (e.g. Jaeger).
 Have a look at the [tracing documentation](/operate/monitoring/tracing) for more information.

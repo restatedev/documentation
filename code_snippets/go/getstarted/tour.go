@@ -38,7 +38,7 @@ type CheckoutRequest struct {
 /*
 // <start_uuid>
 func (CheckoutService) Handle(ctx restate.Context, request CheckoutRequest) (bool, error) {
-	// withClass(1:3) highlight-line
+	// !mark(1:3)
 	idempotencyKey := restate.Rand(ctx).UUID().String()
 	ctx.Log().Info("Generated idempotency key", "idempotencyKey", idempotencyKey)
 	return false, fmt.Errorf("Something happened!")

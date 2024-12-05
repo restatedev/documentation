@@ -9,8 +9,8 @@ import dev.restate.sdk.kotlin.Context
 @Service
 class MyService {
   @Handler
-  suspend fun myHandler(ctx: Context, input: String): String {
-    return "my-output"
+  suspend fun myHandler(ctx: Context, greeting: String): String {
+    return "$greeting!"
   }
 }
 

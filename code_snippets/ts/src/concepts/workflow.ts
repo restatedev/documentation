@@ -10,10 +10,7 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
-import {
-  emailClnt,
-  paymentClnt,
-} from "./utils";
+import { emailClnt, paymentClnt } from "./utils";
 
 /**
  * Order processing workflow Gets called for each Kafka event that is published to the order topic.

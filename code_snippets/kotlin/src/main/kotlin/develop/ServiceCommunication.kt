@@ -40,7 +40,7 @@ class ServiceCommunication {
 
     // <start_one_way>
     MyServiceClient.fromContext(ctx)
-        // withClass highlight-line
+        // !mark
         .send()
         .myHandler(request)
     // <end_one_way>
@@ -51,7 +51,7 @@ class ServiceCommunication {
 
     // <start_delayed>
     MyServiceClient.fromContext(ctx)
-        // withClass highlight-line
+        // !mark
         .send(1.seconds)
         .myHandler(request)
     // <end_delayed>

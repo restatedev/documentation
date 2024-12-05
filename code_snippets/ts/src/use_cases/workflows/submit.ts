@@ -5,21 +5,21 @@ async function submit(user: User) {
   // <start_here>
   // import * as clients from "@restatedev/restate-sdk-clients";
   const rs = clients.connect({ url: "http://localhost:8080" });
-  // mark
+  // !mark
   await rs
-    // mark
+    // !mark
     .workflowClient<SignUpWorkflow>({ name: "sign-up-workflow" }, user.id)
-    // mark
+    // !mark
     .workflowSubmit(user);
 
   // do something else, with workflow running in the background
 
   // attach back to the workflow
-  // mark
+  // !mark
   const result = await rs
-    // mark
+    // !mark
     .workflowClient<SignUpWorkflow>({ name: "sign-up-workflow" }, user.id)
-    // mark
+    // !mark
     .workflowAttach();
   // <end_here>
 }

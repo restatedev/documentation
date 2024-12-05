@@ -22,33 +22,23 @@ Import this service definition in the service handler that wants to call it.
 
 Request-response calls are requests where the client waits for the response.
 
-<CH.Scrollycoding className={"single-item"}>
+To a Service:
 
-    To a Service:
+```ts
+CODE_LOAD::ts/src/develop/service_communication.ts#request_response_service
+```
 
-    ```ts
-    CODE_LOAD::ts/src/develop/service_communication.ts#request_response_service
-    ```
+To a Virtual Object:
 
-</CH.Scrollycoding>
-<CH.Scrollycoding className={"single-item"}>
+```ts
+CODE_LOAD::ts/src/develop/service_communication.ts#request_response_object
+```
 
-    To a Virtual Object:
+To a Workflow:
 
-    ```ts
-    CODE_LOAD::ts/src/develop/service_communication.ts#request_response_object
-    ```
-
-</CH.Scrollycoding>
-<CH.Scrollycoding className={"single-item"}>
-
-    To a Workflow:
-
-    ```ts
-    CODE_LOAD::ts/src/develop/service_communication.ts#request_response_workflow
-    ```
-
-</CH.Scrollycoding>
+```ts
+CODE_LOAD::ts/src/develop/service_communication.ts#request_response_workflow
+```
 
 1. **Create a service client** and supply the service definition of the service you want to call.
    For Virtual Objects, you also need to supply the key of the Virtual Object you want to call, here `"Mary"`.
@@ -79,35 +69,23 @@ Request-response calls are requests where the client waits for the response.
 
 Handlers can send messages (a.k.a. one-way calls, or fire-and-forget calls), as follows:
 
-<CH.Scrollycoding className={"single-item"}>
+To a Service:
 
-    To a Service:
+```ts
+CODE_LOAD::ts/src/develop/service_communication.ts#one_way_service
+```
 
-    ```ts
-    CODE_LOAD::ts/src/develop/service_communication.ts#one_way_service
-    ```
+To a Virtual Object:
 
-</CH.Scrollycoding>
+```ts
+CODE_LOAD::ts/src/develop/service_communication.ts#one_way_object
+```
 
-<CH.Scrollycoding className={"single-item"}>
+To a Workflow:
 
-    To a Virtual Object:
-
-    ```ts
-    CODE_LOAD::ts/src/develop/service_communication.ts#one_way_object
-    ```
-
-</CH.Scrollycoding>
-
-<CH.Scrollycoding className={"single-item"}>
-
-    To a Workflow:
-
-    ```ts
-    CODE_LOAD::ts/src/develop/service_communication.ts#one_way_workflow
-    ```
-
-</CH.Scrollycoding>
+```ts
+CODE_LOAD::ts/src/develop/service_communication.ts#one_way_workflow
+```
 
 <Admonition type="tip" title="No need for message queues">
     Without Restate, you would usually put a message queue in between the two services, to guarantee the message delivery.
@@ -120,24 +98,17 @@ A delayed call is a one-way call that gets executed after a specified delay.
 
 To schedule a delayed call, send a message with a delay parameter, as follows:
 
-<CH.Scrollycoding className={"single-item"}>
+To a Service:
 
-    To a Service:
+```ts
+CODE_LOAD::ts/src/develop/service_communication.ts#delayed_service
+```
 
-    ```ts
-    CODE_LOAD::ts/src/develop/service_communication.ts#delayed_service
-    ```
+To a Virtual Object:
 
-</CH.Scrollycoding>
-<CH.Scrollycoding className={"single-item"}>
-
-    To a Virtual Object:
-
-    ```ts
-    CODE_LOAD::ts/src/develop/service_communication.ts#delayed_object
-    ```
-
-</CH.Scrollycoding>
+```ts
+CODE_LOAD::ts/src/develop/service_communication.ts#delayed_object
+```
 
 <Admonition type="tip" title="Scheduling async tasks">
     You can also use this functionality to schedule async tasks.

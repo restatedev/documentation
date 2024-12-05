@@ -32,6 +32,7 @@ Handlers can either be part of a [Service](/concepts/services#services-1), a [Vi
         - Handlers have the `Context` parameter ([JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api/latest/dev/restate/sdk/Context.html)) as the first parameter.
         Within the handler, you use the `Context` to interact with Restate.
         The SDK stores the actions you do on the context in the Restate journal to make them durable.
+        - You can retrieve the key of the object you are in via `ctx.key()`.
         - The input parameter (at most one) and return type are optional and can be of any type, as long as they are serializable/deserializable using [Jackson Databind](https://github.com/FasterXML/jackson) ([see serialization docs](/develop/java/serialization)).
         - The service will be reachable under the simple class name `MyService`. You can override it by using the annotation field `name`.
         - Create an endpoint and bind the service(s) to the Restate endpoint. Listen on the specified port (default `9080`) for connections and requests.
@@ -67,8 +68,9 @@ Handlers can either be part of a [Service](/concepts/services#services-1), a [Vi
         - The first argument of the handler must be the `ObjectContext` parameter ([JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api/latest/dev/restate/sdk/ObjectContext.html)).
         Handlers with the `ObjectContext` parameter can write to the K/V state store.
         Only one handler can be active at a time, to ensure consistency.
+        - You can retrieve the key of the object you are in via `ctx.key()`.
         - If you want to have a handler that executes concurrently to the others and doesn't have write access to the K/V state, use the `@Shared` annotation and the `SharedObjectContext`.
-        For example, you can use these handlers to read K/V state, or interact with the blocking handler.
+        You can use these handlers, for example, to read K/V state and expose it to the outside world, or to interact with the blocking handler (e.g. resolve awakeables).
     </TabItem>
     <TabItem value="kotlin" label="Kotlin">
         ```kotlin
@@ -79,8 +81,9 @@ Handlers can either be part of a [Service](/concepts/services#services-1), a [Vi
         - The first argument of the handler must be the `ObjectContext` parameter ([JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api/latest/dev/restate/sdk/ObjectContext.html)).
             Handlers with the `ObjectContext` parameter can write to the K/V state store.
             Only one handler can be active at a time, to ensure consistency.
+        - You can retrieve the key of the object you are in via `ctx.key()`.
         - If you want to have a handler that executes concurrently to the others and doesn't have write access to the K/V state, use the `@Shared` annotation and the `SharedObjectContext`.
-            For example, you can use these handlers to read K/V state, or interact with the blocking handler.
+        You can use these handlers, for example, to read K/V state and expose it to the outside world, or to interact with the blocking handler (e.g. resolve awakeables).
     </TabItem>
 </Tabs>
 

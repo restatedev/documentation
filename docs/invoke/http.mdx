@@ -1,9 +1,7 @@
----
-sidebar_position: 1
-description: "Invoke handlers over HTTP."
----
-
-import Admonition from '@theme/Admonition';
+import {CodeWithNotes} from "../../src/components/code/code/code-with-notes";import Admonition from '@theme/Admonition';
+import {Scrollycoding} from "../../src/components/code/scrollycoding";
+import {CodeWithTabs} from "../../src/components/code/code";
+import {TextAndCode} from "../../src/components/code/code/text-and-code";
 
 # HTTP
 
@@ -17,41 +15,39 @@ You can invoke handlers over HTTP with or without waiting for a response, and wi
 You can invoke services over HTTP 1.1 or higher.
 Request/response bodies should be encoded as JSON.
 
-<CH.Scrollycoding className={"single-item"}>
+<TextAndCode>
     ### Invoking Services
     Invoke `myHandler` of `myService` as follows:
 
-    ```shell
+    ```shell !result
     curl localhost:8080/MyService/myHandler \
         -H 'content-type: application/json' \
         -d '{"name": "Mary", "age": 25}'
     ```
 
-</CH.Scrollycoding>
-<CH.Scrollycoding className={"single-item"}>
-
+</TextAndCode>
+<TextAndCode>
     ### Invoking Virtual Objects
     Invoke `myHandler` of `myVirtualObject` for `myKey` as follows:
 
-    ```shell
+    ```shell !result
     curl localhost:8080/MyVirtualObject/myObjectKey/myHandler \
         -H 'content-type: application/json' \
         -d '{"name": "Mary", "age": 25}'
     ```
 
-</CH.Scrollycoding>
-<CH.Scrollycoding className={"single-item"}>
-
+</TextAndCode>
+<TextAndCode>
     ### Invoke Workflows
     Call the `run` handler of the `MyWorkflow` as follows:
 
-    ```shell
+    ```shell !result
     curl localhost:8080/MyWorkflow/myWorkflowId/run \
         -H 'content-type: application/json' \
         -d '{"name": "Mary", "age": 25}'
     ```
 
-</CH.Scrollycoding>
+</TextAndCode>
 
 
 Follow the same pattern for calling the other handlers of the workflow.
@@ -65,7 +61,6 @@ Follow the same pattern for calling the other handlers of the workflow.
 If you do not want to wait for the response, you can also send a message by adding `/send` to the URL path:
 
 ```shell
-# focus[40:44]
 curl localhost:8080/MyService/myHandler/send \
     -H 'content-type: application/json' \
     -d '{"name": "Mary", "age": 25}'
@@ -86,23 +81,21 @@ You can use this identifier [to cancel](/operate/invocation#cancelling-invocatio
 
 You can **delay the message** by adding a delay request parameter in ISO8601 notation or using [humantime format](https://docs.rs/humantime/latest/humantime/):
 
-<CH.Code>
+<CodeWithTabs>
 
-    ```shell humantime
-    # focus[40:56]
+    ```shell !!tabs humantime
     curl localhost:8080/MyService/myHandler/send?delay=10s \
         -H 'content-type: application/json' \
         -d '{"name": "Mary", "age": 25}'
     ```
 
-    ```shell ISO8601
-    # focus[40:56]
+    ```shell !!tabs ISO8601
     curl localhost:8080/MyService/myHandler/send?delay=PT10S \
         -H 'content-type: application/json' \
         -d '{"name": "Mary", "age": 25}'
     ```
 
-</CH.Code>
+</CodeWithTabs>
 
 <Admonition type="note" title={"Not supported for workflows"}>
     You cannot yet use this feature for workflows.
@@ -116,7 +109,7 @@ You can send requests to Restate providing an idempotency key, through the [`Ide
 
 ```shell
 curl localhost:8080/MyService/myHandler \
-# focus
+# !focus
   -H 'idempotency-key: ad5472esg4dsg525dssdfa5loi' \
   -H 'content-type: application/json' \
   -d '{"name": "Mary", "age": 25}'
@@ -133,16 +126,13 @@ If you re-invoke the service with the same idempotency key within 24 hours, Rest
 <details className={"grey-details"}>
     <summary> Tuning retention time</summary>
 
-    <CH.Section>
-        You can tune the [retention time](focus://3) on a service-level by using the [Admin API](focus://1[15:28]) ([docs](/references/admin-api#tag/service/operation/modify_service)):
-        ```shell
-        curl -X PATCH localhost:9070/services/MyService \
-            -H 'content-type: application/json' \
-            -d '{"idempotency_retention": "2days"}'
-        ```
-        The [retention time](focus://3) is in [humantime format](https://docs.rs/humantime/latest/humantime/).
-    </CH.Section>
-
+    You can tune the retention time on a service-level by using the [Admin API](/references/admin-api#tag/service/operation/modify_service)):
+    ```shell
+    curl -X PATCH localhost:9070/services/MyService \
+        -H 'content-type: application/json' \
+        -d '{"idempotency_retention": "2days"}'
+    ```
+    The retention time is in [humantime format](https://docs.rs/humantime/latest/humantime/).
 </details>
 
 

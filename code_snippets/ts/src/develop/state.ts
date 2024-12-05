@@ -1,6 +1,6 @@
 import * as restate from "@restatedev/restate-sdk";
 
-const router = restate.object({
+export const router = restate.object({
   name: "State",
   handlers: {
     greet: async (ctx: restate.ObjectContext, name: string) => {

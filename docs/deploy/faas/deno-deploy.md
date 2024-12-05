@@ -11,7 +11,6 @@ You can run your Restate services as serverless functions on [Deno Deploy](https
 You can easily get started using the
 [Deno+Restate template](https://github.com/restatedev/examples/tree/main/templates/deno):
 ```shell CLI
-# link(1:3) /develop/local_dev#running-restate-server--cli-locally
 restate example typescript-deno-hello-world &&
 cd typescript-deno-hello-world
 ```

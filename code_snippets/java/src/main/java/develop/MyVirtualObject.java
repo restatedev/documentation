@@ -12,8 +12,10 @@ import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 public class MyVirtualObject {
 
   @Handler
-  public String myHandler(ObjectContext ctx, String input) {
-    return "my-output";
+  public String myHandler(ObjectContext ctx, String greeting) {
+    String objectId = ctx.key();
+
+    return greeting + " " + objectId + "!";
   }
 
   @Shared

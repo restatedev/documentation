@@ -11,7 +11,6 @@ You can run your Restate services as serverless functions on [Cloudflare Workers
 You can easily get started using the
 [Workers+Restate template](https://github.com/restatedev/examples/tree/main/templates/cloudflare-worker):
 ```shell CLI
-# link(1:3) /develop/local_dev#running-restate-server--cli-locally
 restate example typescript-cloudflare-worker-hello-world &&
 cd typescript-cloudflare-worker-hello-world
 ```

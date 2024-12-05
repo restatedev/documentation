@@ -24,7 +24,7 @@ Here is an example of a database request for which the string response is stored
 CODE_LOAD::go/develop/journalingresults.go#side_effect
 ```
 
-You cannot use the Restate context within a side effect.
+You cannot use the Restate context within `Run`.
 This includes actions such as getting state, calling another service, and
 nesting other journaled actions. You should only use methods available on the
 [`RunContext`](https://pkg.go.dev/github.com/restatedev/sdk-go#RunContext)
@@ -55,27 +55,23 @@ these types is inside of a `restate.Run` function.
 ## Generating randoms
 The SDK provides helper functions for the deterministic generation of UUIDs and random numbers. Restate seeds the random number generator with the invocation ID, so it always returns the same value on retries.
 
-<CH.Scrollycoding className={clsx("single-item", "durable-promises-short")}>
-    ### Generating UUIDs
+### Generating UUIDs
 
-    You can use these UUIDs to generate stable idempotency keys, to deduplicate operations. For example, you can use this to let a payment service avoid duplicate payments during retries.
+You can use these UUIDs to generate stable idempotency keys, to deduplicate operations. For example, you can use this to let a payment service avoid duplicate payments during retries.
 
-    Do not use this in cryptographic contexts.
+Do not use this in cryptographic contexts.
 
-    ```go
-    CODE_LOAD::go/develop/journalingresults.go#uuid
-    ```
+```go
+CODE_LOAD::go/develop/journalingresults.go#uuid
+```
 
-</CH.Scrollycoding>
-<CH.Scrollycoding className={clsx("single-item", "durable-promises-short")}>
 
-    ### Generating random numbers
+### Generating random numbers
 
-    Methods exist on `restate.Rand(ctx)` for generating `float64` and `uint64`, or
-    otherwise `restate.Rand(ctx).Source()` can be provided to `math/rand/v2` as a
-    source for any random operation.
+Methods exist on `restate.Rand(ctx)` for generating `float64` and `uint64`, or
+otherwise `restate.Rand(ctx).Source()` can be provided to `math/rand/v2` as a
+source for any random operation.
 
-    ```go
-    CODE_LOAD::go/develop/journalingresults.go#random_nb
-    ```
-</CH.Scrollycoding>
+```go
+CODE_LOAD::go/develop/journalingresults.go#random_nb
+```

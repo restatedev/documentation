@@ -8,7 +8,7 @@ import {
 const dataPreparationService = restate.workflow({
   name: "dataPrep",
   handlers: {
-    run: async (ctx: WorkflowContext, args: { userId: string }) => {
+    run: async (ctx: WorkflowContext) => {
       // <mark_1>
       const url = await ctx.run(() => createS3Bucket());
       await ctx.run(() => uploadData(url));
@@ -16,7 +16,6 @@ const dataPreparationService = restate.workflow({
       // <mark_2>
       await ctx.promise<URL>("url").resolve(url);
       // </mark_2>
-
       return url;
       // </mark_1>
     },

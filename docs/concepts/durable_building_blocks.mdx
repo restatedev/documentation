@@ -1,11 +1,13 @@
 ---
 sidebar_position: 1
 description: ""
+hide_table_of_contents: true
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
+import {Scrollycoding} from "../../src/components/code/scrollycoding";
 
 # Durable Building Blocks
 
@@ -29,209 +31,178 @@ Let's have a look at a handler that processes food orders:
 <Tabs groupId="sdk" queryString>
 <TabItem value="ts" label="TypeScript">
 
-<CH.Scrollycoding className="durable-promises">
-    ### Durable <mark class="accent">functions</mark>
+<Scrollycoding className="durable-promises">
+    ### !!steps Durable functions
     Handlers take part in durable execution, meaning that Restate keeps track of their progress and recovers them to the previously reached state in case of failures.
 
-
-    ```ts order_processor.ts
+    ```ts ! order_processor.ts
     CODE_LOAD::ts/src/concepts/food_ordering.ts?1
     ```
 
-    ---
-
-    ### Durable <mark class="accent">RPCs</mark> and <mark class="accent">queues</mark>
+    ### !!steps Durable RPCs and queues
     Handlers can call other handlers in a resilient way, with or without waiting for the response.
     When a failure happens, Restate handles retries and recovers partial progress.
 
-    ```ts order_processor.ts
+    ```ts ! order_processor.ts
     CODE_LOAD::ts/src/concepts/food_ordering.ts?2
     ```
 
-    ---
-
-    ### Durable <mark class="accent">promises and timers</mark>
+    ### !!steps Durable promises and timers
     Register promises in Restate to make them resilient to failures (e.g. webhooks, timers).
     Restate lets the handler suspend while awaiting the promise, and invokes it again when the result is available.
     A great match for function-as-a-service platforms.
 
-    ```ts order_processor.ts
+    ```ts ! order_processor.ts
     CODE_LOAD::ts/src/concepts/food_ordering.ts?3
     ```
 
-    ---
-
-    ### Consistent <mark class="accent">K/V state</mark>
+    ### !!steps Consistent K/V state
     Persist application state in Restate with a simple concurrency model and no extra setup. Restate makes sure state remains consistent amid failures.
 
 
-    ```ts order_processor.ts
+    ```ts ! order_processor.ts
     CODE_LOAD::ts/src/concepts/food_ordering.ts?4
     ```
-    ---
 
-    ### Journaling <mark className="accent">actions</mark>
+    ### !!steps Journaling actions
     Store the result of an action in Restate. The result gets replayed in case of failures and the action is not executed again.
 
-    ```ts order_processor.ts
+    ```ts ! order_processor.ts
     CODE_LOAD::ts/src/concepts/food_ordering.ts?5
     ```
 
-</CH.Scrollycoding>
+</Scrollycoding>
 </TabItem>
 <TabItem value="java" label="Java">
 
-<CH.Scrollycoding className="durable-promises">
+<Scrollycoding className="durable-promises">
 
-    ### Durable <mark className="accent">functions</mark>
+    ### !!steps Durable functions
     Handlers take part in durable execution, meaning that Restate keeps track of their progress and recovers them to the previously reached state in case of failures.
 
 
-    ```java OrderWorkflow.java
+    ```java ! OrderWorkflow.java
     CODE_LOAD::java/src/main/java/concepts/buildingblocks/OrderWorkflow.java?1
     ```
 
-    ---
-
-    ### Durable <mark className="accent">RPCs</mark> and <mark className="accent">queues</mark>
+    ### !!steps Durable RPCs and queues
     Handlers can call other handlers in a resilient way, with or without waiting for the response.
     When a failure happens, Restate handles retries and recovers partial progress.
 
-    ```java OrderWorkflow.java
+    ```java ! OrderWorkflow.java
     CODE_LOAD::java/src/main/java/concepts/buildingblocks/OrderWorkflow.java?2
     ```
 
-    ---
-
-    ### Durable <mark className="accent">promises and timers</mark>
+    ### !!steps Durable promises and timers
     Register promises in Restate to make them resilient to failures (e.g. webhooks, timers). Restate lets the handler suspend while awaiting the promise, and invokes it again when the result is available. A great match for function-as-a-service platforms.
 
-    ```java OrderWorkflow.java
+    ```java ! OrderWorkflow.java
     CODE_LOAD::java/src/main/java/concepts/buildingblocks/OrderWorkflow.java?3
     ```
 
-    ---
-
-    ### Consistent <mark className="accent">K/V state</mark>
+    ### !!steps Consistent K/V state
     Persist application state in Restate with a simple concurrency model and no extra setup. Restate makes sure state remains consistent amid failures.
 
-    ```java OrderWorkflow.java
+    ```java ! OrderWorkflow.java
     CODE_LOAD::java/src/main/java/concepts/buildingblocks/OrderWorkflow.java?4
     ```
 
-    ---
-
-    ### Journaling <mark className="accent">actions</mark>
+    ### !!steps Journaling actions
     Store the result of an action in Restate. The result gets replayed in case of failures and the function is not executed again.
 
-    ```java OrderWorkflow.java
+    ```java ! OrderWorkflow.java
     CODE_LOAD::java/src/main/java/concepts/buildingblocks/OrderWorkflow.java?5
     ```
 
-</CH.Scrollycoding>
+</Scrollycoding>
 </TabItem>
 <TabItem value="go" label="Go">
 
-<CH.Scrollycoding className="durable-promises">
-    ### Durable <mark class="accent">functions</mark>
+<Scrollycoding className="durable-promises">
+    ### !!steps Durable functions
     Handlers take part in durable execution, meaning that Restate keeps track of their progress and recovers them to the previously reached state in case of failures.
 
 
-    ```go orderprocessor.go
+    ```go ! orderprocessor.go
     CODE_LOAD::go/concepts/foodordering.go?1
     ```
 
-    ---
-
-    ### Durable <mark class="accent">RPCs</mark> and <mark class="accent">queues</mark>
+    ### !!steps Durable RPCs and queues
     Handlers can call other handlers in a resilient way, with or without waiting for the response.
     When a failure happens, Restate handles retries and recovers partial progress.
 
-    ```go orderprocessor.go
+    ```go ! orderprocessor.go
     CODE_LOAD::go/concepts/foodordering.go?2
     ```
 
-    ---
-
-    ### Durable <mark class="accent">promises and timers</mark>
+    ### !!steps Durable promises and timers
     Register promises in Restate to make them resilient to failures (e.g. webhooks, timers).
     Restate lets the handler suspend while awaiting the promise, and invokes it again when the result is available.
     A great match for function-as-a-service platforms.
 
-    ```go orderprocessor.go
+    ```go ! orderprocessor.go
     CODE_LOAD::go/concepts/foodordering.go?3
     ```
 
-    ---
-
-    ### Consistent <mark class="accent">K/V state</mark>
+    ### !!steps Consistent K/V state
     Persist application state in Restate with a simple concurrency model and no extra setup. Restate makes sure state remains consistent amid failures.
 
 
-    ```go orderprocessor.go
+    ```go ! orderprocessor.go
     CODE_LOAD::go/concepts/foodordering.go?4
     ```
-    ---
 
-    ### Journaling <mark className="accent">actions</mark>
+    ### !!steps Journaling actions
     Store the result of an action in Restate. The result gets replayed in case of failures and the action is not executed again.
 
-    ```go orderprocessor.go
+    ```go ! orderprocessor.go
     CODE_LOAD::go/concepts/foodordering.go?5
     ```
 
-</CH.Scrollycoding>
+</Scrollycoding>
 </TabItem>
 <TabItem value="python" label="Python">
 
-        <CH.Scrollycoding className="durable-promises">
-            ### Durable <mark class="accent">functions</mark>
+        <Scrollycoding className="durable-promises">
+            ### !!steps Durable functions
             Handlers take part in durable execution, meaning that Restate keeps track of their progress and recovers them to the previously reached state in case of failures.
 
-
-            ```python order_processor.py
+            ```python ! order_processor.py
             CODE_LOAD::python/src/concepts/food_ordering.py?1
             ```
 
-            ---
-
-            ### Durable <mark class="accent">RPCs</mark> and <mark class="accent">queues</mark>
+            ### !!steps Durable RPCs and queues
             Handlers can call other handlers in a resilient way, with or without waiting for the response.
             When a failure happens, Restate handles retries and recovers partial progress.
 
-            ```python order_processor.py
+            ```python ! order_processor.py
             CODE_LOAD::python/src/concepts/food_ordering.py?2
             ```
 
-            ---
-
-            ### Durable <mark class="accent">promises and timers</mark>
+            ### !!steps Durable promises and timers
             Register promises in Restate to make them resilient to failures (e.g. webhooks, timers).
             Restate lets the handler suspend while awaiting the promise, and invokes it again when the result is available.
             A great match for function-as-a-service platforms.
 
-            ```python order_processor.py
+            ```python ! order_processor.py
             CODE_LOAD::python/src/concepts/food_ordering.py?3
             ```
 
-            ---
-
-            ### Consistent <mark class="accent">K/V state</mark>
+            ### !!steps Consistent K/V state
             Persist application state in Restate with a simple concurrency model and no extra setup. Restate makes sure state remains consistent amid failures.
 
 
-            ```python order_processor.py
+            ```python ! order_processor.py
             CODE_LOAD::python/src/concepts/food_ordering.py?4
             ```
-            ---
 
-            ### Journaling <mark className="accent">actions</mark>
+            ### !!steps Journaling actions
             Store the result of an action in Restate. The result gets replayed in case of failures and the action is not executed again.
 
-            ```python order_processor.py
+            ```python ! order_processor.py
             CODE_LOAD::python/src/concepts/food_ordering.py?5
             ```
 
-        </CH.Scrollycoding>
+        </Scrollycoding>
 </TabItem>
 </Tabs>

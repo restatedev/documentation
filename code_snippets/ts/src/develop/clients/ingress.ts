@@ -48,7 +48,7 @@ const servicesIdempotent = async () => {
   // <start_service_idempotent>
   await rs
     .serviceSendClient(greeterService)
-    // withClass highlight-line
+      // !mark
     .greet(request, clients.rpc.sendOpts({ idempotencyKey: "abcde" }));
   // <end_service_idempotent>
 };
@@ -61,13 +61,13 @@ const servicesAttach = async () => {
   // Send a message
   const handle = await rs
     .serviceSendClient(greeterService)
-    // mark
+    // !mark
     .greet(request, clients.rpc.sendOpts({ idempotencyKey: "abcde" }));
 
   // ... do something else ...
 
   // Attach later to retrieve the result
-  // mark
+  // !mark
   const response = await rs.result(handle);
   // <end_service_attach>
 };

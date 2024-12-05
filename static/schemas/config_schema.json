@@ -3,13 +3,20 @@
   "title": "Restate configuration file",
   "description": "Configuration for Restate server.",
   "type": "object",
+  "required": [
+    "tracing-filter",
+    "tracing-headers"
+  ],
   "properties": {
     "worker": {
       "default": {
-        "internal-queue-length": 10000,
+        "cleanup-interval": "1h",
+        "experimental-feature-new-invocation-status-table": false,
+        "internal-queue-length": 1000,
         "invoker": {
           "abort-timeout": "1m",
-          "concurrent-invocations-limit": 10000,
+          "concurrent-invocations-limit": 100,
+          "in-memory-queue-length-limit": 1056784,
           "inactivity-timeout": "1m",
           "message-size-limit": null,
           "message-size-warning": "10.0 MB",
@@ -22,6 +29,7 @@
           },
           "tmp-dir": null
         },
+        "max-command-batch-size": 4,
         "num-timers-in-memory-limit": null,
         "storage": {
           "persist-lsn-interval": "1h",
@@ -36,6 +44,7 @@
       "default": {
         "bind-address": "0.0.0.0:9070",
         "concurrent-api-requests-limit": null,
+        "default-replication-strategy": "on-all-nodes",
         "heartbeat-interval": "1s 500ms",
         "log-trim-interval": "1h",
         "log-trim-threshold": 1000,
@@ -58,14 +67,25 @@
     },
     "bifrost": {
       "default": {
+        "append-retry-max-interval": "1s",
+        "append-retry-min-interval": "10ms",
         "default-provider": "local",
+        "default-provider-config": null,
         "local": {
           "rocksdb-disable-wal": false,
           "rocksdb-disable-wal-fsync": false,
           "rocksdb-memory-ratio": 0.5,
           "writer-batch-commit-count": 5000,
           "writer-batch-commit-duration": "0s"
-        }
+        },
+        "read-retry-policy": {
+          "factor": 2.0,
+          "initial-interval": "50ms",
+          "max-attempts": 50,
+          "max-interval": "1s",
+          "type": "exponential"
+        },
+        "seal-retry-interval": "2s"
       },
       "$ref": "#/definitions/BifrostOptions"
     },
@@ -79,6 +99,29 @@
         "rocksdb-memory-ratio": 0.009999999776482582
       },
       "$ref": "#/definitions/LocalMetadataStoreOptions"
+    },
+    "networking": {
+      "default": {
+        "connect-retry-policy": {
+          "factor": 2.0,
+          "initial-interval": "10ms",
+          "max-attempts": 10,
+          "max-interval": "500ms",
+          "type": "exponential"
+        },
+        "handshake-timeout": "3s"
+      },
+      "$ref": "#/definitions/NetworkingOptions"
+    },
+    "log-server": {
+      "default": {
+        "incoming-network-queue-length": 1000,
+        "rocksdb-disable-wal": false,
+        "rocksdb-disable-wal-fsync": false,
+        "rocksdb-memory-ratio": 0.5,
+        "writer-batch-commit-count": 5000
+      },
+      "$ref": "#/definitions/LogServer"
     },
     "roles": {
       "description": "Defines the roles which this Restate node should run, by default the node starts with all roles.",
@@ -128,11 +171,6 @@
         "null"
       ]
     },
-    "metadata-store-address": {
-      "description": "Address of the metadata store server to bootstrap the node from.",
-      "default": "http://127.0.0.1:5123/",
-      "type": "string"
-    },
     "bind-address": {
       "description": "Address to bind for the Node server. Default is `0.0.0.0:5122`",
       "default": "0.0.0.0:5122",
@@ -145,10 +183,10 @@
     },
     "bootstrap-num-partitions": {
       "title": "Partitions",
-      "description": "Number of partitions that will be provisioned during cluster bootstrap, partitions used to process messages.\n\nNOTE: This config entry only impacts the initial number of partitions, the value of this entry is ignored for bootstrapped nodes/clusters.\n\nCannot be higher than `4611686018427387903` (You should almost never need as many partitions anyway)",
+      "description": "Number of partitions that will be provisioned during cluster bootstrap, partitions used to process messages.\n\nNOTE: This config entry only impacts the initial number of partitions, the value of this entry is ignored for bootstrapped nodes/clusters.\n\nCannot be higher than `65535` (You should almost never need as many partitions anyway)",
       "default": 24,
       "type": "integer",
-      "format": "uint64",
+      "format": "uint16",
       "minimum": 1.0
     },
     "shutdown-timeout": {
@@ -166,28 +204,6 @@
       ],
       "format": "uint",
       "minimum": 0.0
-    },
-    "tracing-endpoint": {
-      "title": "Tracing Endpoint",
-      "description": "Specify the tracing endpoint to send traces to. Traces will be exported using [OTLP gRPC](https://opentelemetry.io/docs/specs/otlp/#otlpgrpc) through [opentelemetry_otlp](https://docs.rs/opentelemetry-otlp/0.12.0/opentelemetry_otlp/).\n\nTo configure the sampling, please refer to the [opentelemetry autoconfigure docs](https://github.com/open-telemetry/opentelemetry-java/blob/main/sdk-extensions/autoconfigure/README.md#sampler).",
-      "type": [
-        "string",
-        "null"
-      ]
-    },
-    "tracing-json-path": {
-      "title": "Distributed Tracing JSON Export Path",
-      "description": "If set, an exporter will be configured to write traces to files using the Jaeger JSON format. Each trace file will start with the `trace` prefix.\n\nIf unset, no traces will be written to file.\n\nIt can be used to export traces in a structured format without configuring a Jaeger agent.\n\nTo inspect the traces, open the Jaeger UI and use the Upload JSON feature to load and inspect them.",
-      "type": [
-        "string",
-        "null"
-      ]
-    },
-    "tracing-filter": {
-      "title": "Tracing Filter",
-      "description": "Distributed tracing exporter filter. Check the [`RUST_LOG` documentation](https://docs.rs/tracing-subscriber/latest/tracing_subscriber/filter/struct.EnvFilter.html) for more details how to configure it.",
-      "default": "info",
-      "type": "string"
     },
     "log-filter": {
       "title": "Logging Filter",
@@ -285,6 +301,89 @@
       "description": "Defines the level of PerfContext used internally by rocksdb. Default is `enable-count` which should be sufficient for most users. Note that higher levels incur a CPU cost and might slow down the critical path.",
       "default": "enable-count",
       "$ref": "#/definitions/RocksbPerfStatisticsLevel"
+    },
+    "metadata-update-interval": {
+      "title": "Metadata update interval",
+      "description": "The interval at which each node checks for metadata updates it has observed from different nodes or other sources.",
+      "default": "3s",
+      "type": "string"
+    },
+    "network-error-retry-policy": {
+      "title": "Network error retry policy",
+      "description": "The retry policy for node network error",
+      "default": {
+        "factor": 2.0,
+        "initial-interval": "10ms",
+        "max-attempts": 15,
+        "max-interval": "5s",
+        "type": "exponential"
+      },
+      "$ref": "#/definitions/RetryPolicy"
+    },
+    "metadata-store-client": {
+      "description": "Metadata store server to bootstrap the node from.",
+      "default": {
+        "address": "http://127.0.0.1:5123/",
+        "type": "embedded"
+      },
+      "$ref": "#/definitions/MetadataStoreClient"
+    },
+    "metadata-store-client-backoff-policy": {
+      "title": "Backoff policy used by the metadata store client",
+      "description": "Backoff policy used by the metadata store client when it encounters concurrent modifications.",
+      "default": {
+        "factor": 2.0,
+        "initial-interval": "10ms",
+        "max-attempts": null,
+        "max-interval": "100ms",
+        "type": "exponential"
+      },
+      "$ref": "#/definitions/RetryPolicy"
+    },
+    "tracing-endpoint": {
+      "title": "Tracing Endpoint",
+      "description": "This is a shortcut to set both [`Self::tracing_runtime_endpoint`], and [`Self::tracing_services_endpoint`].\n\nSpecify the tracing endpoint to send runtime traces to. Traces will be exported using [OTLP gRPC](https://opentelemetry.io/docs/specs/otlp/#otlpgrpc) through [opentelemetry_otlp](https://docs.rs/opentelemetry-otlp/0.12.0/opentelemetry_otlp/).\n\nTo configure the sampling, please refer to the [opentelemetry autoconfigure docs](https://github.com/open-telemetry/opentelemetry-java/blob/main/sdk-extensions/autoconfigure/README.md#sampler).",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "tracing-runtime-endpoint": {
+      "title": "Runtime Tracing Endpoint",
+      "description": "Overrides [`Self::tracing_endpoint`] for runtime traces\n\nSpecify the tracing endpoint to send runtime traces to. Traces will be exported using [OTLP gRPC](https://opentelemetry.io/docs/specs/otlp/#otlpgrpc) through [opentelemetry_otlp](https://docs.rs/opentelemetry-otlp/0.12.0/opentelemetry_otlp/).\n\nTo configure the sampling, please refer to the [opentelemetry autoconfigure docs](https://github.com/open-telemetry/opentelemetry-java/blob/main/sdk-extensions/autoconfigure/README.md#sampler).",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "tracing-services-endpoint": {
+      "title": "Services Tracing Endpoint",
+      "description": "Overrides [`Self::tracing_endpoint`] for services traces\n\nSpecify the tracing endpoint to send services traces to. Traces will be exported using [OTLP gRPC](https://opentelemetry.io/docs/specs/otlp/#otlpgrpc) through [opentelemetry_otlp](https://docs.rs/opentelemetry-otlp/0.12.0/opentelemetry_otlp/).\n\nTo configure the sampling, please refer to the [opentelemetry autoconfigure docs](https://github.com/open-telemetry/opentelemetry-java/blob/main/sdk-extensions/autoconfigure/README.md#sampler).",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "tracing-json-path": {
+      "title": "Distributed Tracing JSON Export Path",
+      "description": "If set, an exporter will be configured to write traces to files using the Jaeger JSON format. Each trace file will start with the `trace` prefix.\n\nIf unset, no traces will be written to file.\n\nIt can be used to export traces in a structured format without configuring a Jaeger agent.\n\nTo inspect the traces, open the Jaeger UI and use the Upload JSON feature to load and inspect them.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "tracing-filter": {
+      "title": "Tracing Filter",
+      "description": "Distributed tracing exporter filter. Check the [`RUST_LOG` documentation](https://docs.rs/tracing-subscriber/latest/tracing_subscriber/filter/struct.EnvFilter.html) for more details how to configure it.",
+      "type": "string"
+    },
+    "tracing-headers": {
+      "title": "Additional tracing headers",
+      "description": "Specify additional headers you want the system to send to the tracing endpoint (e.g. authentication headers).",
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
     },
     "request-identity-private-key-pem-file": {
       "title": "Request identity private key PEM file",
@@ -406,7 +505,7 @@
       "properties": {
         "internal-queue-length": {
           "title": "Internal queue for partition processor communication",
-          "default": 10000,
+          "default": 1000,
           "type": "integer",
           "format": "uint",
           "minimum": 1.0
@@ -421,6 +520,12 @@
           "format": "uint",
           "minimum": 1.0
         },
+        "cleanup-interval": {
+          "title": "Cleanup interval",
+          "description": "In order to clean up completed invocations, that is invocations invoked with an idempotency id, or workflows, Restate periodically scans among the completed invocations to check whether they need to be removed or not. This interval sets the scan interval of the cleanup procedure. Default: 1 hour.\n\nCan be configured using the [`humantime`](https://docs.rs/humantime/latest/humantime/fn.parse_duration.html) format.",
+          "default": "1h",
+          "type": "string"
+        },
         "storage": {
           "default": {
             "persist-lsn-interval": "1h",
@@ -433,7 +538,8 @@
         "invoker": {
           "default": {
             "abort-timeout": "1m",
-            "concurrent-invocations-limit": 10000,
+            "concurrent-invocations-limit": 100,
+            "in-memory-queue-length-limit": 1056784,
             "inactivity-timeout": "1m",
             "message-size-limit": null,
             "message-size-warning": "10.0 MB",
@@ -447,6 +553,14 @@
             "tmp-dir": null
           },
           "$ref": "#/definitions/InvokerOptions"
+        },
+        "max-command-batch-size": {
+          "title": "Maximum command batch size for partition processors",
+          "description": "The maximum number of commands a partition processor will apply in a batch. The larger this value is, the higher the throughput and latency are.",
+          "default": 4,
+          "type": "integer",
+          "format": "uint",
+          "minimum": 1.0
         }
       }
     },
@@ -460,7 +574,7 @@
             "integer",
             "null"
           ],
-          "format": "uint64",
+          "format": "uint16",
           "minimum": 1.0
         },
         "rocksdb-memory-budget": {
@@ -673,10 +787,18 @@
             "null"
           ]
         },
+        "in-memory-queue-length-limit": {
+          "title": "Spill invocations to disk",
+          "description": "Defines the threshold after which queues invocations will spill to disk at the path defined in `tmp-dir`. In other words, this is the number of invocations that can be kept in memory before spilling to disk.",
+          "default": 1056784,
+          "type": "integer",
+          "format": "uint",
+          "minimum": 1.0
+        },
         "concurrent-invocations-limit": {
           "title": "Limit number of concurrent invocations from this node",
           "description": "Number of concurrent invocations that can be processed by the invoker.",
-          "default": 10000,
+          "default": 100,
           "type": [
             "integer",
             "null"
@@ -692,7 +814,7 @@
       "oneOf": [
         {
           "title": "None",
-          "description": "No retries strategy.",
+          "description": "No retry strategy.",
           "type": "object",
           "required": [
             "type"
@@ -838,6 +960,12 @@
           "type": "integer",
           "format": "uint64",
           "minimum": 0.0
+        },
+        "default-replication-strategy": {
+          "title": "Default replication strategy",
+          "description": "The default replication strategy to be used by the cluster controller to schedule partition processors.",
+          "default": "on-all-nodes",
+          "$ref": "#/definitions/ReplicationStrategy"
         }
       }
     },
@@ -876,6 +1004,33 @@
           "type": "string"
         }
       }
+    },
+    "ReplicationStrategy": {
+      "description": "Replication strategy for partition processors.",
+      "oneOf": [
+        {
+          "description": "Schedule partition processor replicas on all available nodes",
+          "type": "string",
+          "enum": [
+            "on-all-nodes"
+          ]
+        },
+        {
+          "description": "Schedule this number of partition processor replicas",
+          "type": "object",
+          "required": [
+            "factor"
+          ],
+          "properties": {
+            "factor": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 1.0
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
     },
     "IngressOptions": {
       "title": "Ingress options",
@@ -938,6 +1093,13 @@
           "default": "local",
           "$ref": "#/definitions/ProviderKind"
         },
+        "default-provider-config": {
+          "description": "An opaque string that gets passed to the loglet provider to seed the creation of new loglets.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "local": {
           "description": "Configuration of local loglet provider",
           "default": {
@@ -947,6 +1109,36 @@
             "writer-batch-commit-count": 5000,
             "writer-batch-commit-duration": "0s"
           },
+          "type": "string"
+        },
+        "read-retry-policy": {
+          "title": "Read retry policy",
+          "description": "Retry policy to use when bifrost waits for reconfiguration to complete during read operations",
+          "default": {
+            "factor": 2.0,
+            "initial-interval": "50ms",
+            "max-attempts": 50,
+            "max-interval": "1s",
+            "type": "exponential"
+          },
+          "$ref": "#/definitions/RetryPolicy"
+        },
+        "seal-retry-interval": {
+          "title": "Seal retry interval",
+          "description": "Interval to wait between retries of loglet seal failures",
+          "default": "2s",
+          "type": "string"
+        },
+        "append-retry-min-interval": {
+          "title": "Append retry minimum interval",
+          "description": "Minimum retry duration used by the exponential backoff mechanism for bifrost appends.",
+          "default": "10ms",
+          "type": "string"
+        },
+        "append-retry-max-interval": {
+          "title": "Append retry maximum interval",
+          "description": "Maximum retry duration used by the exponential backoff mechanism for bifrost appends.",
+          "default": "1s",
           "type": "string"
         }
       }
@@ -1085,14 +1277,140 @@
         }
       }
     },
-    "Role": {
-      "oneOf": [
-        {
-          "type": "string",
-          "enum": [
-            "metadata-store"
+    "NetworkingOptions": {
+      "title": "Networking options",
+      "type": "object",
+      "properties": {
+        "connect-retry-policy": {
+          "title": "Retry policy",
+          "description": "Retry policy to use for internal node-to-node networking.",
+          "default": {
+            "factor": 2.0,
+            "initial-interval": "10ms",
+            "max-attempts": 10,
+            "max-interval": "500ms",
+            "type": "exponential"
+          },
+          "$ref": "#/definitions/RetryPolicy"
+        },
+        "handshake-timeout": {
+          "title": "Handshake timeout",
+          "description": "Timeout for handshake message for internal node-to-node networking.",
+          "default": "3s",
+          "type": "string"
+        }
+      }
+    },
+    "LogServer": {
+      "title": "Log server options",
+      "description": "Configuration is only used on nodes running with `log-server` role.",
+      "type": "object",
+      "properties": {
+        "rocksdb-memory-budget": {
+          "description": "The memory budget for rocksdb memtables in bytes\n\nIf this value is set, it overrides the ratio defined in `rocksdb-memory-ratio`.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/NonZeroHumanBytes"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
+        "rocksdb-memory-ratio": {
+          "description": "The memory budget for rocksdb memtables as ratio\n\nThis defines the total memory for rocksdb as a ratio of all memory available to the log-server.\n\n(See `rocksdb-total-memtables-ratio` in common).",
+          "default": 0.5,
+          "type": "number",
+          "format": "float"
+        },
+        "rocksdb-disable-wal-fsync": {
+          "description": "Disable fsync of WAL on every batch",
+          "default": false,
+          "type": "boolean"
+        },
+        "writer-batch-commit-count": {
+          "description": "Trigger a commit when the batch size exceeds this threshold.\n\nSet to 0 or 1 to commit the write batch on every command.",
+          "default": 5000,
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0.0
+        },
+        "incoming-network-queue-length": {
+          "description": "The number of messages that can queue up on input network stream while request processor is busy.",
+          "default": 1000,
+          "type": "integer",
+          "format": "uint",
+          "minimum": 1.0
+        },
+        "rocksdb-disable-direct-io-for-reads": {
+          "title": "Disable Direct IO for reads",
+          "description": "Files will be opened in \"direct I/O\" mode which means that data r/w from the disk will not be cached or buffered. The hardware buffer of the devices may however still be used. Memory mapped files are not impacted by these parameters.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "rocksdb-disable-direct-io-for-flush-and-compactions": {
+          "title": "Disable Direct IO for flush and compactions",
+          "description": "Use O_DIRECT for writes in background flush and compactions.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "rocksdb-disable-wal": {
+          "title": "Disable WAL",
+          "description": "The default depends on the different rocksdb use-cases at Restate.\n\nSupports hot-reloading (Partial / Bifrost only)",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "rocksdb-disable-statistics": {
+          "description": "Disable rocksdb statistics collection\n\nDefault: False (statistics enabled)",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "rocksdb-max-background-jobs": {
+          "title": "RocksDB max background jobs (flushes and compactions)",
+          "description": "Default: the number of CPU cores on this node.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 1.0
+        },
+        "rocksdb-compaction-readahead-size": {
+          "title": "RocksDB compaction readahead size in bytes",
+          "description": "If non-zero, we perform bigger reads when doing compaction. If you're running RocksDB on spinning disks, you should set this to at least 2MB. That way RocksDB's compaction is doing sequential instead of random reads.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/NonZeroHumanBytes"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rocksdb-statistics-level": {
+          "title": "RocksDB statistics level",
+          "description": "StatsLevel can be used to reduce statistics overhead by skipping certain types of stats in the stats collection process.\n\nDefault: \"except-detailed-timers\"",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/RocksbStatistics"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "Role": {
+      "oneOf": [
         {
           "description": "A worker runs partition processor (journal, state, and drives invocations)",
           "type": "string",
@@ -1105,6 +1423,20 @@
           "type": "string",
           "enum": [
             "admin"
+          ]
+        },
+        {
+          "description": "Serves the metadata store",
+          "type": "string",
+          "enum": [
+            "metadata-store"
+          ]
+        },
+        {
+          "description": "[IN DEVELOPMENT] Serves a log server for replicated loglets",
+          "type": "string",
+          "enum": [
+            "log-server"
           ]
         }
       ]
@@ -1174,6 +1506,50 @@
           "enum": [
             "enable-time"
           ]
+        }
+      ]
+    },
+    "MetadataStoreClient": {
+      "title": "Metadata Store",
+      "description": "Definition of a bootstrap metadata store",
+      "oneOf": [
+        {
+          "description": "Connects to an embedded metadata store that is run by nodes that run with the MetadataStore role.",
+          "type": "object",
+          "required": [
+            "address",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "embedded"
+              ]
+            },
+            "address": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "description": "Uses external etcd as metadata store. The addresses are formatted as `host:port`",
+          "type": "object",
+          "required": [
+            "addresses",
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "etcd"
+              ]
+            },
+            "addresses": {
+              "type": "string"
+            }
+          }
         }
       ]
     },

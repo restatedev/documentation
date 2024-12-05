@@ -3,11 +3,11 @@ import { greetCounter, greeter, myWorkflow } from "./utils";
 
 // <start_one_way_call>
 async function myRestateHandler(ctx: restate.Context) {
-  // focus
+  // !focus
   ctx
-    // focus
+    // !focus
     .serviceSendClient(greeter)
-    // focus
+    // !focus
     .greet({ greeting: "Hi" });
 }
 // <end_one_way_call>
