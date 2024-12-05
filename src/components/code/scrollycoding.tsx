@@ -41,7 +41,7 @@ export function Scrollycoding(props: unknown) {
                             {(step.title.length > 0) ? <p className={styles.stepTitle}>{step.title}</p> : null}
                             <div>{step.children}</div>
                         </Selectable>
-                        {/*<div className={styles.stepMobile}>*/}
+                        {/*Mobile:*/}
                         <Selectable
                             key={i}
                             index={i}
@@ -51,9 +51,6 @@ export function Scrollycoding(props: unknown) {
                             {(step.title.length > 0) ? <p className={styles.stepTitle}>{step.title}</p> : null}
                             <div>{step.children}</div>
                         </Selectable>
-                        {/*    {(step.title.length > 0) ? <p className={styles.stepTitle}>{step.title}</p> : null}*/}
-                        {/*    <div>{step.children}</div>*/}
-                        {/*</div>*/}
                     </>
 
                 ))}
