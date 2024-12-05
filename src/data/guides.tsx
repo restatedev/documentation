@@ -44,28 +44,37 @@ export type TagType =
 const Guides: Guide[] = [
   {
     title: "Sagas",
-    description: "With graceful cancellations, you can stop service invocations and workflows while keeping the overall application state consistent.",
+    description: "Implementing undo operations in case of failures, to keep your system consistent.",
     preview: require('./guides/cancellation-signal-propagation.png'),
     website: '/guides/sagas',
-    source: 'https://github.com/restatedev/examples/blob/main/typescript/patterns/src/compensations.ts',
-    tags: ['deploy', 'workflows', 'microservices'],
+    source: null,
+    tags: ['develop', 'workflows', 'microservices'],
   },
   {
-    title: 'Restate on AWS Lambda via AWS console',
-    description: 'Deploying Restate services to AWS Lambda via the AWS console.',
+    title: 'TypeScript services on AWS Lambda',
+    description: 'Deploying Restate TypeScript services to AWS Lambda via the AWS console.',
     preview: require('./guides/lambda-console-guide.png'),
-    website: '/guides/lambda_deployment',
-    source: 'https://github.com/restatedev/examples/tree/main/typescript/hello-world-lambda',
+    website: '/guides/lambda-ts',
+    source: null,
     tags: ['deploy', 'typescript'],
   },
   {
-    title: 'Kafka Event Processing with Restate',
+    title: 'Restate + Kafka Quickstart',
     description:
         'A hands-on example on how to trigger a Restate service over Kafka',
-    preview: require('./guides/kakfa-guide.png'),
-    website: 'https://restate.dev/blog/restate--kafka-event-driven-apps-where-event-driven-is-an-implementation-detail/',
+    preview: require('./guides/kafka-guide.png'),
+    website: '/guides/kafka-quickstart',
     source: null,
     tags: ['eventprocessing'],
+  },
+  {
+    title: "Restate + XState",
+    description:
+        'Blog post on persistent serverless state machines with XState and Restate',
+    preview: require('./guides/xstate-img.png'),
+    website: 'https://restate.dev/blog/persistent-serverless-state-machines-with-xstate-and-restate/',
+    source: 'https://github.com/restatedev/xstate/tree/main',
+    tags: ['develop', 'typescript', 'microservices'],
   },
 
   // Add new guides in alphabetical order!
@@ -177,14 +186,34 @@ export const Tags: {[type in TagType]: Tag} = {
     color: '#127f82',
   },
 
+  develop: {
+    label: translate({message: 'Develop'}),
+    description: translate({
+      message:
+        'Learn how to implement common patterns in Restate.',
+      id: 'showcase.tag.develop.description',
+    }),
+    color: '#fe6829',
+  },
+
   deploy: {
-    label: translate({message: 'Deployment'}),
+    label: translate({message: 'Deploy'}),
     description: translate({
       message:
         'Learn how to deploy Restate applications.',
-      id: 'showcase.tag.deployment.description',
+      id: 'showcase.tag.deploy.description',
     }),
-    color: '#fe6829',
+    color: '#852b08',
+  },
+
+  operate: {
+    label: translate({message: 'Operate'}),
+    description: translate({
+      message:
+        'Learn how to operate Restate applications.',
+      id: 'showcase.tag.operate.description',
+    }),
+    color: '#491700',
   },
 };
 

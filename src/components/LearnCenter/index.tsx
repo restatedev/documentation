@@ -310,9 +310,9 @@ function GuideCards() {
                         {/*        ))}*/}
                         {/*    </ul>*/}
                         {/*</details>*/}
-                        <Heading as="h2" className={styles.guideHeader}>
-                            <Translate id="guide.usersList.allUsers">All guides</Translate>
-                        </Heading>
+                        {/*<Heading as="h2" className={styles.guideHeader}>*/}
+                        {/*    <Translate id="guide.usersList.allUsers">All guides</Translate>*/}
+                        {/*</Heading>*/}
                         <ul className={clsx('clean-list', styles.guideList)}>
                             {otherGuides.map((guide) => (
                                 <GuideCard key={guide.title} guide={guide}/>
@@ -340,7 +340,7 @@ export default function LearnCenter(): JSX.Element {
     return (
         <section className={styles.features}>
             {/*<LearnCenterHeader/>*/}
-            <GuideFilters/>
+            {/*<GuideFilters/>*/}
             <GuideCards/>
         </section>
     );

@@ -58,36 +58,36 @@ function getCardImage(guide: Guide): string {
 function GuideCard({guide}: {guide: Guide}) {
   const image = getCardImage(guide);
   return (
-    <li key={guide.title} className="card shadow--md">
-      <div className={clsx('card__image', styles.guideCardImage)}>
-        <IdealImage img={image} alt={guide.title} />
-      </div>
-      <div className="card__body">
-        <div className={clsx(styles.guideCardHeader)}>
-          <Heading as="h4" className={styles.guideCardTitle}>
-            <Link href={guide.website} className={styles.guideCardLink}>
-              {guide.title}
-            </Link>
-          </Heading>
-          {guide.tags.includes('favorite') && (
-              <a>🚀</a>
-          )}
-          {guide.source && (
-            <Link
-              href={guide.source}
-              className={clsx(
-                'button button--secondary button--sm',
-                styles.guideCardSrcBtn,
-              )}>
-              <Translate id="guide.card.sourceLink">source</Translate>
-            </Link>
-          )}
-        </div>
-        <p className={styles.guideCardBody}>{guide.description}</p>
-      </div>
-      <ul className={clsx('card__footer', styles.cardFooter)}>
-        <GuideCardTag tags={guide.tags} />
-      </ul>
+    <li key={guide.title} className={clsx(styles.guideCard, "card shadow--md")}>
+        <Link href={guide.website} className={styles.guideCardLink}>
+          <div className={clsx('card__image', styles.guideCardImage)}>
+            <IdealImage img={image} alt={guide.title} />
+          </div>
+          <div className={clsx("card__body", styles.guideCardBody)}>
+            <div className={clsx(styles.guideCardHeader)}>
+              <Heading as="h6" className={styles.guideCardTitle}>
+                  {guide.title}
+              </Heading>
+              {guide.tags.includes('favorite') && (
+                  <a>🚀</a>
+              )}
+              {guide.source && (
+                <Link
+                  href={guide.source}
+                  className={clsx(
+                    'button button--secondary button--sm',
+                    styles.guideCardSrcBtn,
+                  )}>
+                  <Translate id="guide.card.sourceLink">source</Translate>
+                </Link>
+              )}
+            </div>
+            <p className={styles.guideCardBody}>{guide.description}</p>
+          </div>
+          <ul className={clsx('card__footer', styles.cardFooter)}>
+            <GuideCardTag tags={guide.tags} />
+          </ul>
+        </Link>
     </li>
   );
 }
