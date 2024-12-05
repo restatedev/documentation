@@ -43,6 +43,14 @@ export type TagType =
 // prettier-ignore
 const Guides: Guide[] = [
   {
+    title: "Sagas",
+    description: "With graceful cancellations, you can stop service invocations and workflows while keeping the overall application state consistent.",
+    preview: require('./guides/cancellation-signal-propagation.png'),
+    website: '/guides/sagas',
+    source: 'https://github.com/restatedev/examples/blob/main/typescript/patterns/src/compensations.ts',
+    tags: ['deploy', 'workflows', 'microservices'],
+  },
+  {
     title: 'Restate on AWS Lambda via AWS console',
     description: 'Deploying Restate services to AWS Lambda via the AWS console.',
     preview: require('./guides/lambda-console-guide.png'),
