@@ -11,7 +11,6 @@ import {
     Tags,
     TagList,
     type Guide,
-    type Levels,
     type TagType,
 } from '../../data/guides';
 import Heading from '@theme/Heading';
@@ -109,15 +108,15 @@ function useFilteredGuides() {
         [selectedTags, operator, searchName],
     );
 }
-
-function LearnCenterHeader() {
-    return (
-        <section className="margin-top--lg margin-bottom--lg text--center">
-            <Heading as="h1">💡{TITLE}</Heading>
-            <p>{DESCRIPTION}</p>
-        </section>
-    );
-}
+//
+// function LearnCenterHeader() {
+//     return (
+//         <section className="margin-top--lg margin-bottom--lg text--center">
+//             <Heading as="h1">💡{TITLE}</Heading>
+//             <p>{DESCRIPTION}</p>
+//         </section>
+//     );
+// }
 
 function useSiteCountPlural() {
     const {selectMessage} = usePluralForm();
@@ -189,18 +188,18 @@ function GuideFilters() {
     );
 }
 
-const favoriteGuides = sortedGuides.filter((guide) =>
-    guide.tags.includes('favorite'),
-);
-const workflowGuides = sortedGuides.filter((guide) =>
-    guide.tags.includes('workflows'),
-);
-const microservicesGuides = sortedGuides.filter((guide) =>
-    guide.tags.includes('microservices'),
-);
-const eventProcessingGuides = sortedGuides.filter((guide) =>
-    guide.tags.includes('eventprocessing'),
-);
+// const favoriteGuides = sortedGuides.filter((guide) =>
+//     guide.tags.includes('favorite'),
+// );
+// const workflowGuides = sortedGuides.filter((guide) =>
+//     guide.tags.includes('workflows'),
+// );
+// const microservicesGuides = sortedGuides.filter((guide) =>
+//     guide.tags.includes('microservices'),
+// );
+// const eventProcessingGuides = sortedGuides.filter((guide) =>
+//     guide.tags.includes('eventprocessing'),
+// );
 const otherGuides = sortedGuides.filter(
   (guide) => !guide.tags.includes('favorite')
 );
@@ -261,56 +260,56 @@ function GuideCards() {
         <section className="margin-top--lg margin-bottom--xl">
             {filteredGuides.length === sortedGuides.length ? (
                 <>
-                    <div className={styles.guideFavorite}>
-                        <div className="container">
-                            <div
-                                className={clsx(
-                                    'margin-bottom--md',
-                                    styles.guideFavoriteHeader,
-                                )}>
-                                <Heading as="h2">
-                                    <Translate id="guide.favoritesList.title">
-                                        🚀 First time here?
-                                    </Translate>
-                                </Heading>
-                            </div>
-                            <ul
-                                className={clsx(
-                                    'container',
-                                    'clean-list',
-                                    styles.guideList,
-                                )}>
-                                {favoriteGuides.map((guide) => (
-                                    <GuideCard key={guide.title} guide={guide}/>
-                                ))}
-                            </ul>
-                        </div>
-                    </div>
+                    {/*<div className={styles.guideFavorite}>*/}
+                    {/*    <div className="container">*/}
+                    {/*        <div*/}
+                    {/*            className={clsx(*/}
+                    {/*                'margin-bottom--md',*/}
+                    {/*                styles.guideFavoriteHeader,*/}
+                    {/*            )}>*/}
+                    {/*            <Heading as="h2">*/}
+                    {/*                <Translate id="guide.favoritesList.title">*/}
+                    {/*                    🚀 First time here?*/}
+                    {/*                </Translate>*/}
+                    {/*            </Heading>*/}
+                    {/*        </div>*/}
+                    {/*        <ul*/}
+                    {/*            className={clsx(*/}
+                    {/*                'container',*/}
+                    {/*                'clean-list',*/}
+                    {/*                styles.guideList,*/}
+                    {/*            )}>*/}
+                    {/*            {favoriteGuides.map((guide) => (*/}
+                    {/*                <GuideCard key={guide.title} guide={guide}/>*/}
+                    {/*            ))}*/}
+                    {/*        </ul>*/}
+                    {/*    </div>*/}
+                    {/*</div>*/}
                     <div className="container margin-top--lg">
-                        <details>
-                          <summary className={styles.pathHeader}>Path 1: Workflows</summary>
-                            <ul className={clsx('clean-list', styles.guideList)}>
-                                {workflowGuides.map((guide) => (
-                                    <GuideCard key={guide.title} guide={guide}/>
-                                ))}
-                            </ul>
-                        </details>
-                        <details>
-                          <summary className={styles.pathHeader}>Path 2: Microservice Orchestration</summary>
-                            <ul className={clsx('clean-list', styles.guideList)}>
-                                {microservicesGuides.map((guide) => (
-                                    <GuideCard key={guide.title} guide={guide}/>
-                                ))}
-                            </ul>
-                        </details>
-                        <details>
-                          <summary className={styles.pathHeader}>Path 3: Event Processing</summary>
-                            <ul className={clsx('clean-list', styles.guideList)}>
-                                {eventProcessingGuides.map((guide) => (
-                                    <GuideCard key={guide.title} guide={guide}/>
-                                ))}
-                            </ul>
-                        </details>
+                        {/*<details>*/}
+                        {/*  <summary className={styles.pathHeader}>Path 1: Workflows</summary>*/}
+                        {/*    <ul className={clsx('clean-list', styles.guideList)}>*/}
+                        {/*        {workflowGuides.map((guide) => (*/}
+                        {/*            <GuideCard key={guide.title} guide={guide}/>*/}
+                        {/*        ))}*/}
+                        {/*    </ul>*/}
+                        {/*</details>*/}
+                        {/*<details>*/}
+                        {/*  <summary className={styles.pathHeader}>Path 2: Microservice Orchestration</summary>*/}
+                        {/*    <ul className={clsx('clean-list', styles.guideList)}>*/}
+                        {/*        {microservicesGuides.map((guide) => (*/}
+                        {/*            <GuideCard key={guide.title} guide={guide}/>*/}
+                        {/*        ))}*/}
+                        {/*    </ul>*/}
+                        {/*</details>*/}
+                        {/*<details>*/}
+                        {/*  <summary className={styles.pathHeader}>Path 3: Event Processing</summary>*/}
+                        {/*    <ul className={clsx('clean-list', styles.guideList)}>*/}
+                        {/*        {eventProcessingGuides.map((guide) => (*/}
+                        {/*            <GuideCard key={guide.title} guide={guide}/>*/}
+                        {/*        ))}*/}
+                        {/*    </ul>*/}
+                        {/*</details>*/}
                         <Heading as="h2" className={styles.guideHeader}>
                             <Translate id="guide.usersList.allUsers">All guides</Translate>
                         </Heading>
@@ -339,13 +338,11 @@ function GuideCards() {
 
 export default function LearnCenter(): JSX.Element {
     return (
-        <Layout title={TITLE} description={DESCRIPTION}>
-            <main className="margin-vert--lg">
-                <LearnCenterHeader/>
-                <GuideFilters/>
-                <GuideCards/>
-            </main>
-        </Layout>
+        <section className={styles.features}>
+            {/*<LearnCenterHeader/>*/}
+            <GuideFilters/>
+            <GuideCards/>
+        </section>
     );
 }
 

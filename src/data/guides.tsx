@@ -27,45 +27,28 @@ import {sortBy} from '@site/src/utils/jsUtils';
 // Don't add new tags without checking whether this fits the page structure.
 export type TagType =
   | 'favorite'
-  | 'tipsntricks'
-  | 'devex'
   | 'workflows'
   | 'microservices'
   | 'eventprocessing'
-  | 'deployment'
+  | 'develop'
+  | 'deploy'
+  | 'operate'
   | 'java'
   | 'typescript'
-  | 'blog'
-  | 'tutorial'
-  | 'video'
-  | 'example';
+  | 'rust'
+  | 'go'
+  | 'python';
 
 // Add sites to this list
 // prettier-ignore
 const Guides: Guide[] = [
-  {
-    title: 'Quickstart',
-    description: 'Get started with Restate in minutes',
-    preview: require('./guides/observability.jpeg'),
-    website: '/quickstart',
-    source: null,
-    tags: ['favorite', 'tutorial', 'java', 'typescript'],
-  },
-  {
-    title: 'Tour of Restate',
-    description: 'Develop an end-to-end Restate application, covering all the essentials.',
-    preview: require('../../static/img/tour-of-restate-diagram-handler.png'),
-    website: '/tour',
-    source: null,
-    tags: ['favorite', 'tutorial', 'java', 'typescript'],
-  },
   {
     title: 'Restate on AWS Lambda via AWS console',
     description: 'Deploying Restate services to AWS Lambda via the AWS console.',
     preview: require('./guides/lambda-console-guide.png'),
     website: '/guides/lambda_deployment',
     source: 'https://github.com/restatedev/examples/tree/main/typescript/hello-world-lambda',
-    tags: ['deployment', 'typescript'],
+    tags: ['deploy', 'typescript'],
   },
   {
     title: 'Kafka Event Processing with Restate',
@@ -82,7 +65,7 @@ const Guides: Guide[] = [
     preview: require('./guides/cancellation-signal-propagation.png'),
     website: 'https://restate.dev/blog/graceful-cancellations-how-to-keep-your-application-and-workflow-state-consistent/',
     source: 'https://github.com/restatedev/examples/blob/main/typescript/patterns/src/compensations.ts',
-    tags: ['deployment', 'workflows', 'microservices'],
+    tags: ['deploy', 'workflows', 'microservices'],
   },
   {
     title: 'Restate + Kubernetes',
@@ -91,7 +74,7 @@ const Guides: Guide[] = [
     preview: require('./guides/kubernetes.png'),
     website: '/guides/kubernetes',
     source: 'https://github.com/algolia/docsearch/tree/main/packages/website',
-    tags: ['deployment'],
+    tags: ['deploy'],
   }
 
   // Add new guides in alphabetical order!
@@ -143,6 +126,36 @@ export const Tags: {[type in TagType]: Tag} = {
     color: '#fff200',
   },
 
+  go: {
+    label: translate({message: 'Go'}),
+    description: translate({
+      message:
+          'Guides using the Go SDK.',
+      id: 'showcase.tag.go.description',
+    }),
+    color: '#aaff00',
+  },
+
+  rust: {
+    label: translate({message: 'Rust'}),
+    description: translate({
+      message:
+          'Guides using the Rust SDK.',
+      id: 'showcase.tag.rust.description',
+    }),
+    color: '#2fff00',
+  },
+
+  python: {
+    label: translate({message: 'Python'}),
+    description: translate({
+      message:
+          'Guides using the :Python SDK.',
+      id: 'showcase.tag.python.description',
+    }),
+    color: '#00ffa6',
+  },
+
   workflows: {
     label: translate({message: 'Workflows'}),
     description: translate({
@@ -160,7 +173,7 @@ export const Tags: {[type in TagType]: Tag} = {
           'Learn how to use Restate for Microservices Orchestration.',
       id: 'showcase.tag.workflows.description',
     }),
-    color: '#a44fb7',
+    color: '#b74f6b',
   },
 
   eventprocessing: {
@@ -173,7 +186,7 @@ export const Tags: {[type in TagType]: Tag} = {
     color: '#127f82',
   },
 
-  deployment: {
+  deploy: {
     label: translate({message: 'Deployment'}),
     description: translate({
       message:
@@ -181,46 +194,6 @@ export const Tags: {[type in TagType]: Tag} = {
       id: 'showcase.tag.deployment.description',
     }),
     color: '#fe6829',
-  },
-
-  blog: {
-    label: translate({message: 'Blog'}),
-    description: translate({
-      message:
-        'Tutorial-like blog posts.',
-      id: 'showcase.tag.blog.description',
-    }),
-    color: '#89da26',
-  },
-
-  tutorial: {
-    label: translate({message: 'Tutorial'}),
-    description: translate({
-      message:
-        'Tutorials to get you started smoothly.',
-      id: 'showcase.tag.tutorial.description',
-    }),
-    color: '#ff0000',
-  },
-
-  video: {
-    label: translate({message: 'Video'}),
-    description: translate({
-      message:
-        'Restate videos on all sorts of topics.',
-      id: 'showcase.tag.video.description',
-    }),
-    color: '#205d14',
-  },
-
-  example: {
-    label: translate({message: 'Example'}),
-    description: translate({
-      message:
-        'Find out how to implement common use cases.',
-      id: 'showcase.tag.example.description',
-    }),
-    color: '#c80adc',
   },
 };
 

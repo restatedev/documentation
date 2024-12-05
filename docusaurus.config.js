@@ -132,17 +132,17 @@ const config = {
           target: "_self",
         },
         items: [
-          {
-            to: '/',
-            label: 'Build',
-            position: 'left',
-            activeBaseRegex: '^/$',
-          },
-          {
-            to: 'learn',
-            label: 'Learn',
-            position: 'left'
-          },
+          // {
+          //   to: '/',
+          //   label: 'Build',
+          //   position: 'left',
+          //   activeBaseRegex: '^/$',
+          // },
+          // {
+          //   to: 'learn',
+          //   label: 'Learn',
+          //   position: 'left'
+          // },
           {
             type: "search", // This is the Algolia search bar
             position: "right",
