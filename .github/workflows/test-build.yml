@@ -88,3 +88,17 @@ jobs:
       - name: Test Go code snippets
         working-directory: code_snippets/go
         run: go test ./...
+
+
+      # Setup Rust
+      - name: Install Rust toolchain
+        if: inputs.sdkRustVersion != ''
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: clippy
+          rustflags: ""
+
+      # Run Rust tests
+      - name: Run Rust tests
+        if: inputs.sdkRustVersion != ''
+        run: cargo clippy --manifest-path ./code_snippets/rust/Cargo.toml
