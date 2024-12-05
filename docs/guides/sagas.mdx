@@ -1,14 +1,14 @@
 ---
 title: "Sagas"
 description: "Sagas let you run compensations when your code crashes halfway through."
+pagination_next: null
+pagination_prev: null
 ---
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
-import {Code} from "../../src/components/code/code";
 
 # Sagas
-
 
 When building distributed systems, it is crucial to ensure that the system remains consistent even in the presence of failures.
 One way to achieve this is by using the [Saga pattern](https://learn.microsoft.com/en-us/azure/architecture/reference-architectures/saga/saga).
@@ -75,3 +75,10 @@ In the catch block, you run the compensations in reverse order, and rethrow the 
 These compensations are executed with the same guarantees as the service code. So Restate ensures that the compensations will complete.
 As part of these compensations, it is for example possible to reset the state of the service, call other services to undo previously executed calls, or run `sideEffects` to delete previously inserted rows in a database.
 
+
+## Related resources
+
+- Terminal errors: [Java](/develop/java/error-handling) / [TS](/develop/ts/error-handling) / [Go](/develop/go/error-handling) / [Python](/develop/python/error-handling)  / [Rust](https://docs.rs/restate-sdk/latest/restate_sdk/errors/index.html)
+- [Cancellation of invocations](operate/invocation#cancelling-invocations)
+- [Blog post: Graceful cancellations: How to keep your application and workflow state consistent 💪](https://restate.dev/blog/graceful-cancellations-how-to-keep-your-application-and-workflow-state-consistent/)
+- [Microservice orchestration use case page](/use-cases/microservice-orchestration)
