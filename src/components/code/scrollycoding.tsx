@@ -31,15 +31,31 @@ export function Scrollycoding(props: unknown) {
         <SelectionProvider className={styles.scrollycodingContainer}>
             <div className={styles.stepsContainer}>
                 {steps.map((step, i) => (
-                    <Selectable
-                        key={i}
-                        index={i}
-                        selectOn={["hover", "scroll", "click"]}
-                        className={styles.step}
-                    >
-                        {(step.title.length > 0) ? <p className={styles.stepTitle}>{step.title}</p> : null}
-                        <div>{step.children}</div>
-                    </Selectable>
+                    <>
+                        <Selectable
+                            key={i}
+                            index={i}
+                            selectOn={["hover", "scroll", "click"]}
+                            className={styles.step}
+                        >
+                            {(step.title.length > 0) ? <p className={styles.stepTitle}>{step.title}</p> : null}
+                            <div>{step.children}</div>
+                        </Selectable>
+                        {/*<div className={styles.stepMobile}>*/}
+                        <Selectable
+                            key={i}
+                            index={i}
+                            selectOn={["click"]}
+                            className={styles.stepMobile}
+                        >
+                            {(step.title.length > 0) ? <p className={styles.stepTitle}>{step.title}</p> : null}
+                            <div>{step.children}</div>
+                        </Selectable>
+                        {/*    {(step.title.length > 0) ? <p className={styles.stepTitle}>{step.title}</p> : null}*/}
+                        {/*    <div>{step.children}</div>*/}
+                        {/*</div>*/}
+                    </>
+
                 ))}
             </div>
             <Selection
