@@ -67,23 +67,6 @@ const Guides: Guide[] = [
     source: null,
     tags: ['eventprocessing'],
   },
-  {
-    title: "Graceful cancellations",
-    description: "With graceful cancellations, you can stop service invocations and workflows while keeping the overall application state consistent.",
-    preview: require('./guides/cancellation-signal-propagation.png'),
-    website: 'https://restate.dev/blog/graceful-cancellations-how-to-keep-your-application-and-workflow-state-consistent/',
-    source: 'https://github.com/restatedev/examples/blob/main/typescript/patterns/src/compensations.ts',
-    tags: ['deploy', 'workflows', 'microservices'],
-  },
-  {
-    title: 'Restate + Kubernetes',
-    description:
-        'Find out how to deploy Restate applications on Kubernetes',
-    preview: require('./guides/kubernetes.png'),
-    website: '/guides/kubernetes',
-    source: 'https://github.com/algolia/docsearch/tree/main/packages/website',
-    tags: ['deploy'],
-  }
 
   // Add new guides in alphabetical order!
 ];

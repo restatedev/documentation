@@ -1,148 +1,77 @@
 ---
 title: "Sagas"
-description: "With graceful cancellations, it is now possible to stop service invocations and workflows while keeping the overall application state consistent."
+description: "Sagas let you run compensations when your code crashes halfway through."
 ---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import {Code} from "../../src/components/code/code";
 
 # Sagas
 
-Restate allows you to build modern distributed applications that are resilient against all kinds of infrastructure faults.
-The basic building block to express your application is stateful services that can interact with each other and the outside world.
-Restate guarantees that invocations run to completion and that the state stays consistent even in the presence of infrastructure faults.
-It achieves this by capturing state changes, code execution progress, and effects in a single, durable log, and by reliably delivering requests to their destination.
 
-<p align="center">
-    <picture>
-        <source media="(prefers-color-scheme: light)" srcset="/poster_intro_2.svg"/>
-            <img alt="Restate overview" src="/poster_intro_2.svg" width="600"/>
-    </picture>
-</p>
+When building distributed systems, it is crucial to ensure that the system remains consistent even in the presence of failures.
+One way to achieve this is by using the [Saga pattern](https://learn.microsoft.com/en-us/azure/architecture/reference-architectures/saga/saga).
 
-Because every invocation holds a lock on its state and will eventually complete, the overall application state will transition from one valid state into the next.
-But what happens if you want to stop a service invocation because it is taking too long to complete or is no longer of interest?
-Ideally, you could interrupt it and undo all the changes the service invocation has made so far.
-With Restate’s new [graceful cancellation](https://docs.restate.dev/operate/invocation#cancelling-invocations) feature this is now possible.
+Sagas are a way to manage transactions that span multiple services.
+They allow you to run compensations when your code crashes halfway through.
+This way, you can ensure that your system remains consistent even in the presence of failures.
 
-To make this a bit more concrete, let’s assume we want to build a travel booking application.
+## When to use Sagas
+
+Restate runs invocations till completion, with infinite retries and recovery of partial progress.
+In that sense, you do not require to run compensations in between retries. Restate will start the retry attempt from the point where the invocation failed.
+
+However, there can still be cases in your business logic where you want to stop a handler from executing any further and run compensations for the work done so far.
+For example, when you throw a terminal error, you might want to undo previous steps.
+
+You will also need sagas to end up in a consistent state when you [cancel an invocation](operate/invocation#cancelling-invocations).
+For example, if an invocation gets stuck because an external system is not responding, you might want to stop executing the invocation while keeping the overall system state consistent.
+
+## Implementing Sagas in Restate
+
+Let’s assume we want to build a travel booking application.
 The core of our application is the `Travel` service that first tries to book the flight, then rents a car, and finally processes the customer’s payment before confirming the flight and car rental.
-
-```typescript
-const reserveTrip = async (ctx: restate.RpcContext, tripID: string) => {
-// set up RPC clients
-const flights = ctx.rpc(flightsService);
-const carRentals = ctx.rpc(carRentalService);
-const payments = ctx.rpc(paymentsService);
-
-const flightBooking = await flights.reserve(tripID);
-const carBooking = await carRentals.reserve(tripID);
-const payment = await payments.process(tripID);
-
-// confirm the flight and car
-await flights.confirm(tripID, flightBooking);
-await ctx.rpc(carRentalService).confirm(tripID, carBooking);
-}
-```
-
-If this reminds you of a workflow, then you are not mistaken.
-In Restate, every service can act as a coordinator for other services.
-Depending on the business logic, an invocation can last from a few milliseconds up to many months if not years.
-That’s the power of Restate!
 
 Now let us assume that we want to offer our customers a way to cancel their booking.
 If a user cancels her booking while the `Travel` service is still trying to rent a car, then, ideally, we would be able to cancel the invocation exactly at this point so that we don’t start processing the payment.
 Moreover, we need to cancel the already booked flight.
 Otherwise, the airline might charge us for the plane ticket and we remain stuck with the costs.
 
-Graceful cancellations were introduced in [Restate 0.7](https://restate.dev/blog/release-announcement-restate-0.7-is-here/), and allow you to stop an ongoing invocation.
-Restate cancels an invocation by recursively canceling all children of the invocation (direct calls, sleeps, and awakeables).
-Once the child invocations have been canceled, they respond with a `TerminalError`.
+**Restate lets you implement this by wrapping the steps in a try-catch, and running compensations in the catch block.
+In the try block, you track the compensations by adding them to a list.
+In the catch block, you run the compensations in reverse order, and rethrow the terminal error.**
 
-<p align="center">
-    <img src="cancellation-signal-propagation.png" alt="Cancellation happens recursively, starting with the leaves of the call tree." width="750px"/>
-</p>
+<Tabs groupId={"sdk"}>
+    <TabItem value="typescript" label="TypeScript">
 
-On receiving the `TerminalError` Restate allows running compensating actions for an invocation.
-The compensating actions can undo steps that have been completed before.
-The cool thing is that these compensations are executed with the same guarantees as the service code.
-So Restate ensures that the compensations will complete.
+        ```ts
+        // !collapse(1:30) collapsed
+        // !mark[/Expand imports and comments/]
+        // Expand imports and comments
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/patterns-use-cases/sagas/sagas-typescript/src/workflow_saga.ts
+        ```
+        <a className="btn btn-primary btn-lg githublink"
+           href="https://github.com/restatedev/examples/tree/main/patterns-use-cases/sagas/sagas-typescript"
+           target="_blank"
+           role="button"> To the sourcecode </a>
+
+    </TabItem>
+    <TabItem value="java" label="Java">
+        ```java
+        // !collapse(1:49) collapsed
+        // !mark[/Expand imports and comments/]
+        // Expand imports and comments
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/patterns-use-cases/sagas/sagas-java/src/main/java/dev/restate/patterns/BookingWorkflow.java
+        ```
+        <a className="btn btn-primary btn-lg githublink"
+           href="https://github.com/restatedev/examples/tree/main/patterns-use-cases/sagas/sagas-java"
+           target="_blank"
+           role="button"> To the sourcecode </a>
+    </TabItem>
+</Tabs>
+
+
+These compensations are executed with the same guarantees as the service code. So Restate ensures that the compensations will complete.
 As part of these compensations, it is for example possible to reset the state of the service, call other services to undo previously executed calls, or run `sideEffects` to delete previously inserted rows in a database.
 
-So how would our example code from above look like if we wanted to keep the application state consistent in the presence of graceful cancellations?
-
-```typescript
-const reserveTrip = async (ctx: restate.RpcContext, tripID: string) => {
-// set up RPC clients
-const flights = ctx.rpc(flightsService);
-const carRentals = ctx.rpc(carRentalService);
-const payments = ctx.rpc(paymentsService);
-
-// create an compensation stack
-const compensations = [];
-try {
-    // call the flights Lambda to reserve, keeping track of how to cancel
-    const flightBooking = await flights.reserve(tripID);
-    compensations.push(() => flights.cancel(tripID, flightBooking));
-
-    // RPC the rental service to reserve, keeping track of how to cancel
-    const carBooking = await carRentals.reserve(tripID);
-    compensations.push(() => carRentals.cancel(tripID, carBooking));
-
-    // RPC the payments service to process, keeping track of how to refund
-    const payment = await payments.process(tripID);
-    compensations.push(() => payments.refund(tripID, payment));
-
-    // confirm the flight and car
-    await flights.confirm(tripID, flightBooking);
-    await carRentals.confirm(tripID, carBooking);
-} catch (e) {
-    // undo all the steps up to this point by running the compensations
-    for (const compensation of compensations.reverse()) {
-        await compensation();
-    }
-
-    // exit with an error
-    throw new restate.TerminalError(`Travel reservation failed with err '${e}'`);
-}
-}
-```
-*You can find the full example code in our [examples repository](https://github.com/restatedev/examples/blob/main/patterns-use-cases/sagas/sagas-typescript/src/workflow_saga.ts). It is also available in [Java](https://github.com/restatedev/examples/blob/main/patterns-use-cases/sagas/sagas-java/src/main/java/dev/restate/patterns/Compensations.java)!*
-
-After every successful step, we register a compensation which will undo the effect in case of a failure (see the catch block).
-Because these compensations are guaranteed to complete, we can be sure that the overall system will return to a consistent state in the event of errors.
-Also, note that the code only contains pure business logic and no handling of infrastructure failures because Restate will take care of that for you.
-
-An interesting observation is that the code snippet above can handle any `TerminalErrors` from called services (e.g. also those used for control flow logic).
-The cancellation mechanism was designed to blend in naturally with the general error propagation mechanism.
-So cancellations and `TerminalErrors` follow the same compensation steps to keep the application state consistent.
-
-Restate will always try to run invocations to completion, but in some cases, this is just not possible.
-For example, if the service deployment with your service code is no longer present, then Restate will be unable to complete an invocation and run its compensations.
-Similarly, if you deploy new code that is incompatible with the journal of in-flight invocations, then Restate will not be able to make progress anymore. Instead Restate will keep retrying those invocations infinitely until the problem gets fixed or the user manually intervenes.
-For these situations, Restate allows to kill an invocation which immediately stops it without running its compensations.
-The callers of this invocation will still receive a `TerminalError` which they can handle appropriately (e.g. running their compensations).
-
-You can use our new [CLI](https://docs.restate.dev/operate/cli) to cancel or kill an invocation as follows:
-
-```bash
-# graceful cancellation
-restate inv cancel [INVOCATION_ID]
-```
-
-```bash
-# hard kill
-restate inv cancel --kill [INVOCATION_ID]
-```
-
-If this sounds too good to be true, then give Restate a spin and try it yourself.
-You can get the binaries via our [download page](https://restate.dev/get-restate/) and with our [quickstart](https://docs.restate.dev/get_started/quickstart) you are up and running in only a few minutes.
-
----
-
-Join the community and help shape Restate!
-
-<a role="button" class="btn-restate bg-secondary-restate py-2 px-4" href="https://discord.gg/skW3AZ6uGd" target="_blank">
-    Join Restate's Discord Server
-</a>
-
-<a role="button" class="btn-restate bg-secondary-restate py-2 px-4" href="https://join.slack.com/t/restatecommunity/shared_invite/zt-2v9gl005c-WBpr167o5XJZI1l7HWKImA" target="_blank">
-    Join Restate's Slack Community
-</a>
