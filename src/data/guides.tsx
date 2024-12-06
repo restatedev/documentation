@@ -76,6 +76,15 @@ const Guides: Guide[] = [
     source: 'https://github.com/restatedev/xstate/tree/main',
     tags: ['develop', 'typescript', 'microservices'],
   },
+  {
+    title: "Retries, Suspensions, and Timeouts",
+    description:
+        'Learn how retries, suspensions, and timeouts work in Restate, and how to configure them.',
+    preview: require('./guides/durable-execution.png'),
+    website: '/guides/retries-suspensions-timeouts',
+    source: null,
+    tags: ['operate'],
+  },
 
   // Add new guides in alphabetical order!
 ];

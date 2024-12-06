@@ -117,7 +117,7 @@ export function HighCode({
                         <span className={styles.codeFileNameTitle}>{title}</span>
                     </div>
                     {(!noCopyButton) ? <CopyButton text={h.code} className="ch-code-button"/>: null}
-                    {(!noCopyButton) ? <GithubButton githubUrl={githubLink} className="ch-code-button"/>: null}
+                    {/*{(!noCopyButton) ? <GithubButton githubUrl={githubLink} className="ch-code-button"/>: null}*/}
                     {pre}
                 </div>
             </div>
