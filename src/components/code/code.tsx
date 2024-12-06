@@ -28,6 +28,7 @@ import {Block, HighlightedCodeBlock, parseProps} from "codehike/blocks";
 import {z} from "zod"
 import styles from "./code-styling.module.css"
 import clsx from "clsx";
+import {GithubButton} from "./github-button";
 
 export function InlineCode({ codeblock }: { codeblock: HighlightedCode }) {
   return (
@@ -56,6 +57,7 @@ export function HighCode({
                            isTab,
                            noBorder,
                            noCopyButton,
+                           githubLink,
                            className,
                            style,
                            extraHandlers = [],
@@ -64,6 +66,7 @@ export function HighCode({
   isTab?: boolean
   noBorder?: boolean
   noCopyButton?: boolean
+  githubLink?: string
   className?: string
   style?: React.CSSProperties
   extraHandlers?: AnnotationHandler[]
@@ -114,6 +117,7 @@ export function HighCode({
                         <span className={styles.codeFileNameTitle}>{title}</span>
                     </div>
                     {(!noCopyButton) ? <CopyButton text={h.code} className="ch-code-button"/>: null}
+                    {/*{(!noCopyButton) ? <GithubButton githubUrl={githubLink} className="ch-code-button"/>: null}*/}
                     {pre}
                 </div>
             </div>

@@ -86,6 +86,18 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
         },
+        blog: false,
+        pages: {
+          path: 'src/pages',
+          routeBasePath: '',
+          include: ['**/*.{js,jsx,ts,tsx,md,mdx}'],
+          exclude: [
+            '**/_*.{js,jsx,ts,tsx,md,mdx}',
+            '**/_*/**',
+            '**/*.test.{js,jsx,ts,tsx}',
+            '**/__tests__/**',
+          ],
+        },
         theme: {
           customCss: [
             require.resolve("./src/css/custom.css"),
@@ -96,6 +108,15 @@ const config = {
       }),
     ],
     redocusaurus,
+    [
+      '@docusaurus/plugin-ideal-image',
+      {
+        quality: 70,
+        max: 1030,
+        min: 640,
+        steps: 2,
+      },
+    ]
   ],
 
   themeConfig:
@@ -111,6 +132,17 @@ const config = {
           target: "_self",
         },
         items: [
+          // {
+          //   to: '/',
+          //   label: 'Build',
+          //   position: 'left',
+          //   activeBaseRegex: '^/$',
+          // },
+          // {
+          //   to: 'learn',
+          //   label: 'Learn',
+          //   position: 'left'
+          // },
           {
             type: "search", // This is the Algolia search bar
             position: "right",
