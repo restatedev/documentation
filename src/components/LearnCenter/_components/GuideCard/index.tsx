@@ -11,7 +11,6 @@ import {
 } from '@site/src/data/guides';
 import {sortBy} from '@site/src/utils/jsUtils';
 import Heading from '@theme/Heading';
-import Tooltip from '../GuideTooltip';
 import styles from './styles.module.css';
 import IdealImage from "@docusaurus/plugin-ideal-image/lib/theme/IdealImage";
 
@@ -35,16 +34,8 @@ function GuideCardTag({tags}: {tags: TagType[]}) {
   return (
     <>
       {tagObjectsSorted.map((tagObject, index) => {
-        const id = `guide_card_tag_${tagObject.tag}`;
-
         return (
-          <Tooltip
-            key={index}
-            text={tagObject.description}
-            anchorEl="#__docusaurus"
-            id={id}>
             <TagComp key={index} {...tagObject} />
-          </Tooltip>
         );
       })}
     </>

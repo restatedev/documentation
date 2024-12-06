@@ -5,7 +5,6 @@ import Translate, {translate} from '@docusaurus/Translate';
 import {useHistory, useLocation} from '@docusaurus/router';
 import {usePluralForm} from '@docusaurus/theme-common';
 
-import Layout from '@theme/Layout';
 import {
     sortedGuides,
     Tags,
@@ -22,7 +21,6 @@ import GuideFilterToggle, {
     readOperator,
 } from './_components/GuideFilterToggle';
 import GuideCard from './_components/GuideCard';
-import GuideToolTip from './_components/GuideTooltip';
 
 import styles from './styles.module.css';
 
@@ -157,29 +155,24 @@ function GuideFilters() {
 
                     return (
                         <li key={i} className={styles.checkboxListItem}>
-                            <GuideToolTip
+                            <GuideTagSelect
+                                tag={tag}
                                 id={id}
-                                text={description}
-                                anchorEl="#__docusaurus">
-                                <GuideTagSelect
-                                    tag={tag}
-                                    id={id}
-                                    label={label}
-                                    icon={
-                                        tag === 'favorite' ? (<a style={{marginLeft: 8,}}> 🚀</a>) : (
-                                            <span
-                                                style={{
-                                                    backgroundColor: color,
-                                                    width: 10,
-                                                    height: 10,
-                                                    borderRadius: '50%',
-                                                    marginLeft: 8,
-                                                }}
-                                            />
-                                        )
-                                    }
-                                />
-                            </GuideToolTip>
+                                label={label}
+                                icon={
+                                    tag === 'favorite' ? (<a style={{marginLeft: 8,}}> 🚀</a>) : (
+                                        <span
+                                            style={{
+                                                backgroundColor: color,
+                                                width: 10,
+                                                height: 10,
+                                                borderRadius: '50%',
+                                                marginLeft: 8,
+                                            }}
+                                        />
+                                    )
+                                }
+                            />
                         </li>
                     );
                 })}
