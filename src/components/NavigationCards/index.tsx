@@ -34,7 +34,6 @@ function NavigationCard({title, category, stepLabel, description, link}: Feature
 }
 
 export default function NavigationCards({ features }): JSX.Element {
-
     const colSize = 12 / features.length;
     return (
         <section>

@@ -7,6 +7,7 @@ type FeatureItem = {
   iconPath: string;
   description: JSX.Element;
   htmlContent?: JSX.Element;
+  singleLink?: string;
   links?: [{ icon: string; url: string }];
 };
 
@@ -14,9 +15,10 @@ function Feature({
   title,
   description,
   links,
+  singleLink,
   htmlContent,
 }: FeatureItem) {
-  return (
+  const cardContent = (
     <div>
       <h6 className={styles.title}>{title}</h6>
       {description ? <p className={styles.description}>{description}</p> : null}
@@ -46,6 +48,20 @@ function Feature({
       </div>
     </div>
   );
+
+    return (
+        singleLink ? (
+            <span onClick={() => window.location.href = singleLink} style={{cursor: "pointer", textDecoration: "none"}}>
+                {cardContent}
+            </span>
+        ) : (
+            <>
+                {cardContent}
+            </>
+        )
+    );
+
+
 }
 
 export default function ExampleWidget({ itemsPerRow, boxStyling, features }): JSX.Element {
