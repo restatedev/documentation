@@ -1,7 +1,7 @@
 ---
 label: "cloudflare-workers"
 sidebar_position: 2
-description: "Learn how to run Restate TypeScript services on Cloudflare Workers."
+description: "TypeScript services on Cloudflare Workers."
 ---
 
 # Cloudflare Workers

@@ -1,6 +1,6 @@
 ---
 sidebar_position: 2
-description: "Find out how to configure logging for Restate."
+description: "Configure logging for Restate Server."
 ---
 
 # Logging

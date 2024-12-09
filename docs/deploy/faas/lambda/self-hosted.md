@@ -1,6 +1,6 @@
 ---
 sidebar_position: 1
-description: "Deploy Restate on Kubernetes or to AWS with this guide."
+description: "Deploy Restate Server on EC2."
 ---
 
 # Restate on AWS EC2 with CDK
