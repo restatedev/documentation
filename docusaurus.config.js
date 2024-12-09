@@ -190,18 +190,22 @@ const config = {
             title: "Restate",
             items: [
               {
+                label: "GitHub",
+                href: "https://github.com/restatedev",
+              },
+              {
                 href: "https://restate.dev",
-                label: "Home",
+                label: "Restate.dev",
+              },
+              {
+                href: "https://restate.dev/cloud",
+                label: "Restate Cloud",
               },
             ],
           },
           {
             title: "Community",
             items: [
-              {
-                label: "Twitter",
-                href: "https://twitter.com/restatedev",
-              },
               {
                 label: "Discord",
                 href: "https://discord.gg/skW3AZ6uGd",
@@ -210,14 +214,26 @@ const config = {
                 label: "Slack",
                 href: "https://join.slack.com/t/restatecommunity/shared_invite/zt-2v9gl005c-WBpr167o5XJZI1l7HWKImA",
               },
+              {
+                label: "Community Events",
+                href: "https://lu.ma/restatedev",
+              },
             ],
           },
           {
-            title: "More",
+            title: "Social",
             items: [
               {
-                label: "GitHub",
-                href: "https://github.com/restatedev",
+                label: "Twitter",
+                href: "https://twitter.com/restatedev",
+              },
+              {
+                label: "LinkedIn",
+                href: "https://www.linkedin.com/company/restatedev",
+              },
+              {
+                label: "Bluesky",
+                href: "https://bsky.app/profile/restatedev.bsky.social",
               },
             ],
           },
