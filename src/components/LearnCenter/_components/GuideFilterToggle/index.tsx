@@ -68,7 +68,7 @@ export default function GuideFilterToggle(): JSX.Element {
       </label>
 
       <button
-        className="button button--outline button--primary"
+        className="button button--outline button--secondary"
         type="button"
         onClick={() => ClearTag()}>
         Clear All

@@ -140,7 +140,7 @@ function GuideFilters() {
         <section className="container margin-top--l margin-bottom--lg">
             <div className={clsx('margin-bottom--sm', styles.filterCheckbox)}>
                 <div>
-                    <Heading as="h2">
+                    <Heading as="h4">
                         <Translate id="guide.filters.title">Filters</Translate>
                     </Heading>
                     <span>{siteCountPlural(filteredGuides.length)}</span>
@@ -242,7 +242,7 @@ function GuideCards() {
             <section className="margin-top--lg margin-bottom--xl">
                 <div className="container padding-vert--md text--center">
                     <Heading as="h2">
-                        <Translate id="guide.usersList.noResult">No result</Translate>
+                        <Translate id="guide.usersList.noResult">No results</Translate>
                     </Heading>
                 </div>
             </section>
@@ -253,31 +253,31 @@ function GuideCards() {
         <section className="margin-top--lg margin-bottom--xl">
             {filteredGuides.length === sortedGuides.length ? (
                 <>
-                    {/*<div className={styles.guideFavorite}>*/}
-                    {/*    <div className="container">*/}
-                    {/*        <div*/}
-                    {/*            className={clsx(*/}
-                    {/*                'margin-bottom--md',*/}
-                    {/*                styles.guideFavoriteHeader,*/}
-                    {/*            )}>*/}
-                    {/*            <Heading as="h2">*/}
-                    {/*                <Translate id="guide.favoritesList.title">*/}
-                    {/*                    🚀 First time here?*/}
-                    {/*                </Translate>*/}
-                    {/*            </Heading>*/}
-                    {/*        </div>*/}
-                    {/*        <ul*/}
-                    {/*            className={clsx(*/}
-                    {/*                'container',*/}
-                    {/*                'clean-list',*/}
-                    {/*                styles.guideList,*/}
-                    {/*            )}>*/}
-                    {/*            {favoriteGuides.map((guide) => (*/}
-                    {/*                <GuideCard key={guide.title} guide={guide}/>*/}
-                    {/*            ))}*/}
-                    {/*        </ul>*/}
-                    {/*    </div>*/}
-                    {/*</div>*/}
+{/*                    <div className={styles.guideFavorite}>
+                        <div className="container">
+                            <div
+                                className={clsx(
+                                    'margin-bottom--md',
+                                    styles.guideFavoriteHeader,
+                                )}>
+                                <Heading as="h2">
+                                    <Translate id="guide.favoritesList.title">
+                                        🚀 First time here?
+                                    </Translate>
+                                </Heading>
+                            </div>
+                            <ul
+                                className={clsx(
+                                    'container',
+                                    'clean-list',
+                                    styles.guideList,
+                                )}>
+                                {favoriteGuides.map((guide) => (
+                                    <GuideCard key={guide.title} guide={guide}/>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>*/}
                     <div className="container margin-top--lg">
                         {/*<details>*/}
                         {/*  <summary className={styles.pathHeader}>Path 1: Workflows</summary>*/}
