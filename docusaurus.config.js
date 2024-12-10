@@ -235,6 +235,10 @@ const config = {
                 label: "Bluesky",
                 href: "https://bsky.app/profile/restatedev.bsky.social",
               },
+              {
+                label: "YouTube",
+                href: "https://www.youtube.com/@restatedev",
+              },
             ],
           },
         ],
