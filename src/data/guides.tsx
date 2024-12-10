@@ -28,7 +28,7 @@ const Guides: Guide[] = [
     preview: require('./guides/cancellation-signal-propagation.png'),
     website: '/guides/sagas',
     source: null,
-    tags: ['patterns'],
+    tags: ['favorite', 'patterns'],
   },
   {
     title: 'TypeScript services on AWS Lambda',

@@ -193,9 +193,6 @@ function GuideFilters() {
 // const eventProcessingGuides = sortedGuides.filter((guide) =>
 //     guide.tags.includes('eventprocessing'),
 // );
-const otherGuides = sortedGuides.filter(
-  (guide) => !guide.tags.includes('favorite')
-);
 
 function SearchBar() {
     const history = useHistory();
@@ -307,7 +304,7 @@ function GuideCards() {
                         {/*    <Translate id="guide.usersList.allUsers">All guides</Translate>*/}
                         {/*</Heading>*/}
                         <ul className={clsx('clean-list', styles.guideList)}>
-                            {otherGuides.map((guide) => (
+                            {sortedGuides.map((guide) => (
                                 <GuideCard key={guide.title} guide={guide}/>
                             ))}
                         </ul>
