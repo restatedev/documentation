@@ -209,7 +209,7 @@ function SearchBar() {
             <input
                 id="searchbar"
                 placeholder={translate({
-                    message: '🔍 Search for guide...',
+                    message: 'Search for guide...',
                     id: 'guide.searchBar.placeholder',
                 })}
                 value={value ?? undefined}

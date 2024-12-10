@@ -21,7 +21,7 @@ function Feature({
 }: FeatureItem) {
   return (
     <div>
-      { mainImg ? <img src={mainImg} alt={title}/> : null }
+      { mainImg ? <img src={mainImg} alt={title} style={{maxHeight: "150px", display: "block", marginLeft: "auto", marginRight: "auto"}}/> : null }
       <h6 className={styles.title}>{title}</h6>
       {description ? <p className={styles.description}>{description}</p> : null}
       <div className={styles.langContainer}>
@@ -55,6 +55,8 @@ function Feature({
 export default function ExampleWidget({ itemsPerRow, boxStyling, features }): JSX.Element {
 
     const colSize = itemsPerRow ? Math.floor(12 / itemsPerRow) : 4;
+    // Make the columns dubble as big on medium screens
+    const mediumColSize = itemsPerRow ? Math.floor(12 * 2/ itemsPerRow) : 4;
     return (
       <section>
           <div className="container">
@@ -64,7 +66,7 @@ export default function ExampleWidget({ itemsPerRow, boxStyling, features }): JS
                               <Feature key={idx} {...props}/>
                           </div>
                       return (
-                          <div className={clsx(`col col--${colSize} margin-vert--md padding-md`)}>
+                          <div className={clsx(`col col--${colSize} col-lg-${colSize} col-md-${mediumColSize} margin-vert--md padding-md`)}>
                               { props.singleLink ?
                                   <span onClick={() => window.location.href = props.singleLink} style={{cursor: "pointer", textDecoration: "none"}}>
                                         {featureBox}
