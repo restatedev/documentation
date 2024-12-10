@@ -333,7 +333,7 @@ export default function LearnCenter(): JSX.Element {
     return (
         <section className={styles.features}>
             {/*<LearnCenterHeader/>*/}
-            {/*<GuideFilters/>*/}
+            <GuideFilters/>
             <GuideCards/>
         </section>
     );

@@ -9,17 +9,19 @@ type FeatureItem = {
   htmlContent?: JSX.Element;
   singleLink?: string;
   links?: [{ icon: string; url: string }];
+  mainImg: string;
 };
 
 function Feature({
   title,
   description,
   links,
-  singleLink,
   htmlContent,
+  mainImg,
 }: FeatureItem) {
-  const cardContent = (
+  return (
     <div>
+      { mainImg ? <img src={mainImg} alt={title}/> : null }
       <h6 className={styles.title}>{title}</h6>
       {description ? <p className={styles.description}>{description}</p> : null}
       <div className={styles.langContainer}>
@@ -48,20 +50,6 @@ function Feature({
       </div>
     </div>
   );
-
-    return (
-        singleLink ? (
-            <span onClick={() => window.location.href = singleLink} style={{cursor: "pointer", textDecoration: "none"}}>
-                {cardContent}
-            </span>
-        ) : (
-            <>
-                {cardContent}
-            </>
-        )
-    );
-
-
 }
 
 export default function ExampleWidget({ itemsPerRow, boxStyling, features }): JSX.Element {
@@ -71,16 +59,24 @@ export default function ExampleWidget({ itemsPerRow, boxStyling, features }): JS
       <section>
           <div className="container">
               <div className={"row"}>
-                  {features.map((props, idx) => (
-                      <div className={clsx(`col col--${colSize} margin-vert--md padding-md`)}>
-                          <div className={boxStyling}>
-                            <Feature key={idx} {...props}/>
+                  {features.map((props, idx) => {
+                      const featureBox = <div className={boxStyling}>
+                              <Feature key={idx} {...props}/>
                           </div>
-                      </div>
-                  ))}
+                      return (
+                          <div className={clsx(`col col--${colSize} margin-vert--md padding-md`)}>
+                              { props.singleLink ?
+                                  <span onClick={() => window.location.href = props.singleLink} style={{cursor: "pointer", textDecoration: "none"}}>
+                                        {featureBox}
+                                  </span>
+                                  : featureBox}
+                          </div>
+                      )
+                  })
+                  }
               </div>
           </div>
       </section>
 
-  );
+    );
 }
