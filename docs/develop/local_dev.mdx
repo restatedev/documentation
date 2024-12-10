@@ -1,5 +1,6 @@
 ---
 sidebar_position: 2
+slug: "/develop/local_dev"
 description: "Learn how to set up your local dev environment"
 ---
 
@@ -9,7 +10,7 @@ import Admonition from '@theme/Admonition';
 import {CodeWithTabs} from "../../src/components/code/code";
 import {TextAndCode} from "../../src/components/code/code/text-and-code";
 
-# Local Dev
+# Installation
 
 ## Running Restate Server & CLI locally
 Restate is a single self-contained binary. No external dependencies needed.
@@ -141,8 +142,10 @@ Restate is a single self-contained binary. No external dependencies needed.
 
 ## Useful dev CLI commands
 
+With the CLI installed, have a look at some useful commands to interact with the Restate Server:
+
 <TextAndCode>
-    Check if the CLI is installed correctly and can find the server:
+    Check to which server you are connected:
 
     ```shell !result
     restate whoami
@@ -150,7 +153,7 @@ Restate is a single self-contained binary. No external dependencies needed.
 </TextAndCode>
 <TextAndCode>
     Register a new service deployment.
-    When running Restate in a Docker, replace localhost with `host.docker.internal`.
+    When running Restate with Docker, use `http://host.docker.internal:9080`.
 
     ```shell !result
     restate deployments register localhost:9080
@@ -165,15 +168,6 @@ Restate is a single self-contained binary. No external dependencies needed.
     restate invocation cancel <INVOCATION_ID>
     # also works with <SERVICE>/<SERVICE_KEY>/<HANDLER> or a subset of it
     ```
-</TextAndCode>
-<TextAndCode>
-    Purge completed invocations from the state:
-
-    ```shell !result
-    restate invocation purge <INVOCATION_ID>
-    # also works with <SERVICE>/<SERVICE_KEY>/<HANDLER> or a subset of it
-    ```
-
 </TextAndCode>
 <TextAndCode>
     Clear the K/V state of a Virtual Object or Workflows.

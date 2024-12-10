@@ -52,7 +52,7 @@ function GuideCard({guide}: {guide: Guide}) {
     <li key={guide.title} className={clsx(styles.guideCard, "card shadow--md")}>
         <Link href={guide.website} className={styles.guideCardLink}>
           <div className={clsx('card__image', styles.guideCardImage)}>
-            <IdealImage img={image} alt={guide.title} />
+            <IdealImage img={image} alt={guide.title} className={styles.idealImage} />
           </div>
           <div className={clsx("card__body", styles.guideCardBody)}>
             <div className={clsx(styles.guideCardHeader)}>
