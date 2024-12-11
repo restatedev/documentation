@@ -1,7 +1,7 @@
 ---
 label: "deno-deploy"
 sidebar_position: 3
-description: "Learn how to run Restate TypeScript services on Deno Deploy."
+description: "TypeScript services on Deno Deploy."
 ---
 
 # Deno Deploy

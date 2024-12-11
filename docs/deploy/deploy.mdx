@@ -1,6 +1,8 @@
 ---
-sidebar_position: 1
+title: "Deploy"
+slug: /deploy/overview
 description: "Learn how to deploy Restate services."
+sidebar_class_name: display-none
 ---
 
 import Admonition from '@theme/Admonition';
@@ -15,7 +17,7 @@ This page describes how to deploy Restate and Restate services.
 
 ## Restate Server
 
-The Restate Server is a single binary that contains everything you need to host an environment. See the [Get Restate](https://restate.dev/get-restate/) page for various ways of obtaining it.
+The Restate Server is a single binary that contains everything you need to host an environment. See the [Installation page](/develop/local_dev) for various ways of obtaining it.
 
 There are a few options for hosting the Restate Server:
 - [Self-host on AWS](/deploy/faas/lambda/self-hosted)
@@ -29,7 +31,7 @@ The server requires outbound connectivity to the services you deploy in order to
 
 ### Exposed Ports
 
-The server process exposes four services by default, available on different ports:
+The server process exposes a set of services by default, available on different ports:
 
 | Name           | Port | Description                                                                                                                    | Protocol                                      |
 | -------------- | ---- | ------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------- |
@@ -42,7 +44,7 @@ The server process exposes four services by default, available on different port
 ## Restate services
 
 Restate services are deployed as _Service deployments_.
-A service deployment can be a Lambda function, a Kubernetes pod, a Knative Service, or any other process reachable at a specific URL.
+A service deployment can be a Kubernetes pod, a Lambda function, a Knative Service, or any other process reachable at a specific URL.
 The URL (including path prefix) MUST be **unique**, meaning that no two deployments with the same URL can be registered with Restate.
 
 Service deployments are considered **immutable** and to be reachable throughout the entire lifecycle of an invocation.
@@ -50,9 +52,9 @@ To deploy any change to a service, you should create a new deployment with a new
 See the [versioning documentation](/operate/versioning) for more details on how to update services.
 
 <Admonition type="info" title="Running services locally">
-Have a look at the [Quickstart](/get_started/quickstart) to set up your local development environment.
+    Have a look at the [Quickstart](/get_started/quickstart) to set up your local development environment.
 </Admonition>
 
 <Admonition type="info" title="Restate's service protocol">
-The Restate runtime interacts with service deployments via HTTP using Restate's [service protocol](https://github.com/restatedev/service-protocol).
+    The Restate runtime interacts with service deployments via HTTP using Restate's [service protocol](https://github.com/restatedev/service-protocol).
 </Admonition>

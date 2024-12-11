@@ -1,6 +1,6 @@
 ---
 sidebar_position: 2
-description: "Find out how to scrape Prometheus runtime metrics from Restate."
+description: "Scrape Restate Server Prometheus metrics."
 ---
 
 # Metrics
