@@ -600,7 +600,7 @@ The `AppMain.java` file contains the definition of the endpoint that hosts the s
         In `src/app` you will find the skeletons of the various services to help you start implementing the app.
         For example:
         ```rust checkout_service.rs
-        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/rust_tour_split/tutorials/tour-of-restate-rust/src/part1/checkout_service.rs#checkout
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-rust/src/part1/checkout_service.rs#checkout
         ```
 
         You implement your Rust Restate service by implementing a trait which contains the handlers.
@@ -849,7 +849,7 @@ Let's try this out!
         It does that by calling the `TicketObject/reserve` handler:
 
         ```rust cart_object.rs
-        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/rust_tour_split/tutorials/tour-of-restate-rust/src/part1/cart_object.rs#add_ticket
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-rust/src/part1/cart_object.rs#add_ticket
         ```
 
         1. **Create the client** via `ctx.service_client` or `ctx.object_client` (for Virtual Objects). Specify the service client definition (`TicketObjectClient`) and optionally the Virtual Object key (`ticket_id`).
@@ -1017,7 +1017,7 @@ The call to `expireTicket` finishes earlier than the `unreserve` handler because
         Let the `expireTicket` handler call the `TicketObject/unreserve` handler.
 
         ```rust cart_object.rs
-        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/rust_tour_split/tutorials/tour-of-restate-rust/src/part1/cart_object.rs#expire_ticket
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-rust/src/part1/cart_object.rs#expire_ticket
         ```
 
         Specify that you want to call the `TicketObject` by supplying it to the `objectSendClient` function.
@@ -1222,7 +1222,7 @@ You will fix this later on. Note that the `CheckoutService` is not a Virtual Obj
             Add the following code to the `CartObject/checkout` handler:
 
             ```rust cart_object.rs
-            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/rust_tour_split/tutorials/tour-of-restate-rust/src/part1/cart_object.rs#checkout
+            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-rust/src/part1/cart_object.rs#checkout
             ```
 
             This uses the `Json` wrapper type to enable serialization. Check the [serde docs](https://docs.rs/restate-sdk/latest/restate_sdk/serde/index.html) for more information.
@@ -1407,7 +1407,7 @@ The code would fast-forward to the point where it crashed, and continue executin
         To see the recovery of partial progress in practice, let's make the `CartObject/addTicket` handler crash right after the call.
 
         ```rust cart_object.rs
-        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/rust_tour_split/tutorials/tour-of-restate-rust/src/part1/cart_object.rs#add_ticket
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-rust/src/part1/cart_object.rs#add_ticket
         ```
 
         Add the following code instead of `Ok(true)`, to let the code throw an error after the call:
@@ -1772,7 +1772,7 @@ To test it out, put the delay to a lower value, for example 5 seconds, call the 
         Let the `CartObject/addTicket` handler call the `CartObject/expireTicket` handler with a delay of 15 minutes:
 
         ```rust cart_object.rs
-        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/rust_tour_split/tutorials/tour-of-restate-rust/src/part2/cart_object.rs#add_ticket
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-rust/src/part2/cart_object.rs#add_ticket
         ```
 
         To test it out, put the delay to a lower value, for example 5 seconds, call the `addTicket` function, and see in the logs how the call to `CartObject/expireTicket` is executed 5 seconds later.
@@ -2061,7 +2061,7 @@ After you added the ticket to the cart array, you set the state to the new value
         Have a look at the highlighted code:
 
         ```rust cart_object.rs
-        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/rust_tour_split/tutorials/tour-of-restate-rust/src/part3/cart_object.rs#add_ticket
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-rust/src/part3/cart_object.rs#add_ticket
         ```
 
         To retrieve the cart, you use `ctx.get`.
@@ -2192,7 +2192,7 @@ So when you operate on the state in your function, you get access to a local cop
         Also adapt the `CartObject/checkout` function, to use the tickets:
 
         ```rust cart_object.rs
-        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/rust_tour_split/tutorials/tour-of-restate-rust/src/part3/cart_object.rs#checkout
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-rust/src/part3/cart_object.rs#checkout
         ```
 
         After the tickets are checked out, you clear the state with `ctx.clear`.
@@ -2338,7 +2338,7 @@ curl localhost:8080/CartObject/Mary/expireTicket -H 'content-type: application/j
         <details>
             <summary>Solution</summary>
             ```rust cart_object.rs
-            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/rust_tour_split/tutorials/tour-of-restate-rust/src/part3/cart_object.rs#expire_ticket
+            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-rust/src/part3/cart_object.rs#expire_ticket
             ```
 
             Call the `expireTicket` handler with:
@@ -2555,7 +2555,7 @@ This ties the final parts together.
             <details>
                 <summary>Solution</summary>
                 ```rust ticket_object.rs
-                CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/rust_tour_split/tutorials/tour-of-restate-rust/src/part3/ticket_object.rs#reserve
+                CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-rust/src/part3/ticket_object.rs#reserve
                 ```
 
                 Now, you can't reserve the same ticket multiple times anymore.
@@ -2567,7 +2567,7 @@ This ties the final parts together.
             <details>
                 <summary>Solution</summary>
                 ```rs ticket_object.rs
-                CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/rust_tour_split/tutorials/tour-of-restate-rust/src/part3/ticket_object.rs#unreserve
+                CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-rust/src/part3/ticket_object.rs#unreserve
                 ```
 
                 Now, the ticket reservation status is cleared when the delayed `expireTicket` call triggers.
@@ -2582,7 +2582,7 @@ This ties the final parts together.
             <details>
                 <summary>Solution</summary>
                 ```rs ticket_object.rs
-                CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/rust_tour_split/tutorials/tour-of-restate-rust/src/part3/ticket_object.rs#mark_as_sold
+                CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-rust/src/part3/ticket_object.rs#mark_as_sold
                 ```
 
                 In the next section, you implement the `CheckoutService/handle` function that calls `markAsSold`.
@@ -3030,7 +3030,7 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/
             <details>
                 <summary>Solution</summary>
                 ```rust checkout_service.rs
-                CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/rust_tour_split/tutorials/tour-of-restate-rust/src/part4/checkout_service.rs#checkout
+                CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-rust/src/part4/checkout_service.rs#checkout
                 ```
             </details>
         </SubtleStep>
@@ -3041,7 +3041,7 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/
             <details>
                 <summary>Solution</summary>
                 ```rust cart_object.rs
-                CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/rust_tour_split/tutorials/tour-of-restate-rust/src/part4/cart_object.rs#checkout
+                CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/tutorials/tour-of-restate-rust/src/part4/cart_object.rs#checkout
                 ```
             </details>
 
