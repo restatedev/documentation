@@ -5,7 +5,7 @@ import dev.restate.sdk.client.Client;
 
 public class Idempotency {
 
-    public static String RESTATE_URL = "http://localhost:8080";
+  public static String RESTATE_URL = "http://localhost:8080";
 
   // <start_here>
   Client rs = Client.connect(RESTATE_URL);

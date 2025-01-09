@@ -2,10 +2,8 @@ package usecases.asynctasks.synctoasync;
 
 import dev.restate.sdk.client.Client;
 import develop.workflows.Email;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
 import usecases.asynctasks.synctoasync.DataPreparationServiceClient.IngressClient;
 
 public class MyClient {
@@ -21,9 +19,7 @@ public class MyClient {
 
     try {
       // <mark_3>
-      uploadClient.workflowHandle().attachAsync()
-          .orTimeout(30, TimeUnit.SECONDS)
-          .join();
+      uploadClient.workflowHandle().attachAsync().orTimeout(30, TimeUnit.SECONDS).join();
       // </mark_3>
       // <mark_4>
     } catch (Exception e) {
