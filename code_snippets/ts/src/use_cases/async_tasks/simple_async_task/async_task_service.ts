@@ -17,7 +17,7 @@ const asyncTaskService = restate.service({
 
 export type AsyncTaskService = typeof asyncTaskService;
 
-const endpoint = restate.endpoint().bind(asyncTaskService).listen(9080);
+restate.endpoint().bind(asyncTaskService).listen(9080);
 // <end_here>
 
 // ----------------------- Stubs to please the compiler -----------------------

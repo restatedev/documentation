@@ -9,7 +9,7 @@ description: "TypeScript services on Cloudflare Workers."
 You can run your Restate services as serverless functions on [Cloudflare Workers](https://workers.cloudflare.com/).
 
 You can easily get started using the
-[Workers+Restate template](https://github.com/restatedev/examples/tree/main/templates/cloudflare-worker):
+[Workers+Restate template](https://github.com/restatedev/examples/tree/main/typescript/templates/cloudflare-worker):
 ```shell CLI
 restate example typescript-cloudflare-worker-hello-world &&
 cd typescript-cloudflare-worker-hello-world

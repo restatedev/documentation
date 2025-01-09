@@ -11,7 +11,7 @@ RESTATE_URL = "http://localhost:8080"
 
 
 # <start_here>
-def download_data(user: User):
+def upload_data(user: User):
     headers = {"Content-Type": "application/json"}
     try:
         # <mark_1>
@@ -32,7 +32,3 @@ def download_data(user: User):
     # ... process result directly ...
     # </mark_4>
 # <end_here>
-
-
-async def read_line(prompt: str) -> str:
-    return await asyncio.get_event_loop().run_in_executor(None, input, prompt)

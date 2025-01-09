@@ -9,7 +9,7 @@ description: "TypeScript services on Deno Deploy."
 You can run your Restate services as serverless functions on [Deno Deploy](https://deno.com/deploy).
 
 You can easily get started using the
-[Deno+Restate template](https://github.com/restatedev/examples/tree/main/templates/deno):
+[Deno+Restate template](https://github.com/restatedev/examples/tree/main/typescript/templates/deno):
 ```shell CLI
 restate example typescript-deno-hello-world &&
 cd typescript-deno-hello-world
