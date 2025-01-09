@@ -52,7 +52,7 @@ The provided subscription is invalid. Subscriptions should have:
 * A `sink` field in the format of `service://<service_NAME>/<HANDLER_NAME>`. When registering, service and handler should be available already in the registry, meaning they have been previously registered.
 * Additional constraints may apply depending on the sink service type.
 
-Please look at the Kafka documentation (for [TypeScript](https://docs.restate.dev/develop/ts/kafka) and [Java](https://docs.restate.dev/develop/java/kafka)) for more details on subscriptions and event handlers.
+Please look at the [Kafka invocation docs](https://docs.restate.dev/invoke/kafka) for more details on subscriptions and event handlers.
 
 <h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="META0010">META0010<a href="#META0010" class="hash-link">&#8203;</a></h2>
 
@@ -129,7 +129,7 @@ Suggestions:
 
 Cannot start Restate because the configuration cannot be parsed. Check the configuration file and the environment variables provided.
 
-For a complete list of configuration options, and a sample configuration, check https://docs.restate.dev/operate/configuration
+For a complete list of configuration options, and a sample configuration, check https://docs.restate.dev/category/configuration
 
 <h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="RT0003">RT0003<a href="#RT0003" class="hash-link">&#8203;</a></h2>
 
