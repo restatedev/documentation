@@ -140,18 +140,10 @@ This way, you can use Restate to process events in a lightweight, flexible, tran
 
 <Step stepLabel="5" title={"Invoke the handler by publishing an event"}>
 
-    Exec into the Kafka broker container.
-
-    Get the container ID by running `docker ps` and then exec into the container:
+    Create a Kafka producer and publish an event to the `greetings` topic:
 
     ```shell
-    docker exec -ti f7381464eaef /bin/bash
-    ```
-
-    Publish an event to the `greetings` topic:
-
-    ```shell
-    kafka-console-producer --bootstrap-server localhost:9092 --topic greetings
+    docker exec -it broker kafka-console-producer --bootstrap-server broker:29092 --topic greetings
     ```
 
     Then type a message and press enter. The greeter takes a String name as an input:
@@ -221,6 +213,6 @@ This way, you can use Restate to process events in a lightweight, flexible, tran
 
 ## Related resources
 - [Event processing use cases](/use-cases/event-processing): Have a look at examples of how Restate gives you lightweight, transactional event processing.
-- Have a look at [the basic examples](https://github.com/restatedev/examples/tree/main/basics). There, you can find an example on Durable Execution and event processing and on stateful event processing.
+- Have a look at [the examples](https://github.com/restatedev/examples/tree/main/basics). There, you can find examples on Durable Execution and event processing.
 - [Reference docs for invoking over Kafka](/invoke/kafka)
 - [Blog post on Kafka integration](https://restate.dev/blog/restate--kafka-event-driven-apps-where-event-driven-is-an-implementation-detail/)

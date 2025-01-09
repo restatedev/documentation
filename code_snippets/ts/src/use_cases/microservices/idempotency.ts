@@ -9,13 +9,12 @@ process.env.RESTATE_URL = "localhost:8080";
 
 // <start_here>
 const rs = restate.connect({ url: process.env.RESTATE_URL });
-const productService: ProductService = { name: "product" };
 
 app.get("/reserve/:product/:reservationId", async (req, res) => {
   const { product, reservationId } = req.params;
 
   // !mark(1:5)
-  const products = rs.serviceClient(productService);
+  const products = rs.serviceClient<ProductService>({ name: "product" });
   const reservation = await products.reserve(
     product,
     Opts.from({ idempotencyKey: reservationId })
