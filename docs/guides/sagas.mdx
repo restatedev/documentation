@@ -1,11 +1,4 @@
----
-title: "Sagas"
-description: "Undo operations in case of failures, to keep your system consistent."
-pagination_next: null
-pagination_prev: null
----
-
-import Tabs from "@theme/Tabs";
+import {CodeWithTabs} from "../../src/components/code/code";import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
 # Sagas
@@ -33,56 +26,34 @@ Restate guarantees us that all code will execute. So if a terminal error is thro
 
 <Tabs groupId={"sdk"}>
     <TabItem value="typescript" label="TypeScript">
-
         ```ts https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/sagas/booking_workflow.ts
         // collapse_prequel
         CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/typescript/patterns-use-cases/src/sagas/booking_workflow.ts
         ```
-        <a className="btn btn-primary btn-lg githublink"
-           href="https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/sagas/booking_workflow.ts"
-           target="_blank"
-           role="button"> To the sourcecode </a>
-
     </TabItem>
     <TabItem value="java" label="Java">
-        ```java https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/sagas/booking_workflow.ts
+        ```java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/sagas/BookingWorkflow.java
         // collapse_prequel
         CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/java/patterns-use-cases/src/main/java/my/example/sagas/BookingWorkflow.java
         ```
-        <a className="btn btn-primary btn-lg githublink"
-           href="https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/sagas/BookingWorkflow.java"
-           target="_blank"
-           role="button"> To the sourcecode </a>
     </TabItem>
     <TabItem value="kotlin" label="Kotlin">
-        ```kotlin
+        ```kotlin https://github.com/restatedev/examples/blob/main/kotlin/patterns-use-cases/src/main/kotlin/my/example/sagas/BookingWorkflow.kt
         // collapse_prequel
         CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/kotlin/patterns-use-cases/src/main/kotlin/my/example/sagas/BookingWorkflow.kt
         ```
-        <a className="btn btn-primary btn-lg githublink"
-           href="https://github.com/restatedev/examples/blob/main/kotlin/patterns-use-cases/src/main/kotlin/my/example/sagas/BookingWorkflow.kt"
-           target="_blank"
-           role="button"> To the sourcecode </a>
     </TabItem>
     <TabItem value="python" label="Python">
-        ```python
+        ```python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/sagas/booking_workflow.py
         // collapse_prequel
         CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/python/patterns-use-cases/src/sagas/booking_workflow.py
         ```
-        <a className="btn btn-primary btn-lg githublink"
-           href="https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/sagas/booking_workflow.py"
-           target="_blank"
-           role="button"> To the sourcecode </a>
     </TabItem>
     <TabItem value="go" label="Go">
-        ```go
+        ```go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/sagas/bookingworkflow.go
         // collapse_prequel
         CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/go/patterns-use-cases/src/sagas/bookingworkflow.go
         ```
-        <a className="btn btn-primary btn-lg githublink"
-           href="https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/sagas/bookingworkflow.go"
-           target="_blank"
-           role="button"> To the sourcecode </a>
     </TabItem>
 </Tabs>
 
@@ -94,7 +65,7 @@ In that sense, you do not require to run compensations in between retries. Resta
 However, there can still be cases in your business logic where you want to stop a handler from executing any further and run compensations for the work done so far.
 For example, when you throw a terminal error, you might want to undo previous steps.
 
-You will also need sagas to end up in a consistent state when you [cancel an invocation](operate/invocation#cancelling-invocations).
+You will also need sagas to end up in a consistent state when you [cancel an invocation](operate/invocation#cancelling-invocations) (via the CLI or programmatically).
 For example, if an invocation gets stuck because an external system is not responding, you might want to stop executing the invocation while keeping the overall system state consistent.
 
 
