@@ -154,7 +154,6 @@ const plugin = (options) => {
             })
 
         if (doCollapsePrequel) {
-            console.log(`Collapsing prequel`)
             finalLines = collapsePrequel(finalLines, serviceSymbol, commentSymbol);
         }
 

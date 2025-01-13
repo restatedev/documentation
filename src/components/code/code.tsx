@@ -57,7 +57,6 @@ export function HighCode({
                            isTab,
                            noBorder,
                            noCopyButton,
-                           githubLink,
                            className,
                            style,
                            extraHandlers = [],
@@ -66,12 +65,11 @@ export function HighCode({
   isTab?: boolean
   noBorder?: boolean
   noCopyButton?: boolean
-  githubLink?: string
   className?: string
   style?: React.CSSProperties
   extraHandlers?: AnnotationHandler[]
 }) {
-  const { title, flags } = extractFlags(highlighted)
+  const { title, flags, githubLink } = extractFlags(highlighted)
   const h = { ...highlighted, meta: title }
 
   const handlers = [
@@ -116,8 +114,7 @@ export function HighCode({
                         <CodeIcon title={title}/>
                         <span className={styles.codeFileNameTitle}>{title}</span>
                     </div>
-                    {(!noCopyButton) ? <CopyButton text={h.code} className="ch-code-button"/>: null}
-                    {/*{(!noCopyButton) ? <GithubButton githubUrl={githubLink} className="ch-code-button"/>: null}*/}
+                    {(!noCopyButton) ? <CopyButton text={h.code} githubUrl={githubLink} className="ch-code-button"/>: null}
                     {pre}
                 </div>
             </div>
@@ -135,7 +132,7 @@ export function HighCode({
         >
             <div className={clsx("ch-codeblock", (isTab || noBorder) ? "no-border" : undefined)}>
                 <div className="ch-code-wrapper ch-code">
-                    {(!noCopyButton) ? <CopyButton text={h.code} className="ch-code-button" />: null}
+                    {(!noCopyButton) ? <CopyButton text={h.code} githubUrl={githubLink} className="ch-code-button" />: null}
                   {pre}
                 </div>
             </div>
@@ -145,13 +142,12 @@ export function HighCode({
 }
 
 export function extractFlags(codeblock: HighlightedCode) {
-  const flags =
-      codeblock.meta.split(" ").filter((flag) => flag.startsWith("-"))[0] ?? ""
-  const title =
-      codeblock.meta === flags
-          ? ""
-          : codeblock.meta.replace(" " + flags, "").trim()
-  return { title, flags: flags.slice(1).split("") }
+    const metaContents = codeblock.meta.split(" ")
+  const githubLink = metaContents.filter((flag) => flag.startsWith("https://github.com"))[0] ?? undefined
+    console.log(githubLink)
+  const flags = metaContents.filter((flag) => flag.startsWith("-"))[0] ?? ""
+  const title = (metaContents.filter((flag) => !flag.startsWith("https://github.com") && !flag.startsWith("-"))[0] ?? "").trim()
+  return { title, flags: flags.slice(1).split(""), githubLink: githubLink }
 }
 
 
