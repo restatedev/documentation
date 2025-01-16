@@ -4,18 +4,13 @@ description: "Persist results of operations."
 ---
 
 import Admonition from '@theme/Admonition';
-import clsx from "clsx";
 
 # Journaling Results
 
 Restate uses an execution log for replay after failures and suspensions.
-This means that non-deterministic results (e.g. database responses, UUID generation) need to be stored in the execution log.
-The SDK offers some functionalities to help you with this:
-1. **[Journaled actions](/develop/python/journaling-results#journaled-actions)**: Run any block of code and store the result in Restate. Restate replays the result instead of re-executing the block on retries.
+This means that non-deterministic results (e.g. database responses, UUID generation) need to be stored in the execution log, so they can be replayed.
 
-## Journaled actions
-You can store the result of a (non-deterministic) operation in the Restate execution log (e.g. database requests, HTTP calls, etc).
-Restate replays the result instead of re-executing the operation on retries.
+You can use `ctx.run` to do this.
 
 Here is an example of a database request for which the string response is stored in Restate:
 ```python
@@ -33,3 +28,21 @@ Always immediately await `ctx.run`, before doing any other context calls.
 If not, you might bump into non-determinism errors during replay,
 because the journaled result can get interleaved with the other context calls in the journal in a non-deterministic way.
 </Admonition>
+
+<Admonition type="note" title="Failure semantics">
+Failures in `ctx.run` have the same semantics as failures in the rest of your handler code.
+By default, the `ctx.run` function is retried infinitely on failure, unless you specify differently in the retry policy ([see below](/develop/python/journaling-results#run-block-retry-policies)) or throw a [`TerminalError`](/develop/python/error-handling).
+</Admonition>
+
+### Run-block Retry Policies
+
+You can configure the retry policy for the `ctx.run` block:
+
+```python
+CODE_LOAD::python/src/develop/retries.py?1
+```
+
+This way you can override the default retry behavior of your Restate service for specific operations.
+
+If you set a maximum number of attempts, then the `ctx.run` block will fail with a [`TerminalError`](/develop/python/error-handling) once the retries are exhausted.
+Have a look at the [error handling docs](/develop/python/error-handling) and [Sagas guide](/guides/sagas) to learn how to handle these.

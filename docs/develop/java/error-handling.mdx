@@ -5,6 +5,7 @@ description: "Stop infinite retries with Terminal Exceptions."
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import Admonition from "@theme/Admonition";
 
 # Error Handling
 
@@ -34,3 +35,8 @@ CODE_LOAD::kotlin/src/main/kotlin/develop/ErrorHandling.kt
 </Tabs>
 
 You can catch terminal exceptions. For example, you can catch the terminal exception that comes out of a [call to another service](/develop/java/service-communication#request-response-calls), and build your control flow around it.
+
+<Admonition type="note" title="Sagas with Restate">
+    When you throw a terminal error, you might need to undo the actions you did earlier in your handler to make sure that your system remains in a consistent state.
+    Have a look at our [Sagas guide](/guides/sagas) to learn more.
+</Admonition>
