@@ -163,7 +163,7 @@ export function CodeTabs(props: { groupId?: string, tabs: HighlightedCode[] }) {
 
         <Tabs className={clsx(styles.codetablist, "ch-codetablist")} {...(groupId ? { groupId, queryString: true } : {})}>
             {tabs.map((tab, i) => (
-                <TabItem className={clsx(styles.codetab)} label={tab.meta} value={tab.meta} >
+                <TabItem className={clsx(styles.codetab)} label={tab.meta} value={tab.meta.toLowerCase()} >
                     <HighCode isTab={true} highlighted={tab}/>
                 </TabItem>
                 ))}
