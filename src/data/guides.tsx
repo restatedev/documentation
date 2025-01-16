@@ -13,6 +13,7 @@ export type TagType =
   | 'patterns'
   | 'operations'
   | 'integrations'
+  | 'development'
   | 'deployment'
   | 'java'
   | 'typescript'
@@ -56,6 +57,15 @@ const Guides: Guide[] = [
     website: 'https://restate.dev/blog/persistent-serverless-state-machines-with-xstate-and-restate/',
     source: 'https://github.com/restatedev/xstate/tree/main',
     tags: ['integrations', 'typescript'],
+  },
+  {
+    title: "Error Handling",
+    description:
+        'Learn about handling infrastructure and application errors in Restate',
+    preview: require('./guides/retry-guide.jpg'),
+    website: '/guides/error-handling',
+    source: null,
+    tags: ['development', 'typescript'],
   },
 
   // Add new guides in alphabetical order!
@@ -158,14 +168,14 @@ export const Tags: {[type in TagType]: Tag} = {
     color: '#127f82',
   },
 
-  operations: {
-    label: translate({message: 'Operations'}),
+  development: {
+    label: translate({message: 'Development'}),
     description: translate({
       message:
-          'Learn how to configure, manage and operate Restate.',
-      id: 'showcase.tag.operations.description',
+        'Learn how to develop Restate applications.',
+      id: 'showcase.tag.development.description',
     }),
-    color: '#b74f6b',
+    color: '#852b08',
   },
 
   deployment: {
@@ -176,6 +186,16 @@ export const Tags: {[type in TagType]: Tag} = {
       id: 'showcase.tag.deployment.description',
     }),
     color: '#852b08',
+  },
+
+  operations: {
+    label: translate({message: 'Operations'}),
+    description: translate({
+      message:
+          'Learn how to configure, manage and operate Restate.',
+      id: 'showcase.tag.operations.description',
+    }),
+    color: '#b74f6b',
   },
 };
 

@@ -1,0 +1,141 @@
+---
+title: "Retries, Suspensions, and Timeouts"
+description: "Learn how retries, suspensions, and timeouts work in Restate, and how to configure them."
+pagination_next: null
+pagination_prev: null
+---
+
+import Admonition from "@theme/Admonition";
+
+# Error Handling
+
+## Infrastructure errors (transient) vs. application errors (terminal)
+
+## Handling transient errors via retries
+Levels at which retries happen (durable code block, service)
+
+Configuring retries with policies (interval, upper bounds)
+
+## Configuring retries with policies
+You can influence the retry behavior of your service invocations by configuring the retry policy.
+
+This can be set at different levels: at the Restate-level (global), at the service-level, and at the run-block-level.
+
+### At the Restate-level (Global)
+
+This is the default retry policy that will be used for all invocations, unless overridden at the service-, or run-block-level.
+
+You can set the global retry policy in the [Restate Server configuration](/operate/configuration/server).
+
+By default, Restate will use an **exponential backoff retry policy**:
+
+```toml restate.toml
+[worker.invoker.retry-policy]
+type = "exponential" # retry strategy; required
+initial-interval = "50ms" # time between the first and second retry; required
+factor = 2.0 # factor used to calculate the next retry interval; required
+max-interval = "10s" # max time between retries; default: unset (=interval keeps increasing)
+max-attempts = "10" # max number of attempts before terminal error; default: unset (=infinite)
+```
+
+You can tune this policy to your needs.
+
+Note that all durations should follow the [humantime format](https://docs.rs/humantime/latest/humantime/fn.parse_duration.html).
+
+You can also use a **fixed-delay retry policy**:
+```toml restate.toml
+[worker.invoker.retry-policy]
+type = "fixed-delay" # retry strategy; required
+interval = "50ms" # time between retries; required
+max-attempts = "10" # max number of attempts before terminal error; default: unset (=infinite)
+```
+
+If you set a maximum number of attempts, then the handler will throw a TerminalException once the retries are exhausted.
+
+Then run the Restate Server with:
+
+```shell
+restate-server --config-file restate.toml
+```
+
+Or set it [via environment variables](/operate/configuration/server#environment-variables), for example:
+```shell
+RESTATE_WORKER__INVOKER__RETRY_POLICY__TYPE=fixed-delay \
+RESTATE_WORKER__INVOKER__RETRY_POLICY__INTERVAL=100ms \
+restate-server
+```
+
+### At the Service-Level
+Coming soon!
+
+### At the Handler-level
+Handler-level retry policy configuration does not exist and is not planned.
+
+### At the Run-block-level
+
+Handlers use run blocks to execute actions involving other systems and services (API call, DB write, ...).
+These run blocks are especially prone to transient failures, and you might want to configure a specific retry policy for them.
+
+Most Restate SDKs allow you to configure the retry policy for a run-block.
+
+Note that these retries are coordinated and initiated by the Restate Server.
+So the handler goes through the regular retry cycle outlined above.
+
+If you set a maximum number of attempts, then the ctx.run block will fail with a TerminalException once the retries are exhausted.
+
+<Admonition type="tip" title="Sagas with Restate">
+    When you throw a terminal error, you need to undo the actions you did earlier in your handler to make sure that your system remains in a consistent state.
+    Have a look at our [Sagas guide](/guides/sagas) to learn more.
+</Admonition>
+
+## Application errors (terminal)
+throwing from handlers or code blocks
+catching, handling, re-throwing --> basically show it works exactly like in a normal program
+Terminal errors propagate across RPCs (compare to error bubble up / stack unwind)
+
+By default, Restate infinitely retries all errors. In some cases, you might not want to retry an error (e.g. because of business logic, because the issue is not transient, ...).
+
+The SDK lets you signal this by throwing/returning a terminal error.
+A terminal error is a Restate-specific error, that is not retried, and is considered to be a permanent failure of the invocation (check syntax at
+[<img class="inline-icon" src="https://skillicons.dev/icons?i=ts" width="24" height="24"/>](/develop/ts/error-handling)
+[<img class="inline-icon" src="https://skillicons.dev/icons?i=go" width="24" height="24"/>](/develop/go/error-handling)
+[<img class="inline-icon" src="https://skillicons.dev/icons?i=python&theme=light" width="24" height="24"/>](/develop/python/error-handling)
+[<img class="inline-icon" src="https://skillicons.dev/icons?i=java&theme=light" width="24" height="24"/>](/develop/java/error-handling)
+[<img class="inline-icon" src="https://skillicons.dev/icons?i=kotlin&theme=light" width="24" height="24"/>](/develop/java/error-handling)
+[<img class="inline-icon" src="https://skillicons.dev/icons?i=rust&theme=light" width="24" height="24"/>](https://docs.rs/restate-sdk/latest/restate_sdk/errors/index.html)
+). Terminal errors are also proxied back to the client.
+
+## Timeouts to bound response times
+
+### Inactivity timeout
+Default 1 minute
+
+This timer guards against stalled service/handler invocations. Once it expires, Restate triggers a graceful termination by asking the service invocation to suspend (which preserves intermediate progress).
+
+The 'abort timeout' is used to abort the invocation, in case it doesn't react to the request to suspend.
+
+Can be configured using the humantime format.
+
+### Abort timeout
+Default 1 minute
+
+This timer guards against stalled service/handler invocations that are supposed to terminate. The abort timeout is started after the 'inactivity timeout' has expired and the service/handler invocation has been asked to gracefully terminate. Once the timer expires, it will abort the service/handler invocation.
+
+This timer potentially interrupts user code. If the user code needs longer to gracefully terminate, then this value needs to be set accordingly.
+
+Can be configured using the humantime format.
+
+
+## Cancellations are Terminal Errors
+If you handle Terminal Errors, you automatically handle cancellation signals
+
+## Common patterns
+    - catch and apply compensation
+    - dead-letter-queue (catch-all wrapper)
+    - rpc-or-timeout
+
+
+
+
+
+
