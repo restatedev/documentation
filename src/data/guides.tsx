@@ -68,8 +68,8 @@ const Guides: Guide[] = [
   },
   {
     title: "Durable webhooks",
-    description: 'Execute a list of tasks in parallel and then gather their result.',
-    preview: require('./guides/parallelizework.png'),
+    description: 'Point webhook callbacks to a Restate handler for durable event processing.',
+    preview: require('./guides/durable-webhooks.png'),
     website: '/guides/durable-webhooks',
     source: null,
     tags: ['patterns', 'typescript', 'go'],
