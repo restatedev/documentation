@@ -16,7 +16,7 @@ Restate handlers can be used as **durable processors of webhook events**.
 
 What does this give you?
 
-- Restate persists all incoming events, and ensures that they are **processed exactly once**, across failures and restarts.
+- Restate persists all incoming events, and ensures that they are **processed exactly once**, across failures and restarts. Restate guarantees your handler runs till completion.
 - Let Restate **deduplicate** events on an [idempotency key](/invoke/http#invoke-a-handler-idempotently). If the sender of the event retries, Restate will not process the event again.
 - Use any of Restate's [**durable SDK constructs**](/concepts/durable_building_blocks) when processing the events: durable calls/messaging to other services, durable timers, scheduling tasks, K/V state, concurrency guarantees etc.
 - Any handler can be a durable webhook endpoint. **No need to do anything special or extra!**
