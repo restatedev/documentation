@@ -66,6 +66,14 @@ const Guides: Guide[] = [
     source: null,
     tags: ['patterns', 'typescript', 'java', 'go', 'python'],
   },
+  {
+    title: "Durable webhooks",
+    description: 'Execute a list of tasks in parallel and then gather their result.',
+    preview: require('./guides/parallelizework.png'),
+    website: '/guides/durable-webhooks',
+    source: null,
+    tags: ['patterns', 'typescript', 'go'],
+  },
 
   // Add new guides in alphabetical order!
 ];

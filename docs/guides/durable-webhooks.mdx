@@ -1,0 +1,34 @@
+---
+title: "Durable webhooks"
+description: "Point webhook callbacks to a Restate handler for durable event processing."
+pagination_next: null
+pagination_prev: null
+---
+
+import {CodeWithTabs} from "../../src/components/code/code";
+
+# Durable webhooks
+
+Restate handlers can be used as the endpoint for webhook callbacks.
+
+Your handler then acts as a durable event processor that ensures that each event is processed exactly once, and that none of them get lost.
+
+You don't need to do anything special!
+
+## Example
+This example processes webhook callbacks from a payment provider.
+
+The payment provider notifies us about payment success or failure of invoices by sending webhook events to our handler.
+The handler then routes the event to the correct processor via a one-way message.
+
+<CodeWithTabs groupId={"sdk"}>
+    ```ts !!tabs TypeScript tabValue-ts https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/webhookcallbacks/webhook_callback_router.ts
+    // collapse_prequel
+    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/typescript/patterns-use-cases/src/webhookcallbacks/webhook_callback_router.ts
+    ```
+
+    ```go !!tabs Go tabValue-go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/webhookcallbacks/callbackrouter.go
+    // collapse_prequel
+    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/go/patterns-use-cases/src/webhookcallbacks/callbackrouter.go
+    ```
+</CodeWithTabs>
