@@ -55,16 +55,16 @@ Restate will then resume the handler when all subtasks are done.
 
 <Step stepLabel="1" title="Download the example">
     <CodeWithTabs groupId={"sdk"} className={"display-none"}>
-        ```shell !!tabs tabValue-ts
+        ```shell !!tabs ts
         restate example typescript-patterns-use-cases && cd typescript-patterns-use-cases
         ```
-        ```shell !!tabs tabValue-java
+        ```shell !!tabs java
         restate example java-patterns-use-cases && cd java-patterns-use-cases
         ```
-        ```shell !!tabs tabValue-python
+        ```shell !!tabs python
         restate example python-patterns-use-cases && cd python-patterns-use-cases
         ```
-        ```shell !!tabs tabValue-go
+        ```shell !!tabs go
         restate example go-patterns-use-cases && cd go-patterns-use-cases
         ```
     </CodeWithTabs>
@@ -76,16 +76,16 @@ Restate will then resume the handler when all subtasks are done.
 </Step>
 <Step stepLabel="3" title="Start the Service">
     <CodeWithTabs groupId={"sdk"} className={"display-none"}>
-        ```shell !!tabs tabValue-ts
+        ```shell !!tabs ts
         npx tsx watch ./src/parallelizework/fan_out_worker.ts
         ```
-        ```shell !!tabs tabValue-java
+        ```shell !!tabs java
         ./gradlew -PmainClass=my.example.parallelizework.FanOutWorker run
         ```
-        ```shell !!tabs tabValue-python
+        ```shell !!tabs python
         python -m hypercorn --config hypercorn-config.toml src/parallelizework/fan_out_worker:app
         ```
-        ```shell !!tabs tabValue-go
+        ```shell !!tabs go
         go run ./src/parallelizework
         ```
     </CodeWithTabs>
@@ -97,19 +97,19 @@ Restate will then resume the handler when all subtasks are done.
 </Step>
 <Step stepLabel="5" title="Send a request">
     <CodeWithTabs groupId={"sdk"} className={"display-none"}>
-        ```shell !!tabs tabValue-ts
+        ```shell !!tabs ts
         curl localhost:8080/worker/run \
             --json '{"description": "get out of bed,shower,make coffee,have breakfast"}'
         ```
-        ```shell !!tabs tabValue-java
+        ```shell !!tabs java
         curl localhost:8080/FanOutWorker/run \
             --json '{"description": "get out of bed,shower,make coffee,have breakfast"}'
         ```
-        ```shell !!tabs tabValue-python
+        ```shell !!tabs python
         curl localhost:8080/FanOutWorker/run \
             --json '{"description": "get out of bed,shower,make coffee,have breakfast"}'
         ```
-        ```shell !!tabs tabValue-go
+        ```shell !!tabs go
         curl localhost:8080/FanOutWorker/Run \
             --json '{"description": "get out of bed,shower,make coffee,have breakfast"}'
         ```
@@ -120,7 +120,7 @@ Restate will then resume the handler when all subtasks are done.
 <Step stepLabel="4" title="Check the service logs">
     See how all tasks get spawned in parallel, finish at different times, and then get aggregated.
     <CodeWithTabs groupId={"sdk"} className={"display-none"}>
-        ```shell !!tabs tabValue-ts
+        ```shell !!tabs ts
         # !mark gold
         [restate] [worker/runSubtask][inv_17jBqoqRG0TN3msVqHEpZn2aQMOX5kSKrf][2025-01-17T08:51:44.993Z] INFO:  Started executing subtask: get out of bed
         # !mark green
@@ -139,7 +139,7 @@ Restate will then resume the handler when all subtasks are done.
         [restate] [worker/runSubtask][inv_1eKDShaxMCEB6DXasrR5OtRXJEvA2je33X][2025-01-17T08:51:49.001Z] INFO:  Execution subtask finished: have breakfast
         [restate] [worker/run][inv_18QHSeAYfvim1oNXRl9I5105veQcTW3BEl][2025-01-17T08:51:49.007Z] INFO:  Aggregated result: get out of bed: DONE,shower: DONE,make coffee: DONE,have breakfast: DONE
         ```
-        ```shell !!tabs tabValue-java
+        ```shell !!tabs java
         2025-01-17 10:00:58 INFO  [FanOutWorker/run][inv_1jNoSMJtWluo4Ir43OUyDAxD9weMAQ4OeR] dev.restate.sdk.core.InvocationStateMachine - Start invocation
         2025-01-17 10:00:58 INFO  [FanOutWorker/runSubtask][inv_1kdpBvVXdqyo3saU6KThul6Jgkfot6LcRP] dev.restate.sdk.core.InvocationStateMachine - Start invocation
         # !focus
@@ -176,7 +176,7 @@ Restate will then resume the handler when all subtasks are done.
         2025-01-17 10:01:05 INFO  [FanOutWorker/run][inv_1jNoSMJtWluo4Ir43OUyDAxD9weMAQ4OeR] my.example.parallelizework.utils.Utils - Aggregated result: get out of bed: DONE, shower: DONE, make coffee: DONE, have breakfast: DONE
         2025-01-17 10:01:05 INFO  [FanOutWorker/run][inv_1jNoSMJtWluo4Ir43OUyDAxD9weMAQ4OeR] dev.restate.sdk.core.InvocationStateMachine - End invocation
         ```
-        ```shell !!tabs tabValue-python
+        ```shell !!tabs python
         # !mark gold
         [2025-01-17 12:00:05,183] [12245] [INFO] - Started executing subtask: get out of bed
         # !mark green
@@ -195,7 +195,7 @@ Restate will then resume the handler when all subtasks are done.
         [2025-01-17 12:00:15,196] [12245] [INFO] - Execution subtask finished: have breakfast
         [2025-01-17 12:00:15,198] [12245] [INFO] - Aggregated result: get out of bed: DONE,shower: DONE,make coffee: DONE,have breakfast: DONE
         ```
-        ```shell !!tabs tabValue-go
+        ```shell !!tabs go
         2025/01/16 16:41:22 INFO Handling invocation method=FanOutWorker/Run invocationID=inv_1lkcVTBmCorR3fSPhE0pNTiO8XFXoV34C5
         2025/01/16 16:41:22 INFO Handling invocation method=FanOutWorker/RunSubtask invocationID=inv_1jpZWOrDK45b2ZwWCapl68GgXzNfoOh0BP
         # !focus

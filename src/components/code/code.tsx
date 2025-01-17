@@ -147,8 +147,7 @@ export function extractFlags(codeblock: HighlightedCode) {
 export function extractFlagsFromMeta(meta: string) {
     const metaContents = meta.split(" ")
     const githubLink = metaContents.filter((flag) => flag.startsWith("https://github.com"))[0] ?? undefined
-    const tabValue = metaContents.filter((flag) => flag.startsWith("tabValue-"))[0]?.replace("tabValue-", "") ?? ""
-    console.log(tabValue)
+    const tabValue = metaContents.filter((flag) => flag.startsWith("tabValue-"))[0]?.replace("tabValue-", "") ?? undefined
     const flags = metaContents.filter((flag) => flag.startsWith("-"))[0] ?? ""
     const title = (metaContents.filter((flag) => !flag.startsWith("https://github.com") && !flag.startsWith("-") && !flag.startsWith("tabValue-"))[0] ?? "").trim()
     return { title, flags: flags.slice(1).split(""), githubLink: githubLink, tabValue }
