@@ -10,11 +10,18 @@ import Admonition from "@theme/Admonition";
 
 # Durable webhooks
 
-Restate handlers can be used as the endpoint for webhook callbacks.
+Restate handlers can be used as **durable processors of webhook events**.
 
-Your handler then acts as a durable event processor that ensures that each event is processed exactly once, and that none of them get lost.
+<img src={"/img/guides/webhooks/durable-webhooks.png"} width={"400px"}/>
 
-You don't need to do anything special!
+What does this give you?
+
+- Restate persists all incoming events, and ensures that they are **processed exactly once**, across failures and restarts.
+- Let Restate **deduplicate** events on an [idempotency key](/invoke/http#invoke-a-handler-idempotently). If the sender of the event retries, Restate will not process the event again.
+- Use any of Restate's [**durable SDK constructs**](/concepts/durable_building_blocks) when processing the events: durable calls/messaging to other services, durable timers, scheduling tasks, K/V state, concurrency guarantees etc.
+- Any handler can be a durable webhook endpoint. **No need to do anything special or extra!**
+
+Just point your webhook endpoint to your handler: `restate:8080/MyService/myHandler`.
 
 ## Example
 This example processes webhook callbacks from a payment provider.
