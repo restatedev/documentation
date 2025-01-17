@@ -90,6 +90,31 @@ RestateHttpEndpointBuilder.builder()
     .buildAndListen();
 ```
 
+## Adding guides
+
+Guides are written in MDX format and are located in the `docs/guides` directory.
+
+To add a new guide:
+- Create a new file in the `docs/guides` directory. Make sure to set the following head items:
+    - `title`: The title of the guide.
+    - `description`: A short description of the guide.
+    - `pagination_next`: The path to the next guide.
+    - `pagination_prev`: The path to the previous guide.
+- Add an image to show as a preview for the guide to the `src/data/guides` directory.
+- Add the guide to [`src/data/guides.tsx`](). Add it to the `Guides` list there with the following format:
+  ```
+  {
+    title: "Guide title",
+    description: 'Guide description',
+    preview: require('./guides/guide-img.png'),
+    website: '/guides/guide-title', // Link to the text of the guide
+    source: null, // Optionally link to the source code
+    tags: ['integrations', 'typescript'], // Add tags to filter for the guide. Choose tags from the `TagType` list in the same file.
+  }
+  ```
+
+You should now see your guide listed in the overview.
+
 ## Releasing the documentation
 
 Before releasing the documentation, update schemas and version of Restate artifacts, either:

@@ -8,10 +8,12 @@ import {sortBy} from '@site/src/utils/jsUtils';
 // Please choose all tags that you think might apply.
 // Don't add new tags without checking whether this fits the page structure.
 export type TagType =
-  | 'favorite'
+  // Add this back at a later point in time where we have many guides
+  // | 'favorite'
   | 'patterns'
-  | 'use_cases'
+  | 'operations'
   | 'integrations'
+  | 'development'
   | 'deployment'
   | 'java'
   | 'typescript'
@@ -28,7 +30,7 @@ const Guides: Guide[] = [
     preview: require('./guides/cancellation-signal-propagation.png'),
     website: '/guides/sagas',
     source: null,
-    tags: ['favorite', 'patterns'],
+    tags: ['patterns', 'java', 'typescript', 'go', 'python'],
   },
   {
     title: 'TypeScript services on AWS Lambda',
@@ -56,15 +58,14 @@ const Guides: Guide[] = [
     source: 'https://github.com/restatedev/xstate/tree/main',
     tags: ['integrations', 'typescript'],
   },
-  // {
-  //   title: "Retries, Suspensions, and Timeouts",
-  //   description:
-  //       'Learn how retries, suspensions, and timeouts work in Restate, and how to configure them.',
-  //   preview: require('./guides/durable-execution.png'),
-  //   website: '/guides/retries-suspensions-timeouts',
-  //   source: null,
-  //   tags: ['operate'],
-  // },
+  {
+    title: "Parallelizing work",
+    description: 'Execute a list of tasks in parallel and then gather their result.',
+    preview: require('./guides/parallelizework.png'),
+    website: '/guides/parallelizing-work',
+    source: null,
+    tags: ['patterns', 'typescript', 'java', 'go', 'python'],
+  },
 
   // Add new guides in alphabetical order!
 ];
@@ -85,15 +86,16 @@ export type Tag = {
 };
 
 export const Tags: {[type in TagType]: Tag} = {
-  favorite: {
-    label: translate({message: 'Favorites'}),
-    description: translate({
-      message:
-        'Our favorite Restate guides that you must absolutely check out!',
-      id: 'showcase.tag.favorite.description',
-    }),
-    color: '#e9669e',
-  },
+  // Add this back at a later point in time where we have many guides
+  // favorite: {
+  //   label: translate({message: 'Favorites'}),
+  //   description: translate({
+  //     message:
+  //       'Our favorite Restate guides that you must absolutely check out!',
+  //     id: 'showcase.tag.favorite.description',
+  //   }),
+  //   color: '#e9669e',
+  // },
 
   java: {
     label: translate({message: 'Java/Kotlin'}),
@@ -146,33 +148,33 @@ export const Tags: {[type in TagType]: Tag} = {
   },
 
   patterns: {
-    label: translate({message: 'Patterns'}),
+    label: translate({message: 'Patterns & Use Cases'}),
     description: translate({
       message:
-          'Learn how to implement common patterns in Restate.',
+          'Learn how to implement common patterns and use cases in Restate.',
       id: 'showcase.tag.patterns.description',
     }),
     color: '#fe6829',
-  },
-
-  use_cases: {
-    label: translate({message: 'Use cases'}),
-    description: translate({
-      message:
-          'Learn how to implement common use cases in Restate.',
-      id: 'showcase.tag.use_cases.description',
-    }),
-    color: '#b74f6b',
   },
 
   integrations: {
     label: translate({message: 'Integrations'}),
     description: translate({
       message:
-        'Learn how to integrate Restate with other tools.',
+          'Learn how to integrate Restate with other tools.',
       id: 'showcase.tag.integrations.description',
     }),
     color: '#127f82',
+  },
+
+  development: {
+    label: translate({message: 'Development'}),
+    description: translate({
+      message:
+        'Learn how to develop Restate applications.',
+      id: 'showcase.tag.development.description',
+    }),
+    color: '#852b08',
   },
 
   deployment: {
@@ -183,6 +185,16 @@ export const Tags: {[type in TagType]: Tag} = {
       id: 'showcase.tag.deployment.description',
     }),
     color: '#852b08',
+  },
+
+  operations: {
+    label: translate({message: 'Operations'}),
+    description: translate({
+      message:
+          'Learn how to configure, manage and operate Restate.',
+      id: 'showcase.tag.operations.description',
+    }),
+    color: '#b74f6b',
   },
 };
 
