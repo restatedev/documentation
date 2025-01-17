@@ -3,6 +3,8 @@ sidebar_position: 9
 description: "Stop infinite retries with Terminal Errors."
 ---
 
+import Admonition from '@theme/Admonition';
+
 # Error Handling
 
 Restate handles retries for failed invocations.
@@ -18,3 +20,9 @@ CODE_LOAD::go/develop/errorhandling.go
 ```
 
 You can handle terminal errors instead of just returning them. For example, you can catch the terminal exception that comes out of a [call to another service](/develop/go/service-communication#request-response-calls), and build your control flow around it.
+
+
+<Admonition type="note" title="Sagas with Restate">
+    When you throw a terminal error, you might need to undo the actions you did earlier in your handler to make sure that your system remains in a consistent state.
+    Have a look at our [Sagas guide](/guides/sagas) to learn more.
+</Admonition>

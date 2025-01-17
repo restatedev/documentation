@@ -4,8 +4,6 @@ description: "Persist results of operations."
 ---
 
 import Admonition from '@theme/Admonition';
-import clsx from "clsx";
-import {Scrollycoding} from "../../../src/components/code/scrollycoding";
 
 # Journaling Results
 
@@ -35,6 +33,25 @@ Always immediately await `ctx.run`, before doing any other context calls.
 If not, you might bump into non-determinism errors during replay,
 because the journaled result can get interleaved with the other context calls in the journal in a non-deterministic way.
 </Admonition>
+
+<Admonition type="note" title="Failure semantics">
+Failures in `ctx.run` have the same semantics as failures in the rest of your handler code.
+By default, the `ctx.run` function is retried infinitely on failure, unless you specify differently in the retry policy (see below) or throw a [`TerminalError`](/develop/ts/error-handling).
+</Admonition>
+
+### Run-block Retry Policies
+
+You can configure the retry policy for the `ctx.run` block:
+
+```ts
+CODE_LOAD::ts/src/develop/retries.ts?1
+```
+
+This way you can override the default retry behavior of your Restate service for specific operations.
+
+If you set a maximum number of attempts, then the `ctx.run` block will fail with a [`TerminalError`](/develop/ts/error-handling) once the retries are exhausted.
+Have a look at the [error handling docs](/develop/ts/error-handling) and [Sagas guide](/guides/sagas) to learn how to handle these.
+
 
 ## Combineable Promise combinators
 Operations such as calls, awakeables, and sleep return a `CombineablePromise`.

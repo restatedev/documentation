@@ -6,7 +6,6 @@ description: "Persist results of operations."
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
-import clsx from "clsx";
 
 # Journaling Results
 
@@ -52,8 +51,35 @@ This includes actions such as getting state, calling another service, and nestin
 
 <Admonition type="note" title="Failure semantics">
 Failures in `ctx.run` have the same semantics as failures in the rest of your handler code.
-By default, the `ctx.run` function is retried infinitely on failure, unless you throw a [terminal error](/develop/java/error-handling).
+By default, the `ctx.run` function is retried infinitely on failure, unless you specify differently in the retry policy ([see below](/develop/java/journaling-results#run-block-retry-policies)) or throw a [`TerminalException`](/develop/java/error-handling).
 </Admonition>
+
+### Run-block Retry Policies
+
+You can configure the retry policy for the `ctx.run` block:
+
+<Tabs groupId="sdk" queryString>
+    <TabItem value="java" label="Java">
+
+        ```java
+        CODE_LOAD::java/src/main/java/develop/RetryRunService.java?1
+        ```
+
+    </TabItem>
+    <TabItem value="kotlin" label="Kotlin">
+
+        ```kotlin
+        CODE_LOAD::kotlin/src/main/kotlin/develop/RetryRunService.kt?1
+        ```
+
+    </TabItem>
+</Tabs>
+
+This way you can override the default retry behavior of your Restate service for specific operations.
+Have a look at the `RetryPolicy` [JavaDoc](/javadocs/dev/restate/sdk/common/RetryPolicy.html) and [KotlinDoc](/ktdocs/sdk-api-kotlin/dev.restate.sdk.kotlin/-retry-policy/index.html) for more information.
+
+If you set a maximum number of attempts, then the `ctx.run` block will fail with a [`TerminalException`](/develop/java/error-handling) once the retries are exhausted.
+Have a look at the [error handling docs](/develop/java/error-handling) and [Sagas guide](/guides/sagas) to learn how to handle these.
 
 ## Awaitable combinators
 Operations such as calls, awakeables, and sleep return a `Awaitable`.
