@@ -30,7 +30,7 @@ const Guides: Guide[] = [
     preview: require('./guides/cancellation-signal-propagation.png'),
     website: '/guides/sagas',
     source: null,
-    tags: ['patterns'],
+    tags: ['patterns', 'java', 'typescript', 'go', 'python'],
   },
   {
     title: 'TypeScript services on AWS Lambda',
@@ -64,7 +64,7 @@ const Guides: Guide[] = [
     preview: require('./guides/parallelizework.png'),
     website: '/guides/parallelizing-work',
     source: null,
-    tags: ['patterns', 'typescript'],
+    tags: ['patterns', 'typescript', 'java', 'go', 'python'],
   },
 
   // Add new guides in alphabetical order!
