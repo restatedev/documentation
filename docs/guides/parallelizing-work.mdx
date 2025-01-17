@@ -13,8 +13,15 @@ import {Step} from "../../src/components/Stepper";
 
 This guide shows how to use the Restate to **execute a list of tasks in parallel and then gather their result**, also known as fan-out, fan-in.
 
+<img src={"/img/guides/parallelizework.png"} width={"400px"}/>
+
+How does Restate help?
+- Restate lets you schedule the tasks asynchronously and guarantees that all tasks will run, with **retries and recovery** on failures.
+- Restate **turns promises into durable, distributed constructs** that are persisted in Restate and can be recovered and awaited on another process.
+- You can deploy the subtask executors on **serverless** infrastructure, like AWS Lambda, to let them scale automatically. The main task, that is idle while waiting on the subtasks, gets suspended until they can make progress.
+
 **Fan out**: You can fan out tasks with Restate by creating a handler that processes a single subtask,
-and then scheduling it repeatedly from another handler. Restate guarantees and manages the execution of all the tasks across failures.
+and then scheduling it repeatedly from another handler.
 
 **Fan in**: You can fan in the results of the subtasks by using Restate's Promise Combinators to wait for all promises to resolve.
 
