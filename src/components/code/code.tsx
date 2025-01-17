@@ -28,7 +28,6 @@ import {Block, HighlightedCodeBlock, parseProps} from "codehike/blocks";
 import {z} from "zod"
 import styles from "./code-styling.module.css"
 import clsx from "clsx";
-import {GithubButton} from "./github-button";
 
 export function InlineCode({ codeblock }: { codeblock: HighlightedCode }) {
   return (
@@ -142,33 +141,40 @@ export function HighCode({
 }
 
 export function extractFlags(codeblock: HighlightedCode) {
-    const metaContents = codeblock.meta.split(" ")
-  const githubLink = metaContents.filter((flag) => flag.startsWith("https://github.com"))[0] ?? undefined
-    console.log(githubLink)
-  const flags = metaContents.filter((flag) => flag.startsWith("-"))[0] ?? ""
-  const title = (metaContents.filter((flag) => !flag.startsWith("https://github.com") && !flag.startsWith("-"))[0] ?? "").trim()
-  return { title, flags: flags.slice(1).split(""), githubLink: githubLink }
+    return extractFlagsFromMeta(codeblock.meta)
+}
+
+export function extractFlagsFromMeta(meta: string) {
+    const metaContents = meta.split(" ")
+    const githubLink = metaContents.filter((flag) => flag.startsWith("https://github.com"))[0] ?? undefined
+    const tabValue = metaContents.filter((flag) => flag.startsWith("tabValue-"))[0]?.replace("tabValue-", "") ?? ""
+    console.log(tabValue)
+    const flags = metaContents.filter((flag) => flag.startsWith("-"))[0] ?? ""
+    const title = (metaContents.filter((flag) => !flag.startsWith("https://github.com") && !flag.startsWith("-") && !flag.startsWith("tabValue-"))[0] ?? "").trim()
+    return { title, flags: flags.slice(1).split(""), githubLink: githubLink, tabValue }
 }
 
 
-const Schema = Block.extend({ groupId: z.optional(z.string()), tabs: z.array(HighlightedCodeBlock) })
+const Schema = Block.extend({ groupId: z.optional(z.string()), className: z.optional(z.string()), tabs: z.array(HighlightedCodeBlock) })
 export function CodeWithTabs(props: unknown) {
-    const { groupId, tabs } = parseProps(props, Schema)
-    return <CodeTabs groupId={groupId} tabs={tabs} />
+    const { groupId, className, tabs } = parseProps(props, Schema)
+    return <CodeTabs groupId={groupId} tabs={tabs} className={className}/>
 }
 
-export function CodeTabs(props: { groupId?: string, tabs: HighlightedCode[] }) {
+export function CodeTabs(props: { groupId?: string, className: string, tabs: HighlightedCode[] }) {
     const { groupId, tabs } = props
     return (
 
-        <Tabs className={clsx(styles.codetablist, "ch-codetablist")} {...(groupId ? { groupId, queryString: true } : {})}>
-            {tabs.map((tab, i) => (
-                <TabItem className={clsx(styles.codetab)} label={tab.meta} value={tab.meta.toLowerCase()} >
-                    <HighCode isTab={true} highlighted={tab}/>
-                </TabItem>
-                ))}
+        <Tabs className={clsx(styles.codetablist, "ch-codetablist", props.className)} {...(groupId ? { groupId, queryString: true } : {})}>
+            {tabs.map((tab, i) => {
+                const { title, tabValue } = extractFlagsFromMeta(tab.meta);
+                const value = tabValue ?? title;
+                return (
+                    <TabItem className={clsx(styles.codetab)} label={title} value={value} key={i}>
+                        <HighCode isTab={true} highlighted={tab} />
+                    </TabItem>
+                );
+            })}
         </Tabs>
     )
 }
-
-

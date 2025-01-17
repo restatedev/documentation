@@ -59,13 +59,12 @@ const Guides: Guide[] = [
     tags: ['integrations', 'typescript'],
   },
   {
-    title: "Error Handling",
-    description:
-        'Learn about handling infrastructure and application errors in Restate',
-    preview: require('./guides/retry-guide.jpg'),
-    website: '/guides/error-handling',
+    title: "Parallelizing work",
+    description: 'Execute a list of tasks in parallel and then gather their result.',
+    preview: require('./guides/parallelizework.png'),
+    website: '/guides/parallelizing-work',
     source: null,
-    tags: ['development', 'typescript'],
+    tags: ['patterns', 'typescript'],
   },
 
   // Add new guides in alphabetical order!
