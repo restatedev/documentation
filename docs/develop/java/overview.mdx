@@ -25,6 +25,7 @@ Handlers can either be part of a [Service](/concepts/services#services-1), a [Vi
     <TabItem value="java" label="Java">
 
         ```java
+        // collapse_prequel
         CODE_LOAD::java/src/main/java/develop/MyService.java
         ```
 
@@ -40,6 +41,7 @@ Handlers can either be part of a [Service](/concepts/services#services-1), a [Vi
     </TabItem>
     <TabItem value="kotlin" label="Kotlin">
         ```kotlin
+        // collapse_prequel
         CODE_LOAD::kotlin/src/main/kotlin/develop/MyService.kt
         ```
 
@@ -61,6 +63,7 @@ Handlers can either be part of a [Service](/concepts/services#services-1), a [Vi
 <Tabs groupId="sdk" queryString>
     <TabItem value="java" label="Java">
         ```java
+        // collapse_prequel
         CODE_LOAD::java/src/main/java/develop/MyVirtualObject.java
         ```
 
@@ -74,6 +77,7 @@ Handlers can either be part of a [Service](/concepts/services#services-1), a [Vi
     </TabItem>
     <TabItem value="kotlin" label="Kotlin">
         ```kotlin
+        // collapse_prequel
         CODE_LOAD::kotlin/src/main/kotlin/develop/MyVirtualObject.kt
         ```
 
@@ -91,25 +95,33 @@ Handlers can either be part of a [Service](/concepts/services#services-1), a [Vi
 
 [Workflows](/concepts/services#workflows) are a special type of Virtual Objects, their definition is similar but with the following differences:
 
-<Tabs>
+<Tabs groupId="sdk" queryString>
 <TabItem value="java" label="Java">
     ```java
+    // collapse_prequel
     CODE_LOAD::java/src/main/java/develop/MyWorkflow.java
     ```
 
-    - Create the workflow
-    - Every workflow implementation needs to have a handler called `run` that implements the workflow logic. This handler uses the `WorkflowContext` to interact with the SDK. The `run` handler executes exactly one time per workflow execution/object.
-    - The other handlers of the workflow are used to interact with the workflow: either query it, or signal it. They use the `SharedWorkflowContext` to interact with the SDK. These handlers can run concurrently with the `run` handler and can still be called after the `run` handler has finished.
+    - Create the workflow by using the `@Workflow` annotation.
+    - Every workflow implementation needs to have a handler called `run` that implements the workflow logic and has the `@Workflow` annotation.
+    This handler uses the `WorkflowContext` to interact with the SDK.
+    - The `run` handler executes exactly one time per workflow execution/object. You can retrieve the ID of the workflow execution via `ctx.key()`.
+    - The `run` handler executes a set of steps/activities. These can be inlined SDK actions (for example [run block](/develop/java/journaling-results#journaled-actions) or [sleep](/develop/java/durable-timers)), or abstracted into calls to other handlers.
+    - The other handlers of the workflow definition are used to interact with the workflow: [either query it, or signal it](/develop/java/workflows#implementing-workflows). They use the `SharedWorkflowContext` to interact with the SDK. These handlers can run concurrently with the `run` handler and can still be called after the `run` handler has finished.
     - [Have a look at the workflow docs to learn more.](/develop/java/workflows)
 </TabItem>
 <TabItem value="kotlin" label="Kotlin">
     ```kotlin
+    // collapse_prequel
     CODE_LOAD::kotlin/src/main/kotlin/develop/MyWorkflow.kt
     ```
 
-    - Create the workflow
-    - Every workflow implementation needs to have a handler called `run` that implements the workflow logic. This handler uses the `WorkflowContext` to interact with the SDK. The `run` handler executes exactly one time per workflow execution/object.
-    - The other handlers of the workflow are used to interact with the workflow: either query it, or signal it. They use the `SharedWorkflowContext` to interact with the SDK. These handlers can run concurrently with the `run` handler and can still be called after the `run` handler has finished.
+    - Create the workflow by using the `@Workflow` annotation.
+    - Every workflow implementation needs to have a handler called `run` that implements the workflow logic and has the `@Workflow` annotation.
+    This handler uses the `WorkflowContext` to interact with the SDK.
+    - The `run` handler executes exactly one time per workflow execution/object. You can retrieve the ID of the workflow execution via `ctx.key()`.
+    - The `run` handler executes a set of steps/activities. These can be inlined SDK actions (for example [run block](/develop/java/journaling-results#journaled-actions) or [sleep](/develop/java/durable-timers)), or abstracted into calls to other handlers.
+    - The other handlers of the workflow definition are used to interact with the workflow: [either query it, or signal it](/develop/java/workflows#implementing-workflows). They use the `SharedWorkflowContext` to interact with the SDK. These handlers can run concurrently with the `run` handler and can still be called after the `run` handler has finished.
     - [Have a look at the workflow docs to learn more.](/develop/java/workflows)
 </TabItem>
 </Tabs>
@@ -193,5 +205,6 @@ Now that you have a high-level idea of what a Restate service might look like, l
 
 <details className="grey-details">
     <summary>Manual service definition without annotation processing</summary>
+
     In case you don't want to use annotation processing, you can manually define your service by using the class `dev.restate.sdk.common.syscalls.ServiceDefinition`. Check the respective JavaDocs/KTDocs for more details.
 </details>

@@ -23,10 +23,11 @@ Handlers can either be part of a [Service](/concepts/services#services-1), or a 
 [Services](/concepts/services#services-1) and their handlers are defined as follows:
 
 ```go
+// collapse_prequel
 CODE_LOAD::go/develop/myservice/main.go
 ```
 
-- Define a Service by implementing exported methods on any struct.
+- Define a Service by implementing exported handlers on any struct.
 - By default, the service name is the name of the struct, so the service can be
   called at `<RESTATE_INGRESS_URL>/MyService/MyHandler`.
 - The service definition contains a list of handlers.
@@ -52,9 +53,11 @@ CODE_LOAD::go/develop/myservice/main.go
 [Virtual Objects](/concepts/services#virtual-objects) and their handlers are defined similarly to services, with the following differences:
 
 ```go
+// collapse_prequel
 CODE_LOAD::go/develop/myvirtualobject/main.go
 ```
 
+- Define a Virtual Object by implementing exported handlers on any struct.
 - The first argument of each handler must be the `ObjectContext` parameter.
 Handlers with the `ObjectContext` parameter can write to the K/V state store.
 Only one handler can be active at a time, to ensure consistency.
@@ -69,5 +72,27 @@ doesn't have write access to the K/V state, instead use the
     code generation from [Protocol Buffers](https://protobuf.dev/). See
     [Code Generation](/develop/go/code-generation) for more details.
 </Admonition>
+
+Now that you have a high-level idea of what a Restate service might look like, let's have a look at what the Restate Context allows you to do.
+
+## Workflows
+
+[Workflows](/concepts/services#workflows) are a special type of Virtual Objects, their definition is similar but with the following differences:
+
+```go
+// collapse_prequel
+CODE_LOAD::go/develop/myworkflow/main.go
+```
+
+- Define a Workflow by implementing exported handlers on any struct.
+- Every workflow implementation needs to have a handler called `Run` that implements the workflow logic.
+This handler uses the `WorkflowContext` to interact with the SDK.
+- The `Run` handler executes exactly one time per workflow execution/object. You can retrieve the ID of the workflow execution via `restate.Key(ctx)`.
+- The `Run` handler executes a set of steps/activities. These can be inlined SDK actions (for example [run block](/develop/go/journaling-results#journaled-actions) or [sleep](/develop/go/durable-timers)), or abstracted into calls to other handlers.
+- The other handlers of the workflow are used to interact with the workflow: [either query it, or signal it](/develop/go/workflows#implementing-workflows).
+They use the `WorkflowSharedContext` to interact with the SDK.
+These handlers can run concurrently with the `Run` handler and can still be called after the `Run` handler has finished.
+- [Have a look at the workflow docs to learn more.](/develop/ts/workflows)
+
 
 Now that you have a high-level idea of what a Restate service might look like, let's have a look at what the Restate Context allows you to do.

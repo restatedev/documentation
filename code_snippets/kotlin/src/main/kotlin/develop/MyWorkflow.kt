@@ -1,12 +1,12 @@
 package develop
 
+// <start_here>
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Workflow
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
 import dev.restate.sdk.kotlin.SharedWorkflowContext
 import dev.restate.sdk.kotlin.WorkflowContext
 
-// <start_here>
 @Workflow
 class MyWorkflow {
 

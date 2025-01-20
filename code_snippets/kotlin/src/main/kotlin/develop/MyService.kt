@@ -1,11 +1,11 @@
 package develop
 
+// <start_here>
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Service
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
 import dev.restate.sdk.kotlin.Context
 
-// <start_here>
 @Service
 class MyService {
   @Handler
