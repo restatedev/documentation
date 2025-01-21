@@ -13,6 +13,7 @@ func serving() {
 	if err := server.NewRestate().
 		Bind(restate.Reflect(MyService{})).
 		Bind(restate.Reflect(MyVirtualObject{})).
+		Bind(restate.Reflect(MyWorkflow{})).
 		Start(context.Background(), ":9080"); err != nil {
 		log.Fatal(err)
 	}
@@ -22,6 +23,7 @@ func serving() {
 	handler, err := server.NewRestate().
 		Bind(restate.Reflect(MyService{})).
 		Bind(restate.Reflect(MyVirtualObject{})).
+		Bind(restate.Reflect(MyWorkflow{})).
 		Handler()
 	if err != nil {
 		log.Fatal(err)

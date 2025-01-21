@@ -1,5 +1,6 @@
 package develop;
 
+// <start_here>
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.SharedObjectContext;
 import dev.restate.sdk.annotation.Handler;
@@ -7,7 +8,6 @@ import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 
-// <start_here>
 @VirtualObject
 public class MyVirtualObject {
 

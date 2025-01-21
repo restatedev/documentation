@@ -1,12 +1,12 @@
 package develop;
 
+// <start_here>
 import dev.restate.sdk.SharedWorkflowContext;
 import dev.restate.sdk.WorkflowContext;
 import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.Workflow;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 
-// <start_here>
 @Workflow
 public class MyWorkflow {
 

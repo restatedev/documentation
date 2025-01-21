@@ -16,6 +16,7 @@ A workflow can be seen as a special type of [Virtual Object](/concepts/services#
 - The `run` handler executes exactly one time for each workflow instance (object / key).
 - A [workflow definition](/develop/ts/overview#workflows) can implement other handlers that can be called multiple times, and can interact with the workflow.
 - Workflows have access to the `WorkflowContext` and `WorkflowSharedContext`, giving them some extra functionality, for example [Durable Promises](/develop/ts/workflows#signaling-workflows) to signal workflows.
+- The K/V state of the workflow is isolated to the workflow execution, and can only be mutated by the `run` handler.
 
 <Admonition type="note" title={"Workflow retention time"}>
     The retention time of a workflow execution is 24 hours after the finishing of the `run` handler.

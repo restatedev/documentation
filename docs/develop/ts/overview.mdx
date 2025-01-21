@@ -23,6 +23,7 @@ Handlers can either be part of a [Service](/concepts/services#services-1), a [Vi
 [Services](/concepts/services#services-1) and their handlers are defined as follows:
 
 ```typescript
+// collapse_prequel
 CODE_LOAD::ts/src/develop/my_service.ts
 ```
 
@@ -42,6 +43,7 @@ CODE_LOAD::ts/src/develop/my_service.ts
 [Virtual Objects](/concepts/services#virtual-objects) and their handlers are defined similarly to services, with the following differences:
 
 ```typescript
+// collapse_prequel
 CODE_LOAD::ts/src/develop/my_virtual_object.ts
 ```
 
@@ -58,14 +60,16 @@ You can use these handlers, for example, to read K/V state and expose it to the 
 [Workflows](/concepts/services#workflows) are a special type of Virtual Objects, their definition is similar but with the following differences:
 
 ```typescript
+// collapse_prequel
 CODE_LOAD::ts/src/develop/workflow.ts
 ```
 
 - Create the workflow with `restate.workflow`.
 - Every workflow implementation needs to have a handler called `run` that implements the workflow logic.
 This handler uses the `WorkflowContext` to interact with the SDK.
-The `run` handler executes exactly one time per workflow execution/object.
-- The other handlers of the workflow are used to interact with the workflow: either query it, or signal it.
+- The `run` handler executes exactly one time per workflow execution/object. You can retrieve the ID of the workflow execution via `ctx.key`.
+- The `run` handler executes a set of steps/activities. These can be inlined SDK actions (for example [run block](/develop/ts/journaling-results#journaled-actions) or [sleep](/develop/ts/durable-timers)), or abstracted into calls to other handlers.
+- The other handlers of the workflow are used to interact with the workflow: [either query it, or signal it](/develop/ts/workflows#implementing-workflows).
 They use the `WorkflowSharedContext` to interact with the SDK.
 These handlers can run concurrently with the `run` handler and can still be called after the `run` handler has finished.
 - [Have a look at the workflow docs to learn more.](/develop/ts/workflows)

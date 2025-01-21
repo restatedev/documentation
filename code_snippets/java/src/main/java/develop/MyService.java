@@ -1,11 +1,11 @@
 package develop;
 
+// <start_here>
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 
-// <start_here>
 @Service
 public class MyService {
   @Handler
