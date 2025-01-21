@@ -66,6 +66,14 @@ const Guides: Guide[] = [
     source: null,
     tags: ['patterns', 'typescript', 'java', 'go', 'python'],
   },
+  {
+    title: "Durable webhooks",
+    description: 'Point webhook callbacks to a Restate handler for durable event processing.',
+    preview: require('./guides/durable-webhooks.png'),
+    website: '/guides/durable-webhooks',
+    source: null,
+    tags: ['patterns', 'typescript', 'go'],
+  },
 
   // Add new guides in alphabetical order!
 ];
