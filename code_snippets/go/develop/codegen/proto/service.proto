@@ -28,6 +28,12 @@ service Counter {
     option (dev.restate.sdk.go.handler_type) = SHARED;
   }
 }
+
+service Workflow {
+  option (dev.restate.sdk.go.service_type) = WORKFLOW;
+  rpc Run (RunRequest) returns (RunResponse) {}
+  rpc GetStatus (GetStatusRequest) returns (GetStatusResponse) {}
+}
 // <end_virtual_object>
 
 message AddRequest {
@@ -42,4 +48,16 @@ message GetRequest {}
 
 message GetResponse {
   int64 value = 1;
+}
+
+message RunRequest {
+}
+
+message RunResponse {
+}
+
+message GetStatusRequest {
+}
+
+message GetStatusResponse {
 }
