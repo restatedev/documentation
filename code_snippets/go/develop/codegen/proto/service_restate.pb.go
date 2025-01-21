@@ -5,7 +5,6 @@
 // source: proto/service.proto
 
 // <start_service>
-// service.proto
 
 package proto
 
@@ -14,7 +13,7 @@ import (
 	sdk_go "github.com/restatedev/sdk-go"
 )
 
-// GreeterClient is the client API for Greeter service.
+// GreeterClient is the client API for greeter.Greeter service.
 type GreeterClient interface {
 	SayHello(opts ...sdk_go.ClientOption) sdk_go.Client[*HelloRequest, *HelloResponse]
 }
@@ -36,10 +35,10 @@ func (c *greeterClient) SayHello(opts ...sdk_go.ClientOption) sdk_go.Client[*Hel
 	if len(opts) > 0 {
 		cOpts = append(append([]sdk_go.ClientOption{}, cOpts...), opts...)
 	}
-	return sdk_go.WithRequestType[*HelloRequest](sdk_go.Service[*HelloResponse](c.ctx, "Greeter", "SayHello", cOpts...))
+	return sdk_go.WithRequestType[*HelloRequest](sdk_go.Service[*HelloResponse](c.ctx, "greeter.Greeter", "SayHello", cOpts...))
 }
 
-// GreeterServer is the server API for Greeter service.
+// GreeterServer is the server API for greeter.Greeter service.
 // All implementations should embed UnimplementedGreeterServer
 // for forward compatibility.
 type GreeterServer interface {
@@ -74,12 +73,12 @@ func NewGreeterServer(srv GreeterServer, opts ...sdk_go.ServiceDefinitionOption)
 		t.testEmbeddedByValue()
 	}
 	sOpts := append([]sdk_go.ServiceDefinitionOption{sdk_go.WithProtoJSON}, opts...)
-	router := sdk_go.NewService("Greeter", sOpts...)
+	router := sdk_go.NewService("greeter.Greeter", sOpts...)
 	router = router.Handler("SayHello", sdk_go.NewServiceHandler(srv.SayHello))
 	return router
 }
 
-// CounterClient is the client API for Counter service.
+// CounterClient is the client API for greeter.Counter service.
 type CounterClient interface {
 	Add(opts ...sdk_go.ClientOption) sdk_go.Client[*AddRequest, *AddResponse]
 	Get(opts ...sdk_go.ClientOption) sdk_go.Client[*GetRequest, *GetResponse]
@@ -104,7 +103,7 @@ func (c *counterClient) Add(opts ...sdk_go.ClientOption) sdk_go.Client[*AddReque
 	if len(opts) > 0 {
 		cOpts = append(append([]sdk_go.ClientOption{}, cOpts...), opts...)
 	}
-	return sdk_go.WithRequestType[*AddRequest](sdk_go.Object[*AddResponse](c.ctx, "Counter", c.key, "Add", cOpts...))
+	return sdk_go.WithRequestType[*AddRequest](sdk_go.Object[*AddResponse](c.ctx, "greeter.Counter", c.key, "Add", cOpts...))
 }
 
 func (c *counterClient) Get(opts ...sdk_go.ClientOption) sdk_go.Client[*GetRequest, *GetResponse] {
@@ -112,10 +111,10 @@ func (c *counterClient) Get(opts ...sdk_go.ClientOption) sdk_go.Client[*GetReque
 	if len(opts) > 0 {
 		cOpts = append(append([]sdk_go.ClientOption{}, cOpts...), opts...)
 	}
-	return sdk_go.WithRequestType[*GetRequest](sdk_go.Object[*GetResponse](c.ctx, "Counter", c.key, "Get", cOpts...))
+	return sdk_go.WithRequestType[*GetRequest](sdk_go.Object[*GetResponse](c.ctx, "greeter.Counter", c.key, "Get", cOpts...))
 }
 
-// CounterServer is the server API for Counter service.
+// CounterServer is the server API for greeter.Counter service.
 // All implementations should embed UnimplementedCounterServer
 // for forward compatibility.
 type CounterServer interface {
@@ -154,8 +153,89 @@ func NewCounterServer(srv CounterServer, opts ...sdk_go.ServiceDefinitionOption)
 		t.testEmbeddedByValue()
 	}
 	sOpts := append([]sdk_go.ServiceDefinitionOption{sdk_go.WithProtoJSON}, opts...)
-	router := sdk_go.NewObject("Counter", sOpts...)
+	router := sdk_go.NewObject("greeter.Counter", sOpts...)
 	router = router.Handler("Add", sdk_go.NewObjectHandler(srv.Add))
 	router = router.Handler("Get", sdk_go.NewObjectSharedHandler(srv.Get))
+	return router
+}
+
+// WorkflowClient is the client API for greeter.Workflow service.
+type WorkflowClient interface {
+	Run(opts ...sdk_go.ClientOption) sdk_go.Client[*RunRequest, *RunResponse]
+	GetStatus(opts ...sdk_go.ClientOption) sdk_go.Client[*GetStatusRequest, *GetStatusResponse]
+}
+
+type workflowClient struct {
+	ctx        sdk_go.Context
+	workflowID string
+	options    []sdk_go.ClientOption
+}
+
+func NewWorkflowClient(ctx sdk_go.Context, workflowID string, opts ...sdk_go.ClientOption) WorkflowClient {
+	cOpts := append([]sdk_go.ClientOption{sdk_go.WithProtoJSON}, opts...)
+	return &workflowClient{
+		ctx,
+		workflowID,
+		cOpts,
+	}
+}
+func (c *workflowClient) Run(opts ...sdk_go.ClientOption) sdk_go.Client[*RunRequest, *RunResponse] {
+	cOpts := c.options
+	if len(opts) > 0 {
+		cOpts = append(append([]sdk_go.ClientOption{}, cOpts...), opts...)
+	}
+	return sdk_go.WithRequestType[*RunRequest](sdk_go.Workflow[*RunResponse](c.ctx, "greeter.Workflow", c.workflowID, "Run", cOpts...))
+}
+
+func (c *workflowClient) GetStatus(opts ...sdk_go.ClientOption) sdk_go.Client[*GetStatusRequest, *GetStatusResponse] {
+	cOpts := c.options
+	if len(opts) > 0 {
+		cOpts = append(append([]sdk_go.ClientOption{}, cOpts...), opts...)
+	}
+	return sdk_go.WithRequestType[*GetStatusRequest](sdk_go.Workflow[*GetStatusResponse](c.ctx, "greeter.Workflow", c.workflowID, "GetStatus", cOpts...))
+}
+
+// WorkflowServer is the server API for greeter.Workflow service.
+// All implementations should embed UnimplementedWorkflowServer
+// for forward compatibility.
+type WorkflowServer interface {
+	Run(ctx sdk_go.WorkflowContext, req *RunRequest) (*RunResponse, error)
+	GetStatus(ctx sdk_go.WorkflowSharedContext, req *GetStatusRequest) (*GetStatusResponse, error)
+}
+
+// UnimplementedWorkflowServer should be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedWorkflowServer struct{}
+
+func (UnimplementedWorkflowServer) Run(ctx sdk_go.WorkflowContext, req *RunRequest) (*RunResponse, error) {
+	return nil, sdk_go.TerminalError(fmt.Errorf("method Run not implemented"), 501)
+}
+func (UnimplementedWorkflowServer) GetStatus(ctx sdk_go.WorkflowSharedContext, req *GetStatusRequest) (*GetStatusResponse, error) {
+	return nil, sdk_go.TerminalError(fmt.Errorf("method GetStatus not implemented"), 501)
+}
+func (UnimplementedWorkflowServer) testEmbeddedByValue() {}
+
+// UnsafeWorkflowServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to WorkflowServer will
+// result in compilation errors.
+type UnsafeWorkflowServer interface {
+	mustEmbedUnimplementedWorkflowServer()
+}
+
+func NewWorkflowServer(srv WorkflowServer, opts ...sdk_go.ServiceDefinitionOption) sdk_go.ServiceDefinition {
+	// If the following call panics, it indicates UnimplementedWorkflowServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	sOpts := append([]sdk_go.ServiceDefinitionOption{sdk_go.WithProtoJSON}, opts...)
+	router := sdk_go.NewWorkflow("greeter.Workflow", sOpts...)
+	router = router.Handler("Run", sdk_go.NewWorkflowHandler(srv.Run))
+	router = router.Handler("GetStatus", sdk_go.NewWorkflowSharedHandler(srv.GetStatus))
 	return router
 }

@@ -61,9 +61,9 @@ type safety for method names and request/response types.
 CODE_LOAD::go/develop/codegen/codegen.go#client
 ```
 
-## Defining Virtual Objects
+## Defining Virtual Objects and Workflows
 
-To define a Virtual Object, you will need to provide the option `dev.restate.sdk.go.service_type` when defining the service.
+To define a Virtual Object or Workflow, you will need to provide the option `dev.restate.sdk.go.service_type` when defining the service.
 This option is defined by the Go SDK's proto file
 [`dev/restate/sdk/go.proto`](https://github.com/restatedev/sdk-go/blob/main/proto/dev/restate/sdk/go.proto) which must be imported in your own file,
 and a directory containing it must be provided to protoc eg with `-I $GOPATH/src/github.com/restatedev/sdk-go/proto`
@@ -75,7 +75,7 @@ concurrently with other handlers.
 CODE_LOAD::go/develop/codegen/proto/service.proto#virtual_object
 ```
 
-Virtual Object clients are instantiated with a key:
+Clients are instantiated with a key:
 ```go
 CODE_LOAD::go/develop/codegen/codegen.go#virtual_object_client
 ```
