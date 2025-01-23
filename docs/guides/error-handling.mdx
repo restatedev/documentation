@@ -9,10 +9,22 @@ import Admonition from "@theme/Admonition";
 
 # Error Handling
 
+Restate handles retries for failed invocations. By default, Restate does infinite retries with an exponential backoff strategy.
+This guide helps you with fine-tuning the retry behavior for your use cases.
+
 ## Infrastructure errors (transient) vs. application errors (terminal)
 
+In Restate, we distinguish between two types of errors: transient errors and terminal errors.
+
+**Transient errors** are temporary and can be retried. They are typically caused by infrastructure issues (network problems, service overload, API unavailability,...).
+
+**Terminal errors** are permanent and should not be retried. They are typically caused by application logic (invalid input, business rule violation, ...).
+
 ## Handling transient errors via retries
-Levels at which retries happen (durable code block, service)
+
+Transient errors are retried by default. This is done to make your system more resilient to temporary failures.
+
+Restate lets you configure the retry strategy at different levels: at the Restate-level (global), at the service-level, and at the run-block-level.
 
 Configuring retries with policies (interval, upper bounds)
 
