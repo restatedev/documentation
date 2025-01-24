@@ -36,6 +36,7 @@ class RetryRunService {
 
     // <start_catch>
     try {
+      // Fails with a terminal error after 3 attempts or if the function throws one
       ctx.runBlock(
           "write",
           RetryPolicy(
@@ -43,8 +44,7 @@ class RetryRunService {
             writeToOtherSystem()
           }
     } catch (e: TerminalException) {
-      // Handle the terminal error after retries exhausted
-      // For example, undo previous actions (see sagas guide) and
+      // Handle the terminal error: undo previous actions and
       // propagate the error back to the caller
       throw e
     }

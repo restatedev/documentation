@@ -8,6 +8,7 @@ import dev.restate.sdk.annotation.Raw;
 import dev.restate.sdk.annotation.Service;
 import dev.restate.sdk.common.RetryPolicy;
 import dev.restate.sdk.common.TerminalException;
+import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 import develop.MyServiceClient;
 import java.time.Duration;
 import java.util.concurrent.TimeoutException;
@@ -33,10 +34,10 @@ public class RetryRunService {
 
     // <start_catch>
     try {
+      // Fails with a terminal error after 3 attempts or if the function throws one
       ctx.run(RetryPolicy.defaultPolicy().setMaxAttempts(3), () -> writeToOtherSystem());
     } catch (TerminalException e) {
-      // Handle the terminal error after retries exhausted
-      // For example, undo previous actions (see sagas guide) and
+      // Handle the terminal error: undo previous actions and
       // propagate the error back to the caller
     }
     // <end_catch>
@@ -82,6 +83,12 @@ public class RetryRunService {
       // Handle the timeout error
     }
     // <end_timeout>
+  }
+
+  public static void main(String[] args) {
+    RestateHttpEndpointBuilder.builder()
+            .bind(new RetryRunService())
+            .buildAndListen();
   }
 
   private Object decodeRequest(byte[] request) {

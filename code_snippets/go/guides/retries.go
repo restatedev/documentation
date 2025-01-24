@@ -15,8 +15,7 @@ func (MyService) Greet(ctx restate.Context, name string) error {
 	})
 	if err != nil {
 		if restate.IsTerminalError(err) {
-			// Handle the terminal error after retries exhausted
-			// For example, undo previous actions (see sagas guide) and
+			// Handle the terminal error: undo previous actions and
 			// propagate the error back to the caller
 		}
 		return err

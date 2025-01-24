@@ -26,10 +26,10 @@ async def my_service_handler(ctx: Context, greeting: str) -> str:
 
     # <start_catch>
     try:
+        # Fails with a terminal error after 3 attempts or if the function throws one
         await ctx.run("write", lambda: write_to_other_system(), max_attempts=3)
     except TerminalError as err:
-        # Handle the terminal error after retries exhausted
-        # For example, undo previous actions (see sagas guide) and
+        # Handle the terminal error: undo previous actions and
         # propagate the error back to the caller
         raise err
     # <end_catch>

@@ -23,14 +23,14 @@ In Restate, we distinguish between two types of errors: transient errors and ter
 
 ## Handling transient errors via retries
 
-**Restate assumes by default that all errors are transient errors and therefore retryable.**
-If you do not want an error to be retried, you need to specifically label it as a terminal error (see below).
+Restate assumes by default that all errors are transient errors and therefore retryable.
+If you do not want an error to be retried, you need to specifically label it as a terminal error ([see below](#application-errors-terminal)).
 
 Restate lets you configure the retry strategy at different levels: at the Restate-level (global) and at the run-block-level.
 
 ### At the Restate-Level (Global)
 
-This is the default retry policy that will be used for all invocations, unless overridden at the service-, or run-block-level.
+This defines the default retry policy that will be used for all invocations, unless overridden at the service-, or run-block-level.
 
 You can set the global retry policy in the [Restate Server configuration](/operate/configuration/server).
 By default, Restate will use an **exponential backoff retry policy**:
@@ -71,11 +71,9 @@ restate-server
 
 ### At the Run-Block-Level
 
-Handlers use run blocks to execute actions involving other systems and services (API call, DB write, ...).
+Handlers use run blocks to execute non-deterministic actions, often involving other systems and services (API call, DB write, ...).
 These run blocks are especially prone to transient failures, and you might want to configure a specific retry policy for them.
-
-Most Restate SDKs allow you to configure the retry policy for a run-block.
-
+Most Restate SDKs allow this:
 
 <CodeWithTabs groupId={"sdk"}>
     ```ts !!tabs TypeScript
@@ -204,7 +202,7 @@ There are two types of timeouts in Restate:
 
 ### Inactivity timeout
 
-When Restate does not receive a next journal entry from a running handler within the inactivity timeout, it will ask the handler to suspend.
+When the Restate Server does not receive a next journal entry from a running handler within the inactivity timeout, it will ask the handler to suspend.
 This timer guards against stalled service/handler invocations. Once it expires, Restate triggers a graceful termination by asking the service invocation to suspend (which preserves intermediate progress).
 
 By default, the inactivity timeout is set to one minute.
@@ -254,7 +252,7 @@ These are some common patterns for handling errors in Restate:
 
 ### Sagas
 
-Have a look at the [sagas](/guides/sagas) guide to learn how to revert your system back to a consistent state after a terminal error.
+Have a look at the [sagas guide](/guides/sagas) to learn how to revert your system back to a consistent state after a terminal error.
 Keep track of compensating actions throughout your business logic and apply them in the catch block after a terminal error.
 
 ### Dead-letter queue
@@ -262,41 +260,45 @@ A [dead-letter queue (DLQ)](https://aws.amazon.com/what-is/dead-letter-queue/) i
 
 You can implement this in Restate by wrapping your handler in a try-catch block. In the catch block you can forward the failed invocation to a DLQ Kafka topic or a catch-all handler which for example reports them or backs them up.
 
-Note that this does not catch errors that happen before the handler gets invoked (e.g. service does not exist, decoding errors, ...).
-Handle these as follows:
-- In case the caller waited for the response of the failed call, the caller can handle the propagation to the DLQ.
-- If the caller did not wait for the response (one-way send), you would lose these messages.
-    You could handle the decoding errors by letting the called handler take raw input and doing the decoding and validation itself.
-    In this case, it would be included in the try-catch block which would do the dispatching:
+<details>
+    <summary>Catching failed invocations before handler execution starts</summary>
 
-    <CodeWithTabs groupId={"sdk"}>
-        ```ts !!tabs TypeScript
-        CODE_LOAD::ts/src/guides/retries.ts#raw
-        ```
+    Some errors might happen before the handler code gets invoked/starts running (e.g. service does not exist, request decoding errors in SDK HTTP server, ...).
+    Handle these as follows:
+    - In case the caller waited for the response of the failed call, the caller can handle the propagation to the DLQ.
+    - If the caller did not wait for the response (one-way send), you would lose these messages.
+        You could handle the decoding errors by letting the called handler take raw input and doing the decoding and validation itself.
+        In this case, it would be included in the try-catch block which would do the dispatching:
 
-        ```python !!tabs Python
-        CODE_LOAD::python/src/guides/retries.py#raw
-        ```
+        <CodeWithTabs groupId={"sdk"}>
+            ```ts !!tabs TypeScript
+            CODE_LOAD::ts/src/guides/retries.ts#raw
+            ```
 
-        ```java !!tabs Java
+            ```python !!tabs Python
+            CODE_LOAD::python/src/guides/retries.py#raw
+            ```
 
-        CODE_LOAD::java/src/main/java/guides/RetryRunService.java#raw
-        ```
+            ```java !!tabs Java
 
-        ```kotlin !!tabs Kotlin
-        CODE_LOAD::kotlin/src/main/kotlin/guides/RetryRunService.kt#raw
-        ```
+            CODE_LOAD::java/src/main/java/guides/RetryRunService.java#raw
+            ```
 
-        ```go !!tabs Go
-        CODE_LOAD::go/guides/retries.go#raw
-        ```
+            ```kotlin !!tabs Kotlin
+            CODE_LOAD::kotlin/src/main/kotlin/guides/RetryRunService.kt#raw
+            ```
 
-        ```rust !!tabs Rust
-        CODE_LOAD::rust/src/guides/retries.rs#raw
-        ```
-    </CodeWithTabs>
-    The other errors mainly occur due to misconfiguration of your setup (e.g. wrong service name, wrong handler name, forgot service registration...).
+            ```go !!tabs Go
+            CODE_LOAD::go/guides/retries.go#raw
+            ```
 
+            ```rust !!tabs Rust
+            CODE_LOAD::rust/src/guides/retries.rs#raw
+            ```
+        </CodeWithTabs>
+        The other errors mainly occur due to misconfiguration of your setup (e.g. wrong service name, wrong handler name, forgot service registration...).
+
+</details>
 
 ### Timeouts for context actions
 

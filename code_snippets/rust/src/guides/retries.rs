@@ -27,12 +27,12 @@ impl MyService for MyServiceImpl {
         // <end_here>
 
         // <start_catch>
+        // Fails with a terminal error after 3 attempts or if the function throws one
         ctx.run(|| write_to_other_system())
             .retry_policy(RunRetryPolicy::default().max_attempts(3))
             .await
             .map_err(|e| {
-                // Handle the terminal error after retries exhausted
-                // For example, undo previous actions (see sagas guide) and
+                // Handle the terminal error: undo previous actions and
                 // propagate the error back to the caller
                 e
             })?;
