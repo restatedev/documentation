@@ -69,9 +69,9 @@ public class RetryRunService {
       // If the timeout hits first, it throws a `TimeoutError`.
       // If you do not catch it, it will lead to a retry.
       MyServiceClient.fromContext(ctx)
-              .myHandler("Hello")
-              // !mark
-              .await(Duration.ofSeconds(5));
+          .myHandler("Hello")
+          // !mark
+          .await(Duration.ofSeconds(5));
 
       var awakeable = ctx.awakeable(JsonSerdes.BOOLEAN);
       // ...Do something that will trigger the awakeable
