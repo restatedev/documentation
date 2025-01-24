@@ -33,7 +33,7 @@ dependencies {
 kotlin { jvmToolchain(21) }
 
 // Set main class
-application { mainClass.set("develop.Greeter") }
+application { mainClass.set("develop.GreeterKt") }
 
 spotless {
   kotlin {

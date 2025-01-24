@@ -1,7 +1,12 @@
 import * as restate from "@restatedev/restate-sdk";
+import {MyService} from "../develop/my_service";
 
 function writeToOtherSystem() {
     return undefined;
+}
+
+function decodeRequest(body: Uint8Array) {
+    return "";
 }
 
 const service = restate.service({
@@ -42,5 +47,46 @@ const service = restate.service({
             }
             // <end_catch>
         },
-    },
+        // <start_raw>
+        myHandler: async (ctx: restate.Context) => {
+            try {
+                // !mark
+                const rawRequest = ctx.request().body;
+                const decodedRequest = decodeRequest(rawRequest);
+
+                // ... rest of your business logic ...
+
+            } catch (e) {
+                if (e instanceof restate.TerminalError) {
+                    // Propagate to DLQ/catch-all handler
+                }
+                throw e;
+            }
+        },
+        // <end_raw>
+
+        myTimeoutHandler: async (ctx: restate.Context) => {
+            // <start_timeout>
+            try {
+                // If the timeout hits first, it throws a `TimeoutError`.
+                // If you do not catch it, it will lead to a retry.
+                await ctx.serviceClient(MyService)
+                    .myHandler("hello")
+                    // !mark
+                    .orTimeout(5000);
+
+                const {id, promise} = ctx.awakeable()
+                // do something that will trigger the awakeable
+                // !mark
+                await promise.orTimeout(5000);
+            } catch (e){
+                // !mark
+                if (e instanceof restate.TimeoutError) {
+                    // Handle the timeout error
+                }
+                throw e;
+            }
+            // <end_timeout>
+        }
+     },
 });

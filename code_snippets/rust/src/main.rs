@@ -1,4 +1,6 @@
 mod utils;
+mod get_started;
+mod guides;
 
 use restate_sdk::prelude::*;
 use std::time::Duration;

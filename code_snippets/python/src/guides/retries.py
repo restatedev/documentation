@@ -11,7 +11,7 @@ def write_to_other_system():
     pass
 
 
-@my_service.handler("myHandler")
+@my_service.handler("myServiceHandler")
 async def my_service_handler(ctx: Context, greeting: str) -> str:
     # <start_here>
     await ctx.run("write", lambda: write_to_other_system(),
@@ -35,6 +35,27 @@ async def my_service_handler(ctx: Context, greeting: str) -> str:
     # <end_catch>
 
     return f"${greeting}!"
+
+
+def decode_request(raw_request):
+    return ""
+
+
+# <start_raw>
+@my_service.handler()
+async def my_handler(ctx: Context):
+    try:
+        # !mark
+        raw_request = ctx.request().body
+        decoded_request = decode_request(raw_request)
+
+        # ... rest of your business logic ...
+
+    except TerminalError as err:
+        # Propagate to DLQ/catch-all handler
+        raise err
+# <end_raw>
+
 
 
 app = restate.app([my_service])

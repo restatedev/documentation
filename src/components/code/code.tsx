@@ -167,7 +167,7 @@ export function CodeTabs(props: { groupId?: string, className: string, tabs: Hig
         <Tabs className={clsx(styles.codetablist, "ch-codetablist", props.className)} {...(groupId ? { groupId, queryString: true } : {})}>
             {tabs.map((tab, i) => {
                 const { title, tabValue } = extractFlagsFromMeta(tab.meta);
-                const value = tabValue ?? title;
+                const value = tabValue ?? title.toLowerCase().replace("typescript", "ts");
                 return (
                     <TabItem className={clsx(styles.codetab)} label={title} value={value} key={i}>
                         <HighCode isTab={true} highlighted={tab} />
