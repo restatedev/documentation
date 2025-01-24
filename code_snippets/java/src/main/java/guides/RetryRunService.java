@@ -16,7 +16,7 @@ import java.util.concurrent.TimeoutException;
 public class RetryRunService {
 
   @Handler
-  public String myHandler(Context ctx, String greeting) {
+  public String myRunHandler(Context ctx, String greeting) {
 
     // <start_here>
     // <mark_1>
