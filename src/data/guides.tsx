@@ -82,6 +82,14 @@ const Guides: Guide[] = [
     source: null,
     tags: ['development', 'typescript', 'go', 'java', 'python', 'rust'],
   },
+  {
+    title: "Databases and Restate",
+    description: 'Learn when and how to use databases in combination with Restate.',
+    preview: require('./guides/database_guide.png'),
+    website: '/guides/databases',
+    source: null,
+    tags: ['development', 'typescript', 'java'],
+  },
 
   // Add new guides in alphabetical order!
 ];
