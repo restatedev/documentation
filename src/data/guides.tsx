@@ -88,7 +88,7 @@ const Guides: Guide[] = [
     preview: require('./guides/database_guide.png'),
     website: '/guides/databases',
     source: null,
-    tags: ['development', 'typescript', 'java'],
+    tags: ['development', 'patterns', 'typescript', 'java'],
   },
 
   // Add new guides in alphabetical order!
