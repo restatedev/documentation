@@ -9,6 +9,8 @@ import Admonition from '@theme/Admonition';
 
 This page describes how you can deploy a distributed Restate cluster.
 
+Check out the [Restate cluster guide](/guides/cluster) for a docker-compose ready-made example.
+
 ## Configuration
 
 To deploy a distributed Restate cluster without external dependencies, you need to configure the following settings in your [server configuration](/operate/configuration/server):
