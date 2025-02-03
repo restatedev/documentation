@@ -1,0 +1,70 @@
+---
+sidebar_position: 4
+description: "Control running servers and clusters"
+---
+
+import Admonition from '@theme/Admonition';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Control servers/clusters
+
+This page describes how you can deploy a distributed Restate cluster.
+
+<Admonition type="note" title="Preview state">
+    The current distributed deployment state is a preview.
+    We reserve the right to make breaking changes.
+</Admonition>
+
+Starting with version 1.2, Restate includes a command line utility to connect to and control running servers called `restatectl`. This tool is specifically designed for system operators to manage the Restate servers, and is different from the application developer-focused [Restate CLI](/develop/local_dev#running-restate-server--cli-locally) which is used to manage service deployments and invocations.
+
+## Getting `restatectl`
+
+Currently `restatectl` is only distributed as part of the `restate-server` Docker image. As Restate 1.2 is not yet officially released, you can use the Docker image `ghcr.io/restatedev/restate:main` to access the latest version.
+
+<Tabs groupid="invoke" querystring>
+
+<TabItem value="remote" label="Remote Restate server" default>
+    ```shell
+    docker run --net host --rm -it --entrypoint restatectl ghcr.io/restatedev/restate:main [ARGUMENTS]
+    ```
+</TabItem>
+
+<TabItem value="local" label="Locally-running Docker container">
+    If you are running a Restate server in a Docker container, you can use the following command from the host machine to connect to it without spawning a separate container:
+
+    ```shell
+    docker exec <CONTAINER_NAME> restatectl [ARGUMENTS]
+    ```
+</TabItem>
+
+</Tabs>
+
+You can create a shell alias for your preferred method to start `restatectl`; in the future we will offer more options to install the binary directly. From here on, we will refer to the command as just `restatectl` assuming that it expands to one of the definitions above.
+
+## Connecting to remote servers
+
+The `restatectl` tool communicates with the Restate server at the admin address specified in the [server configuration](/operate/configuration/server) - by default TCP port 5122. To get an overview of a running server or cluster, use the `status` command:
+
+```shell
+restatectl status --addresses http://localhost:5122/
+```
+<details className={"grey-details"}>
+<summary>Sample output</summary>
+
+```
+Node Configuration (v3)
+ NODE  GEN  NAME  ADDRESS                 ROLES
+ N1    2    n1    http://127.0.0.1:5122/  admin | log-server | metadata-server | worker
+
+Log Configuration (v2)
+Default Provider Config: Local
+ L-ID  FROM-LSN  KIND   LOGLET-ID  REPLICATION  SEQUENCER  NODESET
+ 0     1         Local  N/A        N/A          N/A        N/A
+
+Alive partition processors (nodes config v3, partition table v2)
+ P-ID  NODE  MODE    STATUS  LEADER  EPOCH  SEQUENCER  APPLIED-LSN  ARCHIVED-LSN  LAST-UPDATE
+ 0     N1:2  Leader  Active  N1:2    e1                1            -             615 ms ago
+```
+
+</details>
