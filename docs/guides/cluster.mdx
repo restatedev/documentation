@@ -1,0 +1,150 @@
+---
+title: "Deploying a distributed Restate cluster using Docker"
+description: "Learn how to deploy a Restate cluster using Docker."
+pagination_next: null
+pagination_prev: null
+---
+
+import Admonition from '@theme/Admonition';
+import {Step} from "../../src/components/Stepper";
+
+# Deploying a distributed Restate cluster using Docker
+
+This guide shows how to deploy a distributed Restate cluster consisting of 3 servers using Docker and Docker compose.
+
+<Admonition type="note" title="Prerequisites">
+    - [Docker](https://docs.docker.com/get-started/get-docker/)
+    - [Docker compose](https://docs.docker.com/compose/install/)
+</Admonition>
+
+<Step stepLabel="1" title="Deploy the Restate cluster using Docker">
+
+To deploy a 3 server distributed Restate cluster, copy the `docker-compose.yml` and run `docker compose up`.
+
+```yaml
+x-environment: &default-env
+  RESTATE_CLUSTER_NAME: "my-cluster"
+  RESTATE_ROLES: '["admin","worker","log-server","metadata-server"]'
+  RESTATE_LOG_FILTER: "restate=info"
+  RESTATE_ALLOW_BOOTSTRAP: "false"
+  RESTATE_BIFROST__DEFAULT_PROVIDER: "replicated"
+  RESTATE_BIFROST__REPLICATED_LOGLET__DEFAULT_REPLICATION_PROPERTY: 2
+  RESTATE_METADATA_SERVER__TYPE: "embedded"
+  RESTATE_METADATA_STORE_CLIENT__TYPE: "embedded"
+  RESTATE_METADATA_STORE_CLIENT__ADDRESSES: '["http://node1:5122","http://node2:5122","http://node3:5122"]'
+
+x-variables:
+  common_settings: &common_settings
+    # todo: Update to ghcr.io/restatedev/restate:1.2 once it is released
+    image: ghcr.io/restatedev/restate:main
+    ports:
+      # node port
+      - 5122
+      # admin port
+      - 9070
+      # admin query port
+      - 9071
+      # ingress port
+      - 8080
+
+services:
+  node1:
+    <<: *common_settings
+    ports:
+      - "5122:5122"
+      - "9070:9070"
+      - "9071:9071"
+      - "8080:8080"
+    environment:
+      <<: *default-env
+      RESTATE_NODE_NAME: node1
+      RESTATE_FORCE_NODE_ID: 1
+      RESTATE_ADVERTISED_ADDRESS: "http://node1:5122"
+      # only node1 is allowed to provision the cluster
+      RESTATE_ALLOW_BOOTSTRAP: "true"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  node2:
+    <<: *common_settings
+    ports:
+      - "25122:5122"
+      - "29070:9070"
+      - "29071:9071"
+      - "28080:8080"
+    environment:
+      <<: *default-env
+      RESTATE_NODE_NAME: node2
+      RESTATE_FORCE_NODE_ID: 2
+      RESTATE_ADVERTISED_ADDRESS: "http://node2:5122"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  node3:
+    <<: *common_settings
+    ports:
+      - "35122:5122"
+      - "39070:9070"
+      - "39071:9071"
+      - "38080:8080"
+    environment:
+      <<: *default-env
+      RESTATE_NODE_NAME: node3
+      RESTATE_FORCE_NODE_ID: 3
+      RESTATE_ADVERTISED_ADDRESS: "http://node3:5122"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+```
+
+The cluster uses the `replicated` Bifrost provider and replicates data to 2 servers.
+Since we are running with 3 servers, the cluster can tolerate 1 server failure without becoming unavailable.
+
+The `embedded` metadata cluster consists of all servers since they all run the `metadata-server` role.
+Since the `embedded` metadata cluster requires a majority quorum to operate, the cluster can tolerate 1 server failure without becoming unavailable.
+
+Take a look at the [cluster deployment documentation](/deploy/cluster) for more information on how to configure and deploy a distributed Restate cluster.
+
+</Step>
+
+<Step stepLabel="2" title="Check the cluster status">
+    You can check the status of the cluster by running the `restatectl status` command on any of the started Restate servers.
+
+    ```shell
+    docker compose exec node1 restatectl status
+    ```
+</Step>
+
+<Step stepLabel="3" title={<span><a href={"/get_started/quickstart"}>Start a local Restate service</a></span>}/>
+
+<Step stepLabel="4" title="Register the service endpoint">
+    You can register the service endpoint at any of the started Restate servers since they all run the `admin` role.
+
+    ```shell
+    RESTATE_ADMIN_URL=http://localhost:29070 restate dp reg http://host.docker.internal:9080
+    ```
+</Step>
+
+<Step stepLabel="5" title="Invoke the service">
+    You can invoke the registered service at any of the started Restate servers since they all run ingress.
+
+    ```shell
+    curl localhost:8080/Greeter/greet -H 'content-type: application/json' -d '"Sarah"' &&
+    curl localhost:28080/Greeter/greet -H 'content-type: application/json' -d '"Bob"' &&
+    curl localhost:38080/Greeter/greet -H 'content-type: application/json' -d '"Eve"'
+    ```
+</Step>
+
+<Step stepLabel="6" title="Kill and restart Restate servers">
+    Try killing and restarting one of the Restate servers and see how the cluster reacts.
+    ```shell
+    docker compose kill node1 &&
+    sleep 5 &&
+    docker compose up -d node1
+    ```
+</Step>
+
+<Step end={true} stepLabel="🎉" title="Congratulations, you managed to run your first distributed Restate cluster and simulated some failures!"/>
+
+
+Here are some next steps for you to try:
+
+- Try to configure a 5 server Restate cluster that can tolerate up to 2 server failures.
+- Try to deploy a 3 server Restate cluster using Kubernetes.
