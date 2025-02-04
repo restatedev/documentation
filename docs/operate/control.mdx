@@ -20,13 +20,21 @@ Starting with version 1.2, Restate includes a command line utility to connect to
 
 ## Getting `restatectl`
 
-Currently `restatectl` is only distributed as part of the `restate-server` Docker image. As Restate 1.2 is not yet officially released, you can use the Docker image `ghcr.io/restatedev/restate:main` to access the latest version.
-
 <Tabs groupid="invoke" querystring>
 
-<TabItem value="remote" label="Remote Restate server" default>
+<TabItem value="release" label="Install via `npm`" default>
+    Only available after release of version 1.2
+
     ```shell
-    docker run --net host --rm -it --entrypoint restatectl ghcr.io/restatedev/restate:main [ARGUMENTS]
+    npm install @resatedev/restatectl
+    npx restatectl [ARGUMENTS]
+    ```
+</TabItem>
+
+<TabItem value="docker" label="`restate-cli` docker image" default>
+    `restatectl` is part of `restate-cli` image (version >= 1.2)
+    ```shell
+    docker run --net host --rm -it --entrypoint restatectl ghcr.io/restatedev/restate-cli [ARGUMENTS]
     ```
 </TabItem>
 
