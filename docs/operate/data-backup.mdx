@@ -1,6 +1,6 @@
 ---
-sidebar_position: 10
-description: "Strategies for backing up and restoring the Restate data store"
+sidebar_position: 11
+description: "Backing up and restoring the Restate data store on single nodes"
 ---
 
 import Admonition from '@theme/Admonition';
@@ -8,7 +8,7 @@ import Admonition from '@theme/Admonition';
 # Data Backup
 
 <Admonition type="note">
-    Future versions of Restate will support distributed deployment with spanning multiple machnes enhancing the availability you can achieve with your Restate cluster. This document only covers single-node Restate deployments.
+    This page covers backing up individual Restate server instances. For sharing snapshots in a Restate cluster environment, see [Logs and Snapshots](/operate/logs-snapshots).
 </Admonition>
 
 The Restate server persists both metadata (such as the details of deployed services, in-flight invocations) and data (e.g., virtual object and workflow state keys) in its data store, which is located in its base directory (by default, the `restate-data` path relative to the startup working directory). Restate is configured to perform write-ahead logging with fsync enabled to ensure that effects are fully persisted before being acknowledged to participating services.
@@ -19,7 +19,7 @@ In addition to the data store, you should also make sure you have a back up of t
 
 ## Restoring Backups
 
-<Admonition type={"caution"} title={"Avoid multiple instances of Restate"}>
+<Admonition type={"caution"} title={"Prevent multiple instances of the same node"}>
     Restate cannot guarantee that it is the only instance of the given node. You must ensure that only one instance of any given Restate node is running when restoring the data store from a backup. Running multiple instances could lead to a "split-brain" scenario where different servers process invocations for the same set of services, causing state divergence.
 </Admonition>
 
