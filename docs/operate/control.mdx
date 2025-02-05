@@ -7,45 +7,21 @@ import Admonition from '@theme/Admonition';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Control servers/clusters
+# Control Servers
 
-This page describes how you can manage running Restate servers.
-
-<Admonition type="note" title="Preview state">
-    The current distributed deployment state is a preview.
-    We reserve the right to make breaking changes.
-</Admonition>
-
-Starting with version 1.2, Restate includes a command line utility to connect to and control running servers called `restatectl`. This tool is specifically designed for system operators to manage the Restate servers, and is different from the application developer-focused [Restate CLI](/develop/local_dev#running-restate-server--cli-locally) which is used to manage service deployments and invocations.
+Starting with version 1.2, Restate includes a command line utility to connect to and control running Restate servers called `restatectl`. This tool is specifically designed for system operators to manage the Restate servers, and is distinct from the application developer-focused `restate` CLI tool, which is used to manage service deployments and invocations.
 
 ## Getting `restatectl`
 
-<Tabs groupid="invoke" querystring>
+You can install `restatectl` using your preferred [installation method](/develop/local_dev). The tool is also included in the `restate-cli` and `restate` Docker images. To use `restatectl` in a running Docker container, you can use the following command from the host machine to connect to it without spawning a separate container:
 
-<TabItem value="release" label="Install via `npm`" default>
-    Only available after release of version 1.2
-
-    ```shell
-    npm install @resatedev/restatectl
-    npx restatectl [ARGUMENTS]
-    ```
-</TabItem>
-
-<TabItem value="local" label="Locally-running Docker container">
-    If you are running a Restate server in a Docker container, you can use the following command from the host machine to connect to it without spawning a separate container:
-
-    ```shell
-    docker exec <CONTAINER_NAME> restatectl [ARGUMENTS]
-    ```
-</TabItem>
-
-</Tabs>
-
-You can create a shell alias for your preferred method to start `restatectl`; in the future we will offer more options to install the binary directly. From here on, we will refer to the command as just `restatectl` assuming that it expands to one of the definitions above.
+```shell
+docker exec <CONTAINER_NAME> restatectl [ARGUMENTS]
+```
 
 ## Connecting to remote servers
 
-The `restatectl` tool communicates with the Restate server at the server `advertised` address specified in the [server configuration](/operate/configuration/server) - by default TCP port 5122. To get an overview of a running server or cluster, use the `status` command:
+The `restatectl` tool communicates with Restate using the server's advertised address specified in the [server configuration](/operate/configuration/server) - by default TCP port 5122. To get an overview of a running server or cluster, use the `status` command:
 
 ```shell
 restatectl status --addresses http://localhost:5122/
