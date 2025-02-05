@@ -1,0 +1,39 @@
+---
+sidebar_position: 10
+description: "How Restate uses logs and snapshots"
+---
+
+import Admonition from '@theme/Admonition';
+
+# Logs and Snapshots
+
+In a distributed environment, the shared log is the mechanism for replicating partition state among nodes. Therefore it is critical to that all cluster members can get all the relevant events recorded in the log, even newly built nodes that will join the cluster in the future. This requirement is at odds with an immutable log growing unboundedly. Snapshots enable log trimming - the proces of removing older segments of the log.
+
+When partition processors successfully publish a snapshot, they update their "archived" log sequence number (LSN). This reflects the position in the log at which the snapshot was taken and allows the cluster to safely trim its logs.
+
+## Log trimming
+
+By default, Restate will attempt to trim logs once an hour which you can override or disable in the server configuration:
+
+```toml
+[admin]
+log-trim-interval = "1h"
+```
+
+This interval is only the check and not a guarantee that logs will be trimmed. Restate will automatically determine the appropriate safe trim point for each partition's log.
+
+If replicated logs are in use in a clustered environment, the log safe trim point will be determined based on the archived LSN. If a snapshot repository is not configured, then archived LSNs are not reported. Instead, the safe trim point will be determined by the smallest reported persisted LSN across all known processors for the given partition. Single-node local-only logs are also trimmed based on the partitions' persisted LSNs.
+
+The presence of any dead nodes in a cluster will cause trimming to be suspended for all partitions, unless a snapshot repository is configured. This is because we can not know what partitions may reside on the unreachable nodes, which will become stuck when the node comes back.
+
+When a node starts up with pre-existing partition state and finds that the partition's log has been trimmed to a point beyond the most recent locally-applied LSN, the node will attempt to download the latest snapshot from the configured repository. If a suitable snapshot is available, the processor will re-bootstrap its local state and resume applying the log.
+
+<Admonition type="note" title="Handling log trim gap errors">
+    If you observe repeated `Shutting partition processor down because it encountered a trim gap in the log.` errors in the Restate server log, it is an indication that a processor is failing to start up due to missing log records. To recover, you must ensure that a snapshot repository is correctly configured and accessible from the the node reporting errors. You can still recover even if no snapshots were taken previously as long as there is at least one healthy node with a copy of the partition data. In that case, you must first configure the existing node(s) to publish snapshots for the affected partition(s) to a shared destination.
+</Admonition>
+
+## Pruning the snapshot repository
+
+<Admonition type="warning" title="Pruning">
+    Restate does not currently support pruning older snapshots from the snapshot repository. We recommend implementing an object lifecycle policy directly in the object store to manage retention.
+</Admonition>
