@@ -9,7 +9,9 @@ import Admonition from '@theme/Admonition';
 
 This page describes how you can deploy a distributed Restate cluster.
 
-Check out the [Restate cluster guide](/guides/cluster) for a docker-compose ready-made example.
+<Admonition type="info" title="Quickstart using Docker">
+    Check out the [Restate cluster guide](/guides/cluster) for a docker-compose ready-made example.
+</Admonition>
 
 ## Configuration
 
@@ -34,15 +36,13 @@ default-provider = "replicated"
 [bifrost.replicated-loglet]
 # Replicate the data to 2 nodes. This requires that the cluster has at least 2 nodes to
 # become operational. If the cluster has at least 3 nodes, then it can tolerate 1 node failure.
-default-replication-property = 2
+default-log-replication = 2
 
 [metadata-server]
-# To tolerate node failures, use the embedded metadata server
-type = "embedded"
+# To tolerate node failures, use the replicated metadata server
+type = "replicated"
 
-[metadata-store-client]
-# Use the embedded metadata store
-type = "embedded"
+[metadata-client]
 # List all the advertised addresses of the nodes that run the metadata-server role
 addresses = ["ADVERTISED_ADDRESS", "ADVERTISED_ADDRESS_NODE_X"]
 
@@ -59,35 +59,35 @@ bind-address = "INGRESS_BIND_ADDRESS"
 pgsql-bind-address = "PGSQL_BIND_ADDRESS"
 ```
 
-It is important that every Restate server you start has a unique `node-name` specified.
-All servers that are part of the cluster need to have the same `cluster-name` specified.
-At most one server can be configured with `auto-provision = true`.
-If no server is allowed to auto provision, then you have to manually provision the cluster.
+It is important that every Restate node you start has a unique `node-name` specified.
+All nodes that are part of the cluster need to have the same `cluster-name` specified.
+At most one node can be configured with `auto-provision = true`.
+If no node is allowed to auto provision, then you have to manually provision the cluster.
 Refer to the [Cluster provisioning](#cluster-provisioning) section for more information.
 
 The log provider needs to be configured with `default-provider = "replicated"`.
-The `default-replication-property` should be set to the number of servers that the data should be replicated to.
-If you run at least `2 * default-replication-property - 1` servers, then the cluster can tolerate `default-replication-property - 1` server failures.
-See the [log documentation](/operate/bifrost) for how to configure the log to tolerate up to `n` server failures.
+The `default-log-replication` should be set to the number of nodes that the data should be replicated to.
+If you run at least `2 * default-replication-property - 1` nodes, then the cluster can tolerate `default-replication-property - 1` node failures.
+See the [log documentation](/operate/bifrost) for how to configure the log to tolerate up to `n` node failures.
 
-The metadata server type should be set to `embedded` to tolerate server failures.
-Every server that runs the `metadata-server` role will join the metadata store cluster.
-To tolerate `n` metadata server failures, you need to run at least `2 * n + 1` Restate servers with the `metadata-server` role configured.
+The metadata server type should be set to `replicated` to tolerate node failures.
+Every node that runs the `metadata-server` role will join the metadata store cluster.
+To tolerate `n` metadata node failures, you need to run at least `2 * n + 1` Restate nodes with the `metadata-server` role configured.
 
-The `metadata-store-client` should be set to `embedded` and configured with the advertised addresses of all servers that run the `metadata-server` role.
+The `metadata-client` should be configured with the advertised addresses of all nodes that run the `metadata-server` role.
 
-Every Restate server that runs the `worker` role will also run the ingress server and accept incoming invocations.
+Every Restate node that runs the `worker` role will also run the ingress server and accept incoming invocations.
 
-For those servers that run on the same machine, make sure that the ports do not conflict.
+For those nodes that run on the same machine, make sure that the ports do not conflict.
 
 ## Cluster provisioning
 
-Once you start the server that is configured with `auto-provision = true`, it will provision the cluster so that other servers can join.
+Once you start the node that is configured with `auto-provision = true`, it will provision the cluster so that other nodes can join.
 The provision step initializes the metadata store and writes the initial `NodesConfiguration` with the initial cluster configuration to the metadata store.
-In case none of the servers is allowed to auto-provision, then you need to provision the cluster manually via `restatectl`.
+In case none of the nodes is allowed to auto-provision, then you need to provision the cluster manually via `restatectl`.
 
 ```shell
-restatectl cluster provision --addresses <SERVER_TO_PROVISION> --yes
+restatectl provision --addresses <SERVER_TO_PROVISION> --yes
 ```
 
 This provisions the cluster with default settings specified in the server configuration.
@@ -96,10 +96,8 @@ See the [restatectl documentation](/operate/restatectl) for more information abo
 ## Growing the cluster
 
 It is possible to grow the cluster after it has been started.
-To do so, you need to start a new server with the same `cluster-name` and at least one of the addresses of a running server in `metadata-store-client.addresses`.
-The latter is needed to let the server discover the metadata servers and join the cluster.
-
-If you are using an external metadata store, then `metadata-store-client` should point to the external metadata store.
+To do so, you need to start a new node with the same `cluster-name` and at least one of the addresses of a running node in `metadata-client.addresses`.
+The latter is needed to let the node discover the metadata servers and join the cluster.
 
 <Admonition type="note" title="Growing the cluster in the future">
     If you plan to grow your cluster after some time, we strongly recommend that you enable snapshotting.
@@ -109,6 +107,6 @@ If you are using an external metadata store, then `metadata-store-client` should
 
 <Admonition type="note" title="Shrinking the cluster">
     Currently, it is not supported to shrink the cluster.
-    This means that servers that have joined the cluster once, cannot be stopped!
-    We will add support for removing servers from the cluster soon.
+    This means that nodes that have joined the cluster once, cannot be stopped!
+    We will add support for removing nodes from the cluster soon.
 </Admonition>
