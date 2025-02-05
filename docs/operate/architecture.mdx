@@ -3,6 +3,8 @@ sidebar_position: 9
 description: "Restate architecture and distributed deployment concepts"
 ---
 
+import Admonition from '@theme/Admonition';
+
 # Restate Architecture
 
 Restate is designed to be extremely simple to get started with by delivering all the functionality in a single binary with minimal upfront configuration needs. In particular, when starting out by running Restate on a single node, you don't need to understand its internal architecture in a great level of detail.
@@ -27,6 +29,11 @@ The metadata store is designed to support relatively low volumes of read and wri
 
 External requests enter the Restate cluster via the **HTTP ingress** component, which runs on nodes assigned the `http-ingress` role. Compared to other roles, the HTTP ingress role does not involve long-lived state and it can move around relatively freely, since it only handles ongoing client connections.
 
+<Admonition type="info" title={"Fine-grained ingress role"}>
+    The fine-grained `http-ingress` role is a new addition in Restate 1.2. For backwards-compatibility, nodes running the `worker` role will continue to run the ingress function in version 1.2.
+</Admonition>
+
+
 ## Logs and partitions: the core of durable execution processing
 
 Restate uses a distributed log to durably record all events in the system before acting on them, similar to the function of a write-ahead log (WAL) in a database system. To support scale-out operations, Restate splits the services key-space across multiple partitions, backed by logs. Currently, we map one partition to one log, though this relationship may change in the future. Thus you will see references to both partition ids and log ids, depending on context, so be aware that these are distinct concepts even if they might be the same value.
@@ -34,5 +41,3 @@ Restate uses a distributed log to durably record all events in the system before
 **Log server** nodes running the `log-server` role are responsible for durably persisting the log. If the log is the equivalent of a WAL, then partition stores are the materializations that enable efficient reads of the events (invocation journals, key-value data) that have been recorded. Depending on the configured **log replication** requirements, Restate will allocate multiple log servers to persist a given log, and this will change over time to support maintenance and resizing of the cluster.
 
 The **partition processor** is the Restate component responsible for maintaining the partition store. This runs on nodes assigned the `worker` role. Partition processors can operate in either leader or follower mode. Only a single leader for a given partition can be active at a time, and this is the sole processor that handles invocations to deployed services. Followers keep up with the log without taking action, and are ready to take over in the event that the partition's leader becomes unavailable. The overall number of processors per partition is configurable via the **partition replication** configuration option.
-
-<!-- todo(pavel): mention and link to snapshots once we add that section -->
