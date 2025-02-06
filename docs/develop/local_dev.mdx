@@ -22,6 +22,7 @@ Restate is a single self-contained binary. No external dependencies needed.
 
             ```shell !result
             brew install restatedev/tap/restate-server &&
+            brew install restatedev/tap/restatectl &&
             brew install restatedev/tap/restate
             ```
         </TextAndCode>
@@ -41,10 +42,11 @@ Restate is a single self-contained binary. No external dependencies needed.
             BIN=$HOME/.local/bin && RESTATE_PLATFORM=x86_64-unknown-linux-musl && \
             curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
             tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
-            chmod +x restate restate-server && \
+            chmod +x restate restatectl restate-server && \
 
             # Move the binaries to a directory in your PATH, for example ~/.local/bin:
             mv restate $BIN && \
+            mv restatectl $BIN && \
             mv restate-server $BIN
             ```
 
@@ -52,10 +54,11 @@ Restate is a single self-contained binary. No external dependencies needed.
             BIN=$HOME/.local/bin && RESTATE_PLATFORM=aarch64-unknown-linux-musl && \
             curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
             tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
-            chmod +x restate restate-server && \
+            chmod +x restate restatectl restate-server && \
 
             # Move the binaries to a directory in your PATH, for example ~/.local/bin:
             mv restate $BIN && \
+            mv restatectl $BIN && \
             mv restate-server $BIN
             ```
 
@@ -63,10 +66,11 @@ Restate is a single self-contained binary. No external dependencies needed.
             BIN=/usr/local/bin && RESTATE_PLATFORM=x86_64-apple-darwin && \
             curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
             tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
-            chmod +x restate restate-server && \
+            chmod +x restate restatectl restate-server && \
 
             # Move the binaries to a directory in your PATH, for example /usr/local/bin (needs sudo):
             sudo mv restate $BIN && \
+            sudo mv restatectl $BIN && \
             sudo mv restate-server $BIN
             ```
 
@@ -74,10 +78,11 @@ Restate is a single self-contained binary. No external dependencies needed.
             BIN=/usr/local/bin && RESTATE_PLATFORM=aarch64-apple-darwin && \
             curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
             tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
-            chmod +x restate restate-server && \
+            chmod +x restate restatectl restate-server && \
 
             # Move the binaries to a directory in your PATH, for example /usr/local/bin (needs sudo):
             sudo mv restate $BIN && \
+            sudo mv restatectl $BIN && \
             sudo mv restate-server $BIN
             ```
 
@@ -95,6 +100,7 @@ Restate is a single self-contained binary. No external dependencies needed.
 
             ```shell !result
             npm install --global @restatedev/restate-server@latest &&
+            npm install --global @restatedev/restatectl@latest &&
             npm install --global @restatedev/restate@latest
             ```
         </TextAndCode>
@@ -120,8 +126,23 @@ Restate is a single self-contained binary. No external dependencies needed.
         docker run -it --network=host docker.io/restatedev/restate-cli:VAR::RESTATE_VERSION invocations ls
         ```
 
-        Replace `invocations ls` by the CLI command you want to run.
+        Replace `invocations ls` with the CLI subcommand you want to run.
 
+        #### `restatectl`
+
+        The server and CLI images both contain the `restatectl` tool. To run `restatectl`, use the following command:
+
+        ```shell
+        docker run -it --network=host --entrypoint restatectl docker.io/restatedev/restate-cli:VAR::RESTATE_VERSION nodes ls
+        ```
+
+        You can also execute `restatectl` in a running server container using the following command:
+
+        ```shell
+        docker exec restate_dev restatectl nodes ls
+        ```
+
+        Replace `restate_dev` with the name of a running container, and `nodes ls` with the subcommand you want to run.
     </TabItem>
 </Tabs>
 
