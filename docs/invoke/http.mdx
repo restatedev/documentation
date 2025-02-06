@@ -166,4 +166,14 @@ curl localhost:8080/restate/workflow/MyWorkflow/myWorkflowId/attach
 curl localhost:8080/restate/workflow/MyWorkflow/myWorkflowId/output
 ```
 
+## OpenAPI support
 
+Restate exposes for every service an OpenAPI 3.1 definition, to get it:
+
+```shell
+curl localhost:9070/services/MyService/openapi > MyService_openapi.json
+```
+
+You can use this definition with any OpenAPI 3.1 compliant tool to generate clients for your service, such as [openapi-generator](https://openapi-generator.tech/).
+
+Depending on the SDKs, the rich input/output JSON schemas are included as well. At the moment rich schemas are supported only in Python SDK and Java SDK.
