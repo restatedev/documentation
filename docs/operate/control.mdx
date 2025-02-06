@@ -7,9 +7,9 @@ import Admonition from '@theme/Admonition';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Control Servers
+# Control Clusters
 
-Starting with version 1.2, Restate includes a command line utility to connect to and control running Restate servers called `restatectl`. This tool is specifically designed for system operators to manage the Restate servers, and is distinct from the application developer-focused `restate` CLI tool, which is used to manage service deployments and invocations.
+Starting with version 1.2, Restate includes a command line utility to connect to and control running Restate servers called `restatectl`. This tool is specifically designed for system operators to manage Restate servers and is particularly useful in a cluster environment. It is distinct from the application developer-focused `restate` CLI tool, which is used to manage service deployments and invocations.
 
 ## Getting `restatectl`
 
@@ -21,7 +21,7 @@ docker exec <CONTAINER_NAME> restatectl [ARGUMENTS]
 
 ## Connecting to remote servers
 
-The `restatectl` tool communicates with Restate using the server's advertised address specified in the [server configuration](/operate/configuration/server) - by default TCP port 5122. To get an overview of a running server or cluster, use the `status` command:
+The `restatectl` tool communicates with Restate at the advertised address specified in the [server configuration](/operate/configuration/server) - by default TCP port 5122. To get an overview of a running server or cluster, use the `status` command:
 
 ```shell
 restatectl status --addresses http://localhost:5122/
