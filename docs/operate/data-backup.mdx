@@ -12,6 +12,10 @@ import Admonition from '@theme/Admonition';
 
 Restate workers can be configured to periodically publish snapshots of their partition state to a shared destination. Snapshots act as a form of backup and allow nodes that had not previously served a partition to bootstrap a copy of its state. Without snapshots, rebuilding a partition processor would require the full replay of the partition's log. Replaying the log might take a long time or even be impossible if the log was trimmed.
 
+<Admonition type="note" title="Architectural overview">
+    To understand the terminology used on this page, it might be helpful to read through the [architecture reference](/references/architecture).
+</Admonition>
+
 ### Configuring Snapshots
 Restate clusters should always be configured with a snapshot repository to allow nodes to efficiently share partition state. Restate currently supports using Amazon S3 (or another API-compatible object store) as a shared snapshot repository. To set up a snapshot destination, update your server configuration as follows:
 
@@ -30,8 +34,6 @@ No additional configuration is required to enable restoring snapshots. When part
 </Admonition>
 
 For S3 bucket destinations, Restate will use the AWS credentials available from the environment, or the configuration profile specified by `AWS_PROFILE` environment variable, falling back to the default AWS profile.
-
-To learn more about how Restate uses snapshots, see [Logs and Snapshots](/operate/logs-snapshots).
 
 ### Log trimming and Snapshots
 
