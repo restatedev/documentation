@@ -1,19 +1,24 @@
 ---
+title: "Restate Cluster"
 sidebar_position: 1
 description: "Learn how to deploy a distributed Restate cluster."
 ---
 
 import Admonition from '@theme/Admonition';
 
-# Cluster deployment
+# Restate Cluster Deployment
 
 This page describes how you can deploy a distributed Restate cluster.
 
-<Admonition type="info" title="Quickstart using Docker">
+<Admonition type="tip" title="Quickstart using Docker">
     Check out the [Restate cluster guide](/guides/cluster) for a docker-compose ready-made example.
 </Admonition>
 
 ## Configuration
+
+<Admonition type="note" title="Architectural overview">
+    To understand the terminology used on this page, it might be helpful to read through the [architecture reference](/references/architecture).
+</Admonition>
 
 To deploy a distributed Restate cluster without external dependencies, you need to configure the following settings in your [server configuration](/operate/configuration/server):
 
@@ -102,7 +107,7 @@ The latter is needed to let the node discover the metadata servers and join the 
 <Admonition type="note" title="Growing the cluster in the future">
     If you plan to grow your cluster after some time, we strongly recommend that you enable snapshotting.
     Otherwise, you risk that newly added nodes won't be fully used by the system.
-    See the [snapshotting documentation](/deploy/snapshotting) for more information.
+    See the [snapshotting documentation](/operate/data-backup#snapshotting) for more information.
 </Admonition>
 
 <Admonition type="note" title="Shrinking the cluster">
@@ -110,3 +115,41 @@ The latter is needed to let the node discover the metadata servers and join the 
     This means that nodes that have joined the cluster once, cannot be stopped!
     We will add support for removing nodes from the cluster soon.
 </Admonition>
+
+## Controlling Clusters
+
+Restate includes a command line utility tool to connect to and control running Restate servers called `restatectl`.
+This tool is specifically designed for system operators to manage Restate servers and is particularly useful in a cluster environment.
+It is distinct from the application developer-focused `restate` CLI tool, which is used to manage service deployments and invocations.
+
+<Admonition type="info">
+You can install `restatectl` using your preferred [installation method](/develop/local_dev).
+The tool is also included in the `restate-cli` and `restate` Docker images.
+To use `restatectl` in a running Docker container, you can use the following command from the host machine to connect to it without spawning a separate container:
+`docker exec <CONTAINER_NAME> restatectl [ARGUMENTS]`
+</Admonition>
+
+The `restatectl` tool communicates with Restate at the advertised address specified in the [server configuration](/operate/configuration/server) - by default TCP port 5122. To get an overview of a running server or cluster, use the `status` command:
+
+```shell
+restatectl status --addresses http://localhost:5122/
+```
+<details className={"grey-details"}>
+<summary>Sample output</summary>
+
+```
+Node Configuration (v3)
+ NODE  GEN  NAME  ADDRESS                 ROLES
+ N1    2    n1    http://127.0.0.1:5122/  admin | log-server | metadata-server | worker
+
+Log Configuration (v2)
+Default Provider Config: Local
+ L-ID  FROM-LSN  KIND   LOGLET-ID  REPLICATION  SEQUENCER  NODESET
+ 0     1         Local  N/A        N/A          N/A        N/A
+
+Alive partition processors (nodes config v3, partition table v2)
+ P-ID  NODE  MODE    STATUS  LEADER  EPOCH  SEQUENCER  APPLIED-LSN  ARCHIVED-LSN  LAST-UPDATE
+ 0     N1:2  Leader  Active  N1:2    e1                1            -             615 ms ago
+```
+
+</details>
