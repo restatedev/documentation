@@ -1,9 +1,10 @@
 ---
 sidebar_position: 1
+title: "AWS EC2"
 description: "Deploy Restate Server on EC2."
 ---
 
-# Restate on AWS EC2 with CDK
+# AWS EC2 with CDK
 
 The [Restate CDK support library](https://www.npmjs.com/package/@restatedev/restate-cdk) provides convenient constructs
 for managing Restate server deployments on AWS. We currently offer support for a simple single-node deployment to Amazon
