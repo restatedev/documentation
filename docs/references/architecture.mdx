@@ -74,7 +74,7 @@ External requests enter the Restate cluster via the HTTP ingress component, whic
 
 ## Log servers
 
-Log server nodes running the `log-server` role are responsible for durably persisting the log. If the log is the equivalent of a WAL, then partition stores are the materializations that enable efficient reads of the events (invocation journals, key-value data) that have been recorded. Depending on the configured **log replication** requirements, Restate will allocate multiple log servers to persist a given log, and this will change over time to support maintenance and resizing of the cluster.
+Log server nodes running the `log-server` role are responsible for durably persisting the log. If the log is the equivalent of a WAL, then partition stores are the materializations that enable efficient reads of the events (invocation journals, key-value data) that have been recorded. Depending on the configured **log replication** requirements, Restate will replicate log records to multiple log servers to persist a given log, and this will change over time to support maintenance and resizing of the cluster.
 
 
 ## Workers
