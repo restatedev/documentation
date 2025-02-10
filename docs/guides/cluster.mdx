@@ -22,20 +22,29 @@ This guide shows how to deploy a distributed Restate cluster consisting of 3 nod
 To deploy a 3 node distributed Restate cluster, copy the `docker-compose.yml` and run `docker compose up`.
 
 ```yaml
+# Common environment variables for all restate nodes
 x-environment: &default-env
-  RESTATE_CLUSTER_NAME: "my-cluster"
-  RESTATE_ROLES: '["admin","worker","log-server","metadata-server"]'
+  # To customize logging, check https://docs.restate.dev/operate/monitoring/logging
   RESTATE_LOG_FILTER: "restate=info"
-  RESTATE_AUTO_PROVISION: "false"
+  # Cluster name, this will be visible in few places such as logs
+  RESTATE_CLUSTER_NAME: "my-cluster"
+  # In this setup every node fulfills every role.
+  # For more info on disaggregated setups, check https://docs.restate.dev/deploy/server/cluster/
+  RESTATE_ROLES: '["admin","worker","log-server","metadata-server"]'
+  # Internal metadata and log server configuration
   RESTATE_BIFROST__DEFAULT_PROVIDER: "replicated"
   RESTATE_BIFROST__REPLICATED_LOGLET__DEFAULT_LOG_REPLICATION: 2
   RESTATE_METADATA_SERVER__TYPE: "replicated"
-  RESTATE_METADATA_CLIENT__ADDRESSES: '["http://node1:5122","http://node2:5122","http://node3:5122"]'
+  # This needs to be configured with the hostnames/ports the nodes can use to talk to each other.
+  # In this setup, they interact within the "internal" Docker compose network setup.
+  RESTATE_METADATA_CLIENT__ADDRESSES: '["http://restate-1:5122","http://restate-2:5122","http://restate-3:5122"]'
+  # Only one node provisions the cluster, meaning only one container needs this config to be 'true'
+  RESTATE_AUTO_PROVISION: "false"
 
+# Common containers configuration
 x-variables:
   common_settings: &common_settings
-    # todo: Update to ghcr.io/restatedev/restate:1.2 once it is released
-    image: ghcr.io/restatedev/restate:main
+    image: docker.io/restatedev/restate:1.2
     ports:
       # node port
       - 5122
@@ -47,7 +56,7 @@ x-variables:
       - 8080
 
 services:
-  node1:
+  restate-1:
     <<: *common_settings
     ports:
       - "5122:5122"
@@ -56,14 +65,16 @@ services:
       - "8080:8080"
     environment:
       <<: *default-env
-      RESTATE_NODE_NAME: node1
+      # Node name and id, used to uniquely identify restate processes, and useful for observability
+      RESTATE_NODE_NAME: restate-1
       RESTATE_FORCE_NODE_ID: 1
-      RESTATE_ADVERTISED_ADDRESS: "http://node1:5122"
-      # only node1 is allowed to provision the cluster
+      # This needs to be configured with the hostname/port the other Restate nodes can use to talk to this node.
+      RESTATE_ADVERTISED_ADDRESS: "http://restate-1:5122"
+      # restate-1 provisions the cluster
       RESTATE_AUTO_PROVISION: "true"
     extra_hosts:
       - "host.docker.internal:host-gateway"
-  node2:
+  restate-2:
     <<: *common_settings
     ports:
       - "25122:5122"
@@ -72,12 +83,14 @@ services:
       - "28080:8080"
     environment:
       <<: *default-env
-      RESTATE_NODE_NAME: node2
+      # Node name and id, used to uniquely identify restate processes, and useful for observability
+      RESTATE_NODE_NAME: restate-2
       RESTATE_FORCE_NODE_ID: 2
-      RESTATE_ADVERTISED_ADDRESS: "http://node2:5122"
+      # This needs to be configured with the hostname/port the other Restate nodes can use to talk to this node.
+      RESTATE_ADVERTISED_ADDRESS: "http://restate-2:5122"
     extra_hosts:
       - "host.docker.internal:host-gateway"
-  node3:
+  restate-3:
     <<: *common_settings
     ports:
       - "35122:5122"
@@ -86,9 +99,11 @@ services:
       - "38080:8080"
     environment:
       <<: *default-env
-      RESTATE_NODE_NAME: node3
+      # Node name and id, used to uniquely identify restate processes, and useful for observability
+      RESTATE_NODE_NAME: restate-3
       RESTATE_FORCE_NODE_ID: 3
-      RESTATE_ADVERTISED_ADDRESS: "http://node3:5122"
+      # This needs to be configured with the hostname/port the other Restate nodes can use to talk to this node.
+      RESTATE_ADVERTISED_ADDRESS: "http://restate-3:5122"
     extra_hosts:
       - "host.docker.internal:host-gateway"
 ```
@@ -108,7 +123,7 @@ Take a look at the [cluster deployment documentation](/deploy/server/cluster) fo
     Note, it might take a few seconds until the cluster has fully started and the status is available.
 
     ```shell
-    docker compose exec node1 restatectl status
+    docker compose exec restate-1 restatectl status
     ```
 </Step>
 
@@ -118,8 +133,10 @@ Take a look at the [cluster deployment documentation](/deploy/server/cluster) fo
     You can register the service endpoint at any of the started Restate nodes since they all run the `admin` role.
 
     ```shell
-    docker compose exec node2 restate dp register http://host.docker.internal:9080
+    restate dp register http://host.docker.internal:9080
     ```
+
+    Or alternatively you can open the Restate UI at http://localhost:9080 and register the service endpoint there.
 </Step>
 
 <Step stepLabel="5" title="Invoke the service">
@@ -135,9 +152,9 @@ Take a look at the [cluster deployment documentation](/deploy/server/cluster) fo
 <Step stepLabel="6" title="Kill and restart Restate servers">
     Try killing and restarting one of the Restate nodes and see how the cluster reacts.
     ```shell
-    docker compose kill node1 &&
+    docker compose kill restate-1 &&
     sleep 5 &&
-    docker compose up -d node1
+    docker compose up -d restate-1
     ```
 </Step>
 
