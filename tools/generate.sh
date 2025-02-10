@@ -20,7 +20,7 @@ echo "Generate OpenAPI"
 cargo xtask generate-rest-api-doc > $DOCS_DIR/static/schemas/openapi-admin.json
 
 echo "Generate config schema"
-cargo xtask generate-config-schema > $DOCS_DIR/static/schemas/config_schema.json
+cargo xtask generate-config-schema > $DOCS_DIR/static/schemas/restate-server-configuration-schema.json
 
 echo "Generate default config"
 cargo xtask generate-default-config > $DOCS_DIR/static/schemas/restate.toml
