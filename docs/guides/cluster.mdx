@@ -74,6 +74,7 @@ services:
       RESTATE_AUTO_PROVISION: "true"
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
   restate-2:
     <<: *common_settings
     ports:
@@ -83,13 +84,12 @@ services:
       - "28080:8080"
     environment:
       <<: *default-env
-      # Node name and id, used to uniquely identify restate processes, and useful for observability
       RESTATE_NODE_NAME: restate-2
       RESTATE_FORCE_NODE_ID: 2
-      # This needs to be configured with the hostname/port the other Restate nodes can use to talk to this node.
       RESTATE_ADVERTISED_ADDRESS: "http://restate-2:5122"
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
   restate-3:
     <<: *common_settings
     ports:
@@ -99,10 +99,8 @@ services:
       - "38080:8080"
     environment:
       <<: *default-env
-      # Node name and id, used to uniquely identify restate processes, and useful for observability
       RESTATE_NODE_NAME: restate-3
       RESTATE_FORCE_NODE_ID: 3
-      # This needs to be configured with the hostname/port the other Restate nodes can use to talk to this node.
       RESTATE_ADVERTISED_ADDRESS: "http://restate-3:5122"
     extra_hosts:
       - "host.docker.internal:host-gateway"
