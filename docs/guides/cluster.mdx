@@ -22,86 +22,73 @@ This guide shows how to deploy a distributed Restate cluster consisting of 3 nod
 To deploy a 3 node distributed Restate cluster, copy the `docker-compose.yml` and run `docker compose up`.
 
 ```yaml
-# Common environment variables for all restate nodes
-x-environment: &default-env
-  # To customize logging, check https://docs.restate.dev/operate/monitoring/logging
-  RESTATE_LOG_FILTER: "restate=info"
-  # Cluster name, this will be visible in few places such as logs
+x-environment: &common-envs
   RESTATE_CLUSTER_NAME: "my-cluster"
   # In this setup every node fulfills every role.
-  # For more info on disaggregated setups, check https://docs.restate.dev/deploy/server/cluster/
   RESTATE_ROLES: '["admin","worker","log-server","metadata-server"]'
-  # Internal metadata and log server configuration
+  # To customize logging, check https://docs.restate.dev/operate/monitoring/logging
+  RESTATE_LOG_FILTER: "restate=info"
   RESTATE_BIFROST__DEFAULT_PROVIDER: "replicated"
   RESTATE_BIFROST__REPLICATED_LOGLET__DEFAULT_LOG_REPLICATION: 2
   RESTATE_METADATA_SERVER__TYPE: "replicated"
   # This needs to be configured with the hostnames/ports the nodes can use to talk to each other.
   # In this setup, they interact within the "internal" Docker compose network setup.
   RESTATE_METADATA_CLIENT__ADDRESSES: '["http://restate-1:5122","http://restate-2:5122","http://restate-3:5122"]'
-  # Only one node provisions the cluster, meaning only one container needs this config to be 'true'
-  RESTATE_AUTO_PROVISION: "false"
-
-# Common containers configuration
-x-variables:
-  common_settings: &common_settings
-    image: docker.io/restatedev/restate:1.2
-    ports:
-      # node port
-      - 5122
-      # admin port
-      - 9070
-      # admin query port
-      - 9071
-      # ingress port
-      - 8080
 
 services:
   restate-1:
-    <<: *common_settings
+    image: docker.io/restatedev/restate:1.2
     ports:
-      - "5122:5122"
-      - "9070:9070"
-      - "9071:9071"
+      # Ingress port
       - "8080:8080"
+      # Admin/UI port
+      - "9070:9070"
+      # Admin query port (psql)
+      - "9071:9071"
+      # Node port
+      - "5122:5122"
     environment:
-      <<: *default-env
-      # Node name and id, used to uniquely identify restate processes, and useful for observability
+      <<: *common-envs
       RESTATE_NODE_NAME: restate-1
       RESTATE_FORCE_NODE_ID: 1
       # This needs to be configured with the hostname/port the other Restate nodes can use to talk to this node.
       RESTATE_ADVERTISED_ADDRESS: "http://restate-1:5122"
-      # restate-1 provisions the cluster
+      # Only restate-1 provisions the cluster
       RESTATE_AUTO_PROVISION: "true"
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
   restate-2:
-    <<: *common_settings
+    image: docker.io/restatedev/restate:1.2
     ports:
       - "25122:5122"
       - "29070:9070"
       - "29071:9071"
       - "28080:8080"
     environment:
-      <<: *default-env
+      <<: *common-envs
       RESTATE_NODE_NAME: restate-2
       RESTATE_FORCE_NODE_ID: 2
       RESTATE_ADVERTISED_ADDRESS: "http://restate-2:5122"
+      # Only restate-1 provisions the cluster
+      RESTATE_AUTO_PROVISION: "false"
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
   restate-3:
-    <<: *common_settings
+    image: docker.io/restatedev/restate:1.2
     ports:
       - "35122:5122"
       - "39070:9070"
       - "39071:9071"
       - "38080:8080"
     environment:
-      <<: *default-env
+      <<: *common-envs
       RESTATE_NODE_NAME: restate-3
       RESTATE_FORCE_NODE_ID: 3
       RESTATE_ADVERTISED_ADDRESS: "http://restate-3:5122"
+      # Only restate-1 provisions the cluster
+      RESTATE_AUTO_PROVISION: "false"
     extra_hosts:
       - "host.docker.internal:host-gateway"
 ```
