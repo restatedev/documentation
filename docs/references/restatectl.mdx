@@ -1,0 +1,200 @@
+---
+sidebar_position: 6
+description: "`restatectl` manual."
+hide_table_of_contents: true
+---
+import Admonition from '@theme/Admonition';
+
+# restatectl
+
+## Getting `restatectl`
+You can install `restatectl` using your preferred [installation method](/develop/local_dev).
+The tool is also included in the `restate-cli` and `restate` Docker images.
+To use `restatectl` in a running Docker container, you can use the following command from the host machine to connect to it without spawning a separate container:
+
+```shell
+docker exec <CONTAINER_NAME> restatectl [ARGUMENTS]
+```
+
+<Admonition type="note" title="Notice">
+`restatectl` requires direct access to nodes via their advertised addresses (default port: 5122). Ensure that restatectl commands can reach these addresses.
+</Admonition>
+
+## Using `restatectl`
+To list all available subcommands, run:
+```shell
+restatectl --help
+```
+<details className="grey-details">
+    <summary>Output</summary>
+    ```shell
+    Restate Cluster Administration Tool
+
+A command-line tool for managing Restate clusters. Designed to be be used by administrators, restatectl can be used to inspect cluster health and perform low-level maintenance operations on live nodes. It requires access to restate's node-to-node communication addresses (default on
+port 5122)
+
+https://docs.restate.dev
+
+Usage: restatectl [OPTIONS] <COMMAND>
+
+Commands:
+  provision          Provision a new cluster
+  status             Print cluster status overview (shortcut to `cluster status`)
+  nodes              Cluster node status
+  partitions         Manage partition table
+  logs               Log operations
+  snapshots          Partition processor snapshots
+  config             Cluster configuration operations
+  metadata           Metadata store operations
+  replicated-loglet  [low-level] Commands that operate on replicated loglets
+  help               Print this message or the help of the given subcommand(s)
+
+Options:
+  -s, --address <ADDRESS>
+          Specify server address to connect to.
+
+          It needs access to the node-to-node address (aka. node advertised address) Can also accept a comma-separated list or by repeating `--address=<host>`.
+
+          [env: RESTATECTL_ADDRESS=]
+          [default: http://localhost:5122/]
+          [aliases: server]
+
+      --sync-metadata
+          Use this option to avoid receiving stale metadata information from the nodes by reading it from the metadata store
+
+  -v, --verbose...
+          Increase logging verbosity
+
+  -q, --quiet...
+
+
+      --table-style <TABLE_STYLE>
+          Which table output style to use
+
+          [default: compact]
+
+          Possible values:
+          - compact: No borders, condensed layout
+          - borders: UTF8 borders, good for multiline text
+
+      --time-format <TIME_FORMAT>
+          [default: human]
+
+          Possible values:
+          - human:   Human friendly timestamps and durations
+          - iso8601: RFC-3339/ISO-8601 formatted (1996-12-19T16:39:57-08:00)
+          - rfc2822: RFC-2822 formatted (Tue, 1 Jul 2003 10:52:37 +0200)
+
+  -y, --yes
+          Auto answer "yes" to confirmation prompts
+
+      --connect-timeout <CONNECT_TIMEOUT>
+          Connection timeout for network calls, in milliseconds
+
+          [default: 5000]
+
+      --request-timeout <REQUEST_TIMEOUT>
+          Overall request timeout for network calls, in milliseconds
+
+          [default: 13000]
+
+  -h, --help
+          Print help (see a summary with '-h')
+
+  -V, --version
+          Print version
+
+    ```
+</details>
+
+## Provision
+Deploys a new Restate cluster. See [Restate Cluster Deployment](/deploy/server/cluster) for details.
+
+## Status
+Provides a comprehensive overview of the cluster's current state. Run:
+```shell
+restatectl status
+```
+The output consists of multiple sections detailing different cluster aspects.
+
+### Nodes list
+Also accessible via:
+```shell
+restatectl nodes list
+```
+
+Example output:
+```
+Node Configuration (v21)
+ NODE  GEN  NAME    ADDRESS                 ROLES
+ N1    6    node-1  http://127.0.0.1:5122/  admin | log-server | metadata-server | worker
+ N2    4    node-2  http://127.0.0.1:6122/  admin | log-server | metadata-server | worker
+ N3    6    node-3  http://127.0.0.1:7122/  log-server | metadata-server | worker
+```
+
+This lists all known nodes in the cluster and their assigned roles. However, it does not indicate node health.
+
+### Logs status
+Shows the effective logs per partition and the current log configuration (provider, replication, and node set size). Also accessible via:
+```shell
+restatectl logs list
+```
+
+<details className="grey-details">
+    <summary>Output</summary>
+```
+Log chain v8
+└ Logs Provider: replicated
+ ├ Log replication: {node: 2}
+ └ Nodeset size: 0
+ L-ID  FROM-LSN  KIND        LOGLET-ID  REPLICATION  SEQUENCER  NODESET
+ 0     61        Replicated  0_5        {node: 2}    N1:6       [N1, N2, N3]
+ 1     4         Replicated  1_4        {node: 2}    N1:6       [N1, N2, N3]
+ 2     4         Replicated  2_4        {node: 2}    N1:6       [N1, N2, N3]
+ 3     5         Replicated  3_5        {node: 2}    N1:6       [N1, N2, N3]
+ 4     4         Replicated  4_4        {node: 2}    N1:6       [N1, N2, N3]
+ 5     5         Replicated  5_5        {node: 2}    N1:6       [N1, N2, N3]
+ 6     6         Replicated  6_6        {node: 2}    N1:6       [N1, N2, N3]
+ 7     4         Replicated  7_4        {node: 2}    N1:6       [N1, N2, N3]
+ 8     4         Replicated  8_4        {node: 2}    N1:6       [N1, N2, N3]
+```
+</details>
+
+### Partition status
+Lists all partitions and their current state. Also accessible via:
+```shell
+restatectl partitions list
+```
+
+This section also highlights nodes that are detected as dead.
+
+<details className="grey-details">
+    <summary>Output</summary>
+```
+Alive partition processors (nodes config v21, partition table v21)
+ P-ID  NODE  MODE      STATUS  LEADER  EPOCH  SEQUENCER  APPLIED-LSN  PERSISTED-LSN  SKIPPED-RECORDS  ARCHIVED-LSN  LAST-UPDATE
+ 0     N1:6  Leader    Active  N1:6    e5     N1:6       61           -              0                -             1 second and 170 ms ago
+ 0     N2:4  Follower  Active  N1:6    e5                61           -              0                -             1 second and 64 ms ago
+ 1     N1:6  Leader    Active  N1:6    e4     N1:6       4            -              0                -             801 ms ago
+ 1     N2:4  Follower  Active  N1:6    e4                4            -              0                -             779 ms ago
+ 2     N1:6  Leader    Active  N1:6    e4     N1:6       4            -              0                -             600 ms ago
+ 2     N2:4  Follower  Active  N1:6    e4                4            -              0                -             1 second and 108 ms ago
+ 3     N1:6  Leader    Active  N1:6    e5     N1:6       5            -              0                -             1 second and 369 ms ago
+ 3     N2:4  Follower  Active  N1:6    e5                5            -              0                -             1 second and 306 ms ago
+ 4     N1:6  Leader    Active  N1:6    e4     N1:6       4            -              0                -             651 ms ago
+ 4     N2:4  Follower  Active  N1:6    e4                4            -              0                -             1 second and 169 ms ago
+ 5     N1:6  Leader    Active  N1:6    e5     N1:6       5            -              0                -             567 ms ago
+ 5     N2:4  Follower  Active  N1:6    e5                5            -              0                -             1 second and 382 ms ago
+ 6     N1:6  Leader    Active  N1:6    e6     N1:6       6            -              0                -             804 ms ago
+ 6     N2:4  Follower  Active  N1:6    e6                6            -              0                -             1 second and 145 ms ago
+ 7     N1:6  Leader    Active  N1:6    e4     N1:6       4            -              0                -             1 second and 79 ms ago
+ 7     N2:4  Follower  Active  N1:6    e4                4            -              0                -             974 ms ago
+ 8     N1:6  Leader    Active  N1:6    e4     N1:6       4            -              0                -             1 second and 71 ms ago
+ 8     N2:4  Follower  Active  N1:6    e4                4            -              0                -             717 ms ago
+
+
+☠️ Dead nodes
+ NODE  LAST-SEEN
+ N3    11 minutes, 40 seconds and 995 ms ago
+ ```
+</details>
