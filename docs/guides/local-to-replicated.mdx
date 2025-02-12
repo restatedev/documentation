@@ -1,0 +1,104 @@
+---
+title: "Migrating a single-node to a multi-node deployment"
+description: "Learn how to migrate from a single node using the local loglet and metadata to multiple nodes using the replicated loglet and metadata."
+pagination_next: null
+pagination_prev: null
+---
+
+import Admonition from '@theme/Admonition';
+import {Step} from "../../src/components/Stepper";
+
+# Migrating a single-node to a multi-node deployment
+
+By default when starting a Restate server ({'<='} v1.2), it uses the local loglet and local metadata server.
+The local loglet and local metadata server are suitable for development and single-node deployments.
+However, for production deployments, it is recommended to use the replicated loglet and replicated metadata server to ensure high availability and durability.
+This guide shows how to migrate an existing single-node deployment to use the replicated loglet and replicated metadata server without losing any data.
+By using the replicated loglet and replicated metadata server, you can also scale your deployment to multiple nodes.
+
+This guide assumes you have a running single-node Restate server that uses the local loglet and local metadata server.
+
+<Step stepLabel="1" title="Enable the replicated metadata server">
+
+To use the replicated metadata server, you need to change the metadata server type to `replicated` in the Restate configuration file.
+Once you restart your Restate server, it will start using the replicated metadata server and automatically migrate the local metadata.
+
+```toml restate.toml
+[metadata-server]
+type = "replicated"
+```
+
+If you plan to extend your single-node deployment to a multi-node deployment, you also need to [configure the snapshot repository](/operate/data-backup#snapshotting).
+This allows new nodes to join the cluster by restoring the latest snapshot.
+
+```toml restate.toml
+[worker.snapshots]
+destination = "s3://snapshots-bucket/cluster-prefix"
+```
+
+</Step>
+
+<Step stepLabel="2" title="Enable the replicated loglet">
+
+To use the replicated loglet, you need to reconfigure the cluster configuration to use the replicated loglet as the default log provider.
+You can do this by using `restatectl`.
+
+```shell
+restatectl config set --log-provider replicated --log-replication 1
+```
+
+This command sets the default log provider to `replicated` with a default replication of `1`.
+As long as you have a single-node deployment, you must set the replication to `1`.
+Otherwise, the server will become unavailable because it cannot provision the new log segments.
+</Step>
+
+<Step stepLabel="3" title="Verify the changes">
+
+You can verify that the changes have been applied by checking the cluster status.
+
+```shell
+restatectl status
+```
+
+</Step>
+
+<Step stepLabel="4" title="Create snapshots to allow other nodes to join">
+
+For other nodes to join, you need to snapshot every partition because the local loglet is not accessible from other nodes.
+You can find the partition IDs by running `restatectl status`.
+
+```shell
+restatectl snapshots create --partition-id <PARTITION_ID>
+```
+
+</Step>
+
+<Step stepLabel="5" title="Turn a single-node into a multi-node deployment">
+
+To add more nodes to your cluster, you need to start new Restate servers with the same `cluster-name` and a metadata client with the address of the existing node.
+If you want the new nodes to participate in the replicated metadata cluster, then they should run the `metadata-server` role and use the `replicated` metadata server.
+
+```toml restate.toml
+roles = ["metadata-server", "admin", "worker", "log-server"]
+cluster-name = "my-cluster"
+
+[metadata-client]
+addresses = ["ADVERTISED_ADDRESS_OF_EXISTING_NODE"]
+
+[metadata-server]
+type = "replicated"
+```
+
+</Step>
+
+<Step stepLabel="6" title="Verify that your cluster consists of multiple nodes">
+
+If everything is set up correctly, you should see the new nodes in the cluster status.
+
+```shell
+restatectl status
+```
+
+</Step>
+
+<Step end={true} stepLabel="🎉" title="Congratulations, you migrated your single-node deployment to a multi-node deployment!"/>

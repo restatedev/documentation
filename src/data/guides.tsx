@@ -82,6 +82,14 @@ const Guides: Guide[] = [
     source: null,
     tags: ['deployment'],
   },
+  {
+    title: "Migrating a single-node to a multi-node deployment",
+    description: 'Learn how to migrate from a single node using the local loglet and local metadata to multiple nodes using the replicated loglet and replicated metadata.',
+    preview: require('./guides/local-to-replicated.png'),
+    website: '/guides/local-to-replicated',
+    source: null,
+    tags: ['deployment'],
+  },
 
   // Add new guides in alphabetical order!
 ];
