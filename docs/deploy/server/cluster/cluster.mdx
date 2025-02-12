@@ -137,21 +137,3 @@ restatectl provision --address <SERVER_TO_PROVISION> --yes
 ```
 
 This provisions the cluster with default settings specified in the server configuration.
-
-## Growing the cluster
-
-It is possible to grow the cluster after it has been started.
-To do so, you need to start a new node with the same `cluster-name` and at least one of the addresses of a running node in `metadata-client.addresses`.
-The latter is needed to let the node discover the metadata servers and join the cluster.
-
-<Admonition type="note" title="Growing the cluster in the future">
-    If you plan to grow your cluster after some time, we strongly recommend that you enable snapshotting.
-    Otherwise, you risk that newly added nodes won't be fully used by the system.
-    See the [snapshotting documentation](/operate/data-backup#snapshotting) for more information.
-</Admonition>
-
-<Admonition type="note" title="Shrinking the cluster">
-    Currently, it is not supported to shrink the cluster.
-    This means that nodes that have joined the cluster once, cannot be stopped!
-    We will add support for removing nodes from the cluster soon.
-</Admonition>
