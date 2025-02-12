@@ -1,5 +1,5 @@
 ---
-sidebar_position: 10
+sidebar_position: 5
 slug: errors
 ---
 
@@ -20,10 +20,10 @@ Cannot reach the service endpoint to execute discovery. Make sure:
 
 Cannot register the provided deployment, because it conflicts with the uri of an already registered deployment.
 
-In Restate deployments have a unique uri/arn and are immutable, thus it's not possible to discover the same deployment twice. 
-Make sure, when updating a deployment, to assign it a new uri/arn. 
+In Restate deployments have a unique uri/arn and are immutable, thus it's not possible to discover the same deployment twice.
+Make sure, when updating a deployment, to assign it a new uri/arn.
 
-You can force the override using the `"force": true` field in the discover request, but beware that this can lead in-flight invocations to an unrecoverable error state.  
+You can force the override using the `"force": true` field in the discover request, but beware that this can lead in-flight invocations to an unrecoverable error state.
 
 See the [versioning documentation](https://docs.restate.dev/operate/versioning) for more information.
 
@@ -87,7 +87,7 @@ Suggestions:
 
 <h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="META0013">META0013<a href="#META0013" class="hash-link">&#8203;</a></h2>
 
-Received a bad service discovery response from the specified service endpoint. This indicates that you are trying to register a service endpoint with an incompatible server. 
+Received a bad service discovery response from the specified service endpoint. This indicates that you are trying to register a service endpoint with an incompatible server.
 
 Suggestions:
 
@@ -153,7 +153,7 @@ Suggestions:
 
 <h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="RT0005">RT0005<a href="#RT0005" class="hash-link">&#8203;</a></h2>
 
-Failed opening RocksDB, because the db file is currently locked.  
+Failed opening RocksDB, because the db file is currently locked.
 This happens usually if another process still holds the lock.
 
 Suggestions:
@@ -194,13 +194,13 @@ Network error when interacting with the service endpoint. This can be caused by 
 
 <h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="RT0011">RT0011<a href="#RT0011" class="hash-link">&#8203;</a></h2>
 
-No deployment found for the given service. 
-This might indicate that the service and/or the associated deployment was removed from the schema registry before starting to process the invocation. 
+No deployment found for the given service.
+This might indicate that the service and/or the associated deployment was removed from the schema registry before starting to process the invocation.
 Check whether the schema registry contains the related service and deployment.
 
 <h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="RT0012">RT0012<a href="#RT0012" class="hash-link">&#8203;</a></h2>
 
-Protocol violation error. This can be caused by an incompatible runtime and SDK version. If the error persists, please file a [bug report](https://github.com/restatedev/restate/issues). 
+Protocol violation error. This can be caused by an incompatible runtime and SDK version. If the error persists, please file a [bug report](https://github.com/restatedev/restate/issues).
 
 <h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="RT0013">RT0013<a href="#RT0013" class="hash-link">&#8203;</a></h2>
 
@@ -219,4 +219,3 @@ Suggestions:
 
 * Downgrade the server to a version which is compatible with the used service protocol version
 * Kill the affected invocation via the CLI.
-
