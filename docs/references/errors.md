@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 10
 slug: errors
 ---
 
@@ -20,10 +20,10 @@ Cannot reach the service endpoint to execute discovery. Make sure:
 
 Cannot register the provided deployment, because it conflicts with the uri of an already registered deployment.
 
-In Restate deployments have a unique uri/arn and are immutable, thus it's not possible to discover the same deployment twice.
-Make sure, when updating a deployment, to assign it a new uri/arn.
+In Restate deployments have a unique uri/arn and are immutable, thus it's not possible to discover the same deployment twice. 
+Make sure, when updating a deployment, to assign it a new uri/arn. 
 
-You can force the override using the `"force": true` field in the discover request, but beware that this can lead in-flight invocations to an unrecoverable error state.
+You can force the override using the `"force": true` field in the discover request, but beware that this can lead in-flight invocations to an unrecoverable error state.  
 
 See the [versioning documentation](https://docs.restate.dev/operate/versioning) for more information.
 
@@ -52,7 +52,7 @@ The provided subscription is invalid. Subscriptions should have:
 * A `sink` field in the format of `service://<service_NAME>/<HANDLER_NAME>`. When registering, service and handler should be available already in the registry, meaning they have been previously registered.
 * Additional constraints may apply depending on the sink service type.
 
-Please look at the [Kafka invocation docs](https://docs.restate.dev/invoke/kafka) for more details on subscriptions and event handlers.
+Please look at the Kafka documentation (for [TypeScript](https://docs.restate.dev/develop/ts/kafka) and [Java](https://docs.restate.dev/develop/java/kafka)) for more details on subscriptions and event handlers.
 
 <h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="META0010">META0010<a href="#META0010" class="hash-link">&#8203;</a></h2>
 
@@ -87,7 +87,7 @@ Suggestions:
 
 <h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="META0013">META0013<a href="#META0013" class="hash-link">&#8203;</a></h2>
 
-Received a bad service discovery response from the specified service endpoint. This indicates that you are trying to register a service endpoint with an incompatible server.
+Received a bad service discovery response from the specified service endpoint. This indicates that you are trying to register a service endpoint with an incompatible server. 
 
 Suggestions:
 
@@ -115,6 +115,33 @@ Lambda endpoints do not support the bidirectional protocol mode and should be
 configured to announce themselves as being in request-response mode upon
 discovery.
 
+<h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="META0016">META0016<a href="#META0016" class="hash-link">&#8203;</a></h2>
+
+Cannot update the provided deployment with the discovered metadata, because the new metadata is insufficiently similar to the old.
+
+When updating a deployment, make sure that:
+
+* All services have the same type as they did in the previous deployment.
+* All services contain at least all the handlers that they did in the previous deployment.
+* The updated deployment contains at least all the services that it previously did.
+* The updated deployment has exactly the same supported protocol versions, which generally means you want to use the same SDK minor version.
+
+See the [versioning documentation](https://docs.restate.dev/operate/versioning) for more information.
+
+<h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="META0017">META0017<a href="#META0017" class="hash-link">&#8203;</a></h2>
+
+Cannot force-add the provided URI/ARN as a new deployment, because two or more existing deployments use this URI.
+
+Generally Restate enforces that there is only one deployment for a given destination (a HTTP URI or Lambda ARN). This means
+that redicovering the same destination requires a `force` flag. Adding a deployment in force mode instructs Restate to replace the existing deployment
+with that destination, with the discovered metadata. This relies on there being an unambigious deployment to replace.
+
+When using the `PUT /deployments/{deployment_id}` API to update a deployment in place, it is possible to create two deployments that have the same destination.
+This is intended to be a temporary measure to fix failing invocations on a draining deployment. While in this state, it is not possible to force deploy that same destination.
+Instead, one of the two deployments must be deleted (`DELETE /deployments/{deployment_id}`) so that there is an unambiguous deployment to replace.
+
+See the [versioning documentation](https://docs.restate.dev/operate/versioning) for more information.
+
 <h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="RT0001">RT0001<a href="#RT0001" class="hash-link">&#8203;</a></h2>
 
 The invocation response stream was aborted due to the timeout configured in `worker.invoker.abort_timeout`.
@@ -129,7 +156,7 @@ Suggestions:
 
 Cannot start Restate because the configuration cannot be parsed. Check the configuration file and the environment variables provided.
 
-For a complete list of configuration options, and a sample configuration, check https://docs.restate.dev/category/configuration
+For a complete list of configuration options, and a sample configuration, check https://docs.restate.dev/operate/configuration
 
 <h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="RT0003">RT0003<a href="#RT0003" class="hash-link">&#8203;</a></h2>
 
@@ -153,7 +180,7 @@ Suggestions:
 
 <h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="RT0005">RT0005<a href="#RT0005" class="hash-link">&#8203;</a></h2>
 
-Failed opening RocksDB, because the db file is currently locked.
+Failed opening RocksDB, because the db file is currently locked.  
 This happens usually if another process still holds the lock.
 
 Suggestions:
@@ -168,10 +195,13 @@ We suggest checking the service/deployment logs as well to get any hint on the e
 
 <h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="RT0007">RT0007<a href="#RT0007" class="hash-link">&#8203;</a></h2>
 
-A retry-able error was received from the service while processing the invocation. Suggestions:
+A retry-able error was received from the handler while processing the invocation.
+Restate will soon retry executing the invocation, replaying from the point where it left.
 
-* Check the component/deployment logs to get more info about the error cause, like the stacktrace.
-* Look at the error handling docs for more info about error handling in components (for [TypeScript](https://docs.restate.dev/develop/ts/error-handling) or [Java](https://docs.restate.dev/develop/java/error-handling)).
+Suggestions:
+
+* Check the service logs to get more info about the error cause, like the stacktrace.
+* Look at the error handling docs for more info about error handling in services (e.g. https://docs.restate.dev/develop/ts/error-handling or https://docs.restate.dev/develop/java/error-handling).
 
 <h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="RT0009">RT0009<a href="#RT0009" class="hash-link">&#8203;</a></h2>
 
@@ -185,7 +215,8 @@ Suggestions:
 
 <h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="RT0010">RT0010<a href="#RT0010" class="hash-link">&#8203;</a></h2>
 
-Network error when interacting with the service endpoint. This can be caused by a variety of reasons including:
+Network error when interacting with the service endpoint. 
+This can be caused by a variety of reasons including:
 
 * The service is (temporarily) down
 * The service is (temporarily) not reachable over the network
@@ -195,16 +226,21 @@ Network error when interacting with the service endpoint. This can be caused by 
 <h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="RT0011">RT0011<a href="#RT0011" class="hash-link">&#8203;</a></h2>
 
 No deployment found for the given service.
-This might indicate that the service and/or the associated deployment was removed from the schema registry before starting to process the invocation.
-Check whether the schema registry contains the related service and deployment.
+This might indicate that the service and/or the associated deployment was removed from the schema registry before starting to process the invocation. 
+
+Check whether the deployment still exists using `restate deployments list` or by looking in the UI.
 
 <h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="RT0012">RT0012<a href="#RT0012" class="hash-link">&#8203;</a></h2>
 
-Protocol violation error. This can be caused by an incompatible runtime and SDK version. If the error persists, please file a [bug report](https://github.com/restatedev/restate/issues).
+Protocol violation error.
+This can be caused by an incompatible runtime and SDK version, or by an SDK bug. 
+
+If the error persists, please file a bug report here: https://github.com/restatedev/restate/issues. 
 
 <h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="RT0013">RT0013<a href="#RT0013" class="hash-link">&#8203;</a></h2>
 
-The service endpoint does not support any of the supported service protocol versions of the server. Therefore, the server cannot talk to this endpoint. Please make sure that the service endpoint's SDK and the Restate server are compatible.
+The service endpoint does not support any of the supported service protocol versions of the server. 
+Please make sure that the service endpoint's SDK and the Restate server are compatible.
 
 Suggestions:
 
@@ -213,9 +249,52 @@ Suggestions:
 
 <h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="RT0014">RT0014<a href="#RT0014" class="hash-link">&#8203;</a></h2>
 
-The server cannot resume an in-flight invocation which has been started with a now incompatible service protocol version. Restate does not support upgrading service protocols yet.
+The server cannot resume an in-flight invocation which has been started with a now incompatible service protocol version. 
+Restate does not support upgrading service protocols yet.
 
 Suggestions:
 
 * Downgrade the server to a version which is compatible with the used service protocol version
 * Kill the affected invocation via the CLI.
+
+<h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="RT0015">RT0015<a href="#RT0015" class="hash-link">&#8203;</a></h2>
+
+The server can't establish an invocation stream because the SDK does not support the service protocol version negotiated during discovery.
+This indicates that the SDK was updated to a new version that dropped support for old service protocol versions, but no re-registration was performed.  
+
+Suggestions:
+
+* For in-flight invocations, downgrade the SDK version back to the previous version.
+* For new invocations, register a new deployment with a new endpoint as described here: https://docs.restate.dev/operate/versioning#deploying-new-service-versions.  
+* Make sure the new SDK is compatible with this runtime version, for more info check out https://docs.restate.dev/operate/upgrading#service-compatibility.
+
+<h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="RT0016">RT0016<a href="#RT0016" class="hash-link">&#8203;</a></h2>
+
+Journal mismatch detected when replaying the invocation: the handler generated a sequence of journal entries (thus context operations) that doesn't exactly match the recorded journal.
+This indicates that either the service code was changed (e.g. the service container image updated) without registering a new version of the service deployment, or some code within the handler is non-deterministic.
+Some common mistakes that lead to non-deterministic errors are:
+
+* Branch the execution flow based on some non-deterministic information, such as the elapsed time between now and another timestamp, or the result of an HTTP request that was not recorded using the `ctx.run` feature.
+* A parameter passed to a `Context` operation is non-deterministic, for example setting a state key using a random value or the current date-time.
+* Execute a sequence of `Context` operations, such as calling other services, while iterating over a data structure with non-deterministic iteration order (such as sets/maps/dictionaries).
+
+For more info about service versioning, check out https://docs.restate.dev/operate/versioning.
+For more info about determinism and journaling of non-deterministic operations, check out https://docs.restate.dev/get_started/tour/#journaling-actions.
+
+<h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="RT0017">RT0017<a href="#RT0017" class="hash-link">&#8203;</a></h2>
+
+The entry cannot be processed due to a failed precondition. 
+This entry, and all the subsequent received entries, have been discarded and Restate will retry executing the invocation from the last recorded entry.
+
+Entry preconditions are usually checked by the SDK. 
+If the error persists, please file a bug report here: https://github.com/restatedev/restate/issues. 
+
+<h2 class="anchor anchorWithStickyNavbar_node_modules-@docusaurus-theme-classic-lib-theme-Heading-styles-module" id="RT0018">RT0018<a href="#RT0018" class="hash-link">&#8203;</a></h2>
+
+The request submitted through the `Context` API to the given service handler cannot be processed, because the service handler doesn't exist.
+
+Make sure the service/handler is registered, by using `restate svc ls` or through the UI:
+
+* If the service/handler is correctly registered, you can ignore this error as it's a transient error, due to internal propagation of the cluster metadata.
+* If the service/handler is not registered, you must register it in order for this invocation to progress.
+
