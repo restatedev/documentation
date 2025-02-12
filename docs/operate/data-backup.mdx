@@ -60,10 +60,10 @@ By default, Restate will attempt to trim logs once an hour which you can overrid
 
 ```toml
 [admin]
-log-trim-interval = "1h"
+log-trim-check-interval = "1h"
 ```
 
-This interval is only the check and not a guarantee that logs will be trimmed. Restate will automatically determine the appropriate safe trim point for each partition's log.
+This interval determines only how frequently the check is performed, and not a guarantee that logs will be trimmed. Restate will automatically determine the appropriate safe trim point for each partition's log.
 
 If replicated logs are in use in a clustered environment, the log safe trim point will be determined based on the archived LSN.
 If a snapshot repository is not configured, then archived LSNs are not reported.
