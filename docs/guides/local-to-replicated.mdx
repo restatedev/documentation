@@ -40,6 +40,17 @@ destination = "s3://snapshots-bucket/cluster-prefix"
 
 <Step stepLabel="2" title="Enable the replicated loglet">
 
+To be able to use the replicated loglet, make sure the node includes the `log-server` role as following.
+
+```toml restate..toml
+roles = [
+    "worker",
+    "admin",
+    "metadata-store",
+    "log-server"
+]
+```
+
 To use the replicated loglet, you need to reconfigure the cluster configuration to use the replicated loglet as the default log provider.
 You can do this by using `restatectl`.
 
@@ -102,3 +113,8 @@ restatectl status
 </Step>
 
 <Step end={true} stepLabel="🎉" title="Congratulations, you migrated your single-node deployment to a multi-node deployment!"/>
+
+
+Here are some next step for you to try:
+
+- Try [growing your cluster](/deploy/server/cluster/growing-cluster) to tolerate node failures
