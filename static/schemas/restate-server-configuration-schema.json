@@ -241,7 +241,7 @@
         "connect-timeout": "3s",
         "keep-alive-interval": "5s",
         "keep-alive-timeout": "5s",
-        "type": "native"
+        "type": "replicated"
       },
       "$ref": "#/definitions/MetadataClientOptions"
     },
@@ -1238,7 +1238,7 @@
         },
         "default-partition-replication": {
           "title": "Default partition replication factor",
-          "description": "[__PREVIEW FEATURE__] The default replication factor for partition processors, this impacts how many replicas each partition will have across the worker nodes of the cluster.\n\nNote that this value only impacts the cluster initial provisioning and will not be respected after the cluster has been provisioned.\n\nTo update existing clusters use the `restatectl` utility.",
+          "description": "The default replication factor for partition processors, this impacts how many replicas each partition will have across the worker nodes of the cluster.\n\nNote that this value only impacts the cluster initial provisioning and will not be respected after the cluster has been provisioned.\n\nTo update existing clusters use the `restatectl` utility.",
           "default": "everywhere",
           "type": "string"
         },
@@ -1451,7 +1451,7 @@
           ]
         },
         {
-          "description": "[__PREVIEW FEATURE__] Replicated loglets are restate's native log replication system. This requires `log-server` role to run on enough nodes in the cluster.",
+          "description": "Replicated loglets are restate's native log replication system. This requires `log-server` role to run on enough nodes in the cluster.",
           "type": "string",
           "enum": [
             "replicated"
@@ -1948,7 +1948,7 @@
           ]
         },
         {
-          "description": "[PREVIEW FEATURE] Serves a log-server for replicated loglets",
+          "description": "Serves a log-server for replicated loglets",
           "type": "string",
           "enum": [
             "log-server"
@@ -1969,7 +1969,7 @@
       "type": "object",
       "oneOf": [
         {
-          "description": "Store metadata on the native metadata store that runs on nodes with the metadata-server role.",
+          "description": "Store metadata on the replicated metadata store that runs on nodes with the metadata-server role.",
           "type": "object",
           "required": [
             "addresses",
@@ -1979,7 +1979,7 @@
             "type": {
               "type": "string",
               "enum": [
-                "native"
+                "replicated"
               ]
             },
             "addresses": {
