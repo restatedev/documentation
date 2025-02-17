@@ -30,9 +30,12 @@ To learn how to access the instrospection interface, check out the [instrospecti
 | `completed` | `Boolean` | Indicates whether this journal entry has been completed; this is only valid for some entry types. |
 | `invoked_id` | `Utf8` | If this entry represents an outbound invocation, indicates the ID of that invocation. |
 | `invoked_target` | `Utf8` | If this entry represents an outbound invocation, indicates the invocation Target. Format for plain services: `ServiceName/HandlerName`, e.g. `Greeter/greet`. Format for virtual objects/workflows: `VirtualObjectName/Key/HandlerName`, e.g. `Greeter/Francesco/greet`. |
-| `sleep_wakeup_at` | `Date64` | If this entry represents a sleep, indicates wakeup time. |
+| `sleep_wakeup_at` | `TimestampMillisecond` | If this entry represents a sleep, indicates wakeup time. |
 | `promise_name` | `Utf8` | If this entry is a promise related entry (GetPromise, PeekPromise, CompletePromise), indicates the promise name. |
 | `raw` | `Binary` | Raw binary representation of the entry. Check the [service protocol](https://github.com/restatedev/service-protocol) for more details to decode it. |
+| `version` | `UInt32` | The journal version. |
+| `entry_json` | `Utf8` | The entry serialized as a JSON string (only relevant for journal version 2) |
+| `appended_at` | `TimestampMillisecond` | When the entry was appended to the journal |
 
 ## Table: `sys_keyed_service_status`
 
@@ -52,7 +55,7 @@ To learn how to access the instrospection interface, check out the [instrospecti
 | `service_key` | `Utf8` | The key of the virtual object/workflow. |
 | `id` | `Utf8` | [Invocation ID](/operate/invocation#invocation-identifier). |
 | `sequence_number` | `UInt64` | Sequence number in the inbox. |
-| `created_at` | `Date64` | Timestamp indicating the start of this invocation. |
+| `created_at` | `TimestampMillisecond` | Timestamp indicating the start of this invocation. DEPRECATED: you should not use this field anymore, but join with the sys_invocation table |
 
 ## Table: `sys_idempotency`
 
@@ -95,7 +98,9 @@ To learn how to access the instrospection interface, check out the [instrospecti
 | `id` | `Utf8` | The ID of the service deployment. |
 | `ty` | `Utf8` | The type of the endpoint. Either `http` or `lambda`. |
 | `endpoint` | `Utf8` | The address of the endpoint. Either HTTP URL or Lambda ARN. |
-| `created_at` | `Date64` | Timestamp indicating the deployment registration time. |
+| `created_at` | `TimestampMillisecond` | Timestamp indicating the deployment registration time. |
+| `min_service_protocol_version` | `UInt32` | Minimum supported protocol version. |
+| `max_service_protocol_version` | `UInt32` | Maximum supported protocol version. |
 
 ## Table: `sys_invocation`
 
@@ -107,22 +112,25 @@ To learn how to access the instrospection interface, check out the [instrospecti
 | `target_service_key` | `Utf8` | The key of the virtual object or the workflow ID. Null for regular services. |
 | `target_handler_name` | `Utf8` | The invoked handler. |
 | `target_service_ty` | `Utf8` | The service type. Either `service` or `virtual_object` or `workflow`. |
-| `invoked_by` | `Utf8` | Either `ingress` if the service was invoked externally or `service` if the service was invoked by another Restate service. |
-| `invoked_by_service_name` | `Utf8` | The name of the invoking service. Or `null` if invoked externally. |
-| `invoked_by_id` | `Utf8` | The caller [Invocation ID](/operate/invocation#invocation-identifier) if the service was invoked by another Restate service. Or `null` if invoked externally. |
-| `invoked_by_target` | `Utf8` | The caller invocation target if the service was invoked by another Restate service. Or `null` if invoked externally. |
+| `idempotency_key` | `Utf8` | Idempotency key, if any. |
+| `invoked_by` | `Utf8` | Either: * `ingress` if the invocation was created externally. * `service` if the invocation was created by another Restate service. * `subscription` if the invocation was created by a subscription (e.g. Kafka). |
+| `invoked_by_service_name` | `Utf8` | The name of caller service if `invoked_by = 'service'`. |
+| `invoked_by_id` | `Utf8` | The caller [Invocation ID](/operate/invocation#invocation-identifier) if `invoked_by = 'service'`. |
+| `invoked_by_subscription_id` | `Utf8` | The subscription id if `invoked_by = 'subscription'`. |
+| `invoked_by_target` | `Utf8` | The caller invocation target if `invoked_by = 'service'`. |
 | `pinned_deployment_id` | `Utf8` | The ID of the service deployment that started processing this invocation, and will continue to do so (e.g. for retries). This gets set after the first journal entry has been stored for this invocation. |
+| `pinned_service_protocol_version` | `UInt32` | The negotiated protocol version used for this invocation. This gets set after the first journal entry has been stored for this invocation. |
 | `trace_id` | `Utf8` | The ID of the trace that is assigned to this invocation. Only relevant when tracing is enabled. |
 | `journal_size` | `UInt32` | The number of journal entries durably logged for this invocation. |
-| `created_at` | `Date64` | Timestamp indicating the start of this invocation. |
-| `modified_at` | `Date64` | Timestamp indicating the last invocation status transition. For example, last time the status changed from `invoked` to `suspended`. |
-| `inboxed_at` | `Date64` | Timestamp indicating when the invocation was inboxed, if ever. |
-| `scheduled_at` | `Date64` | Timestamp indicating when the invocation was scheduled, if ever. |
-| `running_at` | `Date64` | Timestamp indicating when the invocation first transitioned to running, if ever. |
-| `completed_at` | `Date64` | Timestamp indicating when the invocation was completed, if ever. |
+| `created_at` | `TimestampMillisecond` | Timestamp indicating the start of this invocation. |
+| `modified_at` | `TimestampMillisecond` | Timestamp indicating the last invocation status transition. For example, last time the status changed from `invoked` to `suspended`. |
+| `inboxed_at` | `TimestampMillisecond` | Timestamp indicating when the invocation was inboxed, if ever. |
+| `scheduled_at` | `TimestampMillisecond` | Timestamp indicating when the invocation was scheduled, if ever. |
+| `running_at` | `TimestampMillisecond` | Timestamp indicating when the invocation first transitioned to running, if ever. |
+| `completed_at` | `TimestampMillisecond` | Timestamp indicating when the invocation was completed, if ever. |
 | `retry_count` | `UInt64` | The number of invocation attempts since the current leader started executing it. Increments on start, so a value greater than 1 means a failure occurred. Note: the value is not a global attempt counter across invocation suspensions and leadership changes. |
-| `last_start_at` | `Date64` | Timestamp indicating the start of the most recent attempt of this invocation. |
-| `next_retry_at` | `Date64` | Timestamp indicating the start of the next attempt of this invocation. |
+| `last_start_at` | `TimestampMillisecond` | Timestamp indicating the start of the most recent attempt of this invocation. |
+| `next_retry_at` | `TimestampMillisecond` | Timestamp indicating the start of the next attempt of this invocation. |
 | `last_attempt_deployment_id` | `Utf8` | The ID of the service deployment that executed the most recent attempt of this invocation; this is set before a journal entry is stored, but can change later. |
 | `last_attempt_server` | `Utf8` | Server/SDK version, e.g. `restate-sdk-java/1.0.1` |
 | `last_failure` | `Utf8` | An error message describing the most recent failed attempt of this invocation, if any. |
