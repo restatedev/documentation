@@ -187,3 +187,40 @@ curl -X DELETE localhost:9070/deployments/dp_14LsPzGz9HBxXIeBoH5wYUh?force=true
 
 </TabItem>
 </Tabs>
+
+## Updating deployments in-place
+Deployments should be immutable; the URI or Lambda ARN defined in them is expected to maintain the same behaviour, and be available, for as long as
+the deployment has in-flight invocations. However, we recognise that there can be bugs which necessitate updating the code backing a particular deployment.
+
+For example, a null pointer exception might be thrown some way into a handler. If this code executes, you will be left with invocations
+stuck retrying where the exception is thrown, and registering a new deployment with a fix will only resolve the issue for new invocations, not those already in flight.
+In production, it is often not appropriate to cancel or kill these failing invocations, necessitating an update to the code to allow them to complete.
+
+There are two ways to change the code backing a particular deployment:
+1. Update the underlying deployed code, but keep it available at the same URI. This is not possible for Lambda ARNs, but is a natural strategy in, for example, Kubernetes deployments.
+2. Use the update deployment API to change the URI or ARN backing the deployment to point to a patched version of the code:
+   ```shell
+   curl -X PUT localhost:9070/deployments/dp_14LsPzGz9HBxXIeBoH5wYUh -H 'content-type: application/json'
+       -d '{"uri": "http://greeter-patched/"}'
+   ```
+
+Let's discuss some scenarios in which you may need to take this action.
+
+### First scenario - failing invocations noticed on the active deployment for a service
+In this case, the deployment that is handling new invocations needs to be fixed, and the failing invocations on it allowed to complete. The following steps should be taken:
+1. Develop a fix, based on the current deployed version, that resolves the failing invocations.
+   Care should be taken to ensure that the new version has the same behaviour as the old version, for any code paths that in-flight invocations have successfully completed (ie, any changes must be from the point of failure onwards).
+2. By updating the underlying code or with the update deployment API, change the active deployment to include the fix. Verify that this resolves the issue both for new invocations, and for those already failing.
+
+### Second scenario - failing invocations noticed on a previous (draining) deployment for a service
+It's common to notice failing invocations because they are preventing an old deployment from fully draining. In this case there are several concerns; the failing invocations on deployment 1, any failing invocations on deployment 2,
+and the potential for new failing invocations to occur on deployment 2 as well. The following steps should be taken:
+1. Develop a fix as above, based on the version backing deployment 1.
+2. By updating the underlying code or with the update deployment API, change deployment 1 to include the fix. Verify that this resolves the failing invocations on this deployment.
+3. Rebase the fix onto the version backing deployment 2.
+4. By updating the underlying code or with the update deployment API, change deployment 2 to include the fix. Verify that this resolves any failing invocations, if any, new invocations.
+
+<Admonition type={"info"} title={"Updating a deployment to use a conflicting endpoint"}>
+It is possible to use the update deployment API to give a deployment the same URI/ARN as another deployment. This is useful where the an appropriate fix for a drained deployment has already been registered as a new deployment.
+If this is done, there will be two deployments with the same endpoint, which is otherwise not allowed. It is strongly recommended that you delete one of the two deployments when the failing invocations have been resolved.
+</Admonition>
