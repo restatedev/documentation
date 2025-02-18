@@ -112,6 +112,7 @@ const config = {
     {
       image: "img/restate-og.png",
       navbar: {
+        hideOnScroll: true,
         title: "",
         logo: {
           alt: "Restate Logo",
