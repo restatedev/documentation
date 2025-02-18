@@ -5,7 +5,7 @@ const variableInjector = require("./src/plugins/variable-injector");
 const variablesReplacements = require("./restate.config.json");
 const codeLoaderPlugin = require("./src/plugins/code-loader");
 
-import { remarkCodeHike, recmaCodeHike } from "codehike/mdx"
+import { remarkCodeHike, recmaCodeHike } from "codehike/mdx";
 
 /** @type {import('codehike/mdx').CodeHikeConfig} */
 const chConfig = {
@@ -13,7 +13,7 @@ const chConfig = {
   syntaxHighlighting: {
     theme: "github-light",
   },
-}
+};
 
 const redocusaurus = [
   "redocusaurus",
@@ -56,7 +56,7 @@ const config = {
     locales: ["en"],
   },
 
-  clientModules: ['./matomo.js'],
+  clientModules: ["./matomo.js"],
 
   presets: [
     [
@@ -97,14 +97,14 @@ const config = {
     ],
     redocusaurus,
     [
-      '@docusaurus/plugin-ideal-image',
+      "@docusaurus/plugin-ideal-image",
       {
         quality: 70,
         max: 1030,
         min: 640,
         steps: 2,
       },
-    ]
+    ],
   ],
 
   themeConfig:
