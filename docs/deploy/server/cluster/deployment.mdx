@@ -5,10 +5,6 @@ description: "Learn how to deploy a distributed Restate cluster."
 ---
 
 import Admonition from '@theme/Admonition';
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-import {CodeWithTabs} from "@site/src/components/code/code";
-import {TextAndCode} from "@site/src/components/code/code/text-and-code";
 
 # Restate Cluster Deployment
 
@@ -94,112 +90,9 @@ For those nodes that run on the same machine, make sure that the ports do not co
 
 ## Controlling Clusters
 
-Restate includes a command line utility tool to connect to and control running Restate servers called `restatectl`.
+Restate includes a command line utility tool to connect to and control running Restate servers called [`restatectl`](/references/restatectl#getting-restatectl).
 This tool is specifically designed for system operators to manage Restate servers and is particularly useful in a cluster environment.
 It is distinct from the application developer-focused `restate` CLI tool, which is used to manage service deployments and invocations.
-
-### Getting `restatectl`
-
-<Tabs groupId={"getting-restatectl"}>
-    <TabItem value={"Homebrew"} label={"Homebrew"}>
-        <TextAndCode>
-            Install with:
-            ```shell !result
-            brew install restatedev/tap/restatectl
-            ```
-        </TextAndCode>
-        <TextAndCode>
-            Then run:
-            ```shell !result
-            restatectl
-            ```
-        </TextAndCode>
-    </TabItem>
-    <TabItem value={"bin"} label={"Download binaries"}>
-        Install restatectl by downloading the binary with `curl` from the [releases page](https://github.com/restatedev/restate/releases/latest), and make them executable:
-
-        <CodeWithTabs>
-
-            ```shell !!tabs Linux-x64
-            BIN=$HOME/.local/bin && RESTATE_PLATFORM=x86_64-unknown-linux-musl && \
-            curl -LO https://restate.gateway.scarf.sh/latest/restatectl-$RESTATE_PLATFORM.tar.xz && \
-            tar -xvf restatectl-$RESTATE_PLATFORM.tar.xz --strip-components=1 restatectl-$RESTATE_PLATFORM/restatectl && \
-            chmod +x restatectl && \
-
-            # Move the binary to a directory in your PATH, for example ~/.local/bin:
-            mv restatectl $BIN
-            ```
-
-            ```shell !!tabs Linux-arm64
-            BIN=$HOME/.local/bin && RESTATE_PLATFORM=aarch64-unknown-linux-musl && \
-            curl -LO https://restate.gateway.scarf.sh/latest/restatectl-$RESTATE_PLATFORM.tar.xz && \
-            tar -xvf restatectl-$RESTATE_PLATFORM.tar.xz --strip-components=1 restatectl-$RESTATE_PLATFORM/restatectl && \
-            chmod +x restatectl && \
-
-            # Move the binary to a directory in your PATH, for example ~/.local/bin:
-            mv restatectl $BIN
-            ```
-
-            ```shell !!tabs MacOS-x64
-            BIN=/usr/local/bin && RESTATE_PLATFORM=x86_64-apple-darwin && \
-            curl -LO https://restate.gateway.scarf.sh/latest/restatectl-$RESTATE_PLATFORM.tar.xz && \
-            tar -xvf restatectl-$RESTATE_PLATFORM.tar.xz --strip-components=1 restatectl-$RESTATE_PLATFORM/restatectl && \
-            chmod +x restatectl && \
-
-            # Move the binary to a directory in your PATH, for example /usr/local/bin (needs sudo):
-            sudo mv restatectl $BIN
-            ```
-
-            ```shell !!tabs MacOS-arm64
-            BIN=/usr/local/bin && RESTATE_PLATFORM=aarch64-apple-darwin && \
-            curl -LO https://restate.gateway.scarf.sh/latest/restatectl-$RESTATE_PLATFORM.tar.xz && \
-            tar -xvf restatectl-$RESTATE_PLATFORM.tar.xz --strip-components=1 restatectl-$RESTATE_PLATFORM/restatectl && \
-            chmod +x restatectl && \
-
-            # Move the binary to a directory in your PATH, for example /usr/local/bin (needs sudo):
-            sudo mv restatectl $BIN
-            ```
-
-        </CodeWithTabs>
-
-        Then run:
-        ```shell
-        restatectl
-        ```
-
-    </TabItem>
-    <TabItem value={"npm"} label={"npm"}>
-        <TextAndCode>
-            Install with:
-            ```shell !result
-            npm install --global @restatedev/restatectl@latest
-            ```
-        </TextAndCode>
-        <TextAndCode>
-            Then run:
-            ```shell !result
-            restatectl
-            ```
-        </TextAndCode>
-    </TabItem>
-    <TabItem value={"Docker"} label={"Docker"}>
-
-        The server and CLI images both contain the `restatectl` tool. To run `restatectl`, use the following command:
-
-        ```shell
-        docker run -it --network=host --entrypoint restatectl docker.restate.dev/restatedev/restate-cli:VAR::RESTATE_VERSION nodes ls
-        ```
-
-        You can also execute `restatectl` in a running server container using the following command:
-
-        ```shell
-        docker exec restate_dev restatectl nodes ls
-        ```
-
-        Replace `restate_dev` with the name of a running container, and `nodes ls` with the subcommand you want to run.
-
-    </TabItem>
-</Tabs>
 
 ### Using `restatectl`
 The `restatectl` tool communicates with Restate at the advertised address specified in the [server configuration](/operate/configuration/server) - by default TCP port 5122. To get an overview of a running server or cluster, use the `status` command:

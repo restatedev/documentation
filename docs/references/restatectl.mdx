@@ -2,17 +2,115 @@
 sidebar_position: 6
 description: "`restatectl` manual."
 ---
+
 import Admonition from '@theme/Admonition';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import {CodeWithTabs} from "@site/src/components/code/code";
+import {TextAndCode} from "@site/src/components/code/code/text-and-code";
 
-## Getting restatectl
+## Getting `restatectl`
 
-You can install `restatectl` using your preferred [installation method](/develop/local_dev).
-The tool is also included in the `restate-cli` and `restate` Docker images.
-To use `restatectl` in a running Docker container, you can use the following command from the host machine to connect to it without spawning a separate container:
+<Tabs groupId={"getting-restatectl"}>
+    <TabItem value={"Homebrew"} label={"Homebrew"}>
+        <TextAndCode>
+            Install with:
+            ```shell !result
+            brew install restatedev/tap/restatectl
+            ```
+        </TextAndCode>
+        <TextAndCode>
+            Then run:
+            ```shell !result
+            restatectl
+            ```
+        </TextAndCode>
+    </TabItem>
+    <TabItem value={"bin"} label={"Download binaries"}>
+        Install restatectl by downloading the binary with `curl` from the [releases page](https://github.com/restatedev/restate/releases/latest), and make them executable:
 
-```shell
-docker exec <CONTAINER_NAME> restatectl [ARGUMENTS]
-```
+        <CodeWithTabs>
+
+            ```shell !!tabs Linux-x64
+            BIN=$HOME/.local/bin && RESTATE_PLATFORM=x86_64-unknown-linux-musl && \
+            curl -LO https://restate.gateway.scarf.sh/latest/restatectl-$RESTATE_PLATFORM.tar.xz && \
+            tar -xvf restatectl-$RESTATE_PLATFORM.tar.xz --strip-components=1 restatectl-$RESTATE_PLATFORM/restatectl && \
+            chmod +x restatectl && \
+
+            # Move the binary to a directory in your PATH, for example ~/.local/bin:
+            mv restatectl $BIN
+            ```
+
+            ```shell !!tabs Linux-arm64
+            BIN=$HOME/.local/bin && RESTATE_PLATFORM=aarch64-unknown-linux-musl && \
+            curl -LO https://restate.gateway.scarf.sh/latest/restatectl-$RESTATE_PLATFORM.tar.xz && \
+            tar -xvf restatectl-$RESTATE_PLATFORM.tar.xz --strip-components=1 restatectl-$RESTATE_PLATFORM/restatectl && \
+            chmod +x restatectl && \
+
+            # Move the binary to a directory in your PATH, for example ~/.local/bin:
+            mv restatectl $BIN
+            ```
+
+            ```shell !!tabs MacOS-x64
+            BIN=/usr/local/bin && RESTATE_PLATFORM=x86_64-apple-darwin && \
+            curl -LO https://restate.gateway.scarf.sh/latest/restatectl-$RESTATE_PLATFORM.tar.xz && \
+            tar -xvf restatectl-$RESTATE_PLATFORM.tar.xz --strip-components=1 restatectl-$RESTATE_PLATFORM/restatectl && \
+            chmod +x restatectl && \
+
+            # Move the binary to a directory in your PATH, for example /usr/local/bin (needs sudo):
+            sudo mv restatectl $BIN
+            ```
+
+            ```shell !!tabs MacOS-arm64
+            BIN=/usr/local/bin && RESTATE_PLATFORM=aarch64-apple-darwin && \
+            curl -LO https://restate.gateway.scarf.sh/latest/restatectl-$RESTATE_PLATFORM.tar.xz && \
+            tar -xvf restatectl-$RESTATE_PLATFORM.tar.xz --strip-components=1 restatectl-$RESTATE_PLATFORM/restatectl && \
+            chmod +x restatectl && \
+
+            # Move the binary to a directory in your PATH, for example /usr/local/bin (needs sudo):
+            sudo mv restatectl $BIN
+            ```
+
+        </CodeWithTabs>
+
+        Then run:
+        ```shell
+        restatectl
+        ```
+
+    </TabItem>
+    <TabItem value={"npm"} label={"npm"}>
+        <TextAndCode>
+            Install with:
+            ```shell !result
+            npm install --global @restatedev/restatectl@latest
+            ```
+        </TextAndCode>
+        <TextAndCode>
+            Then run:
+            ```shell !result
+            restatectl
+            ```
+        </TextAndCode>
+    </TabItem>
+    <TabItem value={"Docker"} label={"Docker"}>
+
+        The server and CLI images both contain the `restatectl` tool. To run `restatectl`, use the following command:
+
+        ```shell
+        docker run -it --network=host --entrypoint restatectl docker.restate.dev/restatedev/restate-cli:VAR::RESTATE_VERSION nodes ls
+        ```
+
+        You can also execute `restatectl` in a running server container using the following command:
+
+        ```shell
+        docker exec restate_dev restatectl nodes ls
+        ```
+
+        Replace `restate_dev` with the name of a running container, and `nodes ls` with the subcommand you want to run.
+
+    </TabItem>
+</Tabs>
 
 <Admonition type="note" title="Notice">
 `restatectl` requires direct access to nodes via their advertised addresses (default port: 5122). Ensure that restatectl commands can reach these addresses.
