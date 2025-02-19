@@ -41,5 +41,5 @@ const environment = new restate.SingleNodeRestateDeployment(this, "Restate", {
 });
 ```
 
-See [deploying Restate services on AWS Lambda with CDK](/deploy/faas/lambda/cdk) for more information on deploying
+See [deploying Restate services on AWS Lambda with CDK](/deploy/services/faas/lambda/cdk) for more information on deploying
 services.
