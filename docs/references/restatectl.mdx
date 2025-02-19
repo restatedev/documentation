@@ -1,13 +1,11 @@
 ---
 sidebar_position: 6
 description: "`restatectl` manual."
-hide_table_of_contents: true
 ---
 import Admonition from '@theme/Admonition';
 
-# restatectl
+## Getting restatectl
 
-## Getting `restatectl`
 You can install `restatectl` using your preferred [installation method](/develop/local_dev).
 The tool is also included in the `restate-cli` and `restate` Docker images.
 To use `restatectl` in a running Docker container, you can use the following command from the host machine to connect to it without spawning a separate container:
@@ -20,15 +18,16 @@ docker exec <CONTAINER_NAME> restatectl [ARGUMENTS]
 `restatectl` requires direct access to nodes via their advertised addresses (default port: 5122). Ensure that restatectl commands can reach these addresses.
 </Admonition>
 
-## Using `restatectl`
+## Using restatectl
+
 To list all available subcommands, run:
 ```shell
 restatectl --help
 ```
 <details className="grey-details">
     <summary>Output</summary>
-    ```shell
-    Restate Cluster Administration Tool
+```
+Restate Cluster Administration Tool
 
 A command-line tool for managing Restate clusters. Designed to be be used by administrators, restatectl can be used to inspect cluster health and perform low-level maintenance operations on live nodes. It requires access to restate's node-to-node communication addresses (default on
 port 5122)
@@ -103,14 +102,15 @@ Options:
 
   -V, --version
           Print version
-
-    ```
+```
 </details>
 
 ## Provision
+
 Deploys a new Restate cluster. See [Restate Cluster Deployment](/deploy/server/cluster/deployment) for details.
 
 ## Status
+
 Provides a comprehensive overview of the cluster's current state. Run:
 ```shell
 restatectl status
@@ -118,6 +118,7 @@ restatectl status
 The output consists of multiple sections detailing different cluster aspects.
 
 ### Nodes list
+
 Also accessible via:
 ```shell
 restatectl nodes list
@@ -135,7 +136,9 @@ Node Configuration (v21)
 This lists all known nodes in the cluster and their assigned roles. However, it does not indicate node health.
 
 ### Logs status
-Shows the effective logs per partition and the current log configuration (provider, replication, and node set size). Also accessible via:
+
+Shows the effective logs per partition and the current log configuration (provider, replication, and node set). Also accessible via:
+
 ```shell
 restatectl logs list
 ```
@@ -161,6 +164,7 @@ Log chain v8
 </details>
 
 ### Partition status
+
 Lists all partitions and their current state. Also accessible via:
 ```shell
 restatectl partitions list
@@ -198,3 +202,62 @@ Alive partition processors (nodes config v21, partition table v21)
  N3    11 minutes, 40 seconds and 995 ms ago
  ```
 </details>
+
+## Replicated Loglet
+
+Manage the replicated loglet using `restatectl replicated-loglet`. See [Restate Architecture](/references/architecture#distributed-log-aka-bifrost) for general background on Restate's distributed log.
+
+When you use the replicated loglet, which is required for distributed operation, the Restate control plane selects nodes on which to replicate the log according to the specified log replication. Each `log-server` node in the cluster has a storage state which determines how the control plane may use this node. The `set-storage-state` tool allows you to manually override this state as operational needs dictate.
+
+New log servers come up in the `provisioning` state and will automatically transition to `read-write`. The `read-write` state means that the node is considered both healthy to read from and accept writes, that is it may be selected as a node set member for new loglet segments.
+
+### list-servers
+
+You can view the current storage state of log servers in your cluster using the `list-servers` sub-command.
+
+```shell
+restatectl replicated-loglet list-servers
+```
+
+<details className="grey-details">
+    <summary>Output</summary>
+```
+Node configuration v12
+Log chain v3
+ NODE  GEN   STORAGE-STATE  HISTORICAL LOGLETS  ACTIVE LOGLETS
+ N1    N1:3  read-write     4                   2
+ N2    N2:2  read-write     4                   2
+ N3    N3:2  read-write     4                   2
+```
+</details>
+
+Other valid storage include `data-loss`, `read-only`, and `disabled`. Nodes may transition to `data-loss` if they detect that some previously written data is not available. This does not necessarily imply corruption, only that such nodes may not participate in some quorum checks. Such nodes may transition back to `read-write` if they can be repaired.
+
+The `read-only` and `disabled` states are of particular interest to operators. Log servers in `read-only` storage state may continue to serve both reads and writes, but will no longer be selected as participants in new segments' node sets. The control plane will reconfigure existing logs to move away from such nodes.
+
+### set-storage-state
+
+<Admonition type="caution" title="Danger of data loss">
+    `set-storage-state` is a low-level command that allows you to directly set log servers' storage-state. Changing this can lead to cluster unavailability or data loss.
+</Admonition>
+
+Use the `set-storage-state` sub-command to manually set the state, for example to drain log servers. Consider the following example:
+
+```shell
+restatectl replicated-loglet set-storage-state --node-id 1 --storage-state read-only
+```
+
+<details className="grey-details">
+    <summary>Output</summary>
+```
+Node N1 storage-state updated from read-write to read-only
+```
+</details>
+
+The cluster controller reconfigures the log node set to exclude `N1`. Depending on the configured log replication level, you may see a warning about compromised availability or, if insufficient log servers are available to achieve the minimum required replication, the log will stop accepting writes altogether. You have to take care as `restatectl` does not currently check whether the cluster will be able to generate new node sets with the remaining log servers.
+
+The `disabled` storage state tells Restate that a log server must not be considered for reads or writes - effectively it is no longer a part of the replicated log. It is only safe to transition a `read-only` server to the `disabled` state once the node has been removed from all node sets and any log chain segments that reference it have been trimmed.
+
+<Admonition type="tip" title="Log details">
+    You can examine logs using `restatectl logs describe`.
+</Admonition>

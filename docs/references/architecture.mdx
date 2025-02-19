@@ -31,6 +31,7 @@ The consensus algorithm powering Bifrost is based on [Flexible Paxos](https://fp
 
 To support scale-out operations, Restate splits the services key-space across multiple partitions, backed by logs. Currently, we map one partition to one log, though this relationship may change in the future. Thus you will see references to both partition ids and log ids, depending on context, so be aware that these are distinct concepts even if they might be the same value.
 
+Each Bifrost log is a chain of append-only segments. The control plane takes care of sealing prior segments and extending this chain. The individual segments are backed by loglets - currently, Bifrost ships with a local loglet suitable for single-node deployments, and a replicated loglet which supports clustered deployments.
 
 ### Processors
 
