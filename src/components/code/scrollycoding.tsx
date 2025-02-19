@@ -38,7 +38,7 @@ export function Scrollycoding(props: unknown) {
                             selectOn={["hover", "scroll", "click"]}
                             className={styles.step}
                         >
-                            {(step.title.length > 0) ? <p className={styles.stepTitle}>{step.title}</p> : null}
+                            {(step.title.length > 0) ? <p className={styles.stepTitle} id={step?.title?.toLowerCase().replace(/\s/g, '-')}>{step.title}</p> : null}
                             <div>{step.children}</div>
                         </Selectable>
                         {/*Mobile:*/}
