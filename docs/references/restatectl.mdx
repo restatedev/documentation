@@ -235,7 +235,7 @@ This lists all known nodes in the cluster and their assigned roles. However, it 
 
 ### Logs status
 
-Shows the effective logs per partition and the current log configuration (provider, replication, and node set). Also accessible via:
+Shows the effective logs per partition and the current log configuration (provider, replication, and nodeset). Also accessible via:
 
 ```shell
 restatectl logs list
@@ -307,7 +307,7 @@ Manage the replicated loglet using `restatectl replicated-loglet`. See [Restate 
 
 When you use the replicated loglet, which is required for distributed operation, the Restate control plane selects nodes on which to replicate the log according to the specified log replication. Each `log-server` node in the cluster has a storage state which determines how the control plane may use this node. The `set-storage-state` tool allows you to manually override this state as operational needs dictate.
 
-New log servers come up in the `provisioning` state and will automatically transition to `read-write`. The `read-write` state means that the node is considered both healthy to read from and accept writes, that is it may be selected as a node set member for new loglet segments.
+New log servers come up in the `provisioning` state and will automatically transition to `read-write`. The `read-write` state means that the node is considered both healthy to read from and accept writes, that is it may be selected as a nodeset member for new loglet segments.
 
 ### list-servers
 
@@ -331,7 +331,7 @@ Log chain v3
 
 Other valid storage include `data-loss`, `read-only`, and `disabled`. Nodes may transition to `data-loss` if they detect that some previously written data is not available. This does not necessarily imply corruption, only that such nodes may not participate in some quorum checks. Such nodes may transition back to `read-write` if they can be repaired.
 
-The `read-only` and `disabled` states are of particular interest to operators. Log servers in `read-only` storage state may continue to serve both reads and writes, but will no longer be selected as participants in new segments' node sets. The control plane will reconfigure existing logs to move away from such nodes.
+The `read-only` and `disabled` states are of particular interest to operators. Log servers in `read-only` storage state may continue to serve both reads and writes, but will no longer be selected as participants in new segments' nodesets. The control plane will reconfigure existing logs to move away from such nodes.
 
 ### set-storage-state
 
@@ -339,7 +339,7 @@ The `read-only` and `disabled` states are of particular interest to operators. L
     `set-storage-state` is a low-level command that allows you to directly set log servers' storage-state. Changing this can lead to cluster unavailability or data loss.
 </Admonition>
 
-Use the `set-storage-state` sub-command to manually set the state, for example to drain log servers. Consider the following example:
+Use the `set-storage-state` sub-command to manually update the log server state, for example to prevent log servers from being included in new nodesets. Consider the following example:
 
 ```shell
 restatectl replicated-loglet set-storage-state --node-id 1 --storage-state read-only
@@ -352,9 +352,7 @@ Node N1 storage-state updated from read-write to read-only
 ```
 </details>
 
-The cluster controller reconfigures the log node set to exclude `N1`. Depending on the configured log replication level, you may see a warning about compromised availability or, if insufficient log servers are available to achieve the minimum required replication, the log will stop accepting writes altogether. You have to take care as `restatectl` does not currently check whether the cluster will be able to generate new node sets with the remaining log servers.
-
-The `disabled` storage state tells Restate that a log server must not be considered for reads or writes - effectively it is no longer a part of the replicated log. It is only safe to transition a `read-only` server to the `disabled` state once the node has been removed from all node sets and any log chain segments that reference it have been trimmed.
+The cluster controller reconfigures the log nodeset to exclude `N1`. Depending on the configured log replication level, you may see a warning about compromised availability or, if insufficient log servers are available to achieve the minimum required replication, the log will stop accepting writes altogether. You have to take care as `restatectl` does not currently check whether the cluster will be able to generate new nodesets with the remaining log servers.
 
 <Admonition type="tip" title="Log details">
     You can examine logs using `restatectl logs describe`.
