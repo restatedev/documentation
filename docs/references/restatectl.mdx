@@ -1,0 +1,359 @@
+---
+sidebar_position: 6
+description: "`restatectl` manual."
+---
+
+import Admonition from '@theme/Admonition';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import {CodeWithTabs} from "@site/src/components/code/code";
+import {TextAndCode} from "@site/src/components/code/code/text-and-code";
+
+## Getting `restatectl`
+
+<Tabs groupId={"getting-restatectl"}>
+    <TabItem value={"Homebrew"} label={"Homebrew"}>
+        <TextAndCode>
+            Install with:
+            ```shell !result
+            brew install restatedev/tap/restatectl
+            ```
+        </TextAndCode>
+        <TextAndCode>
+            Then run:
+            ```shell !result
+            restatectl
+            ```
+        </TextAndCode>
+    </TabItem>
+    <TabItem value={"bin"} label={"Download binaries"}>
+        Install restatectl by downloading the binary with `curl` from the [releases page](https://github.com/restatedev/restate/releases/latest), and make them executable:
+
+        <CodeWithTabs>
+
+            ```shell !!tabs Linux-x64
+            BIN=$HOME/.local/bin && RESTATE_PLATFORM=x86_64-unknown-linux-musl && \
+            curl -LO https://restate.gateway.scarf.sh/latest/restatectl-$RESTATE_PLATFORM.tar.xz && \
+            tar -xvf restatectl-$RESTATE_PLATFORM.tar.xz --strip-components=1 restatectl-$RESTATE_PLATFORM/restatectl && \
+            chmod +x restatectl && \
+
+            # Move the binary to a directory in your PATH, for example ~/.local/bin:
+            mv restatectl $BIN
+            ```
+
+            ```shell !!tabs Linux-arm64
+            BIN=$HOME/.local/bin && RESTATE_PLATFORM=aarch64-unknown-linux-musl && \
+            curl -LO https://restate.gateway.scarf.sh/latest/restatectl-$RESTATE_PLATFORM.tar.xz && \
+            tar -xvf restatectl-$RESTATE_PLATFORM.tar.xz --strip-components=1 restatectl-$RESTATE_PLATFORM/restatectl && \
+            chmod +x restatectl && \
+
+            # Move the binary to a directory in your PATH, for example ~/.local/bin:
+            mv restatectl $BIN
+            ```
+
+            ```shell !!tabs MacOS-x64
+            BIN=/usr/local/bin && RESTATE_PLATFORM=x86_64-apple-darwin && \
+            curl -LO https://restate.gateway.scarf.sh/latest/restatectl-$RESTATE_PLATFORM.tar.xz && \
+            tar -xvf restatectl-$RESTATE_PLATFORM.tar.xz --strip-components=1 restatectl-$RESTATE_PLATFORM/restatectl && \
+            chmod +x restatectl && \
+
+            # Move the binary to a directory in your PATH, for example /usr/local/bin (needs sudo):
+            sudo mv restatectl $BIN
+            ```
+
+            ```shell !!tabs MacOS-arm64
+            BIN=/usr/local/bin && RESTATE_PLATFORM=aarch64-apple-darwin && \
+            curl -LO https://restate.gateway.scarf.sh/latest/restatectl-$RESTATE_PLATFORM.tar.xz && \
+            tar -xvf restatectl-$RESTATE_PLATFORM.tar.xz --strip-components=1 restatectl-$RESTATE_PLATFORM/restatectl && \
+            chmod +x restatectl && \
+
+            # Move the binary to a directory in your PATH, for example /usr/local/bin (needs sudo):
+            sudo mv restatectl $BIN
+            ```
+
+        </CodeWithTabs>
+
+        Then run:
+        ```shell
+        restatectl
+        ```
+
+    </TabItem>
+    <TabItem value={"npm"} label={"npm"}>
+        <TextAndCode>
+            Install with:
+            ```shell !result
+            npm install --global @restatedev/restatectl@latest
+            ```
+        </TextAndCode>
+        <TextAndCode>
+            Then run:
+            ```shell !result
+            restatectl
+            ```
+        </TextAndCode>
+    </TabItem>
+    <TabItem value={"Docker"} label={"Docker"}>
+
+        The server and CLI images both contain the `restatectl` tool. To run `restatectl`, use the following command:
+
+        ```shell
+        docker run -it --network=host --entrypoint restatectl docker.restate.dev/restatedev/restate-cli:VAR::RESTATE_VERSION nodes ls
+        ```
+
+        You can also execute `restatectl` in a running server container using the following command:
+
+        ```shell
+        docker exec restate_dev restatectl nodes ls
+        ```
+
+        Replace `restate_dev` with the name of a running container, and `nodes ls` with the subcommand you want to run.
+
+    </TabItem>
+</Tabs>
+
+<Admonition type="note" title="Notice">
+`restatectl` requires direct access to nodes via their advertised addresses (default port: 5122). Ensure that restatectl commands can reach these addresses.
+</Admonition>
+
+## Using restatectl
+
+To list all available subcommands, run:
+```shell
+restatectl --help
+```
+<details className="grey-details">
+    <summary>Output</summary>
+```
+Restate Cluster Administration Tool
+
+A command-line tool for managing Restate clusters. Designed to be be used by administrators, restatectl can be used to inspect cluster health and perform low-level maintenance operations on live nodes. It requires access to restate's node-to-node communication addresses (default on
+port 5122)
+
+https://docs.restate.dev
+
+Usage: restatectl [OPTIONS] <COMMAND>
+
+Commands:
+  provision          Provision a new cluster
+  status             Print cluster status overview (shortcut to `cluster status`)
+  nodes              Cluster node status
+  partitions         Manage partition table
+  logs               Log operations
+  snapshots          Partition processor snapshots
+  config             Cluster configuration operations
+  metadata           Metadata store operations
+  replicated-loglet  [low-level] Commands that operate on replicated loglets
+  help               Print this message or the help of the given subcommand(s)
+
+Options:
+  -s, --address <ADDRESS>
+          Specify server address to connect to.
+
+          It needs access to the node-to-node address (aka. node advertised address) Can also accept a comma-separated list or by repeating `--address=<host>`.
+
+          [env: RESTATECTL_ADDRESS=]
+          [default: http://localhost:5122/]
+          [aliases: server]
+
+      --sync-metadata
+          Use this option to avoid receiving stale metadata information from the nodes by reading it from the metadata store
+
+  -v, --verbose...
+          Increase logging verbosity
+
+  -q, --quiet...
+
+
+      --table-style <TABLE_STYLE>
+          Which table output style to use
+
+          [default: compact]
+
+          Possible values:
+          - compact: No borders, condensed layout
+          - borders: UTF8 borders, good for multiline text
+
+      --time-format <TIME_FORMAT>
+          [default: human]
+
+          Possible values:
+          - human:   Human friendly timestamps and durations
+          - iso8601: RFC-3339/ISO-8601 formatted (1996-12-19T16:39:57-08:00)
+          - rfc2822: RFC-2822 formatted (Tue, 1 Jul 2003 10:52:37 +0200)
+
+  -y, --yes
+          Auto answer "yes" to confirmation prompts
+
+      --connect-timeout <CONNECT_TIMEOUT>
+          Connection timeout for network calls, in milliseconds
+
+          [default: 5000]
+
+      --request-timeout <REQUEST_TIMEOUT>
+          Overall request timeout for network calls, in milliseconds
+
+          [default: 13000]
+
+  -h, --help
+          Print help (see a summary with '-h')
+
+  -V, --version
+          Print version
+```
+</details>
+
+## Provision
+
+Deploys a new Restate cluster. See [Restate Cluster Deployment](/deploy/server/cluster/deployment) for details.
+
+## Status
+
+Provides a comprehensive overview of the cluster's current state. Run:
+```shell
+restatectl status
+```
+The output consists of multiple sections detailing different cluster aspects.
+
+### Nodes list
+
+Also accessible via:
+```shell
+restatectl nodes list
+```
+
+Example output:
+```
+Node Configuration (v21)
+ NODE  GEN  NAME    ADDRESS                 ROLES
+ N1    6    node-1  http://127.0.0.1:5122/  admin | log-server | metadata-server | worker
+ N2    4    node-2  http://127.0.0.1:6122/  admin | log-server | metadata-server | worker
+ N3    6    node-3  http://127.0.0.1:7122/  log-server | metadata-server | worker
+```
+
+This lists all known nodes in the cluster and their assigned roles. However, it does not indicate node health.
+
+### Logs status
+
+Shows the effective logs per partition and the current log configuration (provider, replication, and nodeset). Also accessible via:
+
+```shell
+restatectl logs list
+```
+
+<details className="grey-details">
+    <summary>Output</summary>
+```
+Log chain v8
+└ Logs Provider: replicated
+ ├ Log replication: {node: 2}
+ └ Nodeset size: 0
+ L-ID  FROM-LSN  KIND        LOGLET-ID  REPLICATION  SEQUENCER  NODESET
+ 0     61        Replicated  0_5        {node: 2}    N1:6       [N1, N2, N3]
+ 1     4         Replicated  1_4        {node: 2}    N1:6       [N1, N2, N3]
+ 2     4         Replicated  2_4        {node: 2}    N1:6       [N1, N2, N3]
+ 3     5         Replicated  3_5        {node: 2}    N1:6       [N1, N2, N3]
+ 4     4         Replicated  4_4        {node: 2}    N1:6       [N1, N2, N3]
+ 5     5         Replicated  5_5        {node: 2}    N1:6       [N1, N2, N3]
+ 6     6         Replicated  6_6        {node: 2}    N1:6       [N1, N2, N3]
+ 7     4         Replicated  7_4        {node: 2}    N1:6       [N1, N2, N3]
+ 8     4         Replicated  8_4        {node: 2}    N1:6       [N1, N2, N3]
+```
+</details>
+
+### Partition status
+
+Lists all partitions and their current state. Also accessible via:
+```shell
+restatectl partitions list
+```
+
+This section also highlights nodes that are detected as dead.
+
+<details className="grey-details">
+    <summary>Output</summary>
+```
+Alive partition processors (nodes config v21, partition table v21)
+ P-ID  NODE  MODE      STATUS  LEADER  EPOCH  SEQUENCER  APPLIED-LSN  PERSISTED-LSN  SKIPPED-RECORDS  ARCHIVED-LSN  LAST-UPDATE
+ 0     N1:6  Leader    Active  N1:6    e5     N1:6       61           -              0                -             1 second and 170 ms ago
+ 0     N2:4  Follower  Active  N1:6    e5                61           -              0                -             1 second and 64 ms ago
+ 1     N1:6  Leader    Active  N1:6    e4     N1:6       4            -              0                -             801 ms ago
+ 1     N2:4  Follower  Active  N1:6    e4                4            -              0                -             779 ms ago
+ 2     N1:6  Leader    Active  N1:6    e4     N1:6       4            -              0                -             600 ms ago
+ 2     N2:4  Follower  Active  N1:6    e4                4            -              0                -             1 second and 108 ms ago
+ 3     N1:6  Leader    Active  N1:6    e5     N1:6       5            -              0                -             1 second and 369 ms ago
+ 3     N2:4  Follower  Active  N1:6    e5                5            -              0                -             1 second and 306 ms ago
+ 4     N1:6  Leader    Active  N1:6    e4     N1:6       4            -              0                -             651 ms ago
+ 4     N2:4  Follower  Active  N1:6    e4                4            -              0                -             1 second and 169 ms ago
+ 5     N1:6  Leader    Active  N1:6    e5     N1:6       5            -              0                -             567 ms ago
+ 5     N2:4  Follower  Active  N1:6    e5                5            -              0                -             1 second and 382 ms ago
+ 6     N1:6  Leader    Active  N1:6    e6     N1:6       6            -              0                -             804 ms ago
+ 6     N2:4  Follower  Active  N1:6    e6                6            -              0                -             1 second and 145 ms ago
+ 7     N1:6  Leader    Active  N1:6    e4     N1:6       4            -              0                -             1 second and 79 ms ago
+ 7     N2:4  Follower  Active  N1:6    e4                4            -              0                -             974 ms ago
+ 8     N1:6  Leader    Active  N1:6    e4     N1:6       4            -              0                -             1 second and 71 ms ago
+ 8     N2:4  Follower  Active  N1:6    e4                4            -              0                -             717 ms ago
+
+
+☠️ Dead nodes
+ NODE  LAST-SEEN
+ N3    11 minutes, 40 seconds and 995 ms ago
+ ```
+</details>
+
+## Replicated Loglet
+
+Manage the replicated loglet using `restatectl replicated-loglet`. See [Restate Architecture](/references/architecture#distributed-log-aka-bifrost) for general background on Restate's distributed log.
+
+When you use the replicated loglet, which is required for distributed operation, the Restate control plane selects nodes on which to replicate the log according to the specified log replication. Each `log-server` node in the cluster has a storage state which determines how the control plane may use this node. The `set-storage-state` tool allows you to manually override this state as operational needs dictate.
+
+New log servers come up in the `provisioning` state and will automatically transition to `read-write`. The `read-write` state means that the node is considered both healthy to read from and accept writes, that is it may be selected as a nodeset member for new loglet segments.
+
+### list-servers
+
+You can view the current storage state of log servers in your cluster using the `list-servers` sub-command.
+
+```shell
+restatectl replicated-loglet list-servers
+```
+
+<details className="grey-details">
+    <summary>Output</summary>
+```
+Node configuration v12
+Log chain v3
+ NODE  GEN   STORAGE-STATE  HISTORICAL LOGLETS  ACTIVE LOGLETS
+ N1    N1:3  read-write     4                   2
+ N2    N2:2  read-write     4                   2
+ N3    N3:2  read-write     4                   2
+```
+</details>
+
+Other valid storage include `data-loss`, `read-only`, and `disabled`. Nodes may transition to `data-loss` if they detect that some previously written data is not available. This does not necessarily imply corruption, only that such nodes may not participate in some quorum checks. Such nodes may transition back to `read-write` if they can be repaired.
+
+The `read-only` and `disabled` states are of particular interest to operators. Log servers in `read-only` storage state may continue to serve both reads and writes, but will no longer be selected as participants in new segments' nodesets. The control plane will reconfigure existing logs to move away from such nodes.
+
+### set-storage-state
+
+<Admonition type="caution" title="Danger of data loss">
+    `set-storage-state` is a low-level command that allows you to directly set log servers' storage-state. Changing this can lead to cluster unavailability or data loss.
+</Admonition>
+
+Use the `set-storage-state` sub-command to manually update the log server state, for example to prevent log servers from being included in new nodesets. Consider the following example:
+
+```shell
+restatectl replicated-loglet set-storage-state --node-id 1 --storage-state read-only
+```
+
+<details className="grey-details">
+    <summary>Output</summary>
+```
+Node N1 storage-state updated from read-write to read-only
+```
+</details>
+
+The cluster controller reconfigures the log nodeset to exclude `N1`. Depending on the configured log replication level, you may see a warning about compromised availability or, if insufficient log servers are available to achieve the minimum required replication, the log will stop accepting writes altogether. You have to take care as `restatectl` does not currently check whether the cluster will be able to generate new nodesets with the remaining log servers.
+
+<Admonition type="tip" title="Log details">
+    You can examine logs using `restatectl logs describe`.
+</Admonition>

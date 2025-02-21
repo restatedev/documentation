@@ -1,7 +1,7 @@
 /* eslint-disable global-require */
 
-import {translate} from '@docusaurus/Translate';
-import {sortBy} from '@site/src/utils/jsUtils';
+import { translate } from "@docusaurus/Translate";
+import { sortBy } from "@site/src/utils/jsUtils";
 
 // LIST OF AVAILABLE TAGS
 // Available tags to assign to a guide
@@ -10,16 +10,16 @@ import {sortBy} from '@site/src/utils/jsUtils';
 export type TagType =
   // Add this back at a later point in time where we have many guides
   // | 'favorite'
-  | 'patterns'
-  | 'operations'
-  | 'integrations'
-  | 'development'
-  | 'deployment'
-  | 'java'
-  | 'typescript'
-  | 'rust'
-  | 'go'
-  | 'python';
+  | "patterns"
+  | "operations"
+  | "integrations"
+  | "development"
+  | "deployment"
+  | "java"
+  | "typescript"
+  | "rust"
+  | "go"
+  | "python";
 
 // Add sites to this list
 // prettier-ignore
@@ -75,6 +75,22 @@ const Guides: Guide[] = [
     tags: ['patterns', 'typescript', 'go'],
   },
   {
+    title: "Deploying Restate cluster using Docker",
+    description: 'Learn how to deploy a Restate cluster using Docker.',
+    preview: require('./guides/cluster.png'),
+    website: '/guides/cluster',
+    source: null,
+    tags: ['deployment'],
+  },
+  {
+    title: "Migrating a single-node to a multi-node deployment",
+    description: 'Learn how to migrate from a single node using the local loglet and local metadata to multiple nodes using the replicated loglet and replicated metadata.',
+    preview: require('./guides/local-to-replicated.png'),
+    website: '/guides/local-to-replicated',
+    source: null,
+    tags: ['deployment'],
+  },
+  {
     title: "Error handling",
     description: 'Learn how to handle transient and terminal errors in your applications.',
     preview: require('./guides/retry-guide.jpg'),
@@ -83,7 +99,8 @@ const Guides: Guide[] = [
     tags: ['development', 'typescript', 'go', 'java', 'python', 'rust'],
   },
 
-  // Add new guides in alphabetical order!
+
+    // Add new guides in alphabetical order!
 ];
 
 export type Guide = {
@@ -101,7 +118,7 @@ export type Tag = {
   color: string;
 };
 
-export const Tags: {[type in TagType]: Tag} = {
+export const Tags: { [type in TagType]: Tag } = {
   // Add this back at a later point in time where we have many guides
   // favorite: {
   //   label: translate({message: 'Favorites'}),
@@ -114,103 +131,94 @@ export const Tags: {[type in TagType]: Tag} = {
   // },
 
   java: {
-    label: translate({message: 'Java/Kotlin'}),
+    label: translate({ message: "Java/Kotlin" }),
     description: translate({
-      message:
-          'Guides using the Java/Kotlin SDK.',
-      id: 'showcase.tag.java.description',
+      message: "Guides using the Java/Kotlin SDK.",
+      id: "showcase.tag.java.description",
     }),
-    color: '#ffcfc3',
+    color: "#ffcfc3",
   },
 
   typescript: {
-    label: translate({message: 'TypeScript'}),
+    label: translate({ message: "TypeScript" }),
     description: translate({
-      message:
-          'Guides using the TypeScript SDK.',
-      id: 'showcase.tag.typescript.description',
+      message: "Guides using the TypeScript SDK.",
+      id: "showcase.tag.typescript.description",
     }),
-    color: '#fff200',
+    color: "#fff200",
   },
 
   go: {
-    label: translate({message: 'Go'}),
+    label: translate({ message: "Go" }),
     description: translate({
-      message:
-          'Guides using the Go SDK.',
-      id: 'showcase.tag.go.description',
+      message: "Guides using the Go SDK.",
+      id: "showcase.tag.go.description",
     }),
-    color: '#aaff00',
+    color: "#aaff00",
   },
 
   rust: {
-    label: translate({message: 'Rust'}),
+    label: translate({ message: "Rust" }),
     description: translate({
-      message:
-          'Guides using the Rust SDK.',
-      id: 'showcase.tag.rust.description',
+      message: "Guides using the Rust SDK.",
+      id: "showcase.tag.rust.description",
     }),
-    color: '#2fff00',
+    color: "#2fff00",
   },
 
   python: {
-    label: translate({message: 'Python'}),
+    label: translate({ message: "Python" }),
     description: translate({
-      message:
-          'Guides using the :Python SDK.',
-      id: 'showcase.tag.python.description',
+      message: "Guides using the :Python SDK.",
+      id: "showcase.tag.python.description",
     }),
-    color: '#00ffa6',
+    color: "#00ffa6",
   },
 
   patterns: {
-    label: translate({message: 'Patterns & Use Cases'}),
+    label: translate({ message: "Patterns & Use Cases" }),
     description: translate({
       message:
-          'Learn how to implement common patterns and use cases in Restate.',
-      id: 'showcase.tag.patterns.description',
+        "Learn how to implement common patterns and use cases in Restate.",
+      id: "showcase.tag.patterns.description",
     }),
-    color: '#fe6829',
+    color: "#fe6829",
   },
 
   integrations: {
-    label: translate({message: 'Integrations'}),
+    label: translate({ message: "Integrations" }),
     description: translate({
-      message:
-          'Learn how to integrate Restate with other tools.',
-      id: 'showcase.tag.integrations.description',
+      message: "Learn how to integrate Restate with other tools.",
+      id: "showcase.tag.integrations.description",
     }),
-    color: '#127f82',
+    color: "#127f82",
   },
 
   development: {
-    label: translate({message: 'Development'}),
+    label: translate({ message: "Development" }),
     description: translate({
-      message:
-        'Learn how to develop Restate applications.',
-      id: 'showcase.tag.development.description',
+      message: "Learn how to develop Restate applications.",
+      id: "showcase.tag.development.description",
     }),
-    color: '#852b08',
+    color: "#852b08",
   },
 
   deployment: {
-    label: translate({message: 'Deployment'}),
+    label: translate({ message: "Deployment" }),
     description: translate({
-      message:
-        'Learn how to deploy Restate applications.',
-      id: 'showcase.tag.deployment.description',
+      message: "Learn how to deploy Restate applications.",
+      id: "showcase.tag.deployment.description",
     }),
-    color: '#852b08',
+    color: "#852b08",
   },
 
   operations: {
-    label: translate({message: 'Operations'}),
+    label: translate({ message: "Operations" }),
     description: translate({
-      message:
-          'Learn how to configure, manage and operate Restate.',
-      id: 'showcase.tag.operations.description',
+      message: "Learn how to configure, manage and operate Restate.",
+      id: "showcase.tag.operations.description",
     }),
-    color: '#b74f6b',
+    color: "#b74f6b",
   },
 };
 
@@ -220,7 +228,7 @@ function sortGuides() {
   // Sort by site name
   result = sortBy(result, (user) => user.title.toLowerCase());
   // Sort by favorite tag, favorites first
-  result = sortBy(result, (user) => !user.tags.includes('favorite'));
+  result = sortBy(result, (user) => !user.tags.includes("favorite"));
   return result;
 }
 
