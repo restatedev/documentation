@@ -10,7 +10,7 @@ import {CodeWithTabs} from "../../src/components/code/code";
 
 # Error Handling
 
-Restate handles retries for failed invocations. By default, Restate does infinite retries with an exponential backoff strategy.
+Restate handles retries for failed invocations. By default, Restate infinitely retries all errors with an exponential backoff strategy.
 
 This guide helps you fine-tune the retry behavior for your use cases.
 
@@ -41,7 +41,6 @@ type = "exponential" # retry strategy; required
 initial-interval = "50ms" # time between the first and second retry; required
 factor = 2.0 # factor used to calculate the next retry interval; required
 max-interval = "10s" # max time between retries; default: unset (=interval keeps increasing)
-max-attempts = "10" # max number of attempts before terminal error; default: unset (=infinite)
 ```
 
 You can tune this policy to your needs. Note that all durations should follow the [humantime format](https://docs.rs/humantime/latest/humantime/fn.parse_duration.html).
@@ -105,8 +104,7 @@ So the handler goes through the regular retry cycle of suspension and re-invocat
 If you set a maximum number of attempts, then the run block will fail with a TerminalException once the retries are exhausted.
 
 <Admonition type="note" title="Other levels of retry policies">
-- Service-level retry policies are planned and will come soon.
-- Handler-level retry policies are not planned.
+Service-level retry policies are planned and will come soon.
 </Admonition>
 
 ## Application errors (terminal)
@@ -196,9 +194,7 @@ Here again, the handler needs to have [compensation logic](/guides/sagas) in pla
 
 ## Timeouts to bound response times
 
-Restate also has timeouts to bound the response time of a service invocation.
-
-There are two types of timeouts in Restate:
+There are two types of timeouts describing the behavior between Restate and the service.
 
 ### Inactivity timeout
 
@@ -206,6 +202,8 @@ When the Restate Server does not receive a next journal entry from a running han
 This timer guards against stalled service/handler invocations. Once it expires, Restate triggers a graceful termination by asking the service invocation to suspend (which preserves intermediate progress).
 
 By default, the inactivity timeout is set to one minute.
+
+You can increase the inactivity timeout if you have long-running `ctx.run` blocks, that lead to long pauses between journal entries. Otherwise, this timeout might kill the ongoing execution.
 
 ### Abort timeout
 
@@ -224,7 +222,16 @@ If the user code needs longer to gracefully terminate, then this value needs to 
 
 ### Configuring the timeouts
 
-You can set the inactivity timeout via the UI or the [Restate Server configuration](/operate/configuration/server).
+You can set the inactivity timeout via the UI, the CLI or the [Restate Server configuration](/operate/configuration/server).
+
+Via the CLI:
+
+```shell
+restate services config edit <SERVICE>
+```
+Then you can adapt the configuration file and save it for the new settings to take effect.
+
+Via the Restate Server Configuration:
 
 ```toml restate.toml
 [worker.invoker]
@@ -264,10 +271,13 @@ You can implement this in Restate by wrapping your handler in a try-catch block.
     <summary>Catching failed invocations before handler execution starts</summary>
 
     Some errors might happen before the handler code gets invoked/starts running (e.g. service does not exist, request decoding errors in SDK HTTP server, ...).
+    By default, Restate fails these requests with `400`.
+
     Handle these as follows:
     - In case the caller waited for the response of the failed call, the caller can handle the propagation to the DLQ.
     - If the caller did not wait for the response (one-way send), you would lose these messages.
-        You could handle the decoding errors by letting the called handler take raw input and doing the decoding and validation itself.
+    - Decoding errors can be caught by doing the decoding inside the handler.
+        The called handler then takes raw input and does the decoding and validation itself.
         In this case, it would be included in the try-catch block which would do the dispatching:
 
         <CodeWithTabs groupId={"sdk"}>
@@ -296,7 +306,9 @@ You can implement this in Restate by wrapping your handler in a try-catch block.
             CODE_LOAD::rust/src/guides/retries.rs#raw
             ```
         </CodeWithTabs>
+
         The other errors mainly occur due to misconfiguration of your setup (e.g. wrong service name, wrong handler name, forgot service registration...).
+        You cannot handle those at the moment.
 
 </details>
 
