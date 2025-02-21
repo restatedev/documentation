@@ -28,14 +28,13 @@ impl MyService for MyServiceImpl {
 
         // <start_catch>
         // Fails with a terminal error after 3 attempts or if the function throws one
-        ctx.run(|| write_to_other_system())
+        if let Err(e) = ctx.run(|| write_to_other_system())
             .retry_policy(RunRetryPolicy::default().max_attempts(3))
-            .await
-            .map_err(|e| {
+            .await {
                 // Handle the terminal error: undo previous actions and
                 // propagate the error back to the caller
-                e
-            })?;
+                return Err(e)
+            }
         // <end_catch>
 
         // <start_terminal_error>
