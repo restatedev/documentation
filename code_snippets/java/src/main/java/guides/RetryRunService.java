@@ -22,7 +22,7 @@ public class RetryRunService {
     // <start_here>
     // <mark_1>
     RetryPolicy myRunRetryPolicy =
-       RetryPolicy.exponential(Duration.ofMillis(500), 2)
+        RetryPolicy.exponential(Duration.ofMillis(500), 2)
             .setMaxDelay(Duration.ofSeconds(10))
             .setMaxAttempts(10)
             .setMaxDuration(Duration.ofMinutes(5));
@@ -84,9 +84,7 @@ public class RetryRunService {
   }
 
   public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder()
-            .bind(new RetryRunService())
-            .buildAndListen();
+    RestateHttpEndpointBuilder.builder().bind(new RetryRunService()).buildAndListen();
   }
 
   private Object decodeRequest(byte[] request) {
