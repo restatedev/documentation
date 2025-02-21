@@ -90,8 +90,17 @@ const Guides: Guide[] = [
     source: null,
     tags: ['deployment'],
   },
+  {
+    title: "Error handling",
+    description: 'Learn how to handle transient and terminal errors in your applications.',
+    preview: require('./guides/retry-guide.jpg'),
+    website: '/guides/error-handling',
+    source: null,
+    tags: ['development', 'typescript', 'go', 'java', 'python', 'rust'],
+  },
 
-  // Add new guides in alphabetical order!
+
+    // Add new guides in alphabetical order!
 ];
 
 export type Guide = {
