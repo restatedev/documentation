@@ -22,11 +22,11 @@ class RetryRunService {
     // <start_here>
     // <mark_1>
     val myRunRetryPolicy = retryPolicy {
-        initialDelay = 5.seconds
-        exponentiationFactor = 2.0f
-        maxDelay = 60.seconds
-        maxAttempts = 10
-        maxDuration = 5.minutes
+      initialDelay = 5.seconds
+      exponentiationFactor = 2.0f
+      maxDelay = 60.seconds
+      maxAttempts = 10
+      maxDuration = 5.minutes
     }
     // </mark_1>
     ctx.runBlock("write", myRunRetryPolicy) { writeToOtherSystem() }
