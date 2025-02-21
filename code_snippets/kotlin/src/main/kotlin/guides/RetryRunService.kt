@@ -80,6 +80,7 @@ class RetryRunService {
     try {
       val result = select {
         awakeable.onAwait { it }
+        // !mark
         timeout.onAwait { throw TimeoutException() }
       }
     } catch (e: TimeoutException) {
@@ -89,10 +90,10 @@ class RetryRunService {
     val callAwaitable = MyServiceClient.fromContext(ctx).myHandler("Hello")
     // !mark
     val callTimeout = ctx.timer(5.seconds)
-    // !mark
     try {
       val result = select {
         callAwaitable.onAwait { it }
+        // !mark
         callTimeout.onAwait { throw TimeoutException() }
       }
     } catch (e: TimeoutException) {
