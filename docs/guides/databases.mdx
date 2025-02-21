@@ -13,17 +13,15 @@ To avoid confusion: In this page, we refer to the type of state that outlives a 
 
 This guide discusses thoughts on when to use Restate for that type of state, when to use a database, and how to integrate Restate and databases.
 
+## What state to store in Restate, what to store in databases
 
-
-## What state to store in Restate, what to store in Databases
-
-State stored directly in Restate (Virtual Objects) has a set of advantages:
-- Ultra robust: No coordination between systems is needed. Instead, state access/updates directly participate in the durable execution logic (go through the same consensus log), making the state always aligned with the business logic: no lost updates, duplications of state changes, stale views of state, etc.
-- Simple correctness model: The single-writer-per-key and linearizable consistency model means developers don’t need to worry about locks, race conditions, dirty reads, change visibility, zombie processes, etc.
-- Efficient: Computation and access patterns to state align naturally, you cannot get into situations where 100s of functions try to access/update the same database entry and contend on locks or interfere with each others’ transaction.
+State stored directly in Restate ([Virtual Objects](/concepts/services#virtual-objects)) has a set of advantages:
+- **Ultra robust**: No coordination between systems is needed. Instead, state access/updates directly participate in the durable execution logic (go through the same consensus log), making the state always aligned with the business logic: no lost updates, duplications of state changes, stale views of state, etc.
+- **Simple correctness model**: The single-writer-per-key and linearizable consistency model means developers don’t need to worry about locks, race conditions, dirty reads, change visibility, zombie processes, etc.
+- **Efficient**: Computation and access patterns to state align naturally, you cannot get into situations where 100s of functions try to access/update the same database entry and contend on locks or interfere with each other's transaction.
 No write amplification through separate durability in an external system (instead state is simply committed with the durable execution journal data).
-- Serverless: relevant state is pushed with function invocations, e.g., to lambda. It is locally available when the function executes, no access delays, synchronization, wait times, etc.
-- No additional dependency - just works when you develop locally, or migrate the Restate app to cloud/prod
+- **Serverless**: when Restate invokes a handler, it attaches the relevant state to the request. On serverless, for example AWS lambda, this means your state is locally available when the function executes, no access delays, synchronization, wait times, etc.
+- **No additional dependency** - the K/V store is integrated in the core of Restate. You don't need to do anything extra to start using state when developing locally, or migrating the Restate app to cloud/production.
 
 State stored directly in Restate (Virtual Objects) has some limitations:
 - K/V interface with single-key transactions (though a single key can store a document with flexible structures)
@@ -46,7 +44,6 @@ Use Restate for any state requiring tight integration with function logic, resil
 - State of control planes (desired cluster status, resource references, ...)
 - Consistent state/metadata overlay over eventual consistent infra
 
-
 ## How to interact with Databases from Restate
 
 This set of examples shows various patterns to access databases from Restate handlers.
@@ -63,5 +60,7 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main
 
 ## Running the examples
 
-This is purely opional, the example code and comments document the behavior well.
+This is purely optional, the example code and comments document the behavior well.
 Running the example can be interesting, though, if you want to play with specific failure scenarios, like pausing/killing processes at specific points and observe the behavior.
+
+[Check out the readme of the example on how to run the example.](https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/README.md#database-interaction-patterns)
