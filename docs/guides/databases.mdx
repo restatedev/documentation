@@ -9,7 +9,7 @@ pagination_prev: null
 
 Restate is not only a system for resilience and durability in communication and orchestration, it can also store data like a database system, to enable writing long-lived stateful logic with strong out-of-the-box resilience.
 
-To avoid confusion: In this page, we refer to the type of state that outlives a single workflow or durable handler execution, and that uses Restate’s Virtual Objects. This is a feature not available in typical workflow systems or durable execution frameworks.
+To avoid confusion: In this page, we refer to the type of state that outlives a single workflow or durable handler execution, and that uses Restate’s [Virtual Objects](/concepts/services#virtual-objects). This is a feature not available in typical workflow systems or durable execution frameworks.
 
 This guide discusses thoughts on when to use Restate for that type of state, when to use a database, and how to integrate Restate and databases.
 
@@ -18,7 +18,7 @@ This guide discusses thoughts on when to use Restate for that type of state, whe
 State stored directly in Restate ([Virtual Objects](/concepts/services#virtual-objects)) has a set of advantages:
 - **Ultra robust**: No coordination between systems is needed. Instead, state access/updates directly participate in the durable execution logic (go through the same consensus log), making the state always aligned with the business logic: no lost updates, duplications of state changes, stale views of state, etc.
 - **Simple correctness model**: The single-writer-per-key and linearizable consistency model means developers don’t need to worry about locks, race conditions, dirty reads, change visibility, zombie processes, etc.
-- **Efficient**: Computation and access patterns to state align naturally, you cannot get into situations where 100s of functions try to access/update the same database entry and contend on locks or interfere with each other's transaction.
+- **Efficient**: Computation and access patterns to state align naturally, you cannot get into situations where multiple function executions try to access/update the same database entry and contend on locks or interfere with each other's transaction.
 No write amplification through separate durability in an external system (instead state is simply committed with the durable execution journal data).
 - **Serverless**: when Restate invokes a handler, it attaches the relevant state to the request. On serverless, for example AWS lambda, this means your state is locally available when the function executes, no access delays, synchronization, wait times, etc.
 - **No additional dependency** - the K/V store is integrated in the core of Restate. You don't need to do anything extra to start using state when developing locally, or migrating the Restate app to cloud/production.
@@ -26,7 +26,7 @@ No write amplification through separate durability in an external system (instea
 State stored directly in Restate (Virtual Objects) has some limitations:
 - K/V interface with single-key transactions (though a single key can store a document with flexible structures)
 - SQL is supported only for analytics / introspection, not for updates/transactions.
-- Modifiable only from the Virtual Object, not from arbitrary services. Any modification needs to be sent as a request to the Virtual Object.
+- Modifiable only from the Virtual Object, not from other services. Any modification needs to be sent as a request to the Virtual Object.
 - While state can be exported in a standard way (psql client), it is managed by a less standard system, compared to some databases.
 
 ## When to use which?
