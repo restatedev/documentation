@@ -1,0 +1,134 @@
+---
+title: "Cluster Deployment"
+sidebar_position: 1
+description: "Learn how to deploy a distributed Restate cluster."
+---
+
+import Admonition from '@theme/Admonition';
+
+# Restate Cluster Deployment
+
+This page describes how you can deploy a distributed Restate cluster.
+
+<Admonition type="tip" title="Quickstart using Docker">
+    Check out the [Restate cluster guide](/guides/cluster) for a docker-compose ready-made example.
+</Admonition>
+
+<Admonition type="tip" title="Migrating an existing single-node deployment">
+    Check out the [single node migration guide](/guides/local-to-replicated) for how to migrate a single-node into a multi-node deployment without losing data.
+</Admonition>
+
+## Configuration
+
+<Admonition type="note" title="Architectural overview">
+    To understand the terminology used on this page, it might be helpful to read through the [architecture reference](/references/architecture).
+</Admonition>
+
+To deploy a distributed Restate cluster without external dependencies, you need to configure the following settings in your [server configuration](/operate/configuration/server):
+
+```toml restate.toml
+# Let every node run all roles
+roles = ["metadata-server", "admin", "worker", "log-server"]
+# Every node needs to have a unique node name
+node-name = "UNIQUE_NODE_NAME"
+# All nodes need to have the same cluster name
+cluster-name = "CLUSTER_NAME"
+# Make sure it does not conflict with the other nodes
+advertised-address = "ADVERTISED_ADDRESS"
+# At most one node can be configured with auto-provision = true
+auto-provision = false
+
+[bifrost]
+# Only the replicated Bifrost provider can be used in a distributed deployment
+default-provider = "replicated"
+
+[bifrost.replicated-loglet]
+# Replicate the data to 2 nodes. This requires that the cluster has at least 2 nodes to
+# become operational. If the cluster has at least 3 nodes, then it can tolerate 1 node failure.
+default-log-replication = 2
+
+[metadata-server]
+# To tolerate node failures, use the replicated metadata server
+type = "replicated"
+
+[metadata-client]
+# List all the advertised addresses of the nodes that run the metadata-server role
+addresses = ["ADVERTISED_ADDRESS", "ADVERTISED_ADDRESS_NODE_X"]
+
+[admin]
+# Make sure it does not conflict with the other nodes
+bind-address = "ADMIN_BIND_ADDRESS"
+
+[ingress]
+# Make sure it does not conflict with other nodes
+bind-address = "INGRESS_BIND_ADDRESS"
+
+[admin.query-engine]
+# Make sure it does not conflict with other nodes
+pgsql-bind-address = "PGSQL_BIND_ADDRESS"
+```
+
+It is important that every Restate node you start has a unique `node-name` specified.
+All nodes that are part of the cluster need to have the same `cluster-name` specified.
+At most one node can be configured with `auto-provision = true`.
+If no node is allowed to auto provision, then you have to manually provision the cluster.
+Refer to the [Cluster provisioning](#cluster-provisioning) section for more information.
+
+The log provider needs to be configured with `default-provider = "replicated"`.
+The `default-log-replication` should be set to the number of nodes that the data should be replicated to.
+If you run at least `2 * default-replication-property - 1` nodes, then the cluster can tolerate `default-replication-property - 1` node failures.
+
+The metadata server type should be set to `replicated` to tolerate node failures.
+Every node that runs the `metadata-server` role will join the metadata store cluster.
+To tolerate `n` metadata node failures, you need to run at least `2 * n + 1` Restate nodes with the `metadata-server` role configured.
+
+The `metadata-client` should be configured with the advertised addresses of all nodes that run the `metadata-server` role.
+
+Every Restate node that runs the `worker` role will also run the ingress server and accept incoming invocations.
+
+For those nodes that run on the same machine, make sure that the ports do not conflict.
+
+## Controlling Clusters
+
+Restate includes a command line utility tool to connect to and control running Restate servers called [`restatectl`](/references/restatectl#getting-restatectl).
+This tool is specifically designed for system operators to manage Restate servers and is particularly useful in a cluster environment.
+It is distinct from the application developer-focused `restate` CLI tool, which is used to manage service deployments and invocations.
+
+### Using `restatectl`
+The `restatectl` tool communicates with Restate at the advertised address specified in the [server configuration](/operate/configuration/server) - by default TCP port 5122. To get an overview of a running server or cluster, use the `status` command:
+
+```shell
+restatectl status --addresses http://localhost:5122/
+```
+
+<details className={"grey-details"}>
+    <summary>Sample output</summary>
+
+    ```
+    Node Configuration (v3)
+    NODE  GEN  NAME  ADDRESS                 ROLES
+    N1    2    n1    http://127.0.0.1:5122/  admin | log-server | metadata-server | worker
+
+    Log Configuration (v2)
+    Default Provider Config: Local
+    L-ID  FROM-LSN  KIND   LOGLET-ID  REPLICATION  SEQUENCER  NODESET
+    0     1         Local  N/A        N/A          N/A        N/A
+
+    Alive partition processors (nodes config v3, partition table v2)
+    P-ID  NODE  MODE    STATUS  LEADER  EPOCH  SEQUENCER  APPLIED-LSN  ARCHIVED-LSN  LAST-UPDATE
+    0     N1:2  Leader  Active  N1:2    e1                1            -             615 ms ago
+    ```
+
+</details>
+
+## Cluster provisioning
+
+Once you start the node that is configured with `auto-provision = true`, it will provision the cluster so that other nodes can join.
+The provision step initializes the metadata store and writes the initial `NodesConfiguration` with the initial cluster configuration to the metadata store.
+In case none of the nodes is allowed to auto-provision, then you need to provision the cluster manually via `restatectl`.
+
+```shell
+restatectl provision --address <SERVER_TO_PROVISION> --yes
+```
+
+This provisions the cluster with default settings specified in the server configuration.

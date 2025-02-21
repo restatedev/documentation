@@ -70,8 +70,7 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
                         Install Restate Server and CLI.
 
                         ```shell !result
-                        brew install restatedev/tap/restate-server &&
-                        brew install restatedev/tap/restate
+                        brew install restatedev/tap/restate-server restatedev/tap/restate
                         ```
                     </TextAndCode>
                     <TextAndCode>
@@ -87,8 +86,9 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
                     <CodeWithTabs>
                         ```shell !!tabs Linux-x64
                         BIN=$HOME/.local/bin && RESTATE_PLATFORM=x86_64-unknown-linux-musl && \
-                        curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
-                        tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+                        curl -LO https://restate.gateway.scarf.sh/latest/restate-{server,cli}-$RESTATE_PLATFORM.tar.xz && \
+                        tar -xvf restate-server-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-server-$RESTATE_PLATFORM/restate-server && \
+                        tar -xvf restate-cli-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-cli-$RESTATE_PLATFORM/restate && \
                         chmod +x restate restate-server && \
 
                         # Move the binaries to a directory in your PATH, for example ~/.local/bin:
@@ -98,8 +98,9 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                         ```shell !!tabs Linux-arm64
                         BIN=$HOME/.local/bin && RESTATE_PLATFORM=aarch64-unknown-linux-musl && \
-                        curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
-                        tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+                        curl -LO https://restate.gateway.scarf.sh/latest/restate-{server,cli}-$RESTATE_PLATFORM.tar.xz && \
+                        tar -xvf restate-server-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-server-$RESTATE_PLATFORM/restate-server && \
+                        tar -xvf restate-cli-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-cli-$RESTATE_PLATFORM/restate && \
                         chmod +x restate restate-server && \
 
                         # Move the binaries to a directory in your PATH, for example ~/.local/bin:
@@ -109,8 +110,9 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                         ```shell !!tabs MacOS-x64
                         BIN=/usr/local/bin && RESTATE_PLATFORM=x86_64-apple-darwin && \
-                        curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
-                        tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+                        curl -LO https://restate.gateway.scarf.sh/latest/restate-{server,cli}-$RESTATE_PLATFORM.tar.xz && \
+                        tar -xvf restate-server-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-server-$RESTATE_PLATFORM/restate-server && \
+                        tar -xvf restate-cli-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-cli-$RESTATE_PLATFORM/restate && \
                         chmod +x restate restate-server && \
 
                         # Move the binaries to a directory in your PATH, for example /usr/local/bin (needs sudo):
@@ -120,8 +122,9 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                         ```shell !!tabs MacOS-arm64
                         BIN=/usr/local/bin && RESTATE_PLATFORM=aarch64-apple-darwin && \
-                        curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
-                        tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+                        curl -LO https://restate.gateway.scarf.sh/latest/restate-{server,cli}-$RESTATE_PLATFORM.tar.xz && \
+                        tar -xvf restate-server-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-server-$RESTATE_PLATFORM/restate-server && \
+                        tar -xvf restate-cli-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-cli-$RESTATE_PLATFORM/restate && \
                         chmod +x restate restate-server && \
 
                         # Move the binaries to a directory in your PATH, for example /usr/local/bin (needs sudo):
@@ -142,8 +145,7 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
                         Install Restate Server and CLI via:
 
                         ```shell !result
-                        npm install --global @restatedev/restate-server@latest &&
-                        npm install --global @restatedev/restate@latest
+                        npm install --global @restatedev/restate-server@latest @restatedev/restate@latest
                         ```
                     </TextAndCode>
                     <TextAndCode>
@@ -159,13 +161,13 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                     ```shell
                     docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 \
-                    --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
+                    --add-host=host.docker.internal:host-gateway docker.restate.dev/restatedev/restate:VAR::RESTATE_VERSION
                     ```
 
                     To run commands with the Restate CLI, use the following command:
 
                     ```shell
-                    docker run -it --network=host docker.io/restatedev/restate-cli:VAR::RESTATE_VERSION invocations ls
+                    docker run -it --network=host docker.restate.dev/restatedev/restate-cli:VAR::RESTATE_VERSION invocations ls
                     ```
 
                     Replace `invocations ls` by the CLI command you want to run.
@@ -655,8 +657,7 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
                         Install Restate Server and CLI via:
 
                         ```shell !result
-                        brew install restatedev/tap/restate-server &&
-                        brew install restatedev/tap/restate
+                        brew install restatedev/tap/restate-server restatedev/tap/restate
                         ```
                     </TextAndCode>
                     <TextAndCode>
@@ -673,8 +674,9 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                         ```shell !!tabs Linux-x64
                         BIN=$HOME/.local/bin && RESTATE_PLATFORM=x86_64-unknown-linux-musl && \
-                        curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
-                        tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+                        curl -LO https://restate.gateway.scarf.sh/latest/restate-{server,cli}-$RESTATE_PLATFORM.tar.xz && \
+                        tar -xvf restate-server-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-server-$RESTATE_PLATFORM/restate-server && \
+                        tar -xvf restate-cli-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-cli-$RESTATE_PLATFORM/restate && \
                         chmod +x restate restate-server && \
 
                         # Move the binaries to a directory in your PATH, for example ~/.local/bin:
@@ -684,8 +686,9 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                         ```shell !!tabs Linux-arm64
                         BIN=$HOME/.local/bin && RESTATE_PLATFORM=aarch64-unknown-linux-musl && \
-                        curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
-                        tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+                        curl -LO https://restate.gateway.scarf.sh/latest/restate-{server,cli}-$RESTATE_PLATFORM.tar.xz && \
+                        tar -xvf restate-server-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-server-$RESTATE_PLATFORM/restate-server && \
+                        tar -xvf restate-cli-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-cli-$RESTATE_PLATFORM/restate && \
                         chmod +x restate restate-server && \
 
                         # Move the binaries to a directory in your PATH, for example ~/.local/bin:
@@ -695,8 +698,9 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                         ```shell !!tabs MacOS-x64
                         BIN=/usr/local/bin && RESTATE_PLATFORM=x86_64-apple-darwin && \
-                        curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
-                        tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+                        curl -LO https://restate.gateway.scarf.sh/latest/restate-{server,cli}-$RESTATE_PLATFORM.tar.xz && \
+                        tar -xvf restate-server-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-server-$RESTATE_PLATFORM/restate-server && \
+                        tar -xvf restate-cli-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-cli-$RESTATE_PLATFORM/restate && \
                         chmod +x restate restate-server && \
 
                         # Move the binaries to a directory in your PATH, for example /usr/local/bin (needs sudo):
@@ -706,8 +710,9 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                         ```shell !!tabs MacOS-arm64
                         BIN=/usr/local/bin && RESTATE_PLATFORM=aarch64-apple-darwin && \
-                        curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
-                        tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+                        curl -LO https://restate.gateway.scarf.sh/latest/restate-{server,cli}-$RESTATE_PLATFORM.tar.xz && \
+                        tar -xvf restate-server-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-server-$RESTATE_PLATFORM/restate-server && \
+                        tar -xvf restate-cli-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-cli-$RESTATE_PLATFORM/restate && \
                         chmod +x restate restate-server && \
 
                         # Move the binaries to a directory in your PATH, for example /usr/local/bin (needs sudo):
@@ -729,13 +734,13 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                     ```shell
                     docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 \
-                    --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
+                    --add-host=host.docker.internal:host-gateway docker.restate.dev/restatedev/restate:VAR::RESTATE_VERSION
                     ```
 
                     To run commands with the Restate CLI, use the following command:
 
                     ```shell
-                    docker run -it --network=host docker.io/restatedev/restate-cli:VAR::RESTATE_VERSION invocations ls
+                    docker run -it --network=host docker.restate.dev/restatedev/restate-cli:VAR::RESTATE_VERSION invocations ls
                     ```
 
                     Replace `invocations ls` by the CLI command you want to run.
@@ -1009,8 +1014,7 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
                         Install Restate Server and CLI via:
 
                         ```shell !result
-                        brew install restatedev/tap/restate-server &&
-                        brew install restatedev/tap/restate
+                        brew install restatedev/tap/restate-server restatedev/tap/restate
                         ```
                     </TextAndCode>
                     <TextAndCode>
@@ -1027,8 +1031,9 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                         ```shell !!tabs Linux-x64
                         BIN=$HOME/.local/bin && RESTATE_PLATFORM=x86_64-unknown-linux-musl && \
-                        curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
-                        tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+                        curl -LO https://restate.gateway.scarf.sh/latest/restate-{server,cli}-$RESTATE_PLATFORM.tar.xz && \
+                        tar -xvf restate-server-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-server-$RESTATE_PLATFORM/restate-server && \
+                        tar -xvf restate-cli-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-cli-$RESTATE_PLATFORM/restate && \
                         chmod +x restate restate-server && \
 
                         # Move the binaries to a directory in your PATH, for example ~/.local/bin:
@@ -1038,8 +1043,9 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                         ```shell !!tabs Linux-arm64
                         BIN=$HOME/.local/bin && RESTATE_PLATFORM=aarch64-unknown-linux-musl && \
-                        curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
-                        tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+                        curl -LO https://restate.gateway.scarf.sh/latest/restate-{server,cli}-$RESTATE_PLATFORM.tar.xz && \
+                        tar -xvf restate-server-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-server-$RESTATE_PLATFORM/restate-server && \
+                        tar -xvf restate-cli-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-cli-$RESTATE_PLATFORM/restate && \
                         chmod +x restate restate-server && \
 
                         # Move the binaries to a directory in your PATH, for example ~/.local/bin:
@@ -1049,8 +1055,9 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                         ```shell !!tabs MacOS-x64
                         BIN=/usr/local/bin && RESTATE_PLATFORM=x86_64-apple-darwin && \
-                        curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
-                        tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+                        curl -LO https://restate.gateway.scarf.sh/latest/restate-{server,cli}-$RESTATE_PLATFORM.tar.xz && \
+                        tar -xvf restate-server-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-server-$RESTATE_PLATFORM/restate-server && \
+                        tar -xvf restate-cli-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-cli-$RESTATE_PLATFORM/restate && \
                         chmod +x restate restate-server && \
 
                         # Move the binaries to a directory in your PATH, for example /usr/local/bin (needs sudo):
@@ -1060,8 +1067,9 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                         ```shell !!tabs MacOS-arm64
                         BIN=/usr/local/bin && RESTATE_PLATFORM=aarch64-apple-darwin && \
-                        curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
-                        tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+                        curl -LO https://restate.gateway.scarf.sh/latest/restate-{server,cli}-$RESTATE_PLATFORM.tar.xz && \
+                        tar -xvf restate-server-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-server-$RESTATE_PLATFORM/restate-server && \
+                        tar -xvf restate-cli-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-cli-$RESTATE_PLATFORM/restate && \
                         chmod +x restate restate-server && \
 
                         # Move the binaries to a directory in your PATH, for example /usr/local/bin (needs sudo):
@@ -1083,13 +1091,13 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                     ```shell
                     docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 \
-                    --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
+                    --add-host=host.docker.internal:host-gateway docker.restate.dev/restatedev/restate:VAR::RESTATE_VERSION
                     ```
 
                     To run commands with the Restate CLI, use the following command:
 
                     ```shell
-                    docker run -it --network=host docker.io/restatedev/restate-cli:VAR::RESTATE_VERSION invocations ls
+                    docker run -it --network=host docker.restate.dev/restatedev/restate-cli:VAR::RESTATE_VERSION invocations ls
                     ```
 
                     Replace `invocations ls` by the CLI command you want to run.
@@ -1242,8 +1250,7 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
                         Install Restate Server and CLI via:
 
                         ```shell !result
-                        brew install restatedev/tap/restate-server &&
-                        brew install restatedev/tap/restate
+                        brew install restatedev/tap/restate-server restatedev/tap/restate
                         ```
                     </TextAndCode>
                     <TextAndCode>
@@ -1260,8 +1267,9 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                         ```shell !!tabs Linux-x64
                         BIN=$HOME/.local/bin && RESTATE_PLATFORM=x86_64-unknown-linux-musl && \
-                        curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
-                        tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+                        curl -LO https://restate.gateway.scarf.sh/latest/restate-{server,cli}-$RESTATE_PLATFORM.tar.xz && \
+                        tar -xvf restate-server-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-server-$RESTATE_PLATFORM/restate-server && \
+                        tar -xvf restate-cli-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-cli-$RESTATE_PLATFORM/restate && \
                         chmod +x restate restate-server && \
 
                         # Move the binaries to a directory in your PATH, for example ~/.local/bin:
@@ -1271,8 +1279,9 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                         ```shell !!tabs Linux-arm64
                         BIN=$HOME/.local/bin && RESTATE_PLATFORM=aarch64-unknown-linux-musl && \
-                        curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
-                        tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+                        curl -LO https://restate.gateway.scarf.sh/latest/restate-{server,cli}-$RESTATE_PLATFORM.tar.xz && \
+                        tar -xvf restate-server-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-server-$RESTATE_PLATFORM/restate-server && \
+                        tar -xvf restate-cli-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-cli-$RESTATE_PLATFORM/restate && \
                         chmod +x restate restate-server && \
 
                         # Move the binaries to a directory in your PATH, for example ~/.local/bin:
@@ -1282,8 +1291,9 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                         ```shell !!tabs MacOS-x64
                         BIN=/usr/local/bin && RESTATE_PLATFORM=x86_64-apple-darwin && \
-                        curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
-                        tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+                        curl -LO https://restate.gateway.scarf.sh/latest/restate-{server,cli}-$RESTATE_PLATFORM.tar.xz && \
+                        tar -xvf restate-server-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-server-$RESTATE_PLATFORM/restate-server && \
+                        tar -xvf restate-cli-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-cli-$RESTATE_PLATFORM/restate && \
                         chmod +x restate restate-server && \
 
                         # Move the binaries to a directory in your PATH, for example /usr/local/bin (needs sudo):
@@ -1293,8 +1303,9 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                         ```shell !!tabs MacOS-arm64
                         BIN=/usr/local/bin && RESTATE_PLATFORM=aarch64-apple-darwin && \
-                        curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
-                        tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+                        curl -LO https://restate.gateway.scarf.sh/latest/restate-{server,cli}-$RESTATE_PLATFORM.tar.xz && \
+                        tar -xvf restate-server-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-server-$RESTATE_PLATFORM/restate-server && \
+                        tar -xvf restate-cli-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-cli-$RESTATE_PLATFORM/restate && \
                         chmod +x restate restate-server && \
 
                         # Move the binaries to a directory in your PATH, for example /usr/local/bin (needs sudo):
@@ -1316,13 +1327,13 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                     ```shell
                     docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 \
-                    --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
+                    --add-host=host.docker.internal:host-gateway docker.restate.dev/restatedev/restate:VAR::RESTATE_VERSION
                     ```
 
                     To run commands with the Restate CLI, use the following command:
 
                     ```shell
-                    docker run -it --network=host docker.io/restatedev/restate-cli:VAR::RESTATE_VERSION invocations ls
+                    docker run -it --network=host docker.restate.dev/restatedev/restate-cli:VAR::RESTATE_VERSION invocations ls
                     ```
 
                     Replace `invocations ls` by the CLI command you want to run.
@@ -1486,8 +1497,7 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
                         Install Restate Server and CLI via:
 
                         ```shell !result
-                        brew install restatedev/tap/restate-server &&
-                        brew install restatedev/tap/restate
+                        brew install restatedev/tap/restate-server restatedev/tap/restate
                         ```
                     </TextAndCode>
                     <TextAndCode>
@@ -1504,8 +1514,9 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                         ```shell !!tabs Linux-x64
                         BIN=$HOME/.local/bin && RESTATE_PLATFORM=x86_64-unknown-linux-musl && \
-                        curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
-                        tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+                        curl -LO https://restate.gateway.scarf.sh/latest/restate-{server,cli}-$RESTATE_PLATFORM.tar.xz && \
+                        tar -xvf restate-server-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-server-$RESTATE_PLATFORM/restate-server && \
+                        tar -xvf restate-cli-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-cli-$RESTATE_PLATFORM/restate && \
                         chmod +x restate restate-server && \
 
                         # Move the binaries to a directory in your PATH, for example ~/.local/bin:
@@ -1515,8 +1526,9 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                         ```shell !!tabs Linux-arm64
                         BIN=$HOME/.local/bin && RESTATE_PLATFORM=aarch64-unknown-linux-musl && \
-                        curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
-                        tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+                        curl -LO https://restate.gateway.scarf.sh/latest/restate-{server,cli}-$RESTATE_PLATFORM.tar.xz && \
+                        tar -xvf restate-server-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-server-$RESTATE_PLATFORM/restate-server && \
+                        tar -xvf restate-cli-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-cli-$RESTATE_PLATFORM/restate && \
                         chmod +x restate restate-server && \
 
                         # Move the binaries to a directory in your PATH, for example ~/.local/bin:
@@ -1526,8 +1538,9 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                         ```shell !!tabs MacOS-x64
                         BIN=/usr/local/bin && RESTATE_PLATFORM=x86_64-apple-darwin && \
-                        curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
-                        tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+                        curl -LO https://restate.gateway.scarf.sh/latest/restate-{server,cli}-$RESTATE_PLATFORM.tar.xz && \
+                        tar -xvf restate-server-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-server-$RESTATE_PLATFORM/restate-server && \
+                        tar -xvf restate-cli-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-cli-$RESTATE_PLATFORM/restate && \
                         chmod +x restate restate-server && \
 
                         # Move the binaries to a directory in your PATH, for example /usr/local/bin (needs sudo):
@@ -1537,8 +1550,9 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                         ```shell !!tabs MacOS-arm64
                         BIN=/usr/local/bin && RESTATE_PLATFORM=aarch64-apple-darwin && \
-                        curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
-                        tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+                        curl -LO https://restate.gateway.scarf.sh/latest/restate-{server,cli}-$RESTATE_PLATFORM.tar.xz && \
+                        tar -xvf restate-server-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-server-$RESTATE_PLATFORM/restate-server && \
+                        tar -xvf restate-cli-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-cli-$RESTATE_PLATFORM/restate && \
                         chmod +x restate restate-server && \
 
                         # Move the binaries to a directory in your PATH, for example /usr/local/bin (needs sudo):
@@ -1560,13 +1574,13 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                     ```shell
                     docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 \
-                    --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
+                    --add-host=host.docker.internal:host-gateway docker.restate.dev/restatedev/restate:VAR::RESTATE_VERSION
                     ```
 
                     To run commands with the Restate CLI, use the following command:
 
                     ```shell
-                    docker run -it --network=host docker.io/restatedev/restate-cli:VAR::RESTATE_VERSION invocations ls
+                    docker run -it --network=host docker.restate.dev/restatedev/restate-cli:VAR::RESTATE_VERSION invocations ls
                     ```
 
                     Replace `invocations ls` by the CLI command you want to run.
@@ -1676,7 +1690,7 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
             <Terminal>
 
                 ```shell !command
-                curl localhost:8080/Greeter/greet -H 'content-type: application/json' -d '"Sarah"'
+                curl localhost:8080/Greeter/greet -H 'content-type: application/json' -d '{"name": "Sarah"}'
                 ```
 
                 ```shell !output
@@ -1736,8 +1750,7 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
                         Install Restate Server and CLI via:
 
                         ```shell !result
-                        brew install restatedev/tap/restate-server &&
-                        brew install restatedev/tap/restate
+                        brew install restatedev/tap/restate-server restatedev/tap/restate
                         ```
                     </TextAndCode>
                     <TextAndCode>
@@ -1754,8 +1767,9 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                         ```shell !!tabs Linux-x64
                         BIN=$HOME/.local/bin && RESTATE_PLATFORM=x86_64-unknown-linux-musl && \
-                        curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
-                        tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+                        curl -LO https://restate.gateway.scarf.sh/latest/restate-{server,cli}-$RESTATE_PLATFORM.tar.xz && \
+                        tar -xvf restate-server-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-server-$RESTATE_PLATFORM/restate-server && \
+                        tar -xvf restate-cli-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-cli-$RESTATE_PLATFORM/restate && \
                         chmod +x restate restate-server && \
 
                         # Move the binaries to a directory in your PATH, for example ~/.local/bin:
@@ -1765,8 +1779,9 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                         ```shell !!tabs Linux-arm64
                         BIN=$HOME/.local/bin && RESTATE_PLATFORM=aarch64-unknown-linux-musl && \
-                        curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
-                        tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+                        curl -LO https://restate.gateway.scarf.sh/latest/restate-{server,cli}-$RESTATE_PLATFORM.tar.xz && \
+                        tar -xvf restate-server-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-server-$RESTATE_PLATFORM/restate-server && \
+                        tar -xvf restate-cli-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-cli-$RESTATE_PLATFORM/restate && \
                         chmod +x restate restate-server && \
 
                         # Move the binaries to a directory in your PATH, for example ~/.local/bin:
@@ -1776,8 +1791,9 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                         ```shell !!tabs MacOS-x64
                         BIN=/usr/local/bin && RESTATE_PLATFORM=x86_64-apple-darwin && \
-                        curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
-                        tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+                        curl -LO https://restate.gateway.scarf.sh/latest/restate-{server,cli}-$RESTATE_PLATFORM.tar.xz && \
+                        tar -xvf restate-server-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-server-$RESTATE_PLATFORM/restate-server && \
+                        tar -xvf restate-cli-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-cli-$RESTATE_PLATFORM/restate && \
                         chmod +x restate restate-server && \
 
                         # Move the binaries to a directory in your PATH, for example /usr/local/bin (needs sudo):
@@ -1787,8 +1803,9 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                         ```shell !!tabs MacOS-arm64
                         BIN=/usr/local/bin && RESTATE_PLATFORM=aarch64-apple-darwin && \
-                        curl -LO https://github.com/restatedev/restate/releases/latest/download/restate.$RESTATE_PLATFORM.tar.gz && \
-                        tar -xvf restate.$RESTATE_PLATFORM.tar.gz && \
+                        curl -LO https://restate.gateway.scarf.sh/latest/restate-{server,cli}-$RESTATE_PLATFORM.tar.xz && \
+                        tar -xvf restate-server-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-server-$RESTATE_PLATFORM/restate-server && \
+                        tar -xvf restate-cli-$RESTATE_PLATFORM.tar.xz --strip-components=1 restate-cli-$RESTATE_PLATFORM/restate && \
                         chmod +x restate restate-server && \
 
                         # Move the binaries to a directory in your PATH, for example /usr/local/bin (needs sudo):
@@ -1810,13 +1827,13 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
                     ```shell
                     docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 \
-                    --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:VAR::RESTATE_VERSION
+                    --add-host=host.docker.internal:host-gateway docker.restate.dev/restatedev/restate:VAR::RESTATE_VERSION
                     ```
 
                     To run commands with the Restate CLI, use the following command:
 
                     ```shell
-                    docker run -it --network=host docker.io/restatedev/restate-cli:VAR::RESTATE_VERSION invocations ls
+                    docker run -it --network=host docker.restate.dev/restatedev/restate-cli:VAR::RESTATE_VERSION invocations ls
                     ```
 
                     Replace `invocations ls` by the CLI command you want to run.

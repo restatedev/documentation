@@ -1,0 +1,77 @@
+---
+sidebar_position: 13
+description: "Resolving common problems with Restate deployments"
+---
+
+import Admonition from '@theme/Admonition';
+import { Terminal } from "@site/src/components/code/terminal";
+
+# Troubleshooting
+
+<Admonition type="note" title="Work in progress">
+    This page calls out some scenarios we've identified that require special care. We expect to cover more common issues over time. In the mean time, if you need help with a particular issue, please reach out to us via [Discord](https://discord.com/invite/skW3AZ6uGd) or [Slack](https://join.slack.com/t/restatecommunity/shared_invite/zt-2v9gl005c-WBpr167o5XJZI1l7HWKImA).
+</Admonition>
+
+## Restate Clusters
+
+### Node id misconfiguration puts log server in `data-loss` state
+
+If a misconfigured Restate node with the log server role attempts to join a cluster where the node id is already in use, you will observe that the newly started node aborts with an error:
+
+```log
+ERROR restate_core::task_center: Shutting down: task 4 failed with: Node cannot start a log-server on N3, it has detected that it has lost its data. storage-state is `data-loss`
+```
+
+Restarting the existing node that previously owned this id will also cause it to stop with the same message. Follow these steps to return the initial log server into service without losing its stored log segments.
+
+First, prevent the misconfigured node from starting again until the configuration has been corrected. If this was a brand new node, there should be no data stored on it, and you may delete it altogether.
+
+The reused node id has been marked as having `data-loss`. This precaution that tells the Restate control plane to avoid selecting this node as member of new log nodesets. You can view the current status using the [`restatectl replicated-loglet` tool](/references/restatectl#replicated-loglet):
+
+<Terminal>
+```shell !command
+restatectl replicated-loglet servers
+```
+```log !output
+Node configuration v21
+Log chain v6
+ NODE  GEN   STORAGE-STATE  HISTORICAL LOGLETS  ACTIVE LOGLETS
+ N1    N1:5  read-write     8                   2
+ N2    N2:4  read-write     8                   2
+ N3    N3:6  data-loss      6                   0
+```
+</Terminal>
+
+You should also observe that the control plane is now avoiding using this node for log storage. This will result in reduced fault tolerance or even unavailability, depending on the configured minimum log replication:
+
+<Terminal>
+```shell !command
+restatectl logs list
+```
+```log !output
+Logs v3
+└ Logs Provider: replicated
+ ├ Log replication: {node: 2}
+ └ Nodeset size: 0
+ L-ID  FROM-LSN  KIND        LOGLET-ID  REPLICATION  SEQUENCER  NODESET
+ 0     2         Replicated  0_1        {node: 2}    N2:1       [N1, N2]
+ 1     2         Replicated  1_1        {node: 2}    N2:1       [N1, N2]
+```
+</Terminal>
+
+To restore the original node's ability to accept writes, we can update its metadata using `set-storage-state` subcommand.
+
+<Admonition type="caution" title="Dangerous operation">
+    Only proceed if you are confident that you understand the reason why the node is in this state, and are certain that its locally stored data is still intact. Since Restate cannot automatically validate that it safe to put this node back into service, we must use the `--force` flag to override the default state transition rules.
+</Admonition>
+
+<Terminal>
+```shell !command
+restatectl replicated-loglet set-storage-state --node-id 3 --storage-state 'read-write' --force
+```
+```log !output
+Node N3 storage-state updated from data-loss to read-write
+```
+</Terminal>
+
+You can validate that the server is once again being used for log storage using `logs list` and `replicated-loglet servers` subcommands.

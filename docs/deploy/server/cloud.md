@@ -127,7 +127,7 @@ restateCloudRole.assumeRolePolicy!.addStatements(
 );
 ```
 
-When you use the [Restate CDK construct library](/deploy/faas/lambda/cdk) to deploy
+When you use the [Restate CDK construct library](/deploy/services/faas/lambda/cdk) to deploy
 Lambda handlers, the provided invoker role will automatically be granted access
 to invoke the corresponding functions. If you manage Restate service deployments
 some other way, you should ensure that the Restate Cloud invoker role is permitted
