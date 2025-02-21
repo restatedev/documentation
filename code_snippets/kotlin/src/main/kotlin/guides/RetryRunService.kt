@@ -5,12 +5,10 @@ import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Raw
 import dev.restate.sdk.annotation.Service
 import dev.restate.sdk.common.TerminalException
-import dev.restate.sdk.kotlin.Awaitable
-import dev.restate.sdk.kotlin.Context
-import dev.restate.sdk.kotlin.KtSerdes
-import dev.restate.sdk.kotlin.RetryPolicy
-import dev.restate.sdk.kotlin.runBlock
+import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
+import dev.restate.sdk.kotlin.*
 import develop.MyServiceClient
+import java.util.concurrent.TimeoutException
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -23,13 +21,13 @@ class RetryRunService {
 
     // <start_here>
     // <mark_1>
-    val myRunRetryPolicy =
-        RetryPolicy(
-            initialDelay = 5.seconds,
-            exponentiationFactor = 2.0f,
-            maxDelay = 60.seconds,
-            maxAttempts = 10,
-            maxDuration = 5.minutes)
+    val myRunRetryPolicy = retryPolicy {
+        initialDelay = 5.seconds
+        exponentiationFactor = 2.0f
+        maxDelay = 60.seconds
+        maxAttempts = 10
+        maxDuration = 5.minutes
+    }
     // </mark_1>
     ctx.runBlock("write", myRunRetryPolicy) { writeToOtherSystem() }
     // <end_here>
@@ -75,27 +73,30 @@ class RetryRunService {
   @Handler
   suspend fun myTimeoutHandler(ctx: Context) {
     // <start_timeout>
-    val awakeable = ctx.awakeable(KtSerdes.json())
+    val awakeable = ctx.awakeable<String>()
     // do something that will trigger the awakeable
-    // !mark
-    val awakeableTimeout = ctx.timer(5.seconds)
-    // !mark
-    val result = Awaitable.any(awakeable, awakeableTimeout).await()
-    if (result == awakeable) {
-      println("Awakeable resolved first")
-    } else if (result == awakeableTimeout) {
-      println("Timeout hit first")
+    // !mark(1:5
+    val timeout = ctx.timer(5.seconds)
+    try {
+      val result = select {
+        awakeable.onAwait { it }
+        timeout.onAwait { throw TimeoutException() }
+      }
+    } catch (e: TimeoutException) {
+      // Handle the timeout
     }
 
-    val call = MyServiceClient.fromContext(ctx).myHandler("Hello")
+    val callAwaitable = MyServiceClient.fromContext(ctx).myHandler("Hello")
     // !mark
     val callTimeout = ctx.timer(5.seconds)
     // !mark
-    val result2 = Awaitable.any(call, callTimeout).await()
-    if (result2 == call) {
-      println("Call responsded first")
-    } else if (result2 == callTimeout) {
-      println("Timeout hit first")
+    try {
+      val result = select {
+        callAwaitable.onAwait { it }
+        callTimeout.onAwait { throw TimeoutException() }
+      }
+    } catch (e: TimeoutException) {
+      // Handle the timeout
     }
     // ... rest of your business logic ...
     // <end_timeout>
@@ -109,4 +110,8 @@ class RetryRunService {
   private fun writeToOtherSystem(): String {
     return "writeToOtherSystem"
   }
+}
+
+fun main() {
+  RestateHttpEndpointBuilder.builder().bind(RetryRunService()).buildAndListen()
 }
