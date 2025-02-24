@@ -3,16 +3,15 @@ sidebar_position: 1
 description: "Restate Server configuration options."
 ---
 
-import Schema from "@site/static/schemas/restate-server-configuration-schema.json";
-import JSONSchemaViewer from "@theme/JSONSchemaViewer";
-import ReactMarkdown from 'react-markdown'
-import CodeBlock from '@theme/CodeBlock'
 import Admonition from '@theme/Admonition';
-import DefaultConfig from '!!raw-loader!/static/schemas/restate.toml';
 
 # Restate Server
 
 The Restate Server has a wide range of configuration options to tune it according to your needs.
+
+<Admonition type={"note"} title={"Configuration Reference"}>
+    Have a look at the [defaults and full configuration reference](/references/server_config).
+</Admonition>
 
 ## Configuration file
 
@@ -70,15 +69,3 @@ kill -USR1 994921
 ```
 Observe the output of the server for a dump of the configuration file contents.
 
-
-## Default configuration
-
-<Admonition type="tip" icon="💡" title="Tip">
-Note that configuration defaults might change across server releases, if you want to make sure you use stable values, use an explicit configuration file an pass the path via `--config-path=<PATH>` as described above.
-</Admonition>
-
-<CodeBlock language="toml" title={"restate.toml"}>{DefaultConfig}</CodeBlock>
-
-## Configuration reference
-
-<JSONSchemaViewer schema={ Schema } viewerOptions={{DescriptionComponent: ({description}) => <ReactMarkdown children={description}/>}} />
