@@ -26,19 +26,13 @@ export function TerminalView(command, output, isTab?, expanded?) {
             <div className={styles.terminalCommand}
                  style={{
                      display: 'flex',
-                     alignItems: 'center',
+                     // alignItems: 'center',
                      backgroundColor: 'white',
                      width: '100%'
                  }}>
                 <span
                     onClick={() => setIsOpen(!isOpen)}
-                    className={styles.arrow}
-                    style={{
-                        fontSize: '14px',
-                        marginLeft: '8px',
-                        color: 'grey',
-                        cursor: 'pointer'
-                    }}>
+                    className={styles.terminalArrow}>
                     {isOpen ? '▼' : '▶'}
                 </span>
                 <div style={{ flexGrow: 1, display: 'flex' }}>
