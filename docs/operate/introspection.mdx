@@ -7,13 +7,15 @@ description: "Learn how to inspect/troubleshoot stuck or failing invocations."
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
+import {Terminal} from "../../src/components/code/terminal";
 
 # Introspection
 
-Restate exposes information on invocations and application state via its CLI and Introspection SQL API. You can use this to gain insight into the status of invocations and the service state that is stored.
+Restate exposes information on invocations and application state via its CLI and [Introspection SQL API](/references/sql-introspection). You can use this to gain insight into the status of invocations and the service state that is stored.
 
 This can be useful for troubleshooting. For example, a Virtual Object might be blocked and you want to kill the invocation that is blocking it, but you don't know the invocation ID. Or you want to check what is currently stored in the state of a service.
 
+You can inspect what is stored in Restate via the UI, via the CLI (via commands or SQL queries), and via psql.
 
 <Tabs groupId="interface" queryString>
 <TabItem value="cli" label="CLI">
@@ -22,50 +24,63 @@ The CLI is the easiest way to get started with introspection.
 Have a look at the [installation guide](/develop/local_dev#running-restate-server--cli-locally) for the CLI.
 
 </TabItem>
-<TabItem value="psql" label="psql">
+<TabItem value="psql" label="SQL">
 
-Restate exposes the following SQL tables, queryable via the [*psql* client](https://www.postgresql.org/docs/current/app-psql.html):
-- `sys_invocation` table to inspect invocations
-- `sys_inbox` table to inspect queue of pending invocations
-- `sys_keyed_service_status` table to inspect the status of a Virtual Object
-- `sys_journal` table to inspect the invocations' journal
-- `sys_service` table to inspect the registered services
-- `sys_deployment` table to inspect service deployments
-- `sys_idempotency` table to inspect idempotency keys
-- `state` table to inspect application state
+    Restate exposes the following SQL tables:
+    - `sys_invocation` table to inspect invocations
+    - `sys_inbox` table to inspect queue of pending invocations
+    - `sys_keyed_service_status` table to inspect the status of a Virtual Object
+    - `sys_journal` table to inspect the invocations' journal
+    - `sys_service` table to inspect the registered services
+    - `sys_deployment` table to inspect service deployments
+    - `sys_idempotency` table to inspect idempotency keys
+    - `state` table to inspect application state
 
-You can find the schema of each of the tables in the [references](/references/sql-introspection).
+    You can find the schema of each of the tables in the [references](/references/sql-introspection).
 
-[Install the *psql* client](https://www.postgresql.org/download/).
+    You can query the tables with the CLI via:
 
-Connect with *psql* to Restate:
+    ```shell
+    restate sql "<QUERY>"
+    ```
 
-```shell
-psql -h localhost -p 9071
-```
+    <details className={"grey-details"}>
 
-You can change the default port `9071` by supplying the `-p` argument.
+        <summary>Alternative: use `psql` client</summary>
 
-To retrieve the schema of the any of the tables, connect the *psql* client to Restate and execute:
+        [Install the *psql* client](https://www.postgresql.org/download/).
 
-```sql
-describe <TABLE_NAME>;
-```
+        Connect with *psql* to Restate:
 
-For example:
+        ```shell
+        psql -h localhost -p 9071
+        ```
 
-```sql
-describe sys_invocation;
-```
+        You can change the default port `9071` by supplying the `-p` argument.
 
-The Restate Introspection SQL API has been implemented based on [DataFusion](https://arrow.apache.org/datafusion/) and supports standard SQL syntax.
+        To retrieve the schema of the any of the tables, connect the *psql* client to Restate and execute:
+
+        ```sql
+        describe <TABLE_NAME>;
+        ```
+
+        For example:
+
+        ```sql
+        describe sys_invocation;
+        ```
+
+    </details>
+
+
+    The Restate Introspection SQL API has been implemented based on [DataFusion](https://arrow.apache.org/datafusion/) and supports standard SQL syntax.
 
 </TabItem>
 </Tabs>
 
 ## Inspecting invocations
 
-    ### Listing ongoing invocations
+### Listing ongoing invocations
 
 <Tabs groupId="interface" queryString  className={"display-none"}>
 <TabItem value="cli" label="CLI">
@@ -99,8 +114,6 @@ The Restate Introspection SQL API has been implemented based on [DataFusion](htt
 
 </TabItem>
 <TabItem value="psql" label="psql">
-
-    ### Retrieving the status of an invocation
 
 ```sql
 select target_service_name, target_handler_name, status from sys_invocation where id = '<INVOCATION_ID>';
@@ -314,14 +327,12 @@ To retrieve the state of a specific service and service key, do:
 <Tabs groupId="interface" queryString  className={"display-none"}>
 <TabItem value="cli" label="CLI">
 
-```shell
-restate kv get <SERVICE_NAME> <SERVICE_KEY>
-```
+    <Terminal>
+        ```shell !command
+        restate kv get <SERVICE_NAME> <SERVICE_KEY>
+        ```
 
-    <details className={"grey-details"}>
-        <summary>Output</summary>
-
-        ```log
+        ```log !output
         🤖 State:
         ―――――――――
 
@@ -331,13 +342,10 @@ restate kv get <SERVICE_NAME> <SERVICE_KEY>
         KEY   VAL
         seen  8
         ```
+    </Terminal>
 
-    </details>
-
-<Admonition type="info">
-If the values are not JSON-encoded UTF-8 strings, then it is also possible to use the `--binary` flag,
-and get the value as base64 encoded string.
-</Admonition>
+    If the values are not JSON-encoded UTF-8 strings, then it is also possible to use the `--binary` flag,
+    and get the value as base64 encoded string.
 
 </TabItem>
 <TabItem value="psql" label="psql">
@@ -348,10 +356,7 @@ You can query the application state via the `state` table.
 select * from state where service_name = 'test.MyServiceName' and service_key = 'myKey';
 ```
 
-<Admonition type="info" title="Take into account the data types of the included columns">
 If your state value is a regular string, then you can access its content in the column `value_utf8`.
-</Admonition>
-
 
 To retrieve the state of a specific service name, service key and state key, do:
 
@@ -385,18 +390,14 @@ restate kv edit <SERVICE_NAME> <SERVICE_KEY>
 This command opens your default editor (as configured in the `cli env`).
 It sends the new state values back to the runtime to be applied.
 
-<Admonition type="info" title="State as binary">
 Use `--binary` if the values are not JSON-encoded UTF-8 strings.
 In this case, you need to decode the base64-encoded string, and encode it back to base64 after editing.
-</Admonition>
 
-<Admonition type="info" title="State as JSON objects">
 Use `--plain` to retrieve the state as a JSON object.
 This can be useful in combination with tools like `jq` for example:
 ```shell
 restate kv get counter bob --plain | jq '.seen'
 ```
-</Admonition>
 
 <Admonition type="caution" title="Editing state during ongoing invocations">
 If during the editing of the state with the CLI, an invocation changed the state as well, then the edit of the CLI will not take affect.
@@ -405,14 +406,12 @@ If you want the CLI state edit to be applied even if the state has changed in th
 
 An example on how to edit the K/V state of the service `counter` for the key `bob`:
 
-```shell
-restate kv edit counter bob
-```
+    <Terminal>
+        ```shell !command
+        restate kv edit counter bob
+        ```
 
-    <details className={"grey-details"}>
-        <summary>Output</summary>
-
-        ```log
+        ```log !output
         ℹ️  About to write the following state :
         ―――――――――――――――――――――――――――――――――――――――
 
@@ -430,8 +429,7 @@ restate kv edit counter bob
 
         Enqueued successfully for processing
         ```
-    </details>
-
+    </Terminal>
 
 </TabItem>
 </Tabs>

@@ -1,7 +1,12 @@
-import {CodeWithNotes} from "../../src/components/code/code/code-with-notes";import Admonition from '@theme/Admonition';
-import {Scrollycoding} from "../../src/components/code/scrollycoding";
+---
+sidebar_position: 1
+description: "Invoke handlers over HTTP."
+---
+
+import Admonition from '@theme/Admonition';
 import {CodeWithTabs} from "../../src/components/code/code";
 import {TextAndCode} from "../../src/components/code/code/text-and-code";
+import {Terminal} from "../../src/components/code/terminal";
 
 # HTTP
 
@@ -60,19 +65,17 @@ Follow the same pattern for calling the other handlers of the workflow.
 ## Sending a message over HTTP
 If you do not want to wait for the response, you can also send a message by adding `/send` to the URL path:
 
-```shell
-curl localhost:8080/MyService/myHandler/send \
-    -H 'content-type: application/json' \
-    -d '{"name": "Mary", "age": 25}'
-```
+<Terminal>
+    ```shell !command
+    curl localhost:8080/MyService/myHandler/send \
+        -H 'content-type: application/json' \
+        -d '{"name": "Mary", "age": 25}'
+    ```
 
-<details className={"grey-details"}>
-    <summary>Output</summary>
-
-    ```json
+    ```json !output
     {"invocationId":"inv_1aiqX0vFEFNH1Umgre58JiCLgHfTtztYK5","status":"Accepted"}
     ```
-</details>
+</Terminal>
 
 The response contains the [Invocation ID](/operate/invocation#invocation-identifier).
 You can use this identifier [to cancel](/operate/invocation#cancelling-invocations) or [kill the invocation](/operate/invocation#killing-invocations).

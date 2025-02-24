@@ -5,7 +5,7 @@ description: "Resolving common problems with Restate deployments"
 ---
 
 import Admonition from '@theme/Admonition';
-import { Terminal } from "@site/src/components/code/terminal";
+import { Terminal } from "../../src/components/code/terminal";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import {CodeWithTabs} from "@site/src/components/code/code";
@@ -147,162 +147,154 @@ Check `restatectl --help` to learn what you can use it for.
 The `restatectl` tool communicates with Restate at the advertised address specified in the [server configuration](/operate/configuration/server) - by default TCP port 5122.
 
 - View the cluster's current state. Optionally, specify the addresses via `--addresses http://localhost:5122/`:
-```shell
-restatectl status
-```
+    <Terminal>
+        ```shell !command
+        restatectl status
+        ```
 
-<details className={"grey-details"}>
-    <summary>Output</summary>
+        ```shell !output
+        Node Configuration (v3)
+        NODE  GEN  NAME  ADDRESS                 ROLES
+        N1    2    n1    http://127.0.0.1:5122/  admin | log-server | metadata-server | worker
 
-    ```
-    Node Configuration (v3)
-    NODE  GEN  NAME  ADDRESS                 ROLES
-    N1    2    n1    http://127.0.0.1:5122/  admin | log-server | metadata-server | worker
+        Log Configuration (v2)
+        Default Provider Config: Local
+        L-ID  FROM-LSN  KIND   LOGLET-ID  REPLICATION  SEQUENCER  NODESET
+        0     1         Local  N/A        N/A          N/A        N/A
 
-    Log Configuration (v2)
-    Default Provider Config: Local
-    L-ID  FROM-LSN  KIND   LOGLET-ID  REPLICATION  SEQUENCER  NODESET
-    0     1         Local  N/A        N/A          N/A        N/A
+        Alive partition processors (nodes config v3, partition table v2)
+        P-ID  NODE  MODE    STATUS  LEADER  EPOCH  SEQUENCER  APPLIED-LSN  ARCHIVED-LSN  LAST-UPDATE
+        0     N1:2  Leader  Active  N1:2    e1                1            -             615 ms ago
+        ```
 
-    Alive partition processors (nodes config v3, partition table v2)
-    P-ID  NODE  MODE    STATUS  LEADER  EPOCH  SEQUENCER  APPLIED-LSN  ARCHIVED-LSN  LAST-UPDATE
-    0     N1:2  Leader  Active  N1:2    e1                1            -             615 ms ago
-    ```
-
-</details>
+    </Terminal>
 
 - [Provisioning clusters](/deploy/server/cluster/deployment)
 
 - List all nodes and their assigned roles:
-```shell
-restatectl nodes list
-```
+    <Terminal>
 
-<details className="grey-details">
-    <summary>Output</summary>
+        ```shell !command
+        restatectl nodes list
+        ```
 
-    ```
-    Node Configuration (v21)
-    NODE  GEN  NAME    ADDRESS                 ROLES
-    N1    6    node-1  http://127.0.0.1:5122/  admin | log-server | metadata-server | worker
-    N2    4    node-2  http://127.0.0.1:6122/  admin | log-server | metadata-server | worker
-    N3    6    node-3  http://127.0.0.1:7122/  log-server | metadata-server | worker
-    ```
-</details>
+        ```shell !output
+        Node Configuration (v21)
+        NODE  GEN  NAME    ADDRESS                 ROLES
+        N1    6    node-1  http://127.0.0.1:5122/  admin | log-server | metadata-server | worker
+        N2    4    node-2  http://127.0.0.1:6122/  admin | log-server | metadata-server | worker
+        N3    6    node-3  http://127.0.0.1:7122/  log-server | metadata-server | worker
+        ```
 
+    </Terminal>
 - View the current log configuration (provider, replication, and nodeset) and the effective logs per partition:
-
-```shell
-restatectl logs list
-```
-
-```shell
-restatectl logs describe
-```
-
-
-<details className="grey-details">
-    <summary>Output</summary>
-
-    ```
-    Log chain v8
-    └ Logs Provider: replicated
-    ├ Log replication: {node: 2}
-    └ Nodeset size: 0
-    L-ID  FROM-LSN  KIND        LOGLET-ID  REPLICATION  SEQUENCER  NODESET
-    0     61        Replicated  0_5        {node: 2}    N1:6       [N1, N2, N3]
-    1     4         Replicated  1_4        {node: 2}    N1:6       [N1, N2, N3]
-    2     4         Replicated  2_4        {node: 2}    N1:6       [N1, N2, N3]
-    3     5         Replicated  3_5        {node: 2}    N1:6       [N1, N2, N3]
-    4     4         Replicated  4_4        {node: 2}    N1:6       [N1, N2, N3]
-    5     5         Replicated  5_5        {node: 2}    N1:6       [N1, N2, N3]
-    6     6         Replicated  6_6        {node: 2}    N1:6       [N1, N2, N3]
-    7     4         Replicated  7_4        {node: 2}    N1:6       [N1, N2, N3]
-    8     4         Replicated  8_4        {node: 2}    N1:6       [N1, N2, N3]
+    ```shell
+    restatectl logs list
     ```
 
-</details>
+    <Terminal>
+
+        ```shell !command
+        restatectl logs describe
+        ```
+
+        ```shell !output
+        Log chain v8
+        └ Logs Provider: replicated
+        ├ Log replication: {node: 2}
+        └ Nodeset size: 0
+        L-ID  FROM-LSN  KIND        LOGLET-ID  REPLICATION  SEQUENCER  NODESET
+        0     61        Replicated  0_5        {node: 2}    N1:6       [N1, N2, N3]
+        1     4         Replicated  1_4        {node: 2}    N1:6       [N1, N2, N3]
+        2     4         Replicated  2_4        {node: 2}    N1:6       [N1, N2, N3]
+        3     5         Replicated  3_5        {node: 2}    N1:6       [N1, N2, N3]
+        4     4         Replicated  4_4        {node: 2}    N1:6       [N1, N2, N3]
+        5     5         Replicated  5_5        {node: 2}    N1:6       [N1, N2, N3]
+        6     6         Replicated  6_6        {node: 2}    N1:6       [N1, N2, N3]
+        7     4         Replicated  7_4        {node: 2}    N1:6       [N1, N2, N3]
+        8     4         Replicated  8_4        {node: 2}    N1:6       [N1, N2, N3]
+        ```
+
+    </Terminal>
 
 - Lists all partition, their current state, and any dead nodes:
 
-```shell
-restatectl partitions list
-```
+    <Terminal>
 
-<details className="grey-details">
-    <summary>Output</summary>
-    ```
-    Alive partition processors (nodes config v21, partition table v21)
-    P-ID  NODE  MODE      STATUS  LEADER  EPOCH  SEQUENCER  APPLIED-LSN  PERSISTED-LSN  SKIPPED-RECORDS  ARCHIVED-LSN  LAST-UPDATE
-    0     N1:6  Leader    Active  N1:6    e5     N1:6       61           -              0                -             1 second and 170 ms ago
-    0     N2:4  Follower  Active  N1:6    e5                61           -              0                -             1 second and 64 ms ago
-    1     N1:6  Leader    Active  N1:6    e4     N1:6       4            -              0                -             801 ms ago
-    1     N2:4  Follower  Active  N1:6    e4                4            -              0                -             779 ms ago
-    2     N1:6  Leader    Active  N1:6    e4     N1:6       4            -              0                -             600 ms ago
-    2     N2:4  Follower  Active  N1:6    e4                4            -              0                -             1 second and 108 ms ago
-    3     N1:6  Leader    Active  N1:6    e5     N1:6       5            -              0                -             1 second and 369 ms ago
-    3     N2:4  Follower  Active  N1:6    e5                5            -              0                -             1 second and 306 ms ago
-    4     N1:6  Leader    Active  N1:6    e4     N1:6       4            -              0                -             651 ms ago
-    4     N2:4  Follower  Active  N1:6    e4                4            -              0                -             1 second and 169 ms ago
-    5     N1:6  Leader    Active  N1:6    e5     N1:6       5            -              0                -             567 ms ago
-    5     N2:4  Follower  Active  N1:6    e5                5            -              0                -             1 second and 382 ms ago
-    6     N1:6  Leader    Active  N1:6    e6     N1:6       6            -              0                -             804 ms ago
-    6     N2:4  Follower  Active  N1:6    e6                6            -              0                -             1 second and 145 ms ago
-    7     N1:6  Leader    Active  N1:6    e4     N1:6       4            -              0                -             1 second and 79 ms ago
-    7     N2:4  Follower  Active  N1:6    e4                4            -              0                -             974 ms ago
-    8     N1:6  Leader    Active  N1:6    e4     N1:6       4            -              0                -             1 second and 71 ms ago
-    8     N2:4  Follower  Active  N1:6    e4                4            -              0                -             717 ms ago
+        ```shell !command
+        restatectl partitions list
+        ```
+
+        ```shell !output
+        Alive partition processors (nodes config v21, partition table v21)
+        P-ID  NODE  MODE      STATUS  LEADER  EPOCH  SEQUENCER  APPLIED-LSN  PERSISTED-LSN  SKIPPED-RECORDS  ARCHIVED-LSN  LAST-UPDATE
+        0     N1:6  Leader    Active  N1:6    e5     N1:6       61           -              0                -             1 second and 170 ms ago
+        0     N2:4  Follower  Active  N1:6    e5                61           -              0                -             1 second and 64 ms ago
+        1     N1:6  Leader    Active  N1:6    e4     N1:6       4            -              0                -             801 ms ago
+        1     N2:4  Follower  Active  N1:6    e4                4            -              0                -             779 ms ago
+        2     N1:6  Leader    Active  N1:6    e4     N1:6       4            -              0                -             600 ms ago
+        2     N2:4  Follower  Active  N1:6    e4                4            -              0                -             1 second and 108 ms ago
+        3     N1:6  Leader    Active  N1:6    e5     N1:6       5            -              0                -             1 second and 369 ms ago
+        3     N2:4  Follower  Active  N1:6    e5                5            -              0                -             1 second and 306 ms ago
+        4     N1:6  Leader    Active  N1:6    e4     N1:6       4            -              0                -             651 ms ago
+        4     N2:4  Follower  Active  N1:6    e4                4            -              0                -             1 second and 169 ms ago
+        5     N1:6  Leader    Active  N1:6    e5     N1:6       5            -              0                -             567 ms ago
+        5     N2:4  Follower  Active  N1:6    e5                5            -              0                -             1 second and 382 ms ago
+        6     N1:6  Leader    Active  N1:6    e6     N1:6       6            -              0                -             804 ms ago
+        6     N2:4  Follower  Active  N1:6    e6                6            -              0                -             1 second and 145 ms ago
+        7     N1:6  Leader    Active  N1:6    e4     N1:6       4            -              0                -             1 second and 79 ms ago
+        7     N2:4  Follower  Active  N1:6    e4                4            -              0                -             974 ms ago
+        8     N1:6  Leader    Active  N1:6    e4     N1:6       4            -              0                -             1 second and 71 ms ago
+        8     N2:4  Follower  Active  N1:6    e4                4            -              0                -             717 ms ago
 
 
-    ☠️ Dead nodes
-    NODE  LAST-SEEN
-    N3    11 minutes, 40 seconds and 995 ms ago
-    ```
-</details>
+        ☠️ Dead nodes
+        NODE  LAST-SEEN
+        N3    11 minutes, 40 seconds and 995 ms ago
+        ```
+
+    </Terminal>
 
 - View and set the cluster settings:
 
-```shell
-restatectl config get
-```
+    <Terminal>
 
-<details className="grey-details">
-    <summary>Output</summary>
+        ```shell !command
+        restatectl config get
+        ```
 
-    ```
-    ⚙️ Cluster Configuration
-    ├ Number of partitions: 8
-    ├ Partition replication: *
-    └ Logs Provider: replicated
-    ├ Log replication: {node: 1}
-    └ Nodeset size: 0
-    ```
+        ```shell !output
+        ⚙️ Cluster Configuration
+        ├ Number of partitions: 8
+        ├ Partition replication: *
+        └ Logs Provider: replicated
+        ├ Log replication: {node: 1}
+        └ Nodeset size: 0
+        ```
 
-</details>
+    </Terminal>
 
-```shell
-restatectl config set --help # check options
-restatectl config set --log-replication 2 # increase log replication
-```
+    <Terminal>
 
-<details className="grey-details">
-    <summary>Output</summary>
+        ```shell !command
+        restatectl config set --help # check options
+        restatectl config set --log-replication 2 # increase log replication
+        ```
 
-    ```
-    ⚙️ Cluster Configuration
-    ├ Number of partitions: 8
-    ├ Partition replication: *
-    └ Logs Provider: replicated
-    - ├ Log replication: {node: 1}
-    + ├ Log replication: {node: 2}
-    └ Nodeset size: 0
+        ```shell !output
+        ⚙️ Cluster Configuration
+        ├ Number of partitions: 8
+        ├ Partition replication: *
+        └ Logs Provider: replicated
+        - ├ Log replication: {node: 1}
+        + ├ Log replication: {node: 2}
+        └ Nodeset size: 0
 
 
-    ? Apply changes? (y/n) › no
-    ```
-    Press `y` to confirm and apply the new configuration.
+        ? Apply changes? (y/n) › yes
+        ```
 
-</details>
+    </Terminal>
 
 ## Growing the cluster
 
@@ -333,14 +325,12 @@ This allows the new node to discover the metadata servers and join the cluster.
 
     Increase log replication to your desired number. For example, to replicate to two nodes:
 
-    ```shell
-    restatectl config set --log-replication 2
-    ```
-
-    <details className="grey-details">
-        <summary>Output</summary>
-
+    <Terminal>
+        ```shell !command
+        restatectl config set --log-replication 2
         ```
+
+        ```shell !output
         ⚙️ Cluster Configuration
         ├ Number of partitions: 8
         ├ Partition replication: *
@@ -350,21 +340,16 @@ This allows the new node to discover the metadata servers and join the cluster.
         └ Nodeset size: 0
 
 
-        ? Apply changes? (y/n) › no
+        ? Apply changes? (y/n) › yes
         ```
-        Press `y` to confirm and apply the new configuration.
+    </Terminal>
 
-    </details>
-
-    Check if the logs have been reconfigured.
-    ```shell
-    restatectl logs list
-    ```
-
-    <details className="grey-details">
-        <summary>Output</summary>
-
+    <Terminal>
+        ```shell !command
+        restatectl logs list
         ```
+
+        ```shell !output
         Log chain v5
         └ Logs Provider: replicated
         ├ Log replication: {node: 2}
@@ -380,7 +365,7 @@ This allows the new node to discover the metadata servers and join the cluster.
         7     2         Replicated  7_2        {node: 2}    N1:2       [N1, N2, N3]
         ```
 
-    </details>
+    </Terminal>
 
     You might need to re-run the command a few times until all logs reflect the updated replication setting.
     If the update takes longer than expected, check the node logs for errors or warnings.
@@ -408,13 +393,12 @@ New log servers come up in the `provisioning` state and will automatically trans
 
 You can view the current storage state of log servers in your cluster using the `list-servers` sub-command.
 
-```shell
-restatectl replicated-loglet list-servers
-```
-
-<details className="grey-details">
-    <summary>Output</summary>
+<Terminal>
+    ```shell !command
+    restatectl replicated-loglet list-servers
     ```
+
+    ```shell !output
     Node configuration v12
     Log chain v3
     NODE  GEN   STORAGE-STATE  HISTORICAL LOGLETS  ACTIVE LOGLETS
@@ -422,7 +406,7 @@ restatectl replicated-loglet list-servers
     N2    N2:2  read-write     4                   2
     N3    N3:2  read-write     4                   2
     ```
-</details>
+</Terminal>
 
 Other valid storage include `data-loss`, `read-only`, and `disabled`. Nodes may transition to `data-loss` if they detect that some previously written data is not available. This does not necessarily imply corruption, only that such nodes may not participate in some quorum checks. Such nodes may transition back to `read-write` if they can be repaired.
 
@@ -436,16 +420,15 @@ The `read-only` and `disabled` states are of particular interest to operators. L
 
 Use the `set-storage-state` sub-command to manually update the log server state, for example to prevent log servers from being included in new nodesets. Consider the following example:
 
-```shell
-restatectl replicated-loglet set-storage-state --node-id 1 --storage-state read-only
-```
-
-<details className="grey-details">
-    <summary>Output</summary>
+<Terminal>
+    ```shell !command
+    restatectl replicated-loglet set-storage-state --node-id 1 --storage-state read-only
     ```
+
+    ```shell !output
     Node N1 storage-state updated from read-write to read-only
     ```
-</details>
+</Terminal>
 
 The cluster controller reconfigures the log nodeset to exclude `N1`. Depending on the configured log replication level, you may see a warning about compromised availability or, if insufficient log servers are available to achieve the minimum required replication, the log will stop accepting writes altogether. You have to take care as `restatectl` does not currently check whether the cluster will be able to generate new nodesets with the remaining log servers.
 Examine the logs using `restatectl logs describe`.
@@ -508,7 +491,8 @@ Examine the logs using `restatectl logs describe`.
     ```shell !command
     restatectl replicated-loglet set-storage-state --node-id 3 --storage-state 'read-write' --force
     ```
-    ```log !output
+
+    ```text !output
     Node N3 storage-state updated from data-loss to read-write
     ```
     </Terminal>
