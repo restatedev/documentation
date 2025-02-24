@@ -1,0 +1,518 @@
+---
+title: "Clusters"
+sidebar_position: 4
+description: "Resolving common problems with Restate deployments"
+---
+
+import Admonition from '@theme/Admonition';
+import { Terminal } from "@site/src/components/code/terminal";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import {CodeWithTabs} from "@site/src/components/code/code";
+import {TextAndCode} from "@site/src/components/code/code/text-and-code";
+import {Step} from "../../src/components/Stepper";
+
+# Operating Clusters
+
+This page helps with operating [Restate clusters](/deploy/server/cluster):
+- [Introduces the `restatectl` command-line tool](/operate/clusters#controlling-clusters-with-restatectl)
+- [Describes how to grow a single node deployment to a cluster](/operate/clusters#growing-the-cluster)
+- [Explains how to manage the replicated loglet](/operate/clusters#managing-the-replicated-loglet)
+- [Describes troubleshooting potential issues with Restate clusters](/operate/clusters#troubleshooting-clusters)
+
+<Admonition type="note" title="Architectural overview">
+    To understand the terminology used on this page, it might be helpful to read through the [architecture reference](/references/architecture).
+</Admonition>
+
+
+## Controlling clusters with `restatectl`
+
+Restate includes a command line utility tool to connect to and control running Restate servers called [`restatectl`](/references/restatectl#getting-restatectl).
+This tool is specifically designed for system operators to manage Restate servers and is particularly useful in a cluster environment.
+It is distinct from the application developer-focused `restate` CLI tool, which is used to manage service deployments and invocations.
+
+### Installation
+
+<Tabs groupId={"getting-restatectl"}>
+    <TabItem value={"Homebrew"} label={"Homebrew"}>
+        <TextAndCode>
+            Install with:
+            ```shell !result
+            brew install restatedev/tap/restatectl
+            ```
+        </TextAndCode>
+        <TextAndCode>
+            Then run:
+            ```shell !result
+            restatectl
+            ```
+        </TextAndCode>
+    </TabItem>
+    <TabItem value={"bin"} label={"Download binaries"}>
+        Install restatectl by downloading the binary with `curl` from the [releases page](https://github.com/restatedev/restate/releases/latest), and make them executable:
+
+        <CodeWithTabs>
+
+            ```shell !!tabs Linux-x64
+            BIN=$HOME/.local/bin && RESTATE_PLATFORM=x86_64-unknown-linux-musl && \
+            curl -LO https://restate.gateway.scarf.sh/latest/restatectl-$RESTATE_PLATFORM.tar.xz && \
+            tar -xvf restatectl-$RESTATE_PLATFORM.tar.xz --strip-components=1 restatectl-$RESTATE_PLATFORM/restatectl && \
+            chmod +x restatectl && \
+
+            # Move the binary to a directory in your PATH, for example ~/.local/bin:
+            mv restatectl $BIN
+            ```
+
+            ```shell !!tabs Linux-arm64
+            BIN=$HOME/.local/bin && RESTATE_PLATFORM=aarch64-unknown-linux-musl && \
+            curl -LO https://restate.gateway.scarf.sh/latest/restatectl-$RESTATE_PLATFORM.tar.xz && \
+            tar -xvf restatectl-$RESTATE_PLATFORM.tar.xz --strip-components=1 restatectl-$RESTATE_PLATFORM/restatectl && \
+            chmod +x restatectl && \
+
+            # Move the binary to a directory in your PATH, for example ~/.local/bin:
+            mv restatectl $BIN
+            ```
+
+            ```shell !!tabs MacOS-x64
+            BIN=/usr/local/bin && RESTATE_PLATFORM=x86_64-apple-darwin && \
+            curl -LO https://restate.gateway.scarf.sh/latest/restatectl-$RESTATE_PLATFORM.tar.xz && \
+            tar -xvf restatectl-$RESTATE_PLATFORM.tar.xz --strip-components=1 restatectl-$RESTATE_PLATFORM/restatectl && \
+            chmod +x restatectl && \
+
+            # Move the binary to a directory in your PATH, for example /usr/local/bin (needs sudo):
+            sudo mv restatectl $BIN
+            ```
+
+            ```shell !!tabs MacOS-arm64
+            BIN=/usr/local/bin && RESTATE_PLATFORM=aarch64-apple-darwin && \
+            curl -LO https://restate.gateway.scarf.sh/latest/restatectl-$RESTATE_PLATFORM.tar.xz && \
+            tar -xvf restatectl-$RESTATE_PLATFORM.tar.xz --strip-components=1 restatectl-$RESTATE_PLATFORM/restatectl && \
+            chmod +x restatectl && \
+
+            # Move the binary to a directory in your PATH, for example /usr/local/bin (needs sudo):
+            sudo mv restatectl $BIN
+            ```
+
+        </CodeWithTabs>
+
+        Then run:
+        ```shell
+        restatectl
+        ```
+
+    </TabItem>
+    <TabItem value={"npm"} label={"npm"}>
+        <TextAndCode>
+            Install with:
+            ```shell !result
+            npm install --global @restatedev/restatectl@latest
+            ```
+        </TextAndCode>
+        <TextAndCode>
+            Then run:
+            ```shell !result
+            restatectl
+            ```
+        </TextAndCode>
+    </TabItem>
+    <TabItem value={"Docker"} label={"Docker"}>
+
+        The server and CLI images both contain the `restatectl` tool. To run `restatectl`, use the following command:
+
+        ```shell
+        docker run -it --network=host --entrypoint restatectl docker.restate.dev/restatedev/restate-cli:VAR::RESTATE_VERSION nodes ls
+        ```
+
+        You can also execute `restatectl` in a running server container using the following command:
+
+        ```shell
+        docker exec restate_dev restatectl nodes ls
+        ```
+
+        Replace `restate_dev` with the name of a running container, and `nodes ls` with the subcommand you want to run.
+
+    </TabItem>
+</Tabs>
+
+<Admonition type="note" title="Notice">
+    `restatectl` requires direct access to nodes via their advertised addresses (default port: 5122). Ensure that restatectl commands can reach these addresses.
+</Admonition>
+
+Check `restatectl --help` to learn what you can use it for.
+
+
+
+### Useful commands
+
+The `restatectl` tool communicates with Restate at the advertised address specified in the [server configuration](/operate/configuration/server) - by default TCP port 5122.
+
+- View the cluster's current state. Optionally, specify the addresses via `--addresses http://localhost:5122/`:
+```shell
+restatectl status
+```
+
+<details className={"grey-details"}>
+    <summary>Output</summary>
+
+    ```
+    Node Configuration (v3)
+    NODE  GEN  NAME  ADDRESS                 ROLES
+    N1    2    n1    http://127.0.0.1:5122/  admin | log-server | metadata-server | worker
+
+    Log Configuration (v2)
+    Default Provider Config: Local
+    L-ID  FROM-LSN  KIND   LOGLET-ID  REPLICATION  SEQUENCER  NODESET
+    0     1         Local  N/A        N/A          N/A        N/A
+
+    Alive partition processors (nodes config v3, partition table v2)
+    P-ID  NODE  MODE    STATUS  LEADER  EPOCH  SEQUENCER  APPLIED-LSN  ARCHIVED-LSN  LAST-UPDATE
+    0     N1:2  Leader  Active  N1:2    e1                1            -             615 ms ago
+    ```
+
+</details>
+
+- [Provisioning clusters](/deploy/server/cluster/deployment)
+
+- List all nodes and their assigned roles:
+```shell
+restatectl nodes list
+```
+
+<details className="grey-details">
+    <summary>Output</summary>
+
+    ```
+    Node Configuration (v21)
+    NODE  GEN  NAME    ADDRESS                 ROLES
+    N1    6    node-1  http://127.0.0.1:5122/  admin | log-server | metadata-server | worker
+    N2    4    node-2  http://127.0.0.1:6122/  admin | log-server | metadata-server | worker
+    N3    6    node-3  http://127.0.0.1:7122/  log-server | metadata-server | worker
+    ```
+</details>
+
+- View the current log configuration (provider, replication, and nodeset) and the effective logs per partition:
+
+```shell
+restatectl logs list
+```
+
+```shell
+restatectl logs describe
+```
+
+
+<details className="grey-details">
+    <summary>Output</summary>
+
+    ```
+    Log chain v8
+    └ Logs Provider: replicated
+    ├ Log replication: {node: 2}
+    └ Nodeset size: 0
+    L-ID  FROM-LSN  KIND        LOGLET-ID  REPLICATION  SEQUENCER  NODESET
+    0     61        Replicated  0_5        {node: 2}    N1:6       [N1, N2, N3]
+    1     4         Replicated  1_4        {node: 2}    N1:6       [N1, N2, N3]
+    2     4         Replicated  2_4        {node: 2}    N1:6       [N1, N2, N3]
+    3     5         Replicated  3_5        {node: 2}    N1:6       [N1, N2, N3]
+    4     4         Replicated  4_4        {node: 2}    N1:6       [N1, N2, N3]
+    5     5         Replicated  5_5        {node: 2}    N1:6       [N1, N2, N3]
+    6     6         Replicated  6_6        {node: 2}    N1:6       [N1, N2, N3]
+    7     4         Replicated  7_4        {node: 2}    N1:6       [N1, N2, N3]
+    8     4         Replicated  8_4        {node: 2}    N1:6       [N1, N2, N3]
+    ```
+
+</details>
+
+- Lists all partition, their current state, and any dead nodes:
+
+```shell
+restatectl partitions list
+```
+
+<details className="grey-details">
+    <summary>Output</summary>
+    ```
+    Alive partition processors (nodes config v21, partition table v21)
+    P-ID  NODE  MODE      STATUS  LEADER  EPOCH  SEQUENCER  APPLIED-LSN  PERSISTED-LSN  SKIPPED-RECORDS  ARCHIVED-LSN  LAST-UPDATE
+    0     N1:6  Leader    Active  N1:6    e5     N1:6       61           -              0                -             1 second and 170 ms ago
+    0     N2:4  Follower  Active  N1:6    e5                61           -              0                -             1 second and 64 ms ago
+    1     N1:6  Leader    Active  N1:6    e4     N1:6       4            -              0                -             801 ms ago
+    1     N2:4  Follower  Active  N1:6    e4                4            -              0                -             779 ms ago
+    2     N1:6  Leader    Active  N1:6    e4     N1:6       4            -              0                -             600 ms ago
+    2     N2:4  Follower  Active  N1:6    e4                4            -              0                -             1 second and 108 ms ago
+    3     N1:6  Leader    Active  N1:6    e5     N1:6       5            -              0                -             1 second and 369 ms ago
+    3     N2:4  Follower  Active  N1:6    e5                5            -              0                -             1 second and 306 ms ago
+    4     N1:6  Leader    Active  N1:6    e4     N1:6       4            -              0                -             651 ms ago
+    4     N2:4  Follower  Active  N1:6    e4                4            -              0                -             1 second and 169 ms ago
+    5     N1:6  Leader    Active  N1:6    e5     N1:6       5            -              0                -             567 ms ago
+    5     N2:4  Follower  Active  N1:6    e5                5            -              0                -             1 second and 382 ms ago
+    6     N1:6  Leader    Active  N1:6    e6     N1:6       6            -              0                -             804 ms ago
+    6     N2:4  Follower  Active  N1:6    e6                6            -              0                -             1 second and 145 ms ago
+    7     N1:6  Leader    Active  N1:6    e4     N1:6       4            -              0                -             1 second and 79 ms ago
+    7     N2:4  Follower  Active  N1:6    e4                4            -              0                -             974 ms ago
+    8     N1:6  Leader    Active  N1:6    e4     N1:6       4            -              0                -             1 second and 71 ms ago
+    8     N2:4  Follower  Active  N1:6    e4                4            -              0                -             717 ms ago
+
+
+    ☠️ Dead nodes
+    NODE  LAST-SEEN
+    N3    11 minutes, 40 seconds and 995 ms ago
+    ```
+</details>
+
+- View and set the cluster settings:
+
+```shell
+restatectl config get
+```
+
+<details className="grey-details">
+    <summary>Output</summary>
+
+    ```
+    ⚙️ Cluster Configuration
+    ├ Number of partitions: 8
+    ├ Partition replication: *
+    └ Logs Provider: replicated
+    ├ Log replication: {node: 1}
+    └ Nodeset size: 0
+    ```
+
+</details>
+
+```shell
+restatectl config set --help # check options
+restatectl config set --log-replication 2 # increase log replication
+```
+
+<details className="grey-details">
+    <summary>Output</summary>
+
+    ```
+    ⚙️ Cluster Configuration
+    ├ Number of partitions: 8
+    ├ Partition replication: *
+    └ Logs Provider: replicated
+    - ├ Log replication: {node: 1}
+    + ├ Log replication: {node: 2}
+    └ Nodeset size: 0
+
+
+    ? Apply changes? (y/n) › no
+    ```
+    Press `y` to confirm and apply the new configuration.
+
+</details>
+
+## Growing the cluster
+
+You can expand an existing cluster by adding new nodes after it has been started.
+
+<Step stepLabel="0" title="Starting point: single node">
+    A Restate cluster can initially be started with a single node.
+    Follow the [cluster deployment instructions](/deploy/server/cluster/deployment) and ensure that:
+    - It uses the replicated loglet. If you use local loglet, check [this migration guide](/guides/local-to-replicated).
+    - `default-log-replication` is set to 1
+    - [Snapshotting is enabled](/operate/data-backup#snapshotting), to ensure that newly added nodes are fully utilized by the system.
+
+    ```toml
+    [bifrost.replicated-loglet]
+    # Replicating data to one node: the cluster cannot tolerate node failures.
+    default-log-replication = 1
+    ```
+
+</Step>
+<Step stepLabel="1" title="Launch new nodes">
+Launch a new node with the same `cluster-name` and specify at least one existing node's address in `metadata-client.addresses`.
+This allows the new node to discover the metadata servers and join the cluster.
+</Step>
+
+<Step stepLabel="2" title="Modify cluster configuration">
+
+    Update the cluster’s replication settings to take advantage of the additional nodes and improve fault tolerance.
+
+    Increase log replication to your desired number. For example, to replicate to two nodes:
+
+    ```shell
+    restatectl config set --log-replication 2
+    ```
+
+    <details className="grey-details">
+        <summary>Output</summary>
+
+        ```
+        ⚙️ Cluster Configuration
+        ├ Number of partitions: 8
+        ├ Partition replication: *
+        └ Logs Provider: replicated
+        - ├ Log replication: {node: 1}
+        + ├ Log replication: {node: 2}
+        └ Nodeset size: 0
+
+
+        ? Apply changes? (y/n) › no
+        ```
+        Press `y` to confirm and apply the new configuration.
+
+    </details>
+
+    Check if the logs have been reconfigured.
+    ```shell
+    restatectl logs list
+    ```
+
+    <details className="grey-details">
+        <summary>Output</summary>
+
+        ```
+        Log chain v5
+        └ Logs Provider: replicated
+        ├ Log replication: {node: 2}
+        └ Nodeset size: 0
+        L-ID  FROM-LSN  KIND        LOGLET-ID  REPLICATION  SEQUENCER  NODESET
+        0     2         Replicated  0_2        {node: 2}    N1:2       [N1, N2, N3]
+        1     2         Replicated  1_2        {node: 2}    N1:2       [N1, N2, N3]
+        2     2         Replicated  2_2        {node: 2}    N1:2       [N1, N2, N3]
+        3     2         Replicated  3_2        {node: 2}    N1:2       [N1, N2, N3]
+        4     2         Replicated  4_2        {node: 2}    N1:2       [N1, N2, N3]
+        5     2         Replicated  5_2        {node: 2}    N1:2       [N1, N2, N3]
+        6     2         Replicated  6_2        {node: 2}    N1:2       [N1, N2, N3]
+        7     2         Replicated  7_2        {node: 2}    N1:2       [N1, N2, N3]
+        ```
+
+    </details>
+
+    You might need to re-run the command a few times until all logs reflect the updated replication setting.
+    If the update takes longer than expected, check the node logs for errors or warnings.
+
+</Step>
+
+<Admonition type="note" title="Shrinking the cluster">
+    Currently, removing nodes from the cluster is not supported. Once a node joins the cluster,
+    it cannot be removed or stopped. Support for shrinking the cluster will be added in the future.
+</Admonition>
+
+## Managing the Replicated Loglet
+
+You can manage the [replicated loglet](/references/architecture#distributed-log-aka-bifrost) via:
+```shell
+restatectl replicated-loglet
+```
+
+When you use the replicated loglet, which is required for distributed operation, the Restate [control plane](/references/architecture#control-plane) selects nodes on which to replicate the log according to the specified log replication.
+
+Each [`log-server` node](/references/architecture#log-servers) in the cluster has a storage state which determines how the control plane may use this node. The `set-storage-state` tool allows you to manually override this state as operational needs dictate.
+New log servers come up in the `provisioning` state and will automatically transition to `read-write`. The `read-write` state means that the node is considered both healthy to read from and accept writes, that is it may be selected as a nodeset member for new loglet segments.
+
+### View storage state of log server
+
+You can view the current storage state of log servers in your cluster using the `list-servers` sub-command.
+
+```shell
+restatectl replicated-loglet list-servers
+```
+
+<details className="grey-details">
+    <summary>Output</summary>
+    ```
+    Node configuration v12
+    Log chain v3
+    NODE  GEN   STORAGE-STATE  HISTORICAL LOGLETS  ACTIVE LOGLETS
+    N1    N1:3  read-write     4                   2
+    N2    N2:2  read-write     4                   2
+    N3    N3:2  read-write     4                   2
+    ```
+</details>
+
+Other valid storage include `data-loss`, `read-only`, and `disabled`. Nodes may transition to `data-loss` if they detect that some previously written data is not available. This does not necessarily imply corruption, only that such nodes may not participate in some quorum checks. Such nodes may transition back to `read-write` if they can be repaired.
+
+The `read-only` and `disabled` states are of particular interest to operators. Log servers in `read-only` storage state may continue to serve both reads and writes, but will no longer be selected as participants in new segments' nodesets. The control plane will reconfigure existing logs to move away from such nodes.
+
+### Manually update the log server state
+
+<Admonition type="caution" title="Danger of data loss">
+    `set-storage-state` is a low-level command that allows you to directly set log servers' storage-state. Changing this can lead to cluster unavailability or data loss.
+</Admonition>
+
+Use the `set-storage-state` sub-command to manually update the log server state, for example to prevent log servers from being included in new nodesets. Consider the following example:
+
+```shell
+restatectl replicated-loglet set-storage-state --node-id 1 --storage-state read-only
+```
+
+<details className="grey-details">
+    <summary>Output</summary>
+    ```
+    Node N1 storage-state updated from read-write to read-only
+    ```
+</details>
+
+The cluster controller reconfigures the log nodeset to exclude `N1`. Depending on the configured log replication level, you may see a warning about compromised availability or, if insufficient log servers are available to achieve the minimum required replication, the log will stop accepting writes altogether. You have to take care as `restatectl` does not currently check whether the cluster will be able to generate new nodesets with the remaining log servers.
+Examine the logs using `restatectl logs describe`.
+
+## Troubleshooting Clusters
+
+<details>
+    <summary>**Node id misconfiguration puts log server in `data-loss` state**</summary>
+
+    If a misconfigured Restate node with the log server role attempts to join a cluster where the node id is already in use, you will observe that the newly started node aborts with an error:
+
+    ```log
+    ERROR restate_core::task_center: Shutting down: task 4 failed with: Node cannot start a log-server on N3, it has detected that it has lost its data. storage-state is `data-loss`
+    ```
+
+    Restarting the existing node that previously owned this id will also cause it to stop with the same message. Follow these steps to return the initial log server into service without losing its stored log segments.
+
+    First, prevent the misconfigured node from starting again until the configuration has been corrected. If this was a brand new node, there should be no data stored on it, and you may delete it altogether.
+
+    The reused node id has been marked as having `data-loss`. This precaution that tells the Restate control plane to avoid selecting this node as member of new log nodesets. You can view the current status using the [`restatectl replicated-loglet` tool](/references/restatectl#replicated-loglet):
+
+    <Terminal>
+    ```shell !command
+    restatectl replicated-loglet servers
+    ```
+    ```log !output
+    Node configuration v21
+    Log chain v6
+     NODE  GEN   STORAGE-STATE  HISTORICAL LOGLETS  ACTIVE LOGLETS
+     N1    N1:5  read-write     8                   2
+     N2    N2:4  read-write     8                   2
+     N3    N3:6  data-loss      6                   0
+    ```
+    </Terminal>
+
+    You should also observe that the control plane is now avoiding using this node for log storage. This will result in reduced fault tolerance or even unavailability, depending on the configured minimum log replication:
+
+    <Terminal>
+    ```shell !command
+    restatectl logs list
+    ```
+    ```log !output
+    Logs v3
+    └ Logs Provider: replicated
+     ├ Log replication: {node: 2}
+     └ Nodeset size: 0
+     L-ID  FROM-LSN  KIND        LOGLET-ID  REPLICATION  SEQUENCER  NODESET
+     0     2         Replicated  0_1        {node: 2}    N2:1       [N1, N2]
+     1     2         Replicated  1_1        {node: 2}    N2:1       [N1, N2]
+    ```
+    </Terminal>
+
+    To restore the original node's ability to accept writes, we can update its metadata using `set-storage-state` subcommand.
+
+    <Admonition type="caution" title="Dangerous operation">
+        Only proceed if you are confident that you understand the reason why the node is in this state, and are certain that its locally stored data is still intact. Since Restate cannot automatically validate that it safe to put this node back into service, we must use the `--force` flag to override the default state transition rules.
+    </Admonition>
+
+    <Terminal>
+    ```shell !command
+    restatectl replicated-loglet set-storage-state --node-id 3 --storage-state 'read-write' --force
+    ```
+    ```log !output
+    Node N3 storage-state updated from data-loss to read-write
+    ```
+    </Terminal>
+
+    You can validate that the server is once again being used for log storage using `logs list` and `replicated-loglet servers` subcommands.
+
+</details>
