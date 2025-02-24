@@ -3,8 +3,6 @@ sidebar_position: 2
 description: "Explore the different ways to invoke Restate services."
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
 import {CodeWithTabs} from "../../src/components/code/code";
 
@@ -20,7 +18,7 @@ Once an invocation is created, you can inspect it, cancel it, and kill it via it
 
 Restate assigns an identifier to every invocation, the Invocation ID. You can use this Invocation ID to inspect the invocation via the CLI, filter the logs, find traces, cancel it, etc.
 
-The invocation ID starts with `inv_`, and can be found in the logs and traces (`restate.invocation.id`), for example:
+The invocation ID starts with `inv_`, and can be found in the [UI](/develop/local_dev#restate-ui), the logs and traces (`restate.invocation.id`), for example:
 
 ```log
 [restate] [CartObject/expireTicket][inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz][2024-03-18T16:14:24.671Z] DEBUG: Invoking function.
@@ -51,7 +49,7 @@ restate invocations list
 If an invocation takes too long to complete or is no longer of interest, you can cancel it.
 Canceling an invocation allows it to free any resources it is holding and roll back any changes it has made so far.
 
-You can cancel the invocation with [its ID](/operate/invocation?interface=curl#invocation-identifier) via the CLI or [Admin API](/references/admin-api):
+You can cancel the invocation with [its ID](/operate/invocation?interface=curl#invocation-identifier) via the [UI](/develop/local_dev#restate-ui), the CLI or [Admin API](/references/admin-api):
 
 <CodeWithTabs>
 
@@ -68,11 +66,11 @@ curl -X DELETE http://localhost:9070/invocations/inv_1gdJBtdVEcM942bjcDmb1c1khoa
 <Admonition type="info" title={"Implement compensation logic"}>
 To roll back correctly, the handlers need to contain the necessary compensation logic.
 This way, the service state stays consistent even in the presence of cancellations.
-Have a look at [this blog post](https://restate.dev/blog/graceful-cancellations-how-to-keep-your-application-and-workflow-state-consistent/) on how to implement compensation logic with Restate.
+Have a look at [this guide](/guides/sagas) on how to implement compensation logic with Restate.
 </Admonition>
 
-<Admonition type="info">
-    Canceling an invocation is a non-blocking operation. This means that the cancellation is not guaranteed to have completed when the API call returns. In some rare cases, cancellations will not have an effect. In these cases, users need to retry the operation.
+<Admonition type="info" title={"Cancelling is non-blocking"}>
+    Cancelling an invocation is a non-blocking operation. This means that the cancellation is not guaranteed to have completed when the API call returns. In some rare cases, cancellations will not have an effect. In these cases, users need to retry the operation.
 </Admonition>
 
 <details className={"grey-details"}>
@@ -92,8 +90,8 @@ Have a look at [this blog post](https://restate.dev/blog/graceful-cancellations-
 Sometimes Restate cannot cancel an invocation.
 For example, when an endpoint is permanently unavailable, Restate can't invoke the handler to run its compensation logic, so it can't complete the cancellation.
 For these cases, you can kill invocations.
-
-To kill an invocation:
+[UI](/develop/local_dev#restate-ui)
+You can kill an invocation via the, the CLI, or the [Admin API](/references/admin-api):
 
 <CodeWithTabs>
 

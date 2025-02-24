@@ -13,7 +13,7 @@ Restate comes with different solutions to update the services, to simplify devel
 
 ## Inspecting deployments
 
-To check which deployments are currently serving your services, do the following:
+To check which deployments are currently serving your services, you can use the [UI](/develop/local_dev#restate-ui) or do the following:
 
 <Tabs groupId="interface" queryString>
     <TabItem value="cli" label="CLI">
@@ -21,7 +21,6 @@ To check which deployments are currently serving your services, do the following
         ```bash
         restate services list
         ```
-
 
         <details className={"grey-details"}>
             <summary>Output</summary>
@@ -103,7 +102,7 @@ As described in the [deployment docs](/deploy/overview), deployments are immutab
 To deploy an updated version of a service, you need to deploy and register a new deployment.
 
 For example, let's assume there is a `Greeter` service deployed at `http://greeter-v1/`.
-To update it, we deploy a new revision at `http://greeter-v2/`, and then register it:
+To update it, we deploy a new revision at `http://greeter-v2/`, and then register it via the [UI](/develop/local_dev#restate-ui) or via:
 
 <Tabs groupId="interface" queryString>
     <TabItem value="cli" label="CLI">
@@ -165,9 +164,9 @@ You cannot remove a single service, but you can remove the deployment containing
 2. If several services are bundled in the same deployment, you can't remove only one of them. You have to remove the whole deployment.
 So make sure that you first deploy the services you want to keep in a separate new deployment.
 4. [Make the service private](/operate/security#private-services) to avoid accepting new HTTP requests.
-5. Check whether the service has pending invocations via `restate services status`, and wait until the service is drained (i.e. no ongoing invocations).
+5. Check whether the service has pending invocations by filtering the invocations on deployment ID in the [UI](/develop/local_dev#restate-ui) or via `restate services status`, and wait until the service is drained (i.e. no ongoing invocations).
 
-**When all prerequisites are fulfilled**, you can remove the deployment containing the service via:
+**When all prerequisites are fulfilled**, you can remove the deployment containing the service via the [UI](/develop/local_dev#restate-ui) or via:
 
 <Tabs groupId="interface" queryString>
 <TabItem value="cli" label="CLI">
