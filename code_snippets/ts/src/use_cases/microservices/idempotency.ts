@@ -5,20 +5,24 @@ import { ProductService } from "./idempotency_utils";
 
 const app = express();
 
-process.env.RESTATE_URL = "localhost:8080";
+const RESTATE_URL = "localhost:8080";
 
 // <start_here>
-const rs = restate.connect({ url: process.env.RESTATE_URL });
-
 app.get("/reserve/:product/:reservationId", async (req, res) => {
   const { product, reservationId } = req.params;
 
-  // !mark(1:5)
-  const products = rs.serviceClient<ProductService>({ name: "product" });
-  const reservation = await products.reserve(
-    product,
-    Opts.from({ idempotencyKey: reservationId })
-  );
+  // !focus(1:8)
+  // <mark_1>
+  const restateClient = restate.connect({ url: RESTATE_URL });
+  const reservation = await restateClient
+      .serviceClient<ProductService>({ name: "product" }) // target service
+      .reserve( // target handler
+        product,
+        // <mark_2>
+        Opts.from({ idempotencyKey: reservationId })
+        // </mark_2>
+      );
+  // </mark_1>
 
   res.json(reservation);
 });

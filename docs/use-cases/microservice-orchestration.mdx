@@ -12,6 +12,7 @@ import ExampleWidget from "../../src/components/ExampleWidget"
 import FeatureList from "../../src/components/FeatureList"
 import SpotlightCard from "../../src/components/SpotlightCard"
 import {Scrollycoding} from "../../src/components/code/scrollycoding";
+import {TextAndCode} from "../../src/components/code/code/text-and-code";
 
 <div className={"row"}>
     <div className={"col col--6 col-lg-6 col-md-12"}>
@@ -50,18 +51,19 @@ import {Scrollycoding} from "../../src/components/code/scrollycoding";
 
 <p className={"padding-bottom--lg"}></p>
 
-## Microservice Orchestration with Restate
-
-Turn functions into durable handlers with the Restate SDK.
+## Resilient Code Execution
 
 <Scrollycoding className="workflows-scroller">
 
-    ### !!steps Distributed, durable building blocks
+    ### !!steps Familiar programming constructs, but now resilient
+    Restate turns the programming building blocks you already know, into resilient constructs.
     Work with objects, functions, and promises as if failures don’t happen.
-    Restate makes them distributed and durable out-of-the-box.
+    Restate can recover them anytime, anywhere.
 
-    ```ts !!tabs TypeScript
-    CODE_LOAD::ts/src/use_cases/microservices/role_updater.ts?1
+    [Learn more](/concepts/durable_building_blocks)
+
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/basics/src/0_durable_execution.ts
+    CODE_LOAD::ts/src/use_cases/microservices/subscription_service.ts?1
     ```
 
     ```java !!tabs Java
@@ -80,42 +82,17 @@ Turn functions into durable handlers with the Restate SDK.
     CODE_LOAD::python/src/use_cases/microservices/role_updater.py?1
     ```
 
-    ### !!steps Scalability, concurrency, consistency
-
-    Restate sequences requests per key, if desired.
-    Scale out without fearing issues such as race conditions, multiple writers to state, etc.
-
-    This handler updates a user’s role in set of systems.
-    Other updates to the same user are queued and processed in order.
-    Updates either succeed or fail, but never leave the user in an inconsistent state.
-
-    ```ts !!tabs TypeScript
-    CODE_LOAD::ts/src/use_cases/microservices/role_updater.ts?2
-    ```
-
-    ```java !!tabs Java
-    CODE_LOAD::java/src/main/java/usecases/microservices/RoleUpdateService.java?2
-    ```
-
-    ```kotlin !!tabs Kotlin
-    CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/RoleUpdateService.kt?2
-    ```
-
-    ```go !!tabs Go
-    CODE_LOAD::go/usecases/microservices/roleupdater.go?2
-    ```
-
-    ```py !!tabs Python
-    CODE_LOAD::python/src/use_cases/microservices/role_updater.py?2
-    ```
 
     ### !!steps Persist progress
 
-    Store results of interaction with external systems or non-deterministic actions.
-    On retries, the action does not get re-executed but the previous result will be returned.
+    Do calls to multiple systems and persist the results.
+    On retries, the action does not get re-executed but the previous result will be recovered.
+    Interact with multiple systems in a row and Restate makes sure that all interactions take place.
 
-    ```ts !!tabs TypeScript
-    CODE_LOAD::ts/src/use_cases/microservices/role_updater.ts?3
+    [Learn more](/concepts/durable_execution)
+
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/basics/src/0_durable_execution.ts
+    CODE_LOAD::ts/src/use_cases/microservices/subscription_service.ts?2
     ```
 
     ```java !!tabs Java
@@ -134,44 +111,27 @@ Turn functions into durable handlers with the Restate SDK.
     CODE_LOAD::python/src/use_cases/microservices/role_updater.py?3
     ```
 
-    ### !!steps Sagas and rollbacks
-
-    Implement compensation logic with Restate’s durable building blocks and Restate takes care of running it till completion.
-
-    Here, we update the user’s role in multiple systems. If one fails, we rollback the changes in the other systems.
-
-    ```ts !!tabs TypeScript
-    CODE_LOAD::ts/src/use_cases/microservices/role_updater.ts?4
-    ```
-
-    ```java !!tabs Java
-    CODE_LOAD::java/src/main/java/usecases/microservices/RoleUpdateService.java?4
-    ```
-
-    ```kotlin !!tabs Kotlin
-    CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/RoleUpdateService.kt?4
-    ```
-
-    ```go !!tabs Go
-    CODE_LOAD::go/usecases/microservices/roleupdater.go?4
-    ```
-
-    ```py !!tabs Python
-    CODE_LOAD::python/src/use_cases/microservices/role_updater.py?4
-    ```
-
 </Scrollycoding>
 
-<p className={"padding-top--lg"}>Proxy RPC calls to other services via Restate and get durability and idempotency for free.</p>
+
+## Durable Communication & Idempotency
+
+Restate sits like a reverse-proxy or message broker in front of your services.
+It persists and deduplicates all communication to and between your services.
 
 <Scrollycoding>
 
-    ### !!steps Durable RPC
-    Send requests to other services and Restate ensures they are delivered and processed.
-    Requests can be done as request-response, as message, or delayed action.
+    ### !!steps Resilient RPC and messaging
 
-    ```ts !!tabs TypeScript
-    CODE_LOAD::ts/src/use_cases/microservices/idempotency.ts
+    Restate proxies RPC calls and ensures they are delivered and processed:
+    - request-response
+    - message (one-way)
+    - scheduled tasks
+
+    [Learn more](/concepts/invocations)
+
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/durablerpc/express_app.ts
+    CODE_LOAD::ts/src/use_cases/microservices/idempotency.ts?1
     ```
 
     ```java !!tabs Java
@@ -183,18 +143,18 @@ Turn functions into durable handlers with the Restate SDK.
     ```
 
     ```py !!tabs Python
-    CODE_LOAD::python/src/use_cases/microservices/idempotency.py
+    CODE_LOAD::python/src/use_cases/microservices/idempotency.py?1
     ```
 
     ### !!steps Idempotency for free
 
-    Add an idempotency token to your request and let Restate take care of deduplication for you.
-    Duplicate requests latch on to the previous one and see the same response.
+    Add an idempotency token to your request to let Restate deduplicate them for you.
+    Each request runs to completion exactly once.
 
-    Here, we reserve a product for a user. We connect to Restate and send a `reserve` request with an idempotency key so retries wouldn't lead to double reservations.
+    [Learn more](/concepts/invocations#idempotent-invocations)
 
     ```ts !!tabs TypeScript
-    CODE_LOAD::ts/src/use_cases/microservices/idempotency.ts
+    CODE_LOAD::ts/src/use_cases/microservices/idempotency.ts?2
     ```
 
     ```java !!tabs Java
@@ -210,13 +170,167 @@ Turn functions into durable handlers with the Restate SDK.
     ```
 </Scrollycoding>
 
+## Sagas and Distributed Transactions
+Restate guarantees code runs to completion. This makes it easy to implement resilient [sagas](https://www.baeldung.com/cs/saga-pattern-microservices) in a simple try-catch block.
+
+<Scrollycoding>
+    ### !!steps Track compensations
+
+    If code execution is durable, then sagas can be expressed purely in code.
+
+    As the function executes, we track the undo operations in a list.
+
+    ```ts !!tabs TypeScript
+    CODE_LOAD::ts/src/use_cases/microservices/subscription_saga.ts?1
+    ```
+
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/usecases/microservices/RoleUpdateService.java?2
+    ```
+
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/RoleUpdateService.kt?2
+    ```
+
+    ```go !!tabs Go
+    CODE_LOAD::go/usecases/microservices/roleupdater.go?2
+    ```
+
+    ```py !!tabs Python
+    CODE_LOAD::python/src/use_cases/microservices/role_updater.py?2
+    ```
+
+    ### !!steps Guaranteed roll back
+
+    When an error occurs for which we do not want to retry or continue, we roll back the changes we already did.
+
+    Restate makes sure all compensations run.
+
+    [Learn more](/guides/sagas)
+
+    ```ts !!tabs TypeScript
+    CODE_LOAD::ts/src/use_cases/microservices/subscription_saga.ts?2
+    ```
+
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/usecases/microservices/RoleUpdateService.java?2
+    ```
+
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/RoleUpdateService.kt?2
+    ```
+
+    ```go !!tabs Go
+    CODE_LOAD::go/usecases/microservices/roleupdater.go?2
+    ```
+
+    ```py !!tabs Python
+    CODE_LOAD::python/src/use_cases/microservices/role_updater.py?2
+    ```
+
+
+</Scrollycoding>
+
+
+## Stateful Entities and State Machines
+Restate lets you implement stateful services by storing state in Restate.
+
+<Scrollycoding>
+    ### !!steps Consistent state
+
+    Implement state machines, where state transitions are always consistent with the code.
+
+
+    ```ts !!tabs TypeScript
+    CODE_LOAD::ts/src/use_cases/microservices/subscription_object.ts?1
+    ```
+
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/usecases/microservices/RoleUpdateService.java?2
+    ```
+
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/RoleUpdateService.kt?2
+    ```
+
+    ```go !!tabs Go
+    CODE_LOAD::go/usecases/microservices/roleupdater.go?2
+    ```
+
+    ```py !!tabs Python
+    CODE_LOAD::python/src/use_cases/microservices/role_updater.py?2
+    ```
+
+    ### !!steps Scalability, concurrency, consistency
+
+    Restate guards consistency by making sure at most one handler is writing to a single state value.
+
+    Scale out without fearing issues such as multiple writers to state, lost updates, race conditions, inconsistencies, etc.
+
+    [Learn more](/concepts/services#virtual-objects)
+
+
+    ```ts !!tabs TypeScript
+    CODE_LOAD::ts/src/use_cases/microservices/subscription_object.ts?2
+    ```
+
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/usecases/microservices/RoleUpdateService.java?2
+    ```
+
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/RoleUpdateService.kt?2
+    ```
+
+    ```go !!tabs Go
+    CODE_LOAD::go/usecases/microservices/roleupdater.go?2
+    ```
+
+    ```py !!tabs Python
+    CODE_LOAD::python/src/use_cases/microservices/role_updater.py?2
+    ```
+
+    ### !!steps Stateful serverless
+
+    You can run stateful services on serverless infrastructure.
+    Restate attaches the state to the request.
+    Your handlers work on local state.
+
+    [Learn more](https://restate.dev/blog/we-replaced-400-lines-of-stepfunctions-asl-with-40-lines-of-typescript-by-making-lambdas-suspendable/ )
+
+
+    ```ts !!tabs TypeScript
+    CODE_LOAD::ts/src/use_cases/microservices/subscription_object.ts?3
+    ```
+
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/usecases/microservices/RoleUpdateService.java?2
+    ```
+
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/RoleUpdateService.kt?2
+    ```
+
+    ```go !!tabs Go
+    CODE_LOAD::go/usecases/microservices/roleupdater.go?2
+    ```
+
+    ```py !!tabs Python
+    CODE_LOAD::python/src/use_cases/microservices/role_updater.py?2
+    ```
+</Scrollycoding>
+
 <SpotlightCard>
     <FeatureSpotlight
         title={"Detailed Observability"}
-        description={<p>Understand what is happening in your distributed applications, by using built-in tracing, the CLI, and the SQL engine.<br/>
-        Restate tracks communication and execution, giving it a unique position for observability.</p>}
-        imgPath={"/img/use_cases/tracing.svg"}
+        description={<p>Restate tracks communication and execution, giving it a unique position for observability.<br/>
+            Understand what is happening in your distributed applications, by using the UI, the CLI, and the built-in tracing.</p>}
+        imgPath={"/img/use_cases/microservice_observability.svg"}
         imgSize={"100%"}
+        button1={"What can you do with UI?"}
+        link1={"https://restate.dev/blog/announcing-restate-ui/"}
+        button2={"What can you do with CLI?"}
+        link2={"/operate/introspection/"}
     />
 </SpotlightCard>
 
@@ -242,8 +356,8 @@ Turn functions into durable handlers with the Restate SDK.
         ]
     },
     {
-        title: 'Keeping systems in sync / sagas',
-        description: "Reserve a flight, then a car, then handle the payment. If the payment fails, rollback the reservations.",
+        title: 'Sagas / Distributed transactions',
+        description: "Keep multiple systems in sync. For example, reserve a flight, then a car, then handle the payment. If the payment fails, roll back the reservations.",
         links: [{url: "/guides/sagas", icon: "/img/arrow-right.svg"}]
     },
     {
@@ -263,6 +377,13 @@ Turn functions into durable handlers with the Restate SDK.
             { url: "https://github.com/restatedev/examples/tree/main/java/patterns-use-cases/README.md#stateful-actors-and-state-machines", icon: "/img/java.svg"},
             { url: "https://github.com/restatedev/examples/tree/main/python/patterns-use-cases/README.md#stateful-actors-and-state-machines", icon: "/img/python.svg"},
             { url: "https://github.com/restatedev/examples/tree/main/go/patterns-use-cases/README.md#stateful-actors-and-state-machines", icon: "/img/go.svg"},
+        ]
+    },
+    {
+        title: 'Database interaction',
+        description: "Use Restate to improve common access problems, solve race conditions, or avoid inconsistencies in the presence of retries, concurrent requests or zombie processes.",
+        links: [
+            { url: "/guides/databases#how-to-interact-with-databases-from-restate", icon: "/img/arrow-right.svg"},
         ]
     },
     {
