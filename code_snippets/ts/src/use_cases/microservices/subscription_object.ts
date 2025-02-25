@@ -23,7 +23,7 @@ const subscriptionObject = restate.object({
       }
 
       // <mark_1>
-      ctx.set("subscription", "creating_subscriptions")
+      ctx.set("subscription", "creating_subscription")
       // </mark_1>
       await ctx.run(() => createSubscription(req.userId, req.subscription));
 

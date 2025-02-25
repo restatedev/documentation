@@ -31,7 +31,7 @@ const subscriptionService = restate.service({
         // <mark_2>
         if (e instanceof restate.TerminalError) {
           for (const compensation of compensations.reverse()) {
-            await compensation();
+            await ctx.run(() => compensation());
           }
         }
         // </mark_2>

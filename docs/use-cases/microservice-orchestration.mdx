@@ -12,7 +12,6 @@ import ExampleWidget from "../../src/components/ExampleWidget"
 import FeatureList from "../../src/components/FeatureList"
 import SpotlightCard from "../../src/components/SpotlightCard"
 import {Scrollycoding} from "../../src/components/code/scrollycoding";
-import {TextAndCode} from "../../src/components/code/code/text-and-code";
 
 <div className={"row"}>
     <div className={"col col--6 col-lg-6 col-md-12"}>
@@ -66,8 +65,8 @@ import {TextAndCode} from "../../src/components/code/code/text-and-code";
     CODE_LOAD::ts/src/use_cases/microservices/subscription_service.ts?1
     ```
 
-    ```java !!tabs Java
-    CODE_LOAD::java/src/main/java/usecases/microservices/RoleUpdateService.java?1
+    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/basics/src/main/java/durable_execution/SubscriptionService.java
+    CODE_LOAD::java/src/main/java/usecases/microservices/SubscriptionService.java?1
     ```
 
     ```kotlin !!tabs Kotlin
@@ -96,25 +95,25 @@ import {TextAndCode} from "../../src/components/code/code/text-and-code";
     ```
 
     ```java !!tabs Java
-    CODE_LOAD::java/src/main/java/usecases/microservices/RoleUpdateService.java?3
+    CODE_LOAD::java/src/main/java/usecases/microservices/SubscriptionService.java?2
     ```
 
     ```kotlin !!tabs Kotlin
-    CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/RoleUpdateService.kt?3
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/RoleUpdateService.kt?2
     ```
 
     ```go !!tabs Go
-    CODE_LOAD::go/usecases/microservices/roleupdater.go?3
+    CODE_LOAD::go/usecases/microservices/roleupdater.go?2
     ```
 
     ```py !!tabs Python
-    CODE_LOAD::python/src/use_cases/microservices/role_updater.py?3
+    CODE_LOAD::python/src/use_cases/microservices/role_updater.py?2
     ```
 
 </Scrollycoding>
 
 
-## Durable Communication & Idempotency
+## Durable Communication, Scheduling & Idempotency
 
 Restate sits like a reverse-proxy or message broker in front of your services.
 It persists and deduplicates all communication to and between your services.
@@ -153,12 +152,12 @@ It persists and deduplicates all communication to and between your services.
 
     [Learn more](/concepts/invocations#idempotent-invocations)
 
-    ```ts !!tabs TypeScript
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/durablerpc/express_app.ts
     CODE_LOAD::ts/src/use_cases/microservices/idempotency.ts?2
     ```
 
     ```java !!tabs Java
-    CODE_LOAD::java/src/main/java/usecases/microservices/Idempotency.java?1
+    CODE_LOAD::java/src/main/java/usecases/microservices/Idempotency.java?2
     ```
 
     ```kotlin !!tabs Kotlin
@@ -185,7 +184,7 @@ Restate guarantees code runs to completion. This makes it easy to implement resi
     ```
 
     ```java !!tabs Java
-    CODE_LOAD::java/src/main/java/usecases/microservices/RoleUpdateService.java?2
+    CODE_LOAD::java/src/main/java/usecases/microservices/SubscriptionSaga.java?1
     ```
 
     ```kotlin !!tabs Kotlin
@@ -213,7 +212,7 @@ Restate guarantees code runs to completion. This makes it easy to implement resi
     ```
 
     ```java !!tabs Java
-    CODE_LOAD::java/src/main/java/usecases/microservices/RoleUpdateService.java?2
+    CODE_LOAD::java/src/main/java/usecases/microservices/SubscriptionSaga.java?2
     ```
 
     ```kotlin !!tabs Kotlin
@@ -246,7 +245,7 @@ Restate lets you implement stateful services by storing state in Restate.
     ```
 
     ```java !!tabs Java
-    CODE_LOAD::java/src/main/java/usecases/microservices/RoleUpdateService.java?2
+    CODE_LOAD::java/src/main/java/usecases/microservices/SubscriptionObject.java?1
     ```
 
     ```kotlin !!tabs Kotlin
@@ -275,7 +274,7 @@ Restate lets you implement stateful services by storing state in Restate.
     ```
 
     ```java !!tabs Java
-    CODE_LOAD::java/src/main/java/usecases/microservices/RoleUpdateService.java?2
+    CODE_LOAD::java/src/main/java/usecases/microservices/SubscriptionObject.java?2
     ```
 
     ```kotlin !!tabs Kotlin
@@ -291,7 +290,7 @@ Restate lets you implement stateful services by storing state in Restate.
     ```
 
     ### !!steps Stateful serverless
-
+    
     You can run stateful services on serverless infrastructure.
     Restate attaches the state to the request.
     Your handlers work on local state.
@@ -304,7 +303,7 @@ Restate lets you implement stateful services by storing state in Restate.
     ```
 
     ```java !!tabs Java
-    CODE_LOAD::java/src/main/java/usecases/microservices/RoleUpdateService.java?2
+    CODE_LOAD::java/src/main/java/usecases/microservices/SubscriptionObject.java?3
     ```
 
     ```kotlin !!tabs Kotlin
