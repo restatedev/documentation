@@ -1,0 +1,30 @@
+---
+title: "Restate Server Config"
+sidebar_position: 2
+description: "Specification of the API to administer services."
+hide_table_of_contents: true
+---
+
+import Schema from "@site/static/schemas/restate-server-configuration-schema.json";
+import JSONSchemaViewer from "@theme/JSONSchemaViewer";
+import ReactMarkdown from 'react-markdown'
+import CodeBlock from '@theme/CodeBlock'
+import Admonition from '@theme/Admonition';
+import DefaultConfig from '!!raw-loader!/static/schemas/restate.toml';
+
+# Restate Server Configuration Reference
+
+## Default configuration
+
+<Admonition type="tip" icon="💡" title="Tip">
+    Note that configuration defaults might change across server releases, if you want to make sure you use stable values, use an explicit configuration file an pass the path via `--config-path=<PATH>` as described above.
+</Admonition>
+
+<CodeBlock language="toml" title={"restate.toml"}>
+    {DefaultConfig}
+</CodeBlock>
+
+
+## Configuration reference
+
+<JSONSchemaViewer schema={ Schema } viewerOptions={{DescriptionComponent: ({description}) => <ReactMarkdown children={description}/>}} />
