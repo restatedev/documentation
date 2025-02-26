@@ -18,7 +18,9 @@ class Idempotency {
     // <mark_1>
     ProductServiceClient.fromClient(rs, productId)
         .send()
+        // <mark_2>
         .reserve(CallRequestOptions.DEFAULT.withIdempotency(reservationId))
+      // </mark_2>
     // </mark_1>
   }
   // <end_here>
