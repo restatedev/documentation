@@ -8,7 +8,7 @@ const subscriptionService = restate.service({
   handlers: {
     // <mark_1>
     add: async (ctx: restate.Context, req: SubscriptionRequest) => {
-    // </mark_1>
+      // </mark_1>
       const paymentId = ctx.rand.uuidv4();
 
       // <mark_2>
