@@ -243,12 +243,15 @@ Restate is a single self-contained binary. No external dependencies needed. Chec
 restate-server
 ```
 
+    You can find the Restate UI running on port 9070 (`http://localhost:9070`) after starting the Restate Server.
+
 </SubtleStep>
+
 
 <SubtleStep stepLabel="3" title="Register the services with Restate">
 
 Now, we need to tell Restate where our services are running.
-You can register services by calling the Restate Admin API (default port `9070`) and supplying it the service endpoint URI:
+You can register services via the UI (`http://localhost:9070`), the CLI or the Restate Admin API and supplying it the service endpoint URI:
 
 <CodeWithTabs>
     ```shell !!tabs CLI
@@ -621,11 +624,16 @@ The `AppMain.java` file contains the definition of the endpoint that hosts the s
 Handlers can be invoked in several ways: via HTTP requests, programmatically with the SDK, or via Kafka events.
 
 ### Request-response calls over HTTP
-Let's start with invoking our handler over HTTP using `curl`.
+Let's start with invoking our handler over HTTP.
+We can either use the Restate UI playground or `curl`.
 
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
-For example, add a ticket `seat2B` to the cart of Mary by calling the `addTicket` handler of the `CartObject`:
+For example, add a ticket `seat2B` to the cart of Mary by calling the `addTicket` handler of the `CartObject`.
+
+In the UI, click on the `CartObject` service, then on `Playground`, and invoke your handler from there with body `'"seat2B"'`.
+
+Or via `curl`:
 
 ```shell
 curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2B"'
@@ -633,7 +641,9 @@ curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json
 
 If this prints out `true`, then you have a working setup.
 
-When Mary wants to proceed with the purchase, call the `checkout` handler of the `CartObject`:
+When Mary wants to proceed with the purchase, call the `checkout` handler of the `CartObject`.
+
+Via `curl`:
 
 ```shell
 curl -X POST localhost:8080/CartObject/Mary/checkout
@@ -642,6 +652,10 @@ curl -X POST localhost:8080/CartObject/Mary/checkout
 <TabItem value="java" label="Java">
 For example, add a ticket `seat2B` to the cart of Mary by calling the `addTicket` handler of the `CartObject`:
 
+In the UI, click on the `CartObject` service, then on `Playground`, and invoke your handler from there with body `'"seat2B"'`.
+
+Or via `curl`:
+
 ```shell
 curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2B"'
 ```
@@ -650,12 +664,18 @@ If this prints out `true`, then you have a working setup.
 
 When Mary wants to proceed with the purchase, call the `checkout` handler of the `CartObject`:
 
+Via `curl`:
+
 ```shell
 curl -X POST localhost:8080/CartObject/Mary/checkout
 ```
 </TabItem>
 <TabItem value="go" label="Go">
     For example, add a ticket `seat2B` to the cart of Mary by calling the `AddTicket` handler of the `CartObject`:
+
+    In the UI, click on the `CartObject` service, then on `Playground`, and invoke your handler from there with body `'"seat2B"'`.
+
+    Or via `curl`:
 
     ```shell
     curl localhost:8080/CartObject/Mary/AddTicket -H 'content-type: application/json' -d '"seat2B"'
@@ -665,12 +685,18 @@ curl -X POST localhost:8080/CartObject/Mary/checkout
 
     When Mary wants to proceed with the purchase, call the `Checkout` handler of the `CartObject`:
 
+    Via `curl`:
+
     ```shell
     curl -X POST localhost:8080/CartObject/Mary/Checkout
     ```
 </TabItem>
 <TabItem value="py" label="Python">
         For example, add a ticket `seat2B` to the cart of Mary by calling the `addTicket` handler of the `CartObject`:
+
+        In the UI, click on the `CartObject` service, then on `Playground`, and invoke your handler from there with body `'"seat2B"'`.
+
+        Or via `curl`:
 
         ```shell
         curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2B"'
@@ -679,6 +705,8 @@ curl -X POST localhost:8080/CartObject/Mary/checkout
         If this prints out `true`, then you have a working setup.
 
         When Mary wants to proceed with the purchase, call the `checkout` handler of the `CartObject`:
+
+    Via `curl`:
 
         ```shell
         curl -X POST localhost:8080/CartObject/Mary/checkout
@@ -687,6 +715,10 @@ curl -X POST localhost:8080/CartObject/Mary/checkout
     <TabItem value="rust" label="Rust">
         For example, add a ticket `seat2B` to the cart of Mary by calling the `addTicket` handler of the `CartObject`:
 
+        In the UI, click on the `CartObject` service, then on `Playground`, and invoke your handler from there with body `'"seat2B"'`.
+
+        Or via `curl`:
+
         ```shell
         curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2B"'
         ```
@@ -694,6 +726,8 @@ curl -X POST localhost:8080/CartObject/Mary/checkout
         If this prints out `true`, then you have a working setup.
 
         When Mary wants to proceed with the purchase, call the `checkout` handler of the `CartObject`:
+
+        Via `curl`:
 
         ```shell
         curl -X POST localhost:8080/CartObject/Mary/checkout
@@ -1061,7 +1095,7 @@ Restate persists and retries failed one-way invocations. There is no need to set
 </Admonition>
 
 <Admonition type="info" title="Sending messages via `curl`">
-To send messages via `curl`, add `/send` to the handler path:
+To send messages via the UI or `curl`, add `/send` to the handler path:
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
 ```shell
@@ -1478,9 +1512,21 @@ The other times, the call was skipped and the journaled response was replayed.
 [By default](/references/server_config#default-configuration), Restate will keep retrying failed invocations until they succeed.
 If you want to cancel an invocation in a retry loop, you can use the CLI to do this. Let's have a look at that next.
 
-## Debugging with the CLI
+<Admonition type={"note"} title={"Error handling in Restate"}>
+    Discover more about Restate error handling, retry strategies, and common patterns in the [Error Handling guide.](/guides/error-handling)
+</Admonition>
 
-Now that we have a failing invocation, let's take the opportunity to show you how you can get more information about what is going on with the CLI.
+## Debugging with the UI and CLI
+
+Now that we have a failing invocation, let's take the opportunity to show you how you can get more information about what is going on via the UI or CLI.
+Find the failing invocation in the list and have a look at it!
+
+### Debugging with the UI
+
+The UI lets you debug invocations from the invocations tab, where you can find information on retry counts, error messages, the journal, the deployment, and more.
+
+### Debugging with the CLI
+
 The CLI is a management tool that lets you interact with the Restate Server.
 You can use it to boostrap a new project, but also to get information about the services and invocations.
 
