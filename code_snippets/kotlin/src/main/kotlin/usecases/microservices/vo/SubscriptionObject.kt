@@ -4,17 +4,25 @@ import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.VirtualObject
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
 import dev.restate.sdk.kotlin.*
+import dev.restate.sdk.lambda.BaseRestateLambdaHandler
+import dev.restate.sdk.lambda.RestateLambdaEndpointBuilder
 import kotlinx.serialization.Serializable
 
 // <start_here>
+// <mark_2>
 @VirtualObject
 class SubscriptionObject {
+  // </mark_2>
   companion object {
-    val SUBSCRIPTION = KtStateKey.json<String>("my-key")
+    // <mark_1>
+    val SUBSCRIPTION = KtStateKey.json<String>("subscription")
+    // </mark_1>
   }
 
+  // <mark_2>
   @Handler
   suspend fun add(ctx: ObjectContext, req: SubscriptionRequest) {
+    // </mark_2>
     // <mark_1>
     ctx.set(SUBSCRIPTION, "awaiting_payment")
     // </mark_1>
@@ -40,9 +48,13 @@ class SubscriptionObject {
   }
 }
 
-fun main() {
-  RestateHttpEndpointBuilder.builder().bind(SubscriptionObject()).buildAndListen()
+// <mark_3>
+class MyLambdaHandler : BaseRestateLambdaHandler() {
+  override fun register(builder: RestateLambdaEndpointBuilder) {
+    builder.bind(SubscriptionObject())
+  }
 }
+// </mark_3>
 // <end_here>
 
 @Serializable
