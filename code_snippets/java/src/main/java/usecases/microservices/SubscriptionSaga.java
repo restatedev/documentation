@@ -3,6 +3,7 @@ package usecases.microservices;
 import dev.restate.sdk.Context;
 import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.annotation.Handler;
+import dev.restate.sdk.annotation.Service;
 import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
@@ -15,7 +16,7 @@ import static dev.restate.sdk.JsonSerdes.STRING;
 import static usecases.microservices.Utils.*;
 
 // <start_here>
-@VirtualObject
+@Service
 public class SubscriptionSaga {
 
   @Handler
@@ -49,12 +50,6 @@ public class SubscriptionSaga {
       // </mark_2>
       throw e;
     }
-  }
-
-  public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder()
-            .bind(new SubscriptionService())
-            .buildAndListen();
   }
 }
 // <end_here>
