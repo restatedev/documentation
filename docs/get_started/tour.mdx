@@ -4,6 +4,7 @@ title: "Tour of Restate"
 description: ""
 ---
 
+import {TerminalWithTabs, Terminal} from "../../src/components/code/terminal";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
@@ -253,57 +254,55 @@ restate-server
 Now, we need to tell Restate where our services are running.
 You can register services via the UI (`http://localhost:9070`), the CLI or the Restate Admin API and supplying it the service endpoint URI:
 
-<CodeWithTabs>
-    ```shell !!tabs CLI
-    restate deployments register http://localhost:9080
-    ```
+    <TerminalWithTabs>
+        # !!terminals
 
-    ```shell !!tabs curl
-    curl localhost:9070/deployments -H 'content-type: application/json' \
-        -d '{"uri": "http://localhost:9080"}'
-    ```
-</CodeWithTabs>
+        ```shell !command CLI
+        restate deployments register http://localhost:9080
+        ```
 
-<details className="grey-details">
-<summary>Output</summary>
+        ```shell !output
+        ❯ SERVICES THAT WILL BE ADDED:
+        - CheckoutService
+        Type: Service
+        HANDLER  INPUT                                     OUTPUT
+        handle   value of content-type 'application/json'  value of content-type 'application/json'
 
-<Tabs groupId="sdk" queryString className={"display-none"}>
-<TabItem value="ts" label="Typescript">
-<CodeWithTabs>
-```shell !!tabs CLI
-❯ SERVICES THAT WILL BE ADDED:
-- CheckoutService
-Type: Service
-HANDLER  INPUT TYPE                                   OUTPUT TYPE
-handle   one of "empty or value of content-type */*"  value with content-type "application/json"
+        - CartObject
+        Type: VirtualObject ⬅️ 🚶🚶🚶
+        HANDLER       INPUT                                     OUTPUT
+        addTicket     value of content-type 'application/json'  value of content-type 'application/json'
+        expireTicket  value of content-type 'application/json'  none
+        checkout      none                                      value of content-type 'application/json'                                 value of content-type 'application/json'
 
-- CartObject
-Type: VirtualObject ⬅️ 🚶🚶🚶
-HANDLER       INPUT TYPE                                   OUTPUT TYPE
-addTicket     one of "empty or value of content-type */*"  value with content-type "application/json"
-expireTicket  one of "empty or value of content-type */*"  value with content-type "application/json"
-checkout      one of "empty or value of content-type */*"  value with content-type "application/json"
-
-- TicketObject
-Type: VirtualObject ⬅️ 🚶🚶🚶
-HANDLER     INPUT TYPE                                   OUTPUT TYPE
-reserve     one of "empty or value of content-type */*"  value with content-type "application/json"
-markAsSold  one of "empty or value of content-type */*"  value with content-type "application/json"
-unreserve   one of "empty or value of content-type */*"  value with content-type "application/json"
+        - TicketObject
+        Type: VirtualObject ⬅️ 🚶🚶🚶
+        HANDLER     INPUT  OUTPUT
+        unreserve   none   none
+        reserve     none   value of content-type 'application/json'
+        markAsSold  none   none
 
 
-✔ Are you sure you want to apply those changes? · yes
-✅ DEPLOYMENT:
-SERVICE          REV
-TicketObject     1
-CheckoutService  1
-CartObject       1
-```
+        ✔ Are you sure you want to apply those changes? · yes
+        ✅ DEPLOYMENT:
+        SERVICE          REV
+        TicketObject     1
+        CheckoutService  1
+        CartObject       1
+        ```
 
-```json !!tabs curl
-{
-    "id": "dp_11pXug0mWsff2NOoRBZbOcV",
-    "services": [
+
+        # !!terminals
+
+        ```shell !command curl
+        curl localhost:9070/deployments -H 'content-type: application/json' \
+            -d '{"uri": "http://localhost:9080"}'
+        ```
+
+        ```json !output curl
+        {
+            "id": "dp_11pXug0mWsff2NOoRBZbOcV",
+            "services": [
         {
             "name": "TicketObject",
             /* ... Additional information on registered methods ...*/
@@ -316,229 +315,11 @@ CartObject       1
             "name": "CheckoutService",
             /* ... Additional information on registered methods ...*/
         }
-    ]
-}
-```
-</CodeWithTabs>
-</TabItem>
-<TabItem value="java" label="Java">
-<CodeWithTabs>
-```shell !!tabs CLI
-❯ SERVICES THAT WILL BE ADDED:
-- CheckoutService
-Type: Service
-HANDLER  INPUT                                     OUTPUT
-handle   value of content-type 'application/json'  value of content-type 'application/json'
-
-- CartObject
-Type: VirtualObject ⬅️ 🚶🚶🚶
-HANDLER       INPUT                                     OUTPUT
-addTicket     value of content-type 'application/json'  value of content-type 'application/json'
-expireTicket  value of content-type 'application/json'  none
-checkout      none                                      value of content-type 'application/json'                                 value of content-type 'application/json'
-
-- TicketObject
-Type: VirtualObject ⬅️ 🚶🚶🚶
-HANDLER     INPUT  OUTPUT
-unreserve   none   none
-reserve     none   value of content-type 'application/json'
-markAsSold  none   none
-
-
-✔ Are you sure you want to apply those changes? · yes
-✅ DEPLOYMENT:
-SERVICE          REV
-TicketObject     1
-CheckoutService  1
-CartObject       1
-```
-
-```json !!tabs curl
-{
-    "id": "dp_11pXug0mWsff2NOoRBZbOcV",
-    "services": [
-        {
-            "name": "TicketObject",
-            /* ... Additional information on registered methods ...*/
-        },
-        {
-            "name": "CartObject",
-            /* ... Additional information on registered methods ...*/
-        },
-        {
-            "name": "CheckoutService",
-            /* ... Additional information on registered methods ...*/
+            ]
         }
-    ]
-}
-```
-</CodeWithTabs>
-</TabItem>
-<TabItem value="go" label="Go">
-<CodeWithTabs>
-    ```shell !!tabs CLI
-    ❯ SERVICES THAT WILL BE ADDED:
-    - CheckoutService
-    Type: Service
-    HANDLER  INPUT                                     OUTPUT
-    Handle   value of content-type 'application/json'  value of content-type 'application/json'
+        ```
 
-    - CartObject
-    Type: VirtualObject ⬅️ 🚶🚶🚶
-    HANDLER       INPUT                                     OUTPUT
-    ExpireTicket  value of content-type 'application/json'  none
-    Checkout      none                                      value of content-type 'application/json'
-    AddTicket     value of content-type 'application/json'  value of content-type 'application/json'
-
-    - TicketObject
-    Type: VirtualObject ⬅️ 🚶🚶🚶
-    HANDLER     INPUT  OUTPUT
-    MarkAsSold  none   none
-    Unreserve   none   none
-    Reserve     none   value of content-type 'application/json'
-
-
-    ✔ Are you sure you want to apply those changes? · yes
-    ✅ DEPLOYMENT:
-    SERVICE          REV
-    TicketObject     1
-    CheckoutService  1
-    CartObject       1
-    ```
-
-    ```json !!tabs curl
-    {
-        "id": "dp_11pXug0mWsff2NOoRBZbOcV",
-        "services": [
-    {
-        "name": "TicketObject",
-        /* ... Additional information on registered methods ...*/
-    },
-    {
-        "name": "CartObject",
-        /* ... Additional information on registered methods ...*/
-    },
-    {
-        "name": "CheckoutService",
-        /* ... Additional information on registered methods ...*/
-    }
-        ]
-    }
-    ```
-</CodeWithTabs>
-</TabItem>
-    <TabItem value="python" label="Python">
-        <CodeWithTabs>
-            ```shell !!tabs CLI
-            Deployment ID:  dp_15dw4eEnr7AOatMJOv2gmJ3
-
-            ❯ SERVICES THAT WILL BE ADDED:
-            - TicketObject
-            Type: VirtualObject ⬅️ 🚶🚶🚶
-            HANDLER     INPUT                                                        OUTPUT
-            unreserve   one of ["none", "value of content-type 'application/json'"]  value of content-type 'application/json'
-            markAsSold  one of ["none", "value of content-type 'application/json'"]  value of content-type 'application/json'
-            reserve     one of ["none", "value of content-type 'application/json'"]  value of content-type 'application/json'
-
-
-            - CartObject
-            Type: VirtualObject ⬅️ 🚶🚶🚶
-            HANDLER       INPUT                                                        OUTPUT
-            addTicket     one of ["none", "value of content-type 'application/json'"]  value of content-type 'application/json'
-            checkout      one of ["none", "value of content-type 'application/json'"]  value of content-type 'application/json'
-            expireTicket  one of ["none", "value of content-type 'application/json'"]  value of content-type 'application/json'
-
-            - CheckoutService
-            Type: Service
-            HANDLER  INPUT                                                        OUTPUT
-            handle   one of ["none", "value of content-type 'application/json'"]  value of content-type 'application/json'
-
-
-            ✔ Are you sure you want to apply those changes? · yes
-            ✅ DEPLOYMENT:
-            SERVICE          REV
-            TicketObject     1
-            CartObject       1
-            CheckoutService  1
-            ```
-
-            ```json !!tabs curl
-            {
-                "id": "dp_11pXug0mWsff2NOoRBZbOcV",
-                "services": [
-                    {
-                        "name": "TicketObject",
-                        /* ... Additional information on registered methods ...*/
-                    },
-                    {
-                        "name": "CartObject",
-                        /* ... Additional information on registered methods ...*/
-                    },
-                    {
-                        "name": "CheckoutService",
-                        /* ... Additional information on registered methods ...*/
-                    }
-                ]
-            }
-            ```
-        </CodeWithTabs>
-    </TabItem>
-    <TabItem value="rust" label="Rust">
-        <CodeWithTabs>
-            ```shell !!tabs CLI
-            ❯ SERVICES THAT WILL BE ADDED:
-            - CheckoutService
-            Type: Service
-            HANDLER  INPUT TYPE                                   OUTPUT TYPE
-            handle   one of "empty or value of content-type */*"  value with content-type "application/json"
-
-            - CartObject
-            Type: VirtualObject ⬅️ 🚶🚶🚶
-            HANDLER       INPUT TYPE                                   OUTPUT TYPE
-            addTicket     one of "empty or value of content-type */*"  value with content-type "application/json"
-            expireTicket  one of "empty or value of content-type */*"  value with content-type "application/json"
-            checkout      one of "empty or value of content-type */*"  value with content-type "application/json"
-
-            - TicketObject
-            Type: VirtualObject ⬅️ 🚶🚶🚶
-            HANDLER     INPUT TYPE                                   OUTPUT TYPE
-            reserve     one of "empty or value of content-type */*"  value with content-type "application/json"
-            markAsSold  one of "empty or value of content-type */*"  value with content-type "application/json"
-            unreserve   one of "empty or value of content-type */*"  value with content-type "application/json"
-
-
-            ✔ Are you sure you want to apply those changes? · yes
-            ✅ DEPLOYMENT:
-            SERVICE          REV
-            TicketObject     1
-            CheckoutService  1
-            CartObject       1
-            ```
-
-            ```json !!tabs curl
-            {
-                "id": "dp_11pXug0mWsff2NOoRBZbOcV",
-                "services": [
-            {
-                "name": "TicketObject",
-                /* ... Additional information on registered methods ...*/
-            },
-            {
-                "name": "CartObject",
-                /* ... Additional information on registered methods ...*/
-            },
-            {
-                "name": "CheckoutService",
-                /* ... Additional information on registered methods ...*/
-            }
-                ]
-            }
-            ```
-        </CodeWithTabs>
-    </TabItem>
-</Tabs>
-
-</details>
+    </TerminalWithTabs>
 
 If you run Restate with Docker, replace `http://localhost:9080` by `http://host.docker.internal:9080`.
 </SubtleStep>
@@ -1098,33 +879,50 @@ Restate persists and retries failed one-way invocations. There is no need to set
 To send messages via the UI or `curl`, add `/send` to the handler path:
 <Tabs groupId="sdk" queryString className={"display-none"}>
 <TabItem value="ts" label="TypeScript">
-```shell
-curl localhost:8080/CartObject/Mary/addTicket/send -H 'content-type: application/json' -d '"seat2B"'
-```
+    <Terminal>
+    ```shell !command
+    curl localhost:8080/CartObject/Mary/addTicket/send -H 'content-type: application/json' -d '"seat2B"'
+    ```
+
+    ```json !output
+    {"invocationId":"inv_1aiqX0vFEFNH1Umgre58JiCLgHfTtztYK5","status":"Accepted"}
+    ```
+    </Terminal>
 </TabItem>
 <TabItem value="java" label="Java">
-```shell
-curl localhost:8080/CartObject/Mary/addTicket/send -H 'content-type: application/json' -d '"seat2B"'
-```
+    <Terminal>
+    ```shell !command
+    curl localhost:8080/CartObject/Mary/addTicket/send -H 'content-type: application/json' -d '"seat2B"'
+    ```
+
+    ```json !output
+    {"invocationId":"inv_1aiqX0vFEFNH1Umgre58JiCLgHfTtztYK5","status":"Accepted"}
+    ```
+    </Terminal>
 </TabItem>
 <TabItem value="go" label="Go">
-```shell
-curl localhost:8080/CartObject/Mary/AddTicket/send -H 'content-type: application/json' -d '"seat2B"'
-```
+    <Terminal>
+    ```shell !command
+    curl localhost:8080/CartObject/Mary/AddTicket/send -H 'content-type: application/json' -d '"seat2B"'
+    ```
+
+    ```json !output
+    {"invocationId":"inv_1aiqX0vFEFNH1Umgre58JiCLgHfTtztYK5","status":"Accepted"}
+    ```
+    </Terminal>
 </TabItem>
 <TabItem value="python" label="Python">
-```shell
-curl localhost:8080/CartObject/Mary/addTicket/send -H 'content-type: application/json' -d '"seat2B"'
-```
+    <Terminal>
+    ```shell !command
+    curl localhost:8080/CartObject/Mary/addTicket/send -H 'content-type: application/json' -d '"seat2B"'
+    ```
+
+    ```json !output
+    {"invocationId":"inv_1aiqX0vFEFNH1Umgre58JiCLgHfTtztYK5","status":"Accepted"}
+    ```
+    </Terminal>
 </TabItem>
 </Tabs>
-
-<details className="grey-details">
-<summary>Output</summary>
-```json
-{"invocationId":"inv_1aiqX0vFEFNH1Umgre58JiCLgHfTtztYK5","status":"Accepted"}
-```
-</details>
 
 This returns the invocation ID. This is a unique identifier for the invocation.
 You can use it to track the progress of the invocation via the CLI, and to correlate logs and metrics.
@@ -1534,13 +1332,13 @@ Have a look at some useful commands and try them out yourself.
 
 List the services:
 
-```shell
-restate services list
-```
+<Terminal>
 
-<details className={"grey-details"}>
-    <summary>Output</summary>
+    ```shell !command
+    restate services list
     ```
+
+    ```shell !output
     NAME             REVISION  FLAVOR    DEPLOYMENT TYPE  DEPLOYMENT ID
     🌎  CartObject       1         ⬅️ 🚶🚶🚶  HTTP 2           dp_11pXug0mWsff2NOoRBZbOcV
     🌎  CheckoutService  1                   HTTP 2           dp_11pXug0mWsff2NOoRBZbOcV
@@ -1569,20 +1367,16 @@ restate services list
     expireTicket  one of "empty or value of  value with content-type "application/json"
     content-type */*"
     ```
-</details>
+</Terminal>
 
 List the ongoing invocations:
 
-```shell
-restate invocations list
-```
+<Terminal>
+    ```shell !command
+    restate invocations list
+    ```
 
-You find the invocation that is retrying in the list.
-Use its invocation ID (`inv_...`), to dig deeper and describe the invocation:
-
-<details className={"grey-details"}>
-    <summary>Output</summary>
-    ```shell
+    ```shell !output
     ❯ [2024-04-23 14:41:59.365 +02:00] inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
     Target:      CartObject/Mary/addTicket
     Status:      backing-off  (18 seconds and 284 ms. Retried 9 time(s). Next
@@ -1592,15 +1386,17 @@ Use its invocation ID (`inv_...`), to dig deeper and describe the invocation:
     [500] Failing
     Caused by:   UNKNOWN
     ```
-</details>
+</Terminal>
 
-```shell
-restate invocations describe inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
-```
+You find the invocation that is retrying in the list.
+Use its invocation ID (`inv_...`), to dig deeper and describe the invocation:
 
-<details className={"grey-details"}>
-    <summary>Output</summary>
-    ```shell
+<Terminal>
+    ```shell !command
+    restate invocations describe inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
+    ```
+
+    ```shell !output
     📜 Invocation Information:
     ――――――――――――――――――――――――――
     Created at:   2024-04-23 14:41:59.365 +02:00 (a minute ago)
@@ -1625,16 +1421,16 @@ restate invocations describe inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
     ├──── ☑️  #1 Call TicketObject/seat2B/reserve inv_19maBIcE9uRD1CrHgpGXZ7FcXPsz4bzkbL
     └────>> backing-off
     ```
-</details>
+</Terminal>
 
 You can cancel the invocation, or kill it with `--kill`:
 
-```shell
-restate invocations cancel --kill inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
-```
-<details className={"grey-details"}>
-    <summary>Output</summary>
-    ```shell
+<Terminal>
+    ```shell !command
+    restate invocations cancel --kill inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
+    ```
+
+    ```shell !output
     ❯ [2024-04-23 14:41:59.365 +02:00] inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
     Target:      CartObject/Mary/addTicket
     Status:      backing-off  (25 minutes, 29 seconds and 200 ms. Retried 141
@@ -1648,7 +1444,7 @@ restate invocations cancel --kill inv_1fmRNvSNVxNp5PTqHI4HLJ17HpxzhB3MEV
 
     ✅ Request was sent successfully
     ```
-</details>
+</Terminal>
 
 [Cancelling](https://docs.restate.dev/operate/invocation#cancelling-invocations) lets you stop the invocation from retrying, to start running any compensations.
 [Killing](https://docs.restate.dev/operate/invocation#killing-invocations) ends the invocation without running any compensations.
@@ -2251,21 +2047,15 @@ So when you operate on the state in your function, you get access to a local cop
 Restate exposes information on invocations and application state.
 You can watch the state of the `CartObject` service, via:
 
-<CodeWithTabs>
+<TerminalWithTabs>
 
-    ```shell !!tabs CLI
+    # !!terminals
+
+    ```shell !command CLI
     restate kv get -w -n 1 CartObject Mary
     ```
 
-    ```shell !!tabs psql
-    watch -n 1 'psql -h localhost -p 9071 -c "SELECT * FROM state WHERE service_name like '\''%CartObject%'\''";'
-    ```
-</CodeWithTabs>
-
-<details className="grey-details">
-    <summary>Output</summary>
-
-    ```json
+    ```json !output
     🤖 State:
     ―――――――――
 
@@ -2274,11 +2064,30 @@ You can watch the state of the `CartObject` service, via:
 
     KEY      VALUE
     tickets  [
-               "seat2B"
-             ]
+    "seat2B"
+    ]
     ```
 
-</details>
+    # !!terminals
+
+    ```shell !command psql
+    watch -n 1 'psql -h localhost -p 9071 -c "SELECT * FROM state WHERE service_name like '\''%CartObject%'\''";'
+    ```
+
+    ```json !output
+    🤖 State:
+    ―――――――――
+
+    Service  CartObject
+    Key      Mary
+
+    KEY      VALUE
+    tickets  [
+    "seat2B"
+    ]
+    ```
+</TerminalWithTabs>
+
 
 Add some tickets to the state to see how the query result gets updated.
 
