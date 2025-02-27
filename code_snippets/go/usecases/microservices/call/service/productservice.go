@@ -4,8 +4,8 @@ import (
 	"context"
 	restate "github.com/restatedev/sdk-go"
 	"github.com/restatedev/sdk-go/server"
+	"log"
 	"log/slog"
-	"os"
 )
 
 type ProductService struct{}
@@ -29,8 +29,7 @@ func (ProductService) Reserve(ctx restate.ObjectContext) (bool, error) {
 func main() {
 	if err := server.NewRestate().
 		Bind(restate.Reflect(ProductService{})).
-		Start(context.Background(), ":9080"); err != nil {
-		slog.Error(err.Error())
-		os.Exit(1)
+		Start(context.Background(), "0.0.0.0:9080"); err != nil {
+		log.Fatal(err)
 	}
 }

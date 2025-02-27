@@ -1,0 +1,76 @@
+package main
+
+import (
+	"context"
+	restate "github.com/restatedev/sdk-go"
+	"github.com/restatedev/sdk-go/server"
+	"log"
+	"time"
+)
+
+type SocialMediaPost struct {
+	Content  string `json:"content"`
+	Metadata string `json:"metadata"`
+}
+
+// <start_here>
+type UserFeed struct{}
+
+// <mark_1>
+func (UserFeed) ProcessPost(ctx restate.ObjectContext, post SocialMediaPost) error {
+	// </mark_1>
+	// <mark_5>
+	var userId = restate.Key(ctx)
+	// </mark_5>
+
+	// <mark_3>
+	postId, err := restate.Run(ctx, func(ctx restate.RunContext) (string, error) {
+		return CreatePost(userId, post)
+	})
+	// </mark_3>
+	if err != nil {
+		return err
+	}
+
+	// <mark_4>
+	for {
+		// <mark_3>
+		status, err := restate.Run(ctx, func(ctx restate.RunContext) (string, error) {
+			return GetPostStatus(postId), nil
+		})
+		// </mark_3>
+		if err != nil {
+			return err
+		}
+		if status != PENDING {
+			break
+		}
+		// <mark_2>
+		err = restate.Sleep(ctx, 5*time.Second)
+		// </mark_2>
+		if err != nil {
+			return err
+		}
+	}
+	// </mark_4>
+
+	// <mark_3>
+	if _, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
+		return restate.Void{}, UpdateUserFeed(userId, postId)
+		// </mark_3>
+	}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func main() {
+	if err := server.NewRestate().
+		Bind(restate.Reflect(UserFeed{})).
+		Start(context.Background(), "0.0.0.0:9080"); err != nil {
+		log.Fatal(err)
+	}
+}
+
+// <end_here>
