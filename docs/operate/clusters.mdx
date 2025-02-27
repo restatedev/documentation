@@ -27,7 +27,7 @@ This page helps with operating [Restate clusters](/deploy/server/cluster):
 
 ## Controlling clusters with `restatectl`
 
-Restate includes a command line utility tool to connect to and control running Restate servers called [`restatectl`](/references/restatectl#getting-restatectl).
+Restate includes a command line utility tool to connect to and control running Restate servers called [`restatectl`](/operate/clusters#controlling-clusters-with-restatectl).
 This tool is specifically designed for system operators to manage Restate servers and is particularly useful in a cluster environment.
 It is distinct from the application developer-focused `restate` CLI tool, which is used to manage service deployments and invocations.
 
@@ -169,7 +169,7 @@ The `restatectl` tool communicates with Restate at the advertised address specif
 
     </Terminal>
 
-- [Provisioning clusters](/deploy/server/cluster/deployment)
+- [Provisioning clusters](/deploy/server/cluster)
 
 - List all nodes and their assigned roles:
     <Terminal>
@@ -302,7 +302,7 @@ You can expand an existing cluster by adding new nodes after it has been started
 
 <Step stepLabel="0" title="Starting point: single node">
     A Restate cluster can initially be started with a single node.
-    Follow the [cluster deployment instructions](/deploy/server/cluster/deployment) and ensure that:
+    Follow the [cluster deployment instructions](/deploy/server/cluster) and ensure that:
     - It uses the replicated loglet. If you use local loglet, check [this migration guide](/guides/local-to-replicated).
     - `default-log-replication` is set to 1
     - [Snapshotting is enabled](/operate/data-backup#snapshotting), to ensure that newly added nodes are fully utilized by the system.
@@ -448,7 +448,7 @@ Examine the logs using `restatectl logs describe`.
 
     First, prevent the misconfigured node from starting again until the configuration has been corrected. If this was a brand new node, there should be no data stored on it, and you may delete it altogether.
 
-    The reused node id has been marked as having `data-loss`. This precaution that tells the Restate control plane to avoid selecting this node as member of new log nodesets. You can view the current status using the [`restatectl replicated-loglet` tool](/references/restatectl#replicated-loglet):
+    The reused node id has been marked as having `data-loss`. This precaution that tells the Restate control plane to avoid selecting this node as member of new log nodesets. You can view the current status using the [`restatectl replicated-loglet` tool](/operate/clusters#managing-the-replicated-loglet):
 
     <Terminal>
     ```shell !command
