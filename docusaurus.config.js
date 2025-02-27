@@ -153,7 +153,7 @@ const config = {
           },
           {
             type: "html",
-            value: `<img referrerpolicy="no-referrer-when-downgrade" width=0 height=0 src="https://static.scarf.sh/a.png?x-pxid=b7f8ab9f-ecc3-4443-9bbe-908eab952944" />`,
+            value: `<img referrerpolicy="no-referrer-when-downgrade" width=0 height=0 src="https://scarf.restate.dev/a.png?x-pxid=792a64ae-afe4-487d-9eb6-5dacca7dd248" />`,
           },
           {
             href: "https://bsky.app/profile/restate.dev",
