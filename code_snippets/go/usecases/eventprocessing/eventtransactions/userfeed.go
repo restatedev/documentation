@@ -22,7 +22,6 @@ func (UserFeed) ProcessPost(ctx restate.ObjectContext, post SocialMediaPost) err
 	// <mark_5>
 	var userId = restate.Key(ctx)
 	// </mark_5>
-
 	// <mark_3>
 	postId, err := restate.Run(ctx, func(ctx restate.RunContext) (string, error) {
 		return CreatePost(userId, post)
@@ -46,9 +45,8 @@ func (UserFeed) ProcessPost(ctx restate.ObjectContext, post SocialMediaPost) err
 			break
 		}
 		// <mark_2>
-		err = restate.Sleep(ctx, 5*time.Second)
-		// </mark_2>
-		if err != nil {
+		if err = restate.Sleep(ctx, 5*time.Second); err != nil {
+			// </mark_2>
 			return err
 		}
 	}
@@ -61,7 +59,6 @@ func (UserFeed) ProcessPost(ctx restate.ObjectContext, post SocialMediaPost) err
 	}); err != nil {
 		return err
 	}
-
 	return nil
 }
 
