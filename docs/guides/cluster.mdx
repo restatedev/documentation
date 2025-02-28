@@ -19,88 +19,94 @@ This guide shows how to deploy a distributed Restate cluster consisting of 3 nod
 
 <Step stepLabel="1" title="Deploy the Restate cluster using Docker">
 
-To deploy a 3 node distributed Restate cluster, copy the `docker-compose.yml` and run `docker compose up`.
+To deploy a 3 node distributed Restate cluster, create a file `docker-compose.yml` and run `docker compose up`.
 
 ```yaml docker-compose.yml
-x-environment: &common-envs
-  RESTATE_CLUSTER_NAME: "my-cluster"
-  # In this setup every node fulfills every role.
-  RESTATE_ROLES: '["admin","worker","log-server","metadata-server"]'
-  # To customize logging, check https://docs.restate.dev/operate/monitoring/logging
+x-environment: &common-env
+  RESTATE_CLUSTER_NAME: "restate-cluster"
+  # Every node runs every role
+  RESTATE_ROLES: '["admin", "worker", "log-server", "metadata-server"]'
+  # For more on logging, see: https://docs.restate.dev/operate/monitoring/logging
   RESTATE_LOG_FILTER: "restate=info"
   RESTATE_BIFROST__DEFAULT_PROVIDER: "replicated"
-  RESTATE_BIFROST__REPLICATED_LOGLET__DEFAULT_LOG_REPLICATION: 2
+  RESTATE_BIFROST__REPLICATED_LOGLET__DEFAULT_LOG_REPLICATION: 2  # We require minimum of 2 nodes to accept writes
   RESTATE_METADATA_SERVER__TYPE: "replicated"
-  # This needs to be configured with the hostnames/ports the nodes can use to talk to each other.
-  # In this setup, they interact within the "internal" Docker compose network setup.
+  # The addresses where nodes can reach each other over the "internal" Docker Compose network
   RESTATE_METADATA_CLIENT__ADDRESSES: '["http://restate-1:5122","http://restate-2:5122","http://restate-3:5122"]'
+  # Partition snapshotting, see: https://docs.restate.dev/operate/snapshots
+  RESTATE_WORKER__SNAPSHOTS__DESTINATION: "s3://restate/snapshots"
+  RESTATE_WORKER__SNAPSHOTS__SNAPSHOT_INTERVAL_NUM_RECORDS: "1000"
+  RESTATE_WORKER__SNAPSHOTS__AWS_REGION: "local"
+  RESTATE_WORKER__SNAPSHOTS__AWS_ENDPOINT_URL: "http://minio:9000"
+  RESTATE_WORKER__SNAPSHOTS__AWS_ALLOW_HTTP: true
+  RESTATE_WORKER__SNAPSHOTS__AWS_ACCESS_KEY_ID: "minioadmin"
+  RESTATE_WORKER__SNAPSHOTS__AWS_SECRET_ACCESS_KEY: "minioadmin"
+
+x-defaults: &defaults
+  image: docker.restate.dev/restatedev/restate:1.2
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
 
 services:
   restate-1:
-    image: docker.restate.dev/restatedev/restate:1.2
+    <<: *defaults
     ports:
-      # Ingress port
-      - "8080:8080"
-      # Admin/UI port
-      - "9070:9070"
-      # Admin query port (psql)
-      - "9071:9071"
-      # Node port
-      - "5122:5122"
+      - "8080:8080"  # Ingress
+      - "9070:9070"  # Admin
+      - "5122:5122"  # Node-to-node communication
     environment:
-      <<: *common-envs
+      <<: *common-env
       RESTATE_NODE_NAME: restate-1
       RESTATE_FORCE_NODE_ID: 1
-      # This needs to be configured with the hostname/port the other Restate nodes can use to talk to this node.
-      RESTATE_ADVERTISED_ADDRESS: "http://restate-1:5122"
-      # Only restate-1 provisions the cluster
-      RESTATE_AUTO_PROVISION: "true"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      RESTATE_ADVERTISED_ADDRESS: "http://restate-1:5122"  # Other Restate nodes must be able to reach us using this address
+      RESTATE_AUTO_PROVISION: "true"                       # Only the first node provisions the cluster
 
   restate-2:
-    image: docker.restate.dev/restatedev/restate:1.2
+    <<: *defaults
     ports:
       - "25122:5122"
       - "29070:9070"
-      - "29071:9071"
       - "28080:8080"
     environment:
-      <<: *common-envs
+      <<: *common-env
       RESTATE_NODE_NAME: restate-2
       RESTATE_FORCE_NODE_ID: 2
       RESTATE_ADVERTISED_ADDRESS: "http://restate-2:5122"
-      # Only restate-1 provisions the cluster
       RESTATE_AUTO_PROVISION: "false"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
 
   restate-3:
-    image: docker.restate.dev/restatedev/restate:1.2
+    <<: *defaults
     ports:
       - "35122:5122"
       - "39070:9070"
-      - "39071:9071"
       - "38080:8080"
     environment:
-      <<: *common-envs
+      <<: *common-env
       RESTATE_NODE_NAME: restate-3
       RESTATE_FORCE_NODE_ID: 3
       RESTATE_ADVERTISED_ADDRESS: "http://restate-3:5122"
-      # Only restate-1 provisions the cluster
       RESTATE_AUTO_PROVISION: "false"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+
+  minio:
+    image: quay.io/minio/minio
+    # volumes:
+    #   - object-store:/data
+    entrypoint: "/bin/sh"
+    # Ensure a bucket called "restate" exists on startup:
+    command: "-c 'mkdir -p /data/restate && /usr/bin/minio server --quiet /data'"
+    ports:
+      - "9000:9000"
 ```
 
-The cluster uses the `replicated` Bifrost provider and replicates data to 2 nodes.
+The cluster uses the `replicated` Bifrost provider and replicates log writes to a minimum of 2 nodes.
 Since we are running with 3 nodes, the cluster can tolerate 1 node failure without becoming unavailable.
+By default, partition state is replicated to all workers (though each partition has only one acting leader at a time).
 
 The `replicated` metadata cluster consists of all nodes since they all run the `metadata-server` role.
 Since the `replicated` metadata cluster requires a majority quorum to operate, the cluster can tolerate 1 node failure without becoming unavailable.
 
 Take a look at the [cluster deployment documentation](/deploy/server/cluster/deployment) for more information on how to configure and deploy a distributed Restate cluster.
-
+In this example we also deployed a Minio server to host the cluster snapshots bucket. Visit [Snapshots](/operate/snapshots) to learn more about whis is strongly recommended for all clusters.
 </Step>
 
 <Step stepLabel="2" title="Check the cluster status">
@@ -143,10 +149,19 @@ Take a look at the [cluster deployment documentation](/deploy/server/cluster/dep
     ```
 </Step>
 
+<Step stepLabel="7" title="Create snapshots">
+    Try instructing the partition processors to create a snapshot of their state in the object store bucket:
+    ```shell
+    docker compose exec restate-1 restatectl snapshot create
+    ```
+    Navigate to the Minio console at [http://localhost:9000](http://localhost:9000) and browse the bucket contents (default credentials: `minioadmin`/`minioadmin`).
+</Step>
+
 <Step end={true} stepLabel="🎉" title="Congratulations, you managed to run your first distributed Restate cluster and simulated some failures!"/>
 
 
 Here are some next steps for you to try:
 
 - Try to configure a 5 server Restate cluster that can tolerate up to 2 server failures.
+- Trim the logs (either manually, or by setting up automatic trimming) _before_ adding more nodes.
 - Try to deploy a 3 server Restate cluster using Kubernetes.
