@@ -33,17 +33,17 @@ import {Scrollycoding} from "../../src/components/code/scrollycoding";
 
 <FeatureList className={"padding-bottom--lg"} features={[
     {
-        title: 'Lightweight Durable Functions',
+        title: 'Lightweight, resilient functions',
         iconPath: '/img/code-icon.svg',
         description: "On failures, Restate takes care of retries and recovers the progress of your executions. Your code runs like a normal Java/Python/... application in a Docker container or on serverless infrastructure.",
     },
     {
-        title: 'Queue per key',
+        title: 'Parallelize complex, long-running workflows',
         iconPath: '/img/use_cases/trident.svg',
-        description: "Restate splits partitions into a queue per key. If it takes long to process an event, the events for other keys aren’t blocked.",
+        description: "Restate parallelizes processing based on the key (instead of on partition). Long-running functions do not block processing of other keys. Functions can implement loops and timers, or any complex logic.    ",
     },
     {
-        title: 'Push events to functions',
+        title: 'No managing Kafka consumers',
         iconPath: '/img/use_cases/forward-email.svg',
         description: "Restate pushes events to your handlers. No need to implement consumers, manage subscriptions/offsets, etc. ",
     },
@@ -224,11 +224,11 @@ Restate pushes the events to your function.
     <TwoColumnText features={[
         {
             title: 'LOW-LATENCY',
-            description: "Restate’s event-driven foundation built in Rust lets you process events at high speed. Restate keeps a queue per key and pushes events to your functions to process them in parallel as fast as possible.",
+            description: <>Restate’s event-driven foundation lets you process events at high speed. Restate keeps a queue per key and pushes events to your functions to process them in parallel as fast as possible. <br/><br/>  <a href={"https://restate.dev/blog/the-anatomy-of-a-durable-execution-stack-from-first-principles/#some-performance-numbers"}>Learn more</a></>,
         },
         {
             title: 'DURABLE EXECUTION',
-            description: "Restate manages the complexities of reading from Kafka to make sure each event gets processed exactly once. Restate handles retries and recovery of your event handlers to the exact point before the crash.",
+            description: <>Restate manages the complexities of reading from Kafka, processes each event exactly once, and handles retries and recovery of your event handlers to the exact point before the crash. <br/><br/>  <a href={"https://restate.dev/what-is-durable-execution/"}>Learn more</a></>,
         },
     ]}/>
 </SpotlightCard>
