@@ -10,7 +10,7 @@ user_feed = VirtualObject("UserFeed")
 
 
 # <mark_1>
-@user_feed.handler("processPost")
+@user_feed.handler()
 async def process_post(ctx: ObjectContext, post: SocialMediaPost):
     # </mark_1>
     # <mark_5>
@@ -35,5 +35,7 @@ async def process_post(ctx: ObjectContext, post: SocialMediaPost):
     # </mark_3>
 
 
-app = restate.app(services=[user_feed])
+# <mark_1>
+aws_lambda_handler = restate.app([user_feed])
+# </mark_1>
 # <end_here>

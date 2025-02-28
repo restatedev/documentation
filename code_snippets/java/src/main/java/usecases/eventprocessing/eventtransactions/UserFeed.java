@@ -4,6 +4,9 @@ import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import dev.restate.sdk.lambda.BaseRestateLambdaHandler;
+import dev.restate.sdk.lambda.RestateLambdaEndpointBuilder;
+import usecases.microservices.SubscriptionService;
 
 import java.time.Duration;
 
@@ -42,11 +45,14 @@ public class UserFeed {
         ctx.run(() -> updateUserFeed(userId, postId));
         // </mark_3>
     }
+}
 
-    public static void main(String[] args) {
-        RestateHttpEndpointBuilder.builder()
-                .bind(new UserFeed())
-                .buildAndListen();
+// <mark_1>
+class MyLambdaHandler extends BaseRestateLambdaHandler {
+    @Override
+    public void register(RestateLambdaEndpointBuilder builder) {
+        builder.bind(new SubscriptionService());
     }
 }
+// </mark_1>
 // <end_here>

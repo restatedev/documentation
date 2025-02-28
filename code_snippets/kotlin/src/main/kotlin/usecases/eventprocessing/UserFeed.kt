@@ -5,7 +5,10 @@ import dev.restate.sdk.annotation.VirtualObject
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
 import dev.restate.sdk.kotlin.ObjectContext
 import dev.restate.sdk.kotlin.runBlock
+import dev.restate.sdk.lambda.BaseRestateLambdaHandler
+import dev.restate.sdk.lambda.RestateLambdaEndpointBuilder
 import kotlinx.serialization.Serializable
+import usecases.microservices.vo.SubscriptionObject
 import kotlin.time.Duration.Companion.milliseconds
 
 // <start_here>
@@ -43,9 +46,13 @@ class UserFeed {
     }
 }
 
-fun main() {
-    RestateHttpEndpointBuilder.builder().bind(UserFeed()).buildAndListen()
+// <mark_1>
+class MyLambdaHandler : BaseRestateLambdaHandler() {
+    override fun register(builder: RestateLambdaEndpointBuilder) {
+        builder.bind(SubscriptionObject())
+    }
 }
+// </mark_1>
 // <end_here>
 
 fun createPost(userId: String, post: UserFeed.SocialMediaPost): String {

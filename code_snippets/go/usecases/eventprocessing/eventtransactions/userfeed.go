@@ -5,6 +5,8 @@ import (
 	restate "github.com/restatedev/sdk-go"
 	"github.com/restatedev/sdk-go/server"
 	"log"
+	"log/slog"
+	"os"
 	"time"
 )
 
@@ -62,12 +64,17 @@ func (UserFeed) ProcessPost(ctx restate.ObjectContext, post SocialMediaPost) err
 	return nil
 }
 
+// <mark_1>
 func main() {
-	if err := server.NewRestate().
+	handler, err := server.NewRestate().
 		Bind(restate.Reflect(UserFeed{})).
-		Start(context.Background(), "0.0.0.0:9080"); err != nil {
-		log.Fatal(err)
+		Bidirectional(false).
+		LambdaHandler()
+	if err != nil {
+		log.Fatal(err.Error())
 	}
+	lambda.Start(handler)
 }
 
+// </mark_1>
 // <end_here>
