@@ -8,13 +8,15 @@ public class Idempotency {
   public static String RESTATE_URL = "http://localhost:8080";
 
   // <start_here>
-  Client rs = Client.connect(RESTATE_URL);
-
   public void reserveProduct(String productId, String reservationId) {
+    // !focus(1:4)
     // <mark_1>
-    ProductServiceClient.fromClient(rs, productId)
+    Client restateClient = Client.connect(RESTATE_URL);
+    ProductServiceClient.fromClient(restateClient, productId)
         .send()
+          // <mark_2>
         .reserve(CallRequestOptions.DEFAULT.withIdempotency(reservationId));
+    // </mark_2>
     // </mark_1>
   }
   // <end_here>

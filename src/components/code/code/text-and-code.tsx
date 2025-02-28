@@ -8,32 +8,36 @@ import {
 } from "codehike/code"
 import { pill } from "../annotations/pill"
 import { ruler } from "../annotations/ruler"
-import { HighCode } from "../code"
+import {CodeTabs, CodeWithTabs, HighCode} from "../code"
 import React from "react"
 // @ts-ignore
 import styles from "./text-and-code.module.css"
+import {z} from "zod";
 
 export function TextAndCode(props: unknown) {
-  const { title, children, result } = parseProps(
+  const { title, children, result, tabs} = parseProps(
     props,
     Block.extend({
-      result: HighlightedCodeBlock,
+      result: z.optional(HighlightedCodeBlock),
+      tabs: z.optional(z.array(HighlightedCodeBlock)),
     }),
   )
 
-  const resultChildren = <CalloutCode code={result} />
   return (
     <div className={`ruler-group m-0 ${styles["text-and-code"]}`}>
         <div className={styles["text-and-code-content"]}>
           {children}
         </div>
         <div className={styles["text-and-code-sticker"]}>
-          <CodeWithNotes
-            code={result}
-            notes={{
-              result: { children: resultChildren },
-            }}
-          />
+          { (result) ?
+              <CodeWithNotes
+                  code={result}
+                  notes={{
+                    result: { children: <CalloutCode code={result} /> },
+                  }}
+              /> :
+              <CodeTabs groupId={"sdk"} tabs={tabs} className={""}/>
+          }
         </div>
     </div>
   )

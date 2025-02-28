@@ -48,10 +48,11 @@ const plugin = (options) => {
 
         // Take care of the collapse_prequel tag (we then need to collapse all imports before the first restate object)
         const doCollapsePrequel = str.includes("collapse_prequel")
-        const cleanedStr = str.split("\n").filter(line => !line.includes("collapse_prequel")).join("\n")
+        const doRemoveComments = str.includes("remove_comments")
+        const cleanedStr = str.split("\n").filter(line => !line.includes("collapse_prequel") && !line.includes("remove_comments")).join("\n")
 
         const fileContent = await readFileOrFetch(fileData.filePath);
-        const data = extractAndClean(fileContent, fileData.customTag, fileData.markNumber, fileData.filePath, doCollapsePrequel);
+        const data = extractAndClean(fileContent, fileData.customTag, fileData.markNumber, fileData.filePath, doCollapsePrequel, doRemoveComments);
         return cleanedStr.replace(codeLoadRegex, (match) => match.replace(/.*CODE_LOAD::[^#?]+(?:#([^?]*))?(?:\?(.+))?$/, data));
     };
 
@@ -87,7 +88,7 @@ const plugin = (options) => {
         }
     }
 
-    function extractAndClean(fileContent, customTag, markNumber, filePath, doCollapsePrequel) {
+    function extractAndClean(fileContent, customTag, markNumber, filePath, doCollapsePrequel, doRemoveComments) {
         const {commentSymbol, serviceSymbol} = extractLanguageSymbol(filePath)
 
         const startTag = (customTag) ? `<start_${customTag}>` : "<start_here>";
@@ -117,12 +118,14 @@ const plugin = (options) => {
             const markEndTag = `${commentSymbol} </mark_${markNumber}>`;
 
             let needToMark = false;
+            let marking = ""; // to keep the color of the marking (codehike allows choosing mark color)
             lines.forEach(function (line, index) {
                 if(line.includes(markStartTag)){
                     if(needToMark){
                         throw new Error(`Mark start tag ${markStartTag} found before mark end tag in file ${filePath}`)
                     }
                     needToMark = true;
+                    marking = line.replace(`<mark_${markNumber}>`, "!mark");
                 }
                 if(line.includes(markEndTag)){
                     if(!needToMark){
@@ -133,7 +136,7 @@ const plugin = (options) => {
 
                 if(!line.includes('<start_') && !line.includes('<end_') && !line.includes('<mark_') && !line.includes('</mark_')) {
                     if(needToMark){
-                        filteredLines.push(`${commentSymbol} !mark`)
+                        filteredLines.push(marking)
                     }
                     filteredLines.push(line);
                 }
@@ -144,14 +147,32 @@ const plugin = (options) => {
 
         const leadingWhitespace = lines[0].match(/^\s*/)[0];
 
+        let inBlockComment = false;
         let finalLines = filteredLines.filter(line => {
+            let trimmedLine = line.trim();
+
+            // Handle multi-line comments
+            if (trimmedLine.startsWith('/*')) {
+                inBlockComment = true;
+            }
+            if (inBlockComment) {
+                if (trimmedLine.endsWith('*/')) {
+                    inBlockComment = false;
+                }
+                return false; // Ignore everything inside /* ... */
+            }
             // filter out all code loader tags
-                return !line.includes('<start_') &&
-                    !line.includes('<end_') &&
-                    !line.includes('<mark_') &&
-                    !line.includes('</mark_') &&
-                    !line.includes('collapse_prequel');
-            })
+            let keepLine = !line.includes('<start_') &&
+                !line.includes('<end_') &&
+                !line.includes('<mark_') &&
+                !line.includes('</mark_') &&
+                !line.includes('collapse_prequel');
+
+            if (doRemoveComments) {
+                keepLine = keepLine && !trimmedLine.includes(commentSymbol)
+            }
+            return keepLine
+        })
 
         if (doCollapsePrequel) {
             finalLines = collapsePrequel(finalLines, serviceSymbol, commentSymbol);

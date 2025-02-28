@@ -67,7 +67,7 @@ export function Scrollycoding(props: unknown) {
                                     style={{ maxHeight: "50rem" }}
                                 />
                             ) : "tabs" in step ? (
-                                <CodeTabs tabs={step.tabs} />
+                                <CodeTabs groupId={"sdk"} tabs={step.tabs} className={""} />
                             ) : /* "windows" in step ?*/ (
                                 step.windows.map((window) => (
                                     <Code codeblock={window} />

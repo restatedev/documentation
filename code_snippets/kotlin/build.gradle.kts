@@ -33,7 +33,13 @@ dependencies {
 kotlin { jvmToolchain(21) }
 
 // Set main class
-application { mainClass.set("develop.GreeterKt") }
+application {
+  if (project.hasProperty("mainClass")) {
+    mainClass.set(project.property("mainClass") as String)
+  } else {
+    mainClass.set("develop.GreeterKt")
+  }
+}
 
 spotless {
   kotlin {
