@@ -15,6 +15,7 @@ import SpotlightCard from "../../src/components/SpotlightCard"
 import Tabs from "@theme/Tabs"
 import TabItem from "@theme/TabItem"
 import {Scrollycoding} from "../../src/components/code/scrollycoding";
+import Admonition from "@theme/Admonition";
 
 <div className={"row"}>
     <div className={"col col--6 col-lg-6 col-md-12"}>
@@ -38,7 +39,7 @@ import {Scrollycoding} from "../../src/components/code/scrollycoding";
         description: "On failures, Restate takes care of retries and recovers the progress of your executions. Your code runs like a normal Java/Python/... application in a Docker container or on serverless infrastructure.",
     },
     {
-        title: 'Parallelize complex, long-running workflows',
+        title: 'From complex, long-running workflows to fast ETL tasks',
         iconPath: '/img/use_cases/trident.svg',
         description: "Restate parallelizes processing based on the key (instead of on partition). Long-running functions do not block processing of other keys. Functions can implement loops and timers, or any complex logic.    ",
     },
@@ -335,12 +336,26 @@ Implement stateful event handlers with Restate.
 
 <ExampleWidget itemsPerRow={3} features={[
     {
-        title: 'Agents, actors and digital twins',
+        title: 'Event-driven state machines',
         description: "A delivery service that responds to location updates arriving over Kafka. The order gets updated accordingly. ",
         links: [
             {url: "https://github.com/restatedev/examples/tree/main/java/end-to-end-applications/food-ordering#the-delivery-workflow", icon: "/img/java.svg"},
             {url: "https://github.com/restatedev/examples/tree/main/kotlin/end-to-end-applications/food-ordering#the-delivery-workflow", icon: "/img/kotlin.svg"},
             {url: "https://github.com/restatedev/examples/tree/main/typescript/end-to-end-applications/food-ordering#the-delivery-workflow", icon: "/img/typescript.svg"},
+        ],
+    },
+    {
+        title: 'Stateful actors',
+        description: "A subway fare calculator with stateful actors that combine events, schedule follow-up tasks, and execute durable side effects like payments.",
+        links: [
+            {url: "https://github.com/restatedev/examples/tree/main/java/end-to-end-applications/subway-fare-calculator", icon: "/img/java.svg"},
+        ],
+    },
+    {
+        title: 'Webhook event processing',
+        description: "Point your webhook to Restate and let it process the events. Restate takes care of retries and recovery.",
+        links: [
+            {url: "/guides/durable-webhooks", icon: "/img/arrow-right.svg"},
         ],
     },
     {
@@ -354,25 +369,8 @@ Implement stateful event handlers with Restate.
         ],
     },
     {
-        title: 'Transactional event processing or workflows over Kafka',
-        description: "Execute a flow of steps with retries and recovery.",
-        links: [
-            {url: "https://github.com/restatedev/examples/tree/main/java/patterns-use-cases/README.md#transactional-event-processing", icon: "/img/java.svg"},
-            {url: "https://github.com/restatedev/examples/tree/main/typescript/patterns-use-cases/README.md#transactional-event-processing", icon: "/img/typescript.svg"},
-            {url: "https://github.com/restatedev/examples/tree/main/go/patterns-use-cases/README.md#transactional-event-processing", icon: "/img/go.svg"},
-            {url: "https://github.com/restatedev/examples/tree/main/python/patterns-use-cases/README.md#transactional-event-processing", icon: "/img/python.svg"},
-        ],
-    },
-    {
-        title: 'Webhook event processing',
-        description: "Point your webhook to Restate and let it process the events. Restate takes care of retries and recovery.",
-        links: [
-            {url: "/guides/durable-webhooks", icon: "/img/arrow-right.svg"},
-        ],
-    },
-    {
-        title: 'Flexible control flow and scheduling of events',
-        description: "Scheduling reminders in a loop until another function has been called.",
+        title: 'Conditional, reminder scheduling',
+        description: "Scheduling reminders in a loop until another function has been called. An example of flexible control flow and scheduling.",
         links: [
             {url: "https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/README.md#scheduling-tasks", icon: "/img/typescript.svg"},
             {url: "https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/README.md#scheduling-tasks", icon: "/img/go.svg"},
@@ -388,6 +386,10 @@ Implement stateful event handlers with Restate.
     },
 ]}>
 </ExampleWidget>
+
+<Admonition type="note" title={"Didn't see your use case?"}>
+💡 You can connect any handler to a Kafka topic, so have a look at the other use case pages for more inspiration.
+</Admonition>
 
 ## Developer Resources
 
