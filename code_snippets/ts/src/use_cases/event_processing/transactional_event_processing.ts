@@ -34,12 +34,12 @@ const userFeed = restate.object({
     },
 });
 
-// <mark_1>
+// <mark_6>
 export const awsLambdaHandler = restate
     .endpoint()
     .bind(userFeed)
     .handler();
-// </mark_1>
+// </mark_6>
 // <end_here>
 
 type SocialMediaPost = {

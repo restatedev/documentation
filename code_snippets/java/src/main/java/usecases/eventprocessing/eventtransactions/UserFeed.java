@@ -47,12 +47,12 @@ public class UserFeed {
     }
 }
 
-// <mark_1>
+// <mark_6>
 class MyLambdaHandler extends BaseRestateLambdaHandler {
     @Override
     public void register(RestateLambdaEndpointBuilder builder) {
         builder.bind(new SubscriptionService());
     }
 }
-// </mark_1>
+// </mark_6>
 // <end_here>

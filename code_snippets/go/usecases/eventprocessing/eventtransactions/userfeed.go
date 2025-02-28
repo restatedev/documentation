@@ -54,10 +54,10 @@ func (UserFeed) ProcessPost(ctx restate.ObjectContext, post SocialMediaPost) err
 	}
 	// </mark_4>
 
-	// <mark_3>
+	// <mark_6>
 	if _, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
 		return restate.Void{}, UpdateUserFeed(userId, postId)
-		// </mark_3>
+		// </mark_6>
 	}); err != nil {
 		return err
 	}

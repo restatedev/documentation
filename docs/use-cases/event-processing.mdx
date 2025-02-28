@@ -64,6 +64,8 @@ Restate pushes the events to your function.
     Whenever you do a side effect in your code (`run` block), Restate persists the result and replays it after a crash.
     This lets you write workflow-like code that is resilient to failures.
 
+    [Learn more](https://docs.restate.dev/concepts/durable_execution)
+
     ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/eventtransactions/user_feed.ts
     CODE_LOAD::ts/src/use_cases/event_processing/transactional_event_processing.ts?3
     ```
@@ -84,10 +86,8 @@ Restate pushes the events to your function.
     CODE_LOAD::python/src/use_cases/event_processing/user_feed.py?3
     ```
 
-    ### !!steps Push events to serverless, lightweight functions
+    ### !!steps No managing Kafka consumers
     You can hook up functions to Kafka topics and let Restate manage the consumers: polling for records, committing offsets, recovering...
-
-    You can deploy your functions on serverless platforms, let Restate push events to them, and scale them up and down as needed.
 
     [Learn more](/guides/kafka-quickstart)
 
@@ -109,6 +109,33 @@ Restate pushes the events to your function.
 
     ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/eventtransactions/user_feed.py
     CODE_LOAD::python/src/use_cases/event_processing/user_feed.py?1
+    ```
+
+
+    ### !!steps Scale with serverless functions
+
+    You can deploy your functions on serverless platforms, let Restate push events to them, and scale them up and down as needed.
+
+    [Learn more](https://restate.dev/blog/we-replaced-400-lines-of-stepfunctions-asl-with-40-lines-of-typescript-by-making-lambdas-suspendable/)
+
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/eventtransactions/user_feed.ts
+    CODE_LOAD::ts/src/use_cases/event_processing/transactional_event_processing.ts?6
+    ```
+
+    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/eventtransactions/UserFeed.java
+    CODE_LOAD::java/src/main/java/usecases/eventprocessing/eventtransactions/UserFeed.java?6
+    ```
+
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/UserFeed.kt?6
+    ```
+
+    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/eventtransactions/userfeed.go
+    CODE_LOAD::go/usecases/eventprocessing/eventtransactions/userfeed.go?6
+    ```
+
+    ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/eventtransactions/user_feed.py
+    CODE_LOAD::python/src/use_cases/event_processing/user_feed.py?6
     ```
 
     ### !!steps Schedule events or postpone processing
@@ -306,18 +333,9 @@ Implement stateful event handlers with Restate.
 
 ## What you can build with Event Processing and Restate
 
-<ExampleWidget itemsPerRow={2} features={[
+<ExampleWidget itemsPerRow={3} features={[
     {
-        title: 'Kafka-triggered workflows',
-        description: "Handle the payment, request the order preparation, wait for driver acceptance callback, etc.",
-        links: [
-            {url: "https://github.com/restatedev/examples/tree/main/java/end-to-end-applications/food-ordering#the-order-workflow", icon: "/img/java.svg"},
-            {url: "https://github.com/restatedev/examples/tree/main/kotlin/end-to-end-applications/food-ordering#the-order-workflow", icon: "/img/kotlin.svg"},
-            {url: "https://github.com/restatedev/examples/tree/main/typescript/end-to-end-applications/food-ordering#the-order-workflow", icon: "/img/typescript.svg"},
-        ],
-    },
-    {
-        title: 'Digital twin pattern',
+        title: 'Agents, actors and digital twins',
         description: "A delivery service that responds to location updates arriving over Kafka. The order gets updated accordingly. ",
         links: [
             {url: "https://github.com/restatedev/examples/tree/main/java/end-to-end-applications/food-ordering#the-delivery-workflow", icon: "/img/java.svg"},
@@ -326,13 +344,38 @@ Implement stateful event handlers with Restate.
         ],
     },
     {
-        title: 'Event-based task scheduling',
-        description: "For each event that comes in, schedule some tasks for in the future.",
+        title: 'Restate as (delayed) message queue',
+        description: "Send messages to Restate and define when they should get executed. When the time comes, Restate take care of the scheduling and execution.",
+        links: [
+            {url: "https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/README.md#delayed-message-queue", icon: "/img/java.svg"},
+            {url: "https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/README.md#delayed-message-queue", icon: "/img/typescript.svg"},
+            {url: "https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/README.md#delayed-message-queue", icon: "/img/go.svg"},
+            {url: "https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/README.md#delayed-message-queue", icon: "/img/python.svg"},
+        ],
+    },
+    {
+        title: 'Transactional event processing or workflows over Kafka',
+        description: "Execute a flow of steps with retries and recovery.",
         links: [
             {url: "https://github.com/restatedev/examples/tree/main/java/patterns-use-cases/README.md#transactional-event-processing", icon: "/img/java.svg"},
             {url: "https://github.com/restatedev/examples/tree/main/typescript/patterns-use-cases/README.md#transactional-event-processing", icon: "/img/typescript.svg"},
             {url: "https://github.com/restatedev/examples/tree/main/go/patterns-use-cases/README.md#transactional-event-processing", icon: "/img/go.svg"},
             {url: "https://github.com/restatedev/examples/tree/main/python/patterns-use-cases/README.md#transactional-event-processing", icon: "/img/python.svg"},
+        ],
+    },
+    {
+        title: 'Webhook event processing',
+        description: "Point your webhook to Restate and let it process the events. Restate takes care of retries and recovery.",
+        links: [
+            {url: "/guides/durable-webhooks", icon: "/img/arrow-right.svg"},
+        ],
+    },
+    {
+        title: 'Flexible control flow and scheduling of events',
+        description: "Scheduling reminders in a loop until another function has been called.",
+        links: [
+            {url: "https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/README.md#scheduling-tasks", icon: "/img/typescript.svg"},
+            {url: "https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/README.md#scheduling-tasks", icon: "/img/go.svg"},
         ],
     },
     {
@@ -350,11 +393,6 @@ Implement stateful event handlers with Restate.
 
 <FeatureWidget features={[
     {
-        title: 'Blog post',
-        description: <i>Event-driven apps where event-driven is an implementation detail.</i>,
-        link: {url: "https://restate.dev/blog/restate--kafka-event-driven-apps-where-event-driven-is-an-implementation-detail"}
-    },
-    {
         title: 'Docs',
         description: (
             "Read the docs to learn more."
@@ -363,6 +401,13 @@ Implement stateful event handlers with Restate.
         java: "/invoke/kafka?sdk=java",
         go: "/invoke/kafka?sdk=go",
         python: "/invoke/kafka?sdk=python",
+    },
+    {
+        title: 'Kafka + Restate Quickstart',
+        description: "Get started with your first Restate Kafka handler.",
+        links: [
+            {url: "/guides/kafka-quickstart", icon: "/img/arrow-right.svg"},
+        ]
     },
     {
         title: 'Need help?',

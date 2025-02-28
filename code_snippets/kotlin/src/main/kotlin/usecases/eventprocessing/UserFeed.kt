@@ -46,13 +46,13 @@ class UserFeed {
     }
 }
 
-// <mark_1>
+// <mark_6>
 class MyLambdaHandler : BaseRestateLambdaHandler() {
     override fun register(builder: RestateLambdaEndpointBuilder) {
         builder.bind(SubscriptionObject())
     }
 }
-// </mark_1>
+// </mark_6>
 // <end_here>
 
 fun createPost(userId: String, post: UserFeed.SocialMediaPost): String {

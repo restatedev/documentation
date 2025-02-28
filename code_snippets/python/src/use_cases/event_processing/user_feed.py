@@ -35,7 +35,7 @@ async def process_post(ctx: ObjectContext, post: SocialMediaPost):
     # </mark_3>
 
 
-# <mark_1>
+# <mark_6>
 aws_lambda_handler = restate.app([user_feed])
-# </mark_1>
+# </mark_6>
 # <end_here>
