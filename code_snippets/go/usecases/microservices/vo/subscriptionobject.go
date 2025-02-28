@@ -5,6 +5,7 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	restate "github.com/restatedev/sdk-go"
 	"github.com/restatedev/sdk-go/server"
+	"log"
 	"log/slog"
 	"os"
 )
@@ -61,8 +62,7 @@ func main() {
 		Bidirectional(false).
 		LambdaHandler()
 	if err != nil {
-		slog.Error(err.Error())
-		os.Exit(1)
+		log.Fatal(err.Error())
 	}
 	lambda.Start(handler)
 }

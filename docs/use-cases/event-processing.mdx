@@ -15,14 +15,7 @@ import SpotlightCard from "../../src/components/SpotlightCard"
 import Tabs from "@theme/Tabs"
 import TabItem from "@theme/TabItem"
 import {Scrollycoding} from "../../src/components/code/scrollycoding";
-
-<Tabs groupId="sdk" queryString>
-    <TabItem value="ts" label="TypeScript"/>
-    <TabItem value="java" label="Java"/>
-    <TabItem value="kotlin" label="Kotlin"/>
-    <TabItem value="go" label="Go"/>
-    <TabItem value="python" label="Python"/>
-</Tabs>
+import Admonition from "@theme/Admonition";
 
 <div className={"row"}>
     <div className={"col col--6 col-lg-6 col-md-12"}>
@@ -41,17 +34,17 @@ import {Scrollycoding} from "../../src/components/code/scrollycoding";
 
 <FeatureList className={"padding-bottom--lg"} features={[
     {
-        title: 'Lightweight Durable Functions',
+        title: 'Lightweight, resilient functions',
         iconPath: '/img/code-icon.svg',
-        description: "Functions are executed durably with fine-grained retries and workflow-like semantics. ",
+        description: "On failures, Restate takes care of retries and recovers the progress of your executions. Your code runs like a normal Java/Python/... application in a Docker container or on serverless infrastructure.",
     },
     {
-        title: 'Queue per key',
+        title: 'From complex, long-running workflows to fast ETL tasks',
         iconPath: '/img/use_cases/trident.svg',
-        description: "Restate splits partitions into a queue per key. If it takes long to process an event, the events for other keys aren’t blocked.",
+        description: "Restate parallelizes processing based on the key (instead of on partition). Long-running functions do not block processing of other keys. Functions can implement loops and timers, or any complex logic.    ",
     },
     {
-        title: 'Push events to functions',
+        title: 'No managing Kafka consumers',
         iconPath: '/img/use_cases/forward-email.svg',
         description: "Restate pushes events to your handlers. No need to implement consumers, manage subscriptions/offsets, etc. ",
     },
@@ -64,65 +57,114 @@ import {Scrollycoding} from "../../src/components/code/scrollycoding";
 Connect functions to Kafka topics.
 Restate pushes the events to your function.
 
-<Tabs groupId="sdk" className={"display-none"}>
-    <TabItem value="ts" label="TypeScript">
-    <Scrollycoding className="workflows-scroller">
+<Scrollycoding>
 
-    ### !!steps Lightweight Durable Functions
-    Write functions that take Kafka events as inputs.
-    Functions execute with Durable Execution: their progress is tracked and they can be retried from the exact point before the crash, as if you are taking micro-checkpoints throughout the function execution.
+    ### !!steps Resilient business logic and durable side effects
 
-    ```ts ! user_updates.ts
-    CODE_LOAD::ts/src/use_cases/event_processing/event_processing.ts?1
+    Restate persists the progress of execution and retries it from the point where it crashed.
+    Whenever you do a side effect in your code (`run` block), Restate persists the result and replays it after a crash.
+    This lets you write workflow-like code that is resilient to failures.
+
+    [Learn more](https://docs.restate.dev/concepts/durable_execution)
+
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/eventtransactions/user_feed.ts
+    CODE_LOAD::ts/src/use_cases/event_processing/transactional_event_processing.ts?3
     ```
 
-    ### !!steps Push events to functions
-    Let Restate subscribe to a Kafka topic and specify to which function to push the events.
-    Restate will take care of the event plumbing: polling for records, committing offsets, recovering...
-
-    ```ts !!windows user_updates.ts
-    CODE_LOAD::ts/src/use_cases/event_processing/event_processing.ts
+    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/eventtransactions/UserFeed.java
+    CODE_LOAD::java/src/main/java/usecases/eventprocessing/eventtransactions/UserFeed.java?3
     ```
 
-    ```shell !!windows curl
-    # !mark(1:5)
-    curl restate:9070/subscriptions --json '{
-        "source": "kafka://my-cluster/user-events",
-        "sink": "service://userUpdates/updateUserEvent"
-    }'
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/UserFeed.kt?3
     ```
 
-    ### !!steps Queue per key
-    Events get sent to objects based on the Kafka key.
-    For each key, Restate ensures that events are processed sequentially and in order.
-    Slow events on other keys do not block processing.
-
-    In the example, we process user updates in a queue per user.
-    Slow updates for one user do not block updates for other users.
-
-    ```ts ! user_updates.ts
-    CODE_LOAD::ts/src/use_cases/event_processing/event_processing.ts?1
+    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/eventtransactions/userfeed.go
+    CODE_LOAD::go/usecases/eventprocessing/eventtransactions/userfeed.go?3
     ```
 
-    ### !!steps Postpone processing
+    ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/eventtransactions/user_feed.py
+    CODE_LOAD::python/src/use_cases/event_processing/user_feed.py?3
+    ```
+
+    ### !!steps No managing Kafka consumers
+    You can hook up functions to Kafka topics and let Restate manage the consumers: polling for records, committing offsets, recovering...
+
+    [Learn more](/guides/kafka-quickstart)
+
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/eventtransactions/user_feed.ts
+    CODE_LOAD::ts/src/use_cases/event_processing/transactional_event_processing.ts?1
+    ```
+
+    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/eventtransactions/UserFeed.java
+    CODE_LOAD::java/src/main/java/usecases/eventprocessing/eventtransactions/UserFeed.java?1
+    ```
+
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/UserFeed.kt?1
+    ```
+
+    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/eventtransactions/userfeed.go
+    CODE_LOAD::go/usecases/eventprocessing/eventtransactions/userfeed.go?1
+    ```
+
+    ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/eventtransactions/user_feed.py
+    CODE_LOAD::python/src/use_cases/event_processing/user_feed.py?1
+    ```
+
+
+    ### !!steps Scale with serverless functions
+
+    You can deploy your functions on serverless platforms, let Restate push events to them, and scale them up and down as needed.
+
+    [Learn more](https://restate.dev/blog/we-replaced-400-lines-of-stepfunctions-asl-with-40-lines-of-typescript-by-making-lambdas-suspendable/)
+
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/eventtransactions/user_feed.ts
+    CODE_LOAD::ts/src/use_cases/event_processing/transactional_event_processing.ts?6
+    ```
+
+    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/eventtransactions/UserFeed.java
+    CODE_LOAD::java/src/main/java/usecases/eventprocessing/eventtransactions/UserFeed.java?6
+    ```
+
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/UserFeed.kt?6
+    ```
+
+    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/eventtransactions/userfeed.go
+    CODE_LOAD::go/usecases/eventprocessing/eventtransactions/userfeed.go?6
+    ```
+
+    ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/eventtransactions/user_feed.py
+    CODE_LOAD::python/src/use_cases/event_processing/user_feed.py?6
+    ```
+
+    ### !!steps Schedule events or postpone processing
 
     Flexibly postpone processing of events until later.
-    Restate tracks the timers and re-invokes.
-    When sleeping, other events for that key are enqueued.
+    Or schedule async tasks for now or for later, based on an event.
+    Restate tracks the timers and triggers execution when needed.
 
-    Here, we postpone processing for 5 seconds if the user profile is not ready yet.
-
-    ```ts ! user_updates.ts
-    CODE_LOAD::ts/src/use_cases/event_processing/event_processing.ts?2
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/eventtransactions/user_feed.ts
+    CODE_LOAD::ts/src/use_cases/event_processing/transactional_event_processing.ts?2
     ```
 
-    ### !!steps Durable side effects
-
-    The results of interactions with external systems are tracked and recovered after failures. This simplifies writing flows that keep multiple systems in sync.
-
-    ```ts ! user_updates.ts
-    CODE_LOAD::ts/src/use_cases/event_processing/event_processing.ts?3
+    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/eventtransactions/UserFeed.java
+    CODE_LOAD::java/src/main/java/usecases/eventprocessing/eventtransactions/UserFeed.java?2
     ```
+
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/UserFeed.kt?2
+    ```
+
+    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/eventtransactions/userfeed.go
+    CODE_LOAD::go/usecases/eventprocessing/eventtransactions/userfeed.go?2
+    ```
+
+    ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/eventtransactions/user_feed.py
+    CODE_LOAD::python/src/use_cases/event_processing/user_feed.py?2
+    ```
+
 
     ### !!steps Flexible control flow
 
@@ -130,307 +172,64 @@ Restate pushes the events to your function.
     Each event crafts its own path through the code
     and builds up its own recovery log.
 
-    ```ts ! user_updates.ts
-    CODE_LOAD::ts/src/use_cases/event_processing/event_processing.ts?4
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/eventtransactions/user_feed.ts
+    CODE_LOAD::ts/src/use_cases/event_processing/transactional_event_processing.ts?4
+    ```
+
+    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/eventtransactions/UserFeed.java
+    CODE_LOAD::java/src/main/java/usecases/eventprocessing/eventtransactions/UserFeed.java?4
+    ```
+
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/UserFeed.kt?4
+    ```
+
+    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/eventtransactions/userfeed.go
+    CODE_LOAD::go/usecases/eventprocessing/eventtransactions/userfeed.go?4
+    ```
+
+    ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/eventtransactions/user_feed.py
+    CODE_LOAD::python/src/use_cases/event_processing/user_feed.py?4
+    ```
+
+    ### !!steps Queue per key
+    Events get sent to objects based on the Kafka key.
+    For each key, Restate ensures that events are processed sequentially and in order.
+    Slow events on other keys do not block processing.
+
+    In the example, slow moderation checks do not block posts for other users.
+
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/eventtransactions/user_feed.ts
+    CODE_LOAD::ts/src/use_cases/event_processing/transactional_event_processing.ts?5
+    ```
+
+    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/eventtransactions/UserFeed.java
+    CODE_LOAD::java/src/main/java/usecases/eventprocessing/eventtransactions/UserFeed.java?5
+    ```
+
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/UserFeed.kt?5
+    ```
+
+    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/eventtransactions/userfeed.go
+    CODE_LOAD::go/usecases/eventprocessing/eventtransactions/userfeed.go?5
+    ```
+
+    ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/eventtransactions/user_feed.py
+    CODE_LOAD::python/src/use_cases/event_processing/user_feed.py?5
     ```
 
 </Scrollycoding>
-    </TabItem>
-    <TabItem value="java" label="Java">
-        <Scrollycoding className="workflows-scroller">
-
-        ### !!steps Lightweight Durable Functions
-        Write functions that take Kafka events as inputs.
-        Functions execute with Durable Execution: their progress is tracked and they can be retried from the exact point before the crash, as if you are taking micro-checkpoints throughout the function execution.
-
-        ```java ! UserUpdatesService.java
-        CODE_LOAD::java/src/main/java/usecases/eventprocessing/UserUpdatesService.java?1
-        ```
-
-        ### !!steps Push events to functions
-        Let Restate subscribe to a Kafka topic and specify to which function to push the events.
-        Restate will take care of the event plumbing: polling for records, committing offsets, recovering...
-
-        ```java !!windows UserUpdatesService.java
-        CODE_LOAD::java/src/main/java/usecases/eventprocessing/UserUpdatesService.java
-        ```
-
-        ```shell !!windows curl
-        # !mark(1:5)
-        curl restate:9070/subscriptions --json '{
-          "source": "kafka://my-cluster/user-events",
-          "sink": "service://UserUpdatesService/updateUserEvent"
-        }'
-        ```
-
-        ### !!steps Queue per key
-        Events get sent to objects based on the Kafka key.
-        For each key, Restate ensures that events are processed sequentially and in order.
-        Slow events on other keys do not block processing.
-
-        In the example, we process user updates in a queue per user.
-        Slow updates for one user do not block updates for other users.
-
-        ```java ! UserUpdatesService.java
-        CODE_LOAD::java/src/main/java/usecases/eventprocessing/UserUpdatesService.java?1
-        ```
-
-        ### !!steps Postpone processing
-
-        Flexibly postpone processing of events until later.
-        Restate tracks the timers and re-invokes.
-        When sleeping, other events for that key are enqueued.
-
-        Here, we postpone processing for 5 seconds if the user profile is not ready yet.
-
-        ```java ! UserUpdatesService.java
-        CODE_LOAD::java/src/main/java/usecases/eventprocessing/UserUpdatesService.java?2
-        ```
-
-        ### !!steps Durable side effects
-
-        The results of interactions with external systems are tracked and recovered after failures. This simplifies writing flows that keep multiple systems in sync.
-
-        ```java ! UserUpdatesService.java
-        CODE_LOAD::java/src/main/java/usecases/eventprocessing/UserUpdatesService.java?3
-        ```
-
-        ### !!steps Flexible control flow
-
-        As opposed to many stream processing systems, Restate does not put any restrictions on the control flow (e.g. DAG).
-        Each event crafts its own path through the code
-        and builds up its own recovery log.
-
-        ```java ! UserUpdatesService.java
-        CODE_LOAD::java/src/main/java/usecases/eventprocessing/UserUpdatesService.java?4
-        ```
-
-        </Scrollycoding>
-    </TabItem>
-    <TabItem value="kotlin" label={"Kotlin"}>
-        <Scrollycoding className="workflows-scroller">
-
-            ### !!steps Lightweight Durable Functions
-            Write functions that take Kafka events as inputs.
-            Functions execute with Durable Execution: their progress is tracked and they can be retried from the exact point before the crash, as if you are taking micro-checkpoints throughout the function execution.
-
-            ```kotlin ! UserUpdatesService.kt
-            CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/UserUpdatesService.kt?1
-            ```
-
-            ### !!steps Push events to functions
-            Let Restate subscribe to a Kafka topic and specify to which function to push the events.
-            Restate will take care of the event plumbing: polling for records, committing offsets, recovering...
-
-            ```kotlin !!windows UserUpdatesService.kt
-            CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/UserUpdatesService.kt
-            ```
-
-            ```shell !!windows curl
-            # !mark(1:5)
-            curl restate:9070/subscriptions --json '{
-              "source": "kafka://my-cluster/user-events",
-              "sink": "service://UserUpdatesService/updateUserEvent"
-            }'
-            ```
-
-            ### !!steps Queue per key
-            Events get sent to objects based on the Kafka key.
-            For each key, Restate ensures that events are processed sequentially and in order.
-            Slow events on other keys do not block processing.
-
-            In the example, we process user updates in a queue per user.
-            Slow updates for one user do not block updates for other users.
-
-            ```kotlin ! UserUpdatesService.kt
-            CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/UserUpdatesService.kt?1
-            ```
-
-            ### !!steps Postpone processing
-
-            Flexibly postpone processing of events until later.
-            Restate tracks the timers and re-invokes.
-            When sleeping, other events for that key are enqueued.
-
-            Here, we postpone processing for 5 seconds if the user profile is not ready yet.
-
-            ```kotlin ! UserUpdatesService.kt
-            CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/UserUpdatesService.kt?2
-            ```
-
-            ### !!steps Durable side effects
-
-            The results of interactions with external systems are tracked and recovered after failures. This simplifies writing flows that keep multiple systems in sync.
-
-            ```kotlin ! UserUpdatesService.kt
-            CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/UserUpdatesService.kt?3
-            ```
-
-            ### !!steps Flexible control flow
-
-            As opposed to many stream processing systems, Restate does not put any restrictions on the control flow (e.g. DAG).
-            Each event crafts its own path through the code
-            and builds up its own recovery log.
-
-            ```kotlin ! UserUpdatesService.kt
-            CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/UserUpdatesService.kt?4
-            ```
-
-        </Scrollycoding>
-    </TabItem>
-    <TabItem value="go" label="Go">
-      <Scrollycoding className="workflows-scroller">
-
-        ### !!steps Lightweight Durable Functions
-        Write functions that take Kafka events as inputs.
-        Functions execute with Durable Execution: their progress is tracked and they can be retried from the exact point before the crash, as if you are taking micro-checkpoints throughout the function execution.
-
-        ```go ! userupdates.go
-        CODE_LOAD::go/usecases/eventprocessing/eventprocessing.go?1
-        ```
-
-        ### !!steps Push events to functions
-        Let Restate subscribe to a Kafka topic and specify to which function to push the events.
-        Restate will take care of the event plumbing: polling for records, committing offsets, recovering...
-
-        ```go !!windows userupdates.go
-        CODE_LOAD::go/usecases/eventprocessing/eventprocessing.go?1
-        ```
-
-        ```shell !!windows curl
-        # !mark(1:5)
-        curl restate:9070/subscriptions --json '{
-          "source": "kafka://my-cluster/user-events",
-          "sink": "service://userUpdates/updateUserEvent"
-        }'
-        ```
-
-        ### !!steps Queue per key
-        Events get sent to objects based on the Kafka key.
-        For each key, Restate ensures that events are processed sequentially and in order.
-        Slow events on other keys do not block processing.
-
-        In the example, we process user updates in a queue per user.
-        Slow updates for one user do not block updates for other users.
-
-        ```go ! userupdates.go
-        CODE_LOAD::go/usecases/eventprocessing/eventprocessing.go?1
-        ```
-
-        ### !!steps Postpone processing
-
-        Flexibly postpone processing of events until later.
-        Restate tracks the timers and re-invokes.
-        When sleeping, other events for that key are enqueued.
-
-        Here, we postpone processing for 5 seconds if the user profile is not ready yet.
-
-        ```go ! userupdates.go
-        CODE_LOAD::go/usecases/eventprocessing/eventprocessing.go?2
-        ```
-
-        ### !!steps Durable side effects
-
-        The results of interactions with external systems are tracked and recovered after failures. This simplifies writing flows that keep multiple systems in sync.
-
-        ```go ! userupdates.go
-        CODE_LOAD::go/usecases/eventprocessing/eventprocessing.go?3
-        ```
-
-        ### !!steps Flexible control flow
-
-        As opposed to many stream processing systems, Restate does not put any restrictions on the control flow (e.g. DAG).
-        Each event crafts its own path through the code
-        and builds up its own recovery log.
-
-        ```go ! userupdates.go
-        CODE_LOAD::go/usecases/eventprocessing/eventprocessing.go?4
-        ```
-
-  </Scrollycoding>
-</TabItem>
-    <TabItem value="python" label="Python">
-        <Scrollycoding className="workflows-scroller">
-
-        ### !!steps Lightweight Durable Functions
-        Write functions that take Kafka events as inputs.
-        Functions execute with Durable Execution: their progress is tracked and they can be retried from the exact point before the crash, as if you are taking micro-checkpoints throughout the function execution.
-
-        ```python ! user_updates.py
-        CODE_LOAD::python/src/use_cases/event_processing/event_processing.py?1
-        ```
-
-        ### !!steps Push events to functions
-        Let Restate subscribe to a Kafka topic and specify to which function to push the events.
-        Restate will take care of the event plumbing: polling for records, committing offsets, recovering...
-
-        ```python !!windows user_updates.py
-        CODE_LOAD::python/src/use_cases/event_processing/event_processing.py
-        ```
-
-        ```shell !!windows curl
-        # !mark(1:5)
-        curl restate:9070/subscriptions --json '{
-            "source": "kafka://my-cluster/user-events",
-            "sink": "service://userUpdates/update"
-        }'
-        ```
-
-        ### !!steps Queue per key
-        Events get sent to objects based on the Kafka key.
-        For each key, Restate ensures that events are processed sequentially and in order.
-        Slow events on other keys do not block processing.
-
-        In the example, we process user updates in a queue per user.
-        Slow updates for one user do not block updates for other users.
-
-        ```python ! user_updates.py
-        CODE_LOAD::python/src/use_cases/event_processing/event_processing.py?1
-        ```
-
-        ### !!steps Postpone processing
-
-        Flexibly postpone processing of events until later.
-        Restate tracks the timers and re-invokes.
-        When sleeping, other events for that key are enqueued.
-
-        Here, we postpone processing for 5 seconds if the user profile is not ready yet.
-
-        ```python ! user_updates.py
-        CODE_LOAD::python/src/use_cases/event_processing/event_processing.py?2
-        ```
-
-        ### !!steps Durable side effects
-
-        The results of interactions with external systems are tracked and recovered after failures. This simplifies writing flows that keep multiple systems in sync.
-
-        ```python ! user_updates.py
-        CODE_LOAD::python/src/use_cases/event_processing/event_processing.py?3
-        ```
-
-        ### !!steps Flexible control flow
-
-        As opposed to many stream processing systems, Restate does not put any restrictions on the control flow (e.g. DAG).
-        Each event crafts its own path through the code
-        and builds up its own recovery log.
-
-        ```python ! user_updates.py
-        CODE_LOAD::python/src/use_cases/event_processing/event_processing.py?4
-        ```
-
-        </Scrollycoding>
-    </TabItem>
-</Tabs>
 
 <SpotlightCard>
     <TwoColumnText features={[
         {
             title: 'LOW-LATENCY',
-            description: "Restate’s event-driven foundation built in Rust lets you process events at high speed. Restate keeps a queue per key and pushes events to your functions to process them in parallel as fast as possible.",
+            description: <>Restate’s event-driven foundation lets you process events at high speed. Restate keeps a queue per key and pushes events to your functions to process them in parallel as fast as possible. <br/><br/>  <a href={"https://restate.dev/blog/the-anatomy-of-a-durable-execution-stack-from-first-principles/#some-performance-numbers"}>Learn more</a></>,
         },
         {
             title: 'DURABLE EXECUTION',
-            description: "Restate manages the complexities of reading from Kafka to make sure each event gets processed exactly once. Restate handles retries and recovery of your event handlers to the exact point before the crash.",
+            description: <>Restate manages the complexities of reading from Kafka, processes each event exactly once, and handles retries and recovery of your event handlers to the exact point before the crash. <br/><br/>  <a href={"https://restate.dev/what-is-durable-execution/"}>Learn more</a></>,
         },
     ]}/>
 </SpotlightCard>
@@ -439,237 +238,89 @@ Restate pushes the events to your function.
 
 Implement stateful event handlers with Restate.
 
-<Tabs groupId="sdk" className={"display-none"}>
-    <TabItem value="ts" label="TypeScript">
-        <Scrollycoding className={"workflows-scroller"}>
+<Scrollycoding className={"workflows-scroller"}>
 
-    ### !!steps K/V State
-    Store state in Restate and access it from other handlers.
+    ### !!steps K/V State and Event Enrichment
+    Store state in Restate and access or expose it from other handlers.
     Restate guarantees that it is consistent and persistent.
     The state gets delivered together with the request, so you operate on local state.
 
-    ```ts ! profile_service.ts
-    CODE_LOAD::ts/src/use_cases/event_processing/events_state.ts?1
+    [Learn more](/concepts/services#virtual-objects)
+
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/eventenrichment/package_tracker.ts
+    CODE_LOAD::ts/src/use_cases/event_processing/event_enrichment.ts?1
     ```
 
-
-
-    ### !!steps Event Enrichment
-
-    Enrich events with data from multiple sources by storing it in state and eventually exposing it via other functions.
-
-    ```ts ! profile_service.ts
-    CODE_LOAD::ts/src/use_cases/event_processing/events_state.ts?2
+    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/eventenrichment/PackageTracker.java
+    CODE_LOAD::java/src/main/java/usecases/eventprocessing/eventenrichment/PackageTracker.java?1
     ```
 
-
-
-    ### !!steps Delayed actions
-    Schedule async follow-up tasks for now or for later.
-    Restate tracks the timers and triggers them when the time comes.
-
-    Here, we wait one second for other user features to arrive before sending the event to downstream processing.
-
-    ```ts ! profile_service.ts
-    CODE_LOAD::ts/src/use_cases/event_processing/events_state.ts?3
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/PackageTracker.kt?1
     ```
 
+    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/eventenrichment/packagetracker.go
+    CODE_LOAD::go/usecases/eventprocessing/eventenrichment/packagetracker.go?1
+    ```
+
+    ```py !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/eventenrichment/package_tracker.py
+    CODE_LOAD::python/src/use_cases/event_processing/package_tracker.py?1
+    ```
+
+    ### !!steps Agents, actors and state machines
+
+    Implement agents, actors, digital twins, and state machines that act on Kafka events.
+
+    Restate gives you simple concurrency guarantees and makes them fully resilient and consistent out of the box.
+
+
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/eventenrichment/package_tracker.ts
+    CODE_LOAD::ts/src/use_cases/event_processing/event_enrichment.ts?2
+    ```
+
+    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/eventenrichment/PackageTracker.java
+    CODE_LOAD::java/src/main/java/usecases/eventprocessing/eventenrichment/PackageTracker.java?2
+    ```
+
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/PackageTracker.kt?2
+    ```
+
+    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/eventenrichment/packagetracker.go
+    CODE_LOAD::go/usecases/eventprocessing/eventenrichment/packagetracker.go?2
+    ```
+
+    ```py !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/eventenrichment/package_tracker.py
+    CODE_LOAD::python/src/use_cases/event_processing/package_tracker.py?2
+    ```
 
 
     ### !!steps Combine Kafka and RPC
 
     Functions can be called over RPC or Kafka without changing the code.
-    In the example, the registration can come over Kafka, while the email gets called via HTTP.
+    In the example, the registration can come over Kafka, while the location updates come over Kafka, and a dashboard can call the get info handler.
 
-    ```ts ! profile_service.ts
-    CODE_LOAD::ts/src/use_cases/event_processing/events_state.ts?2
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/eventenrichment/package_tracker.ts
+    CODE_LOAD::ts/src/use_cases/event_processing/event_enrichment.ts?3
+    ```
+
+    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/eventenrichment/PackageTracker.java
+    CODE_LOAD::java/src/main/java/usecases/eventprocessing/eventenrichment/PackageTracker.java?3
+    ```
+
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/PackageTracker.kt?3
+    ```
+
+    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/eventenrichment/packagetracker.go
+    CODE_LOAD::go/usecases/eventprocessing/eventenrichment/packagetracker.go?3
+    ```
+
+    ```py !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/eventenrichment/package_tracker.py
+    CODE_LOAD::python/src/use_cases/event_processing/package_tracker.py?3
     ```
 
 </Scrollycoding>
-    </TabItem>
-    <TabItem value="java" label="Java">
-        <Scrollycoding className={"workflows-scroller"}>
-
-            ### !!steps K/V State
-            Store state in Restate and access it from other handlers.
-            Restate guarantees that it is consistent and persistent.
-            The state gets delivered together with the request, so you operate on local state.
-
-            ```java ! ProfileService.java
-            CODE_LOAD::java/src/main/java/usecases/eventprocessing/ProfileService.java?1
-            ```
-
-
-
-            ### !!steps Event Enrichment
-
-            Enrich events with data from multiple sources by storing it in state and eventually exposing it via other functions.
-
-            ```java ! ProfileService.java
-            CODE_LOAD::java/src/main/java/usecases/eventprocessing/ProfileService.java?2
-            ```
-
-
-
-            ### !!steps Delayed actions
-            Schedule async follow-up tasks for now or for later.
-            Restate tracks the timers and triggers them when the time comes.
-
-            Here, we wait one second for other user features to arrive before sending the event to downstream processing.
-
-            ```java ! ProfileService.java
-            CODE_LOAD::java/src/main/java/usecases/eventprocessing/ProfileService.java?3
-            ```
-
-
-
-            ### !!steps Combine Kafka and RPC
-
-            Functions can be called over RPC or Kafka without changing the code.
-            In the example, the registration can come over Kafka, while the email gets called via HTTP.
-
-            ```java ! ProfileService.java
-            CODE_LOAD::java/src/main/java/usecases/eventprocessing/ProfileService.java?2
-            ```
-
-        </Scrollycoding>
-</TabItem>
-    <TabItem value="kotlin" label={"Kotlin"}>
-        <Scrollycoding className={"workflows-scroller"}>
-
-            ### !!steps K/V State
-            Store state in Restate and access it from other handlers.
-            Restate guarantees that it is consistent and persistent.
-            The state gets delivered together with the request, so you operate on local state.
-
-            ```kotlin ! ProfileService.kt
-            CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/ProfileService.kt?1
-            ```
-
-
-
-            ### !!steps Event Enrichment
-
-            Enrich events with data from multiple sources by storing it in state and eventually exposing it via other functions.
-
-            ```kotlin ! ProfileService.kt
-            CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/ProfileService.kt?2
-            ```
-
-
-
-            ### !!steps Delayed actions
-            Schedule async follow-up tasks for now or for later.
-            Restate tracks the timers and triggers them when the time comes.
-
-            Here, we wait one second for other user features to arrive before sending the event to downstream processing.
-
-            ```kotlin ! ProfileService.kt
-            CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/ProfileService.kt?3
-            ```
-
-
-
-            ### !!steps Combine Kafka and RPC
-
-            Functions can be called over RPC or Kafka without changing the code.
-            In the example, the registration can come over Kafka, while the email gets called via HTTP.
-
-            ```kotlin ! ProfileService.kt
-            CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/ProfileService.kt?2
-            ```
-
-        </Scrollycoding>
-</TabItem>
-    <TabItem value="go" label="Go">
-<Scrollycoding className={"workflows-scroller"}>
-
-### !!steps K/V State
-Store state in Restate and access it from other handlers.
-Restate guarantees that it is consistent and persistent.
-The state gets delivered together with the request, so you operate on local state.
-
-```go ! profileservice.go
-CODE_LOAD::go/usecases/eventprocessing/eventsstate.go?1
-```
-
-
-
-### !!steps Event Enrichment
-
-Enrich events with data from multiple sources by storing it in state and eventually exposing it via other functions.
-
-```go ! profileservice.go
-CODE_LOAD::go/usecases/eventprocessing/eventsstate.go?2
-```
-
-
-
-### !!steps Delayed actions
-Schedule async follow-up tasks for now or for later.
-Restate tracks the timers and triggers them when the time comes.
-
-Here, we wait one second for other user features to arrive before sending the event to downstream processing.
-
-```go ! profileservice.go
-CODE_LOAD::go/usecases/eventprocessing/eventsstate.go?3
-```
-
-
-
-### !!steps Combine Kafka and RPC
-
-Functions can be called over RPC or Kafka without changing the code.
-In the example, the registration can come over Kafka, while the email gets called via HTTP.
-
-```go ! profileservice.go
-CODE_LOAD::go/usecases/eventprocessing/eventsstate.go?2
-```
-
-</Scrollycoding>
-</TabItem>
-    <TabItem value="python" label="Python">
-        <Scrollycoding className={"workflows-scroller"}>
-
-            ### !!steps K/V State
-            Store state in Restate and access it from other handlers.
-            Restate guarantees that it is consistent and persistent.
-            The state gets delivered together with the request, so you operate on local state.
-
-            ```py ! profile_service.py
-            CODE_LOAD::python/src/use_cases/event_processing/events_state.py?1
-            ```
-
-            ### !!steps Event Enrichment
-
-            Enrich events with data from multiple sources by storing it in state and eventually exposing it via other functions.
-
-            ```py ! profile_service.py
-            CODE_LOAD::python/src/use_cases/event_processing/events_state.py?2
-            ```
-
-            ### !!steps Delayed actions
-            Schedule async follow-up tasks for now or for later.
-            Restate tracks the timers and triggers them when the time comes.
-
-            Here, we wait one second for other user features to arrive before sending the event to downstream processing.
-
-            ```py ! profile_service.py
-            CODE_LOAD::python/src/use_cases/event_processing/events_state.py?3
-            ```
-
-            ### !!steps Combine Kafka and RPC
-
-            Functions can be called over RPC or Kafka without changing the code.
-            In the example, the registration can come over Kafka, while the email gets called via HTTP.
-
-            ```py ! profile_service.py
-            CODE_LOAD::python/src/use_cases/event_processing/events_state.py?2
-            ```
-
-        </Scrollycoding>
-    </TabItem>
-</Tabs>
 
 <SpotlightCard>
     <FeatureSpotlight
@@ -683,18 +334,9 @@ CODE_LOAD::go/usecases/eventprocessing/eventsstate.go?2
 
 ## What you can build with Event Processing and Restate
 
-<ExampleWidget itemsPerRow={2} features={[
+<ExampleWidget itemsPerRow={3} features={[
     {
-        title: 'Kafka-triggered workflows',
-        description: "Handle the payment, request the order preparation, wait for driver acceptance callback, etc.",
-        links: [
-            {url: "https://github.com/restatedev/examples/tree/main/java/end-to-end-applications/food-ordering#the-order-workflow", icon: "/img/java.svg"},
-            {url: "https://github.com/restatedev/examples/tree/main/kotlin/end-to-end-applications/food-ordering#the-order-workflow", icon: "/img/kotlin.svg"},
-            {url: "https://github.com/restatedev/examples/tree/main/typescript/end-to-end-applications/food-ordering#the-order-workflow", icon: "/img/typescript.svg"},
-        ],
-    },
-    {
-        title: 'Digital twin pattern',
+        title: 'Event-driven state machines',
         description: "A delivery service that responds to location updates arriving over Kafka. The order gets updated accordingly. ",
         links: [
             {url: "https://github.com/restatedev/examples/tree/main/java/end-to-end-applications/food-ordering#the-delivery-workflow", icon: "/img/java.svg"},
@@ -703,13 +345,35 @@ CODE_LOAD::go/usecases/eventprocessing/eventsstate.go?2
         ],
     },
     {
-        title: 'Event-based task scheduling',
-        description: "For each event that comes in, schedule some tasks for in the future.",
+        title: 'Stateful actors',
+        description: "A subway fare calculator with stateful actors that combine events, schedule follow-up tasks, and execute durable side effects like payments.",
         links: [
-            {url: "https://github.com/restatedev/examples/tree/main/java/patterns-use-cases/README.md#transactional-event-processing", icon: "/img/java.svg"},
-            {url: "https://github.com/restatedev/examples/tree/main/typescript/patterns-use-cases/README.md#transactional-event-processing", icon: "/img/typescript.svg"},
-            {url: "https://github.com/restatedev/examples/tree/main/go/patterns-use-cases/README.md#transactional-event-processing", icon: "/img/go.svg"},
-            {url: "https://github.com/restatedev/examples/tree/main/python/patterns-use-cases/README.md#transactional-event-processing", icon: "/img/python.svg"},
+            {url: "https://github.com/restatedev/examples/tree/main/java/end-to-end-applications/subway-fare-calculator", icon: "/img/java.svg"},
+        ],
+    },
+    {
+        title: 'Webhook event processing',
+        description: "Point your webhook to Restate and let it process the events. Restate takes care of retries and recovery.",
+        links: [
+            {url: "/guides/durable-webhooks", icon: "/img/arrow-right.svg"},
+        ],
+    },
+    {
+        title: 'Restate as (delayed) message queue',
+        description: "Send messages to Restate and define when they should get executed. When the time comes, Restate take care of the scheduling and execution.",
+        links: [
+            {url: "https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/README.md#delayed-message-queue", icon: "/img/java.svg"},
+            {url: "https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/README.md#delayed-message-queue", icon: "/img/typescript.svg"},
+            {url: "https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/README.md#delayed-message-queue", icon: "/img/go.svg"},
+            {url: "https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/README.md#delayed-message-queue", icon: "/img/python.svg"},
+        ],
+    },
+    {
+        title: 'Conditional, reminder scheduling',
+        description: "Scheduling reminders in a loop until another function has been called. An example of flexible control flow and scheduling.",
+        links: [
+            {url: "https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/README.md#scheduling-tasks", icon: "/img/typescript.svg"},
+            {url: "https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/README.md#scheduling-tasks", icon: "/img/go.svg"},
         ],
     },
     {
@@ -723,14 +387,13 @@ CODE_LOAD::go/usecases/eventprocessing/eventsstate.go?2
 ]}>
 </ExampleWidget>
 
+<Admonition type="note" title={"Didn't see your use case?"}>
+💡 You can connect any handler to a Kafka topic, so have a look at the other use case pages for more inspiration.
+</Admonition>
+
 ## Developer Resources
 
 <FeatureWidget features={[
-    {
-        title: 'Blog post',
-        description: <i>Event-driven apps where event-driven is an implementation detail.</i>,
-        link: {url: "https://restate.dev/blog/restate--kafka-event-driven-apps-where-event-driven-is-an-implementation-detail"}
-    },
     {
         title: 'Docs',
         description: (
@@ -740,6 +403,13 @@ CODE_LOAD::go/usecases/eventprocessing/eventsstate.go?2
         java: "/invoke/kafka?sdk=java",
         go: "/invoke/kafka?sdk=go",
         python: "/invoke/kafka?sdk=python",
+    },
+    {
+        title: 'Kafka + Restate Quickstart',
+        description: "Get started with your first Restate Kafka handler.",
+        links: [
+            {url: "/guides/kafka-quickstart", icon: "/img/arrow-right.svg"},
+        ]
     },
     {
         title: 'Need help?',
