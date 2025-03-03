@@ -2,7 +2,6 @@
 title: "Async tasks"
 sidebar_position: 4
 description: "Schedule async tasks and let Restate manage their execution."
-hide_table_of_contents: true
 hide_title: true
 ---
 
@@ -12,9 +11,8 @@ import TwoColumnText from "../../src/components/TwoColumnText";
 import ExampleWidget from "../../src/components/ExampleWidget"
 import FeatureList from "../../src/components/FeatureList"
 import SpotlightCard from "../../src/components/SpotlightCard"
-import Tabs from "@theme/Tabs"
-import TabItem from "@theme/TabItem"
 import {Scrollycoding} from "../../src/components/code/scrollycoding";
+import Admonition from "@theme/Admonition";
 
 <div className={"row"}>
     <div className={"col col--6 col-lg-6 col-md-12 "}>
@@ -275,10 +273,10 @@ Schedule tasks for now or later with the Restate SDK.
 
 
 
-## Durable webhook processing
+## Durable webhook processing with Restate
 
 <Scrollycoding>
-    ### !!steps
+    ### !!steps Restate handlers as durable event processors
     You can point your webhook endpoint to any Restate handler.
 
     Restate makes sure all events are persisted and run to completion.
@@ -296,9 +294,11 @@ Schedule tasks for now or later with the Restate SDK.
     CODE_LOAD::ts/src/use_cases/async_tasks/reminders/payment_reminders.ts?2
     ```
 
-    ### !!steps
+    ### !!steps Correlating events
 
     You can correlate or join async events by sending them to the same object.
+
+    Restate ensures sequential processing of events for the same key.
 
 
     ```ts !!tabs TypeScript
@@ -400,8 +400,8 @@ Restate lets you easily convert synchronous tasks to asynchronous ones, and back
 
 <ExampleWidget itemsPerRow={3} features={[
     {
-        title: "Job scheduler",
-        description: "A job scheduler that can handle both immediate and delayed jobs. The scheduler makes sure job submissions are idempotent and that jobs run to completion exactly once. You can attach back to jobs to retrieve their result later.",
+        title: "(Delayed) task queue",
+        description: "A task queue that can handle both immediate and scheduled tasks. Restate makes sure task submissions are idempotent and that tasks run to completion exactly once. You can attach back to tasks to retrieve their result later.",
         links: [
             {url: "https://github.com/restatedev/examples/tree/main/java/patterns-use-cases/README.md#delayed-message-queue", icon: "/img/java.svg"},
             {url: "https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/README.md#delayed-message-queue", icon: "/img/typescript.svg"},
@@ -413,13 +413,12 @@ Restate lets you easily convert synchronous tasks to asynchronous ones, and back
         title: "Durable webhook event processing",
         description: "A Restate handler can be the endpoint for a webhook. Restate makes sure the events are persisted and retried until they run till completion.",
         links: [
-            {url: "https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/README.md#webhook-callbacks", icon: "/img/typescript.svg"},
-            {url: "https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/README.md#webhook-callbacks", icon: "/img/go.svg"},
+            {url: "/guides/durable-webhooks", icon: "/img/arrow-right.svg"},
         ]
     },
     {
-        title: "Scheduling follow-up tasks for webhook events",
-        description: "A webhook processor which processes failed payment events from a payment provider. The service reminds the customer for 3 days to update their payment details, and otherwise escalates to support.",
+        title: "Complex task scheduling",
+        description: "An invoice payment tracker which correlates payment success events and failure events. Until a success event is received, each failure event generates up to 3 daily reminders and then escalates to support.",
         links: [
             {url: "https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/README.md#scheduling-tasks", icon: "/img/typescript.svg"},
             {url: "https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/README.md#scheduling-tasks", icon: "/img/go.svg"},
@@ -435,8 +434,8 @@ Restate lets you easily convert synchronous tasks to asynchronous ones, and back
         ]
     },
     {
-        title: "Building Durable Promises on top of Restate",
-        description: "Promises that get durably stored in Restate, and can be resolved by any process. Implemented as a Restate service, to use for callbacks, signal and communicate between systems. The SDK offers similar constructs with Awakeables and Durable Promises.",
+        title: "Building Durable-Promises-as-a-Service with Restate",
+        description: "Using Restate to build Promises/Futures as a service, that can be exposed to external clients and are durable across processes and failures..",
         links: [{url: "https://github.com/restatedev/examples/tree/main/typescript/patterns-use-cases/README.md#durable-promises-as-a-service", icon: "/img/typescript.svg"}]
     },
     {
@@ -449,6 +448,10 @@ Restate lets you easily convert synchronous tasks to asynchronous ones, and back
     },
 ]}>
 </ExampleWidget>
+
+<Admonition type="note" title={"Didn't see your use case?"}>
+    💡 You can invoke any handler asynchronously, so have a look at the other use case pages for more inspiration.
+</Admonition>
 
 ## Developer Resources
 
