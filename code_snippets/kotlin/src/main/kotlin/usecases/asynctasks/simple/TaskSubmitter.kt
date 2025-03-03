@@ -3,18 +3,19 @@ package usecases.asynctasks.simple
 import dev.restate.sdk.client.CallRequestOptions
 import dev.restate.sdk.client.Client
 import dev.restate.sdk.kotlin.KtSerdes
+import kotlin.time.Duration.Companion.days
 
 // <start_here>
 class TaskSubmitter {
   companion object {
-    private val rs: Client = Client.connect("http://localhost:8080")
+    private val restateClient: Client = Client.connect("http://localhost:8080")
   }
 
-  suspend fun submitAndAwaitTasks(taskOpts: TaskOpts) {
+  suspend fun scheduleTask(taskOpts: TaskOpts) {
     // <mark_1>
     val handle =
-        AsyncTaskServiceClient.fromClient(rs)
-            .send()
+        AsyncTaskServiceClient.fromClient(restateClient)
+            .send(5.days)
             .runTask(
                 taskOpts,
                 // <mark_2>
@@ -26,7 +27,7 @@ class TaskSubmitter {
     // await the handler's result
     // <mark_3>
     val result =
-        rs.invocationHandle(
+        restateClient.invocationHandle(
                 handle.invocationId,
                 KtSerdes.json<String>(),
             )

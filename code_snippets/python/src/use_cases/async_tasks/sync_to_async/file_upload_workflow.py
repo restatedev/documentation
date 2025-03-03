@@ -2,7 +2,7 @@ from restate import WorkflowContext, WorkflowSharedContext, Workflow
 from typing import TypedDict
 
 
-class DataPrepService(TypedDict):
+class FileUploadWorkflow(TypedDict):
     name: str
     handlers: dict
 
@@ -11,7 +11,7 @@ def create_s3_bucket() -> str:
     return ""
 
 
-def upload_data(target: str):
+def upload_file(target: str):
     pass
 
 
@@ -20,14 +20,14 @@ def send_email(url: str, email: str):
 
 
 # <start_here>
-data_preparation = Workflow("dataPrep")
+file_upload_workflow = Workflow("FileUploadWorkflow")
 
 
-@data_preparation.main()
+@file_upload_workflow.main()
 async def run(ctx: WorkflowContext) -> str:
     # <mark_1>
     url = await ctx.run("bucket creation", lambda: create_s3_bucket())
-    await ctx.run("upload", lambda: upload_data(url))
+    await ctx.run("upload", lambda: upload_file(url))
 
     # <mark_2>
     await ctx.promise("url").resolve(url)
@@ -37,8 +37,8 @@ async def run(ctx: WorkflowContext) -> str:
     # </mark_1>
 
 
-@data_preparation.handler("resultAsEmail")
-async def result_as_email(ctx: WorkflowSharedContext, email: str):
+@file_upload_workflow.handler("getUrlViaEmail")
+async def get_url_via_email(ctx: WorkflowSharedContext, email: str):
     # <mark_2>
     url = await ctx.promise("url").value()
     # </mark_2>

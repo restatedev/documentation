@@ -17,7 +17,7 @@ import { AsyncTaskService, TaskOpts } from "./async_task_service";
 const RESTATE_URL = process.env.RESTATE_URL ?? "http://localhost:8080";
 
 // <start_here>
-async function submitAndAwaitTask(task: TaskOpts) {
+async function scheduleTask(task: TaskOpts) {
   const restateClient = restate.connect({ url: RESTATE_URL });
 
   // <mark_1>
@@ -26,7 +26,7 @@ async function submitAndAwaitTask(task: TaskOpts) {
     .runTask(
       task,
       // <mark_2>
-      SendOpts.from({ idempotencyKey: "dQw4w9WgXcQ" })
+      SendOpts.from({ idempotencyKey: "dQw4w9WgXcQ", delay: 1000 })
       // </mark_2>
     );
   // </mark_1>

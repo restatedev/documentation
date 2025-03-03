@@ -11,7 +11,7 @@ import develop.workflows.Email
 
 // <start_here>
 @Workflow
-class DataPreparationService {
+class FileUploadWorkflow {
 
   companion object {
     private val URL_PROMISE = DurablePromiseKey.of("url", KtSerdes.json<URL>())
@@ -31,7 +31,7 @@ class DataPreparationService {
   }
 
   @Shared
-  suspend fun resultAsEmail(ctx: SharedWorkflowContext, email: Email) {
+  suspend fun getUrlViaEmail(ctx: SharedWorkflowContext, email: Email) {
     // <mark_2>
     val url: URL = ctx.promise(URL_PROMISE).awaitable().await()
     // </mark_2>

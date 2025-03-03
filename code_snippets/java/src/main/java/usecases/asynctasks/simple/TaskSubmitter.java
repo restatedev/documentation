@@ -6,16 +6,18 @@ import dev.restate.sdk.client.Client;
 import dev.restate.sdk.client.SendResponse;
 import usecases.utils.TaskOpts;
 
+import java.time.Duration;
+
 // <start_here>
 public class TaskSubmitter {
 
-  private static final Client rs = Client.connect("http://localhost:8080");
+  private static final Client restateClient = Client.connect("http://localhost:8080");
 
-  public void submitAndAwaitTasks(TaskOpts taskOpts) {
+  public void scheduleTask(TaskOpts taskOpts) {
     // <mark_1>
     SendResponse handle =
-        AsyncTaskServiceClient.fromClient(rs)
-            .send()
+        AsyncTaskServiceClient.fromClient(restateClient)
+            .send(Duration.ofDays(5))
             .runTask(
                 taskOpts,
                 // <mark_2>
@@ -26,7 +28,7 @@ public class TaskSubmitter {
 
     // await the handler's result
     // <mark_3>
-    String result = rs.invocationHandle(handle.getInvocationId(), JsonSerdes.STRING).attach();
+    String result = restateClient.invocationHandle(handle.getInvocationId(), JsonSerdes.STRING).attach();
 
     // </mark_3>
   }
