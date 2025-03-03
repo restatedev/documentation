@@ -10,11 +10,10 @@ const RESTATE_URL = process.env.RESTATE_URL ?? "http://localhost:8080";
 
 // <start_here>
 const restateClient = restate.connect({ url: RESTATE_URL });
-const fileUploadWorkflow: FileUploadWorkflow = { name: "FileUploadWorkflow" };
 
 async function uploadFile(user: { id: string, email: string }) {
   // <mark_1>
-  const workflowClient = restateClient.workflowClient(fileUploadWorkflow, user.id);
+  const workflowClient = restateClient.workflowClient<FileUploadWorkflow>({ name: "FileUploadWorkflow" }, user.id);
   await workflowClient.workflowSubmit();
   // </mark_1>
 

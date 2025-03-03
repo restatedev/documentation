@@ -184,20 +184,14 @@ Schedule tasks for now or later with the Restate SDK.
 
 ## Parallelizing work with Restate
 
-Write flexible scheduling logic via durable building blocks:
-- Resilient RPC calls and events to subtasks: Restate makes sure they run to completion.
-- Durable Promises: persisted in Restate and live across failures and processes.
-
-All steps happen exactly once.
-
 <Scrollycoding>
 
     ### !!steps Fan out
 
-    Fan out tasks by calling the subtask handler for each subtask.
-    Every handler is an asynchronous task, for which Restate serves as the queue.
+    Write flexible scheduling logic via durable building blocks.
+    Fan out tasks with Restate's resilient RPC calls.
 
-    The subtasks might run in different processes, if this is deployed in a parallel setup.
+    Restate makes sure all tasks run to completion, with retries and recovery upon failures.
 
     ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/parallelizework/fan_out_worker.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/fan_out_worker.ts?1
@@ -221,8 +215,7 @@ All steps happen exactly once.
 
     ### !!steps Fan in
     Invocations produce durable promises that can be awaited and combined.
-    Fan in by simply awaiting the combined promise.
-    Invocation promises recover from failures, re-connect to running subtasks.
+    Durable promises recover from failures, re-connect to running subtasks.
 
     ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/parallelizework/fan_out_worker.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/fan_out_worker.ts?2
@@ -245,7 +238,7 @@ All steps happen exactly once.
     ```
 
     ### !!steps Server(less)
-    Deploy this service on an platform like Kubernetes or AWS Lambda to
+    Deploy this service or the subtasks on a platform like Kubernetes or AWS Lambda to
     automatically get parallel scale out.
 
     [Learn more](https://restate.dev/blog/we-replaced-400-lines-of-stepfunctions-asl-with-40-lines-of-typescript-by-making-lambdas-suspendable/)
@@ -280,6 +273,40 @@ All steps happen exactly once.
     />
 </SpotlightCard>
 
+
+
+## Durable webhook processing
+
+<Scrollycoding>
+    ### !!steps
+    You can point your webhook endpoint to any Restate handler.
+
+    Restate makes sure all events are persisted and run to completion.
+
+    ```ts !!tabs TypeScript
+    CODE_LOAD::ts/src/use_cases/async_tasks/reminders/payment_reminders.ts?1
+    ```
+
+    ### !!steps
+
+    You can schedule follow-up tasks for webhook events, like reminders or escalations.
+
+
+    ```ts !!tabs TypeScript
+    CODE_LOAD::ts/src/use_cases/async_tasks/reminders/payment_reminders.ts?2
+    ```
+
+    ### !!steps
+
+    You can correlate or join async events by sending them to the same object.
+
+
+    ```ts !!tabs TypeScript
+    CODE_LOAD::ts/src/use_cases/async_tasks/reminders/payment_reminders.ts?3
+    ```
+
+</Scrollycoding>
+
 ## Switch between async and sync with Restate
 
 Restate lets you easily convert synchronous tasks to asynchronous ones, and back.
@@ -312,9 +339,9 @@ Restate lets you easily convert synchronous tasks to asynchronous ones, and back
     CODE_LOAD::python/src/use_cases/async_tasks/sync_to_async/client.py?1
     ```
 
-    ### !!steps Switch to async result
+    ### !!steps Switch from synchronous to asynchronous
 
-    If the upload takes more than 30 seconds, rewire the workflow to notify us via email about the uploaded file URL.
+    If the upload takes more than 30 seconds, then we want the workflow to notify us via email about the uploaded file URL.
 
     ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/syncasync/client.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/sync_to_async/client.ts?2
@@ -367,6 +394,7 @@ Restate lets you easily convert synchronous tasks to asynchronous ones, and back
     ```
 
 </Scrollycoding>
+
 
 ## What you can build with Async Tasks and Restate
 
