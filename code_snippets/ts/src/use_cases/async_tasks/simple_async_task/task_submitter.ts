@@ -21,6 +21,7 @@ async function scheduleTask(task: TaskOpts) {
   const restateClient = restate.connect({ url: RESTATE_URL });
 
   // <mark_1>
+  // The TypeScript SDK includes a client to send requests to services
   const taskHandle = await restateClient
     .serviceSendClient<AsyncTaskService>({ name: "taskWorker" })
     .runTask(

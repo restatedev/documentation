@@ -1,19 +1,15 @@
 package usecases.microservices;
 
-import dev.restate.sdk.Context;
-import dev.restate.sdk.JsonSerdes;
-import dev.restate.sdk.annotation.Handler;
-import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.common.TerminalException;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
-import usecases.microservices.Utils.SubscriptionRequest;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import static dev.restate.sdk.JsonSerdes.STRING;
 import static usecases.microservices.Utils.*;
+
+import dev.restate.sdk.Context;
+import dev.restate.sdk.annotation.Handler;
+import dev.restate.sdk.annotation.Service;
+import dev.restate.sdk.common.TerminalException;
+import java.util.ArrayList;
+import java.util.List;
+import usecases.microservices.Utils.SubscriptionRequest;
 
 // <start_here>
 @Service

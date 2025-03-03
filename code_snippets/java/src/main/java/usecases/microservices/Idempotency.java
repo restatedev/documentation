@@ -14,7 +14,7 @@ public class Idempotency {
     Client restateClient = Client.connect(RESTATE_URL);
     ProductServiceClient.fromClient(restateClient, productId)
         .send()
-          // <mark_2>
+        // <mark_2>
         .reserve(CallRequestOptions.DEFAULT.withIdempotency(reservationId));
     // </mark_2>
     // </mark_1>

@@ -9,25 +9,23 @@ const fileUploadWorfklow = restate.workflow({
   name: "FileUploadWorfklow",
   handlers: {
     run: async (ctx: WorkflowContext) => {
-      // <mark_1>
       const url = await ctx.run(() => createS3Bucket());
       await ctx.run(() => uploadFile(url));
 
-      // <mark_2>
+      // <mark_1>
       await ctx.promise<URL>("url").resolve(url);
-      // </mark_2>
-      
-      return url;
       // </mark_1>
+
+      return url;
     },
 
     getUrlViaEmail: async (
       ctx: WorkflowSharedContext,
       req: { email: string }
     ) => {
-      // <mark_2>
+      // <mark_1>
       const url = await ctx.promise<URL>("url");
-      // </mark_2>
+      // </mark_1>
       await ctx.run(() => sendEmail(url, req.email));
     },
   },

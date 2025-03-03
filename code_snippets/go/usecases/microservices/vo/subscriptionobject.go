@@ -1,13 +1,10 @@
 package vo
 
 import (
-	"context"
 	"github.com/aws/aws-lambda-go/lambda"
 	restate "github.com/restatedev/sdk-go"
 	"github.com/restatedev/sdk-go/server"
 	"log"
-	"log/slog"
-	"os"
 )
 
 type SubscriptionRequest struct {
