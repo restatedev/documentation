@@ -19,22 +19,20 @@ class FileUploadWorkflow {
 
   @Workflow
   suspend fun run(ctx: WorkflowContext): URL {
-    // <mark_1>
     val url: URL = ctx.runBlock { createS3Bucket() }
     ctx.runBlock { uploadData(url) }
 
-    // <mark_2>
+    // <mark_1>
     ctx.promiseHandle(URL_PROMISE).resolve(url)
-    // </mark_2>
-    return url
     // </mark_1>
+    return url
   }
 
   @Shared
   suspend fun getUrlViaEmail(ctx: SharedWorkflowContext, email: Email) {
-    // <mark_2>
+    // <mark_1>
     val url: URL = ctx.promise(URL_PROMISE).awaitable().await()
-    // </mark_2>
+    // </mark_1>
     ctx.runBlock { sendEmail(url, email) }
   }
 }

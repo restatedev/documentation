@@ -54,13 +54,13 @@ import {Scrollycoding} from "../../src/components/code/scrollycoding";
 <p className={"padding-bottom--lg"}></p>
 
 
-## Async tasks with Restate
+## Scheduling async tasks with Restate
 Schedule tasks for now or later with the Restate SDK.
 
 <Scrollycoding>
 
     ### !!steps Restate as message queue
-    
+
     Any function can be turned into an async task by using Restate as a message queue.
     Restate persists requests and makes sure they run to completion, with retries and recovery upon failures.
 
@@ -93,16 +93,18 @@ Schedule tasks for now or later with the Restate SDK.
     You can turn an HTTP invocation into an async event by adding  `/send` to the URL.
     You can schedule the task for later with the optional `?delay=10s` parameter.
 
+    [Learn more](/concepts/invocations)
+
     ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/queue/task_submitter.ts
-    CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/task_submitter.ts?2
+    CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/task_submitter.ts?1
     ```
 
     ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/queue/TaskSubmitter.java
-    CODE_LOAD::java/src/main/java/usecases/asynctasks/simple/TaskSubmitter.java?2
+    CODE_LOAD::java/src/main/java/usecases/asynctasks/simple/TaskSubmitter.java?1
     ```
 
     ```kotlin !!tabs Kotlin
-    CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/simple/TaskSubmitter.kt?2
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/simple/TaskSubmitter.kt?1
     ```
 
     ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/queue/client/tasksubmitter.go
@@ -143,6 +145,8 @@ Schedule tasks for now or later with the Restate SDK.
     Use the idempotency key to latch onto the task later and retrieve the result.
     You can also let another process latch on.
 
+    [Learn more](http://localhost:3000/invoke/http#retrieve-result-of-invocations-and-workflows)
+
     ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/queue/task_submitter.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/task_submitter.ts?3
     ```
@@ -180,12 +184,11 @@ Schedule tasks for now or later with the Restate SDK.
 
 ## Parallelizing work with Restate
 
-Write flexible scheduling logic via durable building blocks.
+Write flexible scheduling logic via durable building blocks:
+- Resilient RPC calls and events to subtasks: Restate makes sure they run to completion.
+- Durable Promises: persisted in Restate and live across failures and processes.
 
-Restate makes it easy to parallelize async work by fanning out tasks.
-Afterwards, you can collect the result by fanning in the partial results.
-Durable Execution ensures that the fan-out and fan-in steps happen
-reliably exactly once.
+All steps happen exactly once.
 
 <Scrollycoding>
 
@@ -196,11 +199,11 @@ reliably exactly once.
 
     The subtasks might run in different processes, if this is deployed in a parallel setup.
 
-    ```ts !!tabs TypeScript
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/parallelizework/fan_out_worker.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/fan_out_worker.ts?1
     ```
 
-    ```java !!tabs Java
+    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/parallelizework/FanOutWorker.java
     CODE_LOAD::java/src/main/java/usecases/asynctasks/FanOutWorker.java?1
     ```
 
@@ -208,7 +211,11 @@ reliably exactly once.
     CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/FanOutWorker.kt?1
     ```
 
-    ```python !!tabs Python
+    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/parallelizework/fanoutworker.go
+    CODE_LOAD::go/usecases/asynctasks/parallelizework/fanoutworker.go?1
+    ```
+
+    ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/parallelizework/fan_out_worker.py
     CODE_LOAD::python/src/use_cases/async_tasks/fan_out_worker.py?1
     ```
 
@@ -217,11 +224,11 @@ reliably exactly once.
     Fan in by simply awaiting the combined promise.
     Invocation promises recover from failures, re-connect to running subtasks.
 
-    ```ts !!tabs TypeScript
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/parallelizework/fan_out_worker.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/fan_out_worker.ts?2
     ```
 
-    ```java !!tabs Java
+    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/parallelizework/FanOutWorker.java
     CODE_LOAD::java/src/main/java/usecases/asynctasks/FanOutWorker.java?2
     ```
 
@@ -229,7 +236,11 @@ reliably exactly once.
     CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/FanOutWorker.kt?2
     ```
 
-    ```python !!tabs Python
+    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/parallelizework/fanoutworker.go
+    CODE_LOAD::go/usecases/asynctasks/parallelizework/fanoutworker.go?2
+    ```
+
+    ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/parallelizework/fan_out_worker.py
     CODE_LOAD::python/src/use_cases/async_tasks/fan_out_worker.py?2
     ```
 
@@ -237,11 +248,13 @@ reliably exactly once.
     Deploy this service on an platform like Kubernetes or AWS Lambda to
     automatically get parallel scale out.
 
-    ```ts !!tabs TypeScript
+    [Learn more](https://restate.dev/blog/we-replaced-400-lines-of-stepfunctions-asl-with-40-lines-of-typescript-by-making-lambdas-suspendable/)
+
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/parallelizework/fan_out_worker.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/fan_out_worker.ts?3
     ```
 
-    ```java !!tabs Java
+    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/parallelizework/FanOutWorker.java
     CODE_LOAD::java/src/main/java/usecases/asynctasks/FanOutWorker.java?3
     ```
 
@@ -249,7 +262,11 @@ reliably exactly once.
     CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/FanOutWorker.kt?3
     ```
 
-    ```python !!tabs Python
+    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/parallelizework/fanoutworker.go
+    CODE_LOAD::go/usecases/asynctasks/parallelizework/fanoutworker.go?3
+    ```
+
+    ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/parallelizework/fan_out_worker.py
     CODE_LOAD::python/src/use_cases/async_tasks/fan_out_worker.py?3
     ```
 
@@ -275,11 +292,11 @@ Restate lets you easily convert synchronous tasks to asynchronous ones, and back
 
     Wait for the response for 30 seconds.
 
-    ```ts !!tabs TypeScript
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/syncasync/client.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/sync_to_async/client.ts?1
     ```
 
-    ```java !!tabs Java
+    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/syncasync/UploadClient.java
     CODE_LOAD::java/src/main/java/usecases/asynctasks/synctoasync/MyClient.java?1
     ```
 
@@ -287,7 +304,11 @@ Restate lets you easily convert synchronous tasks to asynchronous ones, and back
     CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/synctoasync/MyClient.kt?1
     ```
 
-    ```python !!tabs Python
+    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/syncasync/client/client.go
+    CODE_LOAD::go/usecases/asynctasks/dataupload/client/client.go?1
+    ```
+
+    ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/syncasync/client.py
     CODE_LOAD::python/src/use_cases/async_tasks/sync_to_async/client.py?1
     ```
 
@@ -295,11 +316,11 @@ Restate lets you easily convert synchronous tasks to asynchronous ones, and back
 
     If the upload takes more than 30 seconds, rewire the workflow to notify us via email about the uploaded file URL.
 
-    ```ts !!tabs TypeScript
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/syncasync/client.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/sync_to_async/client.ts?2
     ```
 
-    ```java !!tabs Java
+    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/syncasync/UploadClient.java
     CODE_LOAD::java/src/main/java/usecases/asynctasks/synctoasync/MyClient.java?2
     ```
 
@@ -307,7 +328,11 @@ Restate lets you easily convert synchronous tasks to asynchronous ones, and back
     CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/synctoasync/MyClient.kt?2
     ```
 
-    ```python !!tabs Python
+    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/syncasync/client/client.go
+    CODE_LOAD::go/usecases/asynctasks/dataupload/client/client.go?2
+    ```
+
+    ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/syncasync/client.py
     CODE_LOAD::python/src/use_cases/async_tasks/sync_to_async/client.py?2
     ```
 
@@ -321,27 +346,57 @@ Restate lets you easily convert synchronous tasks to asynchronous ones, and back
 
     Restate persists these promises and makes sure they are recoverable.
 
-    ```ts !!tabs TypeScript
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/syncasync/data_upload_service.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/sync_to_async/file_upload_workflow.ts?1
     ```
 
-    ```java !!tabs Java
-    CODE_LOAD::java/src/main/java/usecases/asynctasks/synctoasync/FileUploadWorkflow.java
+    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/syncasync/DataUploadService.java
+    CODE_LOAD::java/src/main/java/usecases/asynctasks/synctoasync/FileUploadWorkflow.java?1
     ```
 
     ```kotlin !!tabs Kotlin
-    CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/synctoasync/FileUploadWorkflow.kt
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/synctoasync/FileUploadWorkflow.kt?1
     ```
 
-    ```py !!tabs Python
-    CODE_LOAD::python/src/use_cases/async_tasks/sync_to_async/file_upload_workflow.py?2
+    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/syncasync/service/datauploadservice.go
+    CODE_LOAD::go/usecases/asynctasks/dataupload/fileuploadworkflow.go?1
+    ```
+
+    ```py !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/syncasync/data_upload_service.py
+    CODE_LOAD::python/src/use_cases/async_tasks/sync_to_async/file_upload_workflow.py?1
     ```
 
 </Scrollycoding>
 
 ## What you can build with Async Tasks and Restate
 
-<ExampleWidget itemsPerRow={2} features={[
+<ExampleWidget itemsPerRow={3} features={[
+    {
+        title: "Job scheduler",
+        description: "A job scheduler that can handle both immediate and delayed jobs. The scheduler makes sure job submissions are idempotent and that jobs run to completion exactly once. You can attach back to jobs to retrieve their result later.",
+        links: [
+            {url: "https://github.com/restatedev/examples/tree/main/java/patterns-use-cases/README.md#delayed-message-queue", icon: "/img/java.svg"},
+            {url: "https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/README.md#delayed-message-queue", icon: "/img/typescript.svg"},
+            {url: "https://github.com/restatedev/examples/tree/main/python/patterns-use-cases/README.md#delayed-message-queue", icon: "/img/python.svg"},
+            {url: "https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/README.md#delayed-message-queue", icon: "/img/go.svg"}
+        ]
+    },
+    {
+        title: "Durable webhook event processing",
+        description: "A Restate handler can be the endpoint for a webhook. Restate makes sure the events are persisted and retried until they run till completion.",
+        links: [
+            {url: "https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/README.md#webhook-callbacks", icon: "/img/typescript.svg"},
+            {url: "https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/README.md#webhook-callbacks", icon: "/img/go.svg"},
+        ]
+    },
+    {
+        title: "Scheduling follow-up tasks for webhook events",
+        description: "A webhook processor which processes failed payment events from a payment provider. The service reminds the customer for 3 days to update their payment details, and otherwise escalates to support.",
+        links: [
+            {url: "https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/README.md#scheduling-tasks", icon: "/img/typescript.svg"},
+            {url: "https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/README.md#scheduling-tasks", icon: "/img/go.svg"},
+        ]
+    },
     {
         title: "Payments: Combining sync & async responses",
         description: "Issue an idempotent payment to Stripe and process the response. The payment provider either responds immediately or notifies us later via a webhook.",
@@ -350,10 +405,6 @@ Restate lets you easily convert synchronous tasks to asynchronous ones, and back
             {url: "https://github.com/restatedev/examples/tree/main/typescript/patterns-use-cases/README.md#payment-signals", icon: "/img/typescript.svg"},
             {url: "https://github.com/restatedev/examples/tree/main/python/patterns-use-cases/README.md#payment-signals", icon: "/img/python.svg"}
         ]
-    },
-    {
-        title: "Job scheduler",
-        description: "A job scheduler that can handle both immediate and delayed jobs. The scheduler makes sure job submissions are idempotent and that jobs run to completion exactly once. You can attach back to jobs to retrieve their result later."
     },
     {
         title: "Building Durable Promises on top of Restate",

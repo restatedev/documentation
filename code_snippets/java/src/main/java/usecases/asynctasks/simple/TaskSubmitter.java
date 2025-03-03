@@ -15,6 +15,7 @@ public class TaskSubmitter {
 
   public void scheduleTask(TaskOpts taskOpts) {
     // <mark_1>
+    // The Java SDK generates clients for each service
     SendResponse handle =
         AsyncTaskServiceClient.fromClient(restateClient)
             .send(Duration.ofDays(5))

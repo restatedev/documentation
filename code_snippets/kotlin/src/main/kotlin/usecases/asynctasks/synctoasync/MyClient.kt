@@ -11,13 +11,13 @@ class MyClient {
   suspend fun uploadFile(userId: String, email: Email) {
     // <mark_1>
     val restateClient: Client = Client.connect("http://localhost:8080")
-    val workflowClient = FileUploadWorkflowClient.fromClient(restateClient, userId)
-    workflowClient.submit()
+    val fileUploadClient = FileUploadWorkflowClient.fromClient(restateClient, userId)
+    fileUploadClient.submit()
     // </mark_1>
 
     try {
       // <mark_1>
-      val fileUploadUrl = workflowClient.workflowHandle().attachAsync()
+      val fileUploadUrl = fileUploadClient.workflowHandle().attachAsync()
         // break
         .orTimeout(30, TimeUnit.SECONDS).join()
       // </mark_1>
@@ -27,7 +27,7 @@ class MyClient {
     } catch (e: Exception) {
       // <mark_2>
       if (e.cause is TimeoutException) {
-        workflowClient.resultAsEmail(email)
+        fileUploadClient.getUrlViaEmail(email)
         // </mark_2>
         return
       }

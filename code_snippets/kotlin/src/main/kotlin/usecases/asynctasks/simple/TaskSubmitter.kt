@@ -13,6 +13,7 @@ class TaskSubmitter {
 
   suspend fun scheduleTask(taskOpts: TaskOpts) {
     // <mark_1>
+    // The Kotlin SDK generates clients for each service
     val handle =
         AsyncTaskServiceClient.fromClient(restateClient)
             .send(5.days)
