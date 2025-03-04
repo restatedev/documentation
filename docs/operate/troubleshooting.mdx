@@ -5,6 +5,7 @@ description: "Resolving common problems with Restate deployments"
 
 import Admonition from '@theme/Admonition';
 import { Terminal } from "@site/src/components/code/terminal";
+import { Step } from "@site/src/components/Stepper";
 
 # Troubleshooting
 
@@ -13,6 +14,89 @@ import { Terminal } from "@site/src/components/code/terminal";
 </Admonition>
 
 ## Restate Clusters
+
+### Handling missing snapshots
+
+You are observing a partition processor repeatedly crash-looping with a `TrimGapEncountered` error, or see one of the following errors in the Restate server logs:
+
+> A log trim gap was encountered, but no snapshot repository is configured!
+
+> A log trim gap was encountered, but no snapshot is available for this partition!
+
+> The latest available snapshot is from an LSN before the target LSN!
+
+You are observing a situation where the local state available on a given worker node does not allow it to resume from the log's trim point - either because it is brand new, or because its applied partition state is behind the trim point of the partition log. If you are attempting to migrate from a single-node Restate to a cluster deployment, you can also refer to the [migration guide](/guides/local-to-replicated).
+
+To recover from this situation, you need to make available a snapshot of the partition state from another worker, which is up to date with the log. This situation can arise if you have manually trimmed the log, the node is missing a snapshot repository configuration, or the snapshot repository is otherwise inaccessible. See [Log trimming and Snapshots](/operate/data-backup#log-trimming-and-snapshots) for more context about how logs, partitions, and snapshots are related.
+
+#### Recovery procedure
+
+<Step stepLabel="1" title="Identify whether a snapshot repository is configured and accessible">
+If a snapshot repository is set up on other nodes in the cluster, and simply not configured on the node where you are seeing the partition processor startup errors, correct the configuration on the new node - refer to [Configuring Snapshots](/operate/snapshots#configuring-snapshots). If you have not yet set up a snapshot repository, please do so now. If it is impossible to use an object store to host the snapshots repository, you can export snapshots to a local filesystem and manually transfer them to other nodes - skip to step `2b`.
+
+In your server configuration, you should have a snapshot path specified as follows:
+
+```toml
+[worker.snapshots]
+destination = "s3://snapshots/prefix"
+```
+Confirm that this is consistent with other nodes in the cluster.
+
+Check the server logs for any access errors; does the node have the necessary credentials and are those credentials authorized to access the snapshots destination?
+</Step>
+
+<Step stepLabel="2" title="Publish a snapshot to the repository">
+Snapshots are produced periodically by partition processors on certain triggers, such as a number of records being appended to the log. If you are seeing the following error, check that snapshot are being written to the object store destination you have configured.
+
+Verify that this partition has an active node:
+
+```shell
+restatectl partitions list
+```
+
+If you have lost all nodes which previously hosted this partition, you have permanent data loss - the partition state can not be fully recovered. Get in touch with us to assist in re-starting the partition accepting the data loss.
+
+Request a snapshot for this partition:
+
+```shell
+restatectl snapshots create-snapshot {partition_id}
+```
+
+You can manually confirm that the snapshot was published to the expected destination. Within the specified snapshot bucket and prefix, you will find a partition-based tree structure. Navigate to the bucket path `{prefix}/{partition_id}` - you should see an entry for the new snapshot id matching the output of the create snapshot command.
+</Step>
+
+<Step stepLabel="2b" title="Alternative: Manually transfer snapshot from another node">
+If you are running a cluster but are unable to setup a snapshot repository in a shared object store destination, you can still recover node state by publishing a snapshot from a healthy node ot the local filesystem and manually transferring it to the new node.
+
+<Admonition type="tip" title="Experimenting with snapshots without an object store">
+    Note that shared filesystems are not a supported target for cluster snapshots, and have known correctness risks. The `file://` protocol does not support conditional updates, which makes it unsuitable for potentially contended operation.
+</Admonition>
+
+Identify an up-to-date node which is running the partition by running:
+
+```shell
+restatectl partitions list
+```
+
+On this node, configure a local destination for the partition snapshot repository - make sure this already exists:
+
+```toml
+[worker.snapshots]
+destination = "file:///mnt/restate-data/snapshots-repository"
+```
+
+Restart the node. If you have multiple nodes which may assume leadership for this partition, you will need to either repeat this on all of them, or temporarily shut them down. Create snapshot(s) for the affected partition(s):
+
+```shell
+restatectl snapshots create-snapshot {partition_id}
+```
+
+Copy the contents of the snapshots repository to the node experiencing issues, and configure it to point to the snapshot repository. If you have multiple snapshots produced by multiple peer nodes, you can merge them all in the same location - each partition's snapshots will be written to dedicated sub-directory for that partition.
+</Step>
+
+<Step stepLabel="3" title="Confirm that the affected node starts up and bootstraps its partition store from a snapshot">
+Once you have confirmed that a snapshot for the partition is available at the configured location, the configured repository access credentials have the necessary permissions, and the local node configuration is correct, you should see the partition processor start up and join the partition. If you have updated the Restate server configuration in the process, you should restart the server process to ensure that the latest changes are picked up.
+</Step>
 
 ### Node id misconfiguration puts log server in `data-loss` state
 
