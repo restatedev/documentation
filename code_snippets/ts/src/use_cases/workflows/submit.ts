@@ -1,14 +1,14 @@
 import * as clients from "@restatedev/restate-sdk-clients";
-import { SignUpWorkflow, User } from "./signup_workflow";
+import { SignUpWorkflow } from "./signup_workflow";
 
-async function submit(user: User) {
+async function submit(user: {id: string, name: string; email: string }) {
   // <start_here>
   // import * as clients from "@restatedev/restate-sdk-clients";
   const rs = clients.connect({ url: "http://localhost:8080" });
   // !mark
   await rs
     // !mark
-    .workflowClient<SignUpWorkflow>({ name: "sign-up-workflow" }, user.id)
+    .workflowClient<SignUpWorkflow>({ name: "user-signup" }, user.id)
     // !mark
     .workflowSubmit(user);
 
@@ -18,7 +18,7 @@ async function submit(user: User) {
   // !mark
   const result = await rs
     // !mark
-    .workflowClient<SignUpWorkflow>({ name: "sign-up-workflow" }, user.id)
+    .workflowClient<SignUpWorkflow>({ name: "user-signup" }, user.id)
     // !mark
     .workflowAttach();
   // <end_here>
