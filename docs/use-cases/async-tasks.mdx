@@ -2,6 +2,7 @@
 title: "Async tasks"
 sidebar_position: 4
 description: "Schedule async tasks and let Restate manage their execution."
+hide_table_of_contents: true
 hide_title: true
 ---
 
@@ -303,94 +304,6 @@ Schedule tasks for now or later with the Restate SDK.
 
     ```ts !!tabs TypeScript
     CODE_LOAD::ts/src/use_cases/async_tasks/reminders/payment_reminders.ts?3
-    ```
-
-</Scrollycoding>
-
-## Switch between async and sync with Restate
-
-Restate lets you easily convert synchronous tasks to asynchronous ones, and back.
-
-<Scrollycoding>
-    ### !!steps Submit synchronous workflow
-
-    Submit a new workflow to upload a file.
-    This is idempotent per workflow ID (here user id).
-
-    Wait for the response for 30 seconds.
-
-    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/syncasync/client.ts
-    CODE_LOAD::ts/src/use_cases/async_tasks/sync_to_async/client.ts?1
-    ```
-
-    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/syncasync/UploadClient.java
-    CODE_LOAD::java/src/main/java/usecases/asynctasks/synctoasync/MyClient.java?1
-    ```
-
-    ```kotlin !!tabs Kotlin
-    CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/synctoasync/MyClient.kt?1
-    ```
-
-    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/syncasync/client/client.go
-    CODE_LOAD::go/usecases/asynctasks/dataupload/client/client.go?1
-    ```
-
-    ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/syncasync/client.py
-    CODE_LOAD::python/src/use_cases/async_tasks/sync_to_async/client.py?1
-    ```
-
-    ### !!steps Switch from synchronous to asynchronous
-
-    If the upload takes more than 30 seconds, then we want the workflow to notify us via email about the uploaded file URL.
-
-    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/syncasync/client.ts
-    CODE_LOAD::ts/src/use_cases/async_tasks/sync_to_async/client.ts?2
-    ```
-
-    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/syncasync/UploadClient.java
-    CODE_LOAD::java/src/main/java/usecases/asynctasks/synctoasync/MyClient.java?2
-    ```
-
-    ```kotlin !!tabs Kotlin
-    CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/synctoasync/MyClient.kt?2
-    ```
-
-    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/syncasync/client/client.go
-    CODE_LOAD::go/usecases/asynctasks/dataupload/client/client.go?2
-    ```
-
-    ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/syncasync/client.py
-    CODE_LOAD::python/src/use_cases/async_tasks/sync_to_async/client.py?2
-    ```
-
-</Scrollycoding>
-<Scrollycoding>
-    ### !!steps Durable promises shared across handlers and retries
-
-    When the file upload workflow is done, it resolves a promise with the file URL.
-
-    If the email handler has been called in the mean time, then it would now get unblocked on the waiting on the URL promise, and would continue with sending the email.
-
-    Restate persists these promises and makes sure they are recoverable.
-
-    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/syncasync/data_upload_service.ts
-    CODE_LOAD::ts/src/use_cases/async_tasks/sync_to_async/file_upload_workflow.ts?1
-    ```
-
-    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/syncasync/DataUploadService.java
-    CODE_LOAD::java/src/main/java/usecases/asynctasks/synctoasync/FileUploadWorkflow.java?1
-    ```
-
-    ```kotlin !!tabs Kotlin
-    CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/synctoasync/FileUploadWorkflow.kt?1
-    ```
-
-    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/syncasync/service/datauploadservice.go
-    CODE_LOAD::go/usecases/asynctasks/dataupload/fileuploadworkflow.go?1
-    ```
-
-    ```py !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/syncasync/data_upload_service.py
-    CODE_LOAD::python/src/use_cases/async_tasks/sync_to_async/file_upload_workflow.py?1
     ```
 
 </Scrollycoding>
