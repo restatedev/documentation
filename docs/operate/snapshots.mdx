@@ -16,7 +16,7 @@ import Admonition from '@theme/Admonition';
 </Admonition>
 
 <Admonition type="caution">
-    Snapshots are essential to support safe log trimming and also allow you to set partition replication to a subset of all cluster nodes, while still allowing for fast partition fail-over to to any live node. Snapshots are also necessary to add more nodes in the future.
+    Snapshots are essential to support safe log trimming and also allow you to set partition replication to a subset of all cluster nodes, while still allowing for fast partition fail-over to any live node. Snapshots are also necessary to add more nodes in the future.
 </Admonition>
 
 Restate workers can be configured to periodically publish snapshots of their partition state to a shared destination. Snapshots are not necessarily backups. Rather, snapshots allow nodes that had not previously served a partition to bootstrap a copy of its state. Without snapshots, placing a partition processor on a node that wasn't previously a follower would require the full replay of that partition's log. Replaying the log might take a long time - and is impossible if the log gets trimmed.
