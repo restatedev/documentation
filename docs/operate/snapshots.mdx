@@ -11,11 +11,15 @@ import Admonition from '@theme/Admonition';
     This page covers configuring a Restate cluster to share partition snapshots for fast fail-over and bootstrapping new nodes. For backup of Restate nodes, see [Data Backup](/operate/data-backup).
 </Admonition>
 
-Restate workers can be configured to periodically publish snapshots of their partition state to a shared destination. Snapshots are not necessarily backups. Rather, snapshots allow nodes that had not previously served a partition to bootstrap a copy of its state. Without snapshots, placing a partition processor on a node that wasn't previously a follower would require the full replay of that partition's log. Replaying the log might take a long time - and is impossible if the log gets trimmed.
-
 <Admonition type="note" title="Architectural overview">
     To understand the terminology used on this page, it might be helpful to read through the [architecture reference](/references/architecture).
 </Admonition>
+
+<Admonition type="caution">
+    Snapshots are essential to support safe log trimming and also allow you to set partition replication to a subset of all cluster nodes, while still allowing for fast partition fail-over to any live node. Snapshots are also necessary to add more nodes in the future.
+</Admonition>
+
+Restate workers can be configured to periodically publish snapshots of their partition state to a shared destination. Snapshots are not necessarily backups. Rather, snapshots allow nodes that had not previously served a partition to bootstrap a copy of its state. Without snapshots, placing a partition processor on a node that wasn't previously a follower would require the full replay of that partition's log. Replaying the log from the start might take a long time, or be impossible if the log was trimmed.
 
 ## Configuring Snapshots
 Restate clusters should always be configured with a snapshot repository to allow nodes to efficiently share partition state, and for new nodes to be added to the cluster in the future.
