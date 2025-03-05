@@ -17,6 +17,9 @@ const subscriptionWorkflow = restate.workflow({
         // <mark_2> green
         await ctx.run(() => createRecurringPayment(req.creditCard, paymentId));
         // </mark_2>
+        // <mark_1>
+        ctx.set("status", "payment_success");
+        // </mark_1>
 
         for (const subscription of req.subscriptions) {
           // <mark_2> orange
@@ -25,12 +28,10 @@ const subscriptionWorkflow = restate.workflow({
           // <mark_2> green
           await ctx.run(() => createSubscription(req.userId, subscription));
           // </mark_2>
-
-          // <mark_1>
-          const subscriptions = await ctx.get<string[]>("subscriptions") ?? [];
-          ctx.set("subscriptions", subscriptions.push(subscription));
-          // </mark_1>
         }
+        // <mark_1>
+        ctx.set("status", "subscribed");
+        // </mark_1>
       } catch (e) {
         // <mark_2> orange
         if (e instanceof restate.TerminalError) {
@@ -39,15 +40,15 @@ const subscriptionWorkflow = restate.workflow({
           }
           // </mark_2>
           // <mark_1>
-          ctx.clearAll();
+          ctx.set("status", "rolled_back");
           // </mark_1>
         }
         throw e;
       }
     },
-    getSuccessfulSubscriptions: async (ctx: restate.WorkflowSharedContext) => {
+    getStatus: async (ctx: restate.WorkflowSharedContext) => {
       // <mark_1>
-        return ctx.get("subscriptions") ?? [];
+        return ctx.get("status");
       // </mark_1>
     }
   },
