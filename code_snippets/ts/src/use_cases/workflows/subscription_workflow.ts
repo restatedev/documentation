@@ -46,11 +46,6 @@ const subscriptionWorkflow = restate.workflow({
         throw e;
       }
     },
-    getStatus: async (ctx: restate.WorkflowSharedContext) => {
-      // <mark_1>
-        return ctx.get("status");
-      // </mark_1>
-    }
   },
 })
 

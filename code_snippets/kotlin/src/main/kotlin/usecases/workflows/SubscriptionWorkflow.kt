@@ -57,13 +57,6 @@ class SubscriptionWorkflow {
       throw TerminalException("Subscription failed")
     }
   }
-
-  @Shared
-  suspend fun getStatus(ctx: SharedWorkflowContext): String {
-    // <mark_1>
-    return ctx.get(STATUS) ?: "unknown"
-    // </mark_1>
-  }
 }
 
 // <mark_3>

@@ -64,13 +64,6 @@ public class SubscriptionWorkflow {
       throw e;
     }
   }
-
-  @Shared
-  public String getStatus(SharedWorkflowContext ctx) {
-    // <mark_1>
-    return ctx.get(STATUS).orElse("unknown");
-    // </mark_1>
-  }
 }
 
 // <mark_3>

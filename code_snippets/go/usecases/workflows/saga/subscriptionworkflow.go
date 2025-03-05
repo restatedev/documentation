@@ -45,11 +45,10 @@ func (SubscriptionWorkflow) Run(ctx restate.WorkflowContext, req SubscriptionReq
 	})
 	// </mark_2>
 	// <mark_2> green
-	_, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
+	if _, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
 		return CreateRecurringPayment(req.CreditCard, paymentId)
 		// </mark_2>
-	})
-	if err != nil {
+	}); err != nil {
 		// <mark_2>
 		return handleError(err)
 		// </mark_2>
@@ -78,12 +77,6 @@ func (SubscriptionWorkflow) Run(ctx restate.WorkflowContext, req SubscriptionReq
 	restate.Set(ctx, "status", "subscribed")
 	// </mark_1>
 	return nil
-}
-
-func (SubscriptionWorkflow) GetStatus(ctx restate.WorkflowSharedContext, req SubscriptionRequest) (string, error) {
-	// <mark_1>
-	return restate.Get[string](ctx, "status")
-	// </mark_1>
 }
 
 func main() {
