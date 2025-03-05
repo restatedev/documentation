@@ -5,8 +5,6 @@ import (
 	restate "github.com/restatedev/sdk-go"
 	"github.com/restatedev/sdk-go/server"
 	"log"
-	"log/slog"
-	"os"
 )
 
 type SubscriptionRequest struct {
