@@ -59,13 +59,6 @@ async def run(ctx: WorkflowContext, req: SubscriptionRequest):
         raise e
 
 
-@subscription_workflow.handler()
-async def get_status(ctx: WorkflowSharedContext):
-    # <mark_1>
-    return await ctx.get("status") or "unknown"
-    # </mark_1>
-
-
 # <mark_3>
 aws_lambda_handler = restate.app([subscription_workflow])
 # </mark_3>
