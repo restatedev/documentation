@@ -2,7 +2,7 @@ package usecases.utils;
 
 public class Utils {
 
-  public static void createUserEntry(String id, String name) {}
+  public static void createUserEntry(User user) {}
 
-  public static void sendEmailWithLink(String email, String secret) {}
+  public static void sendEmailWithLink(String email, User user, String secret) {}
 }

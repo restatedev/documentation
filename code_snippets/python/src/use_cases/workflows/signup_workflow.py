@@ -1,79 +1,45 @@
 import uuid
-from typing import TypedDict
-
+import restate
 from pydantic import BaseModel
 from restate import Workflow, WorkflowContext, WorkflowSharedContext
-import restate
-from restate.exceptions import TerminalError
-
+from utils import create_user_entry, send_email_with_link
 
 class User(BaseModel):
-    email: str
     name: str
-
-
-def create_user_entry(user):
-    pass
-
-
-def send_email_with_link(email, secret):
-    pass
+    email: str
 
 
 # <start_here>
-# <mark_1>
-signup_workflow = Workflow("signupWorkflow")
-# </mark_1>
-
+user_signup = Workflow("user-signup")
 
 # <mark_1>
-@signup_workflow.main()
+@user_signup.main()
 async def run(ctx: WorkflowContext, user: User) -> bool:
     # </mark_1>
-    # <mark_3>
-    ctx.set("stage", "Creating user")
-    # </mark_3>
+    user_id = ctx.key()
+
     # <mark_2>
-    await ctx.run("create user", lambda: create_user_entry(user))
+    await ctx.run("create_user", lambda: create_user_entry(user))
     # </mark_2>
 
-    # <mark_3>
-    ctx.set("stage", "Email verification")
-    # </mark_3>
     # <mark_2>
-    secret = await ctx.run("generate secret", lambda: str(uuid.uuid4()))
-    await ctx.run("send email", lambda: send_email_with_link(user.email, secret))
+    secret = await ctx.run("secret", lambda: str(uuid.uuid4()))
+    await ctx.run("send_email", lambda: send_email_with_link(user_id, user.email, secret))
     # </mark_2>
 
-    # <mark_5>
-    click_secret = await ctx.promise("email_link_clicked").value()
-    # </mark_5>
-    # <mark_7>
-    if click_secret != secret:
-        # <mark_3>
-        ctx.set("stage", "Email verification failed")
-        # </mark_3>
-        raise TerminalError("Wrong secret from email link")
-
+    # <mark_2>
     # <mark_3>
-    ctx.set("stage", "Email verified")
+    click_secret = await ctx.promise("link_clicked").value()
     # </mark_3>
-    return True
-    # </mark_7>
+    # </mark_2>
+    return click_secret == secret
 
 
-# <mark_4>
-@signup_workflow.handler("getStage")
-async def get_stage(ctx: WorkflowSharedContext) -> str:
-    return await ctx.get("stage") or "unknown"
-    # </mark_4>
+@user_signup.handler()
+async def click(ctx: WorkflowSharedContext, secret: str):
+    # <mark_3>
+    await ctx.promise("link_clicked").resolve(secret)
+    # </mark_3>
 
-
-# <mark_6>
-@signup_workflow.handler("approveEmail")
-async def approve_email(ctx: WorkflowSharedContext, secret: str):
-    await ctx.promise("email_link_clicked").resolve(secret)
-    # </mark_6>
-    # <end_here>
-
-app = restate.app([signup_workflow])
+app = restate.app(services=[user_signup])
+# <end_here>

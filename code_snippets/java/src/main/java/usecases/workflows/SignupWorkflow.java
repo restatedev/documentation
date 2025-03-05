@@ -1,76 +1,66 @@
 package usecases.workflows;
 
-import static usecases.utils.Utils.createUserEntry;
-import static usecases.utils.Utils.sendEmailWithLink;
-
 import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.SharedWorkflowContext;
 import dev.restate.sdk.WorkflowContext;
-import dev.restate.sdk.annotation.Handler;
+import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.Workflow;
 import dev.restate.sdk.common.DurablePromiseKey;
-import dev.restate.sdk.common.StateKey;
-import dev.restate.sdk.common.TerminalException;
+import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 import usecases.utils.User;
+
+import static usecases.utils.Utils.createUserEntry;
+import static usecases.utils.Utils.sendEmailWithLink;
+
 
 // <start_here>
 @Workflow
 public class SignupWorkflow {
 
-  private final StateKey<String> STAGE = StateKey.of("stage", JsonSerdes.STRING);
-  private final DurablePromiseKey<String> EMAIL_LINK =
-      DurablePromiseKey.of("email-link", JsonSerdes.STRING);
+  // <mark_3>
+  private static final DurablePromiseKey<String> LINK_CLICKED =
+          DurablePromiseKey.of("link_clicked", JsonSerdes.STRING);
+  // </mark_3>
 
   // <mark_1>
   @Workflow
   public boolean run(WorkflowContext ctx, User user) {
-    // <mark_3>
-    ctx.set(STAGE, "Creating user");
-    // </mark_3>
+    // </mark_1>
+    // workflow ID = user ID; workflow runs once per user
+    String userId = ctx.key();
+
     // <mark_2>
-    ctx.run(() -> createUserEntry(ctx.key(), user.getName()));
+    ctx.run(() -> createUserEntry(user));
     // </mark_2>
 
-    // <mark_3>
-    ctx.set(STAGE, "Email verification");
-    // </mark_3>
     // <mark_2>
     String secret = ctx.random().nextUUID().toString();
-    ctx.run(() -> sendEmailWithLink(user.getEmail(), secret));
+    ctx.run(() -> sendEmailWithLink(userId, user, secret));
     // </mark_2>
 
-    // <mark_5>
-    String clickSecret = ctx.promise(EMAIL_LINK).awaitable().await();
-    // </mark_5>
-    // <mark_7>
-    if (!clickSecret.equals(secret)) {
-      // <mark_3>
-      ctx.set(STAGE, "Verification failed");
-      // </mark_3>
-      throw new TerminalException("Wrong secret from email link");
-    }
+    // <mark_2>
     // <mark_3>
-    // </mark_7>
-    ctx.set(STAGE, "User verified");
+    String clickSecret =
+            ctx.promise(LINK_CLICKED)
+                    .awaitable()
+                    .await();
     // </mark_3>
-    return true;
+    // </mark_2>
+
+    return clickSecret.equals(secret);
   }
 
-  // </mark_1>
-
-  // <mark_4>
-  @Handler
-  public String getStage(SharedWorkflowContext ctx) {
-    return ctx.get(STAGE).orElse("Unknown");
+  @Shared
+  public void click(SharedWorkflowContext ctx, String secret) {
+    // <mark_3>
+    ctx.promiseHandle(LINK_CLICKED).resolve(secret);
+    // </mark_3>
   }
 
-  // </mark_4>
-
-  // <mark_6>
-  @Handler
-  public void approveEmail(SharedWorkflowContext ctx, String secret) {
-    ctx.promiseHandle(EMAIL_LINK).resolve(secret);
+  public static void main(String[] args) {
+    RestateHttpEndpointBuilder.builder()
+            .bind(new SignupWorkflow())
+            .buildAndListen();
   }
-  // </mark_6>
 }
 // <end_here>
