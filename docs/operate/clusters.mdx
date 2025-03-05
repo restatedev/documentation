@@ -545,7 +545,7 @@ Examine the logs using `restatectl logs describe`.
 
     #### Recovery procedure
 
-    <Step stepLabel="1" title="Identify whether a snapshot repository is configured and accessible">
+    ##### 1. Identify whether a snapshot repository is configured and accessible
     If a snapshot repository is set up on other nodes in the cluster, and simply not configured on the node where you are seeing the partition processor startup errors, correct the configuration on the new node - refer to [Configuring Snapshots](/operate/snapshots#configuring-snapshots). If you have not yet set up a snapshot repository, please do so now. If it is impossible to use an object store to host the snapshots repository, you can export snapshots to a local filesystem and manually transfer them to other nodes - skip to step `2b`.
 
     In your server configuration, you should have a snapshot path specified as follows:
@@ -557,9 +557,8 @@ Examine the logs using `restatectl logs describe`.
     Confirm that this is consistent with other nodes in the cluster.
 
     Check the server logs for any access errors; does the node have the necessary credentials and are those credentials authorized to access the snapshots destination?
-    </Step>
 
-    <Step stepLabel="2" title="Publish a snapshot to the repository">
+    ##### 2. Publish a snapshot to the repository
     Snapshots are produced periodically by partition processors on certain triggers, such as a number of records being appended to the log. If you are seeing the following error, check that snapshot are being written to the object store destination you have configured.
 
     Verify that this partition has an active node:
@@ -577,9 +576,9 @@ Examine the logs using `restatectl logs describe`.
     ```
 
     You can manually confirm that the snapshot was published to the expected destination. Within the specified snapshot bucket and prefix, you will find a partition-based tree structure. Navigate to the bucket path `{prefix}/{partition_id}` - you should see an entry for the new snapshot id matching the output of the create snapshot command.
-    </Step>
 
-    <Step stepLabel="2b" title="Alternative: Manually transfer snapshot from another node">
+    ##### 2b. Alternative: Manually transfer snapshot from another node
+
     If you are running a cluster but are unable to setup a snapshot repository in a shared object store destination, you can still recover node state by publishing a snapshot from a healthy node ot the local filesystem and manually transferring it to the new node.
 
     <Admonition type="tip" title="Experimenting with snapshots without an object store">
@@ -606,10 +605,8 @@ Examine the logs using `restatectl logs describe`.
     ```
 
     Copy the contents of the snapshots repository to the node experiencing issues, and configure it to point to the snapshot repository. If you have multiple snapshots produced by multiple peer nodes, you can merge them all in the same location - each partition's snapshots will be written to dedicated sub-directory for that partition.
-    </Step>
 
-    <Step stepLabel="3" title="Confirm that the affected node starts up and bootstraps its partition store from a snapshot">
+    ##### 3. Confirm that the affected node starts up and bootstraps its partition store from a snapshot
     Once you have confirmed that a snapshot for the partition is available at the configured location, the configured repository access credentials have the necessary permissions, and the local node configuration is correct, you should see the partition processor start up and join the partition. If you have updated the Restate server configuration in the process, you should restart the server process to ensure that the latest changes are picked up.
-    </Step>
 
 </details>
