@@ -6,9 +6,9 @@ class WorkflowSubmitter {
   suspend fun submit(user: User) {
     // <start_here>
     // import dev.restate.sdk.client.Client;
-    val rs = Client.connect("http://localhost:8080")
+    val restateClient = Client.connect("http://localhost:8080")
     // !mark
-    SignupWorkflowClient.fromClient(rs, user.id)
+    SignupWorkflowClient.fromClient(restateClient, user.id)
         // !mark
         .submit(user)
 
@@ -17,7 +17,7 @@ class WorkflowSubmitter {
     // attach back to the workflow
     // !mark
     val result =
-        SignupWorkflowClient.fromClient(rs, user.id)
+        SignupWorkflowClient.fromClient(restateClient, user.id)
             // !mark
             .workflowHandle()
             // !mark

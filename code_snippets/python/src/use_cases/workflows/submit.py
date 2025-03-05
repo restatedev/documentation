@@ -1,25 +1,28 @@
-# <start_here>
 import requests
 
+# <start_here>
 restate = "http://localhost:8080"
-workflow_id = "myUser123"
-payload = {
-    "email": "user@user.com",
-    "name": "Pete"
-}
-headers = {"Content-Type": "application/json"}
 
-# !mark[/Submit/] blue
 # 1. Submit the workflow
-# !mark[/\/send/] blue
-url = f'${restate}/signupWorkflow/${workflow_id}/run/send'
-response = requests.post(url, json=payload, headers=headers)
+user_id = "myUser123"
+# !mark
+requests.post(
+    # !mark
+    f'${restate}/signupWorkflow/${user_id}/run/send',
+    json = {
+        "email": "user@user.com",
+        "name": "Pete"
+    },
+    headers = {"Content-Type": "application/json"}
+)
 
 # Do something else, with workflow running in the background
 
-# !mark[/Attach/] blue
 # 2. Attach back to the workflow
-# !mark[/\/attach/] blue
-attach_url = f'${restate}/restate/workflow/signupWorkflow/${workflow_id}/attach'
-response = requests.get(attach_url)
+# !mark
+response = requests.get(
+    # !mark
+    f'${restate}/restate/workflow/signupWorkflow/${user_id}/attach'
+    # !mark
+)
 # <end_here>

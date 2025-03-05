@@ -17,32 +17,44 @@ import static usecases.utils.Utils.sendEmailWithLink;
 @Workflow
 public class SignupWorkflow {
 
-  private static final DurablePromiseKey<String> EMAIL_CLICKED =
-          DurablePromiseKey.of("email_clicked", JsonSerdes.STRING);
+  // <mark_3>
+  private static final DurablePromiseKey<String> LINK_CLICKED =
+          DurablePromiseKey.of("link_clicked", JsonSerdes.STRING);
+  // </mark_3>
 
-  // --- The workflow logic ---
+  // <mark_1>
   @Workflow
   public boolean run(WorkflowContext ctx, User user) {
+    // </mark_1>
     // workflow ID = user ID; workflow runs once per user
     String userId = ctx.key();
 
+    // <mark_2>
     ctx.run(() -> createUserEntry(user));
+    // </mark_2>
 
+    // <mark_2>
     String secret = ctx.random().nextUUID().toString();
     ctx.run(() -> sendEmailWithLink(userId, user, secret));
+    // </mark_2>
 
+    // <mark_2>
+    // <mark_3>
     String clickSecret =
-            ctx.promise(EMAIL_CLICKED)
+            ctx.promise(LINK_CLICKED)
                     .awaitable()
                     .await();
+    // </mark_3>
+    // </mark_2>
 
     return clickSecret.equals(secret);
   }
 
-  // --- Other handlers interact with the workflow via queries and signals ---
   @Shared
   public void click(SharedWorkflowContext ctx, String secret) {
-    ctx.promiseHandle(EMAIL_CLICKED).resolve(secret);
+    // <mark_3>
+    ctx.promiseHandle(LINK_CLICKED).resolve(secret);
+    // </mark_3>
   }
 
   public static void main(String[] args) {
