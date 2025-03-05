@@ -2,7 +2,6 @@ package usecases.microservices.vo
 
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.VirtualObject
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
 import dev.restate.sdk.kotlin.*
 import dev.restate.sdk.lambda.BaseRestateLambdaHandler
 import dev.restate.sdk.lambda.RestateLambdaEndpointBuilder

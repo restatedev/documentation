@@ -1,21 +1,20 @@
 package usecases.microservices;
 
-import dev.restate.sdk.JsonSerdes;
+import static dev.restate.sdk.JsonSerdes.STRING;
+import static usecases.microservices.Utils.createRecurringPayment;
+import static usecases.microservices.Utils.createSubscription;
+
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 import usecases.microservices.Utils.SubscriptionRequest;
 
-import static dev.restate.sdk.JsonSerdes.STRING;
-import static usecases.microservices.Utils.createRecurringPayment;
-import static usecases.microservices.Utils.createSubscription;
-
 // <start_here>
 // <mark_1>
 @Service
 public class SubscriptionService {
-// </mark_1>
+  // </mark_1>
 
   // <mark_1>
   @Handler
@@ -35,9 +34,7 @@ public class SubscriptionService {
   }
 
   public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder()
-            .bind(new SubscriptionService())
-            .buildAndListen();
+    RestateHttpEndpointBuilder.builder().bind(new SubscriptionService()).buildAndListen();
   }
 }
 // <end_here>

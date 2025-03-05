@@ -20,7 +20,7 @@ class Idempotency {
         .send()
         // <mark_2>
         .reserve(CallRequestOptions.DEFAULT.withIdempotency(reservationId))
-      // </mark_2>
+    // </mark_2>
     // </mark_1>
   }
   // <end_here>

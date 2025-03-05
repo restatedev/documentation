@@ -1,7 +1,6 @@
 package vo
 
 import (
-	"context"
 	"github.com/aws/aws-lambda-go/lambda"
 	restate "github.com/restatedev/sdk-go"
 	"github.com/restatedev/sdk-go/server"
@@ -44,7 +43,7 @@ func (SubscriptionObject) Add(ctx restate.ObjectContext, req SubscriptionRequest
 	restate.Set(ctx, "subscription", "creating_subscription")
 	// </mark_1>
 	if _, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-		return restate.Void{}, CreateSubscription(req.UserID, req.Subscription, payRef)
+		return restate.Void{}, CreateSubscription(req.UserID, req.Subscription)
 	}); err != nil {
 		return err
 	}
@@ -70,7 +69,7 @@ func main() {
 // </mark_3>
 // <end_here>
 
-func CreateSubscription(id string, subscription string, ref string) error {
+func CreateSubscription(id string, subscription string) error {
 	return nil
 }
 

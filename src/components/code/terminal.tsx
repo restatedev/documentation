@@ -26,7 +26,6 @@ export function TerminalView(command, output, isTab?, expanded?) {
             <div className={styles.terminalCommand}
                  style={{
                      display: 'flex',
-                     // alignItems: 'center',
                      backgroundColor: 'white',
                      width: '100%'
                  }}>
