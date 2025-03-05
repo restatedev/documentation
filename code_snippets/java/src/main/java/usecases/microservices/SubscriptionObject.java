@@ -1,16 +1,16 @@
 package usecases.microservices;
 
+import static dev.restate.sdk.JsonSerdes.BOOLEAN;
+import static dev.restate.sdk.JsonSerdes.STRING;
+import static usecases.microservices.ObjectUtils.createRecurringPayment;
+import static usecases.microservices.Utils.createSubscription;
+
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.lambda.BaseRestateLambdaHandler;
 import dev.restate.sdk.lambda.RestateLambdaEndpointBuilder;
-
-import static dev.restate.sdk.JsonSerdes.BOOLEAN;
-import static dev.restate.sdk.JsonSerdes.STRING;
-import static usecases.microservices.ObjectUtils.createRecurringPayment;
-import static usecases.microservices.Utils.createSubscription;
 
 // <start_here>
 // <mark_2>
@@ -20,6 +20,7 @@ public class SubscriptionObject {
 
   // <mark_1>
   StateKey<String> SUBSCRIPTION = StateKey.of("subscription", STRING);
+
   // </mark_1>
 
   // <mark_2>
@@ -31,10 +32,9 @@ public class SubscriptionObject {
     ctx.set(SUBSCRIPTION, "awaiting_payment");
     // </mark_1>
     var paymentId = ctx.random().nextUUID().toString();
-    boolean success = ctx.run(BOOLEAN, () ->
-            createRecurringPayment(req.creditCard(), paymentId));
+    boolean success = ctx.run(BOOLEAN, () -> createRecurringPayment(req.creditCard(), paymentId));
 
-    if(!success){
+    if (!success) {
       // <mark_1>
       ctx.set(SUBSCRIPTION, "payment_failed");
       // </mark_1>
