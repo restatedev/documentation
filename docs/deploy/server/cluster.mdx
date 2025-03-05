@@ -1,5 +1,5 @@
 ---
-title: "Cluster Deployment"
+title: "Cluster"
 sidebar_position: 1
 description: "Learn how to deploy a distributed Restate cluster."
 ---
@@ -92,38 +92,12 @@ Every Restate node that runs the `worker` role will also run the ingress server 
 
 For those nodes that run on the same machine, make sure that the ports do not conflict.
 
-## Controlling Clusters
+<Admonition type="note" title="Growing the cluster in the future">
+    If you plan to scale your cluster over time, we strongly recommend enabling snapshotting.
+    Without it, newly added nodes may not be fully utilized by the system.
+    See the [snapshotting documentation](/operate/snapshots) for more details.
+</Admonition>
 
-Restate includes a command line utility tool to connect to and control running Restate servers called [`restatectl`](/references/restatectl#getting-restatectl).
-This tool is specifically designed for system operators to manage Restate servers and is particularly useful in a cluster environment.
-It is distinct from the application developer-focused `restate` CLI tool, which is used to manage service deployments and invocations.
-
-### Using `restatectl`
-The `restatectl` tool communicates with Restate at the advertised address specified in the [server configuration](/operate/configuration/server) - by default TCP port 5122. To get an overview of a running server or cluster, use the `status` command:
-
-```shell
-restatectl status --addresses http://localhost:5122/
-```
-
-<details className={"grey-details"}>
-    <summary>Sample output</summary>
-
-    ```
-    Node Configuration (v3)
-    NODE  GEN  NAME  ADDRESS                 ROLES
-    N1    2    n1    http://127.0.0.1:5122/  admin | log-server | metadata-server | worker
-
-    Log Configuration (v2)
-    Default Provider Config: Local
-    L-ID  FROM-LSN  KIND   LOGLET-ID  REPLICATION  SEQUENCER  NODESET
-    0     1         Local  N/A        N/A          N/A        N/A
-
-    Alive partition processors (nodes config v3, partition table v2)
-    P-ID  NODE  MODE    STATUS  LEADER  EPOCH  SEQUENCER  APPLIED-LSN  ARCHIVED-LSN  LAST-UPDATE
-    0     N1:2  Leader  Active  N1:2    e1                1            -             615 ms ago
-    ```
-
-</details>
 
 ## Cluster provisioning
 

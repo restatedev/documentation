@@ -5,12 +5,11 @@ pagination_next: null
 pagination_prev: null
 ---
 
-import Admonition from '@theme/Admonition';
 import {Step} from "../../src/components/Stepper";
 
 # Migrating a single-node to a multi-node deployment
 
-By default when starting a Restate server ({'<='} v1.2), it uses the local loglet and local metadata server.
+By default, when starting a Restate server ({'<='} v1.2), it uses the local loglet and local metadata server.
 The local loglet and local metadata server are suitable for development and single-node deployments.
 However, for production deployments, it is recommended to use the replicated loglet and replicated metadata server to ensure high availability and durability.
 This guide shows how to migrate an existing single-node deployment to use the replicated loglet and replicated metadata server without losing any data.
@@ -52,7 +51,7 @@ roles = [
 ```
 
 To use the replicated loglet, you need to reconfigure the cluster configuration to use the replicated loglet as the default log provider.
-You can do this by using [`restatectl`](/references/restatectl#getting-restatectl).
+You can do this by using [`restatectl`](/operate/clusters#controlling-clusters-with-restatectl).
 
 ```shell
 restatectl config set --log-provider replicated --log-replication 1
@@ -117,4 +116,4 @@ restatectl status
 
 Here are some next step for you to try:
 
-- Try [growing your cluster](/deploy/server/cluster/growing-cluster) to tolerate node failures
+- Try [growing your cluster](/operate/clusters#growing-the-cluster) to tolerate node failures
