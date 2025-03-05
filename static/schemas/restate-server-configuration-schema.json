@@ -1089,12 +1089,11 @@
     },
     "SnapshotsOptions": {
       "title": "Snapshot options.",
-      "description": "Partition store snapshotting settings.",
+      "description": "Partition store snapshotting settings. At a minimum, set `destination` and `snapshot-interval-num-records` to enable snapshotting. For a complete example, see [Snapshots](https://docs.restate.dev/operate/snapshots).",
       "type": "object",
       "properties": {
         "destination": {
-          "title": "Destination",
-          "description": "Newly produced snapshots are published to this location. Supports `s3://` and `file://` protocol scheme.\n\nFor S3 bucket destinations, Restate will use the AWS credentials available from the environment, or the configuration profile specified by `AWS_PROFILE` environment variable, falling back to the default AWS profile.\n\nExample: `s3://bucket/prefix` will put snapshots in the specified bucket and (optional) prefix.\n\nDefault: `None`",
+          "description": "Base URL for cluster snapshots. Supports `s3://` and `file://` protocol scheme.\n\nDefault: `None`",
           "default": null,
           "type": [
             "string",
@@ -1113,56 +1112,49 @@
           "minimum": 1.0
         },
         "aws-profile": {
-          "description": "The AWS configuration profile to use for S3 object store destinations.",
-          "default": null,
+          "description": "The AWS configuration profile to use for S3 object store destinations. If you use named profiles in your AWS configuration, you can replace all the other settings with a single profile reference. See the [AWS documentation on profiles] (https://docs.aws.amazon.com/sdkref/latest/guide/file-format.html) for more.",
           "type": [
             "string",
             "null"
           ]
         },
         "aws-region": {
-          "description": "AWS region to use with S3 object store destinations.",
-          "default": null,
+          "description": "AWS region to use with S3 object store destinations. This may be inferred from the environment, for example the current region when running in EC2. Because of the request signing algorightm this must have a value. For Minio, you can generally set this to any string, such as `us-east-1`.",
           "type": [
             "string",
             "null"
           ]
         },
         "aws-access-key-id": {
-          "description": "AWS access key. We strongly recommend against using long-lived credentials; set up a configuration profile with a role-based session credentials provider instead.",
-          "default": null,
+          "description": "AWS access key (or username in Minio / S3-compatible stores).",
           "type": [
             "string",
             "null"
           ]
         },
         "aws-secret-access-key": {
-          "description": "AWS secret key. We strongly recommend against using long-lived credentials; set up a configuration profile with a role-based session credentials provider instead.",
-          "default": null,
+          "description": "AWS secret key (or password in Minio / S3-compatible stores).",
           "type": [
             "string",
             "null"
           ]
         },
         "aws-session-token": {
-          "description": "AWS session token. We strongly recommend against using long-lived credentials; set up a configuration profile with a role-based session credentials provider instead.",
-          "default": null,
+          "description": "AWS session token, needed with short-term STS session credentials.",
           "type": [
             "string",
             "null"
           ]
         },
         "aws-endpoint-url": {
-          "description": "AWS endpoint URL for S3 object store destinations. Some S3-compatible stores may require you to use this.",
-          "default": null,
+          "description": "Endpoint URL override. When you use Amazon S3, this is typically inferred from the region and there is no need to set it. With other object stores, you will have to provide an appropriate HTTP(S) endpoint. If *not* using HTTPS, also set `aws-allow-http` to `true`.",
           "type": [
             "string",
             "null"
           ]
         },
         "aws-allow-http": {
-          "description": "Allow plain HTTP to be used with the object store endpoint.",
-          "default": null,
+          "description": "Allow plain HTTP to be used with the object store endpoint. Required when the endpoint URL that isn't using HTTPS.",
           "type": [
             "boolean",
             "null"

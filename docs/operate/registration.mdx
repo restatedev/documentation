@@ -6,6 +6,7 @@ description: "Find out how to register new deployments with Restate."
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
+import {Terminal} from "../../src/components/code/terminal";
 
 # Registration
 
@@ -19,58 +20,54 @@ You can register deployments via the [UI](/develop/local_dev#restate-ui), via th
 <Tabs groupId="interface" queryString>
 <TabItem value="cli" label="CLI">
 
-```shell
-restate deployments register localhost:9080
-```
+    <Terminal>
+        ```shell !command
+        restate deployments register localhost:9080
+        ```
 
-<details className="grey-details">
-    <summary>Output</summary>
+        ```shell !output
+        ❯ SERVICES THAT WILL BE ADDED:
+        - CheckoutService
+        Type: Service
+        HANDLER  INPUT TYPE                                   OUTPUT TYPE
+        handle   one of "empty or value of content-type */*"  value with content-type "application/json"
 
-    ```shell
-    ❯ SERVICES THAT WILL BE ADDED:
-    - CheckoutService
-    Type: Service
-    HANDLER  INPUT TYPE                                   OUTPUT TYPE
-    handle   one of "empty or value of content-type */*"  value with content-type "application/json"
+        - CartObject
+        Type: VirtualObject ⬅️ 🚶🚶🚶
+        HANDLER       INPUT TYPE                                   OUTPUT TYPE
+        addTicket     one of "empty or value of content-type */*"  value with content-type "application/json"
+        expireTicket  one of "empty or value of content-type */*"  value with content-type "application/json"
+        checkout      one of "empty or value of content-type */*"  value with content-type "application/json"
 
-    - CartObject
-    Type: VirtualObject ⬅️ 🚶🚶🚶
-    HANDLER       INPUT TYPE                                   OUTPUT TYPE
-    addTicket     one of "empty or value of content-type */*"  value with content-type "application/json"
-    expireTicket  one of "empty or value of content-type */*"  value with content-type "application/json"
-    checkout      one of "empty or value of content-type */*"  value with content-type "application/json"
-
-    - TicketObject
-    Type: VirtualObject ⬅️ 🚶🚶🚶
-    HANDLER     INPUT TYPE                                   OUTPUT TYPE
-    reserve     one of "empty or value of content-type */*"  value with content-type "application/json"
-    markAsSold  one of "empty or value of content-type */*"  value with content-type "application/json"
-    unreserve   one of "empty or value of content-type */*"  value with content-type "application/json"
+        - TicketObject
+        Type: VirtualObject ⬅️ 🚶🚶🚶
+        HANDLER     INPUT TYPE                                   OUTPUT TYPE
+        reserve     one of "empty or value of content-type */*"  value with content-type "application/json"
+        markAsSold  one of "empty or value of content-type */*"  value with content-type "application/json"
+        unreserve   one of "empty or value of content-type */*"  value with content-type "application/json"
 
 
-    ✔ Are you sure you want to apply those changes? · yes
-    ✅ DEPLOYMENT:
-    SERVICE          REV
-    TicketObject     1
-    CheckoutService  1
-    CartObject       1
-    ```
-</details>
+        ✔ Are you sure you want to apply those changes? · yes
+        ✅ DEPLOYMENT:
+        SERVICE          REV
+        TicketObject     1
+        CheckoutService  1
+        CartObject       1
+        ```
+    </Terminal>
 
 Or you can use the shorthand `restate dp add`.
 
 </TabItem>
 <TabItem value="curl" label="curl">
 
-```bash
-curl localhost:9070/deployments -H 'content-type: application/json' \
-    -d '{"uri": "http://localhost:9080"}'
-```
+    <Terminal>
+        ```bash !command
+        curl localhost:9070/deployments -H 'content-type: application/json' \
+            -d '{"uri": "http://localhost:9080"}'
+        ```
 
-    <details className="grey-details">
-        <summary>Output</summary>
-
-        ```json
+        ```json !output
         {
             "id": "dp_11pXug0mWsff2NOoRBZbOcV",
             "services": [
@@ -121,7 +118,7 @@ curl localhost:9070/deployments -H 'content-type: application/json' \
             ]
         }
         ```
-    </details>
+    </Terminal>
 </TabItem>
 </Tabs>
 
