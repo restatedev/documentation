@@ -10,7 +10,7 @@ class AsyncTaskService {
   // <mark_1>
   @Handler
   suspend fun runTask(ctx: Context, params: TaskOpts): String {
-    return someHeavyWork(params)
+    return params.someHeavyWork()
   }
   // </mark_1>
 }
@@ -18,6 +18,6 @@ class AsyncTaskService {
 
 class TaskOpts
 
-fun someHeavyWork(task: TaskOpts): String {
+fun TaskOpts.someHeavyWork(): String {
   return ""
 }
