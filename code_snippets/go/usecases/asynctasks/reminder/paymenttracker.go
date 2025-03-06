@@ -4,8 +4,7 @@ import (
 	"context"
 	restate "github.com/restatedev/sdk-go"
 	"github.com/restatedev/sdk-go/server"
-	"log/slog"
-	"os"
+	"log"
 	"time"
 )
 
@@ -38,7 +37,7 @@ func (PaymentTracker) OnPaymentFailure(ctx restate.ObjectContext, event StripeEv
 		return nil
 	}
 
-	remindersCount, err := restate.Get[int8](ctx, "remindersCount")
+	remindersCount, err := restate.Get[int8](ctx, "reminders_count")
 	if err != nil {
 		return err
 	}
@@ -55,7 +54,7 @@ func (PaymentTracker) OnPaymentFailure(ctx restate.ObjectContext, event StripeEv
 		restate.ObjectSend(ctx,
 			"PaymentTracker",
 			restate.Key(ctx), // this object's invoice id
-			"onPaymentFailure").
+			"OnPaymentFailure").
 			Send(event, restate.WithDelay(5*time.Second))
 		// </mark_2>
 	} else {
@@ -73,12 +72,10 @@ func (PaymentTracker) OnPaymentFailure(ctx restate.ObjectContext, event StripeEv
 // <end_here>
 
 func main() {
-	server := server.NewRestate().
-		Bind(restate.Reflect(PaymentTracker{}))
-
-	if err := server.Start(context.Background(), ":9080"); err != nil {
-		slog.Error("application exited unexpectedly", "err", err.Error())
-		os.Exit(1)
+	if err := server.NewRestate().
+		Bind(restate.Reflect(PaymentTracker{})).
+		Start(context.Background(), ":9080"); err != nil {
+		log.Fatal(err)
 	}
 }
 
