@@ -4,7 +4,7 @@ import dev.restate.sdk.client.Client;
 import develop.workflows.Email;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import usecases.asynctasks.synctoasync.DataPreparationServiceClient.IngressClient;
+import usecases.asynctasks.synctoasync.FileUploadWorkflowClient.IngressClient;
 import usecases.utils.URL;
 
 public class MyClient {

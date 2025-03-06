@@ -57,59 +57,86 @@ import Admonition from "@theme/Admonition";
 Schedule tasks for now or later with the Restate SDK.
 
 <Scrollycoding>
-
     ### !!steps Restate as message queue
 
     Any function can be turned into an async task by using Restate as a message queue.
     Restate persists requests and makes sure they run to completion, with retries and recovery upon failures.
 
+    [Learn more](/concepts/durable_execution)
+
     ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/queue/async_task_worker.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/async_task_service.ts?1
+    ```
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/queue/task_submitter.ts
+    CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/task_submitter.ts
     ```
 
     ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/queue/AsyncTaskWorker.java
     CODE_LOAD::java/src/main/java/usecases/asynctasks/simple/AsyncTaskService.java?1
     ```
+    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/queue/TaskSubmitter.java
+    CODE_LOAD::java/src/main/java/usecases/asynctasks/simple/TaskSubmitter.java
+    ```
 
     ```kotlin !!tabs Kotlin
     CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/simple/AsyncTaskService.kt?1
+    ```
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/simple/TaskSubmitter.kt
     ```
 
     ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/queue/service/asynctaskworker.go
     CODE_LOAD::go/usecases/asynctasks/simpleasynctask/asynctaskworker.go?1
     ```
+    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/queue/client/tasksubmitter.go
+    CODE_LOAD::go/usecases/asynctasks/simpleasynctask/client/tasksubmitter.go
+    ```
 
     ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/queue/async_task_worker.py
     CODE_LOAD::python/src/use_cases/async_tasks/simple_async_task/async_task_service.py?1
     ```
+    ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/queue/task_submitter.py
+    CODE_LOAD::python/src/use_cases/async_tasks/simple_async_task/task_submitter.py
+    ```
 
+    ### !!steps Schedule async tasks
 
-</Scrollycoding>
-
-<Scrollycoding>
-    ### !!steps Schedule tasks over HTTP
-
-    You can turn an HTTP invocation into an async event by adding  `/send` to the URL.
-    You can schedule the task for later with the optional `?delay=10s` parameter.
+    You can schedule tasks with the SDK clients or via HTTP.
+    You can schedule the task for later via the optional delay parameter.
 
     [Learn more](/concepts/invocations)
 
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/queue/async_task_worker.ts
+    CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/async_task_service.ts
+    ```
     ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/queue/task_submitter.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/task_submitter.ts?1
     ```
 
+    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/queue/AsyncTaskWorker.java
+    CODE_LOAD::java/src/main/java/usecases/asynctasks/simple/AsyncTaskService.java
+    ```
     ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/queue/TaskSubmitter.java
     CODE_LOAD::java/src/main/java/usecases/asynctasks/simple/TaskSubmitter.java?1
     ```
 
     ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/simple/AsyncTaskService.kt
+    ```
+    ```kotlin !!tabs Kotlin
     CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/simple/TaskSubmitter.kt?1
     ```
 
+    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/queue/service/asynctaskworker.go
+    CODE_LOAD::go/usecases/asynctasks/simpleasynctask/asynctaskworker.go
+    ```
     ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/queue/client/tasksubmitter.go
     CODE_LOAD::go/usecases/asynctasks/simpleasynctask/client/tasksubmitter.go?1
     ```
 
+    ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/queue/async_task_worker.py
+    CODE_LOAD::python/src/use_cases/async_tasks/simple_async_task/async_task_service.py
+    ```
     ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/queue/task_submitter.py
     CODE_LOAD::python/src/use_cases/async_tasks/simple_async_task/task_submitter.py?1
     ```
@@ -119,22 +146,37 @@ Schedule tasks for now or later with the Restate SDK.
     Use an idempotency key to ensure that the task is only scheduled once.
     For duplicate requests, Restate returns the previous response.
 
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/queue/async_task_worker.ts
+    CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/async_task_service.ts
+    ```
     ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/queue/task_submitter.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/task_submitter.ts?2
     ```
 
+    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/queue/AsyncTaskWorker.java
+    CODE_LOAD::java/src/main/java/usecases/asynctasks/simple/AsyncTaskService.java
+    ```
     ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/queue/TaskSubmitter.java
     CODE_LOAD::java/src/main/java/usecases/asynctasks/simple/TaskSubmitter.java?2
     ```
 
     ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/simple/AsyncTaskService.kt
+    ```
+    ```kotlin !!tabs Kotlin
     CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/simple/TaskSubmitter.kt?2
     ```
 
+    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/queue/service/asynctaskworker.go
+    CODE_LOAD::go/usecases/asynctasks/simpleasynctask/asynctaskworker.go
+    ```
     ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/queue/client/tasksubmitter.go
     CODE_LOAD::go/usecases/asynctasks/simpleasynctask/client/tasksubmitter.go?2
     ```
 
+    ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/queue/async_task_worker.py
+    CODE_LOAD::python/src/use_cases/async_tasks/simple_async_task/async_task_service.py
+    ```
     ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/queue/task_submitter.py
     CODE_LOAD::python/src/use_cases/async_tasks/simple_async_task/task_submitter.py?2
     ```
@@ -146,22 +188,37 @@ Schedule tasks for now or later with the Restate SDK.
 
     [Learn more](http://localhost:3000/invoke/http#retrieve-result-of-invocations-and-workflows)
 
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/queue/async_task_worker.ts
+    CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/async_task_service.ts
+    ```
     ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/queue/task_submitter.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/simple_async_task/task_submitter.ts?3
     ```
 
+    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/queue/AsyncTaskWorker.java
+    CODE_LOAD::java/src/main/java/usecases/asynctasks/simple/AsyncTaskService.java
+    ```
     ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/queue/TaskSubmitter.java
     CODE_LOAD::java/src/main/java/usecases/asynctasks/simple/TaskSubmitter.java?3
     ```
 
     ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/simple/AsyncTaskService.kt
+    ```
+    ```kotlin !!tabs Kotlin
     CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/simple/TaskSubmitter.kt?3
     ```
 
+    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/queue/service/asynctaskworker.go
+    CODE_LOAD::go/usecases/asynctasks/simpleasynctask/asynctaskworker.go
+    ```
     ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/queue/client/tasksubmitter.go
     CODE_LOAD::go/usecases/asynctasks/simpleasynctask/client/tasksubmitter.go?3
     ```
 
+    ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/queue/async_task_worker.py
+    CODE_LOAD::python/src/use_cases/async_tasks/simple_async_task/async_task_service.py
+    ```
     ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/queue/task_submitter.py
     CODE_LOAD::python/src/use_cases/async_tasks/simple_async_task/task_submitter.py?3
     ```
@@ -287,24 +344,71 @@ Schedule tasks for now or later with the Restate SDK.
     CODE_LOAD::ts/src/use_cases/async_tasks/reminders/payment_reminders.ts?1
     ```
 
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/usecases/asynctasks/reminder/PaymentTracker.java?1
+    ```
+
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/reminder/PaymentTracker.kt?1
+    ```
+
+    ```go !!tabs Go
+    CODE_LOAD::go/usecases/asynctasks/reminder/paymenttracker.go?1
+    ```
+
+    ```python !!tabs Python
+    CODE_LOAD::python/src/use_cases/async_tasks/reminders/payment_tracker.py?1
+    ```
+
+
     ### !!steps
-
     You can schedule follow-up tasks for webhook events, like reminders or escalations.
-
 
     ```ts !!tabs TypeScript
     CODE_LOAD::ts/src/use_cases/async_tasks/reminders/payment_reminders.ts?2
     ```
 
-    ### !!steps Correlating events
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/usecases/asynctasks/reminder/PaymentTracker.java?2
+    ```
+
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/reminder/PaymentTracker.kt?2
+    ```
+
+    ```go !!tabs Go
+    CODE_LOAD::go/usecases/asynctasks/reminder/paymenttracker.go?2
+    ```
+
+    ```python !!tabs Python
+    CODE_LOAD::python/src/use_cases/async_tasks/reminders/payment_tracker.py?2
+    ```
+
+    ### !!steps Stateful handlers and event joins
 
     You can correlate or join async events by sending them to the same object.
 
-    Restate ensures sequential processing of events for the same key.
+    Restate ensures sequential processing of events for the same key and gives you access to K/V state.
 
 
     ```ts !!tabs TypeScript
     CODE_LOAD::ts/src/use_cases/async_tasks/reminders/payment_reminders.ts?3
+    ```
+
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/usecases/asynctasks/reminder/PaymentTracker.java?3
+    ```
+
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/asynctasks/reminder/PaymentTracker.kt?3
+    ```
+
+    ```go !!tabs Go
+    CODE_LOAD::go/usecases/asynctasks/reminder/paymenttracker.go?3
+    ```
+
+    ```python !!tabs Python
+    CODE_LOAD::python/src/use_cases/async_tasks/reminders/payment_tracker.py?3
     ```
 
 </Scrollycoding>

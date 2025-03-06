@@ -8,15 +8,15 @@ import usecases.utils.TaskOpts;
 
 import java.time.Duration;
 
-// <start_here>
 public class TaskSubmitter {
 
-  private static final Client restateClient = Client.connect("http://localhost:8080");
-
+  String RESTATE_URL = "http://localhost:8080";
   public void scheduleTask(TaskOpts taskOpts) {
-    // <mark_1>
+// <start_here>
     // The Java SDK generates clients for each service
+    Client restateClient = Client.connect(RESTATE_URL);
     SendResponse handle =
+        // <mark_1>
         AsyncTaskServiceClient.fromClient(restateClient)
             .send(Duration.ofDays(5))
             .runTask(
@@ -27,11 +27,14 @@ public class TaskSubmitter {
                 );
     // </mark_1>
 
-    // await the handler's result
+    // Attach to the async task to get the result
     // <mark_3>
-    String result = restateClient.invocationHandle(handle.getInvocationId(), JsonSerdes.STRING).attach();
-
+    String result = restateClient
+            // break
+            .invocationHandle(handle.getInvocationId(), JsonSerdes.STRING)
+            // break
+            .attach();
     // </mark_3>
+    // <end_here>
   }
 }
-// <end_here>

@@ -162,17 +162,29 @@ export function CodeWithTabs(props: unknown) {
 
 export function CodeTabs(props: { groupId?: string, className: string, tabs: HighlightedCode[] }) {
     const { groupId, tabs } = props
-    return (
 
+    // Tabs with the same title are merged and shown as different stacked windows in a single tab
+    const tabMap = new Map<string, HighlightedCode[]>()
+    tabs.forEach((tab) => {
+        const { title } = extractFlagsFromMeta(tab.meta)
+        if (tabMap.has(title)) {
+            tabMap.get(title)!.push(tab)
+        } else {
+            tabMap.set(title, [tab])
+        }
+    })
+
+    return (
         <Tabs className={clsx(styles.codetablist, "ch-codetablist", props.className)} {...(groupId ? { groupId, queryString: true } : {})}>
-            {tabs.map((tab, i) => {
-                const { title, tabValue } = extractFlagsFromMeta(tab.meta);
-                const value = tabValue ?? title.toLowerCase().replace("typescript", "ts");
+            {Array.from(tabMap.entries()).map(([title, windows], i) => {
                 return (
-                    <TabItem className={clsx(styles.codetab)} label={title} value={value} key={i}>
-                        <HighCode isTab={true} highlighted={tab} />
+                    <TabItem className={clsx(styles.codetab)} label={title} value={title.toLowerCase().replace("typescript", "ts")} key={i}>
+                        {windows.map((window, i) => {
+                            return <><HighCode isTab={true} highlighted={window} key={i}/>
+                                {i < windows.length - 1 && <div className={styles.greyLine}></div>}</>
+                        })}
                     </TabItem>
-                );
+                )
             })}
         </Tabs>
     )

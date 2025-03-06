@@ -6,48 +6,42 @@ const paymentTracker = restate.object({ // one instance per invoice id
     // </mark_3>
     name: "PaymentTracker",
     handlers: {
-        // First invoked by Stripe webhook events,
-        // and then via delayed self calls until payment has succeeded
+        // Stripe sends us webhook events for invoice payment attempts
         // <mark_1>
-        remindPaymentFailed: async (ctx: restate.ObjectContext, event: StripeEvent) => {
+        onPaymentSuccess: async (ctx: restate.ObjectContext, event: StripeEvent) => {
             // </mark_1>
             // <mark_3>
-            if (await ctx.get<string>("status") === "PAID") {
+            ctx.set("paid", true);
+            // </mark_3>
+        },
+        // <mark_1>
+        onPaymentFailed: async (ctx: restate.ObjectContext, event: StripeEvent) => {
+            // </mark_1>
+            // <mark_3>
+            if (await ctx.get<boolean>("paid")) {
                 return;
             }
             // </mark_3>
 
             const remindersCount = await ctx.get<number>("reminders_count") ?? 0;
-            if (remindersCount >= 3) {
+            if (remindersCount < 3) {
+                ctx.set("reminders_count", remindersCount + 1);
+                await ctx.run(() => sendReminderEmail(event));
+
+                // Schedule next reminder via a delayed self call
                 // <mark_2>
-                await ctx.objectSendClient(PaymentTracker, ctx.key).escalate(event);
+                await ctx.objectSendClient(
+                    PaymentTracker,
+                    ctx.key, // this object's invoice id
+                    {delay: 24 * 60 * 60 * 1000}
+                ).onPaymentFailed(event);
                 // </mark_2>
-                return;
+            } else {
+                // <mark_2>
+                await ctx.run(() => escalateToHuman(event));
+                // </mark_2>
             }
-
-            await ctx.run(() => sendReminderEmail(event));
-            ctx.set("reminders_count", remindersCount + 1);
-
-            // Schedule next reminder
-            // <mark_2>
-            await ctx.objectSendClient(PaymentTracker, ctx.key, {delay: 24 * 60 * 60 * 1000})
-                .remindPaymentFailed(event);
-            // </mark_2>
         },
-
-        // <mark_1>
-        onPaymentSuccess: async (ctx: restate.ObjectContext, event: StripeEvent) => {
-            // </mark_1>
-            // <mark_3>
-            ctx.set("status", "PAID");
-            // </mark_3>
-        },
-
-        // <mark_1>
-        escalate: async (ctx: restate.ObjectContext, event: StripeEvent) => {
-            // </mark_1>
-            //  Request human intervention to resolve the issue.
-        }
     }
 })
 // <end_here>
@@ -73,4 +67,8 @@ export type StripeEvent = {
 
 export function sendReminderEmail(message: StripeEvent) {
     console.log(`Sending email: ${message}`);
+}
+
+function escalateToHuman(event: StripeEvent) {
+    return undefined;
 }

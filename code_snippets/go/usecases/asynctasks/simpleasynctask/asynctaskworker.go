@@ -20,10 +20,12 @@ type Result struct {
 // <start_here>
 type AsyncTaskWorker struct{}
 
+// <mark_1>
 func (AsyncTaskWorker) RunTask(ctx restate.Context, task TaskOpts) (Result, error) {
 	return someHeavyWork(task)
 }
 
+// </mark_1>
 // <end_here>
 
 func main() {

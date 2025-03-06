@@ -5,11 +5,11 @@ import requests
 from src.use_cases.async_tasks.simple_async_task.async_task_service import TaskOpts
 
 
-# <start_here>
 RESTATE_URL = "http://localhost:8080"
 
 
 def schedule_task(task: TaskOpts):
+    # <start_here>
     # <mark_1>
     requests.post(
         f"{RESTATE_URL}/taskWorker/runTask/send",
@@ -22,9 +22,7 @@ def schedule_task(task: TaskOpts):
           })
     # </mark_1>
 
-    # Do something else, with task running in the background
-
-    # Attach back to the task to retrieve the result
+    # Attach to the async task to retrieve the result
     # <mark_3>
     # <mark_4>
     attach_url = f"{RESTATE_URL}/restate/invocation/taskWorker/runTask/dQw4w9WgXcQ/attach"

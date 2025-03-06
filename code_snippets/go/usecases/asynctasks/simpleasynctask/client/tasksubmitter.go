@@ -15,10 +15,9 @@ type TaskOpts struct {
 
 const RESTATE_URL = "http://localhost:8080"
 
-// <start_here>
 func SubmitTask(task TaskOpts) error {
+	// <start_here>
 	client := &http.Client{}
-
 	// <mark_1>
 	url := fmt.Sprintf("%s/AsyncTaskWorker/RunTask/Send", RESTATE_URL)
 	taskData, _ := json.Marshal(task)
@@ -41,20 +40,20 @@ func SubmitTask(task TaskOpts) error {
 	// ... do other things while the task is being processed ...
 
 	// <mark_3>
-	attachUrl := fmt.Sprintf("%s/restate/invocation/AsyncTaskWorker/RunTask/%s/attach", RESTATE_URL, "dQw4w9WgXcQ")
+	attachUrl := fmt.Sprintf(
+		"%s/restate/invocation/AsyncTaskWorker/RunTask/%s/attach",
+		RESTATE_URL,
+		"dQw4w9WgXcQ")
 	resp, err = http.DefaultClient.Get(attachUrl)
 	// </mark_3>
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
-
-	// ... Process the result ...
+	// <end_here>
 
 	return nil
 }
-
-// <end_here>
 
 func main() {
 	task := TaskOpts{

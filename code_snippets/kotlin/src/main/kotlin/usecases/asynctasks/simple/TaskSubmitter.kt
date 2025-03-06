@@ -5,16 +5,15 @@ import dev.restate.sdk.client.Client
 import dev.restate.sdk.kotlin.KtSerdes
 import kotlin.time.Duration.Companion.days
 
-// <start_here>
 class TaskSubmitter {
-  companion object {
-    private val restateClient: Client = Client.connect("http://localhost:8080")
-  }
 
   suspend fun scheduleTask(taskOpts: TaskOpts) {
-    // <mark_1>
+      val RESTATE_URL = "http://localhost:8080"
+    // <start_here>
     // The Kotlin SDK generates clients for each service
+    val restateClient: Client = Client.connect(RESTATE_URL)
     val handle =
+        // <mark_1>
         AsyncTaskServiceClient.fromClient(restateClient)
             .send(5.days)
             .runTask(
@@ -25,7 +24,7 @@ class TaskSubmitter {
             )
     // </mark_1>
 
-    // await the handler's result
+    // Attach to the async task to get the result
     // <mark_3>
     val result =
         restateClient.invocationHandle(
@@ -34,6 +33,6 @@ class TaskSubmitter {
             )
             .attach()
     // </mark_3>
+    // <end_here>
   }
 }
-// <end_here>
