@@ -50,7 +50,7 @@ import {Scrollycoding} from "../../src/components/code/scrollycoding";
 
 <p className={"padding-bottom--lg"}></p>
 
-## Resilient Code Execution
+## Resilient Code Execution and Communication
 
 <Scrollycoding className="workflows-scroller">
 
@@ -64,21 +64,36 @@ import {Scrollycoding} from "../../src/components/code/scrollycoding";
     ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/basics/src/0_durable_execution.ts
     CODE_LOAD::ts/src/use_cases/microservices/subscription_service.ts?1
     ```
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/durablerpc/express_app.ts
+    CODE_LOAD::ts/src/use_cases/microservices/idempotency.ts
+    ```
 
     ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/basics/src/main/java/durable_execution/SubscriptionService.java
     CODE_LOAD::java/src/main/java/usecases/microservices/SubscriptionService.java?1
+    ```
+    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/durablerpc/MyClient.java
+    CODE_LOAD::java/src/main/java/usecases/microservices/Idempotency.java
     ```
 
     ```kotlin !!tabs Kotlin https://github.com/restatedev/examples/blob/main/kotlin/basics/src/main/kotlin/durable_execution/SubscriptionService.kt
     CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/service/SubscriptionService.kt?1
     ```
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/Idempotency.kt
+    ```
 
     ```go !!tabs Go
     CODE_LOAD::go/usecases/microservices/service/subscriptionservice.go?1
     ```
+    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/durablerpc/client/client.go
+    CODE_LOAD::go/usecases/microservices/service/client/client.go
+    ```
 
     ```py !!tabs Python
     CODE_LOAD::python/src/use_cases/microservices/subscription_service.py?1
+    ```
+    ```py !!tabs Python
+    CODE_LOAD::python/src/use_cases/microservices/idempotency.py
     ```
 
 
@@ -93,34 +108,42 @@ import {Scrollycoding} from "../../src/components/code/scrollycoding";
     ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/basics/src/0_durable_execution.ts
     CODE_LOAD::ts/src/use_cases/microservices/subscription_service.ts?2
     ```
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/durablerpc/express_app.ts
+    CODE_LOAD::ts/src/use_cases/microservices/idempotency.ts
+    ```
 
     ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/basics/src/main/java/durable_execution/SubscriptionService.java
     CODE_LOAD::java/src/main/java/usecases/microservices/SubscriptionService.java?2
+    ```
+    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/durablerpc/MyClient.java
+    CODE_LOAD::java/src/main/java/usecases/microservices/Idempotency.java
     ```
 
     ```kotlin !!tabs Kotlin https://github.com/restatedev/examples/blob/main/kotlin/basics/src/main/kotlin/durable_execution/SubscriptionService.kt
     CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/service/SubscriptionService.kt?2
     ```
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/Idempotency.kt
+    ```
 
     ```go !!tabs Go
     CODE_LOAD::go/usecases/microservices/service/subscriptionservice.go?2
+    ```
+    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/durablerpc/client/client.go
+    CODE_LOAD::go/usecases/microservices/service/client/client.go
     ```
 
     ```py !!tabs Python
     CODE_LOAD::python/src/use_cases/microservices/subscription_service.py?2
     ```
+    ```py !!tabs Python
+    CODE_LOAD::python/src/use_cases/microservices/idempotency.py
+    ```
 
-</Scrollycoding>
-
-
-## Durable Communication, Scheduling & Idempotency
-
-Restate sits like a reverse-proxy or message broker in front of your services.
-It persists and deduplicates all communication to and between your services.
-
-<Scrollycoding>
 
     ### !!steps Resilient RPC and messaging
+
+    Restate sits like a reverse-proxy or message broker in front of your services.
 
     Restate proxies RPC calls and ensures they are delivered and processed:
     - request-response
@@ -129,22 +152,37 @@ It persists and deduplicates all communication to and between your services.
 
     [Learn more](/concepts/invocations)
 
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/basics/src/0_durable_execution.ts
+    CODE_LOAD::ts/src/use_cases/microservices/subscription_service.ts
+    ```
     ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/durablerpc/express_app.ts
     CODE_LOAD::ts/src/use_cases/microservices/idempotency.ts?1
     ```
 
+    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/basics/src/main/java/durable_execution/SubscriptionService.java
+    CODE_LOAD::java/src/main/java/usecases/microservices/SubscriptionService.java
+    ```
     ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/durablerpc/MyClient.java
     CODE_LOAD::java/src/main/java/usecases/microservices/Idempotency.java?1
     ```
 
+    ```kotlin !!tabs Kotlin https://github.com/restatedev/examples/blob/main/kotlin/basics/src/main/kotlin/durable_execution/SubscriptionService.kt
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/service/SubscriptionService.kt
+    ```
     ```kotlin !!tabs Kotlin
     CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/Idempotency.kt?1
     ```
 
     ```go !!tabs Go
-    CODE_LOAD::go/usecases/microservices/call/client/client.go?1
+    CODE_LOAD::go/usecases/microservices/service/subscriptionservice.go
+    ```
+    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/durablerpc/client/client.go
+    CODE_LOAD::go/usecases/microservices/service/client/client.go?1
     ```
 
+    ```py !!tabs Python
+    CODE_LOAD::python/src/use_cases/microservices/subscription_service.py
+    ```
     ```py !!tabs Python
     CODE_LOAD::python/src/use_cases/microservices/idempotency.py?1
     ```
@@ -155,23 +193,38 @@ It persists and deduplicates all communication to and between your services.
     Each request runs to completion exactly once.
 
     [Learn more](/concepts/invocations#idempotent-invocations)
-    
+
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/basics/src/0_durable_execution.ts
+    CODE_LOAD::ts/src/use_cases/microservices/subscription_service.ts
+    ```
     ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/durablerpc/express_app.ts
     CODE_LOAD::ts/src/use_cases/microservices/idempotency.ts?2
     ```
 
+    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/basics/src/main/java/durable_execution/SubscriptionService.java
+    CODE_LOAD::java/src/main/java/usecases/microservices/SubscriptionService.java
+    ```
     ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/durablerpc/MyClient.java
     CODE_LOAD::java/src/main/java/usecases/microservices/Idempotency.java?2
     ```
 
+    ```kotlin !!tabs Kotlin https://github.com/restatedev/examples/blob/main/kotlin/basics/src/main/kotlin/durable_execution/SubscriptionService.kt
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/service/SubscriptionService.kt
+    ```
     ```kotlin !!tabs Kotlin
     CODE_LOAD::kotlin/src/main/kotlin/usecases/microservices/Idempotency.kt?2
     ```
 
     ```go !!tabs Go
-    CODE_LOAD::go/usecases/microservices/call/client/client.go?2
+    CODE_LOAD::go/usecases/microservices/service/subscriptionservice.go
+    ```
+    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/durablerpc/client/client.go
+    CODE_LOAD::go/usecases/microservices/service/client/client.go?2
     ```
 
+    ```py !!tabs Python
+    CODE_LOAD::python/src/use_cases/microservices/subscription_service.py
+    ```
     ```py !!tabs Python
     CODE_LOAD::python/src/use_cases/microservices/idempotency.py?2
     ```

@@ -4,7 +4,7 @@ import (
 	"context"
 	restate "github.com/restatedev/sdk-go"
 	"github.com/restatedev/sdk-go/server"
-	"log/slog"
+	"log"
 )
 
 type SubscriptionRequest struct {
@@ -73,7 +73,8 @@ func main() {
 	if err := server.NewRestate().
 		Bind(restate.Reflect(SubscriptionSaga{})).
 		Start(context.Background(), ":9080"); err != nil {
-		slog.Error(err.Error())
+
+		log.Fatal(err)
 	}
 }
 
