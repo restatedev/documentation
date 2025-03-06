@@ -17,17 +17,12 @@ class FanOutWorker {
   suspend fun run(ctx: Context, task: Task): TaskResult {
     val subTasks = ctx.runBlock { task.split() }
 
-    val resultFutures: MutableList<Awaitable<SubTaskResult>> = mutableListOf()
     // <mark_1>
-    for (subTask in subTasks) {
-      val subResultFuture = FanOutWorkerClient.fromContext(ctx).runSubtask(subTask)
-
+    val results = subTasks.map {
+      FanOutWorkerClient.fromContext(ctx).runSubtask(it)
       // </mark_1>
-      resultFutures.add(subResultFuture)
-    }
-
-    // <mark_2>
-    val results = resultFutures.awaitAll()
+      // <mark_2>
+    }.awaitAll()
     // </mark_2>
     return results.aggregate()
   }
