@@ -158,14 +158,16 @@ const plugin = (options) => {
             let trimmedLine = line.trim();
 
             // Handle multi-line comments
-            if (trimmedLine.startsWith('/*')) {
-                inBlockComment = true;
-            }
-            if (inBlockComment) {
-                if (trimmedLine.endsWith('*/')) {
-                    inBlockComment = false;
+            if (doRemoveComments) {
+                if (trimmedLine.startsWith('/*')) {
+                    inBlockComment = true;
                 }
-                return false; // Ignore everything inside /* ... */
+                if (inBlockComment) {
+                    if (trimmedLine.endsWith('*/')) {
+                        inBlockComment = false;
+                    }
+                    return false; // Ignore everything inside /* ... */
+                }
             }
             // filter out all code loader tags
             let keepLine = !line.includes('<start_') &&
