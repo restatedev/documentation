@@ -16,31 +16,24 @@ import { AsyncTaskService, TaskOpts } from "./async_task_service";
 
 const RESTATE_URL = process.env.RESTATE_URL ?? "http://localhost:8080";
 
+async function scheduleTask(task: TaskOpts) {
 // <start_here>
-async function submitAndAwaitTask(task: TaskOpts) {
+  // The TypeScript SDK includes a client to send requests to services
   const restateClient = restate.connect({ url: RESTATE_URL });
-
   // <mark_1>
   const taskHandle = await restateClient
     .serviceSendClient<AsyncTaskService>({ name: "taskWorker" })
     .runTask(
       task,
       // <mark_2>
-      SendOpts.from({ idempotencyKey: "dQw4w9WgXcQ" })
+      SendOpts.from({ idempotencyKey: "dQw4w9WgXcQ", delay: 1000 })
       // </mark_2>
     );
   // </mark_1>
 
-  // await the handler's result
+  // Attach to the async task to get the result
   // <mark_3>
   const result = await restateClient.result(taskHandle);
   // </mark_3>
-}
-
-// <mark_4>
-async function attachToTask(taskHandle: string) {
-  const rs = restate.connect({ url: RESTATE_URL });
-  const result = await rs.result<string>(JSON.parse(taskHandle));
-}
-// </mark_4>
 // <end_here>
+}

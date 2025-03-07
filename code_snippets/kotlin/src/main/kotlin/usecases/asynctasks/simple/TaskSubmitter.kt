@@ -3,18 +3,19 @@ package usecases.asynctasks.simple
 import dev.restate.sdk.client.CallRequestOptions
 import dev.restate.sdk.client.Client
 import dev.restate.sdk.kotlin.KtSerdes
+import kotlin.time.Duration.Companion.days
 
-// <start_here>
 class TaskSubmitter {
-  companion object {
-    private val rs: Client = Client.connect("http://localhost:8080")
-  }
 
-  suspend fun submitAndAwaitTasks(taskOpts: TaskOpts) {
-    // <mark_1>
+  suspend fun scheduleTask(taskOpts: TaskOpts) {
+      val RESTATE_URL = "http://localhost:8080"
+    // <start_here>
+    // The Kotlin SDK generates clients for each service
+    val restateClient: Client = Client.connect(RESTATE_URL)
     val handle =
-        AsyncTaskServiceClient.fromClient(rs)
-            .send()
+        // <mark_1>
+        AsyncTaskServiceClient.fromClient(restateClient)
+            .send(5.days)
             .runTask(
                 taskOpts,
                 // <mark_2>
@@ -23,15 +24,15 @@ class TaskSubmitter {
             )
     // </mark_1>
 
-    // await the handler's result
+    // Attach to the async task to get the result
     // <mark_3>
     val result =
-        rs.invocationHandle(
+        restateClient.invocationHandle(
                 handle.invocationId,
                 KtSerdes.json<String>(),
             )
             .attach()
     // </mark_3>
+    // <end_here>
   }
 }
-// <end_here>

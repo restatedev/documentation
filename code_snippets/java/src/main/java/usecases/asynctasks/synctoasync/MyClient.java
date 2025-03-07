@@ -4,33 +4,41 @@ import dev.restate.sdk.client.Client;
 import develop.workflows.Email;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import usecases.asynctasks.synctoasync.DataPreparationServiceClient.IngressClient;
+import usecases.asynctasks.synctoasync.FileUploadWorkflowClient.IngressClient;
+import usecases.utils.URL;
 
 public class MyClient {
   // <start_here>
-  public void downloadData(String userId, Email email) {
+  public void uploadFile(String userId, Email email) {
+
     // <mark_1>
-    Client rs = Client.connect("http://localhost:8080");
-    IngressClient uploadClient = DataPreparationServiceClient.fromClient(rs, userId);
+    Client restateClient = Client.connect("http://localhost:8080");
+    IngressClient fileUploadClient = FileUploadWorkflowClient.fromClient(restateClient, userId);
+    fileUploadClient.submit();
     // </mark_1>
-    // <mark_2>
-    uploadClient.submit();
-    // </mark_2>
 
     try {
-      // <mark_3>
-      uploadClient.workflowHandle().attachAsync().orTimeout(30, TimeUnit.SECONDS).join();
-      // </mark_3>
-      // <mark_4>
+      // <mark_1>
+      URL fileUploadUrl =
+          fileUploadClient
+              .workflowHandle()
+              .attachAsync()
+              // break
+              .orTimeout(30, TimeUnit.SECONDS)
+              .join();
+      // </mark_1>
+
+      // ... process directly ...
+
     } catch (Exception e) {
+      // <mark_2>
       if (e.getCause() instanceof TimeoutException) {
-        uploadClient.resultAsEmail(email);
+        fileUploadClient.getUrlViaEmail(email);
+        // </mark_2>
         return;
       }
       throw e;
     }
-    // </mark_4>
-    // ... process directly ...
   }
   // <end_here>
 }

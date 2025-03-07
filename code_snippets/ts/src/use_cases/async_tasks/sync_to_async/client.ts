@@ -1,6 +1,5 @@
 import * as restate from "@restatedev/restate-sdk-clients";
-import * as readline from "readline";
-import { DataPrepService } from "./data_preparation_service";
+import {FileUploadWorkflow} from "./file_upload_workflow";
 
 const RESTATE_URL = process.env.RESTATE_URL ?? "http://localhost:8080";
 // Client:
@@ -10,30 +9,27 @@ const RESTATE_URL = process.env.RESTATE_URL ?? "http://localhost:8080";
 // workflow to send an email instead.
 
 // <start_here>
-const rs = restate.connect({ url: RESTATE_URL });
-const dataPrepService: DataPrepService = { name: "dataPrep" };
+const restateClient = restate.connect({ url: RESTATE_URL });
 
-async function downloadData(user: { id: string, email: string }) {
+async function uploadFile(user: { id: string, email: string }) {
   // <mark_1>
-  const dataPrep = rs.workflowClient(dataPrepService, user.id);
+  const workflowClient = restateClient.workflowClient<FileUploadWorkflow>({ name: "FileUploadWorkflow" }, user.id);
+  await workflowClient.workflowSubmit();
+  // </mark_1>
+
+  // <mark_1>
+  const result = await withTimeout(workflowClient.workflowAttach(), 30_000);
   // </mark_1>
 
   // <mark_2>
-  await dataPrep.workflowSubmit();
-  // </mark_2>
-
-  // <mark_3>
-  const result = await withTimeout(dataPrep.workflowAttach(), 30_000);
-  // </mark_3>
-
-  // <mark_4>
   if (result === Timeout) {
-    // Hit timeout... Mail us the link later
-    await dataPrep.resultAsEmail({ email: user.email });
+    await workflowClient.resultAsEmail({ email: user.email });
+    // </mark_2>
     return;
   }
-  // </mark_4>
+
   // ... process directly ...
+
 }
 // <end_here>
 

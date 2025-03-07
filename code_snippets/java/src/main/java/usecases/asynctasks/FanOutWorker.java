@@ -22,8 +22,13 @@ public class FanOutWorker {
 
   @Handler
   public Result run(Context ctx, Task task) {
+
     // Split the task in subtasks
-    SubTask[] subTasks = ctx.run(JacksonSerdes.of(new TypeReference<>() {}), () -> split(task));
+    SubTask[] subTasks =
+        ctx.run(
+            JacksonSerdes.of(new TypeReference<>() {}),
+            // break
+            () -> split(task));
 
     List<Awaitable<?>> resultFutures = new ArrayList<>();
     // <mark_1>

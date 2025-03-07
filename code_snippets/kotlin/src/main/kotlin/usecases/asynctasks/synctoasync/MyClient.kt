@@ -3,31 +3,36 @@ package usecases.asynctasks.synctoasync
 import dev.restate.sdk.client.Client
 import develop.workflows.Email
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
 class MyClient {
 
   // <start_here>
-  suspend fun downloadData(userId: String, email: Email) {
+  suspend fun uploadFile(userId: String, email: Email) {
     // <mark_1>
-    val rs: Client = Client.connect("http://localhost:8080")
-    val client = DataPreparationServiceClient.fromClient(rs, userId)
+    val restateClient: Client = Client.connect("http://localhost:8080")
+    val fileUploadClient = FileUploadWorkflowClient.fromClient(restateClient, userId)
+    fileUploadClient.submit()
     // </mark_1>
 
-    // <mark_2>
-    client.submit()
-    // </mark_2>
-
     try {
-      // <mark_3>
-      client.workflowHandle().attachAsync().orTimeout(30, TimeUnit.SECONDS).join()
-      // </mark_3>
-      // <mark_4>
+      // <mark_1>
+      val fileUploadUrl = fileUploadClient.workflowHandle().attachAsync()
+        // break
+        .orTimeout(30, TimeUnit.SECONDS).join()
+      // </mark_1>
+
+      // ... process directly ...
+
     } catch (e: Exception) {
-      client.resultAsEmail(email)
-      return
+      // <mark_2>
+      if (e.cause is TimeoutException) {
+        fileUploadClient.getUrlViaEmail(email)
+        // </mark_2>
+        return
+      }
+      throw e
     }
-    // </mark_4>
-    // ... process directly ...
   }
   // <end_here>
 }
