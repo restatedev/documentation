@@ -19,9 +19,8 @@ public class Idempotency {
         .add(
             subscriptionRequest,
             // <mark_2>
-            CallRequestOptions.DEFAULT.withIdempotency(requestId)
-            // </mark_2>
-            );
+            CallRequestOptions.DEFAULT.withIdempotency(requestId));
+    // </mark_2>
     // </mark_1>
     // <end_here>
   }

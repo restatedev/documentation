@@ -23,7 +23,11 @@ public class SubscriptionService {
     var paymentId = ctx.random().nextUUID().toString();
 
     // <mark_2>
-    var payRef = ctx.run(STRING, () -> createRecurringPayment(req.creditCard(), paymentId));
+    var payRef =
+        ctx.run(
+            STRING,
+            // break
+            () -> createRecurringPayment(req.creditCard(), paymentId));
     // </mark_2>
 
     for (String subscription : req.subscriptions()) {
@@ -34,7 +38,10 @@ public class SubscriptionService {
   }
 
   public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder().bind(new SubscriptionService()).buildAndListen();
+    RestateHttpEndpointBuilder.builder()
+        // break
+        .bind(new SubscriptionService())
+        .buildAndListen();
   }
 }
 // <end_here>

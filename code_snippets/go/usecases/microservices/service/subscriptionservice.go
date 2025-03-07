@@ -21,6 +21,7 @@ func (SubscriptionService) Add(ctx restate.Context, req SubscriptionRequest) err
 	// </mark_1>
 	paymentId := restate.Rand(ctx).UUID().String()
 	// <mark_2>
+
 	payRef, err := restate.Run(ctx, func(ctx restate.RunContext) (string, error) {
 		return CreateRecurringPayment(req.CreditCard, paymentId)
 	})
@@ -38,6 +39,7 @@ func (SubscriptionService) Add(ctx restate.Context, req SubscriptionRequest) err
 			return err
 		}
 	}
+
 	return nil
 }
 
