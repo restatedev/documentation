@@ -20,8 +20,8 @@ import Admonition from "@theme/Admonition";
         <h1 className={"padding-top--lg text--left"}>Async tasks</h1>
         <h1 className={"use-case-subtitle text--left"}>Flexible, durable scheduling across processes and time.</h1>
         <p className={"use-case-description padding-bottom--lg text--left"}>
-            Restate lets you write resilient scheduling logic with the flexibility of code: delay execution, re-attach to ongoing tasks, fan out/in, etc.
-            Restate runs your tasks to completion exactly once.
+            Restate lets you write resilient scheduling logic with the flexibility of code: delay execution, re-attach to ongoing tasks, fan-out/in patterns, and more.
+            Restate guarantees that your tasks run to completion exactly once.
         </p>
     </div>
     <div className={"col col--6 col-lg-6 col-md-12"}>
@@ -36,17 +36,17 @@ import Admonition from "@theme/Admonition";
     {
         title: 'Durable timers',
         iconPath: '/img/use_cases/hour-glass.svg',
-        description: "Register timers with Restate to make them durable. Restate makes sure that they get fired when they should, whether it's millis or months.",
+        description: "Persist timers in Restate. Restate makes sure that they get fired when they should, whether it's millis or months later.",
     },
     {
         title: '(Delayed) task queue',
         iconPath: '/img/use_cases/queue.svg',
-        description: "Schedule tasks asynchronously, by using Restate as message queue. Tasks execute with workflow-like semantics and durability. Restate handles retries and recovery of progress."
+        description: "Use Restate as message queue and schedule tasks asynchronously. Tasks execute with workflow-like durability and reliability. Restate handles retries and recovery of progress."
     },
     {
         title: 'Switch between async and sync',
         iconPath: '/img/use_cases/switch.svg',
-        description: "Schedule an async task, by using Restate as queue. Let another process latch on to it later and wait for the result, or peek at the output to see if it has finished.",
+        description: "Schedule an async task through Restate, then let any process latch onto it later to wait for the result or check its completion status, all with built-in durability.",
     },
 ]}/>
 
@@ -54,13 +54,11 @@ import Admonition from "@theme/Admonition";
 
 
 ## Scheduling async tasks with Restate
-Schedule tasks for now or later with the Restate SDK.
-
 <Scrollycoding>
     ### !!steps Restate as message queue
 
-    Any function can be turned into an async task by using Restate as a message queue.
-    Restate persists requests and makes sure they run to completion, with retries and recovery upon failures.
+    Any function becomes a durable async task by using Restate as your message queue.
+    Restate persists all requests and ensures they run to completion with automatic retries and recovery upon failures.
 
     [Learn more](/concepts/durable_execution)
 
@@ -101,8 +99,7 @@ Schedule tasks for now or later with the Restate SDK.
 
     ### !!steps Schedule async tasks
 
-    You can schedule tasks with the SDK clients or via HTTP.
-    You can schedule the task for later via the optional delay parameter.
+    You can schedule tasks with the SDK clients or via HTTP, and you can postpone execution via the optional delay parameter.
 
     [Learn more](/concepts/invocations)
 
@@ -240,9 +237,8 @@ Schedule tasks for now or later with the Restate SDK.
 
     ### !!steps Fan out
 
-    Write flexible scheduling logic via durable building blocks.
-    Fan out tasks with Restate's resilient RPC calls.
-
+    Write flexible scheduling logic with Restate's durable building blocks.
+    Fan out tasks with resilient RPC calls.
     Restate makes sure all tasks run to completion, with retries and recovery upon failures.
 
     ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/parallelizework/fan_out_worker.ts
@@ -250,7 +246,7 @@ Schedule tasks for now or later with the Restate SDK.
     ```
 
     ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/parallelizework/FanOutWorker.java
-    CODE_LOAD::java/src/main/java/usecases/asynctasks/FanOutWorker.java?1
+    CODE_LOAD::java/src/main/java/usecases/asynctasks/parallelize/FanOutWorker.java?1
     ```
 
     ```kotlin !!tabs Kotlin https://github.com/restatedev/examples/blob/main/kotlin/patterns-use-cases/src/main/kotlin/my/example/parallelizework/FanOutWorker.kt
@@ -267,14 +263,14 @@ Schedule tasks for now or later with the Restate SDK.
 
     ### !!steps Fan in
     Invocations produce durable promises that can be awaited and combined.
-    Durable promises recover from failures, re-connect to running subtasks.
+    These durable promises can be recovered on other processes after a failure.
 
     ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/parallelizework/fan_out_worker.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/fan_out_worker.ts?2
     ```
 
     ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/parallelizework/FanOutWorker.java
-    CODE_LOAD::java/src/main/java/usecases/asynctasks/FanOutWorker.java?2
+    CODE_LOAD::java/src/main/java/usecases/asynctasks/parallelize/FanOutWorker.java?2
     ```
 
     ```kotlin !!tabs Kotlin https://github.com/restatedev/examples/blob/main/kotlin/patterns-use-cases/src/main/kotlin/my/example/parallelizework/FanOutWorker.kt
@@ -290,7 +286,7 @@ Schedule tasks for now or later with the Restate SDK.
     ```
 
     ### !!steps Server(less)
-    Deploy this service or the subtasks on a platform like Kubernetes or AWS Lambda to
+    Deploy this service or its subtask processors on a platform like Kubernetes or AWS Lambda to
     automatically get parallel scale out.
 
     [Learn more](https://restate.dev/blog/we-replaced-400-lines-of-stepfunctions-asl-with-40-lines-of-typescript-by-making-lambdas-suspendable/)
@@ -300,7 +296,7 @@ Schedule tasks for now or later with the Restate SDK.
     ```
 
     ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/parallelizework/FanOutWorker.java
-    CODE_LOAD::java/src/main/java/usecases/asynctasks/FanOutWorker.java?3
+    CODE_LOAD::java/src/main/java/usecases/asynctasks/parallelize/FanOutWorker.java?3
     ```
 
     ```kotlin !!tabs Kotlin https://github.com/restatedev/examples/blob/main/kotlin/patterns-use-cases/src/main/kotlin/my/example/parallelizework/FanOutWorker.kt
@@ -325,7 +321,7 @@ Schedule tasks for now or later with the Restate SDK.
         },
         {
             title: 'DURABLE EXECUTION',
-            description: <>Restate makes sure all tasks run to completion. It keeps track of timers, handles retries and recovery upon failures, and ensures that tasks are executed exactly once. <br/><br/>  <a href={"https://restate.dev/what-is-durable-execution/"}>Learn more</a></>,
+            description: <>Restate guarantees all tasks run to completion. It keeps track of timers, handles retries and recovery upon failures, and ensures that tasks are executed exactly once. <br/><br/>  <a href={"https://restate.dev/what-is-durable-execution/"}>Learn more</a></>,
         },
     ]}/>
 </SpotlightCard>
@@ -336,8 +332,7 @@ Schedule tasks for now or later with the Restate SDK.
 
 <Scrollycoding>
     ### !!steps Restate handlers as durable event processors
-    You can point your webhook endpoint to any Restate handler.
-
+    Point your webhook endpoint to any Restate handler.
     Restate makes sure all events are persisted and run to completion.
 
     ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/schedulingtasks/payment_reminders.ts
@@ -362,7 +357,7 @@ Schedule tasks for now or later with the Restate SDK.
 
 
     ### !!steps
-    You can schedule follow-up tasks for webhook events, like reminders or escalations.
+    Schedule follow-up tasks for webhook events, like reminders or escalations.
 
     ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/schedulingtasks/payment_reminders.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/reminders/payment_reminders.ts?2
@@ -386,10 +381,9 @@ Schedule tasks for now or later with the Restate SDK.
 
     ### !!steps Stateful handlers and event joins
 
-    You can correlate or join async events by sending them to the same object.
+    Correlate or join asynchronous events by routing them to the same object.
 
-    Restate ensures sequential processing of events for the same key and gives you access to K/V state.
-
+    Restate ensures sequential processing of events for the same key while giving access to durable key-value state.
 
     ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/schedulingtasks/payment_reminders.ts
     CODE_LOAD::ts/src/use_cases/async_tasks/reminders/payment_reminders.ts?3
