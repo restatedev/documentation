@@ -71,12 +71,7 @@ func (PackageTracker) GetPackageInfo(ctx restate.ObjectSharedContext) (*PackageI
 	// </mark_2>
 	// </mark_3>
 	// <mark_1>
-	packageInfo, err := restate.Get[PackageInfo](ctx, "package-info")
-	// </mark_1>
-	if err != nil {
-		return PackageInfo{}, err
-	}
-	return packageInfo, nil
+	return restate.Get[*PackageInfo](ctx, "package-info")
 }
 
 func main() {
