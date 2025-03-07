@@ -73,7 +73,7 @@ func main() {
 	if err := server.NewRestate().
 		Bind(restate.Reflect(SubscriptionSaga{})).
 		Start(context.Background(), ":9080"); err != nil {
-		log.Fatal(err.Error())
+		log.Fatal(err)
 	}
 }
 

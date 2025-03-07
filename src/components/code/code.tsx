@@ -30,114 +30,114 @@ import styles from "./code-styling.module.css"
 import clsx from "clsx";
 
 export function InlineCode({ codeblock }: { codeblock: HighlightedCode }) {
-  return (
-      <Inline
-          code={codeblock}
-          style={codeblock.style}
-          className="selection:bg-editor-selectionBackground"
-      />
-  )
+    return (
+        <Inline
+            code={codeblock}
+            style={codeblock.style}
+            className="selection:bg-editor-selectionBackground"
+        />
+    )
 }
 
 export function Code({
-                             codeblock,
-                             ...rest
-                           }: {
-  codeblock: HighlightedCode
-  className?: string
-  style?: React.CSSProperties
-  extraHandlers?: AnnotationHandler[]
+                         codeblock,
+                         ...rest
+                     }: {
+    codeblock: HighlightedCode
+    className?: string
+    style?: React.CSSProperties
+    extraHandlers?: AnnotationHandler[]
 }) {
-  return <HighCode highlighted={codeblock} {...rest} />
+    return <HighCode highlighted={codeblock} {...rest} />
 }
 
 export function HighCode({
-                           highlighted,
-                           isTab,
-                           noBorder,
-                           noCopyButton,
-                           className,
-                           style,
-                           extraHandlers = [],
+                             highlighted,
+                             isTab,
+                             noBorder,
+                             noCopyButton,
+                             className,
+                             style,
+                             extraHandlers = [],
                          }: {
-  highlighted: HighlightedCode
-  isTab?: boolean
-  noBorder?: boolean
-  noCopyButton?: boolean
-  className?: string
-  style?: React.CSSProperties
-  extraHandlers?: AnnotationHandler[]
+    highlighted: HighlightedCode
+    isTab?: boolean
+    noBorder?: boolean
+    noCopyButton?: boolean
+    className?: string
+    style?: React.CSSProperties
+    extraHandlers?: AnnotationHandler[]
 }) {
-  const { title, flags, githubLink } = extractFlags(highlighted)
-  const h = { ...highlighted, meta: title }
+    const { title, flags, githubLink } = extractFlags(highlighted)
+    const h = { ...highlighted, meta: title }
 
-  const handlers = [
-    ...extraHandlers,
-    mark,
-    tooltip,
-    pill,
-    fold,
-    link,
-    focus,
-    ruler,
-    flags.includes("a") && tokenTransitions,
-    flags.includes("n") && lineNumbers,
-    diff,
-    ...collapse,
-    flags.includes("w") && wordWrap,
-    callout,
-  ].filter(Boolean) as AnnotationHandler[]
+    const handlers = [
+        ...extraHandlers,
+        mark,
+        tooltip,
+        pill,
+        fold,
+        link,
+        focus,
+        ruler,
+        flags.includes("a") && tokenTransitions,
+        flags.includes("n") && lineNumbers,
+        diff,
+        ...collapse,
+        flags.includes("w") && wordWrap,
+        callout,
+    ].filter(Boolean) as AnnotationHandler[]
 
-  const pre = (
-      <Pre
-          code={h}
-          handlers={handlers}
-      />
-  )
+    const pre = (
+        <Pre
+            code={h}
+            handlers={handlers}
+        />
+    )
 
-  if (title && !isTab) {
-    return (
-        <div
-            className={clsx(
-                className,
-            )}
-            style={
-              {
-                ...style,
-              } as any
-            }
-        >
-            <div className="ch-codeblock">
-                <div className="ch-code-wrapper ch-code">
-                    <div className={styles.codeFileName}>
-                        <CodeIcon title={title}/>
-                        <span className={styles.codeFileNameTitle}>{title}</span>
+    if (title && !isTab) {
+        return (
+            <div
+                className={clsx(
+                    className,
+                )}
+                style={
+                    {
+                        ...style,
+                    } as any
+                }
+            >
+                <div className="ch-codeblock">
+                    <div className="ch-code-wrapper ch-code">
+                        <div className={styles.codeFileName}>
+                            <CodeIcon title={title}/>
+                            <span className={styles.codeFileNameTitle}>{title}</span>
+                        </div>
+                        {(!noCopyButton) ? <CopyButton text={h.code} githubUrl={githubLink} className="ch-code-button"/>: null}
+                        {pre}
                     </div>
-                    {(!noCopyButton) ? <CopyButton text={h.code} githubUrl={githubLink} className="ch-code-button"/>: null}
-                    {pre}
                 </div>
             </div>
-        </div>
-    )
-  } else {
-      return (
-          <div
-              className={className}
-              style={
-              {
-                ...style,
-              } as any
-            }
-        >
-            <div className={clsx("ch-codeblock", (isTab || noBorder) ? "no-border" : undefined)}>
-                <div className="ch-code-wrapper ch-code">
-                    {(!noCopyButton) ? <CopyButton text={h.code} githubUrl={githubLink} className="ch-code-button" />: null}
-                  {pre}
+        )
+    } else {
+        return (
+            <div
+                className={className}
+                style={
+                    {
+                        ...style,
+                    } as any
+                }
+            >
+                <div className={clsx("ch-codeblock", (isTab || noBorder) ? "no-border" : undefined)}>
+                    <div className="ch-code-wrapper ch-code">
+                        {(!noCopyButton) ? <CopyButton text={h.code} githubUrl={githubLink} className="ch-code-button" />: null}
+                        {pre}
+                    </div>
                 </div>
             </div>
-        </div>
-    )
-  }
+        )
+    }
 }
 
 export function extractFlags(codeblock: HighlightedCode) {
@@ -162,17 +162,29 @@ export function CodeWithTabs(props: unknown) {
 
 export function CodeTabs(props: { groupId?: string, className: string, tabs: HighlightedCode[] }) {
     const { groupId, tabs } = props
-    return (
 
+    // Tabs with the same title are merged and shown as different stacked windows in a single tab
+    const tabMap = new Map<string, HighlightedCode[]>()
+    tabs.forEach((tab) => {
+        const { title } = extractFlagsFromMeta(tab.meta)
+        if (tabMap.has(title)) {
+            tabMap.get(title)!.push(tab)
+        } else {
+            tabMap.set(title, [tab])
+        }
+    })
+
+    return (
         <Tabs className={clsx(styles.codetablist, "ch-codetablist", props.className)} {...(groupId ? { groupId, queryString: true } : {})}>
-            {tabs.map((tab, i) => {
-                const { title, tabValue } = extractFlagsFromMeta(tab.meta);
-                const value = tabValue ?? title.toLowerCase().replace("typescript", "ts");
+            {Array.from(tabMap.entries()).map(([title, windows], i) => {
                 return (
-                    <TabItem className={clsx(styles.codetab)} label={title} value={value} key={i}>
-                        <HighCode isTab={true} highlighted={tab} />
+                    <TabItem className={clsx(styles.codetab)} label={title} value={title.toLowerCase().replace("typescript", "ts")} key={i}>
+                        {windows.map((window, i) => {
+                            return <><HighCode isTab={true} highlighted={window} key={i}/>
+                                {i < windows.length - 1 && <div className={styles.greyLine}></div>}</>
+                        })}
                     </TabItem>
-                );
+                )
             })}
         </Tabs>
     )

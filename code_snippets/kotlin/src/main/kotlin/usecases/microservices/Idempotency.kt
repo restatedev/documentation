@@ -2,6 +2,7 @@ package usecases.microservices
 
 import dev.restate.sdk.client.CallRequestOptions
 import dev.restate.sdk.client.Client
+import usecases.microservices.service.SubscriptionServiceClient
 
 class Config {
   companion object {
@@ -10,18 +11,21 @@ class Config {
 }
 
 class Idempotency {
-
-  // <start_here>
-  val rs = Client.connect(Config.RESTATE_URL)
-
-  suspend fun reserveProduct(productId: String, reservationId: String) {
+  suspend fun createSubscription() {
+    val requestId = "123"
+    val subscriptionRequest = SubscriptionRequest("123", "123", listOf("123"))
+    // <start_here>
+    val restateClient = Client.connect(Config.RESTATE_URL)
     // <mark_1>
-    ProductServiceClient.fromClient(rs, productId)
+    SubscriptionServiceClient.fromClient(restateClient)
         .send()
-        // <mark_2>
-        .reserve(CallRequestOptions.DEFAULT.withIdempotency(reservationId))
-    // </mark_2>
+        .add(
+            subscriptionRequest,
+            // <mark_2>
+            CallRequestOptions.DEFAULT.withIdempotency(requestId)
+            // </mark_2>
+            )
     // </mark_1>
+    // <end_here>
   }
-  // <end_here>
 }
