@@ -108,37 +108,37 @@ import Admonition from "@theme/Admonition";
     CODE_LOAD::python/src/use_cases/event_processing/user_feed.py?1
     ```
 
-
-    ### !!steps Scale with serverless
-
-    Deploy your functions on serverless platforms where Restate pushes events to them and scale based on demand.
-
-    [Learn more](https://restate.dev/blog/we-replaced-400-lines-of-stepfunctions-asl-with-40-lines-of-typescript-by-making-lambdas-suspendable/)
+    ### !!steps Queue per key
+    Events are routed to objects based on Kafka keys, with Restate ensuring sequential, in-order processing for each key.
+    Processing delays for one key never block events for other keys.
+    In the example, slow moderation checks do not block posts for other users.
 
     ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/eventtransactions/user_feed.ts
-    CODE_LOAD::ts/src/use_cases/event_processing/transactional_event_processing.ts?6
+    CODE_LOAD::ts/src/use_cases/event_processing/transactional_event_processing.ts?5
     ```
 
     ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/eventtransactions/UserFeed.java
-    CODE_LOAD::java/src/main/java/usecases/eventprocessing/eventtransactions/UserFeed.java?6
+    CODE_LOAD::java/src/main/java/usecases/eventprocessing/eventtransactions/UserFeed.java?5
     ```
 
     ```kotlin !!tabs Kotlin https://github.com/restatedev/examples/blob/main/kotlin/patterns-use-cases/src/main/kotlin/my/example/eventtransactions/UserFeed.kt
-    CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/UserFeed.kt?6
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/UserFeed.kt?5
     ```
 
     ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/eventtransactions/userfeed.go
-    CODE_LOAD::go/usecases/eventprocessing/eventtransactions/userfeed.go?6
+    CODE_LOAD::go/usecases/eventprocessing/eventtransactions/userfeed.go?5
     ```
 
     ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/eventtransactions/user_feed.py
-    CODE_LOAD::python/src/use_cases/event_processing/user_feed.py?6
+    CODE_LOAD::python/src/use_cases/event_processing/user_feed.py?5
     ```
+
 
     ### !!steps Schedule events or postpone processing
 
     Flexibly postpone event processing or schedule asynchronous tasks for immediate or future execution.
     Restate tracks all timers and triggers execution exactly when needed.
+    Restate's queue per key, makes sure that slow moderation checks do not block posts for other users.
 
     ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/eventtransactions/user_feed.ts
     CODE_LOAD::ts/src/use_cases/event_processing/transactional_event_processing.ts?2
@@ -186,30 +186,33 @@ import Admonition from "@theme/Admonition";
     CODE_LOAD::python/src/use_cases/event_processing/user_feed.py?4
     ```
 
-    ### !!steps Queue per key
-    Events are routed to objects based on Kafka keys, with Restate ensuring sequential, in-order processing for each key.
-    Processing delays for one key never block events for other keys.
-    In the example, slow moderation checks do not block posts for other users.
+
+    ### !!steps Scale with serverless
+
+    Deploy your functions on serverless platforms where Restate pushes events to them and scale based on demand.
+
+    [Learn more](https://restate.dev/blog/we-replaced-400-lines-of-stepfunctions-asl-with-40-lines-of-typescript-by-making-lambdas-suspendable/)
 
     ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/eventtransactions/user_feed.ts
-    CODE_LOAD::ts/src/use_cases/event_processing/transactional_event_processing.ts?5
+    CODE_LOAD::ts/src/use_cases/event_processing/transactional_event_processing.ts?6
     ```
 
     ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/eventtransactions/UserFeed.java
-    CODE_LOAD::java/src/main/java/usecases/eventprocessing/eventtransactions/UserFeed.java?5
+    CODE_LOAD::java/src/main/java/usecases/eventprocessing/eventtransactions/UserFeed.java?6
     ```
 
     ```kotlin !!tabs Kotlin https://github.com/restatedev/examples/blob/main/kotlin/patterns-use-cases/src/main/kotlin/my/example/eventtransactions/UserFeed.kt
-    CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/UserFeed.kt?5
+    CODE_LOAD::kotlin/src/main/kotlin/usecases/eventprocessing/UserFeed.kt?6
     ```
 
     ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/eventtransactions/userfeed.go
-    CODE_LOAD::go/usecases/eventprocessing/eventtransactions/userfeed.go?5
+    CODE_LOAD::go/usecases/eventprocessing/eventtransactions/userfeed.go?6
     ```
 
     ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/eventtransactions/user_feed.py
-    CODE_LOAD::python/src/use_cases/event_processing/user_feed.py?5
+    CODE_LOAD::python/src/use_cases/event_processing/user_feed.py?6
     ```
+
 
 </Scrollycoding>
 
