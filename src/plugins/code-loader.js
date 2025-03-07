@@ -112,6 +112,12 @@ const plugin = (options) => {
                 .filter(line => !line.includes(`${commentSymbol} break`));
         }
 
+        // if language is go, then replace tab by 4 spaces
+        // go fmt does not like spaces so we need to do that here
+        if (filePath.includes(".go")) {
+            lines = lines.map(line => line.replace(/\t/g, '  '))
+        }
+
         let filteredLines = [];
         if (markNumber) {
             const markStartTag = `${commentSymbol} <mark_${markNumber}>`;
@@ -195,9 +201,7 @@ const plugin = (options) => {
         if (collapseIndex !== -1) {
             const collapseComment = `${commentSymbol} !collapse(1:${collapseIndex + 1}) collapsed \n ${commentSymbol} Click to expand imports/comments...`
             // Add collapseComment as first line to lines
-            let collapsedContent = [collapseComment, ...lines]
-
-            return collapsedContent;
+            return [collapseComment, ...lines];
         } else {
             throw new Error('No service/object/workflow found in file, so cannot collapse prequel');
         }
