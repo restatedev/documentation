@@ -1,78 +1,54 @@
 import * as restate from "@restatedev/restate-sdk";
-import {
-  TerminalError,
-  WorkflowContext,
-  WorkflowSharedContext,
-} from "@restatedev/restate-sdk";
 
 // <start_here>
 // <mark_1>
-const signUpWorkflow = restate.workflow({
-  name: "sign-up-workflow",
-  handlers: {
-    run: async (ctx: WorkflowContext, user: User) => {
-      // </mark_1>
-      const { id, name, email } = user;
+const signupWorkflow = restate.workflow({
+    name: "user-signup",
+    handlers: {
+        run: async (
+            ctx: restate.WorkflowContext,
+            user: { name: string; email: string },
+        ) => {
+            // </mark_1>
+            // workflow ID = user ID; workflow runs once per user
+            const userId = ctx.key;
 
-      // <mark_3>
-      ctx.set("stage", "Creating User");
-      // </mark_3>
-      // <mark_2>
-      await ctx.run(() => createUserEntry({ id, name }));
-      // </mark_2>
+            // <mark_2>
+            await ctx.run(() => createUserEntry(user));
+            // </mark_2>
 
-      // <mark_3>
-      ctx.set("stage", "Email Verification");
-      // </mark_3>
-      // <mark_2>
-      const secret = ctx.rand.uuidv4();
-      await ctx.run(() => sendEmailWithLink({ email, secret }));
-      // </mark_2>
+            // <mark_2>
+            const secret = ctx.rand.uuidv4();
+            await ctx.run(() => sendEmailWithLink({ userId, user, secret }));
+            // </mark_2>
 
-      // <mark_5>
-      const clickSecret = await ctx.promise<string>("email-link");
-      // </mark_5>
-      // <mark_7>
-      if (clickSecret !== secret) {
-        // <mark_3>
-        ctx.set("stage", `Verification failed`);
-        // </mark_3>
-        throw new TerminalError("Wrong secret from email link");
-      }
-      // <mark_3>
-      ctx.set("stage", "User verified");
-      // </mark_3>
-      return true;
-      // </mark_7>
+            // <mark_2>
+            // <mark_3>
+            const clickSecret = await ctx.promise<string>("link-clicked");
+            // </mark_3>
+            // </mark_2>
+            return clickSecret === secret;
+        },
+
+        click: async (
+            ctx: restate.WorkflowSharedContext,
+            request: { secret: string },
+        ) => {
+            // <mark_3>
+            await ctx.promise<string>("link-clicked").resolve(request.secret);
+            // </mark_3>
+        },
     },
-
-    // <mark_4>
-    getStage: (ctx: WorkflowSharedContext) => ctx.get("stage"),
-    // </mark_4>
-
-    // <mark_6>
-    approveEmail: (ctx: WorkflowSharedContext, secret: string) =>
-      ctx.promise<string>("email-link").resolve(secret)
-    // </mark_6>
-  },
 });
 // <end_here>
 
-export type SignUpWorkflow = typeof signUpWorkflow;
+export type SignUpWorkflow = typeof signupWorkflow;
 
-type KafkaEvent = { topic: string; message: string };
-export type User = { id: string; name: string; email: string };
+restate.endpoint().bind(signupWorkflow).listen(9080);
 
-function sendEmailWithLink({
-  email,
-  secret,
-}: {
-  email: string;
-  secret: string;
-}) {
-  // send email with link
+function createUserEntry(user: { name: string; email: string }) {
 }
 
-function createUserEntry({ id, name }: { id: string; name: string }) {
-  // create user entry
+function sendEmailWithLink(param: { userId: string; user: { name: string; email: string }; secret: string }) {
+    return undefined;
 }
