@@ -36,7 +36,7 @@ public class UserFeed {
         while(ctx.run(STRING, () -> getPostStatus(postId)).equals("PENDING")) {
             // </mark_3>
             // <mark_2>
-            ctx.sleep(Duration.ofMillis(5000));
+            ctx.sleep(Duration.ofSeconds(5));
             // </mark_2>
         }
         // </mark_4>
