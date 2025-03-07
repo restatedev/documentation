@@ -9,10 +9,6 @@ class StripeEvent(TypedDict):
     id: str
 
 
-def some_heavy_work(params: TaskOpts):
-    return "Work!"
-
-
 # <start_here>
 payment_tracker = VirtualObject("PaymentTracker") # one instance per invoice ID
 
