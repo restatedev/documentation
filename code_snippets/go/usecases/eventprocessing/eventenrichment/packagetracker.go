@@ -41,7 +41,14 @@ func (PackageTracker) UpdateLocation(ctx restate.ObjectContext, locationUpdate L
 	// </mark_2>
 	// </mark_3>
 	// <mark_1>
-	packageInfo, err := restate.Get[PackageInfo](ctx, "package-info")
+	packageInfo, err := restate.Get[*PackageInfo](ctx, "package-info")
+	if err != nil {
+		return err
+	}
+	if packageInfo == nil {
+		return restate.TerminalError(errors.New("package not found"))
+	}
+	
 	// </mark_1>
 	if err != nil {
 		return err
@@ -60,16 +67,11 @@ func (PackageTracker) UpdateLocation(ctx restate.ObjectContext, locationUpdate L
 
 // <mark_3>
 // <mark_2>
-func (PackageTracker) GetPackageInfo(ctx restate.ObjectSharedContext) (PackageInfo, error) {
+func (PackageTracker) GetPackageInfo(ctx restate.ObjectSharedContext) (*PackageInfo, error) {
 	// </mark_2>
 	// </mark_3>
 	// <mark_1>
-	packageInfo, err := restate.Get[PackageInfo](ctx, "package-info")
-	// </mark_1>
-	if err != nil {
-		return PackageInfo{}, err
-	}
-	return packageInfo, nil
+	return restate.Get[*PackageInfo](ctx, "package-info")
 }
 
 func main() {
