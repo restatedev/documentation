@@ -1,12 +1,21 @@
 import requests
 
-url = "http://localhost:8080/productService/reserve"
-payload = {"product_id": "myProduct123"}
-headers = {
-    # <mark_1>
-    "idempotency-key": "myReservation123",
-    # </mark_1>
-    "Content-Type": "application/json"
-}
+from src.use_cases.microservices.subscription_service import SubscriptionRequest
 
-response = requests.post(url, json=payload, headers=headers)
+RESTATE_URL = "http://localhost:8080"
+subscription_request = SubscriptionRequest(user_id="user123", credit_card="1234", subscriptions=["sub1", "sub2"])
+request_id = "myTask123"
+# <start_here>
+# <mark_1>
+response = requests.post(
+    url = f"${RESTATE_URL}/SubscriptionService/add",
+    json=subscription_request,
+    headers={
+        # <mark_2>
+        "idempotency-key": request_id,
+        # </mark_2>
+        "Content-Type": "application/json"
+    }
+)
+# </mark_1>
+# <end_here>
