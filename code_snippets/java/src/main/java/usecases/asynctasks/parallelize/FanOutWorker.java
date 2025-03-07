@@ -1,20 +1,18 @@
-package usecases.asynctasks;
-
-import static usecases.utils.ExampleStubs.aggregate;
-import static usecases.utils.ExampleStubs.split;
+package usecases.asynctasks.parallelize;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import dev.restate.sdk.Awaitable;
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
+import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
 import java.util.ArrayList;
 import java.util.List;
-import usecases.utils.Result;
-import usecases.utils.SubTask;
-import usecases.utils.SubTaskResult;
-import usecases.utils.Task;
+
+import usecases.asynctasks.parallelize.utils.*;
+
+import static usecases.asynctasks.parallelize.utils.Utils.*;
 
 // <start_here>
 @Service
@@ -24,7 +22,7 @@ public class FanOutWorker {
   public Result run(Context ctx, Task task) {
 
     // Split the task in subtasks
-    SubTask[] subTasks =
+    List<SubTask> subTasks =
         ctx.run(
             JacksonSerdes.of(new TypeReference<>() {}),
             // break
@@ -32,19 +30,16 @@ public class FanOutWorker {
 
     List<Awaitable<?>> resultFutures = new ArrayList<>();
     // <mark_1>
-    for (SubTask subTask : subTasks) {
-      Awaitable<SubTaskResult> subResultFuture =
-          FanOutWorkerClient.fromContext(ctx).runSubtask(subTask);
+    subTasks.stream().map(subTask -> FanOutWorkerClient.fromContext(ctx).runSubtask(subTask))
+            .forEach(resultFutures::add);
       // </mark_1>
-
-      resultFutures.add(subResultFuture);
-    }
 
     // <mark_2>
     Awaitable.all(resultFutures).await();
 
-    SubTaskResult[] results =
-        (SubTaskResult[]) resultFutures.stream().map(Awaitable::await).toArray();
+    var results = resultFutures.stream()
+            .map(future -> (SubTaskResult) future.await())
+            .toList();
     // </mark_2>
 
     return aggregate(results);
@@ -54,7 +49,11 @@ public class FanOutWorker {
   public SubTaskResult runSubtask(Context ctx, SubTask subTask) {
     // Processing logic goes here ...
     // Can be moved to a separate service to scale independently
-    return new SubTaskResult();
+    return executeSubtask(ctx, subTask);
+  }
+
+  public static void main(String[] args) {
+    RestateHttpEndpointBuilder.builder().bind(new FanOutWorker()).buildAndListen();
   }
 }
 // <end_here>
