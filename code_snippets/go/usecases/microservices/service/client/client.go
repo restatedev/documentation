@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"github.com/restatedev/documentation/code_snippets/go/usecases/microservices/service"
 	"io"
@@ -55,14 +54,8 @@ func Subscribe() error {
 }
 
 func main() {
-	productId := flag.String("productId", "", "Product ID")
-	reservationId := flag.String("reservationId", "", "Reservation ID")
-	flag.Parse()
-
-	if *productId == "" || *reservationId == "" {
-		slog.Error("Product ID and Reservation ID must be provided")
+	err := Subscribe()
+	if err != nil {
 		return
 	}
-
-	ReserveProduct(*productId, *reservationId)
 }
