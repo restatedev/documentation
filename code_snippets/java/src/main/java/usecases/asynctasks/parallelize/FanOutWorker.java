@@ -30,8 +30,9 @@ public class FanOutWorker {
 
     List<Awaitable<?>> resultFutures = new ArrayList<>();
     // <mark_1>
-    subTasks.stream().map(subTask -> FanOutWorkerClient.fromContext(ctx).runSubtask(subTask))
-            .forEach(resultFutures::add);
+    for (SubTask subTask : subTasks) {
+      resultFutures.add(FanOutWorkerClient.fromContext(ctx).runSubtask(subTask));
+    }
       // </mark_1>
 
     // <mark_2>
