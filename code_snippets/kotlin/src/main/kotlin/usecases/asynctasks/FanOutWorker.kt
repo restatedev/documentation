@@ -2,13 +2,12 @@ package usecases.asynctasks
 
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Service
-import dev.restate.sdk.kotlin.Awaitable
 import dev.restate.sdk.kotlin.Context
 import dev.restate.sdk.kotlin.awaitAll
 import dev.restate.sdk.kotlin.runBlock
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.serialization.Serializable
 import org.apache.logging.log4j.LogManager
-import kotlin.time.Duration.Companion.seconds
 
 // <start_here>
 @Service
@@ -18,11 +17,14 @@ class FanOutWorker {
     val subTasks = ctx.runBlock { task.split() }
 
     // <mark_1>
-    val results = subTasks.map {
-      FanOutWorkerClient.fromContext(ctx).runSubtask(it)
-      // </mark_1>
-      // <mark_2>
-    }.awaitAll()
+    val results =
+        subTasks
+            .map {
+              FanOutWorkerClient.fromContext(ctx).runSubtask(it)
+              // </mark_1>
+              // <mark_2>
+            }
+            .awaitAll()
     // </mark_2>
     return results.aggregate()
   }
@@ -36,17 +38,13 @@ class FanOutWorker {
 }
 // <end_here>
 
-@Serializable
-data class TaskResult(val description: String)
+@Serializable data class TaskResult(val description: String)
 
-@Serializable
-data class SubTask(val description: String)
+@Serializable data class SubTask(val description: String)
 
-@Serializable
-data class Task(val description: String)
+@Serializable data class Task(val description: String)
 
-@Serializable
-data class SubTaskResult(val description: String)
+@Serializable data class SubTaskResult(val description: String)
 
 private val logger = LogManager.getLogger("FanOutWorker")
 

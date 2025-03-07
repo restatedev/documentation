@@ -34,10 +34,7 @@ class SignupWorkflow {
 
     // <mark_2>
     // <mark_3>
-    val clickSecret: String =
-      ctx.promise(LINK_CLICKED)
-        .awaitable()
-        .await()
+    val clickSecret: String = ctx.promise(LINK_CLICKED).awaitable().await()
     // </mark_3>
     // </mark_2>
 
@@ -53,9 +50,7 @@ class SignupWorkflow {
 }
 
 fun main() {
-  RestateHttpEndpointBuilder.builder()
-    .bind(SignupWorkflow())
-    .buildAndListen()
+  RestateHttpEndpointBuilder.builder().bind(SignupWorkflow()).buildAndListen()
 }
 // <end_here>
 
@@ -63,5 +58,4 @@ fun createUserEntry(user: User) {}
 
 fun sendEmailWithLink(email: String?, user: User, secret: String?) {}
 
-@Serializable
-data class User(val id: String, val email: String, val name: String)
+@Serializable data class User(val id: String, val email: String, val name: String)

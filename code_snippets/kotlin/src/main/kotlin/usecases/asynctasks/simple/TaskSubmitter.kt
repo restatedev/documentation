@@ -8,7 +8,7 @@ import kotlin.time.Duration.Companion.days
 class TaskSubmitter {
 
   suspend fun scheduleTask(taskOpts: TaskOpts) {
-      val RESTATE_URL = "http://localhost:8080"
+    val RESTATE_URL = "http://localhost:8080"
     // <start_here>
     // The Kotlin SDK generates clients for each service
     val restateClient: Client = Client.connect(RESTATE_URL)
@@ -27,7 +27,8 @@ class TaskSubmitter {
     // Attach to the async task to get the result
     // <mark_3>
     val result =
-        restateClient.invocationHandle(
+        restateClient
+            .invocationHandle(
                 handle.invocationId,
                 KtSerdes.json<String>(),
             )
