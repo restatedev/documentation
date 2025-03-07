@@ -1,6 +1,5 @@
 package usecases.workflows
 
-import dev.restate.sdk.annotation.Shared
 import dev.restate.sdk.annotation.Workflow
 import dev.restate.sdk.common.TerminalException
 import dev.restate.sdk.kotlin.*

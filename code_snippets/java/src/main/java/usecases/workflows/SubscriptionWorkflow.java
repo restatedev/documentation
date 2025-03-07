@@ -1,20 +1,16 @@
 package usecases.workflows;
 
-import dev.restate.sdk.Context;
-import dev.restate.sdk.SharedWorkflowContext;
+import static dev.restate.sdk.JsonSerdes.STRING;
+import static usecases.microservices.Utils.*;
+
 import dev.restate.sdk.WorkflowContext;
-import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.Workflow;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.lambda.BaseRestateLambdaHandler;
 import dev.restate.sdk.lambda.RestateLambdaEndpointBuilder;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import static dev.restate.sdk.JsonSerdes.STRING;
-import static usecases.microservices.Utils.*;
 
 // <start_here>
 @Workflow
@@ -22,6 +18,7 @@ public class SubscriptionWorkflow {
 
   // <mark_1>
   StateKey<String> STATUS = StateKey.of("status", STRING);
+
   // </mark_1>
 
   @Workflow

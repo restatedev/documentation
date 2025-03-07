@@ -2,7 +2,7 @@ import uuid
 
 import restate
 from pydantic import BaseModel
-from restate import Workflow, WorkflowContext, WorkflowSharedContext
+from restate import Workflow, WorkflowContext
 from restate.exceptions import TerminalError
 
 
@@ -72,7 +72,7 @@ def remove_recurring_payment(payment_id):
     pass
 
 
-def create_subscription(user_id, subscription, pay_ref):
+def create_subscription(user_id, subscription):
     return None
 
 def remove_subscription(user_id, subscription):

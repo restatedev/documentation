@@ -40,28 +40,28 @@ async def update_location(ctx: ObjectContext, location_update: LocationUpdate):
     # </mark_2>
     # </mark_3>
     # <mark_1>
-    package_info = PackageInfo(**await ctx.get("package-info"))
+    package_info = await ctx.get("package-info")
     # </mark_1>
     if package_info is None:
         raise TerminalError(f"Package {ctx.key()} not found")
 
-    locations = package_info.locations or []
-    locations.append(location_update)
-    package_info.locations = locations
+    locations = package_info.get("locations", [])
+    locations.append(location_update.model_dump())
+    package_info["locations"] = locations
 
     # <mark_1>
-    ctx.set("package-info", package_info.model_dump())
+    ctx.set("package-info", package_info)
     # </mark_1>
 
 
 # <mark_3>
 # <mark_2>
 @package_tracker.handler()
-async def get_package_info(ctx: ObjectContext) -> PackageInfo:
+async def get_package_info(ctx: ObjectContext):
     # </mark_2>
     # </mark_3>
     # <mark_1>
-    return PackageInfo(**await ctx.get("package-info"))
+    return await ctx.get("package-info")
     # </mark_1>
 
 

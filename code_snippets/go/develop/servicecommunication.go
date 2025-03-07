@@ -59,10 +59,10 @@ func (Router) Greet2(ctx restate.Context, name string) error {
 
 	// <start_one_way_workflow>
 	// Call the `run` handler of the workflow (only works once).
-	restate.WorkflowSend[bool](ctx, "MyWorkflow", "my-workflow-id", "Run").
+	restate.WorkflowSend(ctx, "MyWorkflow", "my-workflow-id", "Run").
 		Send("Hi")
 	// Call some other `interactWithWorkflow` handler of the workflow.
-	restate.WorkflowSend[bool](ctx, "MyWorkflow", "my-workflow-id", "InteractWithWorkflow").
+	restate.WorkflowSend(ctx, "MyWorkflow", "my-workflow-id", "InteractWithWorkflow").
 		Send("Hi again")
 	// <end_one_way_workflow>
 
@@ -77,7 +77,7 @@ func (Router) Greet2(ctx restate.Context, name string) error {
 	// <end_delayed_object>
 
 	// <start_delayed_workflow>
-	restate.WorkflowSend[bool](ctx, "MyWorkflow", "my-workflow-id", "Run").
+	restate.WorkflowSend(ctx, "MyWorkflow", "my-workflow-id", "Run").
 		Send("Hi", restate.WithDelay(5*time.Second))
 	// <end_delayed_workflow>
 
