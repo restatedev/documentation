@@ -42,16 +42,12 @@ func (PackageTracker) UpdateLocation(ctx restate.ObjectContext, locationUpdate L
 	// </mark_3>
 	// <mark_1>
 	packageInfo, err := restate.Get[*PackageInfo](ctx, "package-info")
+	// </mark_1>
 	if err != nil {
 		return err
 	}
 	if packageInfo == nil {
 		return restate.TerminalError(errors.New("package not found"))
-	}
-	
-	// </mark_1>
-	if err != nil {
-		return err
 	}
 
 	if packageInfo.FinalDestination == "" {
@@ -60,7 +56,7 @@ func (PackageTracker) UpdateLocation(ctx restate.ObjectContext, locationUpdate L
 
 	packageInfo.Locations = append(packageInfo.Locations, locationUpdate)
 	// <mark_1>
-	restate.Set[PackageInfo](ctx, "package-info", packageInfo)
+	restate.Set[PackageInfo](ctx, "package-info", *packageInfo)
 	// </mark_1>
 	return nil
 }
