@@ -2,7 +2,7 @@ import uuid
 import restate
 from pydantic import BaseModel
 from restate import Workflow, WorkflowContext, WorkflowSharedContext
-from utils import create_user_entry, send_email_with_link
+from src.use_cases.workflows.utils import create_user_entry, send_email_with_link
 
 class User(BaseModel):
     name: str
