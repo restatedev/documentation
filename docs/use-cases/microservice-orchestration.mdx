@@ -18,7 +18,7 @@ import {Scrollycoding} from "../../src/components/code/scrollycoding";
         <h1 className={"padding-top--lg text--left"}>Microservice Orchestration</h1>
         <h1 className={"use-case-subtitle text--left"}>The simplest way to build resilient applications.</h1>
         <p className={"use-case-description padding-bottom--lg text--left"}>
-            Restate serves as the resilience and durability layer for distributed apps.
+            Restate serves as the resilience and durability layer for applications.
             Write regular functions and services, and let Restate make them resilient, consistent, and scalable.
         </p>
     </div>
@@ -34,17 +34,17 @@ import {Scrollycoding} from "../../src/components/code/scrollycoding";
     {
         title: 'Resiliency baked into familiar programming constructs',
         iconPath: '/img/code-icon.svg',
-        description: "The Restate SDKs give you programming constructs that have retries and recovery baked in. Restate ensures code runs to the end: failures are retried and previous progress gets recovered.",
+        description: "The Restate SDKs provide programming constructs with built-in retries and recovery. Restate ensures code runs to completion: failures are automatically retried and previous progress is recovered.",
     },
     {
         title: 'Consistent application state',
         iconPath: '/img/use_cases/data.svg',
-        description: "Restate persists code execution, including updates to state. State becomes effortlessly consistent with execution progress. Restate enforces a single writer per key to avoid lost updates and other concurrency issues.",
+        description: "Restate persists code execution, including state updates. State remains consistent with execution progress. Restate enforces a single writer per key to prevent lost updates and concurrency issues.",
     },
     {
         title: 'Resilient communication and scheduling',
         iconPath: '/img/use_cases/call.svg',
-        description: "Restate makes all communication resilient: request-response calls, async messages, webhooks, and scheduled tasks. No need for message queues, retry logic, deduplication, schedulers etc.",
+        description: "Restate makes all communication resilient: request-response calls, async messages, webhooks, and scheduled tasks. No need for message queues, custom retry logic, deduplication, or separate schedulers.",
     },
 ]}/>
 
@@ -55,8 +55,8 @@ import {Scrollycoding} from "../../src/components/code/scrollycoding";
 <Scrollycoding className="workflows-scroller">
 
     ### !!steps Familiar programming constructs, but now resilient
-    Restate turns the programming building blocks you already know, into resilient constructs.
-    Work with objects, functions, and promises as if failures don’t happen.
+    Restate transforms the programming building blocks you already know into resilient constructs.
+    Work with objects, functions, and promises as if failures don't exist.
     Restate can recover them anytime, anywhere.
 
     [Learn more](/concepts/durable_building_blocks)
@@ -99,9 +99,9 @@ import {Scrollycoding} from "../../src/components/code/scrollycoding";
 
     ### !!steps Persist progress
 
-    Do calls to multiple systems and persist the results.
-    On retries, the action does not get re-executed but the previous result will be recovered.
-    Interact with multiple systems in a row and Restate makes sure that all interactions take place.
+    Execute calls to other systems and APIs and persist their results.
+    On retries, actions aren't re-executed —- previous results are recovered.
+    Chain interactions with multiple systems, and Restate ensures all interactions complete successfully.
 
     [Learn more](/concepts/durable_execution)
 
@@ -143,12 +143,11 @@ import {Scrollycoding} from "../../src/components/code/scrollycoding";
 
     ### !!steps Resilient RPC and messaging
 
-    Restate sits like a reverse-proxy or message broker in front of your services.
-
-    Restate proxies RPC calls and ensures they are delivered and processed:
-    - request-response
-    - message (one-way)
-    - scheduled tasks
+    Restate sits like a reverse-proxy or message broker in front of your services, proxying calls and ensuring they're delivered and processed.
+    Make any type of call resilient:
+    - Request-response calls
+    - One-way message
+    - Scheduled tasks
 
     [Learn more](/concepts/invocations)
 
@@ -189,8 +188,7 @@ import {Scrollycoding} from "../../src/components/code/scrollycoding";
 
     ### !!steps Idempotency for free
 
-    Add an idempotency token to your request to let Restate deduplicate them for you.
-    Each request runs to completion exactly once.
+    Add an idempotency token to your requests and let Restate handle deduplication. Each request runs to completion exactly once.
 
     [Learn more](/concepts/invocations#idempotent-invocations)
 
@@ -233,23 +231,21 @@ import {Scrollycoding} from "../../src/components/code/scrollycoding";
 
 <SpotlightCard>
     <FeatureSpotlight
-        title={"Regular functions and services, in your existing infra"}
-        description={<p>Your code runs just like before: as Java or NodeJS applications on FaaS, K8s, servers, containers. <br/>
-            On-prem or in the cloud. Restate meets you where you are.</p>}
+        title={"Regular functions and services, in your existing infrastructure"}
+        description={<p>Your code runs just like before: as Java/NodeJS/... applications on FaaS, Kubernetes, servers, containers. <br/>
+            -- on-premises or in the cloud. Restate is a single binary that is easy to deploy and operate. Restate meets you where you are.</p>}
         imgPath={"/img/use_cases/microservice_orchestration-white.svg"}
     />
 </SpotlightCard>
 
 ## Sagas and Distributed Transactions
-Restate guarantees code runs to completion. This lets you implement resilient [sagas](https://www.baeldung.com/cs/saga-pattern-microservices) in a try-catch block.
-Restate takes care of retries and recovery.
+Restate guarantees code runs to completion, enabling you to implement resilient [sagas](https://www.baeldung.com/cs/saga-pattern-microservices) in a try-catch block.
+Restate handles retries and recovery.
 
 <Scrollycoding>
     ### !!steps Track compensations
 
-    If code execution is durable, then sagas can be expressed purely in code.
-
-    As the function executes, we track the undo operations in a list.
+    With durable code execution, sagas can be expressed purely in code. As functions execute, undo operations are tracked in a list.
 
     ```ts !!tabs TypeScript
     CODE_LOAD::ts/src/use_cases/microservices/subscription_saga.ts?1
@@ -273,9 +269,7 @@ Restate takes care of retries and recovery.
 
     ### !!steps Guaranteed roll back
 
-    When an error occurs for which we do not want to retry or continue, we roll back the changes we already did.
-
-    Restate makes sure all compensations run.
+    When an unrecoverable error occurs, previously completed changes are rolled back. Restate ensures all compensation actions run to completion.
 
     [Learn more](/guides/sagas)
 
@@ -304,12 +298,12 @@ Restate takes care of retries and recovery.
 
 
 ## Stateful Entities and State Machines
-Restate lets you implement stateful services by storing state in Restate.
+Restate lets you implement stateful services by storing state directly in Restate.
 
 <Scrollycoding>
     ### !!steps Consistent state
 
-    Implement state machines, where state transitions are always consistent with the code.
+    Implement state machines where state transitions are always consistent with your code.
 
 
     ```ts !!tabs TypeScript
@@ -334,9 +328,8 @@ Restate lets you implement stateful services by storing state in Restate.
 
     ### !!steps Scalability, concurrency, consistency
 
-    Restate guards consistency by making sure at most one handler is writing to a single state value.
-
-    Scale out without fearing issues such as multiple writers to state, lost updates, race conditions, inconsistencies, etc.
+    Restate guards consistency by ensuring only one handler writes to a single state value at a time.
+    Scale out without worrying about multiple writers, lost updates, race conditions, or inconsistencies.
 
     [Learn more](/concepts/services#virtual-objects)
 
@@ -362,9 +355,7 @@ Restate lets you implement stateful services by storing state in Restate.
 
     ### !!steps Stateful serverless
 
-    You can run stateful services on serverless infrastructure.
-    Restate attaches the state to the request.
-    Your handlers work on local state.
+    Run stateful services on serverless infrastructure. Restate attaches the service's K/V state to each request, allowing your handlers to work with local state.
 
     [Learn more](https://restate.dev/blog/we-replaced-400-lines-of-stepfunctions-asl-with-40-lines-of-typescript-by-making-lambdas-suspendable/ )
 
@@ -410,7 +401,7 @@ Restate lets you implement stateful services by storing state in Restate.
 <ExampleWidget features={[
     {
         title: 'Idempotent async payments',
-        description: "Issue an idempotent payment to Stripe and process the response. The payment provider either responds immediately or notifies us later via a webhook.",
+        description: "Issue idempotent payments to providers and process responses, whether immediate or via webhooks.",
         links: [
             {url: "https://github.com/restatedev/examples/tree/main/java/patterns-use-cases/README.md#payment-signals", icon: "/img/java.svg"},
             {url: "https://github.com/restatedev/examples/tree/main/typescript/patterns-use-cases/README.md#payment-signals", icon: "/img/typescript.svg"},
@@ -419,12 +410,12 @@ Restate lets you implement stateful services by storing state in Restate.
     },
     {
         title: 'Sagas',
-        description: "Keep multiple systems in sync. For example, reserve a flight, then a car, then handle the payment. If the payment fails, roll back the reservations.",
+        description: "Keep multiple systems in sync. For example, reserve a flight and car, then handle payment. If payment fails, automatically roll back reservations.",
         links: [{url: "/guides/sagas", icon: "/img/arrow-right.svg"}]
     },
     {
         title: 'Human-in-the-loop workflows',
-        description: "Food ordering: handle payment, wait till desired delivery time, ask restaurant to start preparation, wait for restaurant to confirm, deliver.",
+        description: "Food ordering example: handle payment, wait until desired delivery time, notify restaurant to start preparation, confirm with restaurant, and deliver.",
         links: [
             {url: "https://github.com/restatedev/examples/tree/main/java/end-to-end-applications/food-ordering", icon: "/img/java.svg"},
             {url: "https://github.com/restatedev/examples/tree/main/kotlin/end-to-end-applications/food-ordering", icon: "/img/kotlin.svg"},
@@ -433,7 +424,7 @@ Restate lets you implement stateful services by storing state in Restate.
     },
     {
         title: 'Durable state machines',
-        description: "Define state transitions in your handlers and store the current state in Restate. Use single-writer per key and concurrency limits to simplify writing robust state machines.",
+        description: "Tracking the state of a machine in our factory with a Virtual Object. Define state transitions in your handlers and store current state in Restate.",
         links: [
             { url: "https://github.com/restatedev/examples/tree/main/typescript/patterns-use-cases/README.md#stateful-actors-and-state-machines", icon: "/img/typescript.svg"},
             { url: "https://github.com/restatedev/examples/tree/main/java/patterns-use-cases/README.md#stateful-actors-and-state-machines", icon: "/img/java.svg"},
@@ -443,7 +434,7 @@ Restate lets you implement stateful services by storing state in Restate.
     },
     {
         title: 'Database interaction',
-        description: "Use Restate to improve common access problems, solve race conditions, or avoid inconsistencies in the presence of retries, concurrent requests or zombie processes.",
+        description: "Use Restate to solve common access problems, race conditions, and inconsistencies caused by retries, concurrent requests, or zombie processes.",
         links: [
             { url: "/guides/databases#how-to-interact-with-databases-from-restate", icon: "/img/arrow-right.svg"},
         ]
