@@ -4,8 +4,7 @@ import (
 	"context"
 	restate "github.com/restatedev/sdk-go"
 	"github.com/restatedev/sdk-go/server"
-	"log/slog"
-	"os"
+	"log"
 )
 
 type TaskOpts struct {
@@ -29,12 +28,10 @@ func (AsyncTaskWorker) RunTask(ctx restate.Context, task TaskOpts) (Result, erro
 // <end_here>
 
 func main() {
-	server := server.NewRestate().
-		Bind(restate.Reflect(AsyncTaskWorker{}))
-
-	if err := server.Start(context.Background(), ":9080"); err != nil {
-		slog.Error("application exited unexpectedly", "err", err.Error())
-		os.Exit(1)
+	if err := server.NewRestate().
+		Bind(restate.Reflect(AsyncTaskWorker{})).
+		Start(context.Background(), ":9080"); err != nil {
+		log.Fatal(err)
 	}
 }
 

@@ -6,50 +6,67 @@ import dev.restate.sdk.kotlin.Awaitable
 import dev.restate.sdk.kotlin.Context
 import dev.restate.sdk.kotlin.awaitAll
 import dev.restate.sdk.kotlin.runBlock
+import kotlinx.serialization.Serializable
+import org.apache.logging.log4j.LogManager
+import kotlin.time.Duration.Companion.seconds
 
 // <start_here>
 @Service
 class FanOutWorker {
   @Handler
-  suspend fun run(ctx: Context, task: Task): Result {
-    val subTasks = ctx.runBlock { split(task) }
+  suspend fun run(ctx: Context, task: Task): TaskResult {
+    val subTasks = ctx.runBlock { task.split() }
 
-    val resultFutures: MutableList<Awaitable<SubTaskResult>> = mutableListOf()
     // <mark_1>
-    for (subTask in subTasks) {
-      val subResultFuture = FanOutWorkerClient.fromContext(ctx).runSubtask(subTask)
-
+    val results = subTasks.map {
+      FanOutWorkerClient.fromContext(ctx).runSubtask(it)
       // </mark_1>
-      resultFutures.add(subResultFuture)
-    }
-
-    // <mark_2>
-    val results = resultFutures.awaitAll()
+      // <mark_2>
+    }.awaitAll()
     // </mark_2>
-    return aggregate(results)
+    return results.aggregate()
   }
 
   @Handler
-  suspend fun runSubtask(ctx: Context?, subTask: SubTask?): SubTaskResult {
+  suspend fun runSubtask(ctx: Context, subTask: SubTask): SubTaskResult {
     // Processing logic goes here ...
     // Can be moved to a separate service to scale independently
-    return SubTaskResult()
+    return subTask.execute(ctx)
   }
 }
 // <end_here>
 
-class Result
+@Serializable
+data class TaskResult(val description: String)
 
-class SubTask
+@Serializable
+data class SubTask(val description: String)
 
-class Task
+@Serializable
+data class Task(val description: String)
 
-class SubTaskResult
+@Serializable
+data class SubTaskResult(val description: String)
 
-fun split(task: Task): Array<SubTask> {
-  return emptyArray()
+private val logger = LogManager.getLogger("FanOutWorker")
+
+fun Task.split(): List<SubTask> {
+  // Split the task into subTasks
+  return this.description.split(",").map { SubTask(it) }
 }
 
-fun aggregate(subResults: List<SubTaskResult>): Result {
-  return Result()
+suspend fun SubTask.execute(ctx: Context): SubTaskResult {
+  // Execute subtask
+  logger.info("Started executing subtask: {}", this.description)
+  // Sleep for a random amount between 0 and 10 seconds
+  ctx.sleep(ctx.random().nextInt(0, 10).toLong().seconds)
+  logger.info("Execution subtask finished: {}", this.description)
+  return SubTaskResult("${this.description}: DONE")
+}
+
+fun List<SubTaskResult>.aggregate(): TaskResult {
+  // Aggregate the results
+  val resultDescription = this.joinToString(", ") { it.description }
+  logger.info("Aggregated result: {}", resultDescription)
+  return TaskResult(resultDescription)
 }

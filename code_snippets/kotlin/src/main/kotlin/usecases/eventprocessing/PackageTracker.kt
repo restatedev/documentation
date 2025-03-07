@@ -7,6 +7,7 @@ import dev.restate.sdk.common.StateKey
 import dev.restate.sdk.common.TerminalException
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
 import dev.restate.sdk.kotlin.KtSerdes
+import dev.restate.sdk.kotlin.KtStateKey
 import dev.restate.sdk.kotlin.ObjectContext
 import dev.restate.sdk.kotlin.SharedObjectContext
 import kotlinx.serialization.Serializable
@@ -18,7 +19,7 @@ class PackageTracker {
     // </mark_2>
 
     companion object {
-        private val PACKAGE_INFO = StateKey.of("package-info", KtSerdes.json<PackageInfo>())
+        private val PACKAGE_INFO = KtStateKey.json<PackageInfo>("package-info")
     }
 
     // <mark_3>

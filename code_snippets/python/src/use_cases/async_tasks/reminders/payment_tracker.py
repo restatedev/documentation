@@ -38,8 +38,7 @@ async def on_payment_failed(ctx: ObjectContext, event: StripeEvent):
 
     reminder_count = await ctx.get("reminder_count") or 0
     if reminder_count < 3:
-        reminder_count += 1
-        ctx.set("reminder_count", reminder_count)
+        ctx.set("reminder_count", reminder_count + 1)
         await ctx.run("send_reminder", lambda: send_reminder_email(event))
 
         # Schedule next reminder via a delayed self call

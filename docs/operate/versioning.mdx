@@ -6,6 +6,7 @@ description: "All you need to know on upgrading deployments."
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
+import {Terminal} from "../../src/components/code/terminal";
 
 # Versioning
 
@@ -18,21 +19,18 @@ To check which deployments are currently serving your services, you can use the 
 <Tabs groupId="interface" queryString>
     <TabItem value="cli" label="CLI">
 
-        ```bash
-        restate services list
-        ```
+        <Terminal>
+            ```bash !command
+            restate services list
+            ```
 
-        <details className={"grey-details"}>
-            <summary>Output</summary>
-
-            ```shell
+            ```shell !output
             NAME             REVISION  FLAVOR  DEPLOYMENT TYPE  DEPLOYMENT ID
             🌎  TicketObject     1                 HTTP 2           dp_14LsPzGz9HBxXIeBoH5wYUh
             🌎  CartObject       1                 HTTP 2           dp_14LsPzGz9HBxXIeBoH5wYUh
             🌎  CheckoutService  1                 HTTP 2           dp_14LsPzGz9HBxXIeBoH5wYUh
             ```
-
-        </details>
+        </Terminal>
 
         To list only the deployments, you can do `restate deployments list`.
 
@@ -46,14 +44,12 @@ To check which deployments are currently serving your services, you can use the 
 
     <TabItem value="curl" label="curl">
 
-        ```bash
-        curl localhost:9070/services/Greeter
-        ```
+        <Terminal>
+            ```bash !command
+            curl localhost:9070/services/Greeter
+            ```
 
-        <details className={"grey-details"}>
-            <summary>Output</summary>
-
-            ```json
+            ```json !output
             {
                 "name": "Greeter",
                 "revision": 2,
@@ -62,34 +58,31 @@ To check which deployments are currently serving your services, you can use the 
                 [...]
             }
             ```
-
-        </details>
+        </Terminal>
 
         Note that deployment IDs start with `dp_`. You can use it to describe the deployment:
 
-        ```bash
-        curl localhost:9070/deployments/Z3JlZXRlci12Mi8
-        ```
+        <Terminal>
+            ```bash !command
+            curl localhost:9070/deployments/Z3JlZXRlci12Mi8
+            ```
 
-        <details className={"grey-details"}>
-            <summary>Output</summary>
-
-            ```json
+            ```json !output
             {
                 "id": "Z3JlZXRlci12Mi8",
                 "uri": "http://greeter-v2/",
                 "additional_headers": {},
                 "protocol_type": "BidiStream",
                 "services": [
-            {
-                "name": "Greeter",
-                "revision": 2
-            }
+                    {
+                        "name": "Greeter",
+                        "revision": 2
+                    }
                 ]
             }
             ```
+        </Terminal>
 
-        </details>
 
     </TabItem>
 </Tabs>
@@ -114,30 +107,25 @@ To update it, we deploy a new revision at `http://greeter-v2/`, and then registe
     </TabItem>
     <TabItem value="curl" label="curl">
 
-        ```shell
-        curl localhost:9070/deployments -H 'content-type: application/json'
-            -d '{"uri": "http://greeter-v2/"}'
-        ```
+        <Terminal>
+            ```shell !command
+            curl localhost:9070/deployments -H 'content-type: application/json'
+                -d '{"uri": "http://greeter-v2/"}'
+            ```
 
-
-        <details className={"grey-details"}>
-            <summary>Output</summary>
-
-            ```json
+            ```json !output
             {
                 "id": "Z3JlZXRlci12Mi8",
                 "services": [
-            {
-                "name": "Greeter",
-                // !focus
-                "revision": 2
-            }
+                    {
+                        "name": "Greeter",
+                        // !focus
+                        "revision": 2
+                    }
                 ]
             }
             ```
-
-        </details>
-
+        </Terminal>
     </TabItem>
 </Tabs>
 

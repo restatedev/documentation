@@ -23,7 +23,8 @@ async def process_post(ctx: ObjectContext, post: SocialMediaPost):
 
     # <mark_4>
     # <mark_3>
-    while await ctx.run("post status", lambda: get_post_status(post_id)) == Status.PENDING:
+    current_status = await ctx.run("post status", lambda: get_post_status(post_id))
+    while current_status == Status.PENDING:
         # </mark_3>
         # <mark_2>
         await ctx.sleep(timedelta(seconds=5))

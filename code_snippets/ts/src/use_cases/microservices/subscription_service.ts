@@ -28,6 +28,8 @@ const subscriptionService = restate.service({
   },
 })
 
+export type SubscriptionService = typeof subscriptionService;
+
 restate
     .endpoint()
     .bind(subscriptionService)

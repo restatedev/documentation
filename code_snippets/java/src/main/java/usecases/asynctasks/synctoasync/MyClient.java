@@ -20,7 +20,7 @@ public class MyClient {
     try {
       // <mark_1>
       URL fileUploadUrl =
-            fileUploadClient
+          fileUploadClient
               .workflowHandle()
               .attachAsync()
               // break

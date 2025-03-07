@@ -41,7 +41,7 @@ func (SubscriptionObject) Add(ctx restate.ObjectContext, req SubscriptionRequest
 	restate.Set(ctx, "subscription", "creating_subscription")
 	// </mark_1>
 	if _, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-		return restate.Void{}, CreateSubscription(req.UserID, req.Subscription, payRef)
+		return restate.Void{}, CreateSubscription(req.UserID, req.Subscription)
 	}); err != nil {
 		return err
 	}
@@ -59,7 +59,7 @@ func main() {
 		Bidirectional(false).
 		LambdaHandler()
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatal(err)
 	}
 	lambda.Start(handler)
 }
@@ -67,7 +67,7 @@ func main() {
 // </mark_3>
 // <end_here>
 
-func CreateSubscription(id string, subscription string, ref string) error {
+func CreateSubscription(id string, subscription string) error {
 	return nil
 }
 

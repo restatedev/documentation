@@ -7,18 +7,21 @@ public class Idempotency {
 
   public static String RESTATE_URL = "http://localhost:8080";
 
-  // <start_here>
-  public void reserveProduct(String productId, String reservationId) {
-    // !focus(1:4)
+  public void createSubscription() {
+    String requestId = "123";
+    Utils.SubscriptionRequest subscriptionRequest =
+        new Utils.SubscriptionRequest("123", "123", new String[] {"123"});
+    // <start_here>
     // <mark_1>
     Client restateClient = Client.connect(RESTATE_URL);
-    ProductServiceClient.fromClient(restateClient, productId)
+    SubscriptionServiceClient.fromClient(restateClient)
         .send()
-        // <mark_2>
-        .reserve(CallRequestOptions.DEFAULT.withIdempotency(reservationId));
+        .add(
+            subscriptionRequest,
+            // <mark_2>
+            CallRequestOptions.DEFAULT.withIdempotency(requestId));
     // </mark_2>
     // </mark_1>
+    // <end_here>
   }
-  // <end_here>
-
 }
