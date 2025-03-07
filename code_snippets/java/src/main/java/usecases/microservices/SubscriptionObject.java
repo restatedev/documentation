@@ -32,7 +32,11 @@ public class SubscriptionObject {
     ctx.set(SUBSCRIPTION, "awaiting_payment");
     // </mark_1>
     var paymentId = ctx.random().nextUUID().toString();
-    boolean success = ctx.run(BOOLEAN, () -> createRecurringPayment(req.creditCard(), paymentId));
+    boolean success =
+        ctx.run(
+            BOOLEAN,
+            // break
+            () -> createRecurringPayment(req.creditCard(), paymentId));
 
     if (!success) {
       // <mark_1>

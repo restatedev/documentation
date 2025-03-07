@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/aws/aws-lambda-go/lambda"
 	restate "github.com/restatedev/sdk-go"
 	"github.com/restatedev/sdk-go/server"
 	"log"
@@ -24,6 +25,7 @@ func (UserFeed) ProcessPost(ctx restate.ObjectContext, post SocialMediaPost) err
 	// <mark_5>
 	var userId = restate.Key(ctx)
 	// </mark_5>
+
 	// <mark_3>
 	postId, err := restate.Run(ctx, func(ctx restate.RunContext) (string, error) {
 		return CreatePost(userId, post)
@@ -54,17 +56,18 @@ func (UserFeed) ProcessPost(ctx restate.ObjectContext, post SocialMediaPost) err
 	}
 	// </mark_4>
 
-	// <mark_6>
+	// <mark_3>
 	if _, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
 		return restate.Void{}, UpdateUserFeed(userId, postId)
-		// </mark_6>
+		// </mark_3>
 	}); err != nil {
 		return err
 	}
+
 	return nil
 }
 
-// <mark_1>
+// <mark_6>
 func main() {
 	handler, err := server.NewRestate().
 		Bind(restate.Reflect(UserFeed{})).
@@ -76,5 +79,5 @@ func main() {
 	lambda.Start(handler)
 }
 
-// </mark_1>
+// </mark_6>
 // <end_here>
