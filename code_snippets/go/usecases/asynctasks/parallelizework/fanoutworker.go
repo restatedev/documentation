@@ -4,8 +4,7 @@ import (
 	"context"
 	restate "github.com/restatedev/sdk-go"
 	"github.com/restatedev/sdk-go/server"
-	"log/slog"
-	"os"
+	"log"
 )
 
 // <start_here>
@@ -22,7 +21,8 @@ func (FanOutWorker) Run(ctx restate.Context, task Task) (Result, error) {
 	subtaskFutures := make([]restate.Selectable, 0, len(subtasks))
 	for _, subtask := range subtasks {
 		subtaskFutures = append(subtaskFutures,
-			restate.Service[SubTaskResult](ctx, "FanOutWorker", "RunSubtask").RequestFuture(subtask))
+			restate.Service[SubTaskResult](ctx, "FanOutWorker", "RunSubtask").
+				RequestFuture(subtask))
 	}
 	// </mark_1>
 
@@ -53,11 +53,9 @@ func (FanOutWorker) RunSubtask(ctx restate.Context, subtask SubTask) (SubTaskRes
 // <end_here>
 
 func main() {
-	server := server.NewRestate().
-		Bind(restate.Reflect(FanOutWorker{}))
-
-	if err := server.Start(context.Background(), ":9080"); err != nil {
-		slog.Error("application exited unexpectedly", "err", err.Error())
-		os.Exit(1)
+	if err := server.NewRestate().
+		Bind(restate.Reflect(FanOutWorker{})).
+		Start(context.Background(), ":9080"); err != nil {
+		log.Fatal(err)
 	}
 }

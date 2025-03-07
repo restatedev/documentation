@@ -4,15 +4,15 @@ import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.client.CallRequestOptions;
 import dev.restate.sdk.client.Client;
 import dev.restate.sdk.client.SendResponse;
-import usecases.utils.TaskOpts;
-
 import java.time.Duration;
+import usecases.utils.TaskOpts;
 
 public class TaskSubmitter {
 
   String RESTATE_URL = "http://localhost:8080";
+
   public void scheduleTask(TaskOpts taskOpts) {
-// <start_here>
+    // <start_here>
     // The Java SDK generates clients for each service
     Client restateClient = Client.connect(RESTATE_URL);
     SendResponse handle =
@@ -29,7 +29,8 @@ public class TaskSubmitter {
 
     // Attach to the async task to get the result
     // <mark_3>
-    String result = restateClient
+    String result =
+        restateClient
             // break
             .invocationHandle(handle.getInvocationId(), JsonSerdes.STRING)
             // break
