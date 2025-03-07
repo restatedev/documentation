@@ -1,4 +1,3 @@
 package usecases.utils;
 
-public class Permission {
-}
+public class Permission {}

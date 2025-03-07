@@ -1,5 +1,7 @@
 package usecases.asynctasks.parallelize;
 
+import static usecases.asynctasks.parallelize.utils.Utils.*;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import dev.restate.sdk.Awaitable;
 import dev.restate.sdk.Context;
@@ -9,10 +11,7 @@ import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
 import java.util.ArrayList;
 import java.util.List;
-
 import usecases.asynctasks.parallelize.utils.*;
-
-import static usecases.asynctasks.parallelize.utils.Utils.*;
 
 // <start_here>
 @Service
@@ -33,14 +32,12 @@ public class FanOutWorker {
     for (SubTask subTask : subTasks) {
       resultFutures.add(FanOutWorkerClient.fromContext(ctx).runSubtask(subTask));
     }
-      // </mark_1>
+    // </mark_1>
 
     // <mark_2>
     Awaitable.all(resultFutures).await();
 
-    var results = resultFutures.stream()
-            .map(future -> (SubTaskResult) future.await())
-            .toList();
+    var results = resultFutures.stream().map(future -> (SubTaskResult) future.await()).toList();
     // </mark_2>
 
     return aggregate(results);

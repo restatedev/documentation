@@ -1,5 +1,8 @@
 package usecases.workflows;
 
+import static usecases.utils.Utils.createUserEntry;
+import static usecases.utils.Utils.sendEmailWithLink;
+
 import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.SharedWorkflowContext;
 import dev.restate.sdk.WorkflowContext;
@@ -9,17 +12,14 @@ import dev.restate.sdk.common.DurablePromiseKey;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 import usecases.utils.User;
 
-import static usecases.utils.Utils.createUserEntry;
-import static usecases.utils.Utils.sendEmailWithLink;
-
-
 // <start_here>
 @Workflow
 public class SignupWorkflow {
 
   // <mark_3>
   private static final DurablePromiseKey<String> LINK_CLICKED =
-          DurablePromiseKey.of("link_clicked", JsonSerdes.STRING);
+      DurablePromiseKey.of("link_clicked", JsonSerdes.STRING);
+
   // </mark_3>
 
   // <mark_1>
@@ -40,10 +40,7 @@ public class SignupWorkflow {
 
     // <mark_2>
     // <mark_3>
-    String clickSecret =
-            ctx.promise(LINK_CLICKED)
-                    .awaitable()
-                    .await();
+    String clickSecret = ctx.promise(LINK_CLICKED).awaitable().await();
     // </mark_3>
     // </mark_2>
 
@@ -58,9 +55,7 @@ public class SignupWorkflow {
   }
 
   public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder()
-            .bind(new SignupWorkflow())
-            .buildAndListen();
+    RestateHttpEndpointBuilder.builder().bind(new SignupWorkflow()).buildAndListen();
   }
 }
 // <end_here>

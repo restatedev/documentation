@@ -1,4 +1,3 @@
 package usecases.utils;
 
-public class UserRole {
-}
+public class UserRole {}
