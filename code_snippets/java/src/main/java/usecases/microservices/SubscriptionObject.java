@@ -20,6 +20,7 @@ public class SubscriptionObject {
 
   // <mark_1>
   StateKey<String> SUBSCRIPTION = StateKey.of("subscription", STRING);
+
   // </mark_1>
 
   // <mark_2>

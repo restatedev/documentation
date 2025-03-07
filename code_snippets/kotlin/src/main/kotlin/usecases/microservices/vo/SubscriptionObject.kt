@@ -14,7 +14,7 @@ class SubscriptionObject {
   // </mark_2>
   companion object {
     // <mark_1>
-    private val SUBSCRIPTION = KtStateKey.json<String>("subscription")
+    val SUBSCRIPTION = KtStateKey.json<String>("subscription")
     // </mark_1>
   }
 

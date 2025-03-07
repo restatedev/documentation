@@ -35,7 +35,7 @@ class UserFeed {
         while (ctx.runBlock { getPostStatus(postId) } == "PENDING") {
             // </mark_3>
             // <mark_2>
-            ctx.sleep(5000.milliseconds)
+            ctx.sleep(5.seconds)
             // </mark_2>
         }
         // </mark_4>
