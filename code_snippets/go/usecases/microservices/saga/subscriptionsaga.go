@@ -1,10 +1,12 @@
-package saga
+package main
 
 import (
 	"context"
+	"errors"
 	restate "github.com/restatedev/sdk-go"
 	"github.com/restatedev/sdk-go/server"
 	"log"
+	"log/slog"
 )
 
 type SubscriptionRequest struct {
@@ -18,7 +20,7 @@ type SubscriptionSaga struct{}
 
 func (SubscriptionSaga) Add(ctx restate.Context, req SubscriptionRequest) (err error) {
 	// <mark_1>
-	compensations := make([]func() error, 0, len(req.Subscriptions)+1)
+	var compensations []func() error
 	// </mark_1>
 	// Run compensations at the end if err != nil
 	defer func() {
@@ -79,17 +81,24 @@ func main() {
 }
 
 func RemoveSubscription(id string, subscription string) error {
+	slog.Info("Removing subscription", "id", id, "subscription", subscription)
 	return nil
 }
 
 func RemoveRecurringPayment(card string, id string) error {
+	slog.Info("Removing recurring payment", "card", card, "id", id)
 	return nil
 }
 
 func CreateSubscription(id string, subscription string) (restate.Void, error) {
+	slog.Info("Creating subscription", "id", id, "subscription", subscription)
+	if subscription == "Disney+" {
+		return restate.Void{}, restate.TerminalError(errors.New("subscription not available"))
+	}
 	return restate.Void{}, nil
 }
 
 func CreateRecurringPayment(card string, id string) (restate.Void, error) {
+	slog.Info("Creating recurring payment", "card", card, "id", id)
 	return restate.Void{}, nil
 }
