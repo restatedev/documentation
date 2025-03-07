@@ -1,4 +1,4 @@
-import * as restate from "@restatedev/restate-sdk";
+import * as restate from "@restatedev/restate-sdk/lambda";
 import {randomUUID} from "node:crypto";
 
 
