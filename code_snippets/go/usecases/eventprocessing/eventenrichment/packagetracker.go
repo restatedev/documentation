@@ -67,7 +67,7 @@ func (PackageTracker) UpdateLocation(ctx restate.ObjectContext, locationUpdate L
 
 // <mark_3>
 // <mark_2>
-func (PackageTracker) GetPackageInfo(ctx restate.ObjectSharedContext) (PackageInfo, error) {
+func (PackageTracker) GetPackageInfo(ctx restate.ObjectSharedContext) (*PackageInfo, error) {
 	// </mark_2>
 	// </mark_3>
 	// <mark_1>
