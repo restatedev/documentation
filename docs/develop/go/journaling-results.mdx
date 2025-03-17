@@ -36,6 +36,18 @@ done with
 which uses `encoding/json`. If you don't need to return anything, you can use
 `restate.Void{}` which serialises to a nil byte slice.
 
+### Run-block Retry Policies
+
+You can configure the retry policy for the [`Run`](https://pkg.go.dev/github.com/restatedev/sdk-go#Run) using [`RunOption`](https://pkg.go.dev/github.com/restatedev/sdk-go#RunOption):
+
+```go
+CODE_LOAD::go/develop/journalingresults.go#side_effect_retry
+```
+
+This way you can override the default retry behavior of your Restate service for specific operations.
+
+If you set a maximum number of attempts or a maximum retry duration, then the [`Run`](https://pkg.go.dev/github.com/restatedev/sdk-go#Run) block will fail with a [`TerminalError`](/develop/ts/error-handling) once the retries are exhausted.
+Have a look at the [error handling docs](/develop/go/error-handling) and [Sagas guide](/guides/sagas) to learn how to handle these.
 
 ## Selectors
 Operations such as calls, awakeables, and `restate.After` return futures which can
