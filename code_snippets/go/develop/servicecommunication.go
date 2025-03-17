@@ -88,3 +88,43 @@ func (Router) Greet2(ctx restate.Context, name string) error {
 
 	return nil
 }
+
+func (Router) Greet3(ctx restate.Context, name string) error {
+	// <start_idempotency_key>
+	restate.
+		ServiceSend(ctx, "MyService", "MyHandler").
+		// Send attaching idempotency key
+		Send("Hi", restate.WithIdempotencyKey("my-idempotency-key"))
+	// <end_idempotency_key>
+
+	// <start_attach>
+	// Execute the request and retrieve the invocation id
+	invocationId := restate.
+		ServiceSend(ctx, "MyService", "MyHandler").
+		// Optional: send attaching idempotency key
+		Send("Hi", restate.WithIdempotencyKey("my-idempotency-key")).
+		GetInvocationId()
+
+	// Later re-attach to the request
+	response, err := restate.AttachInvocation[string](ctx, invocationId).Response()
+	// <end_attach>
+
+	_ = response
+	_ = err
+	return nil
+}
+
+func (Router) Greet4(ctx restate.Context, name string) error {
+	// <start_cancel>
+	// Execute the request and retrieve the invocation id
+	invocationId := restate.
+		ServiceSend(ctx, "MyService", "MyHandler").
+		Send("Hi").
+		GetInvocationId()
+
+	// I don't need this invocation anymore, let me just cancel it
+	restate.CancelInvocation(ctx, invocationId)
+	// <end_cancel>
+
+	return nil
+}
