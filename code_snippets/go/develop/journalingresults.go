@@ -25,6 +25,32 @@ func (JournalingResults) Greet(ctx restate.Context, name string) error {
 	return nil
 }
 
+func (JournalingResults) Greet2(ctx restate.Context, name string) error {
+	// <start_side_effect_retry>
+	result, err := restate.Run(ctx,
+		func(ctx restate.RunContext) (string, error) {
+			return doDbRequest()
+		},
+		// After 10 seconds, give up retrying
+		restate.WithMaxRetryDuration(time.Second*10),
+		// On the first retry, wait 100 milliseconds before next attempt
+		restate.WithInitialRetryInterval(time.Millisecond*100),
+		// Grow retry interval with factor 2
+		restate.WithRetryIntervalFactor(2.0),
+		// Optional: provide a name for the operation to be visible in the
+		// observability tools.
+		restate.WithName("my_db_request"),
+	)
+	if err != nil {
+		return err
+	}
+	// <end_side_effect_retry>
+
+	_ = result
+
+	return nil
+}
+
 func (JournalingResults) PromiseCombinators(ctx restate.Context, name string) (string, error) {
 	// <start_race>
 	sleepFuture := restate.After(ctx, 100*time.Millisecond)

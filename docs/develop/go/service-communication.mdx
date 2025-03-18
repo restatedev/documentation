@@ -128,3 +128,35 @@ CODE_LOAD::go/develop/servicecommunication.go#delayed_workflow
     It is guaranteed that call A will execute before call B.
     It is not guaranteed though that call B will be executed immediately after call A, as invocations coming from other handlers/sources, could interleave these two calls.
 </Admonition>
+
+## Using an idempotency key
+
+While service to service communication provides *exactly once semantics*, it won't guarantee that two separate services, or a service and an external client, won't execute the same logical request twice.
+In order to get this additional guarantee, you can provide an [idempotency key](https://docs.restate.dev/develop/ts/clients/#invoke-a-handler-idempotently) on any request using [`WithIdempotencyKey`](https://pkg.go.dev/github.com/restatedev/sdk-go#WithIdempotencyKey):
+
+```go
+CODE_LOAD::go/develop/servicecommunication.go#idempotency_key
+```
+
+## Re-attach to an invocation
+
+You can re-attach to any request using [`AttachInvocation`](https://pkg.go.dev/github.com/restatedev/sdk-go#AttachInvocation):
+
+```go
+CODE_LOAD::go/develop/servicecommunication.go#attach
+```
+
+<Admonition type="tip" title="Best used with idempotency key">
+    Attach will either wait for the in-flight invocation to complete, or in case of requests created with idempotency key, it will return its completion back when available.
+    Thus we generally recommended to attach to invocations created with an idempotency key, because those invocations will persist their result after completion, up to the configured retention time.
+</Admonition>
+
+## Cancel an invocation
+
+You can [cancel an invocation](https://docs.restate.dev/operate/invocation/#cancelling-invocations) using [`CancelInvocation`](https://pkg.go.dev/github.com/restatedev/sdk-go#CancelInvocation):
+
+```go
+CODE_LOAD::go/develop/servicecommunication.go#cancel
+```
+
+Have a look at our [sagas guide](/guides/sagas) to learn more about cancellations and how to handle them.
