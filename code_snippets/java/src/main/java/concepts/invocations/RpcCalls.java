@@ -1,9 +1,9 @@
 package concepts.invocations;
 
+import dev.restate.client.Client;
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.client.Client;
 
 @Service
 public class RpcCalls {

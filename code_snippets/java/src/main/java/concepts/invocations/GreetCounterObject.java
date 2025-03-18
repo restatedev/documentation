@@ -1,15 +1,14 @@
 package concepts.invocations;
 
-import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.common.StateKey;
+import dev.restate.sdk.types.StateKey;
 
 @VirtualObject
 public class GreetCounterObject {
 
-  public static final StateKey<Integer> COUNT = StateKey.of("count", JsonSerdes.INT);
+  public static final StateKey<Integer> COUNT = StateKey.of("count", Integer.class);
 
   @Handler
   public int greet(ObjectContext ctx, String greeting) {

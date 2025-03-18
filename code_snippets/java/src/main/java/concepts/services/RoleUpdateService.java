@@ -4,10 +4,10 @@ import concepts.services.types.SystemA;
 import concepts.services.types.SystemB;
 import concepts.services.types.UpdateRequest;
 import dev.restate.sdk.Context;
-import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
 import usecases.utils.Permission;
 
 /**
@@ -28,7 +28,7 @@ public class RoleUpdateService {
     // <mark_1>
     boolean success =
         ctx.run(
-            JsonSerdes.BOOLEAN,
+            Boolean.class,
             // break
             () -> SystemA.applyUserRole(req.getUserId(), req.getRole()));
     // </mark_1>
@@ -43,7 +43,7 @@ public class RoleUpdateService {
       // </mark_3>
       // <mark_1>
       ctx.run(
-          JsonSerdes.BOOLEAN,
+          Boolean.class,
           // break
           () -> SystemB.applyPermission(req.getUserId(), permission));
       // </mark_1>
@@ -51,11 +51,12 @@ public class RoleUpdateService {
   }
 
   public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder()
-        // break
-        .bind(new RoleUpdateService())
-        // break
-        .buildAndListen();
+    var endpoint =
+        Endpoint
+            // break
+            .bind(new RoleUpdateService());
+    // break
+    RestateHttpServer.listen(endpoint);
   }
 }
 // <end_here>

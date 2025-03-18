@@ -1,14 +1,13 @@
 package usecases.workflows;
 
-import static dev.restate.sdk.JsonSerdes.STRING;
 import static usecases.microservices.Utils.*;
 
 import dev.restate.sdk.WorkflowContext;
 import dev.restate.sdk.annotation.Workflow;
-import dev.restate.sdk.common.StateKey;
-import dev.restate.sdk.common.TerminalException;
+import dev.restate.sdk.endpoint.Endpoint;
 import dev.restate.sdk.lambda.BaseRestateLambdaHandler;
-import dev.restate.sdk.lambda.RestateLambdaEndpointBuilder;
+import dev.restate.sdk.types.StateKey;
+import dev.restate.sdk.types.TerminalException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +16,7 @@ import java.util.List;
 public class SubscriptionWorkflow {
 
   // <mark_1>
-  StateKey<String> STATUS = StateKey.of("status", STRING);
+  StateKey<String> STATUS = StateKey.of("status", String.class);
 
   // </mark_1>
 
@@ -32,7 +31,7 @@ public class SubscriptionWorkflow {
       compensations.add(() -> removeRecurringPayment(paymentId));
       // </mark_2>
       // <mark_2> green
-      ctx.run(STRING, () -> createRecurringPayment(req.creditCard(), paymentId));
+      ctx.run(String.class, () -> createRecurringPayment(req.creditCard(), paymentId));
       // </mark_2>
       // <mark_1>
       ctx.set(STATUS, "payment_success");
@@ -66,7 +65,7 @@ public class SubscriptionWorkflow {
 // <mark_3>
 class MyLambdaHandler extends BaseRestateLambdaHandler {
   @Override
-  public void register(RestateLambdaEndpointBuilder builder) {
+  public void register(Endpoint.Builder builder) {
     builder.bind(new SubscriptionWorkflow());
   }
 }

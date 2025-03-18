@@ -1,9 +1,9 @@
 package concepts.invocations;
 
+import dev.restate.client.Client;
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.client.Client;
 import java.time.Duration;
 
 @Service
@@ -15,9 +15,9 @@ public class DelayedCalls {
     // !focus
     GreeterServiceClient.fromContext(ctx)
         // !focus
-        .send(Duration.ofMillis(1000))
+        .send()
         // !focus
-        .greet("Hi");
+        .greet("Hi", Duration.ofMillis(1000));
   }
 
   // <end_delayed_call>

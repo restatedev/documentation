@@ -1,11 +1,11 @@
 package concepts.services;
 
-import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.common.StateKey;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
+import dev.restate.sdk.types.StateKey;
 
 /**
  * WARNING: The Services page relies on the line numbers for the code animations Make sure you adapt
@@ -20,7 +20,7 @@ public class Greeter {
 
   public static final StateKey<Integer> COUNT =
       // break
-      StateKey.of("count", JsonSerdes.INT);
+      StateKey.of("count", Integer.class);
 
   // <mark_1>
   // <mark_3>
@@ -61,11 +61,12 @@ public class Greeter {
   }
 
   public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder()
-        // break
-        .bind(new Greeter())
-        // break
-        .buildAndListen();
+    var endpoint =
+        Endpoint
+            // break
+            .bind(new Greeter());
+    // break
+    RestateHttpServer.listen(endpoint);
   }
 }
 // <end_here>

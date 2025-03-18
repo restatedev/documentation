@@ -2,9 +2,9 @@ package usecases.microservices.vo
 
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.VirtualObject
+import dev.restate.sdk.endpoint.Endpoint
 import dev.restate.sdk.kotlin.*
 import dev.restate.sdk.lambda.BaseRestateLambdaHandler
-import dev.restate.sdk.lambda.RestateLambdaEndpointBuilder
 import kotlinx.serialization.Serializable
 
 // <start_here>
@@ -14,7 +14,7 @@ class SubscriptionObject {
   // </mark_2>
   companion object {
     // <mark_1>
-    val SUBSCRIPTION = KtStateKey.json<String>("subscription")
+    val SUBSCRIPTION = stateKey<String>("subscription")
     // </mark_1>
   }
 
@@ -49,7 +49,7 @@ class SubscriptionObject {
 
 // <mark_3>
 class MyLambdaHandler : BaseRestateLambdaHandler() {
-  override fun register(builder: RestateLambdaEndpointBuilder) {
+  override fun register(builder: Endpoint.Builder) {
     builder.bind(SubscriptionObject())
   }
 }

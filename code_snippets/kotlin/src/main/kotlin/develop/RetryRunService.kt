@@ -2,10 +2,10 @@ package develop
 
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Service
-import dev.restate.sdk.common.TerminalException
 import dev.restate.sdk.kotlin.Context
 import dev.restate.sdk.kotlin.RetryPolicy
 import dev.restate.sdk.kotlin.runBlock
+import dev.restate.sdk.types.TerminalException
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 

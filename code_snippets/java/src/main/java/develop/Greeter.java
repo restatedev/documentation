@@ -2,13 +2,14 @@ package develop;
 
 import dev.restate.sdk.*;
 import dev.restate.sdk.annotation.*;
-import dev.restate.sdk.common.*;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
+import dev.restate.sdk.types.StateKey;
 
 @VirtualObject
 public class Greeter {
 
-  private static final StateKey<Integer> COUNT = StateKey.of("count", JsonSerdes.INT);
+  private static final StateKey<Integer> COUNT = StateKey.of("count", Integer.class);
 
   @Handler
   public String greet(ObjectContext ctx, String greeting) {
@@ -21,9 +22,7 @@ public class Greeter {
   }
 
   public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder()
-        .bind(new Greeter())
-        // Start the Restate Endpoint HTTP Server
-        .buildAndListen();
+    // Start the Restate Endpoint HTTP Server
+    RestateHttpServer.listen(Endpoint.bind(new Greeter()));
   }
 }
