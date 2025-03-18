@@ -1,10 +1,8 @@
 package develop.clients;
 
-import dev.restate.sdk.JsonSerdes;
-import dev.restate.sdk.client.CallRequestOptions;
-import dev.restate.sdk.client.Client;
-import dev.restate.sdk.client.SendResponse;
-import dev.restate.sdk.common.Output;
+import dev.restate.client.Client;
+import dev.restate.client.SendResponse;
+import dev.restate.common.Output;
 import java.time.Duration;
 
 public class Ingress {
@@ -39,13 +37,13 @@ public class Ingress {
     Client rs = Client.connect("http://localhost:8080");
     GreeterServiceClient.fromClient(rs)
         // !mark
-        .send(Duration.ofMillis(1000))
-        .greet("Hi");
+        .send()
+        .greet("Hi", Duration.ofSeconds(1));
 
     GreetCounterObjectClient.fromClient(rs, "Mary")
         // !mark
-        .send(Duration.ofMillis(1000))
-        .greet("Hi");
+        .send()
+        .greet("Hi", Duration.ofSeconds(1));
     // <end_delayed_call_java>
 
   }
@@ -56,7 +54,7 @@ public class Ingress {
     GreetCounterObjectClient.fromClient(rs, "Mary")
         .send()
         // !mark
-        .greet("Hi", CallRequestOptions.DEFAULT.withIdempotency("abcde"));
+        .greet("Hi", opt -> opt.idempotencyKey("abcde"));
     // <end_service_idempotent>
   }
 
@@ -64,11 +62,11 @@ public class Ingress {
 
     // <start_service_attach>
     Client rs = Client.connect("http://localhost:8080");
-    SendResponse handle =
+    SendResponse<String> handle =
         GreeterServiceClient.fromClient(rs)
             .send()
             // !mark
-            .greet("Hi", CallRequestOptions.DEFAULT.withIdempotency("abcde"));
+            .greet("Hi", opt -> opt.idempotencyKey("abcde"));
 
     // ... do something else ...
 
@@ -76,13 +74,13 @@ public class Ingress {
     // !mark
     String greeting =
         // !mark
-        rs.invocationHandle(handle.getInvocationId(), JsonSerdes.STRING).attach();
+        handle.invocationHandle().attach().response();
 
     // Option 2: Peek to see if the result is ready
     // !mark
     Output<String> output =
         // !mark
-        rs.invocationHandle(handle.getInvocationId(), JsonSerdes.STRING).getOutput();
+        handle.invocationHandle().getOutput().response();
     if (output.isReady()) {
       String result = output.getValue();
     }

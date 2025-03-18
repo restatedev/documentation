@@ -1,13 +1,13 @@
 package concepts.services;
 
-import static dev.restate.sdk.JsonSerdes.STRING;
 import static usecases.microservices.Utils.createRecurringPayment;
 import static usecases.microservices.Utils.createSubscription;
 
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
 import usecases.microservices.Utils.SubscriptionRequest;
 
 // <start_here>
@@ -28,7 +28,7 @@ public class SubscriptionService {
     // <mark_1>
     var payRef =
         ctx.run(
-            STRING,
+            String.class,
             // break
             () -> createRecurringPayment(req.creditCard(), paymentId));
     // </mark_1>
@@ -43,10 +43,9 @@ public class SubscriptionService {
 
   public static void main(String[] args) {
     // <mark_4>
-    RestateHttpEndpointBuilder.builder()
+    RestateHttpServer.listen(
         // break
-        .bind(new SubscriptionService())
-        .buildAndListen();
+        Endpoint.bind(new SubscriptionService()));
     // </mark_4>
   }
 }

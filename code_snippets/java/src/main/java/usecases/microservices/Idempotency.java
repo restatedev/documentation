@@ -1,7 +1,6 @@
 package usecases.microservices;
 
-import dev.restate.sdk.client.CallRequestOptions;
-import dev.restate.sdk.client.Client;
+import dev.restate.client.Client;
 
 public class Idempotency {
 
@@ -19,7 +18,7 @@ public class Idempotency {
         .add(
             subscriptionRequest,
             // <mark_2>
-            CallRequestOptions.DEFAULT.withIdempotency(requestId));
+            opt -> opt.idempotencyKey(requestId));
     // </mark_2>
     // </mark_1>
     // <end_here>

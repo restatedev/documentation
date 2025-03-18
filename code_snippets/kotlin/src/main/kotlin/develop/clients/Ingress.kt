@@ -1,13 +1,11 @@
 package operate.invocations
 
-import dev.restate.sdk.client.CallRequestOptions
-import dev.restate.sdk.client.Client
-import dev.restate.sdk.client.SendResponse
-import dev.restate.sdk.common.Output
-import dev.restate.sdk.kotlin.KtSerdes
+import dev.restate.client.Client
+import dev.restate.client.kotlin.attachSuspend
+import dev.restate.client.kotlin.getOutputSuspend
+import dev.restate.common.Output
 import develop.clients.GreetCounterObjectClient
 import develop.clients.GreeterServiceClient
-import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 class Ingress {
@@ -40,13 +38,13 @@ class Ingress {
     val rs = Client.connect("http://localhost:8080")
     GreeterServiceClient.fromClient(rs)
         // !mark
-        .send(1.seconds)
-        .greet("Hi")
+        .send()
+        .greet("Hi", 1.seconds)
 
     GreetCounterObjectClient.fromClient(rs, "Mary")
         // !mark
-        .send(1000.milliseconds)
-        .greet("Hi")
+        .send()
+        .greet("Hi", 1.seconds)
     // <end_delayed_call_kotlin>
   }
 
@@ -56,30 +54,29 @@ class Ingress {
     GreetCounterObjectClient.fromClient(rs, "Mary")
         .send()
         // !mark
-        .greet("Hi", CallRequestOptions.DEFAULT.withIdempotency("abcde"))
+        .greet("Hi") { idempotencyKey = "abcde" }
     // <end_service_idempotent>
   }
 
   suspend fun attach() {
     // <start_service_attach>
     val rs = Client.connect("http://localhost:8080")
-    val handle: SendResponse =
+    val handle =
         GreeterServiceClient.fromClient(rs)
             .send()
             // !mark
-            .greet("Hi", CallRequestOptions.DEFAULT.withIdempotency("abcde"))
+            .greet("Hi") { idempotencyKey = "abcde" }
+            .invocationHandle
 
     // ... do something else ...
 
     // Option 1: Attach later to retrieve the result
-    // !mark(1:2)
-    val greeting: String =
-        rs.invocationHandle(handle.invocationId, KtSerdes.json<String>()).attach()
+    // !mark(1:1)
+    val greeting: String = handle.attachSuspend().response
 
     // Option 2: Peek to see if the result is ready
-    // !mark(1:2)
-    val output: Output<String> =
-        rs.invocationHandle(handle.invocationId, KtSerdes.json<String>()).output
+    // !mark(1:1)
+    val output: Output<String> = handle.getOutputSuspend().response
     if (output.isReady) {
       val result = output.value
     }

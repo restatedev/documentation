@@ -5,7 +5,8 @@ import dev.restate.sdk.SharedWorkflowContext;
 import dev.restate.sdk.WorkflowContext;
 import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.Workflow;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
 
 @Workflow
 public class MyWorkflow {
@@ -24,7 +25,7 @@ public class MyWorkflow {
   }
 
   public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder().bind(new MyWorkflow()).buildAndListen();
+    RestateHttpServer.listen(Endpoint.bind(new MyWorkflow()));
   }
 }
 // <end_here>

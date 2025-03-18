@@ -1,8 +1,9 @@
 package develop;
 
+import dev.restate.common.Request;
+import dev.restate.common.Target;
 import dev.restate.sdk.Context;
-import dev.restate.sdk.JsonSerdes;
-import dev.restate.sdk.common.Target;
+import dev.restate.serde.TypeTag;
 import java.time.Duration;
 
 public class ServiceCommunication {
@@ -42,7 +43,9 @@ public class ServiceCommunication {
 
     // <start_request_response_generic>
     Target target = Target.service("MyService", "myHandler"); // or virtualObject or workflow
-    String response = ctx.call(target, JsonSerdes.STRING, JsonSerdes.STRING, request).await();
+    String response =
+        ctx.call(Request.of(target, TypeTag.of(String.class), TypeTag.of(String.class), request))
+            .await();
     // <end_request_response_generic>
   }
 
@@ -51,7 +54,7 @@ public class ServiceCommunication {
 
     // <start_one_way_generic>
     Target target = Target.service("MyService", "myHandler"); // or virtualObject or workflow
-    ctx.send(target, JsonSerdes.STRING, request);
+    ctx.send(Request.of(target, TypeTag.of(String.class), TypeTag.of(String.class), request));
     // <end_one_way_generic>
   }
 
@@ -60,7 +63,9 @@ public class ServiceCommunication {
 
     // <start_delayed_generic>
     Target target = Target.service("MyService", "myHandler"); // or virtualObject or workflow
-    ctx.send(target, JsonSerdes.STRING, request, Duration.ofDays(5));
+    ctx.send(
+        Request.of(target, TypeTag.of(String.class), TypeTag.of(String.class), request)
+            .asSendDelayed(Duration.ofDays(5)));
     // <end_delayed_generic>
   }
 
@@ -76,7 +81,7 @@ public class ServiceCommunication {
     String request = "";
 
     // <start_delayed>
-    MyServiceClient.fromContext(ctx).send(Duration.ofDays(5)).myHandler(request);
+    MyServiceClient.fromContext(ctx).send().myHandler(request, Duration.ofDays(5));
     // <end_delayed>
   }
 

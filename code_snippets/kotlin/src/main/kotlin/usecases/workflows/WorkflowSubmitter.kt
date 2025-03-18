@@ -1,11 +1,11 @@
 package usecases.workflows
 
-import dev.restate.sdk.client.Client
+import dev.restate.client.Client
 
 class WorkflowSubmitter {
   suspend fun submit(user: User) {
     // <start_here>
-    // import dev.restate.sdk.client.Client;
+    // import dev.restate.client.Client;
     val restateClient = Client.connect("http://localhost:8080")
     // !mark
     SignupWorkflowClient.fromClient(restateClient, user.id)

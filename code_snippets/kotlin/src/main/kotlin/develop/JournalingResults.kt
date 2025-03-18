@@ -22,14 +22,13 @@ internal class SideEffects {
     // <end_combine_all>
 
     // <start_combine_any>
-    val res = Awaitable.any(a1, a2, a3).await() as Boolean
-
-    // Or using the select statement
-    val resSelect = select {
-      a1.onAwait { it }
-      a2.onAwait { it }
-      a3.onAwait { it }
-    }
+    val resSelect =
+        select {
+              a1.onAwait { it }
+              a2.onAwait { it }
+              a3.onAwait { it }
+            }
+            .await()
     // <end_combine_any>
 
     // <start_uuid>

@@ -1,13 +1,12 @@
 package usecases.eventprocessing.eventtransactions;
 
-import static dev.restate.sdk.JsonSerdes.STRING;
 import static usecases.eventprocessing.eventtransactions.utils.Stubs.*;
 
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
+import dev.restate.sdk.endpoint.Endpoint;
 import dev.restate.sdk.lambda.BaseRestateLambdaHandler;
-import dev.restate.sdk.lambda.RestateLambdaEndpointBuilder;
 import java.time.Duration;
 import usecases.microservices.SubscriptionService;
 
@@ -26,12 +25,12 @@ public class UserFeed {
     // </mark_5>
 
     // <mark_3>
-    String postId = ctx.run(STRING, () -> createPost(userId, post));
+    String postId = ctx.run(String.class, () -> createPost(userId, post));
     // </mark_3>
 
     // <mark_4>
     // <mark_3>
-    while (ctx.run(STRING, () -> getPostStatus(postId)).equals("PENDING")) {
+    while (ctx.run(String.class, () -> getPostStatus(postId)).equals("PENDING")) {
       // </mark_3>
       // <mark_2>
       ctx.sleep(Duration.ofSeconds(5));
@@ -48,7 +47,7 @@ public class UserFeed {
 // <mark_6>
 class MyLambdaHandler extends BaseRestateLambdaHandler {
   @Override
-  public void register(RestateLambdaEndpointBuilder builder) {
+  public void register(Endpoint.Builder builder) {
     builder.bind(new SubscriptionService());
   }
 }

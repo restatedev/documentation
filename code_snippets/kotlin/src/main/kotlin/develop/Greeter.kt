@@ -2,15 +2,15 @@ package develop
 
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.VirtualObject
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
-import dev.restate.sdk.kotlin.KtStateKey
-import dev.restate.sdk.kotlin.ObjectContext
+import dev.restate.sdk.http.vertx.RestateHttpServer
+import dev.restate.sdk.kotlin.*
+import dev.restate.sdk.kotlin.endpoint.*
 
 @VirtualObject
 class Greeter {
 
   companion object {
-    private val COUNT = KtStateKey.json<Int>("count")
+    private val COUNT = stateKey<Int>("count")
   }
 
   @Handler
@@ -25,5 +25,5 @@ class Greeter {
 }
 
 fun main() {
-  RestateHttpEndpointBuilder.builder().bind(Greeter()).buildAndListen()
+  RestateHttpServer.listen(endpoint { bind(Greeter()) })
 }

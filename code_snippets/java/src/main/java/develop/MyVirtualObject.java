@@ -6,7 +6,8 @@ import dev.restate.sdk.SharedObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
 
 @VirtualObject
 public class MyVirtualObject {
@@ -24,7 +25,7 @@ public class MyVirtualObject {
   }
 
   public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder().bind(new MyVirtualObject()).buildAndListen();
+    RestateHttpServer.listen(Endpoint.bind(new MyVirtualObject()));
   }
 }
 // <end_here>

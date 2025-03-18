@@ -3,9 +3,9 @@ package develop
 // <start_here>
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Workflow
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
-import dev.restate.sdk.kotlin.SharedWorkflowContext
-import dev.restate.sdk.kotlin.WorkflowContext
+import dev.restate.sdk.http.vertx.RestateHttpServer
+import dev.restate.sdk.kotlin.*
+import dev.restate.sdk.kotlin.endpoint.*
 
 @Workflow
 class MyWorkflow {
@@ -24,6 +24,6 @@ class MyWorkflow {
 }
 
 fun main() {
-  RestateHttpEndpointBuilder.builder().bind(MyWorkflow()).buildAndListen()
+  RestateHttpServer.listen(endpoint { bind(MyWorkflow()) })
 }
 // <end_here>

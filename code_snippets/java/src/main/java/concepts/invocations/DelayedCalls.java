@@ -1,9 +1,9 @@
 package concepts.invocations;
 
+import dev.restate.client.Client;
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.client.Client;
 import java.time.Duration;
 
 @Service
@@ -15,7 +15,7 @@ public class DelayedCalls {
     // !focus(1:3)
     // From a Java Restate service
     Duration delay = Duration.ofDays(5);
-    GreeterServiceClient.fromContext(ctx).send(delay).greet("Hi");
+    GreeterServiceClient.fromContext(ctx).send().greet("Hi", delay);
   }
 
   // <end_delayed_call>
@@ -26,7 +26,7 @@ public class DelayedCalls {
     // Or from any other Java program
     Client restateClient = Client.connect("http://localhost:8080");
     Duration delay = Duration.ofDays(5);
-    GreeterServiceClient.fromClient(restateClient).send(delay).greet("Hi");
+    GreeterServiceClient.fromClient(restateClient).send().greet("Hi", delay);
   }
   // <end_delayed_call_java>
 }

@@ -6,10 +6,6 @@ plugins {
     id("com.diffplug.spotless") version "6.25.0"
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     // Restate SDK
     annotationProcessor(libs.restate.sdk.api.gen)
@@ -19,7 +15,6 @@ dependencies {
     implementation(libs.restate.sdk.lambda)
     implementation(libs.restate.sdk.request.identity)
     implementation(libs.restate.sdk.serde.jackson)
-    implementation(libs.restate.sdk.serde.protobuf)
     implementation(libs.restate.sdk.testing)
 
     implementation(libs.jackson.parameter.names)

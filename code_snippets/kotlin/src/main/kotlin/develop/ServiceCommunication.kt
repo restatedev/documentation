@@ -1,8 +1,9 @@
 package develop
 
-import dev.restate.sdk.common.Target
-import dev.restate.sdk.kotlin.Context
-import dev.restate.sdk.kotlin.KtSerdes
+import dev.restate.common.Request
+import dev.restate.common.Target
+import dev.restate.sdk.kotlin.*
+import dev.restate.sdk.kotlin.serialization.typeTag
 import kotlin.time.Duration.Companion.days
 
 class ServiceCommunication {
@@ -51,12 +52,7 @@ class ServiceCommunication {
     // <start_request_response_generic>
     val target = Target.service("MyService", "myHandler")
     val response =
-        ctx.callAsync(
-                target,
-                inputSerde = KtSerdes.json<String>(),
-                outputSerde = KtSerdes.json<String>(),
-                request)
-            .await()
+        ctx.call(Request.of(target, typeTag<String>(), typeTag<String>(), request)).await()
     // <end_request_response_generic>
   }
 
@@ -65,7 +61,7 @@ class ServiceCommunication {
 
     // <start_one_way_generic>
     val target = Target.service("MyService", "myHandler")
-    ctx.send(target, KtSerdes.json<String>(), request)
+    ctx.send(Request.of(target, typeTag<String>(), typeTag<String>(), request))
     // <end_one_way_generic>
   }
 
@@ -74,7 +70,8 @@ class ServiceCommunication {
 
     // <start_delayed_generic>
     val target = Target.service("MyService", "myHandler")
-    ctx.send(target, KtSerdes.json<String>(), request, delay = 5.days)
+    ctx.send(
+        Request.of(target, typeTag<String>(), typeTag<String>(), request).asSendDelayed(5.days))
     // <end_delayed_generic>
 
   }
@@ -83,7 +80,7 @@ class ServiceCommunication {
     val request = ""
 
     // <start_delayed>
-    MyServiceClient.fromContext(ctx).send(5.days).myHandler(request)
+    MyServiceClient.fromContext(ctx).send().myHandler(request, 5.days)
     // <end_delayed>
   }
 }

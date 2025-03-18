@@ -1,12 +1,11 @@
 package usecases.microservices;
 
-import static dev.restate.sdk.JsonSerdes.STRING;
 import static usecases.microservices.Utils.*;
 
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.common.TerminalException;
+import dev.restate.sdk.types.TerminalException;
 import java.util.ArrayList;
 import java.util.List;
 import usecases.microservices.Utils.SubscriptionRequest;
@@ -27,7 +26,7 @@ public class SubscriptionSaga {
       compensations.add(() -> removeRecurringPayment(paymentId));
       // </mark_1>
       // <mark_1> green
-      ctx.run(STRING, () -> createRecurringPayment(req.creditCard(), paymentId));
+      ctx.run(String.class, () -> createRecurringPayment(req.creditCard(), paymentId));
       // </mark_1>
 
       for (String subscription : req.subscriptions()) {

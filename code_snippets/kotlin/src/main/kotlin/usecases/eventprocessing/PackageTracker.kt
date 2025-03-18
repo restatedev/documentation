@@ -3,12 +3,10 @@ package usecases.eventprocessing
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Shared
 import dev.restate.sdk.annotation.VirtualObject
-import dev.restate.sdk.common.StateKey
-import dev.restate.sdk.common.TerminalException
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
-import dev.restate.sdk.kotlin.KtSerdes
-import dev.restate.sdk.kotlin.ObjectContext
-import dev.restate.sdk.kotlin.SharedObjectContext
+import dev.restate.sdk.http.vertx.RestateHttpServer
+import dev.restate.sdk.kotlin.*
+import dev.restate.sdk.kotlin.endpoint.endpoint
+import dev.restate.sdk.types.TerminalException
 import kotlinx.serialization.Serializable
 
 // <start_here>
@@ -18,7 +16,7 @@ class PackageTracker {
   // </mark_2>
 
   companion object {
-    private val PACKAGE_INFO = StateKey.of("package-info", KtSerdes.json<PackageInfo>())
+    private val PACKAGE_INFO = stateKey<PackageInfo>("package-info")
   }
 
   // <mark_3>
@@ -64,7 +62,7 @@ class PackageTracker {
 }
 
 fun main() {
-  RestateHttpEndpointBuilder.builder().bind(PackageTracker()).buildAndListen()
+  RestateHttpServer.listen(endpoint { bind(PackageTracker()) })
 }
 // <end_here>
 

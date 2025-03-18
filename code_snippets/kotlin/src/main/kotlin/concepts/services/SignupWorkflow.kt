@@ -2,8 +2,9 @@ package concepts.services
 
 import dev.restate.sdk.annotation.Shared
 import dev.restate.sdk.annotation.Workflow
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
+import dev.restate.sdk.http.vertx.RestateHttpServer
 import dev.restate.sdk.kotlin.*
+import dev.restate.sdk.kotlin.endpoint.endpoint
 import kotlinx.serialization.Serializable
 
 // <start_here>
@@ -12,7 +13,7 @@ class SignupWorkflow {
 
   companion object {
     // <mark_3>
-    private val LINK_CLICKED = KtDurablePromiseKey.json<String>("link_clicked")
+    private val LINK_CLICKED = durablePromiseKey<String>("link_clicked")
     // </mark_3>
   }
 
@@ -32,7 +33,7 @@ class SignupWorkflow {
     // </mark_2>
 
     // <mark_3>
-    val clickSecret: String = ctx.promise(LINK_CLICKED).awaitable().await()
+    val clickSecret: String = ctx.promise(LINK_CLICKED).future().await()
     // </mark_3>
 
     return clickSecret == secret
@@ -48,7 +49,7 @@ class SignupWorkflow {
 }
 
 fun main() {
-  RestateHttpEndpointBuilder.builder().bind(SignupWorkflow()).buildAndListen()
+  RestateHttpServer.listen(endpoint { bind(SignupWorkflow()) })
 }
 // <end_here>
 

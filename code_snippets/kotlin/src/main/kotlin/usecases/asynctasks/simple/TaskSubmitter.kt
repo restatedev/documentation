@@ -1,8 +1,7 @@
 package usecases.asynctasks.simple
 
-import dev.restate.sdk.client.CallRequestOptions
-import dev.restate.sdk.client.Client
-import dev.restate.sdk.kotlin.KtSerdes
+import dev.restate.client.Client
+import dev.restate.client.kotlin.attachSuspend
 import kotlin.time.Duration.Companion.days
 
 class TaskSubmitter {
@@ -15,24 +14,18 @@ class TaskSubmitter {
     val handle =
         // <mark_1>
         AsyncTaskServiceClient.fromClient(restateClient)
-            .send(5.days)
-            .runTask(
-                taskOpts,
-                // <mark_2>
-                CallRequestOptions.DEFAULT.withIdempotency("dQw4w9WgXcQ"),
-                // </mark_2>
-            )
+            .send()
+            .runTask(taskOpts, 5.days) {
+              // <mark_2>
+              idempotencyKey = "dQw4w9WgXcQ"
+              // </mark_2>
+            }
+            .invocationHandle
     // </mark_1>
 
     // Attach to the async task to get the result
     // <mark_3>
-    val result =
-        restateClient
-            .invocationHandle(
-                handle.invocationId,
-                KtSerdes.json<String>(),
-            )
-            .attach()
+    val result = handle.attachSuspend()
     // </mark_3>
     // <end_here>
   }
