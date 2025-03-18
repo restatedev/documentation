@@ -1,11 +1,21 @@
 package develop
 
-class SerializationExample {
-  data class MyDataClass(val a: Int)
+import dev.restate.sdk.annotation.CustomSerdeFactory
+import dev.restate.sdk.annotation.Service
+import dev.restate.sdk.kotlin.serialization.KotlinSerializationSerdeFactory
+import kotlinx.serialization.json.Json
 
-  // <end_statekey>
-  private fun someFn() {
-    // <start_here>
-    // <end_here>
+
+// <start_custom>
+class MyJsonSerdeFactory : KotlinSerializationSerdeFactory(
+  json = Json {
+    prettyPrint = true
   }
-}
+)
+// <end_custom>
+
+// <start_custom_service>
+@CustomSerdeFactory(MyJsonSerdeFactory::class)
+@Service
+internal class ServiceWithCustomSerdeFactory
+// <end_custom_service>

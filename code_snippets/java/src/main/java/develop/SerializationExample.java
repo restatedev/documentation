@@ -1,38 +1,35 @@
 package develop;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import dev.restate.common.Slice;
-import dev.restate.sdk.types.StateKey;
+import dev.restate.sdk.Context;
+import dev.restate.sdk.annotation.CustomSerdeFactory;
+import dev.restate.sdk.annotation.Service;
+import dev.restate.sdk.serde.jackson.JacksonSerdeFactory;
 import dev.restate.serde.Serde;
-import java.util.Arrays;
-import java.util.List;
+
+// <start_custom_jackson>
+class MyJacksonSerdeFactory extends JacksonSerdeFactory {
+  public MyJacksonSerdeFactory() {
+    super(new ObjectMapper().configure(SerializationFeature.INDENT_OUTPUT, true));
+  }
+}
+
+// <end_custom_jackson>
+
+// <start_custom_jackson_service>
+@CustomSerdeFactory(MyJacksonSerdeFactory.class)
+@Service
+class ServiceWithCustomJacksonObjectMapper {}
+
+// <end_custom_jackson_service>
 
 public class SerializationExample {
-  List<Serde> serializers =
-      Arrays.asList(
-          // <start_here>
-
-          // <end_here>
-          );
-
-  // <start_statekey>
-
-  // <end_statekey>
-
-  private void someFn() {
-
-    // <start_protoserdes>
-    // <end_protoserdes>
-
-    // <start_pojoserdes>
-    // <end_pojoserdes>
-
-    // <start_typerefserdes>
-    // <end_typerefserdes>
-
-    // <start_person_state_key>
-    StateKey<Person> PERSON_STATE_KEY = StateKey.of("person", new MyPersonSerde());
-    // <end_person_state_key>
-
+  private void someFn(Context ctx) {
+    // <start_use_person_serde>
+    ctx.run(new MyPersonSerde(), () -> new Person());
+    // <end_use_person_serde>
   }
 }
 
