@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import dev.restate.common.Slice;
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.CustomSerdeFactory;
+import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
 import dev.restate.sdk.serde.jackson.JacksonSerdeFactory;
 import dev.restate.serde.Serde;
@@ -21,7 +22,12 @@ class MyJacksonSerdeFactory extends JacksonSerdeFactory {
 // <start_custom_jackson_service>
 @CustomSerdeFactory(MyJacksonSerdeFactory.class)
 @Service
-class ServiceWithCustomJacksonObjectMapper {}
+class ServiceWithCustomJacksonObjectMapper {
+  @Handler
+  public String greet(Context context) {
+    return "Hello world";
+  }
+}
 
 // <end_custom_jackson_service>
 

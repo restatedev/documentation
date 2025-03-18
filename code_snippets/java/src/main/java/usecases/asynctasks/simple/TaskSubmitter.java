@@ -16,9 +16,10 @@ public class TaskSubmitter {
     SendResponse<String> sendResponse =
         // <mark_1>
         AsyncTaskServiceClient.fromClient(restateClient)
-            .send(Duration.ofDays(5))
+            .send()
             .runTask(
                 taskOpts,
+                Duration.ofDays(5),
                 // <mark_2>
                 opt -> opt.idempotencyKey("dQw4w9WgXcQ")
                 // </mark_2>

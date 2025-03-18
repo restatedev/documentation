@@ -37,13 +37,13 @@ public class Ingress {
     Client rs = Client.connect("http://localhost:8080");
     GreeterServiceClient.fromClient(rs)
         // !mark
-        .send(Duration.ofMillis(1000))
-        .greet("Hi");
+        .send()
+        .greet("Hi", Duration.ofSeconds(1));
 
     GreetCounterObjectClient.fromClient(rs, "Mary")
         // !mark
-        .send(Duration.ofMillis(1000))
-        .greet("Hi");
+        .send()
+        .greet("Hi", Duration.ofSeconds(1));
     // <end_delayed_call_java>
 
   }
@@ -74,13 +74,13 @@ public class Ingress {
     // !mark
     String greeting =
         // !mark
-        rs.invocationHandle(handle.invocationHandle().invocationId(), String.class).attach();
+        handle.invocationHandle().attach().response();
 
     // Option 2: Peek to see if the result is ready
     // !mark
     Output<String> output =
         // !mark
-        rs.invocationHandle(handle.invocationHandle().invocationId(), String.class).getOutput();
+        handle.invocationHandle().getOutput().response();
     if (output.isReady()) {
       String result = output.getValue();
     }
