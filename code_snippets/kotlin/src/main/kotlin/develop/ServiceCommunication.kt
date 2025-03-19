@@ -1,6 +1,8 @@
 package develop
 
+import dev.restate.sdk.common.Target
 import dev.restate.sdk.kotlin.Context
+import dev.restate.sdk.kotlin.KtSerdes
 import kotlin.time.Duration.Companion.seconds
 
 class ServiceCommunication {
@@ -39,21 +41,48 @@ class ServiceCommunication {
     val request = ""
 
     // <start_one_way>
-    MyServiceClient.fromContext(ctx)
-        // !mark
-        .send()
-        .myHandler(request)
+    MyServiceClient.fromContext(ctx).send().myHandler(request)
     // <end_one_way>
+  }
+
+  suspend fun generic(ctx: Context) {
+    val request = ""
+
+    // <start_request_response_generic>
+    val target = Target.service("MyService", "myHandler")
+    val response =
+        ctx.call(
+            target,
+            inputSerde = KtSerdes.json<String>(),
+            outputSerde = KtSerdes.json<String>(),
+            request)
+    // <end_request_response_generic>
+  }
+
+  suspend fun genericSend(ctx: Context) {
+    val request = ""
+
+    // <start_one_way_generic>
+    val target = Target.service("MyService", "myHandler")
+    ctx.send(target, KtSerdes.json<String>(), request)
+    // <end_one_way_generic>
+  }
+
+  suspend fun genericDelayed(ctx: Context) {
+    val request = ""
+
+    // <start_delayed_generic>
+    val target = Target.service("MyService", "myHandler")
+    ctx.send(target, KtSerdes.json<String>(), request, delay = 5.seconds)
+    // <end_delayed_generic>
+
   }
 
   suspend fun delayedCall(ctx: Context) {
     val request = ""
 
     // <start_delayed>
-    MyServiceClient.fromContext(ctx)
-        // !mark
-        .send(1.seconds)
-        .myHandler(request)
+    MyServiceClient.fromContext(ctx).send(1.seconds).myHandler(request)
     // <end_delayed>
   }
 }

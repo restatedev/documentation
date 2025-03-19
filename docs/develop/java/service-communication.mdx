@@ -33,42 +33,54 @@ Use the generated client's of the SDK to do the request-response call:
 <Tabs groupId="sdk" queryString className={"display-none"}>
     <TabItem value="java" label="Java">
 
-             To a Service:
+         To a Service:
 
-             ```java
-             CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#request_response_service
-             ```
+         ```java
+         CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#request_response_service
+         ```
 
-
-             To a Virtual Object:
-
-             ```java
-             CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#request_response_virtual_object
-             ```
-
-             To a Workflow:
-             ```java
-             CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#request_response_workflow
-             ```
-    </TabItem>
-    <TabItem value="kotlin" label="Kotlin">
-            To a Service:
-
-            ```kotlin
-            CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#request_response_service
-            ```
 
          To a Virtual Object:
 
-            ```kotlin
-            CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#request_response_virtual_object
-            ```
+         ```java
+         CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#request_response_virtual_object
+         ```
 
-            To a Workflow:
+         To a Workflow:
+         ```java
+         CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#request_response_workflow
+         ```
 
-            ```kotlin CallWorkflow.kt
-            CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#request_response_workflow
-            ```
+        Or with the generic clients, if you don't have access to typed clients or want to specify the service and handler with strings (e.g. to implement [workflow interpreters](https://github.com/restatedev/examples/tree/main/java/end-to-end-applications/workflow-interpreter)):
+        ```java
+        CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#request_response_generic
+        ```
+
+    </TabItem>
+    <TabItem value="kotlin" label="Kotlin">
+        To a Service:
+
+        ```kotlin
+        CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#request_response_service
+        ```
+
+        To a Virtual Object:
+
+        ```kotlin
+        CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#request_response_virtual_object
+        ```
+
+        To a Workflow:
+
+        ```kotlin CallWorkflow.kt
+        CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#request_response_workflow
+        ```
+
+        Or with the generic clients, if you don't have access to typed clients or want to specify the service and handler with strings (e.g. to implement [workflow interpreters](https://github.com/restatedev/examples/tree/main/java/end-to-end-applications/workflow-interpreter)):
+
+        ```kotlin CallWorkflow.kt
+        CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#request_response_generic
+        ```
 
     </TabItem>
 </Tabs>
@@ -112,6 +124,24 @@ CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#one_way
 </TabItem>
 </Tabs>
 
+Or with the generic clients:
+<Tabs groupId="sdk" queryString className={"display-none"}>
+    <TabItem value="java" label="Java">
+
+        ```java
+        CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#one_way_generic
+        ```
+
+    </TabItem>
+    <TabItem value="kotlin" label="Kotlin">
+
+        ```kotlin
+        CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#one_way_generic
+        ```
+
+    </TabItem>
+</Tabs>
+
 <Admonition type="tip" title="No need for message queues">
     Without Restate, you would usually put a message queue in between the two services, to guarantee the message delivery.
     Restate eliminates the need for a message queue because Restate durably logs the request and makes sure it gets executed.
@@ -137,6 +167,24 @@ CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#delayed
 ```
 
 </TabItem>
+</Tabs>
+
+Or with the generic clients:
+<Tabs groupId="sdk" queryString className={"display-none"}>
+    <TabItem value="java" label="Java">
+
+        ```java
+        CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#delayed_generic
+        ```
+
+    </TabItem>
+    <TabItem value="kotlin" label="Kotlin">
+
+        ```kotlin
+        CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#delayed_generic
+        ```
+
+    </TabItem>
 </Tabs>
 
 <Admonition type="tip" title="Scheduling async tasks">
