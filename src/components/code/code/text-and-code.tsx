@@ -8,7 +8,7 @@ import {
 } from "codehike/code"
 import { pill } from "../annotations/pill"
 import { ruler } from "../annotations/ruler"
-import {CodeTabs, CodeWithTabs, HighCode} from "../code"
+import {CodeTabs, HighCode} from "../code"
 import React from "react"
 // @ts-ignore
 import styles from "./text-and-code.module.css"
