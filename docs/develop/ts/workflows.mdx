@@ -15,8 +15,8 @@ A workflow can be seen as a special type of [Virtual Object](/concepts/services#
 - Each [workflow definition](/develop/ts/overview#workflows) has a **`run` handler** that implements the workflow logic.
   - The `run` handler **executes exactly one time** for each workflow instance (object / key).
   - The `run` handler executes a set of **durable steps/activities**. These can either be:
-  - Inline activities: for example a [run block](/develop/ts/journaling-results#journaled-actions) or [sleep](/develop/ts/durable-timers)
-  - [Calls to other handlers](/develop/ts/service-communication) implementing the activities
+    - Inline activities: for example a [run block](/develop/ts/journaling-results#journaled-actions) or [sleep](/develop/ts/durable-timers)
+    - [Calls to other handlers](/develop/ts/service-communication) implementing the activities
 - You can **submit a workflow** in the same way as any handler invocation (via SDK clients or Restate services, over HTTP or Kafka).
 - A [workflow definition](/develop/ts/overview#workflows) can implement other handlers that can be called multiple times, and can **interact with the workflow**:
   - [Query](/develop/ts/workflows#implementing-workflows) the workflow (get information out of it) by getting K/V state or awaiting promises that are resolved by the workflow.

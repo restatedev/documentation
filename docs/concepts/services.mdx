@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 2
 description: ""
 ---
 
@@ -7,21 +7,15 @@ import {Scrollycoding} from "../../src/components/code/scrollycoding";
 
 # Services
 
-import Admonition from '@theme/Admonition';
-
 This is what a Restate application looks like from a helicopter view:
 
 <center>
     <img src="/img/restate-app.svg" alt="Application overview" width="50%"/>
 </center>
 
-1. **Restate Server**: The server intercepts incoming requests and drives their execution till the end.
-2. **Services**: Contain the handlers which process incoming requests.
-3. **Invocation**: A request to execute a handler that is part of either a service, or a virtual object.
-
-As you can see, handlers are bundled into services.
-Services run like regular RPC services (e.g. a NodeJS app in a Docker container).
-Services can be written in any language for which there is an SDK available.
+1. **Services**: Restate services contain functions/handlers which process incoming requests and execute business logic. Services run like regular code in your infrastructure, for example a NodeJS/Java app in a Docker container or a Python function on AWS Lambda. Services embed the Restate SDK as a dependency, and their handlers use it to persist the progress they make. Services can be written in any language for which there is an SDK available: [TypeScript](/develop/ts/overview), [Java](/develop/java/overview), [Kotlin](/develop/java/overview?sdk=kotlin), [Go](/develop/go/overview), [Python](/develop/python/overview), and [Rust](https://docs.rs/restate-sdk/latest/restate_sdk/).
+2. **[Restate Server](/concepts/services#restate-server)**: The server sits in front of your services, similar to a reverse proxy or message broker. It proxies incoming requests to the corresponding services and drives their execution till the end.
+3. **[Invocation](/concepts/invocations)**: An invocation is a request to execute a handler.
 
 There are three types of services in Restate:
 
@@ -34,12 +28,11 @@ Services expose a collection of handlers:
 
 <Scrollycoding>
     ## !!steps
-    Restate makes sure that **handlers run to completion**, even in the presence of failures.
-    Restate logs the **results of actions** in the system.
-    Restate takes care of retries and recovers the handler to the point where it failed.
+    Restate makes sure that handlers run to completion, even in the presence of failures.
+    Restate persists the results of actions and recovers them after failures.
 
-    ```ts !!tabs TypeScript
-    CODE_LOAD::ts/src/concepts/services.ts?1
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/basics/src/0_durable_execution.ts
+    CODE_LOAD::ts/src/concepts/services/subscription_service.ts?1
     ```
     ```java !!tabs Java
     CODE_LOAD::java/src/main/java/concepts/services/RoleUpdateService.java?1
@@ -52,10 +45,10 @@ Services expose a collection of handlers:
     ```
 
     ## !!steps
-    The handlers of services are **independent** and can be **invoked concurrently**.
+    The handlers of services are independent and can be invoked concurrently.
 
-    ```ts !!tabs TypeScript
-    CODE_LOAD::ts/src/concepts/services.ts?2
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/basics/src/0_durable_execution.ts
+    CODE_LOAD::ts/src/concepts/services/subscription_service.ts?2
     ```
     ```java !!tabs Java
     CODE_LOAD::java/src/main/java/concepts/services/RoleUpdateService.java?2
@@ -68,10 +61,10 @@ Services expose a collection of handlers:
     ```
 
     ## !!steps
-    Handlers use the regular code and control flow, no custom DSLs.
+    Handlers use regular code and control flow, no custom DSLs.
 
-    ```ts !!tabs TypeScript
-    CODE_LOAD::ts/src/concepts/services.ts?3
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/basics/src/0_durable_execution.ts
+    CODE_LOAD::ts/src/concepts/services/subscription_service.ts?3
     ```
     ```java !!tabs Java
     CODE_LOAD::java/src/main/java/concepts/services/RoleUpdateService.java?3
@@ -94,8 +87,8 @@ Virtual objects expose a set of handlers with access to K/V state stored in Rest
     ## !!steps
     A virtual object is **uniquely identified and accessed by its key**.
 
-    ```ts !!tabs TypeScript
-    CODE_LOAD::ts/src/concepts/virtual_objects.ts?1
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/basics/src/2_virtual_objects.ts
+    CODE_LOAD::ts/src/concepts/services/virtual_objects.ts?1
     ```
     ```java !!tabs Java
     CODE_LOAD::java/src/main/java/concepts/services/Greeter.java?1
@@ -111,10 +104,10 @@ Virtual objects expose a set of handlers with access to K/V state stored in Rest
     Each virtual object has access to its own **isolated K/V state**, stored in Restate.
     The handlers of a virtual object can read and write to the state of the object.
     Restate delivers the state together with the request to the virtual object, so virtual objects have their state locally accessible without requiring any database connection or lookup.
-    State is exclusive, and atomically committed with the method execution.
+    State is exclusive, and atomically committed with the handler execution.
 
-    ```ts !!tabs TypeScript
-    CODE_LOAD::ts/src/concepts/virtual_objects.ts?2
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/basics/src/2_virtual_objects.ts
+    CODE_LOAD::ts/src/concepts/services/virtual_objects.ts?2
     ```
     ```java !!tabs Java
     CODE_LOAD::java/src/main/java/concepts/services/Greeter.java?2
@@ -127,11 +120,28 @@ Virtual objects expose a set of handlers with access to K/V state stored in Rest
     ```
 
     ## !!steps
+    When a handler is invoked, it can **read and write to the state** of the virtual object.
     To ensure consistent writes to the state, Restate provides **concurrency guarantees**: at most one handler can execute at a time for a given virtual object.
-    This can also be used for example to implement a locking mechanism or to ensure single writer to a database row.
 
-    ```ts !!tabs TypeScript
-    CODE_LOAD::ts/src/concepts/virtual_objects.ts?3
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/basics/src/2_virtual_objects.ts
+    CODE_LOAD::ts/src/concepts/services/virtual_objects.ts?3
+    ```
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/concepts/services/Greeter.java?3
+    ```
+    ```go !!tabs Go
+    CODE_LOAD::go/concepts/virtualobjects/main.go?3
+    ```
+    ```python !!tabs Python
+    CODE_LOAD::python/src/concepts/virtual_objects.py?3
+    ```
+
+    ## !!steps
+    If you want to **allow concurrent reads** to the state, you can mark a handler as a **shared handler**.
+    This allows the handler to run concurrently with other handlers, but it cannot write to the state.
+
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/basics/src/2_virtual_objects.ts
+    CODE_LOAD::ts/src/concepts/services/virtual_objects.ts?4
     ```
     ```java !!tabs Java
     CODE_LOAD::java/src/main/java/concepts/services/Greeter.java?3
@@ -153,11 +163,11 @@ Workflows have additional capabilities such as signaling, querying, additional i
 <Scrollycoding>
 
     ## !!steps
-    A workflow has a **`run` handler** that implements the **workflow logic**.
+    A workflow has a **run handler** that implements the **workflow logic**.
     The `run` handler runs exactly once per workflow ID (object).
 
     ```ts !!tabs TypeScript
-    CODE_LOAD::ts/src/concepts/workflow.ts?1
+    CODE_LOAD::ts/src/concepts/services/signup_workflow.ts?1
     ```
     ```java !!tabs Java
     CODE_LOAD::java/src/main/java/concepts/services/Payment.java?1
@@ -166,12 +176,14 @@ Workflows have additional capabilities such as signaling, querying, additional i
     CODE_LOAD::python/src/concepts/workflows.py?1
     ```
 
+
     ## !!steps
-    You can **query the workflow** by defining other handlers in the same object.
-    For example, you can store state in the workflow object, and query it from other handlers.
+    The run handler executes a set of **durable steps/activities**. These can either be:
+    - Inline activities: run blocks, sleep, mutating K/V state,...
+    - Calls to other handlers implementing the activities.
 
     ```ts !!tabs TypeScript
-    CODE_LOAD::ts/src/concepts/workflow.ts?2
+    CODE_LOAD::ts/src/concepts/services/signup_workflow.ts?2
     ```
     ```java !!tabs Java
     CODE_LOAD::java/src/main/java/concepts/services/Payment.java?2
@@ -181,11 +193,13 @@ Workflows have additional capabilities such as signaling, querying, additional i
     ```
 
     ## !!steps
-    You can **signal the workflow**, to send information to it, via Durable Promises.
-    For example, the payment provider signals the workflow that the payment was successful by calling the `paymentWebhook`.
+    You can define other handlers in the same workflow that can run concurrently to the `run` handler and:
+    - **Query** the workflow (get information out of it) by getting K/V state or awaiting promises that are resolved by the workflow.
+    - **Signal** the workflow (send information to it) by resolving promises that the workflow waits on.
+    For example, the click handler signals the workflow that the email link was clicked.
 
     ```ts !!tabs TypeScript
-    CODE_LOAD::ts/src/concepts/workflow.ts?3
+    CODE_LOAD::ts/src/concepts/services/signup_workflow.ts?3
     ```
     ```java !!tabs Java
     CODE_LOAD::java/src/main/java/concepts/services/Payment.java?3
@@ -196,22 +210,24 @@ Workflows have additional capabilities such as signaling, querying, additional i
 
 </Scrollycoding>
 
-<Admonition type="note">
-    The `run` handler is the only handler that can **write K/V state**.
-    The other handlers are able to run concurrently to the `run` handler, and can get state but cannot set it.
-</Admonition>
-
 ## Restate Server
 
-In between the services, sits the Restate Server. It proxies invocations to the services and manages their lifecycle.
+The Restate Server sits like reverse-proxy or message broker in front of your services and proxies invocations to them.
 
 The Restate Server is written in Rust, to be self-contained and resource-efficient.
-It has an event-driven foundation. You can put it in the hot, latency-sensitive paths of your applications.
+It has an event-driven foundation to suit low-latency requirements.
 
-The main feature the Restate Server provides is Durable Execution. We dive into this in a [later section](/concepts/durable_execution).
+<div className={"text-center"}>
+    <img src="/img/concepts/restate-server-full.svg" alt="Restate Server" width="30%"/>
+</div>
 
 The Restate Server runs as a single binary with zero dependencies. It runs with low operational overhead on any platform, also locally.
-To deploy the Restate Server, have a look at these deployment guides:
+You can run the Restate Server in a highly-available configuration, with multiple instances behind a load balancer.
 
-- [Kubernetes](/deploy/server/kubernetes)
-- [EC2](/deploy/server/self-hosted)
+For more information on how to deploy the Restate Server, have a look at the [deployment documentation](/deploy/overview).
+To learn more about Restate's architecture, have a look at the [architecture documentation](/concepts/architecture) and [the deep-dive architecture blog post](https://restate.dev/blog/the-anatomy-of-a-durable-execution-stack-from-first-principles/).
+
+The main feature the Restate Server provides is [Durable Execution](/concepts/durable_execution).
+
+
+
