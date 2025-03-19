@@ -3,6 +3,7 @@ from src.develop.my_virtual_object import my_virtual_object
 
 # <start_endpoint>
 import restate
+
 app = restate.app(services=[my_service, my_virtual_object])
 # <end_endpoint>
 
@@ -11,6 +12,6 @@ app = restate.app(services=[my_service, my_virtual_object])
 app = restate.app(
     services=[my_service],
     # !mark
-    identity_keys=["publickeyv1_w7YHemBctH5Ck2nQRQ47iBBqhNHy4FV7t2Usbye2A6f"]
+    identity_keys=["publickeyv1_w7YHemBctH5Ck2nQRQ47iBBqhNHy4FV7t2Usbye2A6f"],
 )
 # <end_identity>

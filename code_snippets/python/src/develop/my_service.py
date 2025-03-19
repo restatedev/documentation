@@ -8,4 +8,5 @@ my_service = Service("MyService")
 async def my_handler(ctx: Context, greeting: str) -> str:
     return f"${greeting}!"
 
+
 app = restate.app([my_service])

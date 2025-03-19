@@ -16,4 +16,5 @@ async def interact_with_workflow(ctx: WorkflowSharedContext, req: str):
     # ... implement interaction logic here ...
     return
 
+
 app = restate.app([my_workflow])

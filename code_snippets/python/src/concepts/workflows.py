@@ -33,7 +33,10 @@ async def run(ctx: WorkflowContext, payment: PaymentRequest):
         raise TerminalError("Payment refused: negative amount")
 
     async def pay():
-        return await payment_client.charge(ctx.key(), payment["account"], payment["amount"])
+        return await payment_client.charge(
+            ctx.key(), payment["account"], payment["amount"]
+        )
+
     await ctx.run("make a payment", pay)
 
     # <mark_3>
@@ -45,6 +48,7 @@ async def run(ctx: WorkflowContext, payment: PaymentRequest):
 
     async def email():
         return await email_client.send_success_notification(payment["email"])
+
     await ctx.run("notify the user", email)
 
     # <mark_2>
@@ -52,6 +56,8 @@ async def run(ctx: WorkflowContext, payment: PaymentRequest):
     # </mark_2>
 
     return "success"
+
+
 # </mark_1>
 
 
@@ -59,6 +65,8 @@ async def run(ctx: WorkflowContext, payment: PaymentRequest):
 @payment_workflow.handler()
 async def payment_webhook(ctx: WorkflowSharedContext, account: str):
     await ctx.promise("payment.success").resolve(account)
+
+
 # </mark_3>
 
 
@@ -66,6 +74,8 @@ async def payment_webhook(ctx: WorkflowSharedContext, account: str):
 @payment_workflow.handler()
 async def status(ctx: WorkflowSharedContext):
     await ctx.get("status")
+
+
 # </mark_2>
 
 app = restate.app([payment_workflow])
