@@ -3,7 +3,7 @@ import { greetCounter, greeter } from "./utils";
 
 // <start_delayed_call>
 async function myRestateHandler(ctx: restate.Context) {
-    // !focus(1:4)
+  // !focus(1:4)
   // From a Restate handler
   ctx
     .serviceSendClient(greeter)

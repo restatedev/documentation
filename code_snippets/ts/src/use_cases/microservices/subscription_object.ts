@@ -35,7 +35,7 @@ const subscriptionObject = restate.object({
 });
 
 // <mark_3>
-export const awsLambdaHandler = restate
+export const lambdaHandler = restate
   .endpoint()
   .bind(subscriptionObject)
   .handler();
