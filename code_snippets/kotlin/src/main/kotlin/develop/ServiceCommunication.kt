@@ -51,11 +51,11 @@ class ServiceCommunication {
     // <start_request_response_generic>
     val target = Target.service("MyService", "myHandler")
     val response =
-        ctx.call(
+        ctx.callAsync(
             target,
             inputSerde = KtSerdes.json<String>(),
             outputSerde = KtSerdes.json<String>(),
-            request)
+            request).await()
     // <end_request_response_generic>
   }
 
