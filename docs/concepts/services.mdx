@@ -20,7 +20,7 @@ This is what a Restate application looks like from a helicopter view:
 There are three types of services in Restate:
 
 [//]: # (This is an html table because markdown tables don't support setting the column width and for some reason the workflow column was very large)
-<table><thead><tr><th>Services (plain)</th><th>Virtual objects</th><th>Workflows</th></tr></thead><tbody><tr><td width={"30%"}>Set of handlers durably executed</td><td width={"30%"}>Set of handlers durably executed</td><td width={"30%"}>The workflow <code>run</code> handler is durably executed a single time.</td></tr><tr><td>No associated K/V store</td><td>Handlers share K/V state; isolated per virtual object</td><td>K/V state isolated per workflow execution. Can only be set by the <code>run</code> handler.</td></tr><tr><td>No concurrency limits</td><td> To guard state consistency, only one handler with write access to the state can run at a time per virtual object (key). Handlers marked as shared don't have write access and can run concurrently to the exclusive handlers.</td><td>The <code>run</code> handler can run only a single time. Other handlers can run concurrently to interact with the workflow.</td></tr><tr><td>Example use cases: <ul><li>Microservice orchestration</li><li>To benefit from idempotency</li><li>Transformation functions</li><li>Sagas</li></ul></td><td>Example use cases: <ul><li>Atomic state machines</li><li>Digital twin</li><li>Locking mechanisms</li><li>Sequencing or ordering invocations</li></ul></td><td>Example use cases: <ul><li>Order processing and logistics</li><li>User sign-up workflow</li><li>Infrastructure provisioning</li><li>Workflow interpreters</li></ul></td></tr></tbody></table>
+<table><thead><tr><th>Services (plain)</th><th>Virtual objects</th><th>Workflows</th></tr></thead><tbody><tr><td width={"30%"}>Set of handlers durably executed</td><td width={"30%"}>Set of handlers durably executed</td><td width={"30%"}>The workflow <code>run</code> handler is durably executed a single time.</td></tr><tr><td>No associated K/V store</td><td>Handlers share K/V state; isolated per virtual object</td><td>K/V state isolated per workflow execution. Can only be set by the <code>run</code> handler.</td></tr><tr><td>No concurrency limits; unlimited scale-out on platforms like AWS Lambda.</td><td> <ul><li>To guard state consistency, only one handler with write access to the state can run at a time per virtual object: queue per key.</li><li>Handlers marked as shared don't have write access to state and can run concurrently to the exclusive handlers.</li></ul></td><td>The run handler can run only a single time per workflow ID. Other handlers can run concurrently to interact with the workflow.</td></tr><tr><td>Example use cases: <ul><li>Microservice orchestration</li><li>Sagas and distributed transactions</li><li>Exactly-once webhook callback processing</li><li>Idempotent requests</li><li>Parallelization, chaining API calls, and complex routing</li><li>Async task scheduling</li></ul></td><td>Example use cases: <ul><li>Stateful handlers and entities: e.g. shopping cart</li><li>Atomic, durable state machines: e.g. payment processing</li><li>Stateful agents, actors, and digital twins: e.g. AI chat sessions</li><li>Locking mechanisms: database writes</li><li>Stateful Kafka event processing: e.g. enrichment, joins</li></ul></td><td>Example use cases: <ul><li>Payments, order processing and logistics</li><li>Human-in-the-loop workflow: e.g. signup, email approval</li><li>Long-running tasks with failures/timeouts: e.g. infrastructure provisioning</li><li>Flexibility and dynamic routing: e.g. workflow interpreters</li></ul></td></tr></tbody></table>
 
 ## Services
 
@@ -224,10 +224,14 @@ It has an event-driven foundation to suit low-latency requirements.
 The Restate Server runs as a single binary with zero dependencies. It runs with low operational overhead on any platform, also locally.
 You can run the Restate Server in a highly-available configuration, with multiple instances behind a load balancer.
 
-For more information on how to deploy the Restate Server, have a look at the [deployment documentation](/deploy/overview).
-To learn more about Restate's architecture, have a look at the [architecture documentation](/concepts/architecture) and [the deep-dive architecture blog post](https://restate.dev/blog/the-anatomy-of-a-durable-execution-stack-from-first-principles/).
+Restate is also available as a [fully managed cloud service](https://restate.dev/cloud/), if all you want is to use it and let us operate it.
+[Contact our team for more information.](https://restate.dev/get-restate-cloud/)
 
-The main feature the Restate Server provides is [Durable Execution](/concepts/durable_execution).
+Learn more about the Restate Server:
+- [Deploying Restate Servers and clusters](/deploy/overview)
+- [Restate's architecture](/concepts/architecture)
+- [Deep-dive architecture blog post with benchmark results](https://restate.dev/blog/the-anatomy-of-a-durable-execution-stack-from-first-principles/).
+- [Durable Execution](/concepts/durable_execution): the main feature the Restate Server implements and how it works
 
 
 
