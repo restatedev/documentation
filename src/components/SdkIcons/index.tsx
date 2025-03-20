@@ -28,7 +28,7 @@ export default function SdkIcons({ sdkLinks }: { sdkLinks: SdkLinks }): JSX.Elem
                         <img
                             className="buttonIcon mb-0.5"
                             src="/img/typescript.svg"
-                            width="24"
+                            width="20"
                         />
                     </a>
                 </div>
@@ -40,7 +40,7 @@ export default function SdkIcons({ sdkLinks }: { sdkLinks: SdkLinks }): JSX.Elem
                         href={java}
                         role="button"
                     >
-                        <img className="buttonIcon mb-0.5" src="/img/java.svg" width="24" />
+                        <img className="buttonIcon mb-0.5" src="/img/java.svg" width="20" />
                     </a>
                 </div>
             ) : null}
@@ -51,7 +51,7 @@ export default function SdkIcons({ sdkLinks }: { sdkLinks: SdkLinks }): JSX.Elem
                         href={kotlin}
                         role="button"
                     >
-                        <img className="buttonIcon mb-0.5" src="/img/kotlin.svg" width="24" />
+                        <img className="buttonIcon mb-0.5" src="/img/kotlin.svg" width="20" />
                     </a>
                 </div>
             ) : null}
@@ -73,7 +73,7 @@ export default function SdkIcons({ sdkLinks }: { sdkLinks: SdkLinks }): JSX.Elem
                         href={python}
                         role="button"
                     >
-                        <img className="buttonIcon mb-0.5" src="/img/python.svg" width="24" />
+                        <img className="buttonIcon mb-0.5" src="/img/python.svg" width="20" />
                     </a>
                 </div>
             ) : null}
@@ -84,7 +84,7 @@ export default function SdkIcons({ sdkLinks }: { sdkLinks: SdkLinks }): JSX.Elem
                         href={rust}
                         role="button"
                     >
-                        <img className="buttonIcon mb-0.5" src="/img/rust.svg" width="24" />
+                        <img className="buttonIcon mb-0.5" src="/img/rust.svg" width="20" />
                     </a>
                 </div>
             ) : null}
