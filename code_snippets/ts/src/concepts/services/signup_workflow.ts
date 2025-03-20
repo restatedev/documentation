@@ -16,8 +16,8 @@ const signupWorkflow = restate.workflow({
       await ctx.run(() => createUserEntry(user));
       // </mark_2>
 
-      const secret = ctx.rand.uuidv4();
       // <mark_2>
+      const secret = ctx.rand.uuidv4();
       await ctx.run(() => sendEmailWithLink({ userId, user, secret }));
       // </mark_2>
 

@@ -32,7 +32,9 @@ const subscriptionService = restate.service({
   },
 });
 
+// <mark_4>
 restate.endpoint().bind(subscriptionService).listen(9080);
+// </mark_4>
 // <end_here>
 
 type SubscriptionRequest = {

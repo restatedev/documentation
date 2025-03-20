@@ -48,7 +48,7 @@ export const greeterObject = restate.object({
     // <mark_4>
     getGreetCount: handlers.object.shared(
       async (ctx: restate.ObjectSharedContext) => {
-        return await ctx.get<number>("count");
+        return await ctx.get<number>("count") ?? 0;
       }
     ),
     // </mark_4>
