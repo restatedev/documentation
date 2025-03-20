@@ -8,7 +8,6 @@ import (
 
 type MyService struct{}
 
-/*
 // <start_rpc_call>
 func (MyService) MyRestateHandler(ctx restate.Context) error {
 	// !focus
@@ -34,7 +33,6 @@ func (MyService) MyRestateHandler(ctx restate.Context) error {
 }
 
 // <end_one_way_call>
-*/
 
 // <start_delayed_call>
 func (MyService) MyRestateHandler(ctx restate.Context) error {

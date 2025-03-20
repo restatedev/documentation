@@ -17,6 +17,7 @@ public class DelayedCalls {
     Duration delay = Duration.ofDays(5);
     GreeterServiceClient.fromContext(ctx).send(delay).greet("Hi");
   }
+
   // <end_delayed_call>
 
   // <start_delayed_call_java>

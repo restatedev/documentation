@@ -15,6 +15,7 @@ public class OneWayCalls {
     // From a Java Restate service
     GreeterServiceClient.fromContext(ctx).send().greet("Hi");
   }
+
   // <end_one_way_call>
 
   // <start_one_way_call_java>

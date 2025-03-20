@@ -15,6 +15,7 @@ public class RpcCalls {
     // From a Java Restate service
     String greet = GreeterServiceClient.fromContext(ctx).greet("Hi").await();
   }
+
   // <end_rpc>
 
   // <start_rpc_java>

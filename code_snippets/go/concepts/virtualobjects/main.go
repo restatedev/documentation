@@ -9,56 +9,63 @@ import (
 	"github.com/restatedev/sdk-go/server"
 )
 
+// <start_here>
 type Greeter struct{}
 
-// <start_here>
 // <mark_1>
 // <mark_3>
 func Greet(ctx restate.ObjectContext, greeting string) (string, error) {
 	// </mark_3>
+	name := restate.Key(ctx)
 	// </mark_1>
 	// <mark_2>
 	count, err := restate.Get[int](ctx, "count")
+	// </mark_2>
 	if err != nil {
 		return "", err
 	}
 	count++
+	// <mark_2>
 	restate.Set(ctx, "count", count)
 	// </mark_2>
-	// <mark_1>
 	return fmt.Sprintf(
 		"%s %s for the %d-th time.",
-		greeting, restate.Key(ctx), count,
+		greeting, name, count,
 	), nil
-	// </mark_1>
 }
 
 // <mark_1>
 // <mark_3>
 func Ungreet(ctx restate.ObjectContext) (string, error) {
 	// </mark_3>
+	name := restate.Key(ctx)
 	// </mark_1>
 	// <mark_2>
 	count, err := restate.Get[int](ctx, "count")
+	// </mark_2>
 	if err != nil {
 		return "", err
 	}
-	// </mark_2>
 	if count > 0 {
-		// <mark_2>
 		count--
-		// </mark_2>
 	}
 	// <mark_2>
 	restate.Set(ctx, "count", count)
 	// </mark_2>
-	// <mark_1>
 	return fmt.Sprintf(
 		"Dear %s, taking one greeting back: %d.",
-		restate.Key(ctx), count,
+		name, count,
 	), nil
-	// </mark_1>
 }
+
+// <mark_4>
+func GetGreetCount(ctx restate.ObjectSharedContext) (int, error) {
+	// <mark_2>
+	return restate.Get[int](ctx, "count")
+	// </mark_2>
+}
+
+// </mark_4>
 
 func main() {
 	if err := server.NewRestate().
