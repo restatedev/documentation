@@ -6,7 +6,10 @@ use restate_sdk::prelude::*;
 pub trait GreeterObject {
     async fn greet(req: String) -> Result<String, HandlerError>;
     async fn ungreet() -> Result<String, HandlerError>;
+    // <mark_4>
+    #[shared]
     async fn get_greet_count() -> Result<u64, HandlerError>;
+    // </mark_4>
 }
 // </mark_1>
 
@@ -60,7 +63,7 @@ impl GreeterObject for GreeterObjectImpl {
 
     // <mark_4>
     // <mark_1>
-    async fn get_greet_count(&self, ctx: ObjectContext) -> Result<u64, HandlerError> {
+    async fn get_greet_count(&self, ctx: SharedObjectContext) -> Result<u64, HandlerError> {
         // </mark_1>
         // <mark_2>
         Ok(ctx.get::<u64>("count").await?.unwrap_or(0))
