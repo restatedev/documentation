@@ -9,12 +9,7 @@ public class ServiceCommunication {
     String request = "";
 
     // <start_request_response_service>
-    String response =
-        MyServiceClient.fromContext(ctx)
-            // break
-            .myHandler(request)
-            // break
-            .await();
+    String response = MyServiceClient.fromContext(ctx).myHandler(request).await();
     // <end_request_response_service>
   }
 
@@ -23,12 +18,7 @@ public class ServiceCommunication {
     String request = "";
 
     // <start_request_response_virtual_object>
-    String response =
-        MyVirtualObjectClient.fromContext(ctx, objectKey)
-            // break
-            .myHandler(request)
-            // break
-            .await();
+    String response = MyVirtualObjectClient.fromContext(ctx, objectKey).myHandler(request).await();
     // <end_request_response_virtual_object>
   }
 
@@ -38,19 +28,10 @@ public class ServiceCommunication {
 
     // <start_request_response_workflow>
     // Call the `run` handler of the workflow
-    String response =
-        MyWorkflowClient.fromContext(ctx, workflowId)
-            // break
-            .run(request)
-            // break
-            .await();
+    String response = MyWorkflowClient.fromContext(ctx, workflowId).run(request).await();
 
     // Calling some other `interactWithWorkflow` handler of the workflow
-    MyWorkflowClient.fromContext(ctx, workflowId)
-        // break
-        .interactWithWorkflow(request)
-        // break
-        .await();
+    MyWorkflowClient.fromContext(ctx, workflowId).interactWithWorkflow(request).await();
     // <end_request_response_workflow>
   }
 
@@ -58,10 +39,7 @@ public class ServiceCommunication {
     String request = "";
 
     // <start_one_way>
-    MyServiceClient.fromContext(ctx)
-        // !mark
-        .send()
-        .myHandler(request);
+    MyServiceClient.fromContext(ctx).send().myHandler(request);
     // <end_one_way>
   }
 
@@ -69,10 +47,7 @@ public class ServiceCommunication {
     String request = "";
 
     // <start_delayed>
-    MyServiceClient.fromContext(ctx)
-        // !mark
-        .send(Duration.ofSeconds(1))
-        .myHandler(request);
+    MyServiceClient.fromContext(ctx).send(Duration.ofDays(5)).myHandler(request);
     // <end_delayed>
   }
 
