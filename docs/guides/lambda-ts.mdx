@@ -90,7 +90,7 @@ This tutorial shows how to deploy a greeter service written with the Restate Typ
         restate deployments register arn:aws:lambda:eu-central-1:000000000000:function:my-greeter:1
         ```
         ```shell !!tabs curl
-        curl localhost:9070/deployments -H 'content-type: application/json' -d '{"arn": "arn:aws:lambda:eu-central-1:000000000000:function:my-greeter:1"  }'
+        curl localhost:9070/deployments --json '{"arn": "arn:aws:lambda:eu-central-1:000000000000:function:my-greeter:1"  }'
         ```
     </CodeWithTabs>
 
@@ -102,7 +102,7 @@ This tutorial shows how to deploy a greeter service written with the Restate Typ
 <Step stepLabel="7" title="Invoke the handler">
 
     ```shell
-    curl localhost:8080/Greeter/greet -H 'content-type: application/json' -d '"Hi"'
+    curl localhost:8080/Greeter/greet --json '"Hi"'
     ```
 
     The Greeter service should say hi back.

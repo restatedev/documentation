@@ -30,9 +30,7 @@ Request/response bodies should be encoded as JSON.
     Invoke `myHandler` of `myService` as follows:
 
     ```shell !result
-    curl localhost:8080/MyService/myHandler \
-        -H 'content-type: application/json' \
-        -d '{"name": "Mary", "age": 25}'
+    curl localhost:8080/MyService/myHandler --json '{"name": "Mary", "age": 25}'
     ```
 
 </TextAndCode>
@@ -41,9 +39,7 @@ Request/response bodies should be encoded as JSON.
     Invoke `myHandler` of `myVirtualObject` for `myKey` as follows:
 
     ```shell !result
-    curl localhost:8080/MyVirtualObject/myObjectKey/myHandler \
-        -H 'content-type: application/json' \
-        -d '{"name": "Mary", "age": 25}'
+    curl localhost:8080/MyVirtualObject/myObjectKey/myHandler --json '{"name": "Mary", "age": 25}'
     ```
 
 </TextAndCode>
@@ -52,9 +48,7 @@ Request/response bodies should be encoded as JSON.
     Call the `run` handler of the `MyWorkflow` as follows:
 
     ```shell !result
-    curl localhost:8080/MyWorkflow/myWorkflowId/run \
-        -H 'content-type: application/json' \
-        -d '{"name": "Mary", "age": 25}'
+    curl localhost:8080/MyWorkflow/myWorkflowId/run --json '{"name": "Mary", "age": 25}'
     ```
 
 </TextAndCode>
@@ -72,9 +66,7 @@ If you do not want to wait for the response, you can also send a message by addi
 
 <Terminal>
     ```shell !command
-    curl localhost:8080/MyService/myHandler/send \
-        -H 'content-type: application/json' \
-        -d '{"name": "Mary", "age": 25}'
+    curl localhost:8080/MyService/myHandler/send --json '{"name": "Mary", "age": 25}'
     ```
 
     ```json !output
@@ -92,15 +84,11 @@ You can **delay the message** by adding a delay request parameter in ISO8601 not
 <CodeWithTabs>
 
     ```shell !!tabs humantime
-    curl localhost:8080/MyService/myHandler/send?delay=10s \
-        -H 'content-type: application/json' \
-        -d '{"name": "Mary", "age": 25}'
+    curl localhost:8080/MyService/myHandler/send?delay=10s --json '{"name": "Mary", "age": 25}'
     ```
 
     ```shell !!tabs ISO8601
-    curl localhost:8080/MyService/myHandler/send?delay=PT10S \
-        -H 'content-type: application/json' \
-        -d '{"name": "Mary", "age": 25}'
+    curl localhost:8080/MyService/myHandler/send?delay=PT10S --json '{"name": "Mary", "age": 25}'
     ```
 
 </CodeWithTabs>
@@ -119,8 +107,7 @@ You can send requests to Restate providing an idempotency key, through the [`Ide
 curl localhost:8080/MyService/myHandler \
 # !focus
   -H 'idempotency-key: ad5472esg4dsg525dssdfa5loi' \
-  -H 'content-type: application/json' \
-  -d '{"name": "Mary", "age": 25}'
+  --json '{"name": "Mary", "age": 25}'
 ```
 
 After the invocation completes, Restate persists the response for a retention period of one day (24 hours).
@@ -136,9 +123,7 @@ If you re-invoke the service with the same idempotency key within 24 hours, Rest
 
     You can tune the retention time on a service-level by using the [Admin API](/adminapi/modify-service)):
     ```shell
-    curl -X PATCH localhost:9070/services/MyService \
-        -H 'content-type: application/json' \
-        -d '{"idempotency_retention": "2days"}'
+    curl -X PATCH localhost:9070/services/MyService --json '{"idempotency_retention": "2days"}'
     ```
     The retention time is in [humantime format](https://docs.rs/humantime/latest/humantime/).
 </details>

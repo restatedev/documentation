@@ -64,8 +64,7 @@ You can invoke handlers via Kafka events, by doing the following:
     Let Restate forward events from the Kafka topic to the event handler by creating a subscription using the [Admin API](/category/admin-api):
 
     ```bash
-    curl localhost:9070/subscriptions -H 'content-type: application/json' \
-        -d '{
+    curl localhost:9070/subscriptions --json '{
             "source": "kafka://my-cluster/my-topic",
             "sink": "service://MyService/handle",
             "options": {"auto.offset.reset": "earliest"}
@@ -118,15 +117,13 @@ You can invoke handlers via Kafka events, by doing the following:
 
     ```bash
     # Subscription to my-cluster-1
-    curl localhost:9070/subscriptions -H 'content-type: application/json' \
-        -d '{
+    curl localhost:9070/subscriptions --json '{
             "source": "kafka://my-cluster-1/topic-1",
             "sink": "service://MyService/handleCluster1"
         }'
 
     # Subscription to my-cluster-2
-    curl localhost:9070/subscriptions -H 'content-type: application/json' \
-        -d '{
+    curl localhost:9070/subscriptions --json '{
             "source": "kafka://my-cluster-2/topic-2",
             "sink": "service://MyService/handleCluster2"
         }'

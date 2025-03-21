@@ -125,8 +125,7 @@ This way, you can use Restate to process events in a lightweight, flexible, tran
     Execute the following curl command to create a subscription, and invoke the handler for each event:
 
     ```shell
-    curl localhost:9070/subscriptions -H 'content-type: application/json' \
-    -d '{
+    curl localhost:9070/subscriptions --json '{
         "source": "kafka://my-cluster/greetings",
         "sink": "service://Greeter/greet",
         "options": {"auto.offset.reset": "earliest"}

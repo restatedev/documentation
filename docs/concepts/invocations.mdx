@@ -211,9 +211,7 @@ Invocations get a unique identifier. This identifier is used to track the progre
             **Request-response invocations** allow you to wait on a response from the handler.
 
             ```bash !
-            curl localhost:8080/GreeterService/greet \
-            -H 'content-type: application/json' \
-            -d '"Hi"'
+            curl localhost:8080/GreeterService/greet --json '"Hi"'
             ```
 
             ## !!steps
@@ -221,18 +219,14 @@ Invocations get a unique identifier. This identifier is used to track the progre
             This returns an invocation ID with which you can retrieve the result of the invocation later, if desired.
 
             ```bash !
-            curl localhost:8080/GreeterService/greet/send \
-            -H 'content-type: application/json' \
-            -d '"Hi"'
+            curl localhost:8080/GreeterService/greet/send --json '"Hi"'
             ```
 
             ## !!steps
             **Delayed invocations** allow you to schedule an invocation for a later point in time.
 
             ```bash !
-            curl localhost:8080/GreeterService/greet/send?delay=10s \
-            -H 'content-type: application/json' \
-            -d '"Hi"'
+            curl localhost:8080/GreeterService/greet/send?delay=10s --json '"Hi"'
             ```
 
         </Scrollycoding>
@@ -251,8 +245,7 @@ Duplicate requests will get the same response as the first request, or will latc
 curl localhost:8080/GreeterService/greet \
 # !focus
   -H 'idempotency-key: ad5472esg4dsg525dssdfa5loi' \
-  -H 'content-type: application/json' \
-  -d '"Hi"'
+  --json '"Hi"'
 ```
 
 Note that, you don't need idempotency tokens for invocations that are invoked programmatically or via Kafka, as Restate will make sure that they are executed only once.

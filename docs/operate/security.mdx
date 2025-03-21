@@ -16,9 +16,7 @@ When registering an endpoint, every service is by default reachable via HTTP req
 You can configure a service as `private`, such that you can't invoke it over HTTP, through the [UI](/develop/local_dev#restate-ui) or the Admin API ([docs](/adminapi/modify-service)):
 
 ```shell
-curl -X PATCH localhost:9070/services/MyService \
-    -H 'content-type: application/json' \
-    -d '{"public": false}'
+curl -X PATCH localhost:9070/services/MyService --json '{"public": false}'
 ```
 
 You can revert it back to public with `{"public": true}`.
