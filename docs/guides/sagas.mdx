@@ -8,6 +8,7 @@ pagination_prev: null
 import Admonition from "@theme/Admonition";
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
+import {CodeWithTabs} from "../../src/components/code/code";
 
 # Sagas
 
@@ -32,38 +33,28 @@ When the payment fails, we want to undo the flight booking and car rental.
 
 Restate guarantees us that all code will execute. So if a terminal error is thrown, all compensations will run:
 
-<Tabs groupId={"sdk"} queryString>
-    <TabItem value="typescript" label="TypeScript">
-        ```ts https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/sagas/booking_workflow.ts
+<CodeWithTabs groupId={"sdk"}>
+        ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/sagas/booking_workflow.ts
         // collapse_prequel
         CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/typescript/patterns-use-cases/src/sagas/booking_workflow.ts
         ```
-    </TabItem>
-    <TabItem value="java" label="Java">
-        ```java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/sagas/BookingWorkflow.java
+        ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/sagas/BookingWorkflow.java
         // collapse_prequel
         CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/java/patterns-use-cases/src/main/java/my/example/sagas/BookingWorkflow.java
         ```
-    </TabItem>
-    <TabItem value="kotlin" label="Kotlin">
-        ```kotlin https://github.com/restatedev/examples/blob/main/kotlin/patterns-use-cases/src/main/kotlin/my/example/sagas/BookingWorkflow.kt
+        ```kotlin !!tabs Kotlin https://github.com/restatedev/examples/blob/main/kotlin/patterns-use-cases/src/main/kotlin/my/example/sagas/BookingWorkflow.kt
         // collapse_prequel
         CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/kotlin/patterns-use-cases/src/main/kotlin/my/example/sagas/BookingWorkflow.kt
         ```
-    </TabItem>
-    <TabItem value="python" label="Python">
-        ```python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/sagas/booking_workflow.py
+        ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/src/sagas/booking_workflow.py
         // collapse_prequel
         CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/python/patterns-use-cases/src/sagas/booking_workflow.py
         ```
-    </TabItem>
-    <TabItem value="go" label="Go">
-        ```go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/sagas/bookingworkflow.go
+        ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/sagas/bookingworkflow.go
         // collapse_prequel
         CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/go/patterns-use-cases/src/sagas/bookingworkflow.go
         ```
-    </TabItem>
-</Tabs>
+</CodeWithTabs>
 
 <Admonition type={"note"} title={"Example not available in your language?"}>
     This pattern is implementable with any of our SDKs. We are still working on translating all patterns to all SDK languages.
@@ -85,7 +76,7 @@ For example, if an invocation gets stuck because an external system is not respo
 Because this is all implemented in pure user code, there are no restrictions on what you can do in compensations, as long as its idempotent.
 It is for example possible to reset the state of the service, call other services to undo previously executed calls, or run `ctx.run` actions to delete previously inserted rows in a database.
 
-<details>
+<details className={"grey-details"}>
     <summary>Adding compensations</summary>
 
     Depending on the characteristics of the API, adding the compensation might look different:

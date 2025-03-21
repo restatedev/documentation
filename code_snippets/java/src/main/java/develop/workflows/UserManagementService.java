@@ -10,25 +10,13 @@ public class UserManagementService {
   @Handler
   public void setup(ObjectContext ctx, Email email) {
     // !focus
-    boolean result =
-        // !focus
-        SignupWorkflowClient.fromContext(ctx, "someone")
-            // !focus
-            .run(email)
-            // !focus
-            .await();
+    boolean result = SignupWorkflowClient.fromContext(ctx, "someone").run(email).await();
   }
 
   @Handler
   public void queryStatus(ObjectContext ctx) {
     // !focus
-    String status =
-        // !focus
-        SignupWorkflowClient.fromContext(ctx, "someone")
-            // !focus
-            .getStatus()
-            // !focus
-            .await();
+    String status = SignupWorkflowClient.fromContext(ctx, "someone").getStatus().await();
   }
   // <end_here>
 }

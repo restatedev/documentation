@@ -3,21 +3,11 @@ sidebar_position: 2
 description: "Call other services from your handler."
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
+import {CodeWithTabs} from '../../../src/components/code/code';
 
 # Service Communication
 A handler can call another handler and wait for the response (request-response), or it can send a message without waiting for the response.
-
-<Tabs groupId="sdk" queryString>
-    <TabItem value="java" label="Java">
-
-    </TabItem>
-    <TabItem value="kotlin" label="Kotlin">
-
-    </TabItem>
-</Tabs>
 
 ## Request-response calls
 
@@ -28,62 +18,37 @@ The Java SDK generates a client for each service, which you can use to make thes
     The clients are generated when you build the project. If you don't see the generated clients, make sure you have built the project with `./gradlew build`.
 </Admonition>
 
-Use the generated client's of the SDK to do the request-response call:
 
-<Tabs groupId="sdk" queryString className={"display-none"}>
-    <TabItem value="java" label="Java">
+Use the generated client's of the SDK to do the call:
 
-         To a Service:
+<CodeWithTabs groupId="sdk">
+    To a Service:
+    ```java !!tabs Java
+    // To a service
+    CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#request_response_service
+    ```
+    ```java !!tabs Java
+    // To a Virtual Object
+    CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#request_response_virtual_object
+    ```
+    ```java !!tabs Java
+    // To a Workflow
+    CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#request_response_workflow
+    ```
+    ```kotlin !!tabs Kotlin
+    // To a service
+    CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#request_response_service
+    ```
+    ```kotlin !!tabs Kotlin
+    // To a Virtual Object
+    CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#request_response_virtual_object
+    ```
+    ```kotlin !!tabs Kotlin
+    // To a Workflow
+    CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#request_response_workflow
+    ```
 
-         ```java
-         CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#request_response_service
-         ```
-
-
-         To a Virtual Object:
-
-         ```java
-         CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#request_response_virtual_object
-         ```
-
-         To a Workflow:
-         ```java
-         CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#request_response_workflow
-         ```
-
-        Or with the generic clients, if you don't have access to typed clients or want to specify the service and handler with strings (e.g. to implement [workflow interpreters](https://github.com/restatedev/examples/tree/main/java/end-to-end-applications/workflow-interpreter)):
-        ```java
-        CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#request_response_generic
-        ```
-
-    </TabItem>
-    <TabItem value="kotlin" label="Kotlin">
-        To a Service:
-
-        ```kotlin
-        CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#request_response_service
-        ```
-
-        To a Virtual Object:
-
-        ```kotlin
-        CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#request_response_virtual_object
-        ```
-
-        To a Workflow:
-
-        ```kotlin CallWorkflow.kt
-        CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#request_response_workflow
-        ```
-
-        Or with the generic clients, if you don't have access to typed clients or want to specify the service and handler with strings (e.g. to implement [workflow interpreters](https://github.com/restatedev/examples/tree/main/java/end-to-end-applications/workflow-interpreter)):
-
-        ```kotlin CallWorkflow.kt
-        CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#request_response_generic
-        ```
-
-    </TabItem>
-</Tabs>
+</CodeWithTabs>
 
 <Admonition type="tip" title="No need for manual retry logic">
     These calls are proxied by Restate, and get logged in the journal.
@@ -107,22 +72,15 @@ In this situation you'll have to unblock the Virtual Object manually by [cancell
 Handlers can send messages (a.k.a. one-way calls, or fire-and-forget calls).
 Use the client's `.send()` method to do this as follows:
 
-<Tabs groupId="sdk" queryString className={"display-none"}>
-<TabItem value="java" label="Java">
 
-```java
-CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#one_way
-```
-
-</TabItem>
-<TabItem value="kotlin" label="Kotlin">
-
-```kotlin
-CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#one_way
-```
-
-</TabItem>
-</Tabs>
+<CodeWithTabs groupId="sdk">
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#one_way
+    ```
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#one_way
+    ```
+</CodeWithTabs>
 
 Or with the generic clients:
 <Tabs groupId="sdk" queryString className={"display-none"}>
@@ -150,24 +108,16 @@ Or with the generic clients:
 ## Delayed calls
 A delayed call is a one-way call that gets executed after a specified delay.
 
-Use Restate's generated clients `.send(Duration)` method to send a delayed requests:
+Use Restate's generated clients `.send(duration)` method to send a delayed requests:
 
-<Tabs groupId="sdk" queryString className={"display-none"}>
-<TabItem value="java" label="Java">
-
-```java
-CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#delayed
-```
-
-</TabItem>
-<TabItem value="kotlin" label="Kotlin">
-
-```kotlin
-CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#delayed
-```
-
-</TabItem>
-</Tabs>
+<CodeWithTabs groupId="sdk">
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#delayed
+    ```
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#delayed
+    ```
+</CodeWithTabs>
 
 Or with the generic clients:
 <Tabs groupId="sdk" queryString className={"display-none"}>

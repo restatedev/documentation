@@ -3,7 +3,7 @@ package develop
 import dev.restate.sdk.common.Target
 import dev.restate.sdk.kotlin.Context
 import dev.restate.sdk.kotlin.KtSerdes
-import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Duration.Companion.days
 
 class ServiceCommunication {
   suspend fun requestResponseService(ctx: Context) {
@@ -82,7 +82,7 @@ class ServiceCommunication {
     val request = ""
 
     // <start_delayed>
-    MyServiceClient.fromContext(ctx).send(1.seconds).myHandler(request)
+    MyServiceClient.fromContext(ctx).send(5.days).myHandler(request)
     // <end_delayed>
   }
 }

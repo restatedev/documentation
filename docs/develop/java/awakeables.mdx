@@ -4,11 +4,8 @@ description: "Pause invocations until external completion."
 ---
 
 import Admonition from '@theme/Admonition';
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-import {Scrollycoding} from "../../../src/components/code/scrollycoding";
 import {TextAndCode} from "../../../src/components/code/code/text-and-code";
-
+import {CodeWithTabs} from '../../../src/components/code/code';
 
 # Awakeables
 
@@ -17,122 +14,73 @@ You can use this pattern to let a handler execute a task somewhere else and retr
 This pattern is also known as the callback (task token) pattern.
 
 ## Creating awakeables
-<Tabs groupId="sdk" queryString>
-<TabItem value="java" label="Java">
+
 1. **Create an awakeable**. This contains a String identifier and a Promise/Awaitable.
 2. **Trigger a task/process** and attach the awakeable ID  (e.g. over Kafka, via HTTP,...).
 For example, send an HTTP request to a service that executes the task, and attach the ID to the payload.
-You use `ctx.run` to avoid re-triggering the task on retries.
+You use a run block to avoid re-triggering the task on retries.
 3. **Wait** until the other process has executed the task.
 The handler **receives the payload and resumes**.
 
-```java
-CODE_LOAD::java/src/main/java/develop/Awakeables.java
-```
-
-</TabItem>
-<TabItem value="kotlin" label="Kotlin">
-1. **Create an awakeable**. This contains a String identifier and a Promise/Awaitable.
-2. **Trigger a task/process** and attach the awakeable ID  (e.g. over Kafka, via HTTP,...).
-For example, send an HTTP request to a service that executes the task, and attach the ID to the payload.
-You use `ctx.runBlock` to avoid re-triggering the task on retries.
-3. **Wait** until the other process has executed the task.
-The handler **receives the payload and resumes**.
-
-```kotlin
-CODE_LOAD::kotlin/src/main/kotlin/develop/Awakeables.kt
-```
-</TabItem>
-</Tabs>
+<CodeWithTabs groupId={"sdk"}>
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/develop/Awakeables.java
+    ```
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/develop/Awakeables.kt
+    ```
+</CodeWithTabs>
 
 ## Completing awakeables
 
 The external process completes the awakeable by either resolving it with an optional payload or by rejecting it
 with its ID and a reason for the failure. This throws [a terminal error](/develop/java/error-handling) in the waiting handler.
 
-<Tabs groupId="sdk" queryString className={"display-none"}>
-<TabItem value="java" label="Java">
-<TextAndCode>
-- Resolving over HTTP with its ID and an optional payload:
 
-```shell !result
-curl localhost:8080/restate/awakeables/prom_1PePOqp/resolve
-    -H 'content-type: application/json'
-    -d '{"hello": "world"}'
-```
-</TextAndCode>
-<TextAndCode>
-- Rejecting over HTTP with its ID and a reason:
+<TextAndCode groupId={"sdk"}>
+    Resolving over HTTP with its ID and an optional payload:
 
-```shell !result
-curl localhost:8080/restate/awakeables/prom_1PePOqp/reject
-    -H 'content-type: text/plain' \
-    -d 'Very bad error!'
-```
-</TextAndCode>
-<TextAndCode >
-- Resolving via the SDK with its ID and an optional payload:
-
-```java !result
-CODE_LOAD::java/src/main/java/develop/Awakeables.java#resolve
-```
-</TextAndCode>
-<TextAndCode >
-- Rejecting via the SDK with its ID and a reason:
-
-```java !result
-CODE_LOAD::java/src/main/java/develop/Awakeables.java#reject
-```
+    ```shell !result
+    curl localhost:8080/restate/awakeables/prom_1PePOqp/resolve
+        --json '{"hello": "world"}'
+    ```
 </TextAndCode>
 
-    <Admonition type="info" title="Specifying the serializer">
-        For primitive types, you can use the Restate SDK's `CoreSerdes`.
-        For other types, have a look at the [serialization docs](/develop/java/serialization).
-    </Admonition>
-</TabItem>
-<TabItem value="kotlin" label="Kotlin">
-    <Scrollycoding >
-        # !!steps
-        - Resolving over HTTP with its ID and an optional payload:
+<TextAndCode groupId={"sdk"}>
+    Rejecting over HTTP with its ID and a reason:
 
-        ```shell !
-        curl localhost:8080/restate/awakeables/prom_1PePOqp/resolve
-            -H 'content-type: application/json'
-            -d '{"hello": "world"}'
-        ```
-    </Scrollycoding>
-    <Scrollycoding >
-        # !!steps
-        - Rejecting over HTTP with its ID and a reason:
+    ```shell !result
+    curl localhost:8080/restate/awakeables/prom_1PePOqp/reject
+        --json 'Very bad error!'
+    ```
+</TextAndCode>
 
-        ```shell !
-        curl localhost:8080/restate/awakeables/prom_1PePOqp/reject
-            -H 'content-type: text/plain' \
-            -d 'Very bad error!'
-        ```
-    </Scrollycoding>
-    <Scrollycoding >
-        # !!steps
-        - Resolving via the SDK with its ID and an optional payload:
+<TextAndCode groupId={"sdk"}>
+    Resolving via the SDK with its ID and an optional payload:
 
-        ```kotlin !
-        CODE_LOAD::kotlin/src/main/kotlin/develop/Awakeables.kt#resolve
-        ```
-    </Scrollycoding>
-    <Scrollycoding >
-        # !!steps
-        - Rejecting via the SDK with its ID and a reason:
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/develop/Awakeables.java#resolve
+    ```
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/develop/Awakeables.kt#resolve
+    ```
+</TextAndCode>
 
-        ```kotlin !
-        CODE_LOAD::kotlin/src/main/kotlin/develop/Awakeables.kt#reject
-        ```
-    </Scrollycoding>
-    <Admonition type="info" title="Specifying the serializer">
-        By default JSON is used to serialize payloads, using Kotlin serialization.
-        For other types, have a look at the [serialization docs](/develop/java/serialization).
-    </Admonition>
-</TabItem>
-</Tabs>
+<TextAndCode groupId={"sdk"}>
+    Rejecting via the SDK with its ID and a reason:
+
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/develop/Awakeables.java#reject
+    ```
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/develop/Awakeables.kt#reject
+    ```
+</TextAndCode>
+
+<Admonition type="note" title="Specifying the serializer">
+    For primitive types, you can use the Restate SDK's `CoreSerdes`.
+    For other types, have a look at the [serialization docs](/develop/java/serialization).
+</Admonition>
 
 <Admonition type="tip" title="Cost savings on FaaS">
 When running on Function-as-a-Service platforms, such as AWS Lambda, Restate suspends the handler while waiting for the awakeable to be completed.
