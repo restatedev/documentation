@@ -1,6 +1,8 @@
 package develop;
 
 import dev.restate.sdk.Context;
+import dev.restate.sdk.JsonSerdes;
+import dev.restate.sdk.common.Target;
 import java.time.Duration;
 
 public class ServiceCommunication {
@@ -33,6 +35,33 @@ public class ServiceCommunication {
     // Calling some other `interactWithWorkflow` handler of the workflow
     MyWorkflowClient.fromContext(ctx, workflowId).interactWithWorkflow(request).await();
     // <end_request_response_workflow>
+  }
+
+  private void genericCall(Context ctx) {
+    String request = "";
+
+    // <start_request_response_generic>
+    Target target = Target.service("MyService", "myHandler"); // or virtualObject or workflow
+    String response = ctx.call(target, JsonSerdes.STRING, JsonSerdes.STRING, request).await();
+    // <end_request_response_generic>
+  }
+
+  private void genericSend(Context ctx) {
+    String request = "";
+
+    // <start_one_way_generic>
+    Target target = Target.service("MyService", "myHandler"); // or virtualObject or workflow
+    ctx.send(target, JsonSerdes.STRING, request);
+    // <end_one_way_generic>
+  }
+
+  private void genericDelayedSend(Context ctx) {
+    String request = "";
+
+    // <start_delayed_generic>
+    Target target = Target.service("MyService", "myHandler"); // or virtualObject or workflow
+    ctx.send(target, JsonSerdes.STRING, request, Duration.ofDays(5));
+    // <end_delayed_generic>
   }
 
   private void oneWay(Context ctx) {

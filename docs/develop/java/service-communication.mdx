@@ -49,6 +49,18 @@ Use the generated client's of the SDK to do the call:
 
 </CodeWithTabs>
 
+Or with the generic clients, if you don't have access to typed clients or want to specify the service and handler with strings (e.g. to implement [workflow interpreters](https://github.com/restatedev/examples/tree/main/java/end-to-end-applications/workflow-interpreter)):
+
+<CodeWithTabs groupId="sdk">
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#request_response_generic
+    ```
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#request_response_generic
+    ```
+</CodeWithTabs>
+
+
 <Admonition type="tip" title="No need for manual retry logic">
     These calls are proxied by Restate, and get logged in the journal.
     In case of failures, Restate takes care of retries.
@@ -81,6 +93,16 @@ Use the client's `.send()` method to do this as follows:
     ```
 </CodeWithTabs>
 
+Or with the generic clients:
+<CodeWithTabs groupId="sdk">
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#one_way_generic
+    ```
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#one_way_generic
+    ```
+</CodeWithTabs>
+
 <Admonition type="tip" title="No need for message queues">
     Without Restate, you would usually put a message queue in between the two services, to guarantee the message delivery.
     Restate eliminates the need for a message queue because Restate durably logs the request and makes sure it gets executed.
@@ -97,6 +119,16 @@ Use Restate's generated clients `.send(duration)` method to send a delayed reque
     ```
     ```kotlin !!tabs Kotlin
     CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#delayed
+    ```
+</CodeWithTabs>
+
+Or with the generic clients:
+<CodeWithTabs groupId="sdk">
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#delayed_generic
+    ```
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#delayed_generic
     ```
 </CodeWithTabs>
 
