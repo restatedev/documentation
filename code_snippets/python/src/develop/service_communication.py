@@ -2,9 +2,9 @@ import json
 from datetime import timedelta
 
 from restate import Service, Context
-from src.develop.my_service import my_service
-from src.develop.my_virtual_object import my_object
-from src.develop.my_workflow import my_workflow
+import src.develop.my_service as my_service
+import src.develop.my_virtual_object as my_object
+import src.develop.my_workflow as my_workflow
 
 caller = Service("Caller")
 
@@ -20,7 +20,7 @@ async def calling_handler(ctx: Context, arg):
     # <end_request_response_object>
 
     # <start_one_way_service>
-    ctx.service_send(my_service.my_service_handler, arg="Hi")
+    ctx.service_send(my_service.my_handler, arg="Hi")
     # <end_one_way_service>
 
     # <start_one_way_object>
