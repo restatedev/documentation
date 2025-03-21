@@ -1,0 +1,71 @@
+---
+id: list-service-handlers
+title: "List service handlers"
+description: "List all the handlers of the given service."
+sidebar_label: "List service handlers"
+hide_title: true
+hide_table_of_contents: true
+api: eJztWE2P20YM/SsDnlpgsE7S9FDdFsi22X5tsE7Rg2EYY4m2JhmNtDOUE0HQfw+okbSy5M0mLeCTT5ZFiu/xkUOLroHU3kO0Ao/uoGPcpMomBh2sJSToY6cL0rmFCP7UnoQyRlCKovPyIt+13/f6gFZ0Ma5AQl6gU/zkbQIRGO1pM0HwIKFQTmVI/CVa1WBVhhD1VECCZuBCUQpTNr+WxlTioVRG7zQmPbTgEIzv8KHUDhOIyJUowccpZgqiGqgqWhBy2u6hadbs7IvcevRsf/XiBX8cw4GEOLeEltimisLouE1v8cGzQz0HyLcfMKYjKisYcl9LKByLRDrADpbHCMo5VbEKhJl/LrK2RUmbMWsZ9JSQlzS1zeCD9DN1JFDVZmzM3a6t0bGDBLRlxvg3n2NTen1gwGWqmJWEf3P3cWfyT4xHmgw/+TYk+heSShSp9xyPi2BLY9SWXbhijYQkj8sMLalQg3qI8ObIMO2MI2vfn526UigvOHG1V4SJ2FatdfnmD89NM81tRinrSI/Z9InMiFwnieZLZXp40T//bTyGOqsh0rujok1bWZ7oghHTt2WmrHCoEk5KtL7iuGOOM7jdCcwKqqSwuQgNLj4F5gedPPIuPTqhSCTax/kBXSVIh2M4a6cTvfg0w+B8bopBQz7Xm9Gh7hjetqL9vrz7WyyDccpoZJt0X1D8VF91qjyBeRdk+I+gIfYctXnySEIzNvLcX4bp2vn5+25esmMj4fX/npgd1I1zuRuXW/STeZZw70pKm+FXaOT9tVGZofdqj/Mh2BtOzUGHnhThJs4THHO+D/dFe3/Ksjdiy5Zduuy22u4FpdoH0/Ozp+ml/uki9bmkfn2R+lxS/3KR+jxS/3yZ1eeT+jKrzyJ1eDFPc94090jtXkkpRLDotkK/qLurZjHaPrXd5WPO10mmrbh+dwsSDuh8IPvy6tXVS061yD1lyj5uS2El7jfPUeDJ2+1Q8O/cobvcCT/TojBKW2ZROsMxQ4bD2s6o0ePePF4z09wTe9b1Vnn8x5mm4dsPJboKotVawkE5HTRd1ZBoz9cJRDtlPH4lmR/uu+b5UTy3jZ/MpN9yLe+4B2VKDOfjI1ajPwGadSMhRZWga/kF63UcY0Gj52YniVfKoSt+u3kPTfMFv6jydw==
+sidebar_class_name: "get api-method"
+info_path: adminapi/admin-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"List service handlers"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/services/{service}/handlers"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+List all the handlers of the given service.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"service","in":"path","description":"Fully qualified service name.","required":true,"schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","required":["handlers"],"properties":{"handlers":{"type":"array","items":{"type":"object","required":["input_description","name","output_description"],"properties":{"name":{"type":"string"},"ty":{"allOf":[{"type":"string","enum":["Exclusive","Shared","Workflow"],"title":"HandlerMetadataType"}],"nullable":true},"documentation":{"title":"Documentation","description":"Documentation of the handler, as propagated by the SDKs.","type":"string","nullable":true},"metadata":{"title":"Metadata","description":"Additional handler metadata, as propagated by the SDKs.","type":"object","additionalProperties":{"type":"string"}},"input_description":{"title":"Human readable input description","description":"If empty, no schema was provided by the user at discovery time.","type":"string"},"output_description":{"title":"Human readable output description","description":"If empty, no schema was provided by the user at discovery time.","type":"string"},"input_json_schema":{"title":"Input JSON Schema","description":"JSON Schema of the handler input","nullable":true},"output_json_schema":{"title":"Output JSON Schema","description":"JSON Schema of the handler output","nullable":true}},"title":"HandlerMetadata"}}},"title":"ListServiceHandlersResponse"}}}},"400":{"description":"","content":{"application/json":{"schema":{"title":"Error description response","description":"Error details of the response","type":"object","required":["message"],"properties":{"message":{"type":"string"},"restate_code":{"title":"Restate code","description":"Restate error code describing this error","type":"string","nullable":true}}}}}},"403":{"description":"","content":{"application/json":{"schema":{"title":"Error description response","description":"Error details of the response","type":"object","required":["message"],"properties":{"message":{"type":"string"},"restate_code":{"title":"Restate code","description":"Restate error code describing this error","type":"string","nullable":true}}}}}},"404":{"description":"","content":{"application/json":{"schema":{"title":"Error description response","description":"Error details of the response","type":"object","required":["message"],"properties":{"message":{"type":"string"},"restate_code":{"title":"Restate code","description":"Restate error code describing this error","type":"string","nullable":true}}}}}},"409":{"description":"","content":{"application/json":{"schema":{"title":"Error description response","description":"Error details of the response","type":"object","required":["message"],"properties":{"message":{"type":"string"},"restate_code":{"title":"Restate code","description":"Restate error code describing this error","type":"string","nullable":true}}}}}},"500":{"description":"","content":{"application/json":{"schema":{"title":"Error description response","description":"Error details of the response","type":"object","required":["message"],"properties":{"message":{"type":"string"},"restate_code":{"title":"Restate code","description":"Restate error code describing this error","type":"string","nullable":true}}}}}},"503":{"description":"","content":{"application/json":{"schema":{"title":"Error description response","description":"Error details of the response","type":"object","required":["message"],"properties":{"message":{"type":"string"},"restate_code":{"title":"Restate code","description":"Restate error code describing this error","type":"string","nullable":true}}}}}}}}
+>
+  
+</StatusCodes>
+
+
+      
