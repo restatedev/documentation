@@ -2,13 +2,13 @@ package usecases.asynctasks.parallelize;
 
 import static usecases.asynctasks.parallelize.utils.Utils.*;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import dev.restate.sdk.Awaitable;
 import dev.restate.sdk.Context;
+import dev.restate.sdk.DurableFuture;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
-import dev.restate.sdk.serde.jackson.JacksonSerdes;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
+import dev.restate.serde.TypeRef;
 import java.util.ArrayList;
 import java.util.List;
 import usecases.asynctasks.parallelize.utils.*;
@@ -23,11 +23,11 @@ public class FanOutWorker {
     // Split the task in subtasks
     List<SubTask> subTasks =
         ctx.run(
-            JacksonSerdes.of(new TypeReference<>() {}),
+            new TypeRef<>() {},
             // break
             () -> split(task));
 
-    List<Awaitable<?>> resultFutures = new ArrayList<>();
+    List<DurableFuture<?>> resultFutures = new ArrayList<>();
     // <mark_1>
     for (SubTask subTask : subTasks) {
       resultFutures.add(FanOutWorkerClient.fromContext(ctx).runSubtask(subTask));
@@ -35,7 +35,7 @@ public class FanOutWorker {
     // </mark_1>
 
     // <mark_2>
-    Awaitable.all(resultFutures).await();
+    DurableFuture.all(resultFutures).await();
 
     var results = resultFutures.stream().map(future -> (SubTaskResult) future.await()).toList();
     // </mark_2>
@@ -51,7 +51,7 @@ public class FanOutWorker {
   }
 
   public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder().bind(new FanOutWorker()).buildAndListen();
+    RestateHttpServer.listen(Endpoint.bind(new FanOutWorker()));
   }
 }
 // <end_here>

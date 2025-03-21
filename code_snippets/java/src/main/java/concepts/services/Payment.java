@@ -3,16 +3,15 @@ package concepts.services;
 import concepts.buildingblocks.utils.PaymentClient;
 import concepts.services.types.PaymentRequest;
 import concepts.services.types.PaymentSuccess;
-import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.SharedWorkflowContext;
 import dev.restate.sdk.WorkflowContext;
 import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.Workflow;
-import dev.restate.sdk.common.DurablePromiseKey;
-import dev.restate.sdk.common.StateKey;
-import dev.restate.sdk.common.TerminalException;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
-import dev.restate.sdk.serde.jackson.JacksonSerdes;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
+import dev.restate.sdk.types.DurablePromiseKey;
+import dev.restate.sdk.types.StateKey;
+import dev.restate.sdk.types.TerminalException;
 
 // <start_here>
 @Workflow
@@ -20,9 +19,9 @@ public class Payment {
 
   private static final StateKey<String> STATUS =
       // break
-      StateKey.of("status", JsonSerdes.STRING);
+      StateKey.of("status", String.class);
   private static final DurablePromiseKey<PaymentSuccess> PAYMENT_SUCCESS =
-      DurablePromiseKey.of("success", JacksonSerdes.of(PaymentSuccess.class));
+      DurablePromiseKey.of("success", PaymentSuccess.class);
 
   // <mark_1>
   @Workflow
@@ -33,12 +32,10 @@ public class Payment {
     }
 
     ctx.run(
-        "make a req",
-        JsonSerdes.BOOLEAN,
-        () -> PaymentClient.charge(req.getAccount(), req.getAmount()));
+        "make a req", Boolean.class, () -> PaymentClient.charge(req.getAccount(), req.getAmount()));
 
     // <mark_3>
-    ctx.promise(PAYMENT_SUCCESS).awaitable().await();
+    ctx.promise(PAYMENT_SUCCESS).future().await();
     // </mark_3>
 
     // <mark_2>
@@ -47,7 +44,7 @@ public class Payment {
 
     ctx.run(
         "notify the user",
-        JsonSerdes.BOOLEAN,
+        Boolean.class,
         () -> EmailClient.sendSuccessNotification(req.getEmail()));
 
     // <mark_2>
@@ -76,11 +73,12 @@ public class Payment {
   // </mark_2>
 
   public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder()
-        // break
-        .bind(new Payment())
-        // break
-        .buildAndListen();
+    var endpoint =
+        Endpoint
+            // break
+            .bind(new Payment());
+    // break
+    RestateHttpServer.listen(endpoint);
   }
 }
 // <end_here>

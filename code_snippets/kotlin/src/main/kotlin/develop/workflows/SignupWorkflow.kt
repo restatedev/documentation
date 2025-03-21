@@ -2,8 +2,9 @@ package develop.workflows
 
 import dev.restate.sdk.annotation.Shared
 import dev.restate.sdk.annotation.Workflow
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
+import dev.restate.sdk.http.vertx.RestateHttpServer
 import dev.restate.sdk.kotlin.*
+import dev.restate.sdk.kotlin.endpoint.endpoint
 import kotlinx.serialization.Serializable
 
 // <start_here>
@@ -11,8 +12,8 @@ import kotlinx.serialization.Serializable
 class SignupWorkflow {
 
   companion object {
-    private val EMAIL_CLICKED = KtDurablePromiseKey.json<String>("email_clicked")
-    private val STATUS = KtStateKey.json<String>("status")
+    private val EMAIL_CLICKED = durablePromiseKey<String>("email_clicked")
+    private val STATUS = stateKey<String>("status")
   }
 
   // <mark_1>
@@ -24,7 +25,7 @@ class SignupWorkflow {
     ctx.runBlock("send email") { sendEmailWithLink(email, secret) }
 
     // <mark_3>
-    val clickSecret = ctx.promise(EMAIL_CLICKED).awaitable().await()
+    val clickSecret = ctx.promise(EMAIL_CLICKED).future().await()
     // </mark_3>
     ctx.set(STATUS, "Clicked email")
 
@@ -49,7 +50,7 @@ class SignupWorkflow {
 
 fun main() {
   // <mark_4>
-  RestateHttpEndpointBuilder.builder().bind(SignupWorkflow()).buildAndListen()
+  RestateHttpServer.listen(endpoint { bind(SignupWorkflow()) })
   // </mark_4>
 }
 // <end_here>

@@ -52,8 +52,8 @@ class ServiceCommunication {
     // <start_delayed>
     MyServiceClient.fromContext(ctx)
         // !mark
-        .send(1.seconds)
-        .myHandler(request)
+        .send()
+        .myHandler(request, 1.seconds)
     // <end_delayed>
   }
 }

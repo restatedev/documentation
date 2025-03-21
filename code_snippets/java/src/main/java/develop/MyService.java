@@ -4,7 +4,8 @@ package develop;
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
 
 @Service
 public class MyService {
@@ -14,7 +15,7 @@ public class MyService {
   }
 
   public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder().bind(new MyService()).buildAndListen();
+    RestateHttpServer.listen(Endpoint.bind(new MyService()));
   }
 }
 // <end_here>

@@ -1,17 +1,17 @@
 package guides;
 
 import dev.restate.sdk.Context;
-import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.annotation.Accept;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Raw;
 import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.common.RetryPolicy;
-import dev.restate.sdk.common.TerminalException;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
+import dev.restate.sdk.types.RetryPolicy;
+import dev.restate.sdk.types.TerminalException;
+import dev.restate.sdk.types.TimeoutException;
 import develop.MyServiceClient;
 import java.time.Duration;
-import java.util.concurrent.TimeoutException;
 
 @Service
 public class RetryRunService {
@@ -27,13 +27,13 @@ public class RetryRunService {
             .setMaxAttempts(10)
             .setMaxDuration(Duration.ofMinutes(5));
     // </mark_1>
-    ctx.run(myRunRetryPolicy, () -> writeToOtherSystem());
+    ctx.run("my-run", myRunRetryPolicy, () -> writeToOtherSystem());
     // <end_here>
 
     // <start_catch>
     try {
       // Fails with a terminal error after 3 attempts or if the function throws one
-      ctx.run(RetryPolicy.defaultPolicy().setMaxAttempts(3), () -> writeToOtherSystem());
+      ctx.run("my-run", RetryPolicy.defaultPolicy().setMaxAttempts(3), () -> writeToOtherSystem());
     } catch (TerminalException e) {
       // Handle the terminal error: undo previous actions and
       // propagate the error back to the caller
@@ -72,7 +72,7 @@ public class RetryRunService {
           // !mark
           .await(Duration.ofSeconds(5));
 
-      var awakeable = ctx.awakeable(JsonSerdes.BOOLEAN);
+      var awakeable = ctx.awakeable(Boolean.class);
       // ...Do something that will trigger the awakeable
       // !mark
       awakeable.await(Duration.ofSeconds(5));
@@ -84,7 +84,7 @@ public class RetryRunService {
   }
 
   public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder().bind(new RetryRunService()).buildAndListen();
+    RestateHttpServer.listen(Endpoint.bind(new RetryRunService()));
   }
 
   private Object decodeRequest(byte[] request) {

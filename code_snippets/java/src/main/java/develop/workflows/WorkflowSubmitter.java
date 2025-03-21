@@ -1,8 +1,8 @@
 package develop.workflows;
 
-import dev.restate.sdk.client.Client;
-import dev.restate.sdk.client.SendResponse;
-import dev.restate.sdk.common.Output;
+import dev.restate.client.Client;
+import dev.restate.client.SendResponse;
+import dev.restate.common.Output;
 
 public class WorkflowSubmitter {
 
@@ -29,7 +29,8 @@ public class WorkflowSubmitter {
             // break
             .workflowHandle()
             // break
-            .attach();
+            .attach()
+            .response();
 
     // Option 2: peek to check if ready
     Output<Boolean> peekOutput =
@@ -37,7 +38,8 @@ public class WorkflowSubmitter {
             // break
             .workflowHandle()
             // break
-            .getOutput();
+            .getOutput()
+            .response();
     if (peekOutput.isReady()) {
       boolean result2 = peekOutput.getValue();
     }

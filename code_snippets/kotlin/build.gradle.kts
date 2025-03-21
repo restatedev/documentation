@@ -1,13 +1,11 @@
 plugins {
   application
-  kotlin("jvm") version "2.0.0"
-  kotlin("plugin.serialization") version "2.0.0"
+  kotlin("jvm") version "2.0.21"
+  kotlin("plugin.serialization") version "2.0.21"
 
-  id("com.google.devtools.ksp") version "2.0.0-1.0.21"
+  id("com.google.devtools.ksp") version "2.0.21-1.0.28"
   id("com.diffplug.spotless") version "6.25.0"
 }
-
-repositories { mavenCentral() }
 
 dependencies {
   // Annotation processor
@@ -15,6 +13,7 @@ dependencies {
 
   // Restate SDK
   implementation(libs.restate.sdk.api.kotlin)
+  implementation(libs.restate.client.kotlin)
   implementation(libs.restate.sdk.common)
   implementation(libs.restate.sdk.http.vertx)
   implementation(libs.restate.sdk.lambda)

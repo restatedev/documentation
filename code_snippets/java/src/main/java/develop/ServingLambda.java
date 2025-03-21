@@ -1,12 +1,12 @@
 package develop;
 
 // <start_here>
+import dev.restate.sdk.endpoint.Endpoint;
 import dev.restate.sdk.lambda.BaseRestateLambdaHandler;
-import dev.restate.sdk.lambda.RestateLambdaEndpointBuilder;
 
 class MyLambdaHandler extends BaseRestateLambdaHandler {
   @Override
-  public void register(RestateLambdaEndpointBuilder builder) {
+  public void register(Endpoint.Builder builder) {
     builder.bind(new MyService()).bind(new MyVirtualObject());
   }
 }

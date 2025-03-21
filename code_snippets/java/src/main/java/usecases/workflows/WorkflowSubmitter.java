@@ -1,12 +1,12 @@
 package usecases.workflows;
 
-import dev.restate.sdk.client.Client;
+import dev.restate.client.Client;
 import usecases.utils.User;
 
 public class WorkflowSubmitter {
   public void submit(User user) {
     // <start_here>
-    // import dev.restate.sdk.client.Client;
+    // import dev.restate.client.Client;
     Client restateClient = Client.connect("http://localhost:8080");
     // !mark
     SignupWorkflowClient.fromClient(restateClient, user.id())
@@ -22,7 +22,8 @@ public class WorkflowSubmitter {
             // !mark
             .workflowHandle()
             // !mark
-            .attach();
+            .attach()
+            .response();
     // <end_here>
   }
 }

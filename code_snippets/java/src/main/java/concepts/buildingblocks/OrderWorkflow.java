@@ -4,20 +4,16 @@ import concepts.buildingblocks.types.OrderRequest;
 import concepts.buildingblocks.types.StatusEnum;
 import concepts.buildingblocks.utils.PaymentClient;
 import concepts.buildingblocks.utils.RestaurantClient;
-import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.common.Serde;
-import dev.restate.sdk.common.StateKey;
-import dev.restate.sdk.serde.jackson.JacksonSerdes;
+import dev.restate.sdk.types.StateKey;
 import java.time.Duration;
 
 // <start_here>
 @VirtualObject
 public class OrderWorkflow {
-  public static final StateKey<StatusEnum> STATUS =
-      StateKey.of("status", JacksonSerdes.of(StatusEnum.class));
+  public static final StateKey<StatusEnum> STATUS = StateKey.of("status", StatusEnum.class);
 
   // <mark_1>
   @Handler
@@ -33,7 +29,7 @@ public class OrderWorkflow {
     String token = ctx.random().nextUUID().toString();
     boolean paid =
         ctx.run(
-            JsonSerdes.BOOLEAN,
+            Boolean.class,
             // break
             () -> PaymentClient.charge(id, token, order.getTotalCost()));
     // </mark_5>
@@ -53,7 +49,7 @@ public class OrderWorkflow {
 
     // 4. Trigger preparation
     // <mark_3>
-    var awakeable = ctx.awakeable(Serde.VOID);
+    var awakeable = ctx.awakeable(Void.class);
     // <mark_5>
     ctx.run(() -> RestaurantClient.prepare(id, awakeable.id()));
     // </mark_5>

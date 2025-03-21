@@ -1,12 +1,10 @@
 package concepts.buildingblocks;
 
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
 
 public class AppMain {
   public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder()
-        .bind(new OrderWorkflow())
-        .bind(new DeliveryManager())
-        .buildAndListen();
+    RestateHttpServer.listen(Endpoint.bind(new OrderWorkflow()).bind(new DeliveryManager()));
   }
 }

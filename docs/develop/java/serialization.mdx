@@ -8,81 +8,54 @@ description: "Customize serialization for SDK actions."
 Restate sends data over the network for storing state, journaling actions, awakeables, etc.
 There are multiple ways to specify which (de)serializers should be used.
 
-Serializers and deserializers are abstracted using the interface `dev.restate.sdk.common.Serde`.
-We suggest to use [Jackson serialization](#jackson-serialization) for Java and [Kotlin serialization](#kotlin-serialization) for Kotlin.
+The SDK uses by default [Jackson Databind](https://github.com/FasterXML/jackson) for the Java API, and [Kotlinx serialization](https://kotlinlang.org/docs/serialization.html) for the Kotlin API.
 
-## Jackson serialization
+## Customizing serialization
 
-If you want to use [Jackson Databind](https://github.com/FasterXML/jackson) to (de)serialize POJOs, add the dependency `sdk-serde-jackson`.
-For example, in Gradle:
+There are different entrypoints in the SDK to customize (de)serialization, depending on your needs.
+
+### Custom Jackson `ObjectMapper`
+
+You can customize the Jackson's [`ObjectMapper`](https://javadoc.io/doc/com.fasterxml.jackson.core/jackson-databind/latest/com/fasterxml/jackson/databind/ObjectMapper.html) by subclassing the [`JacksonSerdeFactory`](https://docs.restate.dev/javadocs/dev/restate/sdk/serde/jackson/JacksonSerdeFactory) class:
+
+```java
+CODE_LOAD::java/src/main/java/develop/SerializationExample.java#custom_jackson
+```
+
+And annotating your services with [`@CustomSerdeFactory`](https://docs.restate.dev/javadocs/dev/restate/sdk/annotation/CustomSerdeFactory):
+
+```java
+CODE_LOAD::java/src/main/java/develop/SerializationExample.java#custom_jackson_service
+```
+
+### Custom Kotlinx Serialization `Json`
+
+You can customize the Kotlinx Serialization [`Json`](https://kotlinlang.org/api/kotlinx.serialization/kotlinx-serialization-json/kotlinx.serialization.json/-json/) by subclassing the [`KotlinSerializationSerdeFactory`](https://docs.restate.dev/ktdocs/sdk-api-kotlin/dev.restate.sdk.kotlin.serialization/-kotlin-serialization-serde-factory/) class:
 
 ```kotlin
-implementation("dev.restate:sdk-serde-jackson:VAR::JAVA_SDK_VERSION")
+CODE_LOAD::kotlin/src/main/kotlin/develop/SerializationExample.kt#custom
 ```
 
-And then use `JacksonSerdes`. For example, to create a Serde for the `Person` class, you can do:
-
-```java
-CODE_LOAD::java/src/main/java/develop/SerializationExample.java#pojoserdes
-```
-
-Alternatively, you can also supply the TypeReference of a generic type, for example:
-
-```java
-CODE_LOAD::java/src/main/java/develop/SerializationExample.java#typerefserdes
-```
-
-## Kotlin serialization
-
-When using Kotlin, the [Kotlin serialization](https://kotlinlang.org/docs/serialization.html) library is included by default. You can manually create a `Serde` using Kotlin serialization using:
+And annotating your services with [`@CustomSerdeFactory`](https://docs.restate.dev/ktdocs/sdk-common/dev.restate.sdk.annotation/-custom-serde-factory/):
 
 ```kotlin
-CODE_LOAD::kotlin/src/main/kotlin/develop/SerializationExample.kt
+CODE_LOAD::kotlin/src/main/kotlin/develop/SerializationExample.kt#custom_service
 ```
 
-## `CoreSerdes` for primitive types
+### Use custom serializer for a specific operation
 
-If you don't want to depend on Jackson databind, we provide some primitive types support using `jackson-core` in `CoreSerdes`.
-The following serializers are included:
-
-```java
-CODE_LOAD::java/src/main/java/develop/SerializationExample.java
-```
-
-For example, to specify the serializer for state of type `Long`:
-
-```java
-CODE_LOAD::java/src/main/java/develop/SerializationExample.java#statekey
-```
-
-## Protobuf messages
-
-If you want to use [Protobuf messages](https://github.com/FasterXML/jackson), add the dependency `sdk-serde-protobuf`.
-For example, in Gradle:
-
-```kotlin
-implementation("dev.restate:sdk-serde-protobuf:VAR::JAVA_SDK_VERSION")
-```
-
-And then use `ProtobufParser`:
-
-```java
-CODE_LOAD::java/src/main/java/develop/SerializationExample.java#protoserdes
-```
-
-## Custom serialization
-
-You can implement custom (de)serializers by implementing the `dev.restate.sdk.common.Serde` interface:
+If you need for a specific operation (e.g. for `Context.run` or `Context.Awakeable`) a custom (de)serializer, you can implement one using the interface [`Serde`](https://docs.restate.dev/javadocs/dev/restate/serde/Serde):
 
 ```java
 CODE_LOAD::java/src/main/java/develop/SerializationExample.java#customserdes
 ```
 
-And then use it, for example, to create a state key for Person objects:
+And then use it, for example, in combination with `ctx.run`:
 
 ```java
-CODE_LOAD::java/src/main/java/develop/SerializationExample.java#person_state_key
+CODE_LOAD::java/src/main/java/develop/SerializationExample.java#use_person_serde
 ```
 
+### Use another serialization library
 
-
+If you want to use a different serialization library throughout your service, we suggest implementing [`SerdeFactory`](https://docs.restate.dev/javadocs/dev/restate/serde/SerdeFactory) and annotating the service class with [`@CustomSerdeFactory`](https://docs.restate.dev/javadocs/dev/restate/sdk/annotation/CustomSerdeFactory). Refer to the Javadocs for more details.

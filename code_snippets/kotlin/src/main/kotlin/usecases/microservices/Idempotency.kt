@@ -1,7 +1,6 @@
 package usecases.microservices
 
-import dev.restate.sdk.client.CallRequestOptions
-import dev.restate.sdk.client.Client
+import dev.restate.client.Client
 import usecases.microservices.service.SubscriptionServiceClient
 
 class Config {
@@ -17,14 +16,11 @@ class Idempotency {
     // <start_here>
     val restateClient = Client.connect(Config.RESTATE_URL)
     // <mark_1>
-    SubscriptionServiceClient.fromClient(restateClient)
-        .send()
-        .add(
-            subscriptionRequest,
-            // <mark_2>
-            CallRequestOptions.DEFAULT.withIdempotency(requestId)
-            // </mark_2>
-            )
+    SubscriptionServiceClient.fromClient(restateClient).send().add(subscriptionRequest) {
+      // <mark_2>
+      idempotencyKey = requestId
+      // </mark_2>
+    }
     // </mark_1>
     // <end_here>
   }

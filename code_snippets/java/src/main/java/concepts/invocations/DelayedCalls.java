@@ -1,9 +1,9 @@
 package concepts.invocations;
 
+import dev.restate.client.Client;
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.client.Client;
 import java.time.Duration;
 
 @Service
@@ -14,10 +14,9 @@ public class DelayedCalls {
   public void myRestateHandler(Context ctx) {
     // !focus
     GreeterServiceClient.fromContext(ctx)
+        .send()
         // !focus
-        .send(Duration.ofMillis(1000))
-        // !focus
-        .greet("Hi");
+        .greet("Hi", Duration.ofSeconds(1));
   }
 
   // <end_delayed_call>
@@ -28,10 +27,9 @@ public class DelayedCalls {
     Client restate = Client.connect("http://localhost:8080");
     // !focus
     GreeterServiceClient.fromClient(restate)
+        .send()
         // !focus
-        .send(Duration.ofMillis(1000))
-        // !focus
-        .greet("Hi");
+        .greet("Hi", Duration.ofSeconds(1));
   }
   // <end_delayed_call_java>
 }

@@ -4,9 +4,9 @@ package develop
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Shared
 import dev.restate.sdk.annotation.VirtualObject
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
-import dev.restate.sdk.kotlin.ObjectContext
-import dev.restate.sdk.kotlin.SharedObjectContext
+import dev.restate.sdk.http.vertx.RestateHttpServer
+import dev.restate.sdk.kotlin.*
+import dev.restate.sdk.kotlin.endpoint.*
 
 @VirtualObject
 class MyVirtualObject {
@@ -25,6 +25,6 @@ class MyVirtualObject {
 }
 
 fun main() {
-  RestateHttpEndpointBuilder.builder().bind(MyVirtualObject()).buildAndListen()
+  RestateHttpServer.listen(endpoint { bind(MyVirtualObject()) })
 }
 // <end_here>

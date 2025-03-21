@@ -1,10 +1,10 @@
 package usecases.workflows
 
 import dev.restate.sdk.annotation.Workflow
-import dev.restate.sdk.common.TerminalException
+import dev.restate.sdk.endpoint.Endpoint
 import dev.restate.sdk.kotlin.*
 import dev.restate.sdk.lambda.BaseRestateLambdaHandler
-import dev.restate.sdk.lambda.RestateLambdaEndpointBuilder
+import dev.restate.sdk.types.TerminalException
 import kotlinx.serialization.Serializable
 
 // <start_here>
@@ -13,7 +13,7 @@ class SubscriptionWorkflow {
 
   companion object {
     // <mark_1>
-    val STATUS = KtStateKey.json<String>("status")
+    val STATUS = stateKey<String>("status")
     // </mark_1>
   }
 
@@ -60,7 +60,7 @@ class SubscriptionWorkflow {
 
 // <mark_3>
 class MyLambdaHandler : BaseRestateLambdaHandler() {
-  override fun register(builder: RestateLambdaEndpointBuilder) {
+  override fun register(builder: Endpoint.Builder) {
     builder.bind(SubscriptionWorkflow())
   }
 }

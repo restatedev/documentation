@@ -71,8 +71,8 @@ public class ServiceCommunication {
     // <start_delayed>
     MyServiceClient.fromContext(ctx)
         // !mark
-        .send(Duration.ofSeconds(1))
-        .myHandler(request);
+        .send()
+        .myHandler(request, Duration.ofSeconds(1));
     // <end_delayed>
   }
 
