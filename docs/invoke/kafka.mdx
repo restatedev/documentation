@@ -21,9 +21,12 @@ You can invoke handlers via Kafka events, by doing the following:
     You can invoke any handler via Kafka events.
     The event payload will be (de)serialized as JSON.
 
-    - When invoking **Virtual Object** handlers via Kafka, the key of the Kafka record will be used to determine the Virtual Object key.
+    - When invoking **Virtual Object** or **Workflow** handlers via Kafka, the key of the Kafka record will be used to determine the Virtual Object/Workflow key.
     The key needs to be a valid UTF-8 string.
-    For each Virtual Object, the events are delivered in the order in which they arrived on the topic partition.
+    The events are delivered to the subscribed handler in the order in which they arrived on the topic partition.
+    - When invoking **Virtual Object** or **Workflow** _shared_ handlers via Kafka, the key of the Kafka record will be used to determine the Virtual Object/Workflow key.
+    The key needs to be a valid UTF-8 string.
+    The events are delivered to the subscribed handler in parallel without ordering guarantees.
     - When invoking **Service** handlers over Kafka, events are delivered in parallel without ordering guarantees.
 
     <Admonition type="tip" title="Combining RPC and Kafka within a service/handler">
