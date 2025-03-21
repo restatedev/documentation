@@ -10,4 +10,6 @@ my_service = Service("MyService")
 async def my_handler(ctx: Context, arg):
     # !focus
     ctx.service_send(greet, arg="Hi")
+
+
 # <end_one_way_call>

@@ -13,22 +13,27 @@ def schedule_task(task: TaskOpts):
     # <mark_1>
     requests.post(
         f"{RESTATE_URL}/taskWorker/runTask/send",
-          json=json.dumps(task),
-          headers={
-              # <mark_2>
-              "idempotency-key": "dQw4w9WgXcQ",
-              # </mark_2>
-              "Content-Type": "application/json"
-          })
+        json=json.dumps(task),
+        headers={
+            # <mark_2>
+            "idempotency-key": "dQw4w9WgXcQ",
+            # </mark_2>
+            "Content-Type": "application/json",
+        },
+    )
     # </mark_1>
 
     # Attach to the async task to retrieve the result
     # <mark_3>
     # <mark_4>
-    attach_url = f"{RESTATE_URL}/restate/invocation/taskWorker/runTask/dQw4w9WgXcQ/attach"
+    attach_url = (
+        f"{RESTATE_URL}/restate/invocation/taskWorker/runTask/dQw4w9WgXcQ/attach"
+    )
     response = requests.get(attach_url)
     # </mark_3>
     # </mark_4>
+
+
 # <end_here>
 
 

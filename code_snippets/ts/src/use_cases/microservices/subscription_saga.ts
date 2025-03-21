@@ -13,7 +13,7 @@ const subscriptionService = restate.service({
       try {
         const paymentId = ctx.rand.uuidv4();
         // <mark_1>
-        compensations.push(() => removeRecurringPayment(paymentId))
+        compensations.push(() => removeRecurringPayment(paymentId));
         // </mark_1>
         // <mark_1> green
         await ctx.run(() => createRecurringPayment(req.creditCard, paymentId));
@@ -21,7 +21,9 @@ const subscriptionService = restate.service({
 
         for (const subscription of req.subscriptions) {
           // <mark_1>
-          compensations.push(() => removeSubscription(req.userId, subscription))
+          compensations.push(() =>
+            removeSubscription(req.userId, subscription)
+          );
           // </mark_1>
           // <mark_1> green
           await ctx.run(() => createSubscription(req.userId, subscription));
@@ -39,21 +41,29 @@ const subscriptionService = restate.service({
       }
     },
   },
-})
+});
 // <end_here>
 
-restate
-    .endpoint()
-    .bind(subscriptionService)
-    .listen(9080);
+restate.endpoint().bind(subscriptionService).listen(9080);
 
+type SubscriptionRequest = {
+  creditCard: string;
+  userId: any;
+  subscriptions: any[];
+};
 
-type SubscriptionRequest = {creditCard: string, userId: any, subscriptions: any[]};
+async function removeRecurringPayment(paymentId: string) {}
+async function createRecurringPayment(creditCard: string, paymentId: string) {}
 
-async function removeRecurringPayment(paymentId: string){}
-async function createRecurringPayment(creditCard: string, paymentId: string){}
-
-async function removeSubscription(userId: any, subscription: any, payRef: void) {}
-async function createSubscription(userId: any, subscription: any, payRef: void) {
+async function removeSubscription(
+  userId: any,
+  subscription: any,
+  payRef: void
+) {}
+async function createSubscription(
+  userId: any,
+  subscription: any,
+  payRef: void
+) {
   return undefined;
 }

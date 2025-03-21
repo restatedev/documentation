@@ -17,7 +17,6 @@ export function CopyButton({
 
   return (
       <div className={clsx(
-        // `hover:bg-gray-400/20 -m-1 p-1 rounded hidden sm:block`,
         className
     )}>
         {(githubUrl) ? <a

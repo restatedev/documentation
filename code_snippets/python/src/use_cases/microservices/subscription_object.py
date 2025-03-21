@@ -24,8 +24,10 @@ async def add(ctx: ObjectContext, req: SubscriptionRequest):
     # <mark_1>
     ctx.set("subscription", "awaiting_payment")
     # </mark_1>
-    success = await ctx.run("recurring payment",
-                            lambda: create_recurring_payment(req.credit_card, payment_id))
+    success = await ctx.run(
+        "recurring payment",
+        lambda: create_recurring_payment(req.credit_card, payment_id),
+    )
     if not success:
         # <mark_1>
         ctx.set("subscription", "payment_failed")
@@ -35,11 +37,13 @@ async def add(ctx: ObjectContext, req: SubscriptionRequest):
     # <mark_1>
     ctx.set("subscription", "creating_subscription")
     # </mark_1>
-    await ctx.run("subscription",
-                  lambda: create_subscription(req.user_id, req.subscription))
+    await ctx.run(
+        "subscription", lambda: create_subscription(req.user_id, req.subscription)
+    )
     # <mark_1>
     ctx.set("subscription", "created")
     # </mark_1>
+
 
 # <mark_3>
 aws_lambda_handler = restate.app([subscription_object])

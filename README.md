@@ -20,6 +20,38 @@ $ yarn start
 
 This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
 
+#### Formatting code snippets
+
+For TS:
+```
+cd code_snippets/ts
+npm run format
+```
+
+For Java:
+```
+cd code_snippets/java
+./gradlew spotlessApply
+```
+
+For Kotlin:
+```
+cd code_snippets/kotlin
+./gradlew spotlessApply
+```
+
+For Go:
+```
+cd code_snippets/go
+go fmt
+```
+
+For Python:
+```
+cd code_snippets/python
+python3 -m black .
+```
+
 ### Build
 
 ```

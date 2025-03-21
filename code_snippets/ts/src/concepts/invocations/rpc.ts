@@ -3,11 +3,8 @@ import { greetCounter, greeter, myWorkflow } from "./utils";
 
 // <start_rpc_call>
 async function myRestateHandler(ctx: restate.Context) {
-  // !focus
-  const greet = await ctx
-    // !focus
-    .serviceClient(greeter)
-    // !focus
-    .greet({ greeting: "Hi" });
+  // !focus(1:2)
+  // From a Restate handler
+  const greet = await ctx.serviceClient(greeter).greet({ greeting: "Hi" });
 }
 // <end_rpc_call>

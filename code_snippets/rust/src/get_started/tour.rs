@@ -1,7 +1,4 @@
-fn add_ticket(
-    ctx: ObjectContext<'_>,
-) -> Result<(), HandlerError> {
-
+fn add_ticket(ctx: ObjectContext<'_>) -> Result<(), HandlerError> {
     // <start_sleep>
     ctx.sleep(Duration::from_millis(15 * 60 * 1000)).await?;
     // <end_sleep>
@@ -14,9 +11,9 @@ fn add_ticket(
     // <end_sleep_and_send>
 }
 
-use std::collections::HashSet;
 use restate_sdk::prelude::*;
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -39,7 +36,6 @@ impl CheckoutService for CheckoutServiceImpl {
         mut ctx: Context<'_>,
         Json(CheckoutRequest { user_id, tickets }): Json<CheckoutRequest>,
     ) -> Result<bool, HandlerError> {
-
         let idempotency_key = ctx.rand_uuid().to_string();
         info!("idempotent key: {}", idempotency_key);
 

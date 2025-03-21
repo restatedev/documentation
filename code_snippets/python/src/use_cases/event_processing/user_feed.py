@@ -3,7 +3,13 @@ from datetime import timedelta
 import restate
 from restate import VirtualObject, ObjectContext
 
-from src.use_cases.event_processing.utils import create_post, get_post_status, update_user_feed, SocialMediaPost, Status
+from src.use_cases.event_processing.utils import (
+    create_post,
+    get_post_status,
+    update_user_feed,
+    SocialMediaPost,
+    Status,
+)
 
 # <start_here>
 user_feed = VirtualObject("UserFeed")

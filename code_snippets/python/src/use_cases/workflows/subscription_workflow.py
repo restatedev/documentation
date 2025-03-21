@@ -29,11 +29,13 @@ async def run(ctx: WorkflowContext, req: SubscriptionRequest):
         compensations.append(lambda: remove_recurring_payment(payment_id))
         # </mark_2>
         # <mark_2> green
-        await ctx.run("recurring payment",
-                            lambda: create_recurring_payment(req.credit_card, payment_id))
+        await ctx.run(
+            "recurring payment",
+            lambda: create_recurring_payment(req.credit_card, payment_id),
+        )
         # </mark_2>
         # <mark_1>
-        ctx.set("status", "payment_success");
+        ctx.set("status", "payment_success")
         # </mark_1>
 
         for subscription in req.subscriptions:
@@ -41,11 +43,12 @@ async def run(ctx: WorkflowContext, req: SubscriptionRequest):
             compensations.append(lambda: remove_subscription(req.user_id, subscription))
             # </mark_2>
             # <mark_2> green
-            await ctx.run("subscription",
-                      lambda: create_subscription(req.user_id, subscription))
+            await ctx.run(
+                "subscription", lambda: create_subscription(req.user_id, subscription)
+            )
             # </mark_2>
         # <mark_1>
-        ctx.set("status", "subscribed");
+        ctx.set("status", "subscribed")
         # </mark_1>
 
         # <mark_2> orange
@@ -54,7 +57,7 @@ async def run(ctx: WorkflowContext, req: SubscriptionRequest):
             await ctx.run("run compensation", compensation)
             # </mark_2>
         # <mark_1>
-        ctx.set("status", "rolled_back");
+        ctx.set("status", "rolled_back")
         # </mark_1>
         raise e
 
@@ -63,6 +66,7 @@ async def run(ctx: WorkflowContext, req: SubscriptionRequest):
 aws_lambda_handler = restate.app([subscription_workflow])
 # </mark_3>
 # <end_here>
+
 
 def create_recurring_payment(credit_card, payment_id):
     return None
@@ -74,6 +78,7 @@ def remove_recurring_payment(payment_id):
 
 def create_subscription(user_id, subscription):
     return None
+
 
 def remove_subscription(user_id, subscription):
     return None

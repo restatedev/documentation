@@ -10,7 +10,7 @@ class StripeEvent(TypedDict):
 
 
 # <start_here>
-payment_tracker = VirtualObject("PaymentTracker") # one instance per invoice ID
+payment_tracker = VirtualObject("PaymentTracker")  # one instance per invoice ID
 
 
 # Stripe sends us webhook events for invoice payment attempts
@@ -40,15 +40,18 @@ async def on_payment_failed(ctx: ObjectContext, event: StripeEvent):
         # Schedule next reminder via a delayed self call
         # <mark_2>
         ctx.object_send(
-            on_payment_failed, # this handler
-            ctx.key(), # this object invoice id
+            on_payment_failed,  # this handler
+            ctx.key(),  # this object invoice id
             event,
-            send_delay=timedelta(days=1))
+            send_delay=timedelta(days=1),
+        )
     # </mark_2>
     else:
         # <mark_2>
         await ctx.run("escalate", lambda: escalate_to_human(event))
         # </mark_2>
+
+
 # <end_here>
 
 app = restate.app([payment_tracker])

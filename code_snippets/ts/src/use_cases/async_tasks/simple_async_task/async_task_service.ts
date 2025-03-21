@@ -20,7 +20,6 @@ export type AsyncTaskService = typeof asyncTaskService;
 
 restate.endpoint().bind(asyncTaskService).listen(9080);
 
-
 // ----------------------- Stubs to please the compiler -----------------------
 
 export type TaskOpts = {};
