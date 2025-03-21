@@ -124,8 +124,7 @@ Restate can trigger handlers via Kafka events.
 
 - **Create subscriptions** for a handler on a topic via:
 ```bash
-curl localhost:9070/subscriptions -H 'content-type: application/json' \
-    -d '{
+curl localhost:9070/subscriptions --json '{
         "source": "kafka://my-cluster/my-topic",
         "sink": "service://MyService/Handle",
         "options": {"auto.offset.reset": "earliest"}
