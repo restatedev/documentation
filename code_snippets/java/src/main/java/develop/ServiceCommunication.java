@@ -60,7 +60,7 @@ public class ServiceCommunication {
 
     // <start_delayed_generic>
     Target target = Target.service("MyService", "myHandler"); // or virtualObject or workflow
-    ctx.send(target, JsonSerdes.STRING, request, Duration.ofSeconds(5));
+    ctx.send(target, JsonSerdes.STRING, request, Duration.ofDays(5));
     // <end_delayed_generic>
   }
 
