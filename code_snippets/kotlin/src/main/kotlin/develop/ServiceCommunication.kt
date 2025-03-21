@@ -52,10 +52,11 @@ class ServiceCommunication {
     val target = Target.service("MyService", "myHandler")
     val response =
         ctx.callAsync(
-            target,
-            inputSerde = KtSerdes.json<String>(),
-            outputSerde = KtSerdes.json<String>(),
-            request).await()
+                target,
+                inputSerde = KtSerdes.json<String>(),
+                outputSerde = KtSerdes.json<String>(),
+                request)
+            .await()
     // <end_request_response_generic>
   }
 
@@ -73,7 +74,7 @@ class ServiceCommunication {
 
     // <start_delayed_generic>
     val target = Target.service("MyService", "myHandler")
-    ctx.send(target, KtSerdes.json<String>(), request, delay = 5.seconds)
+    ctx.send(target, KtSerdes.json<String>(), request, delay = 5.days)
     // <end_delayed_generic>
 
   }
