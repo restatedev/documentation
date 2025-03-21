@@ -15,9 +15,11 @@ const service = restate.service({
       // <start_all>
       const sleepPromise = ctx.sleep(100);
       const callPromise = ctx.serviceClient(MyService).myHandler("Hi");
+      const externalCallPromise = ctx.run(() => httpCall())
       const resultArray = await CombineablePromise.all([
         sleepPromise,
         callPromise,
+        externalCallPromise,
       ]);
       // <end_all>
 
@@ -33,6 +35,10 @@ const service = restate.service({
 });
 
 function doDbRequest() {
+  return "";
+}
+
+async function httpCall() {
   return "";
 }
 
