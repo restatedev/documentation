@@ -4,58 +4,40 @@ description: "Create an endpoint to serve your services."
 ---
 
 import Admonition from '@theme/Admonition';
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+import {CodeWithTabs} from '../../../src/components/code/code';
 
 # Serving
 Restate services can run in two ways: as an HTTP endpoint or as AWS Lambda functions.
 
 ## Creating an HTTP endpoint
 
-<Tabs groupId="sdk" queryString>
-    <TabItem value="java" label="Java">
-        1. Create a `RestateHttpEndpointBuilder`
-        2. Bind one or multiple services to it
-        3. Listen on the specified port (default `9080`) for connections and requests.
+1. Create a `RestateHttpEndpointBuilder`
+2. Bind one or multiple services to it
+3. Listen on the specified port (default `9080`) for connections and requests.
 
-        ```java
-        CODE_LOAD::java/src/main/java/develop/ServingHttp.java
-        ```
-    </TabItem>
-    <TabItem value="kotlin" label="Kotlin">
-        1. Create a `RestateHttpEndpointBuilder`
-        2. Bind one or multiple services to it
-        3. Listen on the specified port (default `9080`) for connections and requests.
-
-        ```kotlin
-        CODE_LOAD::kotlin/src/main/kotlin/develop/ServingHttp.kt
-        ```
-    </TabItem>
-</Tabs>
+<CodeWithTabs groupId="sdk">
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/develop/ServingHttp.java
+    ```
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/develop/ServingHttp.kt
+    ```
+</CodeWithTabs>
 
 ## Creating a Lambda handler
-<Tabs groupId="sdk" queryString>
-    <TabItem value="java" label="Java">
-        1. Add the dependency `dev.restate:sdk-lambda:VAR::JAVA_SDK_VERSION`.
-        2. Extend the class `BaseRestateLambdaHandler`
-        3. Override the register method
-        4. Bind one or multiple services to the builder
+1. Add the dependency `dev.restate:sdk-lambda:VAR::JAVA_SDK_VERSION`.
+2. Extend the class `BaseRestateLambdaHandler`
+3. Override the register method
+4. Bind one or multiple services to the builder
 
-        ```java
-        CODE_LOAD::java/src/main/java/develop/ServingLambda.java
-        ```
-    </TabItem>
-    <TabItem value="kotlin" label="Kotlin">
-        1. Add the dependency `dev.restate:sdk-lambda:VAR::JAVA_SDK_VERSION`.
-        2. Extend the class `BaseRestateLambdaHandler`
-        3. Override the register method
-        4. Bind one or multiple services to the builder
-
-        ```kotlin
-        CODE_LOAD::kotlin/src/main/kotlin/develop/MyLambdaHandler.kt
-        ```
-    </TabItem>
-</Tabs>
+<CodeWithTabs groupId="sdk">
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/develop/ServingLambda.java
+    ```
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/develop/MyLambdaHandler.kt
+    ```
+</CodeWithTabs>
 
 Have a look at the [deployment section](/category/aws-lambda) for guidance on how to deploy your services on AWS Lambda.
 
@@ -65,27 +47,19 @@ The implementation of your services and handlers remains the same for both deplo
 
 
 <details className="grey-details">
-
     <summary>Using Java 21 Virtual Threads</summary>
 
-If you use a JVM >= 21, you can use virtual threads to run your services:
+    If you use a JVM >= 21, you can use virtual threads to run your services:
 
-<Tabs groupId="sdk" queryString>
-<TabItem value="java" label="Java">
+    <CodeWithTabs groupId="sdk">
+        ```java !!tabs Java
+        CODE_LOAD::java/src/main/java/develop/ServingVirtualThreads.java
+        ```
+        ```kotlin !!tabs Kotlin
+        CODE_LOAD::kotlin/src/main/kotlin/develop/ServingVirtualThreads.kt
+        ```
+    </CodeWithTabs>
 
-```java
-CODE_LOAD::java/src/main/java/develop/ServingVirtualThreads.java
-```
-
-</TabItem>
-<TabItem value="kotlin" label="Kotlin">
-
-```kotlin
-CODE_LOAD::kotlin/src/main/kotlin/develop/ServingVirtualThreads.kt
-```
-
-</TabItem>
-</Tabs>
 </details>
 
 ## Validating request identity
@@ -98,15 +72,11 @@ to use the request identity dependency, for example in Gradle:
 implementation("dev.restate:sdk-request-identity:VAR::JAVA_SDK_VERSION")
 ```
 
-<Tabs groupId="sdk" queryString>
-    <TabItem value="java" label="Java">
-        ```java
-        CODE_LOAD::java/src/main/java/develop/ServingIdentity.java
-        ```
-    </TabItem>
-    <TabItem value="kotlin" label="Kotlin">
-        ```kotlin
-        CODE_LOAD::kotlin/src/main/kotlin/develop/ServingIdentity.kt
-        ```
-    </TabItem>
-</Tabs>
+<CodeWithTabs groupId="sdk">
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/develop/ServingIdentity.java
+    ```
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/develop/ServingIdentity.kt
+    ```
+</CodeWithTabs>

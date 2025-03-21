@@ -3,10 +3,9 @@ sidebar_position: 13
 description: "Invoke services from non-Restate services."
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
 import {Step} from "../../../src/components/Stepper";
+import {CodeWithTabs} from '../../../src/components/code/code';
 import {TextAndCode} from "../../../src/components/code/code/text-and-code";
 
 # Clients
@@ -34,63 +33,39 @@ Invoke a handler programmatically with the SDK clients as follows:
 </Step>
 <Step stepLabel="2" title={<span><a href={"/operate/registration"}>Register the service</a> you want to invoke.</span>}/>
 <Step stepLabel="3" title="Connect to Restate and invoke the handler with your preferred semantics">
-    <Tabs groupId="sdk" queryString>
-    <TabItem value="java" label="Java">
-        <TextAndCode>
-            **Request-response invocations** allow you to wait on a response from the handler.
+    <TextAndCode groupId={"sdk"}>
+        **Request-response invocations** allow you to wait on a response from the handler.
 
-            ```java !result
-            CODE_LOAD::java/src/main/java/develop/clients/Ingress.java#rpc_java
-            ```
+        ```java !!tabs Java
+        CODE_LOAD::java/src/main/java/develop/clients/Ingress.java#rpc_java
+        ```
+        ```kotlin !!tabs Kotlin
+        CODE_LOAD::kotlin/src/main/kotlin/develop/clients/Ingress.kt#rpc_kotlin
+        ```
+    </TextAndCode>
+    <TextAndCode groupId={"sdk"}>
+        **One-way invocations** allow you to send a message without waiting for a response.
 
-        </TextAndCode>
-        <TextAndCode>
-            **One-way invocations** allow you to send a message without waiting for a response.
+        ```java !!tabs Java
+        CODE_LOAD::java/src/main/java/develop/clients/Ingress.java#one_way_call_java
+        ```
+        ```kotlin !!tabs Kotlin
+        CODE_LOAD::kotlin/src/main/kotlin/develop/clients/Ingress.kt#one_way_call_kotlin
+        ```
+    </TextAndCode>
+    <TextAndCode groupId={"sdk"}>
+        **Delayed invocations** allow you to schedule an invocation for a later point in time.
 
-            ```java !result
-            CODE_LOAD::java/src/main/java/develop/clients/Ingress.java#one_way_call_java
-            ```
-
-        </TextAndCode>
-        <TextAndCode>
-            **Delayed invocations** allow you to schedule an invocation for a later point in time.
-
-            ```java !result
-            CODE_LOAD::java/src/main/java/develop/clients/Ingress.java#delayed_call_java
-            ```
-
-        </TextAndCode>
-    </TabItem>
-        <TabItem value="kotlin" label="Kotlin">
-            <TextAndCode>
-                **Request-response invocations** allow you to wait on a response from the handler.
-
-                ```kotlin !result
-                CODE_LOAD::kotlin/src/main/kotlin/develop/clients/Ingress.kt#rpc_kotlin
-                ```
-
-            </TextAndCode>
-            <TextAndCode>
-                **One-way invocations** allow you to send a message without waiting for a response.
-
-                ```kotlin !result
-                CODE_LOAD::kotlin/src/main/kotlin/develop/clients/Ingress.kt#one_way_call_kotlin
-                ```
-
-            </TextAndCode>
-            <TextAndCode>
-                **Delayed invocations** allow you to schedule an invocation for a later point in time.
-
-                ```kotlin !result
-                CODE_LOAD::kotlin/src/main/kotlin/develop/clients/Ingress.kt#delayed_call_kotlin
-                ```
-
-            </TextAndCode>
-        </TabItem>
-    </Tabs>
+        ```java !!tabs Java
+        CODE_LOAD::java/src/main/java/develop/clients/Ingress.java#delayed_call_java
+        ```
+        ```kotlin !!tabs Kotlin
+        CODE_LOAD::kotlin/src/main/kotlin/develop/clients/Ingress.kt#delayed_call_kotlin
+        ```
+    </TextAndCode>
 </Step>
 
-<Admonition type="info" title="Invoking workflows">
+<Admonition type="note" title="Invoking workflows">
     [Have a look at the workflow documentation to learn what's different when invoking workflows.](/develop/java/workflows#submitting-workflows-with-sdk-clients)
 </Admonition>
 
@@ -99,18 +74,14 @@ Invoke a handler programmatically with the SDK clients as follows:
 To make a service call idempotent, you can use the idempotency key feature.
 Add the idempotency key [to the header](https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/) via:
 
-<Tabs groupId="sdk" queryString>
-    <TabItem value="java" label="Java">
-        ```java
-        CODE_LOAD::java/src/main/java/develop/clients/Ingress.java#service_idempotent
-        ```
-    </TabItem>
-    <TabItem value="kotlin" label="Kotlin">
-        ```kotlin
-        CODE_LOAD::kotlin/src/main/kotlin/develop/clients/Ingress.kt#service_idempotent
-        ```
-    </TabItem>
-</Tabs>
+<CodeWithTabs groupId={"sdk"}>
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/develop/clients/Ingress.java#service_idempotent
+    ```
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/develop/clients/Ingress.kt#service_idempotent
+    ```
+</CodeWithTabs>
 
 After the invocation completes, Restate persists the response for a retention period of one day (24 hours).
 If you re-invoke the service with the same idempotency key within 24 hours, Restate sends back the same response and doesn't re-execute the request to the service.
@@ -130,8 +101,7 @@ If you re-invoke the service with the same idempotency key within 24 hours, Rest
     You can tune the retention time on a service-level by using the [Admin API](/references/admin-api#tag/service/operation/modify_service)):
     ```shell
     curl -X PATCH localhost:9070/services/MyService \
-        -H 'content-type: application/json' \
-        -d '{"idempotency_retention": "2days"}'
+        --json '{"idempotency_retention": "2days"}'
     ```
     The retention time is in [humantime format](https://docs.rs/humantime/latest/humantime/).
 
@@ -146,18 +116,15 @@ You can:
 
 You can use the invocation ID to attach or peek at a service/object invocation that used an idempotency key:
 
-<Tabs groupId="sdk" queryString>
-    <TabItem value="java" label="Java">
-        ```java
+<CodeWithTabs groupId={"sdk"}>
+        ```java !!tabs Java
         CODE_LOAD::java/src/main/java/develop/clients/Ingress.java#service_attach
         ```
-    </TabItem>
-    <TabItem value="kotlin" label="Kotlin">
-        ```kotlin
+        ```kotlin !!tabs Kotlin
         CODE_LOAD::kotlin/src/main/kotlin/develop/clients/Ingress.kt#service_attach
         ```
-    </TabItem>
-</Tabs>
-<Admonition type={"info"} title={"Attaching to workflows"}>
+</CodeWithTabs>
+
+<Admonition type={"note"} title={"Attaching to workflows"}>
     [Have a look at the workflow documentation to learn how to attach to workflow executions.](/develop/java/workflows#submitting-workflows-with-sdk-clients)
 </Admonition>

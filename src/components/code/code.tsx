@@ -154,7 +154,10 @@ export function extractFlagsFromMeta(meta: string) {
 }
 
 
-const Schema = Block.extend({ groupId: z.optional(z.string()), className: z.optional(z.string()), tabs: z.array(HighlightedCodeBlock) })
+const Schema = Block.extend({
+    groupId: z.optional(z.string()),
+    className: z.optional(z.string()),
+    tabs: z.array(HighlightedCodeBlock) })
 export function CodeWithTabs(props: unknown) {
     const { groupId, className, tabs } = parseProps(props, Schema)
     return <CodeTabs groupId={groupId} tabs={tabs} className={className}/>

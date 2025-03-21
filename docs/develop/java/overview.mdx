@@ -6,6 +6,7 @@ description: "Services, Virtual Objects, and Workflows."
 import Admonition from '@theme/Admonition';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import {CodeWithTabs} from '../../../src/components/code/code';
 
 # Overview
 
@@ -25,110 +26,71 @@ Handlers can either be part of a [Service](/concepts/services#services-1), a [Vi
 ## Services
 [Services](/concepts/services#services-1) and their handlers are defined as follows:
 
-<Tabs groupId="sdk" queryString>
-    <TabItem value="java" label="Java">
+<CodeWithTabs groupId="sdk">
+    ```java !!tabs Java
+    // collapse_prequel
+    CODE_LOAD::java/src/main/java/develop/MyService.java
+    ```
+    ```kotlin !!tabs Kotlin
+    // collapse_prequel
+    CODE_LOAD::kotlin/src/main/kotlin/develop/MyService.kt
+    ```
+</CodeWithTabs>
 
-        ```java
-        // collapse_prequel
-        CODE_LOAD::java/src/main/java/develop/MyService.java
-        ```
-
-        - Use the `@Service` and `@Handler` annotations
-        - Handlers have the `Context` parameter ([JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api/latest/dev/restate/sdk/Context.html)) as the first parameter.
-        Within the handler, you use the `Context` to interact with Restate.
-        The SDK stores the actions you do on the context in the Restate journal to make them durable.
-        - You can retrieve the key of the object you are in via `ctx.key()`.
-        - The input parameter (at most one) and return type are optional and can be of any type, as long as they are serializable/deserializable using [Jackson Databind](https://github.com/FasterXML/jackson) ([see serialization docs](/develop/java/serialization)).
-        - The service will be reachable under the simple class name `MyService`. You can override it by using the annotation field `name`.
-        - Create an endpoint and bind the service(s) to the Restate endpoint. Listen on the specified port (default `9080`) for connections and requests.
-
-    </TabItem>
-    <TabItem value="kotlin" label="Kotlin">
-        ```kotlin
-        // collapse_prequel
-        CODE_LOAD::kotlin/src/main/kotlin/develop/MyService.kt
-        ```
-
-        - Use the `@Service` and `@Handler` annotations
-        - Handlers have the `Context` parameter ([JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api/latest/dev/restate/sdk/Context.html)) as the first parameter.
-        Within the handler, you use the `Context` to interact with Restate.
-        The SDK stores the actions you do on the context in the Restate journal to make them durable.
-        - The input parameter (at most one) and return type are optional and can be of any type, as long as they are serializable/deserializable using [Kotlin serialization](https://kotlinlang.org/docs/serialization.html) ([see serialization docs](/develop/java/serialization)).
-        - The service will be reachable under the simple class name `MyService`. You can override it by using the annotation field `name`.
-        - Create an endpoint and bind the service(s) to the Restate endpoint. Listen on the specified port (default `9080`) for connections and requests.
-
-    </TabItem>
-</Tabs>
+- Use the `@Service` and `@Handler` annotations
+- Handlers have the `Context` parameter ([JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api/latest/dev/restate/sdk/Context.html)/[KotlinDocs](http://localhost:3000/ktdocs/sdk-api-kotlin/dev.restate.sdk.kotlin/-context/index.html)) as the first parameter.
+Within the handler, you use the `Context` to interact with Restate.
+The SDK stores the actions you do on the context in the Restate journal to make them durable.
+- You can retrieve the key of the object you are in via `ctx.key()`.
+- The input parameter (at most one) and return type are optional and can be of any type, as long as they are serializable/deserializable using [Jackson Databind](https://github.com/FasterXML/jackson) ([see serialization docs](/develop/java/serialization)).
+- The service will be reachable under the simple class name `MyService`. You can override it by using the annotation field `name`.
+- Create an endpoint and bind the service(s) to the Restate endpoint. Listen on the specified port (default `9080`) for connections and requests.
 
 
 ## Virtual Objects
 [Virtual Objects](/concepts/services#virtual-objects) and their handlers are defined similarly to services, with the following differences:
 
-<Tabs groupId="sdk" queryString>
-    <TabItem value="java" label="Java">
-        ```java
-        // collapse_prequel
-        CODE_LOAD::java/src/main/java/develop/MyVirtualObject.java
-        ```
+<CodeWithTabs groupId="sdk">
+    ```java !!tabs Java
+    // collapse_prequel
+    CODE_LOAD::java/src/main/java/develop/MyVirtualObject.java
+    ```
+    ```kotlin !!tabs Kotlin
+    // collapse_prequel
+    CODE_LOAD::kotlin/src/main/kotlin/develop/MyVirtualObject.kt
+    ```
+</CodeWithTabs>
 
-        - Use the `@VirtualObject` annotation.
-        - The first argument of the handler must be the `ObjectContext` parameter ([JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api/latest/dev/restate/sdk/ObjectContext.html)).
-        Handlers with the `ObjectContext` parameter can write to the K/V state store.
-        Only one handler can be active at a time, to ensure consistency.
-        - You can retrieve the key of the object you are in via `ctx.key()`.
-        - If you want to have a handler that executes concurrently to the others and doesn't have write access to the K/V state, use the `@Shared` annotation and the `SharedObjectContext`.
-        You can use these handlers, for example, to read K/V state and expose it to the outside world, or to interact with the blocking handler (e.g. resolve awakeables).
-    </TabItem>
-    <TabItem value="kotlin" label="Kotlin">
-        ```kotlin
-        // collapse_prequel
-        CODE_LOAD::kotlin/src/main/kotlin/develop/MyVirtualObject.kt
-        ```
-
-        - Use the `@VirtualObject` annotation.
-        - The first argument of the handler must be the `ObjectContext` parameter ([JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api/latest/dev/restate/sdk/ObjectContext.html)).
-            Handlers with the `ObjectContext` parameter can write to the K/V state store.
-            Only one handler can be active at a time, to ensure consistency.
-        - You can retrieve the key of the object you are in via `ctx.key()`.
-        - If you want to have a handler that executes concurrently to the others and doesn't have write access to the K/V state, use the `@Shared` annotation and the `SharedObjectContext`.
-        You can use these handlers, for example, to read K/V state and expose it to the outside world, or to interact with the blocking handler (e.g. resolve awakeables).
-    </TabItem>
-</Tabs>
+- Use the `@VirtualObject` annotation.
+- The first argument of the handler must be the `ObjectContext` parameter ([JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api/latest/dev/restate/sdk/ObjectContext.html)/[KotlinDocs](http://localhost:3000/ktdocs/sdk-api-kotlin/dev.restate.sdk.kotlin/-object-context/index.html)).
+Handlers with the `ObjectContext` parameter can write to the K/V state store.
+Only one handler can be active at a time, to ensure consistency.
+- You can retrieve the key of the object you are in via `ctx.key()`.
+- If you want to have a handler that executes concurrently to the others and doesn't have write access to the K/V state, use the `@Shared` annotation and the `SharedObjectContext`.
+You can use these handlers, for example, to read K/V state and expose it to the outside world, or to interact with the blocking handler (e.g. resolve awakeables).
 
 ## Workflows
 
 [Workflows](/concepts/services#workflows) are a special type of Virtual Objects, their definition is similar but with the following differences:
 
-<Tabs groupId="sdk" queryString>
-<TabItem value="java" label="Java">
-    ```java
+<CodeWithTabs groupId="sdk">
+    ```java !!tabs Java
     // collapse_prequel
     CODE_LOAD::java/src/main/java/develop/MyWorkflow.java
     ```
-
-    - Create the workflow by using the `@Workflow` annotation.
-    - Every workflow implementation needs to have a handler called `run` that implements the workflow logic and has the `@Workflow` annotation.
-    This handler uses the `WorkflowContext` to interact with the SDK.
-    - The `run` handler executes exactly one time per workflow execution/object. You can retrieve the ID of the workflow execution via `ctx.key()`.
-    - The `run` handler executes a set of steps/activities. These can be inlined SDK actions (for example [run block](/develop/java/journaling-results#journaled-actions) or [sleep](/develop/java/durable-timers)), or abstracted into calls to other handlers.
-    - The other handlers of the workflow definition are used to interact with the workflow: [either query it, or signal it](/develop/java/workflows#implementing-workflows). They use the `SharedWorkflowContext` to interact with the SDK. These handlers can run concurrently with the `run` handler and can still be called after the `run` handler has finished.
-    - [Have a look at the workflow docs to learn more.](/develop/java/workflows)
-</TabItem>
-<TabItem value="kotlin" label="Kotlin">
-    ```kotlin
+    ```kotlin !!tabs Kotlin
     // collapse_prequel
     CODE_LOAD::kotlin/src/main/kotlin/develop/MyWorkflow.kt
     ```
+</CodeWithTabs>
 
-    - Create the workflow by using the `@Workflow` annotation.
-    - Every workflow implementation needs to have a handler called `run` that implements the workflow logic and has the `@Workflow` annotation.
-    This handler uses the `WorkflowContext` to interact with the SDK.
-    - The `run` handler executes exactly one time per workflow execution/object. You can retrieve the ID of the workflow execution via `ctx.key()`.
-    - The `run` handler executes a set of steps/activities. These can be inlined SDK actions (for example [run block](/develop/java/journaling-results#journaled-actions) or [sleep](/develop/java/durable-timers)), or abstracted into calls to other handlers.
-    - The other handlers of the workflow definition are used to interact with the workflow: [either query it, or signal it](/develop/java/workflows#implementing-workflows). They use the `SharedWorkflowContext` to interact with the SDK. These handlers can run concurrently with the `run` handler and can still be called after the `run` handler has finished.
-    - [Have a look at the workflow docs to learn more.](/develop/java/workflows)
-</TabItem>
-</Tabs>
+- Create the workflow by using the `@Workflow` annotation.
+- Every workflow implementation needs to have a handler called `run` that implements the workflow logic and has the `@Workflow` annotation.
+This handler uses the `WorkflowContext` ([JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api/latest/dev/restate/sdk/WorkflowContext.html)/[KotlinDocs](http://localhost:3000/ktdocs/sdk-api-kotlin/dev.restate.sdk.kotlin/-workflow-context/index.html))to interact with the SDK.
+- The `run` handler executes exactly one time per workflow execution/object. You can retrieve the ID of the workflow execution via `ctx.key()`.
+- The `run` handler executes a set of steps/activities. These can be inlined SDK actions (for example [run block](/develop/java/journaling-results#journaled-actions) or [sleep](/develop/java/durable-timers)), or abstracted into calls to other handlers.
+- The other handlers of the workflow definition are used to interact with the workflow: [either query it, or signal it](/develop/java/workflows#implementing-workflows). They use the `SharedWorkflowContext` to interact with the SDK. These handlers can run concurrently with the `run` handler and can still be called after the `run` handler has finished.
+- [Have a look at the workflow docs to learn more.](/develop/java/workflows)
 
 Now that you have a high-level idea of what a Restate service might look like, let's have a look at what the Restate Context allows you to do.
 
@@ -136,9 +98,6 @@ Now that you have a high-level idea of what a Restate service might look like, l
     The Java SDK generates code for service clients when you compile your project.
     Turn on [IntelliJ IDEA annotation processing support](https://www.jetbrains.com/help/idea/annotation-processors-support.html), to be able to re-run code generation by pressing `CTRL + F9`.
 </Admonition>
-
-
-
 
 <details className="grey-details">
     <summary>Annotating interfaces</summary>

@@ -76,7 +76,7 @@ public class ServiceCommunication {
     String request = "";
 
     // <start_delayed>
-    MyServiceClient.fromContext(ctx).send(Duration.ofSeconds(1)).myHandler(request);
+    MyServiceClient.fromContext(ctx).send(Duration.ofDays(5)).myHandler(request);
     // <end_delayed>
   }
 
