@@ -8,36 +8,22 @@ public class WorkflowSubmitter {
 
   public void submitWorkflow(Email email) {
     // <start_submit>
-    Client restate = Client.connect("http://localhost:8080");
-    SendResponse handle =
-        SignupWorkflowClient.fromClient(restate, "someone")
-            // break
-            .submit(email);
+    Client restateClient = Client.connect("http://localhost:8080");
+    SendResponse handle = SignupWorkflowClient.fromClient(restateClient, "someone").submit(email);
     // <end_submit>
 
     // <start_query>
-    String status =
-        SignupWorkflowClient.fromClient(restate, "someone")
-            // break
-            .getStatus();
+    String status = SignupWorkflowClient.fromClient(restateClient, "someone").getStatus();
     // <end_query>
 
     // <start_interact>
     // Option 1: attach and wait for result
     boolean result =
-        SignupWorkflowClient.fromClient(restate, "someone")
-            // break
-            .workflowHandle()
-            // break
-            .attach();
+        SignupWorkflowClient.fromClient(restateClient, "someone").workflowHandle().attach();
 
     // Option 2: peek to check if ready
     Output<Boolean> peekOutput =
-        SignupWorkflowClient.fromClient(restate, "someone")
-            // break
-            .workflowHandle()
-            // break
-            .getOutput();
+        SignupWorkflowClient.fromClient(restateClient, "someone").workflowHandle().getOutput();
     if (peekOutput.isReady()) {
       boolean result2 = peekOutput.getValue();
     }

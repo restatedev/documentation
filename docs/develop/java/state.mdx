@@ -4,8 +4,7 @@ description: "Keep K/V state in Restate."
 ---
 
 import Admonition from '@theme/Admonition';
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+import {CodeWithTabs} from '../../../src/components/code/code';
 
 # State
 You can store key-value state in Restate.
@@ -23,111 +22,65 @@ Have a look at the [introspection docs](/operate/introspection#inspecting-applic
 
 You can do the following operations on the state:
 
-<Tabs groupId="sdk" queryString>
-    <TabItem value="java" label="Java">
-    </TabItem>
-    <TabItem value="kotlin" label="Kotlin">
-    </TabItem>
-</Tabs>
-
-
 ### Listing state keys
 For a single Virtual Object, you can list all the state keys that have entries in the state store via:
-<Tabs groupId="sdk" queryString className={"display-none"}>
-<TabItem value="java" label="Java">
+<CodeWithTabs groupId="sdk">
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/develop/State.java#statekeys
+    ```
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/develop/State.kt#statekeys
+    ```
+</CodeWithTabs>
 
-```java
-CODE_LOAD::java/src/main/java/develop/State.java#statekeys
-```
-
-</TabItem>
-<TabItem value="kotlin" label="Kotlin">
-
-```kotlin
-CODE_LOAD::kotlin/src/main/kotlin/develop/State.kt#statekeys
-```
-
-</TabItem>
-</Tabs>
-
-### Retrieving state
-<Tabs groupId="sdk" queryString className={"display-none"}>
-<TabItem value="java" label="Java">
-    ```java
+## Retrieving state
+<CodeWithTabs groupId="sdk">
+    ```java !!tabs Java
     CODE_LOAD::java/src/main/java/develop/State.java#get
     ```
-
-    1. Define the state key (key name and [(de)serializer](/develop/java/serialization)) at the top of the Virtual Object class.
-    2. Use `ctx.get` to retrieve the state for a specific key.
-</TabItem>
-<TabItem value="kotlin" label="Kotlin">
-    ```kotlin
+    ```kotlin !!tabs Kotlin
     CODE_LOAD::kotlin/src/main/kotlin/develop/State.kt#get
     ```
+</CodeWithTabs>
 
-    1. Define the state key (key name and [(de)serializer](/develop/java/serialization)) at the top of the Virtual Object class.
-    2. Use `ctx.get` to retrieve the state for a specific key.
-</TabItem>
-</Tabs>
+1. Define the state key (key name and [(de)serializer](/develop/java/serialization)) at the top of the Virtual Object class.
+2. Use `ctx.get` to retrieve the state for a specific key.
 
-
-### Setting state
-
-<Tabs groupId="sdk" queryString className={"display-none"}>
-<TabItem value="java" label="Java">
-    ```java
+## Setting state
+<CodeWithTabs groupId="sdk">
+    ```java !!tabs Java
     CODE_LOAD::java/src/main/java/develop/State.java#set
     ```
-
-    1. Define the state key (key name and [(de)serializer](/develop/java/serialization)) at the top of the Virtual Object class.
-    2. Use `ctx.set` to set the state for a specific key. The type of value needs to line up with the type that was defined in the StateKey.
-</TabItem>
-<TabItem value="kotlin" label="Kotlin">
-    ```kotlin
+    ```kotlin !!tabs Kotlin
     CODE_LOAD::kotlin/src/main/kotlin/develop/State.kt#set
     ```
+</CodeWithTabs>
 
-    1. Define the state key (key name and [(de)serializer](/develop/java/serialization)) at the top of the Virtual Object class.
-    2. Use `ctx.set` to set the state for a specific key. The type of value needs to line up with the type that was defined in the StateKey.
-</TabItem>
-</Tabs>
+1. Define the state key (key name and [(de)serializer](/develop/java/serialization)) at the top of the Virtual Object class.
+2. Use `ctx.set` to set the state for a specific key. The type of value needs to line up with the type that was defined in the StateKey.
 
-### Clearing state
+## Clearing state
 
-<Tabs groupId="sdk" queryString className={"display-none"}>
-<TabItem value="java" label="Java">
-    ```java
+<CodeWithTabs groupId="sdk">
+    ```java !!tabs Java
     CODE_LOAD::java/src/main/java/develop/State.java#clear
     ```
-
-    1. Define the state key (key name and [(de)serializer](/develop/java/serialization)) at the top of the Virtual Object class.
-    2. Use `ctx.clear` to delete the state for a specific key.
-</TabItem>
-<TabItem value="kotlin" label="Kotlin">
-    ```kotlin
+    ```kotlin !!tabs Kotlin
     CODE_LOAD::kotlin/src/main/kotlin/develop/State.kt#clear
     ```
+</CodeWithTabs>
 
-    1. Define the state key (key name and [(de)serializer](/develop/java/serialization)) at the top of the Virtual Object class.
-    2. Use `ctx.clear` to delete the state for a specific key.
-</TabItem>
-</Tabs>
+1. Define the state key (key name and [(de)serializer](/develop/java/serialization)) at the top of the Virtual Object class.
+2. Use `ctx.clear` to delete the state for a specific key.
 
-### Clearing all state
-<Tabs groupId="sdk" queryString className={"display-none"}>
-<TabItem value="java" label="Java">
+## Clearing all state
+<CodeWithTabs groupId="sdk">
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/develop/State.java#clear_all
+    ```
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/develop/State.kt#clear_all
+    ```
+</CodeWithTabs>
 
-```java
-CODE_LOAD::java/src/main/java/develop/State.java#clear_all
-```
-
-</TabItem>
-<TabItem value="kotlin" label="Kotlin">
-
-```kotlin
-CODE_LOAD::kotlin/src/main/kotlin/develop/State.kt#clear_all
-```
-
-</TabItem>
-</Tabs>
 This will delete all the state stored in Restate for the Virtual Object.
