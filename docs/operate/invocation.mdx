@@ -47,18 +47,25 @@ Canceling an invocation allows it to free any resources it is holding and roll b
 You can cancel the invocation with [its ID](/operate/invocation?interface=curl#invocation-identifier) via the [UI](/develop/local_dev#restate-ui), the CLI or [Admin API](/references/admin-api):
 
 <CodeWithTabs>
-
-```shell !!tabs CLI
-restate invocations cancel inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz
-```
-
-```shell !!tabs curl
-curl -X DELETE http://localhost:9070/invocations/inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz
-```
-
+    ```shell !!tabs CLI
+    restate invocations cancel inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz
+    ```
+    ```shell !!tabs curl
+    curl -X DELETE http://localhost:9070/invocations/inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz
+    ```
 </CodeWithTabs>
 
-<Admonition type="info" title={"Implement compensation logic"}>
+With the CLI, you can also cancel invocations in bulk by specifying a target string exact match or prefix of the service and handler name, for example:
+- `serviceName` or `serviceName/handler`
+- `virtualObjectName` or `virtualObjectName/key` or `virtualObjectName/key/handler`
+- `workflowName` or `workflowName/key` or `workflowName/key/handler`
+
+For example, to cancel all invocations of the `CartObject/add` handler:
+```shell
+restate invocations cancel CartObject/add
+```
+
+<Admonition type="info" title={"Roll back consistently"}>
 To roll back correctly, the handlers need to contain the necessary compensation logic.
 This way, the service state stays consistent even in the presence of cancellations.
 Have a look at [this guide](/guides/sagas) on how to implement compensation logic with Restate.
@@ -85,20 +92,18 @@ Have a look at [this guide](/guides/sagas) on how to implement compensation logi
 Sometimes Restate cannot cancel an invocation.
 For example, when an endpoint is permanently unavailable, Restate can't invoke the handler to run its compensation logic, so it can't complete the cancellation.
 For these cases, you can kill invocations.
-[UI](/develop/local_dev#restate-ui)
-You can kill an invocation via the, the CLI, or the [Admin API](/references/admin-api):
+You can kill an invocation via the [UI](/develop/local_dev#restate-ui), the CLI, or the [Admin API](/references/admin-api):
 
 <CodeWithTabs>
-
-```shell !!tabs CLI
-restate invocations cancel --kill inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz
-```
-
-```shell !!tabs curl
-curl -X DELETE http://localhost:9070/invocations/inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz?mode=kill
-```
-
+    ```shell !!tabs CLI
+    restate invocations cancel --kill inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz
+    ```
+    ```shell !!tabs curl
+    curl -X DELETE http://localhost:9070/invocations/inv_1gdJBtdVEcM942bjcDmb1c1khoaJe11Hbz?mode=kill
+    ```
 </CodeWithTabs>
+
+Similar to the [cancellation query](/operate/invocation#cancelling-invocations), you can kill invocations in bulk by specifying a target string exact match or prefix of the service and handler name.
 
 
 <Admonition type="warning">
