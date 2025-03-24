@@ -17,7 +17,7 @@ import { AsyncTaskService, TaskOpts } from "./async_task_service";
 const RESTATE_URL = process.env.RESTATE_URL ?? "http://localhost:8080";
 
 async function scheduleTask(task: TaskOpts) {
-// <start_here>
+  // <start_here>
   // The TypeScript SDK includes a client to send requests to services
   const restateClient = restate.connect({ url: RESTATE_URL });
   // <mark_1>
@@ -35,5 +35,5 @@ async function scheduleTask(task: TaskOpts) {
   // <mark_3>
   const result = await restateClient.result(taskHandle);
   // </mark_3>
-// <end_here>
+  // <end_here>
 }

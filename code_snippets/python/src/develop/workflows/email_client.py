@@ -7,6 +7,7 @@
 # in the root directory of this repository or package or at
 # https://github.com/restatedev/examples/
 
+
 class EmailClient:
 
     def send_email_with_link(self, email: str, secret: str):

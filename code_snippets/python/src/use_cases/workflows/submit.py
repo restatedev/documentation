@@ -8,12 +8,9 @@ user_id = "myUser123"
 # !mark
 requests.post(
     # !mark
-    f'${restate}/signupWorkflow/${user_id}/run/send',
-    json = {
-        "email": "user@user.com",
-        "name": "Pete"
-    },
-    headers = {"Content-Type": "application/json"}
+    f"${restate}/signupWorkflow/${user_id}/run/send",
+    json={"email": "user@user.com", "name": "Pete"},
+    headers={"Content-Type": "application/json"},
 )
 
 # Do something else, with workflow running in the background
@@ -22,7 +19,7 @@ requests.post(
 # !mark
 response = requests.get(
     # !mark
-    f'${restate}/restate/workflow/signupWorkflow/${user_id}/attach'
+    f"${restate}/restate/workflow/signupWorkflow/${user_id}/attach"
     # !mark
 )
 # <end_here>

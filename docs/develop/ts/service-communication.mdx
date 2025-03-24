@@ -22,19 +22,19 @@ Import this service definition in the service handler that wants to call it.
 
 Request-response calls are requests where the client waits for the response.
 
-To a Service:
+To call a Service:
 
 ```ts
 CODE_LOAD::ts/src/develop/service_communication.ts#request_response_service
 ```
 
-To a Virtual Object:
+To call a Virtual Object:
 
 ```ts
 CODE_LOAD::ts/src/develop/service_communication.ts#request_response_object
 ```
 
-To a Workflow:
+To call a Workflow:
 
 ```ts
 CODE_LOAD::ts/src/develop/service_communication.ts#request_response_workflow
@@ -46,6 +46,11 @@ CODE_LOAD::ts/src/develop/service_communication.ts#request_response_workflow
 2. **Specify the handler** you want to call and supply the request.
 3. **Await** the call to retrieve the response.
 
+Or with the generic clients, if you don't have access to the service definition or want to specify the service and handler with strings (e.g. to implement [workflow interpreters](https://github.com/restatedev/examples/tree/main/typescript/end-to-end-applications/ai-image-workflows)):
+```ts
+CODE_LOAD::ts/src/develop/service_communication.ts#generic_call
+```
+
 <Admonition type="tip" title="No need for manual retry logic">
     These calls are proxied by Restate, and get logged in the journal.
     In case of failures, Restate takes care of retries.
@@ -53,7 +58,7 @@ CODE_LOAD::ts/src/develop/service_communication.ts#request_response_workflow
 
 <Admonition type="note" title="Workflow retention time">
     Once the `run` handler of the workflow has finished, the other handlers can still be called up to the retention time of the workflow, by default 24 hours.
-    This can be configured via the [Admin API](/adminapi/modify-service) per Workflow definition by setting `workflow_completion_retention`.
+    This can be configured via the UI or [Admin API](/adminapi/modify-service) per Workflow definition by setting `workflow_completion_retention`.
 </Admonition>
 
 <Admonition type={"caution"} title={"Deadlocks with Virtual Objects"}>
@@ -62,7 +67,7 @@ CODE_LOAD::ts/src/develop/service_communication.ts#request_response_workflow
     - Cross deadlock between Virtual Object A and B: A calls B, and B calls A, both using same keys.
     - Cyclical deadlock: A calls B, and B calls C, and C calls A again.
 
-    In this situation, you can use the CLI to unblock the Virtual Object manually by [cancelling invocations](/operate/invocation#cancelling-invocations).
+    In this situation, you can use the UI or CLI to unblock the Virtual Object manually by [cancelling invocations](/operate/invocation#cancelling-invocations).
 </Admonition>
 
 ## Sending messages
@@ -85,6 +90,11 @@ To a Workflow:
 
 ```ts
 CODE_LOAD::ts/src/develop/service_communication.ts#one_way_workflow
+```
+
+Or with the generic clients, if you don't have access to the service definition or want to specify the service and handler with strings (e.g. to implement [workflow interpreters](https://github.com/restatedev/examples/tree/main/typescript/end-to-end-applications/ai-image-workflows)):
+```ts
+CODE_LOAD::ts/src/develop/service_communication.ts#generic_send
 ```
 
 <Admonition type="tip" title="No need for message queues">
@@ -110,6 +120,18 @@ To a Virtual Object:
 CODE_LOAD::ts/src/develop/service_communication.ts#delayed_object
 ```
 
+To a Workflow:
+
+```ts
+CODE_LOAD::ts/src/develop/service_communication.ts#delayed_workflow
+```
+
+Or with the generic clients, if you don't have access to the service definition or want to specify the service and handler with strings (e.g. to implement [workflow interpreters](https://github.com/restatedev/examples/tree/main/typescript/end-to-end-applications/ai-image-workflows)):
+
+```ts
+CODE_LOAD::ts/src/develop/service_communication.ts#generic_delayed
+```
+
 <Admonition type="tip" title="Scheduling async tasks">
     You can also use this functionality to schedule async tasks.
     Restate will make sure the task gets executed at the desired time.
@@ -127,3 +149,36 @@ CODE_LOAD::ts/src/develop/service_communication.ts#delayed_object
     It is guaranteed that call A will execute before call B.
     It is not guaranteed though that call B will be executed immediately after call A, as invocations coming from other handlers/sources, could interleave these two calls.
 </Admonition>
+
+## Using an idempotency key
+
+While service to service communication provides *exactly once semantics*, it won't guarantee that two separate services, or a service and an external client, won't execute the same logical request twice.
+To get this additional guarantee, you can provide an [idempotency key](https://docs.restate.dev/develop/ts/clients/#invoke-a-handler-idempotently) on any request using `restate.rpc.opts`/`restate.rpc.sendOpts`:
+
+```ts
+CODE_LOAD::ts/src/develop/service_communication.ts#idempotency_key
+```
+
+## Re-attach to an invocation
+
+You can re-attach to any request using `ctx.attach`:
+
+```ts
+CODE_LOAD::ts/src/develop/service_communication.ts#attach
+```
+
+<Admonition type="tip" title="Best used with idempotency key">
+    Attaching to requests with an idempotency key, lets you wait for the request to finish and retrieve its response. Restate persists the response to these requests for the configured retention time.
+
+    For requests without an idempotency key, you will not be able to retrieve the result, only wait for them to complete.
+</Admonition>
+
+## Cancel an invocation
+
+You can [cancel an invocation](https://docs.restate.dev/operate/invocation/#cancelling-invocations) using `ctx.cancel`:
+
+```ts
+CODE_LOAD::ts/src/develop/service_communication.ts#cancel
+```
+
+Have a look at our [sagas guide](/guides/sagas) to learn more about cancellations and how to handle them.

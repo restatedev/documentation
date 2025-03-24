@@ -21,7 +21,7 @@ You cannot use the Restate context within `ctx.run`.
 This includes actions such as getting state, calling another service, and nesting other journaled actions.
 
 You can return any payload that can be serialized with `bytes(json.dumps(obj), "utf-8")` and deserialized with `json.loads(buf)`.
-If not, you need to specify a [custom serializer](/develop/python/serialization).
+If not, you can use [Pydantic](/develop/python/serialization#pydantic) or a [custom serializer](/develop/python/serialization#custom-serialization).
 
 <Admonition type="caution" title={"Immediately await journaled actions"}>
 Always immediately await `ctx.run`, before doing any other context calls.

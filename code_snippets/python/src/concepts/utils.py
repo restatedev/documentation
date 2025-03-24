@@ -1,4 +1,3 @@
-
 class PaymentClient:
     async def charge(self, id: str, token: str, amount: int) -> bool:
         return True

@@ -3,11 +3,10 @@ import { greetCounter, greeter } from "./utils";
 
 // <start_delayed_call>
 async function myRestateHandler(ctx: restate.Context) {
-  // !focus
+  // !focus(1:4)
+  // From a Restate handler
   ctx
-    // !focus
     .serviceSendClient(greeter)
-    // !focus
     .greet({ greeting: "Hi" }, restate.rpc.sendOpts({ delay: 1000 }));
 }
 // <end_delayed_call>

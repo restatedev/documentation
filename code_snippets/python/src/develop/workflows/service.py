@@ -16,4 +16,6 @@ async def signup_user(ctx: ObjectContext, email: str):
 async def query_status(ctx: ObjectContext):
     # !focus
     status = await ctx.workflow_call(get_status, key="someone", arg=None)
+
+
 # <end_here>

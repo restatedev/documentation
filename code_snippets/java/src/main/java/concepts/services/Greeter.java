@@ -2,15 +2,12 @@ package concepts.services;
 
 import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.ObjectContext;
+import dev.restate.sdk.SharedObjectContext;
 import dev.restate.sdk.annotation.Handler;
+import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
-
-/**
- * WARNING: The Services page relies on the line numbers for the code animations Make sure you adapt
- * the line numbers when adapting the code
- */
 
 // <start_here>
 // <mark_1>
@@ -18,24 +15,28 @@ import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 public class Greeter {
   // </mark_1>
 
-  public static final StateKey<Integer> COUNT =
-      // break
-      StateKey.of("count", JsonSerdes.INT);
+  // <mark_2>
+  public static final StateKey<Integer> COUNT = StateKey.of("count", JsonSerdes.INT);
+
+  // </mark_2>
 
   // <mark_1>
   // <mark_3>
   @Handler
   public String greet(ObjectContext ctx, String greeting) {
     // </mark_3>
+    String name = ctx.key();
     // </mark_1>
+
     // <mark_2>
-    Integer count = ctx.get(COUNT).orElse(0);
-    count++;
-    ctx.set(COUNT, count);
+    int count = ctx.get(COUNT).orElse(0);
     // </mark_2>
-    // <mark_1>
-    return greeting + " " + ctx.key() + "for the " + count + "-th time";
-    // </mark_1>
+    int newCount = count + 1;
+    // <mark_2>
+    ctx.set(COUNT, newCount);
+    // </mark_2>
+
+    return String.format("%s %s, for the %d-th time", greeting, name, newCount);
   }
 
   // <mark_1>
@@ -43,29 +44,36 @@ public class Greeter {
   @Handler
   public String ungreet(ObjectContext ctx) {
     // </mark_3>
+    String name = ctx.key();
     // </mark_1>
+
     // <mark_2>
-    Integer count = ctx.get(COUNT).orElse(0);
+    int count = ctx.get(COUNT).orElse(0);
     // </mark_2>
     if (count > 0) {
+      int newCount = count - 1;
       // <mark_2>
-      count--;
+      ctx.set(COUNT, newCount);
       // </mark_2>
     }
-    // <mark_2>
-    ctx.set(COUNT, count);
-    // </mark_2>
-    // <mark_1>
-    return "Dear " + ctx.key() + ", taking one greeting back";
-    // </mark_1>
+
+    return String.format("Dear %s, taking one greeting back: %d", name, count);
   }
 
+  // <mark_4>
+  // <mark_1>
+  @Shared
+  public int getGreetCount(SharedObjectContext ctx) {
+    // </mark_1>
+    // <mark_2>
+    return ctx.get(COUNT).orElse(0);
+    // </mark_2>
+  }
+
+  // </mark_4>
+
   public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder()
-        // break
-        .bind(new Greeter())
-        // break
-        .buildAndListen();
+    RestateHttpEndpointBuilder.builder().bind(new Greeter()).buildAndListen();
   }
 }
 // <end_here>
