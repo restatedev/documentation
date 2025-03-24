@@ -61,11 +61,10 @@ You can invoke handlers via Kafka events, by doing the following:
 <SubtleStep stepLabel="3" title={<span><a href={"/operate/registration"}>Register the service</a> you want to invoke.</span>}/>
 
 <SubtleStep stepLabel="4" title="Subscribe the event handler to the Kafka topic">
-    Let Restate forward events from the Kafka topic to the event handler by creating a subscription using the [Admin API](/references/admin-api):
+    Let Restate forward events from the Kafka topic to the event handler by creating a subscription using the [Admin API](/category/admin-api):
 
     ```bash
-    curl localhost:9070/subscriptions -H 'content-type: application/json' \
-        -d '{
+    curl localhost:9070/subscriptions --json '{
             "source": "kafka://my-cluster/my-topic",
             "sink": "service://MyService/handle",
             "options": {"auto.offset.reset": "earliest"}
@@ -118,15 +117,13 @@ You can invoke handlers via Kafka events, by doing the following:
 
     ```bash
     # Subscription to my-cluster-1
-    curl localhost:9070/subscriptions -H 'content-type: application/json' \
-        -d '{
+    curl localhost:9070/subscriptions --json '{
             "source": "kafka://my-cluster-1/topic-1",
             "sink": "service://MyService/handleCluster1"
         }'
 
     # Subscription to my-cluster-2
-    curl localhost:9070/subscriptions -H 'content-type: application/json' \
-        -d '{
+    curl localhost:9070/subscriptions --json '{
             "source": "kafka://my-cluster-2/topic-2",
             "sink": "service://MyService/handleCluster2"
         }'
@@ -148,7 +145,7 @@ You can invoke handlers via Kafka events, by doing the following:
 
     Each event carries within the `CODE_LOAD::ts/src/develop/kafka.ts#headers` map the following entries:
 
-    * `restate.subscription.id`: The subscription identifier, as shown by the [Admin API](../../references/admin-api).
+    * `restate.subscription.id`: The subscription identifier, as shown by the [Admin API](/category/admin-api).
     * `kafka.offset`: The record offset.
     * `kafka.partition`: The record partition.
     * `kafka.timestamp`: The record timestamp.
@@ -171,7 +168,7 @@ You can invoke handlers via Kafka events, by doing the following:
 
     Each event carries within the `CODE_LOAD::java/src/main/java/develop/MyKafkaVirtualObject.java#headers` map the following entries:
 
-    * `restate.subscription.id`: The subscription identifier, as shown by the [Admin API](../../references/admin-api).
+    * `restate.subscription.id`: The subscription identifier, as shown by the [Admin API](/category/admin-api).
     * `kafka.offset`: The record offset.
     * `kafka.partition`: The record partition.
     * `kafka.timestamp`: The record timestamp.
@@ -186,7 +183,7 @@ You can invoke handlers via Kafka events, by doing the following:
 
 Each event carries within the `CODE_LOAD::go/develop/kafka.go#headers` map the following entries:
 
-* `restate.subscription.id`: The subscription identifier, as shown by the [Admin API](../../references/admin-api).
+* `restate.subscription.id`: The subscription identifier, as shown by the [Admin API](/category/admin-api).
 * `kafka.offset`: The record offset.
 * `kafka.partition`: The record partition.
 * `kafka.timestamp`: The record timestamp.

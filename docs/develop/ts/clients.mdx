@@ -83,11 +83,9 @@ If you re-invoke the service with the same idempotency key within 24 hours, Rest
 <details className={"grey-details"}>
     <summary> Tuning retention time</summary>
 
-    You can tune the retention time] on a service-level by using the [Admin API] ([docs](/references/admin-api#tag/service/operation/modify_service)):
+    You can tune the retention time] on a service-level by using the [Admin API] ([docs](/adminapi/modify-service)):
     ```shell
-    curl -X PATCH localhost:9070/services/MyService \
-        -H 'content-type: application/json' \
-        -d '{"idempotency_retention": "2days"}'
+    curl -X PATCH localhost:9070/services/MyService --json '{"idempotency_retention": "2days"}'
     ```
     The retention time is in [humantime format](https://docs.rs/humantime/latest/humantime/).
 

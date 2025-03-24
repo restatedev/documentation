@@ -295,8 +295,7 @@ You can register services via the UI (`http://localhost:9070`), the CLI or the R
         # !!terminals
 
         ```shell !command curl
-        curl localhost:9070/deployments -H 'content-type: application/json' \
-            -d '{"uri": "http://localhost:9080"}'
+        curl localhost:9070/deployments --json '{"uri": "http://localhost:9080"}'
         ```
 
         ```json !output curl
@@ -417,7 +416,7 @@ In the UI, click on the `CartObject` service, then on `Playground`, and invoke y
 Or via `curl`:
 
 ```shell
-curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2B"'
+curl localhost:8080/CartObject/Mary/addTicket --json '"seat2B"'
 ```
 
 If this prints out `true`, then you have a working setup.
@@ -438,7 +437,7 @@ In the UI, click on the `CartObject` service, then on `Playground`, and invoke y
 Or via `curl`:
 
 ```shell
-curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2B"'
+curl localhost:8080/CartObject/Mary/addTicket --json '"seat2B"'
 ```
 
 If this prints out `true`, then you have a working setup.
@@ -459,7 +458,7 @@ curl -X POST localhost:8080/CartObject/Mary/checkout
     Or via `curl`:
 
     ```shell
-    curl localhost:8080/CartObject/Mary/AddTicket -H 'content-type: application/json' -d '"seat2B"'
+    curl localhost:8080/CartObject/Mary/AddTicket --json '"seat2B"'
     ```
 
     If this prints out `true`, then you have a working setup.
@@ -480,7 +479,7 @@ curl -X POST localhost:8080/CartObject/Mary/checkout
         Or via `curl`:
 
         ```shell
-        curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2B"'
+        curl localhost:8080/CartObject/Mary/addTicket --json '"seat2B"'
         ```
 
         If this prints out `true`, then you have a working setup.
@@ -501,7 +500,7 @@ curl -X POST localhost:8080/CartObject/Mary/checkout
         Or via `curl`:
 
         ```shell
-        curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2B"'
+        curl localhost:8080/CartObject/Mary/addTicket --json '"seat2B"'
         ```
 
         If this prints out `true`, then you have a working setup.
@@ -698,7 +697,7 @@ Then call the `unreserve` handler on the `TicketObject`.
 Once you have added this to the code, call the `CartObject/expireTicket` handler:
 
 ```shell
-curl localhost:8080/CartObject/Mary/expireTicket -H 'content-type: application/json' -d '"seat2B"'
+curl localhost:8080/CartObject/Mary/expireTicket --json '"seat2B"'
 ```
 <details className="grey-details">
     <summary>Service logs</summary>
@@ -735,7 +734,7 @@ You also don't need to await the response, as you don't expect one.
 
 Call the handler via:
 ```shell
-curl localhost:8080/CartObject/Mary/expireTicket -H 'content-type: application/json' -d '"seat2B"'
+curl localhost:8080/CartObject/Mary/expireTicket --json '"seat2B"'
 ```
 <details className="grey-details">
     <summary>Service logs</summary>
@@ -784,7 +783,7 @@ The call to `expireTicket` finishes earlier than the `unreserve` handler because
     Once you have added this to the code, call the `CartObject/ExpireTicket` handler:
 
     ```shell
-    curl localhost:8080/CartObject/Mary/ExpireTicket -H 'content-type: application/json' -d '"seat2B"'
+    curl localhost:8080/CartObject/Mary/ExpireTicket --json '"seat2B"'
     ```
     <details className="grey-details">
         <summary>Service logs</summary>
@@ -819,7 +818,7 @@ The call to `expireTicket` finishes earlier than the `unreserve` handler because
         Once you have added this to the code, call the `CartObject/expireTicket` handler:
 
         ```shell
-        curl localhost:8080/CartObject/Mary/expireTicket -H 'content-type: application/json' -d '"seat2B"'
+        curl localhost:8080/CartObject/Mary/expireTicket --json '"seat2B"'
         ```
 
         The Restate Server logs show how the `expireTicket` handler gets executed and then the `unreserve` handler.
@@ -841,7 +840,7 @@ The call to `expireTicket` finishes earlier than the `unreserve` handler because
         Once you have added this to the code, call the `CartObject/expireTicket` handler:
 
         ```shell
-        curl localhost:8080/CartObject/Mary/expireTicket -H 'content-type: application/json' -d '"seat2B"'
+        curl localhost:8080/CartObject/Mary/expireTicket --json '"seat2B"'
         ```
         <details className="grey-details">
             <summary>Restate Server logs</summary>
@@ -881,7 +880,7 @@ To send messages via the UI or `curl`, add `/send` to the handler path:
 <TabItem value="ts" label="TypeScript">
     <Terminal>
     ```shell !command
-    curl localhost:8080/CartObject/Mary/addTicket/send -H 'content-type: application/json' -d '"seat2B"'
+    curl localhost:8080/CartObject/Mary/addTicket/send --json '"seat2B"'
     ```
 
     ```json !output
@@ -892,7 +891,7 @@ To send messages via the UI or `curl`, add `/send` to the handler path:
 <TabItem value="java" label="Java">
     <Terminal>
     ```shell !command
-    curl localhost:8080/CartObject/Mary/addTicket/send -H 'content-type: application/json' -d '"seat2B"'
+    curl localhost:8080/CartObject/Mary/addTicket/send --json '"seat2B"'
     ```
 
     ```json !output
@@ -903,7 +902,7 @@ To send messages via the UI or `curl`, add `/send` to the handler path:
 <TabItem value="go" label="Go">
     <Terminal>
     ```shell !command
-    curl localhost:8080/CartObject/Mary/AddTicket/send -H 'content-type: application/json' -d '"seat2B"'
+    curl localhost:8080/CartObject/Mary/AddTicket/send --json '"seat2B"'
     ```
 
     ```json !output
@@ -914,7 +913,7 @@ To send messages via the UI or `curl`, add `/send` to the handler path:
 <TabItem value="python" label="Python">
     <Terminal>
     ```shell !command
-    curl localhost:8080/CartObject/Mary/addTicket/send -H 'content-type: application/json' -d '"seat2B"'
+    curl localhost:8080/CartObject/Mary/addTicket/send --json '"seat2B"'
     ```
 
     ```json !output
@@ -2114,7 +2113,7 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/typescript
 
 Call the `expireTicket` handler with:
 ```shell
-curl localhost:8080/CartObject/Mary/expireTicket -H 'content-type: application/json' -d '"seat2B"'
+curl localhost:8080/CartObject/Mary/expireTicket --json '"seat2B"'
 ```
 </details>
 </TabItem>
@@ -2135,7 +2134,7 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/java/tutor
 
 Call the `expireTicket` handler with:
 ```shell
-curl localhost:8080/CartObject/Mary/expireTicket -H 'content-type: application/json' -d '"seat2B"'
+curl localhost:8080/CartObject/Mary/expireTicket --json '"seat2B"'
 ```
 </details>
 </TabItem>
@@ -2156,7 +2155,7 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/go/tutoria
 
 Call the `ExpireTicket` handler with:
 ```shell
-curl localhost:8080/CartObject/Mary/ExpireTicket -H 'content-type: application/json' -d '"seat2B"'
+curl localhost:8080/CartObject/Mary/ExpireTicket --json '"seat2B"'
 ```
 </details>
 </TabItem>
@@ -2177,7 +2176,7 @@ CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/main/python/tut
 
 Call the `expireTicket` handler with:
 ```shell
-curl localhost:8080/CartObject/Mary/expireTicket -H 'content-type: application/json' -d '"seat2B"'
+curl localhost:8080/CartObject/Mary/expireTicket --json '"seat2B"'
 ```
 </details>
 </TabItem>
@@ -2198,7 +2197,7 @@ curl localhost:8080/CartObject/Mary/expireTicket -H 'content-type: application/j
 
             Call the `expireTicket` handler with:
             ```shell
-            curl localhost:8080/CartObject/Mary/expireTicket -H 'content-type: application/json' -d '"seat2B"'
+            curl localhost:8080/CartObject/Mary/expireTicket --json '"seat2B"'
             ```
         </details>
     </TabItem>
@@ -2977,9 +2976,9 @@ In our example, when we call the `CartObject/addTicket` handler, the first time 
 However, if we use the same idempotency key, the second call will return `true` as well, because it will return the result of the first call:
 
 ```shell
-curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' \
+curl localhost:8080/CartObject/Mary/addTicket \
     -H 'idempotency-key: ad5472esg4dsg525dssdfa5loi'  \
-    -d '"seat2C"'
+    --json '"seat2C"'
 ```
 </TabItem>
 <TabItem value="java" label="Java">
@@ -2987,9 +2986,9 @@ In our example, when we call the `CartObject/addTicket` handler, the first time 
 However, if we use the same idempotency key, the second call will return `true` as well, because it will return the result of the first call:
 
 ```shell
-curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' \
+curl localhost:8080/CartObject/Mary/addTicket \
     -H 'idempotency-key: ad5472esg4dsg525dssdfa5loi'  \
-    -d '"seat2C"'
+    --json '"seat2C"'
 ```
 </TabItem>
 <TabItem value="go" label="Go">
@@ -2997,9 +2996,9 @@ In our example, when we call the `CartObject/AddTicket` handler, the first time 
 However, if we use the same idempotency key, the second call will return `true` as well, because it will return the result of the first call:
 
 ```shell
-curl localhost:8080/CartObject/Mary/AddTicket -H 'content-type: application/json' \
--H 'idempotency-key: ad5472esg4dsg525dssdfa5loi'  \
--d '"seat2C"'
+curl localhost:8080/CartObject/Mary/AddTicket \
+    -H 'idempotency-key: ad5472esg4dsg525dssdfa5loi'  \
+    --json '"seat2C"'
 ```
 </TabItem>
 <TabItem value="python" label="Python">
@@ -3007,9 +3006,9 @@ curl localhost:8080/CartObject/Mary/AddTicket -H 'content-type: application/json
     However, if we use the same idempotency key, the second call will return `true` as well, because it will return the result of the first call:
 
     ```shell
-    curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' \
+    curl localhost:8080/CartObject/Mary/addTicket \
     -H 'idempotency-key: ad5472esg4dsg525dssdfa5loi'  \
-    -d '"seat2C"'
+    --json '"seat2C"'
     ```
 </TabItem>
 </Tabs>
@@ -3056,34 +3055,34 @@ docker run -d --name jaeger -e COLLECTOR_OTLP_ENABLED=true \
   <TabItem value="ts" label="TypeScript">
 
         ```shell
-        curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2A"'
-        curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2B"'
-        curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2C"'
+        curl localhost:8080/CartObject/Mary/addTicket --json '"seat2A"'
+        curl localhost:8080/CartObject/Mary/addTicket --json '"seat2B"'
+        curl localhost:8080/CartObject/Mary/addTicket --json '"seat2C"'
         curl -X POST localhost:8080/CartObject/Mary/checkout
         ```
   </TabItem>
   <TabItem value="java" label="Java">
         ```shell
-        curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2A"'
-        curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2B"'
-        curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2C"'
+        curl localhost:8080/CartObject/Mary/addTicket --json '"seat2A"'
+        curl localhost:8080/CartObject/Mary/addTicket --json '"seat2B"'
+        curl localhost:8080/CartObject/Mary/addTicket --json '"seat2C"'
         curl -X POST localhost:8080/CartObject/Mary/checkout
         ```
   </TabItem>
   <TabItem value="go" label="Go">
         ```shell
-        curl localhost:8080/CartObject/Mary/AddTicket -H 'content-type: application/json' -d '"seat2A"'
-        curl localhost:8080/CartObject/Mary/AddTicket -H 'content-type: application/json' -d '"seat2B"'
-        curl localhost:8080/CartObject/Mary/AddTicket -H 'content-type: application/json' -d '"seat2C"'
+        curl localhost:8080/CartObject/Mary/AddTicket --json '"seat2A"'
+        curl localhost:8080/CartObject/Mary/AddTicket --json '"seat2B"'
+        curl localhost:8080/CartObject/Mary/AddTicket --json '"seat2C"'
         curl -X POST localhost:8080/CartObject/Mary/Checkout
         ```
   </TabItem>
 <TabItem value="python" label="Python">
 
   ```shell
-  curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2A"'
-  curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2B"'
-  curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2C"'
+  curl localhost:8080/CartObject/Mary/addTicket --json '"seat2A"'
+  curl localhost:8080/CartObject/Mary/addTicket --json '"seat2B"'
+  curl localhost:8080/CartObject/Mary/addTicket --json '"seat2C"'
   curl -X POST localhost:8080/CartObject/Mary/checkout
   ```
 </TabItem>

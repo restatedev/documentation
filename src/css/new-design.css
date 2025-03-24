@@ -154,12 +154,11 @@ img {
 .tablist {
   font-weight: 500 !important;
 }
-.tabs {
+.tabs:not([class*="openapi"]) {
   font-weight: 500 !important;
-  margin-bottom: 2rem !important;
 }
 
-.tabs__item {
+.tabs__item:not([class*="openapi"]) {
   border-bottom-width: 2px !important;
 }
 
@@ -189,13 +188,17 @@ img {
   --ifm-alert-link-line-color: #6045a5;
 }
 
-.alert a {
+.alert:not([class*="openapi"]) a {
   color: var(--ifm-alert-link-line-color);
   text-decoration-color: var(--ifm-alert-link-line-color);
 }
+.alert:is([class*="openapi"]) a {
+  color: var(--ifm-color-secondary-darker);
+  text-decoration-color: var(--ifm-color-secondary-darker);
+}
 /* remove shadow from grey boxes like logs*/
 .grey-details,
-details {
+details:not([class*="openapi"]) {
   --ifm-alert-border-color: rgba(76, 179, 212, 0.15);
   box-shadow: none !important;
   border-left-width: 2px !important;

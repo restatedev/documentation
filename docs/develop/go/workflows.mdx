@@ -27,7 +27,7 @@ A workflow can be seen as a special type of [Virtual Object](/concepts/services#
 <Admonition type="note" title={"Workflow retention time"}>
     The retention time of a workflow execution is 24 hours after the finishing of the `Run` handler.
     After this timeout any [K/V state](/develop/go/state) is cleared, the workflow's shared handlers cannot be called anymore, and the [Durable Promises](/develop/go/workflows#signaling-workflows) are discarded.
-    The retention time can be configured via the via the [UI](/develop/local_dev#restate-ui) or [Admin API](/references/admin-api/#tag/service/operation/modify_service) per Workflow definition by setting `workflow_completion_retention`.
+    The retention time can be configured via the via the [UI](/develop/local_dev#restate-ui) or [Admin API](/adminapi/modify-service) per Workflow definition by setting `workflow_completion_retention`.
 </Admonition>
 
 ## Implementing workflows
@@ -141,9 +141,7 @@ Have a look at the code example to get a better understanding of how workflows a
     You can only call the `Run` handler once per workflow ID (here `"someone"`).
 
     ```shell !result
-    curl localhost:8080/SignupWorkflow/someone/Run \
-        -H 'content-type: application/json' \
-        -d '{"email": "someone@restate.dev"}'
+    curl localhost:8080/SignupWorkflow/someone/Run --json '{"email": "someone@restate.dev"}'
     ```
 </TextAndCode>
 

@@ -6,6 +6,7 @@ const variablesReplacements = require("./restate.config.json");
 const codeLoaderPlugin = require("./src/plugins/code-loader");
 
 import { remarkCodeHike, recmaCodeHike } from "codehike/mdx";
+const OpenApiPlugin = require("docusaurus-plugin-openapi-docs");
 
 /** @type {import('codehike/mdx').CodeHikeConfig} */
 const chConfig = {
@@ -14,19 +15,6 @@ const chConfig = {
     theme: "github-light",
   },
 };
-
-const redocusaurus = [
-  "redocusaurus",
-  {
-    config: "redocly.yaml",
-    specs: [
-      {
-        id: "admin-rest-api",
-        spec: "static/schemas/openapi-admin.json",
-      },
-    ],
-  },
-];
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -84,6 +72,7 @@ const config = {
           recmaPlugins: [[recmaCodeHike, chConfig]],
           routeBasePath: "/", // Set this value to '/'.
           sidebarPath: require.resolve("./sidebars.js"),
+          docItemComponent: "@theme/ApiItem", // Derived from docusaurus-theme-openapi
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
         },
@@ -96,7 +85,6 @@ const config = {
         },
       }),
     ],
-    redocusaurus,
     [
       "@docusaurus/plugin-ideal-image",
       {
@@ -121,17 +109,6 @@ const config = {
           target: "_self",
         },
         items: [
-          // {
-          //   to: '/',
-          //   label: 'Build',
-          //   position: 'left',
-          //   activeBaseRegex: '^/$',
-          // },
-          // {
-          //   to: 'learn',
-          //   label: 'Learn',
-          //   position: 'left'
-          // },
           {
             type: "search", // This is the Algolia search bar
             position: "right",
@@ -276,7 +253,26 @@ const config = {
         searchParameters: {},
       },
     },
-  themes: ["docusaurus-json-schema-plugin", "mdx-v2"],
+  plugins: [
+    [
+      'docusaurus-plugin-openapi-docs',
+      {
+        id: "api", // plugin id
+        docsPluginId: "classic", // configured for preset-classic
+        config: {
+          adminapi: {
+            specPath: "static/schemas/openapi-admin.json",
+            outputDir: "docs/adminapi",
+            sidebarOptions: {
+              groupPathsBy: "tag",
+              categoryLinkSource: "tag",
+            },
+          },
+        }
+      },
+    ]
+  ],
+  themes: ["docusaurus-json-schema-plugin", "docusaurus-theme-openapi-docs"],
   scripts: ["/js/store-query-parameter.js"],
 };
 

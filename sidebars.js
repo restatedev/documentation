@@ -78,23 +78,20 @@ const sidebars = {
                     label: 'Kotlin docs',
                     href: 'pathname:///ktdocs/index.html',
                 },
+                {
+                    type: "category",
+                    label: "Admin API",
+                    link: {
+                        type: "generated-index",
+                        title: "Admin API",
+                        description:
+                            "This is the reference of Restate's Admin API endpoint.",
+                    },
+                    items: require("./docs/adminapi/sidebar.ts")
+                }
             ]
         },
     ],
-
-
-    // But you can create a sidebar manually
-    /*
-    tutorialSidebar: [
-      'intro',
-      'hello',
-      {
-        type: 'category',
-        label: 'Tutorial',
-        items: ['tutorial-basics/create-a-document'],
-      },
-    ],
-     */
 };
 
 module.exports = sidebars;

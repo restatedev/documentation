@@ -44,7 +44,7 @@ Or you can use the CLI to list the invocations and retrieve the ID from there:
 If an invocation takes too long to complete or is no longer of interest, you can cancel it.
 Canceling an invocation allows it to free any resources it is holding and roll back any changes it has made so far.
 
-You can cancel the invocation with [its ID](/operate/invocation?interface=curl#invocation-identifier) via the [UI](/develop/local_dev#restate-ui), the CLI or [Admin API](/references/admin-api):
+You can cancel the invocation with [its ID](/operate/invocation?interface=curl#invocation-identifier) via the [UI](/develop/local_dev#restate-ui), the CLI or [Admin API](/category/admin-api):
 
 <CodeWithTabs>
     ```shell !!tabs CLI
@@ -92,7 +92,8 @@ Have a look at [this guide](/guides/sagas) on how to implement compensation logi
 Sometimes Restate cannot cancel an invocation.
 For example, when an endpoint is permanently unavailable, Restate can't invoke the handler to run its compensation logic, so it can't complete the cancellation.
 For these cases, you can kill invocations.
-You can kill an invocation via the [UI](/develop/local_dev#restate-ui), the CLI, or the [Admin API](/references/admin-api):
+
+You can kill an invocation via the [UI](/develop/local_dev#restate-ui), the CLI, or the [Admin API](/category/admin-api):
 
 <CodeWithTabs>
     ```shell !!tabs CLI
@@ -124,8 +125,7 @@ Restate can trigger handlers via Kafka events.
 
 - **Create subscriptions** for a handler on a topic via:
 ```bash
-curl localhost:9070/subscriptions -H 'content-type: application/json' \
-    -d '{
+curl localhost:9070/subscriptions --json '{
         "source": "kafka://my-cluster/my-topic",
         "sink": "service://MyService/Handle",
         "options": {"auto.offset.reset": "earliest"}
