@@ -39,6 +39,11 @@ CODE_LOAD::python/src/develop/service_communication.py#request_response_workflow
     For Workflows, you need to supply a workflow ID that is unique per workflow execution.
 3. **Await** the call to retrieve the response.
 
+Or with the generic clients, if you don't have access to the service definition or want to specify the service and handler with strings (e.g. to implement workflow interpreters):
+```python
+CODE_LOAD::python/src/develop/service_communication.py#request_response_generic
+```
+
 <Admonition type="tip" title="No need for manual retry logic">
     These calls are proxied by Restate, and get logged in the journal.
     In case of failures, Restate takes care of retries.
@@ -80,6 +85,12 @@ To a Workflow:
 CODE_LOAD::python/src/develop/service_communication.py#one_way_workflow
 ```
 
+Or with generic clients, if you don't have access to the handler definition or want to specify the service and handler with strings (e.g. to implement workflow interpreters):
+
+```python
+CODE_LOAD::python/src/develop/service_communication.py#one_way_generic
+```
+
 <Admonition type="tip" title="No need for message queues">
     Without Restate, you would usually put a message queue in between the two services, to guarantee the message delivery.
     Restate eliminates the need for a message queue because Restate durably logs the request and makes sure it gets executed.
@@ -101,6 +112,18 @@ To a Virtual Object:
 
 ```python
 CODE_LOAD::python/src/develop/service_communication.py#delayed_object
+```
+
+To a Workflow:
+
+```python
+CODE_LOAD::python/src/develop/service_communication.py#delayed_workflow
+```
+
+Or with the generic clients, if you don't have access to the handler definition or want to specify the service and handler with strings (e.g. to implement workflow interpreters):
+
+```python
+CODE_LOAD::python/src/develop/service_communication.py#delayed_generic
 ```
 
 <Admonition type="tip" title="Scheduling async tasks">
