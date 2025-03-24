@@ -10,7 +10,6 @@ from pydantic import BaseModel
 # <start_custom>
 class MyData(typing.TypedDict):
     """Represents a response from the GPT model."""
-
     some_value: str
     my_number: int
 
@@ -27,8 +26,6 @@ class MySerde(Serde[MyData]):
             return bytes()
         data = {"some_value": obj["some_value"], "some_number": obj["my_number"]}
         return bytes(json.dumps(data), "utf-8")
-
-
 # <end_custom>
 
 
@@ -53,13 +50,12 @@ async def my_handler(ctx: ObjectContext, greeting: str) -> str:
     # etc.
 
     return "some-output"
-
-
 # <end_using_custom_serde>
 
 
 def some_task() -> MyData:
     return MyData(some_value="value", my_number=123)
+
 
 
 # <start_using_pydantic>

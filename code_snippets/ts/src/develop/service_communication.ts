@@ -95,5 +95,48 @@ const service = restate.service({
       ctx.workflowSendClient(MyWorkflow, "wf-id").interactWithWorkflow();
       // <end_one_way_workflow>
     },
+    greet3: async (ctx: restate.Context) => {
+      // <start_idempotency_key>
+      // For a regular call
+      const response = await ctx.serviceClient(MyService).myHandler(
+        "Hi",
+        restate.rpc.opts({
+          idempotencyKey: "my-idempotency-key",
+        })
+      );
+      // For a one way call
+      ctx.serviceSendClient(MyService).myHandler(
+        "Hi",
+        restate.rpc.sendOpts({
+          idempotencyKey: "my-idempotency-key",
+        })
+      );
+      // <end_idempotency_key>
+    },
+    greet5: async (ctx: restate.Context) => {
+      // <start_attach>
+      const handle = ctx.serviceSendClient(MyService).myHandler(
+          "Hi",
+          restate.rpc.sendOpts({
+            // Optional: send attaching idempotency key
+            idempotencyKey: "my-idempotency-key",
+          })
+      );
+      const invocationId = await handle.invocationId;
+
+      // Later re-attach to the request
+      const response = ctx.attach(invocationId);
+      // <end_attach>
+    },
+    greet4: async (ctx: restate.Context) => {
+      // <start_cancel>
+      const handle = ctx.serviceSendClient(MyService)
+          .myHandler("Hi");
+      const invocationId = await handle.invocationId;
+
+      // I don't need this invocation anymore, let me just cancel it
+      ctx.cancel(invocationId);
+      // <end_cancel>
+    },
   },
 });
