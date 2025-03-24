@@ -58,7 +58,6 @@ async def handle(ctx: ObjectContext, order: Order) -> bool:
     raise Exception("Something happened!")
 
     return True
+
+
 # <end_uuid>
-
-
-

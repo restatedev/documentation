@@ -17,8 +17,7 @@ async def run(ctx: WorkflowContext, email: str):
     ctx.set("onboarding_status", "Generated secret")
 
     await ctx.run(
-        "send email",
-        lambda: email_client.send_email_with_link(email, secret)
+        "send email", lambda: email_client.send_email_with_link(email, secret)
     )
     ctx.set("onboarding_status", "Sent email")
 
@@ -28,6 +27,8 @@ async def run(ctx: WorkflowContext, email: str):
     ctx.set("onboarding_status", "Clicked email")
 
     return click_secret == secret
+
+
 # </mark_1>
 
 
@@ -42,6 +43,8 @@ async def click(ctx: WorkflowSharedContext, secret: str):
 @signup_workflow.handler()
 async def get_status(ctx: WorkflowSharedContext):
     return await ctx.get("onboarding_status")
+
+
 # </mark_2>
 
 # <mark_4>

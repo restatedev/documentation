@@ -14,14 +14,16 @@ def write_to_other_system():
 @my_service.handler("myServiceHandler")
 async def my_service_handler(ctx: Context, greeting: str) -> str:
     # <start_here>
-    await ctx.run("write", lambda: write_to_other_system(),
-                  # <mark_1>
-                  # Max number of retry attempts to complete the action.
-                  max_attempts=3,
-                  # Max duration for retrying, across all retries.
-                  max_retry_duration=timedelta(seconds=10)
-                  # </mark_1>
-                  )
+    await ctx.run(
+        "write",
+        lambda: write_to_other_system(),
+        # <mark_1>
+        # Max number of retry attempts to complete the action.
+        max_attempts=3,
+        # Max duration for retrying, across all retries.
+        max_retry_duration=timedelta(seconds=10),
+        # </mark_1>
+    )
     # <end_here>
 
     # <start_catch>
@@ -54,8 +56,9 @@ async def my_handler(ctx: Context):
     except TerminalError as err:
         # Propagate to DLQ/catch-all handler
         raise err
-# <end_raw>
 
+
+# <end_raw>
 
 
 app = restate.app([my_service])

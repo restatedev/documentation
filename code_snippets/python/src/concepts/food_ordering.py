@@ -55,10 +55,7 @@ async def process(ctx: ObjectContext, order: Order):
     # <mark_3>
     preparation_id, preparation_promise = ctx.awakeable()
     # <mark_5>
-    await ctx.run(
-        "prepare",
-        lambda: restaurant.prepare(order["id"], preparation_id)
-    )
+    await ctx.run("prepare", lambda: restaurant.prepare(order["id"], preparation_id))
     # </mark_5>
     # </mark_3>
     # <mark_4>
@@ -79,6 +76,8 @@ async def process(ctx: ObjectContext, order: Order):
     # <mark_4>
     ctx.set("status", "DELIVERED")
     # </mark_4>
+
+
 # <end_here>
 
 

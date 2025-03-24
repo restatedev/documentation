@@ -12,7 +12,7 @@ const subscriptionWorkflow = restate.workflow({
       try {
         const paymentId = ctx.rand.uuidv4();
         // <mark_2> orange
-        compensations.push(() => removeRecurringPayment(paymentId))
+        compensations.push(() => removeRecurringPayment(paymentId));
         // </mark_2>
         // <mark_2> green
         await ctx.run(() => createRecurringPayment(req.creditCard, paymentId));
@@ -23,7 +23,9 @@ const subscriptionWorkflow = restate.workflow({
 
         for (const subscription of req.subscriptions) {
           // <mark_2> orange
-          compensations.push(() => removeSubscription(req.userId, subscription))
+          compensations.push(() =>
+            removeSubscription(req.userId, subscription)
+          );
           // </mark_2>
           // <mark_2> green
           await ctx.run(() => createSubscription(req.userId, subscription));
@@ -47,23 +49,34 @@ const subscriptionWorkflow = restate.workflow({
       }
     },
   },
-})
+});
 
 // <mark_3>
 export const awsLambdaHandler = restate
-    .endpoint()
-    .bind(subscriptionWorkflow)
-    .handler();
+  .endpoint()
+  .bind(subscriptionWorkflow)
+  .handler();
 // </mark_3>
 // <end_here>
 
+type SubscriptionRequest = {
+  creditCard: string;
+  userId: any;
+  subscriptions: any[];
+};
 
-type SubscriptionRequest = {creditCard: string, userId: any, subscriptions: any[]};
+async function removeRecurringPayment(paymentId: string) {}
+async function createRecurringPayment(creditCard: string, paymentId: string) {}
 
-async function removeRecurringPayment(paymentId: string){}
-async function createRecurringPayment(creditCard: string, paymentId: string){}
-
-async function removeSubscription(userId: any, subscription: any, payRef: void) {}
-async function createSubscription(userId: any, subscription: any, payRef: void) {
+async function removeSubscription(
+  userId: any,
+  subscription: any,
+  payRef: void
+) {}
+async function createSubscription(
+  userId: any,
+  subscription: any,
+  payRef: void
+) {
   return undefined;
 }

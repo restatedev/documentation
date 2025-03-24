@@ -1,4 +1,12 @@
-from restate import Context, Service, VirtualObject, ObjectContext, Workflow, WorkflowContext, WorkflowSharedContext
+from restate import (
+    Context,
+    Service,
+    VirtualObject,
+    ObjectContext,
+    Workflow,
+    WorkflowContext,
+    WorkflowSharedContext,
+)
 
 greeter = Service("Greeter")
 

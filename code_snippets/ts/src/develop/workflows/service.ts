@@ -1,6 +1,6 @@
 import * as restate from "@restatedev/restate-sdk";
 import { SignUpWorkflow } from "./signup";
-import {Context} from "@restatedev/restate-sdk";
+import { Context } from "@restatedev/restate-sdk";
 
 export default restate.service({
   name: "user-management",

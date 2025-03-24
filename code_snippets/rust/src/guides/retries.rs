@@ -1,6 +1,5 @@
-use std::time::Duration;
 use restate_sdk::prelude::*;
-
+use std::time::Duration;
 
 #[restate_sdk::service]
 trait MyService {
@@ -10,7 +9,6 @@ trait MyService {
 
 struct MyServiceImpl;
 impl MyService for MyServiceImpl {
-
     async fn handle(&self, ctx: Context<'_>) -> Result<(), HandlerError> {
         // <start_here>
         // <mark_1>
@@ -28,13 +26,15 @@ impl MyService for MyServiceImpl {
 
         // <start_catch>
         // Fails with a terminal error after 3 attempts or if the function throws one
-        if let Err(e) = ctx.run(|| write_to_other_system())
+        if let Err(e) = ctx
+            .run(|| write_to_other_system())
             .retry_policy(RunRetryPolicy::default().max_attempts(3))
-            .await {
-                // Handle the terminal error: undo previous actions and
-                // propagate the error back to the caller
-                return Err(e)
-            }
+            .await
+        {
+            // Handle the terminal error: undo previous actions and
+            // propagate the error back to the caller
+            return Err(e);
+        }
         // <end_catch>
 
         // <start_terminal_error>
@@ -48,24 +48,22 @@ impl MyService for MyServiceImpl {
     // Use Vec<u8> to represent a binary request
     // !mark[/request: Vec<u8>/] blue
     async fn my_handler(&self, ctx: Context<'_>, request: Vec<u8>) -> Result<(), HandlerError> {
-        let decoded_request = decode_request(&request)
-            .map_err(|e| {
-                // Propagate to DLQ/catch-all handler
-                e
-            })?;
+        let decoded_request = decode_request(&request).map_err(|e| {
+            // Propagate to DLQ/catch-all handler
+            e
+        })?;
 
         // ... rest of you business logic ...
 
         Ok(())
     }
     // <end_raw>
-
 }
 
 fn decode_request(p0: &Vec<u8>) -> Result<String, HandlerError> {
     Ok(String::from("Hello"))
 }
 
-fn write_to_other_system() -> Result<String, HandlerError>{
+fn write_to_other_system() -> Result<String, HandlerError> {
     Ok("Hello".to_string())
 }
