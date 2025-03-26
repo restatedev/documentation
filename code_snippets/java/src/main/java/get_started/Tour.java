@@ -1,10 +1,10 @@
 package get_started;
 
 import dev.restate.sdk.Context;
-import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
 import java.time.Duration;
 
 @Service
@@ -39,7 +39,7 @@ public class Tour {
   // <end_uuid>
 
   public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder().bind(new Tour()).bind(new TicketObject()).buildAndListen();
+    RestateHttpServer.listen(Endpoint.bind(new Tour()).bind(new TicketObject()).build());
   }
 }
 
@@ -58,7 +58,7 @@ class CheckoutService {
         // !mark
         ctx.run(
             // !mark
-            JsonSerdes.BOOLEAN,
+            Boolean.class,
             // !mark
             () -> PaymentClient.get().call(idempotencyKey, totalPrice));
 

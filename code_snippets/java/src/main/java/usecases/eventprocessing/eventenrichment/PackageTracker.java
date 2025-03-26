@@ -5,10 +5,10 @@ import dev.restate.sdk.SharedObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.common.StateKey;
-import dev.restate.sdk.common.TerminalException;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
-import dev.restate.sdk.serde.jackson.JacksonSerdes;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
+import dev.restate.sdk.types.StateKey;
+import dev.restate.sdk.types.TerminalException;
 import usecases.eventprocessing.eventenrichment.types.LocationUpdate;
 import usecases.eventprocessing.eventenrichment.types.PackageInfo;
 
@@ -19,7 +19,7 @@ public class PackageTracker {
   // </mark_2>
 
   private static final StateKey<PackageInfo> PACKAGE_INFO =
-      StateKey.of("package-info", JacksonSerdes.of(PackageInfo.class));
+      StateKey.of("package-info", PackageInfo.class);
 
   // <mark_3>
   // <mark_2>
@@ -63,7 +63,7 @@ public class PackageTracker {
   }
 
   public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder().bind(new PackageTracker()).buildAndListen();
+    RestateHttpServer.listen(Endpoint.bind(new PackageTracker()));
   }
 }
 // <end_here>

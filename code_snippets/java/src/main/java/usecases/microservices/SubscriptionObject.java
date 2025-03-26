@@ -1,16 +1,14 @@
 package usecases.microservices;
 
-import static dev.restate.sdk.JsonSerdes.BOOLEAN;
-import static dev.restate.sdk.JsonSerdes.STRING;
 import static usecases.microservices.ObjectUtils.createRecurringPayment;
 import static usecases.microservices.Utils.createSubscription;
 
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.common.StateKey;
+import dev.restate.sdk.endpoint.Endpoint;
 import dev.restate.sdk.lambda.BaseRestateLambdaHandler;
-import dev.restate.sdk.lambda.RestateLambdaEndpointBuilder;
+import dev.restate.sdk.types.StateKey;
 
 // <start_here>
 // <mark_2>
@@ -19,7 +17,7 @@ public class SubscriptionObject {
   // </mark_2>
 
   // <mark_1>
-  StateKey<String> SUBSCRIPTION = StateKey.of("subscription", STRING);
+  StateKey<String> SUBSCRIPTION = StateKey.of("subscription", String.class);
 
   // </mark_1>
 
@@ -34,7 +32,7 @@ public class SubscriptionObject {
     var paymentId = ctx.random().nextUUID().toString();
     boolean success =
         ctx.run(
-            BOOLEAN,
+            Boolean.class,
             // break
             () -> createRecurringPayment(req.creditCard(), paymentId));
 
@@ -59,7 +57,7 @@ public class SubscriptionObject {
 // <mark_3>
 class MyLambdaHandler extends BaseRestateLambdaHandler {
   @Override
-  public void register(RestateLambdaEndpointBuilder builder) {
+  public void register(Endpoint.Builder builder) {
     builder.bind(new SubscriptionService());
   }
 }

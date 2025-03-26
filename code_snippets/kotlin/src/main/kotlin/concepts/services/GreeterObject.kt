@@ -3,10 +3,9 @@ package concepts.services
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Shared
 import dev.restate.sdk.annotation.VirtualObject
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
-import dev.restate.sdk.kotlin.KtStateKey
-import dev.restate.sdk.kotlin.ObjectContext
-import dev.restate.sdk.kotlin.SharedObjectContext
+import dev.restate.sdk.http.vertx.RestateHttpServer
+import dev.restate.sdk.kotlin.*
+import dev.restate.sdk.kotlin.endpoint.endpoint
 
 // <start_here>
 // <mark_1>
@@ -16,7 +15,7 @@ class GreeterObject {
 
   companion object {
     // <mark_2>
-    private val COUNT = KtStateKey.json<Int>("greet-count")
+    private val COUNT = stateKey<Int>("greet-count")
     // </mark_2>
   }
 
@@ -73,6 +72,6 @@ class GreeterObject {
 }
 
 fun main() {
-  RestateHttpEndpointBuilder.builder().bind(GreeterObject()).buildAndListen()
+  RestateHttpServer.listen(endpoint { bind(GreeterObject()) })
 }
 // <end_here>

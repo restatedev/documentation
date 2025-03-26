@@ -1,13 +1,13 @@
 package concepts.services;
 
-import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.SharedObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.common.StateKey;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
+import dev.restate.sdk.types.StateKey;
 
 // <start_here>
 // <mark_1>
@@ -16,7 +16,7 @@ public class Greeter {
   // </mark_1>
 
   // <mark_2>
-  public static final StateKey<Integer> COUNT = StateKey.of("count", JsonSerdes.INT);
+  public static final StateKey<Integer> COUNT = StateKey.of("count", Integer.class);
 
   // </mark_2>
 
@@ -73,7 +73,7 @@ public class Greeter {
   // </mark_4>
 
   public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder().bind(new Greeter()).buildAndListen();
+    RestateHttpServer.listen(Endpoint.bind(new Greeter()));
   }
 }
 // <end_here>

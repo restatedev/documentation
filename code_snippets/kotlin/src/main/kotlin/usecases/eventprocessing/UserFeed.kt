@@ -2,10 +2,9 @@ package usecases.eventprocessing
 
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.VirtualObject
-import dev.restate.sdk.kotlin.ObjectContext
-import dev.restate.sdk.kotlin.runBlock
+import dev.restate.sdk.endpoint.Endpoint
+import dev.restate.sdk.kotlin.*
 import dev.restate.sdk.lambda.BaseRestateLambdaHandler
-import dev.restate.sdk.lambda.RestateLambdaEndpointBuilder
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.serialization.Serializable
 import usecases.microservices.vo.SubscriptionObject
@@ -46,7 +45,7 @@ class UserFeed {
 
 // <mark_6>
 class MyLambdaHandler : BaseRestateLambdaHandler() {
-  override fun register(builder: RestateLambdaEndpointBuilder) {
+  override fun register(builder: Endpoint.Builder) {
     builder.bind(SubscriptionObject())
   }
 }

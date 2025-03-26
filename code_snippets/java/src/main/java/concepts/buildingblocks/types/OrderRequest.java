@@ -1,7 +1,5 @@
 package concepts.buildingblocks.types;
 
-// <end_here>
-
 public class OrderRequest {
 
   private final String orderId;

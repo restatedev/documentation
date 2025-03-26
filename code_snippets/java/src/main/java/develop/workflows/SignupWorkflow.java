@@ -2,23 +2,23 @@ package develop.workflows;
 
 import static develop.workflows.Utils.sendEmailWithLink;
 
-import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.SharedWorkflowContext;
 import dev.restate.sdk.WorkflowContext;
 import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.Workflow;
-import dev.restate.sdk.common.DurablePromiseKey;
-import dev.restate.sdk.common.StateKey;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
+import dev.restate.sdk.types.DurablePromiseKey;
+import dev.restate.sdk.types.StateKey;
 
 // <start_here>
 @Workflow
 public class SignupWorkflow {
   private static final DurablePromiseKey<String> EMAIL_CLICKED =
-      DurablePromiseKey.of("email_clicked", JsonSerdes.STRING);
+      DurablePromiseKey.of("email_clicked", String.class);
   private static final StateKey<String> STATUS =
       // break
-      StateKey.of("status", JsonSerdes.STRING);
+      StateKey.of("status", String.class);
 
   // <mark_1>
   @Workflow
@@ -33,7 +33,7 @@ public class SignupWorkflow {
     String clickSecret =
         ctx.promise(EMAIL_CLICKED)
             // break
-            .awaitable()
+            .future()
             // break
             .await();
     // </mark_3>
@@ -61,11 +61,12 @@ public class SignupWorkflow {
 
   public static void main(String[] args) {
     // <mark_4>
-    RestateHttpEndpointBuilder.builder()
-        // break
-        .bind(new SignupWorkflow())
-        // break
-        .buildAndListen();
+    var endpoint =
+        Endpoint
+            // break
+            .bind(new SignupWorkflow());
+    // break
+    RestateHttpServer.listen(endpoint);
     // </mark_4>
   }
 }

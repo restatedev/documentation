@@ -2,9 +2,10 @@ package concepts.services
 
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Service
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
+import dev.restate.sdk.http.vertx.RestateHttpServer
 import dev.restate.sdk.kotlin.*
 import dev.restate.sdk.kotlin.Context
+import dev.restate.sdk.kotlin.endpoint.endpoint
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -44,7 +45,7 @@ class SubscriptionService {
 
 fun main() {
   // <mark_4>
-  RestateHttpEndpointBuilder.builder().bind(SubscriptionService()).buildAndListen()
+  RestateHttpServer.listen(endpoint { bind(SubscriptionService()) })
   // </mark_4>
 }
 // <end_here>

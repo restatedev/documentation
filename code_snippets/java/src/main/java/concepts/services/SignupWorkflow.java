@@ -3,13 +3,13 @@ package concepts.services;
 import static usecases.utils.Utils.createUserEntry;
 import static usecases.utils.Utils.sendEmailWithLink;
 
-import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.SharedWorkflowContext;
 import dev.restate.sdk.WorkflowContext;
 import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.Workflow;
-import dev.restate.sdk.common.DurablePromiseKey;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
+import dev.restate.sdk.types.DurablePromiseKey;
 import usecases.utils.User;
 
 // <start_here>
@@ -18,7 +18,7 @@ public class SignupWorkflow {
 
   // <mark_3>
   private static final DurablePromiseKey<String> LINK_CLICKED =
-      DurablePromiseKey.of("link_clicked", JsonSerdes.STRING);
+      DurablePromiseKey.of("link_clicked", String.class);
 
   // </mark_3>
 
@@ -38,7 +38,7 @@ public class SignupWorkflow {
     // </mark_2>
 
     // <mark_3>
-    String clickSecret = ctx.promise(LINK_CLICKED).awaitable().await();
+    String clickSecret = ctx.promise(LINK_CLICKED).future().await();
     // </mark_3>
 
     return clickSecret.equals(secret);
@@ -55,7 +55,7 @@ public class SignupWorkflow {
   // </mark_3>
 
   public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder().bind(new SignupWorkflow()).buildAndListen();
+    RestateHttpServer.listen(Endpoint.bind(new SignupWorkflow()));
   }
 }
 // <end_here>

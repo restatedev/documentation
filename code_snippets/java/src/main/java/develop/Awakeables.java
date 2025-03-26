@@ -1,7 +1,6 @@
 package develop;
 
 import dev.restate.sdk.Awakeable;
-import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.ObjectContext;
 
 public class Awakeables {
@@ -9,7 +8,7 @@ public class Awakeables {
   public void awakeables(ObjectContext ctx) {
     // <start_here>
     // <mark_1>
-    Awakeable<String> awakeable = ctx.awakeable(JsonSerdes.STRING);
+    Awakeable<String> awakeable = ctx.awakeable(String.class);
     String awakeableId = awakeable.id();
     // </mark_1>
 
@@ -23,7 +22,7 @@ public class Awakeables {
     // <end_here>
 
     // <start_resolve>
-    ctx.awakeableHandle(awakeableId).resolve(JsonSerdes.STRING, "hello");
+    ctx.awakeableHandle(awakeableId).resolve(String.class, "hello");
     // <end_resolve>
 
     // <start_reject>

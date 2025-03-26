@@ -1,7 +1,7 @@
 package develop;
 
 import dev.restate.sdk.Context;
-import dev.restate.sdk.common.TerminalException;
+import dev.restate.sdk.types.TerminalException;
 
 public class ErrorHandling {
 
