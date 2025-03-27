@@ -46,6 +46,40 @@ class ServiceCommunication {
     // <end_one_way>
   }
 
+  suspend fun idempotencyKey(ctx: Context) {
+    val request = ""
+
+    // <start_idempotency_key>
+    // For a regular call
+    MyServiceClient.fromContext(ctx).myHandler(request) { idempotencyKey = "my-idempotency-key" }
+    // For a one way call
+    MyServiceClient.fromContext(ctx).send().myHandler(request) {
+      idempotencyKey = "my-idempotency-key"
+    }
+    // <end_idempotency_key>
+  }
+
+  suspend fun attach(ctx: Context) {
+    val request = ""
+
+    // <start_attach>
+    val handle =
+        MyServiceClient.fromContext(ctx).send().myHandler(request) {
+          idempotencyKey = "my-idempotency-key"
+        }
+    val response = handle.attach().await()
+    // <end_attach>
+  }
+
+  suspend fun cancel(ctx: Context) {
+    val request = ""
+
+    // <start_cancel>
+    val handle = MyServiceClient.fromContext(ctx).send().myHandler(request)
+    handle.cancel()
+    // <end_cancel>
+  }
+
   suspend fun generic(ctx: Context) {
     val request = ""
 

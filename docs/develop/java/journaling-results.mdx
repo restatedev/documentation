@@ -12,7 +12,7 @@ Restate uses an execution log for replay after failures and suspensions.
 This means that non-deterministic results (e.g. database responses, UUID generation) need to be stored in the execution log.
 The SDK offers some functionalities to help you with this:
 1. **[Journaled actions](/develop/java/journaling-results#journaled-actions)**: Run any block of code and store the result in Restate. Restate replays the result instead of re-executing the block on retries.
-2. **[`Awaitable` combinators](/develop/java/journaling-results#awaitable-combinators)**: Log the order in which Awaitables were resolved/rejected, to ensure deterministic replay.
+2. **[`DurableFuture` combinators](/develop/java/journaling-results#durableFuture-combinators)**: Log the order in which DurableFutures were resolved/rejected, to ensure deterministic replay.
 3. **[Random generators](/develop/java/journaling-results#generating-randoms)**: Built-in helpers for generating stable UUIDs and random numbers.
 
 
@@ -60,13 +60,14 @@ Have a look at the `RetryPolicy` [JavaDoc](https://docs.restate.dev/javadocs/dev
 If you set a maximum number of attempts, then the `ctx.run` block will fail with a [`TerminalException`](/develop/java/error-handling) once the retries are exhausted.
 Have a look at the [error handling docs](/develop/java/error-handling) and [Sagas guide](/guides/sagas) to learn how to handle these.
 
-## Awaitable combinators
-Operations such as calls, awakeables, and sleep return a `Awaitable`.
-The SDK provides combinators for working with `Awaitable`.
+## Durable Future combinators
+
+Operations such as `ctx.run`, calls, awakeables, and sleep return a `DurableFuture`.
+The SDK provides APIs to join `DurableFuture`s, or wait for the first of them to complete.
 Restate then logs the order in which they are resolved or rejected, to make them deterministic on replay.
 
 
-**Await all** creates an `Awaitable` that awaits for all of the provided Awaitables to resolve.
+**Await all** creates an `DurableFuture` that awaits for all the provided DurableFutures to resolve.
 The semantics are similar to [`CompleteableFuture.allOf()`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/CompletableFuture.html#allOf(java.util.concurrent.CompletableFuture...)), but the outcome is stored in the Restate journal to be deterministically replayable.
 
 <CodeWithTabs groupId={"sdk"}>
@@ -78,7 +79,7 @@ The semantics are similar to [`CompleteableFuture.allOf()`](https://docs.oracle.
     ```
 </CodeWithTabs>
 
-**Await any** creates an `Awaitable` that awaits any of the provided Awaitables to resolve.
+**Select** creates a `DurableFuture` that returns on the first completed `DurableFuture` of the provided ones.
 The semantics are similar to [`CompleteableFuture.anyOf()`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/CompletableFuture.html#anyOf(java.util.concurrent.CompletableFuture...)), but the outcome is stored in the Restate journal to be deterministically replayable.
 
 <CodeWithTabs groupId={"sdk"}>

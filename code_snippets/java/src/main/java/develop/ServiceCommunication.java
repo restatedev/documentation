@@ -77,6 +77,44 @@ public class ServiceCommunication {
     // <end_one_way>
   }
 
+  private void idempotencyKey(Context ctx) {
+    String request = "";
+
+    // <start_idempotency_key>
+    // For a regular call
+    MyServiceClient.fromContext(ctx)
+        .myHandler(request, req -> req.idempotencyKey("my-idempotency-key"));
+    // For a one way call
+    MyServiceClient.fromContext(ctx)
+        .send()
+        .myHandler(request, req -> req.idempotencyKey("my-idempotency-key"));
+    // <end_idempotency_key>
+  }
+
+  private void attach(Context ctx) {
+    String request = "";
+
+    // <start_attach>
+    var handle =
+        MyServiceClient.fromContext(ctx)
+            .send()
+            .myHandler(
+                request,
+                // Optional: send attaching idempotency key
+                req -> req.idempotencyKey("my-idempotency-key"));
+    var response = handle.attach().await();
+    // <end_attach>
+  }
+
+  private void cancel(Context ctx) {
+    String request = "";
+
+    // <start_cancel>
+    var handle = MyServiceClient.fromContext(ctx).send().myHandler(request);
+    handle.cancel();
+    // <end_cancel>
+  }
+
   private void delayedCall(Context ctx) {
     String request = "";
 
