@@ -111,7 +111,7 @@ Or with the generic clients:
 ## Delayed calls
 A delayed call is a one-way call that gets executed after a specified delay.
 
-Use Restate's generated clients `.send(duration)` method to send a delayed requests:
+Use Restate's generated clients `.send()` and the overload with `Duration` as second parameter to send a delayed requests:
 
 <CodeWithTabs groupId="sdk">
     ```java !!tabs Java
@@ -150,3 +150,53 @@ Restate will make sure the task gets executed at the desired time.
     It is guaranteed that call A will execute before call B.
     It is not guaranteed though that call B will be executed immediately after call A, as invocations coming from other handlers/sources, could interleave these two calls.
 </Admonition>
+
+## Using an idempotency key
+
+While service-to-service communication provides *exactly once semantics*, it won't guarantee that two separate services, or a service and an external client, won't submit the same logical request twice.
+To get this additional guarantee, you can provide an [idempotency key](https://docs.restate.dev/develop/java/clients/#invoke-a-handler-idempotently) on any request decorating the `Request` object:
+
+<CodeWithTabs groupId="sdk">
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#idempotency_key
+    ```
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#idempotency_key
+    ```
+</CodeWithTabs>
+
+## Re-attach to an invocation
+
+You can re-attach to any request by using the `InvocationHandle` API:
+
+<CodeWithTabs groupId="sdk">
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#attach
+    ```
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#attach
+    ```
+</CodeWithTabs>
+
+You can acquire an `InvocationHandle` both from a just sent one way call, or from an invocation id.
+
+<Admonition type="tip" title="Best used with idempotency key">
+    Attaching to requests with an idempotency key, lets you wait for the request to finish and retrieve its response. Restate persists the response to these requests for the configured retention time.
+
+    For requests without an idempotency key, you will not be able to retrieve the result, only wait for them to complete.
+</Admonition>
+
+## Cancel an invocation
+
+You can [cancel an invocation](https://docs.restate.dev/operate/invocation/#cancelling-invocations) by using the `InvocationHandle` API:
+
+<CodeWithTabs groupId="sdk">
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/develop/ServiceCommunication.java#cancel
+    ```
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/develop/ServiceCommunication.kt#cancel
+    ```
+</CodeWithTabs>
+
+Have a look at our [sagas guide](/guides/sagas) to learn more about cancellations and how to handle them.
