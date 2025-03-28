@@ -187,7 +187,7 @@ For example, to catch a terminal error of a run block:
 ## Cancellations are Terminal Errors
 
 You can cancel invocations via the [CLI](/operate/invocation#cancelling-invocations), UI and programmatically.
-When you cancel an invocation, it throws a terminal error in the handler processing the invocation the next time it awaits a Promise or Future of a Restate Context action (e.g. run block, RPC, sleep,...; `CombineablePromise` in TypeScript, `Awaitable` in Java).
+When you cancel an invocation, it throws a terminal error in the handler processing the invocation the next time it awaits a Promise or Future of a Restate Context action (e.g. run block, RPC, sleep,...; `CombineablePromise` in TypeScript, `DurableFuture` in Java).
 Unless caught, This terminal error will propagate up the call stack until it reaches the original caller.
 
 Here again, the handler needs to have [compensation logic](/guides/sagas) in place to make sure the system remains in a consistent state, when you cancel an invocation.

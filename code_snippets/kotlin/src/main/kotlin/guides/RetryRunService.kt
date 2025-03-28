@@ -88,12 +88,12 @@ class RetryRunService {
       // Handle the timeout
     }
 
-    val callAwaitable = MyServiceClient.fromContext(ctx).myHandler("Hello")
+    val callFuture = MyServiceClient.fromContext(ctx).myHandler("Hello")
     // !mark
     val callTimeout = ctx.timer(5.seconds)
     try {
       val result = select {
-        callAwaitable.onAwait { it }
+        callFuture.onAwait { it }
         // !mark
         callTimeout.onAwait { throw TimeoutException() }
       }
