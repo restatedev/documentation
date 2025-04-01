@@ -3,7 +3,7 @@ package develop
 import dev.restate.common.Request
 import dev.restate.common.Target
 import dev.restate.sdk.kotlin.*
-import dev.restate.sdk.kotlin.serialization.typeTag
+import dev.restate.serde.kotlinx.*
 import kotlin.time.Duration.Companion.days
 
 class ServiceCommunication {
@@ -104,8 +104,7 @@ class ServiceCommunication {
 
     // <start_delayed_generic>
     val target = Target.service("MyService", "myHandler")
-    ctx.send(
-        Request.of(target, typeTag<String>(), typeTag<String>(), request).asSendDelayed(5.days))
+    Request.of(target, typeTag<String>(), typeTag<String>(), request).send(ctx, 5.days)
     // <end_delayed_generic>
 
   }
