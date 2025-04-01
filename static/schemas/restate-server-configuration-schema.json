@@ -10,8 +10,6 @@
     "worker": {
       "default": {
         "cleanup-interval": "1h",
-        "experimental-feature-disable-idempotency-table": false,
-        "experimental-feature-invocation-status-killed": false,
         "internal-queue-length": 1000,
         "invoker": {
           "abort-timeout": "1m",
@@ -19,7 +17,7 @@
           "in-memory-queue-length-limit": 66049,
           "inactivity-timeout": "1m",
           "message-size-limit": null,
-          "message-size-warning": "10.0 MB",
+          "message-size-warning": "9.5 MiB",
           "retry-policy": {
             "factor": 2.0,
             "initial-interval": "50ms",
@@ -29,8 +27,19 @@
           },
           "tmp-dir": null
         },
-        "max-command-batch-size": 4,
+        "max-command-batch-size": 32,
         "num-timers-in-memory-limit": null,
+        "snapshots": {
+          "destination": null,
+          "object-store-retry-policy": {
+            "factor": 2.0,
+            "initial-interval": "100ms",
+            "max-attempts": 10,
+            "max-interval": "10s",
+            "type": "exponential"
+          },
+          "snapshot-interval-num-records": null
+        },
         "storage": {
           "persist-lsn-interval": "1h",
           "persist-lsn-threshold": 1000,
@@ -48,14 +57,15 @@
         "advertised-admin-endpoint": null,
         "bind-address": "0.0.0.0:9070",
         "concurrent-api-requests-limit": null,
-        "default-partition-replication": "everywhere",
+        "default-partition-replication": null,
         "disable-cluster-controller": false,
+        "disable-web-ui": false,
         "heartbeat-interval": "1s 500ms",
         "log-tail-update-interval": "5m",
         "log-trim-check-interval": "1h",
         "log-trim-threshold": null,
         "query-engine": {
-          "memory-size": "4.0 GB",
+          "memory-size": "3.7 GiB",
           "pgsql-bind-address": "0.0.0.0:9071",
           "query-parallelism": null,
           "tmp-dir": null
@@ -69,7 +79,6 @@
         "bind-address": "0.0.0.0:8080",
         "concurrent-api-requests-limit": null,
         "experimental-feature-enable-separate-ingress-role": false,
-        "experimental-feature-kafka-ingress-next": false,
         "kafka-clusters": []
       },
       "$ref": "#/definitions/IngressOptions"
@@ -79,7 +88,7 @@
         "append-retry-max-interval": "1s",
         "append-retry-min-interval": "10ms",
         "auto-recovery-interval": "3s",
-        "default-provider": "local",
+        "default-provider": "replicated",
         "local": {
           "rocksdb-disable-wal": false,
           "rocksdb-disable-wal-fsync": false,
@@ -97,9 +106,9 @@
           "max-interval": "1s",
           "type": "exponential"
         },
-        "record-cache-memory-size": "20.0 MB",
+        "record-cache-memory-size": "238.4 MiB",
         "replicated-loglet": {
-          "default-log-replication": "{node: 1}",
+          "default-log-replication": null,
           "log-server-retry-policy": {
             "factor": 2.0,
             "initial-interval": "250ms",
@@ -126,13 +135,17 @@
     },
     "metadata-server": {
       "default": {
+        "raft-election-tick": 20,
+        "raft-heartbeat-tick": 2,
+        "raft-tick-interval": "100ms",
         "request-queue-length": 32,
         "rocksdb-disable-wal": false,
         "rocksdb-log-keep-file-num": null,
         "rocksdb-log-level": null,
         "rocksdb-log-max-file-size": null,
         "rocksdb-memory-ratio": 0.009999999776482582,
-        "type": "local"
+        "status-update-interval": "5s",
+        "type": "replicated"
       },
       "$ref": "#/definitions/MetadataServerOptions"
     },
@@ -150,7 +163,7 @@
         "http2-adaptive-window": true,
         "http2-keep-alive-interval": "5s",
         "http2-keep-alive-timeout": "5s",
-        "num-concurrent-connections": 13,
+        "num-concurrent-connections": 3,
         "outbound-queue-length": 1000
       },
       "$ref": "#/definitions/NetworkingOptions"
@@ -163,6 +176,7 @@
         "rocksdb-log-keep-file-num": null,
         "rocksdb-log-level": null,
         "rocksdb-log-max-file-size": null,
+        "rocksdb-max-sub-compactions": 0,
         "rocksdb-memory-ratio": 0.5,
         "writer-batch-commit-count": 5000
       },
@@ -260,7 +274,13 @@
       "default": 24,
       "type": "integer",
       "format": "uint16",
-      "minimum": 1.0
+      "minimum": 0.0
+    },
+    "default-replication": {
+      "title": "Default replication factor",
+      "description": "Configures the global default replication factor to be used by the the system.\n\nNote that this value only impacts the cluster initial provisioning and will not be respected after the cluster has been provisioned.\n\nTo update existing clusters use the `restatectl` utility.",
+      "default": 1,
+      "type": "string"
     },
     "shutdown-timeout": {
       "title": "Shutdown grace timeout",
@@ -335,7 +355,7 @@
     "rocksdb-total-memory-size": {
       "title": "Total memory limit for rocksdb caches and memtables.",
       "description": "This includes memory for uncompressed block cache and all memtables by all open databases. The memory size used for rocksdb caches.",
-      "default": "6.0 GB",
+      "default": "5.6 GiB",
       "$ref": "#/definitions/NonZeroHumanBytes"
     },
     "rocksdb-total-memtables-ratio": {
@@ -617,6 +637,18 @@
           "type": "null"
         }
       ]
+    },
+    "rocksdb-block-size": {
+      "title": "RocksDB block size",
+      "description": "Uncompressed block size\n\nDefault: 64KiB",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/NonZeroHumanBytes"
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
   "definitions": {
@@ -667,7 +699,7 @@
             "in-memory-queue-length-limit": 66049,
             "inactivity-timeout": "1m",
             "message-size-limit": null,
-            "message-size-warning": "10.0 MB",
+            "message-size-warning": "9.5 MiB",
             "retry-policy": {
               "factor": 2.0,
               "initial-interval": "50ms",
@@ -682,7 +714,7 @@
         "max-command-batch-size": {
           "title": "Maximum command batch size for partition processors",
           "description": "The maximum number of commands a partition processor will apply in a batch. The larger this value is, the higher the throughput and latency are.",
-          "default": 4,
+          "default": 32,
           "type": "integer",
           "format": "uint",
           "minimum": 1.0
@@ -690,6 +722,17 @@
         "snapshots": {
           "title": "Snapshots",
           "description": "Snapshots provide a mechanism for safely trimming the log and efficient bootstrapping of new worker nodes.",
+          "default": {
+            "destination": null,
+            "object-store-retry-policy": {
+              "factor": 2.0,
+              "initial-interval": "100ms",
+              "max-attempts": 10,
+              "max-interval": "10s",
+              "type": "exponential"
+            },
+            "snapshot-interval-num-records": null
+          },
           "$ref": "#/definitions/SnapshotsOptions"
         }
       }
@@ -699,7 +742,7 @@
       "type": "object",
       "properties": {
         "num-partitions-to-share-memory-budget": {
-          "description": "How many partitions to divide memory across?\n\nBy default this uses the value defined in `bootstrap-num-partitions` in the common section of the config.",
+          "description": "How many partitions to divide memory across?\n\nBy default this uses the value defined in `default-num-partitions` in the common section of the config.",
           "type": [
             "integer",
             "null"
@@ -839,6 +882,18 @@
               "type": "null"
             }
           ]
+        },
+        "rocksdb-block-size": {
+          "title": "RocksDB block size",
+          "description": "Uncompressed block size\n\nDefault: 64KiB",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/NonZeroHumanBytes"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     },
@@ -940,7 +995,7 @@
         "message-size-warning": {
           "title": "Message size warning",
           "description": "Threshold to log a warning in case protocol messages coming from a service are larger than the specified amount.",
-          "default": "10.0 MB",
+          "default": "9.5 MiB",
           "$ref": "#/definitions/NonZeroHumanBytes"
         },
         "message-size-limit": {
@@ -1093,7 +1148,8 @@
       "type": "object",
       "properties": {
         "destination": {
-          "description": "Base URL for cluster snapshots. Supports `s3://` and `file://` protocol scheme.\n\nDefault: `None`",
+          "title": "Snapshot destination URL",
+          "description": "Base URL for cluster snapshots. Supports `s3://` and `file://` protocol scheme. S3-compatible object stores must support ETag-based conditional writes.\n\nDefault: `None`",
           "default": null,
           "type": [
             "string",
@@ -1102,7 +1158,7 @@
         },
         "snapshot-interval-num-records": {
           "title": "Automatic snapshot creation frequency",
-          "description": "Number of log records that trigger a snapshot to be created.\n\nAs snapshots are created asynchronously, the actual number of new records that will trigger a snapshot will vary. The counter for the subsequent snapshot begins from the LSN at which the previous snapshot export was initiated. Only leader Partition Processors will take snapshots for a given partition.\n\nThis setting does not influence explicitly requested snapshots triggered using `restatectl`.\n\nDefault: `None` - automatic snapshots are disabled by default",
+          "description": "Number of log records that trigger a snapshot to be created.\n\nAs snapshots are created asynchronously, the actual number of new records that will trigger a snapshot will vary. The counter for the subsequent snapshot begins from the LSN at which the previous snapshot export was initiated. Only leader Partition Processors will take snapshots for a given partition.\n\nThis setting does not influence explicitly requested snapshots triggered using `restatectl`.\n\nDefault: `None` - automatic snapshots are disabled",
           "default": null,
           "type": [
             "integer",
@@ -1111,7 +1167,20 @@
           "format": "uint64",
           "minimum": 1.0
         },
+        "object-store-retry-policy": {
+          "title": "Error retry policy",
+          "description": "A retry policy for dealing with retryable object store errors.",
+          "default": {
+            "factor": 2.0,
+            "initial-interval": "100ms",
+            "max-attempts": 10,
+            "max-interval": "10s",
+            "type": "exponential"
+          },
+          "$ref": "#/definitions/RetryPolicy"
+        },
         "aws-profile": {
+          "title": "AWS profile",
           "description": "The AWS configuration profile to use for S3 object store destinations. If you use named profiles in your AWS configuration, you can replace all the other settings with a single profile reference. See the [AWS documentation on profiles] (https://docs.aws.amazon.com/sdkref/latest/guide/file-format.html) for more.",
           "type": [
             "string",
@@ -1119,41 +1188,47 @@
           ]
         },
         "aws-region": {
-          "description": "AWS region to use with S3 object store destinations. This may be inferred from the environment, for example the current region when running in EC2. Because of the request signing algorightm this must have a value. For Minio, you can generally set this to any string, such as `us-east-1`.",
+          "title": "AWS region",
+          "description": "AWS region to use with S3 object store destinations. This may be inferred from the environment, for example the current region when running in EC2. Because of the request signing algorithm this must have a value. For Minio, you can generally set this to any string, such as `us-east-1`.",
           "type": [
             "string",
             "null"
           ]
         },
         "aws-access-key-id": {
-          "description": "AWS access key (or username in Minio / S3-compatible stores).",
+          "title": "AWS access key",
+          "description": "Username for Minio, or consult the service documentation for other S3-compatible stores.",
           "type": [
             "string",
             "null"
           ]
         },
         "aws-secret-access-key": {
-          "description": "AWS secret key (or password in Minio / S3-compatible stores).",
+          "title": "AWS secret key",
+          "description": "Password for Minio, or consult the service documentation for other S3-compatible stores.",
           "type": [
             "string",
             "null"
           ]
         },
         "aws-session-token": {
-          "description": "AWS session token, needed with short-term STS session credentials.",
+          "title": "AWS session token",
+          "description": "This is only needed with short-term STS session credentials.",
           "type": [
             "string",
             "null"
           ]
         },
         "aws-endpoint-url": {
-          "description": "Endpoint URL override. When you use Amazon S3, this is typically inferred from the region and there is no need to set it. With other object stores, you will have to provide an appropriate HTTP(S) endpoint. If *not* using HTTPS, also set `aws-allow-http` to `true`.",
+          "title": "Object store API endpoint URL override",
+          "description": "When you use Amazon S3, this is typically inferred from the region and there is no need to set it. With other object stores, you will have to provide an appropriate HTTP(S) endpoint. If *not* using HTTPS, also set `aws-allow-http` to `true`.",
           "type": [
             "string",
             "null"
           ]
         },
         "aws-allow-http": {
+          "title": "Allow insecure HTTP",
           "description": "Allow plain HTTP to be used with the object store endpoint. Required when the endpoint URL that isn't using HTTPS.",
           "type": [
             "boolean",
@@ -1192,7 +1267,7 @@
         },
         "query-engine": {
           "default": {
-            "memory-size": "4.0 GB",
+            "memory-size": "3.7 GiB",
             "pgsql-bind-address": "0.0.0.0:9071",
             "query-parallelism": null,
             "tmp-dir": null
@@ -1231,8 +1306,14 @@
         "default-partition-replication": {
           "title": "Default partition replication factor",
           "description": "The default replication factor for partition processors, this impacts how many replicas each partition will have across the worker nodes of the cluster.\n\nNote that this value only impacts the cluster initial provisioning and will not be respected after the cluster has been provisioned.\n\nTo update existing clusters use the `restatectl` utility.",
-          "default": "everywhere",
+          "default": null,
+          "deprecated": true,
           "type": "string"
+        },
+        "disable-web-ui": {
+          "description": "Disable serving the Restate Web UI on the admin port. Default is `false`.",
+          "default": false,
+          "type": "boolean"
         },
         "disable-cluster-controller": {
           "default": false,
@@ -1247,7 +1328,7 @@
         "memory-size": {
           "title": "Memory size limit",
           "description": "The total memory in bytes that can be used to preform sql queries",
-          "default": "4.0 GB",
+          "default": "3.7 GiB",
           "$ref": "#/definitions/NonZeroHumanBytes"
         },
         "tmp-dir": {
@@ -1344,8 +1425,8 @@
       "properties": {
         "default-provider": {
           "title": "The default kind of loglet to be used",
-          "description": "Default: Local",
-          "default": "local",
+          "description": "Default: Replicated",
+          "default": "replicated",
           "$ref": "#/definitions/ProviderKind"
         },
         "local": {
@@ -1365,7 +1446,7 @@
         "replicated-loglet": {
           "description": "Configuration of replicated loglet provider",
           "default": {
-            "default-log-replication": "{node: 1}",
+            "default-log-replication": null,
             "log-server-retry-policy": {
               "factor": 2.0,
               "initial-interval": "250ms",
@@ -1426,8 +1507,8 @@
         },
         "record-cache-memory-size": {
           "title": "In-memory RecordCache memory limit",
-          "description": "Optional size of record cache in bytes. If set to 0, record cache will be disabled. Defaults: 20M",
-          "default": "20.0 MB",
+          "description": "Optional size of record cache in bytes. If set to 0, record cache will be disabled. Defaults: 250MB",
+          "default": "238.4 MiB",
           "$ref": "#/definitions/HumanBytes"
         }
       }
@@ -1435,13 +1516,6 @@
     "ProviderKind": {
       "description": "An enum with the list of supported loglet providers.",
       "oneOf": [
-        {
-          "description": "A local rocksdb-backed loglet.",
-          "type": "string",
-          "enum": [
-            "local"
-          ]
-        },
         {
           "description": "Replicated loglets are restate's native log replication system. This requires `log-server` role to run on enough nodes in the cluster.",
           "type": "string",
@@ -1509,7 +1583,8 @@
         "default-log-replication": {
           "title": "Default log replication factor",
           "description": "Configures the default replication factor to be used by the replicated loglets.\n\nNote that this value only impacts the cluster initial provisioning and will not be respected after the cluster has been provisioned.\n\nTo update existing clusters use the `restatectl` utility.",
-          "default": "{node: 1}",
+          "default": null,
+          "deprecated": true,
           "type": "string"
         }
       }
@@ -1706,6 +1781,18 @@
               "type": "null"
             }
           ]
+        },
+        "rocksdb-block-size": {
+          "title": "RocksDB block size",
+          "description": "Uncompressed block size\n\nDefault: 64KiB",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/NonZeroHumanBytes"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     },
@@ -1764,7 +1851,7 @@
         "num-concurrent-connections": {
           "title": "Number of connections to each peer",
           "description": "This is used as a guiding value for how many connections every node can maintain with each peer. With more connections, concurrency of network message processing increases, but it also increases the memory and CPU overhead.",
-          "default": 13,
+          "default": 3,
           "type": "integer",
           "format": "uint",
           "minimum": 1.0
@@ -1797,6 +1884,13 @@
           "description": "Disable fsync of WAL on every batch",
           "default": false,
           "type": "boolean"
+        },
+        "rocksdb-max-sub-compactions": {
+          "description": "The maximum number of subcompactions to run in parallel.\n\nSetting this to 1 means no sub-compactions are allowed (i.e. only 1 thread will do the compaction).\n\nDefault is 0 which maps to floor(number of CPU cores / 2)",
+          "default": 0,
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0.0
         },
         "writer-batch-commit-count": {
           "description": "Trigger a commit when the batch size exceeds this threshold.\n\nSet to 0 or 1 to commit the write batch on every command.",
@@ -1913,6 +2007,18 @@
               "type": "null"
             }
           ]
+        },
+        "rocksdb-block-size": {
+          "title": "RocksDB block size",
+          "description": "Uncompressed block size\n\nDefault: 64KiB",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/NonZeroHumanBytes"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     },
@@ -1975,6 +2081,7 @@
               ]
             },
             "addresses": {
+              "title": "Restate metadata server address list",
               "type": "array",
               "items": {
                 "type": "string"
@@ -1997,6 +2104,7 @@
               ]
             },
             "addresses": {
+              "title": "Etcd cluster node address list",
               "type": "string"
             }
           }
@@ -2005,8 +2113,7 @@
           "description": "Store metadata on an external object store.",
           "type": "object",
           "required": [
-            "bucket",
-            "credentials",
+            "path",
             "type"
           ],
           "properties": {
@@ -2016,12 +2123,77 @@
                 "object-store"
               ]
             },
-            "credentials": {
-              "$ref": "#/definitions/ObjectStoreCredentials"
-            },
-            "bucket": {
-              "title": "The bucket name to use for storage",
+            "path": {
+              "title": "Object store path for metadata storage",
+              "description": "This location will be used to persist cluster metadata. Takes the form of a URL with `s3://` as the protocol and bucket name as the authority, plus an optional prefix specified as the path component.\n\nExample: `s3://bucket/prefix`",
               "type": "string"
+            },
+            "object_store_retry_policy": {
+              "title": "Error retry policy",
+              "default": {
+                "factor": 2.0,
+                "initial-interval": "100ms",
+                "max-attempts": 10,
+                "max-interval": "10s",
+                "type": "exponential"
+              },
+              "$ref": "#/definitions/RetryPolicy"
+            },
+            "aws-profile": {
+              "title": "AWS profile",
+              "description": "The AWS configuration profile to use for S3 object store destinations. If you use named profiles in your AWS configuration, you can replace all the other settings with a single profile reference. See the [AWS documentation on profiles] (https://docs.aws.amazon.com/sdkref/latest/guide/file-format.html) for more.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "aws-region": {
+              "title": "AWS region",
+              "description": "AWS region to use with S3 object store destinations. This may be inferred from the environment, for example the current region when running in EC2. Because of the request signing algorithm this must have a value. For Minio, you can generally set this to any string, such as `us-east-1`.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "aws-access-key-id": {
+              "title": "AWS access key",
+              "description": "Username for Minio, or consult the service documentation for other S3-compatible stores.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "aws-secret-access-key": {
+              "title": "AWS secret key",
+              "description": "Password for Minio, or consult the service documentation for other S3-compatible stores.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "aws-session-token": {
+              "title": "AWS session token",
+              "description": "This is only needed with short-term STS session credentials.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "aws-endpoint-url": {
+              "title": "Object store API endpoint URL override",
+              "description": "When you use Amazon S3, this is typically inferred from the region and there is no need to set it. With other object stores, you will have to provide an appropriate HTTP(S) endpoint. If *not* using HTTPS, also set `aws-allow-http` to `true`.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "aws-allow-http": {
+              "title": "Allow insecure HTTP",
+              "description": "Allow plain HTTP to be used with the object store endpoint. Required when the endpoint URL that isn't using HTTPS.",
+              "type": [
+                "boolean",
+                "null"
+              ]
             }
           }
         }
@@ -2056,28 +2228,6 @@
           "$ref": "#/definitions/RetryPolicy"
         }
       }
-    },
-    "ObjectStoreCredentials": {
-      "title": "Metadata Store",
-      "description": "Definition of a bootstrap metadata store",
-      "oneOf": [
-        {
-          "title": "Use standard AWS environment variables",
-          "description": "Configure the object store by setting the standard AWS env variables (prefixed with AWS_)",
-          "type": "object",
-          "required": [
-            "type"
-          ],
-          "properties": {
-            "type": {
-              "type": "string",
-              "enum": [
-                "aws-env"
-              ]
-            }
-          }
-        }
-      ]
     },
     "LogFormat": {
       "title": "Log format",
