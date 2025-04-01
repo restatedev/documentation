@@ -61,6 +61,31 @@ async def calling_handler(ctx: Context, arg):
     ctx.object_send(my_object.my_handler, key="Mary", arg="I'm call B")
     # <end_ordering>
 
+    # <start_idempotency_key>
+    await ctx.service_call(
+        my_service.my_handler,
+        arg="Hi",
+        idempotency_key="my-idempotency-key"
+    )
+    # <end_idempotency_key>
+
+    # <start_attach>
+    # Send a request, get the invocation id
+    handle = ctx.service_send(
+        my_service.my_handler,
+        arg="Hi",
+        idempotency_key="my-idempotency-key"
+    )
+    invocation_id = await handle.invocation_id()
+
+    # Now re-attach
+    result = await ctx.attach_invocation(invocation_id)
+    # <end_attach>
+
+    # <start_cancel>
+    ctx.cancel_invocation(invocation_id)
+    # <end_cancel>
+
 
 @caller.handler()
 async def call_workflows(ctx: Context, arg):

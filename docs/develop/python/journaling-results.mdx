@@ -46,3 +46,17 @@ This way you can override the default retry behavior of your Restate service for
 
 If you set a maximum number of attempts, then the `ctx.run` block will fail with a [`TerminalError`](/develop/python/error-handling) once the retries are exhausted.
 Have a look at the [error handling docs](/develop/python/error-handling) and [Sagas guide](/guides/sagas) to learn how to handle these.
+
+## Waiting multiple futures
+
+By using the concurrency primitives in `restate` you can wait for many futures to complete at the same time:
+
+```python
+CODE_LOAD::python/src/develop/journaling_results.py#select
+```
+
+Or all of the futures, in the order they complete:
+
+```python
+CODE_LOAD::python/src/develop/journaling_results.py#as_completed
+```
