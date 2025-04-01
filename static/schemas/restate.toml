@@ -8,6 +8,7 @@ cluster-name = "localcluster"
 auto-provision = true
 advertised-address = "http://127.0.0.1:5122/"
 default-num-partitions = 24
+default-replication = 1
 shutdown-timeout = "1m"
 tracing-filter = "info"
 log-filter = "warn,restate=info"
@@ -17,7 +18,7 @@ tokio-console-bind-address = "0.0.0.0:6669"
 no-proxy = []
 connect-timeout = "10s"
 disable-prometheus = false
-rocksdb-total-memory-size = "6.0 GB"
+rocksdb-total-memory-size = "5.6 GiB"
 rocksdb-total-memtables-ratio = 0.5
 rocksdb-high-priority-bg-threads = 2
 rocksdb-write-stall-threshold = "3s"
@@ -55,9 +56,7 @@ max-interval = "5s"
 [worker]
 internal-queue-length = 1000
 cleanup-interval = "1h"
-experimental-feature-disable-idempotency-table = false
-experimental-feature-invocation-status-killed = false
-max-command-batch-size = 4
+max-command-batch-size = 32
 
 [worker.storage]
 rocksdb-disable-wal = true
@@ -68,7 +67,7 @@ persist-lsn-threshold = 1000
 [worker.invoker]
 inactivity-timeout = "1m"
 abort-timeout = "1m"
-message-size-warning = "10.0 MB"
+message-size-warning = "9.5 MiB"
 in-memory-queue-length-limit = 66049
 concurrent-invocations-limit = 100
 
@@ -78,31 +77,37 @@ initial-interval = "50ms"
 factor = 2.0
 max-interval = "10s"
 
+[worker.snapshots.object-store-retry-policy]
+type = "exponential"
+initial-interval = "100ms"
+factor = 2.0
+max-attempts = 10
+max-interval = "10s"
+
 [admin]
 bind-address = "0.0.0.0:9070"
 heartbeat-interval = "1s 500ms"
 log-trim-check-interval = "1h"
 log-tail-update-interval = "5m"
-default-partition-replication = "everywhere"
+disable-web-ui = false
 disable-cluster-controller = false
 
 [admin.query-engine]
-memory-size = "4.0 GB"
+memory-size = "3.7 GiB"
 pgsql-bind-address = "0.0.0.0:9071"
 
 [ingress]
 bind-address = "0.0.0.0:8080"
 kafka-clusters = []
 experimental-feature-enable-separate-ingress-role = false
-experimental-feature-kafka-ingress-next = false
 
 [bifrost]
-default-provider = "local"
+default-provider = "replicated"
 seal-retry-interval = "2s"
 auto-recovery-interval = "3s"
 append-retry-min-interval = "10ms"
 append-retry-max-interval = "1s"
-record-cache-memory-size = "20.0 MB"
+record-cache-memory-size = "238.4 MiB"
 
 [bifrost.local]
 rocksdb-disable-wal = false
@@ -117,7 +122,6 @@ sequencer-inactivity-timeout = "15s"
 log-server-rpc-timeout = "2s"
 readahead-records = 100
 readahead-trigger-ratio = 0.5
-default-log-replication = "{node: 1}"
 
 [bifrost.replicated-loglet.sequencer-retry-policy]
 type = "exponential"
@@ -143,7 +147,11 @@ max-interval = "1s"
 request-queue-length = 32
 rocksdb-memory-ratio = 0.009999999776482582
 rocksdb-disable-wal = false
-type = "local"
+type = "replicated"
+raft-election-tick = 20
+raft-heartbeat-tick = 2
+raft-tick-interval = "100ms"
+status-update-interval = "5s"
 
 [networking]
 connect-timeout = "3s"
@@ -152,7 +160,7 @@ http2-keep-alive-interval = "5s"
 http2-keep-alive-timeout = "5s"
 http2-adaptive-window = true
 outbound-queue-length = 1000
-num-concurrent-connections = 13
+num-concurrent-connections = 3
 
 [networking.connect-retry-policy]
 type = "exponential"
@@ -165,6 +173,7 @@ max-interval = "3s"
 rocksdb-disable-wal = false
 rocksdb-memory-ratio = 0.5
 rocksdb-disable-wal-fsync = false
+rocksdb-max-sub-compactions = 0
 writer-batch-commit-count = 5000
 incoming-network-queue-length = 1000
 
