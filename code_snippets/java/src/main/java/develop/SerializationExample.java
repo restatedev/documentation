@@ -7,8 +7,8 @@ import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.CustomSerdeFactory;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.serde.jackson.JacksonSerdeFactory;
 import dev.restate.serde.Serde;
+import dev.restate.serde.jackson.JacksonSerdeFactory;
 
 // <start_custom_jackson>
 class MyJacksonSerdeFactory extends JacksonSerdeFactory {
