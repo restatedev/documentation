@@ -1,4 +1,4 @@
-name: Test build
+name: Test
 
 on:
   pull_request:
@@ -6,8 +6,8 @@ on:
       - main
 
 jobs:
-  test-build:
-    name: Test build
+  doc-build:
+    name: Documentation build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -27,7 +27,16 @@ jobs:
       - name: Test build website
         run: yarn build
 
-      # Test TypeScript code snippets
+  ts-build:
+    name: TS snippets build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: yarn
+
       - name: Compile TypeScript code snippets
         run: npm install --prefix code_snippets/ts && npm run build --prefix code_snippets/ts
 
@@ -40,8 +49,11 @@ jobs:
           exit 1
           fi
 
-          
-      # Setup Python
+  python-build:
+    name: Python snippets build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -58,6 +70,11 @@ jobs:
           python3 -m mypy .
           deactivate
 
+  java-build:
+    name: Java snippets build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
       # Setup Java
       - uses: actions/setup-java@v3
         with:
@@ -71,12 +88,29 @@ jobs:
           arguments: check
           build-root-directory: code_snippets/java
 
-      # Check Java code snippets
+  kotlin-build:
+    name: Kotlin snippets build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      # Setup Java
+      - uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: "21"
+
+      # Check Kotlin code snippets
       - name: Test Kotlin code snippets
         uses: gradle/gradle-build-action@v2
         with:
           arguments: check
           build-root-directory: code_snippets/kotlin
+
+  go-build:
+    name: Golang snippets build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
 
       # Setup Go
       - uses: actions/setup-go@v5
@@ -89,6 +123,11 @@ jobs:
         working-directory: code_snippets/go
         run: go test ./...
 
+  rust-build:
+    name: Rust snippets build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
 
       # Setup Rust
       - name: Install Rust toolchain
