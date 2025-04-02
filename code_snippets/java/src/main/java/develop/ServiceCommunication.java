@@ -64,8 +64,8 @@ public class ServiceCommunication {
     // <start_delayed_generic>
     Target target = Target.service("MyService", "myHandler"); // or virtualObject or workflow
     ctx.send(
-        Request.of(target, TypeTag.of(String.class), TypeTag.of(String.class), request)
-            .asSendDelayed(Duration.ofDays(5)));
+        Request.of(target, TypeTag.of(String.class), TypeTag.of(String.class), request),
+        Duration.ofDays(5));
     // <end_delayed_generic>
   }
 
