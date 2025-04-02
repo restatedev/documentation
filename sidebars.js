@@ -87,7 +87,7 @@ const sidebars = {
                         description:
                             "This is the reference of Restate's Admin API endpoint.",
                     },
-                    items: require("./docs/adminapi/sidebar.ts")
+                    items: require("./docs/adminapi/sidebar.ts").default,
                 }
             ]
         },
