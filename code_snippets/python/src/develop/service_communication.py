@@ -65,6 +65,7 @@ async def calling_handler(ctx: Context, arg):
     await ctx.service_call(
         my_service.my_handler,
         arg="Hi",
+        # !mark
         idempotency_key="my-idempotency-key"
     )
     # <end_idempotency_key>
@@ -79,6 +80,7 @@ async def calling_handler(ctx: Context, arg):
     invocation_id = await handle.invocation_id()
 
     # Now re-attach
+    # !mark
     result = await ctx.attach_invocation(invocation_id)
     # <end_attach>
 

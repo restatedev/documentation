@@ -146,7 +146,7 @@ CODE_LOAD::python/src/develop/service_communication.py#delayed_generic
 
 ## Using an idempotency key
 
-While service-to-service communication provides *exactly once semantics*, it won't guarantee that two separate services, or a service and an external client, won't submit the same logical request twice.
+While service-to-service communication provides *exactly-once semantics*, it won't guarantee that two separate services, or a service and an external client, won't submit the same logical request twice.
 To get this additional guarantee, you can provide an [idempotency key](https://docs.restate.dev/develop/java/clients/#invoke-a-handler-idempotently) on any request by using the parameter `idempotency_key`:
 
 ```python
@@ -155,7 +155,7 @@ CODE_LOAD::python/src/develop/service_communication.py#idempotency_key
 
 ## Re-attach to an invocation
 
-You can re-attach to any request by using the `ctx.attach_invocation` API, providing the invocation ID:
+You can re-attach to any request via:
 
 ```python
 CODE_LOAD::python/src/develop/service_communication.py#attach
@@ -169,7 +169,7 @@ CODE_LOAD::python/src/develop/service_communication.py#attach
 
 ## Cancel an invocation
 
-You can [cancel an invocation](https://docs.restate.dev/operate/invocation/#cancelling-invocations) by using the `ctx.cancel_invocation` API, providing the invocation ID:
+You can [cancel an invocation](https://docs.restate.dev/operate/invocation/#cancelling-invocations) as follows:
 
 ```python
 CODE_LOAD::python/src/develop/service_communication.py#cancel
