@@ -1,3 +1,6 @@
+#![allow(dead_code)]
+#![allow(clippy::implicit_saturating_sub)]
+
 use restate_sdk::prelude::*;
 
 // <start_here>
@@ -63,7 +66,7 @@ impl GreeterObject for GreeterObjectImpl {
 
     // <mark_4>
     // <mark_1>
-    async fn get_greet_count(&self, ctx: SharedObjectContext) -> Result<u64, HandlerError> {
+    async fn get_greet_count(&self, ctx: SharedObjectContext<'_>) -> Result<u64, HandlerError> {
         // </mark_1>
         // <mark_2>
         Ok(ctx.get::<u64>("count").await?.unwrap_or(0))

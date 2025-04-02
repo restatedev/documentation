@@ -1,15 +1,20 @@
+#![allow(unused_variables)]
+#![allow(dead_code)]
+#![allow(clippy::redundant_closure)]
+#![allow(clippy::question_mark)]
+
 use restate_sdk::prelude::*;
 use std::time::Duration;
 
 #[restate_sdk::service]
 trait MyService {
-    async fn handle() -> Result<(), HandlerError>;
+    async fn handle() -> Result<(), TerminalError>;
     async fn my_handler(request: Vec<u8>) -> Result<(), HandlerError>;
 }
 
 struct MyServiceImpl;
 impl MyService for MyServiceImpl {
-    async fn handle(&self, ctx: Context<'_>) -> Result<(), HandlerError> {
+    async fn handle(&self, ctx: Context<'_>) -> Result<(), TerminalError> {
         // <start_here>
         // <mark_1>
         let my_run_retry_policy = RunRetryPolicy::default()
@@ -38,20 +43,15 @@ impl MyService for MyServiceImpl {
         // <end_catch>
 
         // <start_terminal_error>
-        Err(TerminalError::new("This is a terminal error").into());
+        Err(TerminalError::new("This is a terminal error"))
         // <end_terminal_error>
-
-        Ok(())
     }
 
     // <start_raw>
     // Use Vec<u8> to represent a binary request
     // !mark[/request: Vec<u8>/] blue
     async fn my_handler(&self, ctx: Context<'_>, request: Vec<u8>) -> Result<(), HandlerError> {
-        let decoded_request = decode_request(&request).map_err(|e| {
-            // Propagate to DLQ/catch-all handler
-            e
-        })?;
+        let decoded_request = decode_request(&request)?;
 
         // ... rest of you business logic ...
 
@@ -60,10 +60,10 @@ impl MyService for MyServiceImpl {
     // <end_raw>
 }
 
-fn decode_request(p0: &Vec<u8>) -> Result<String, HandlerError> {
+fn decode_request(p0: &[u8]) -> Result<String, HandlerError> {
     Ok(String::from("Hello"))
 }
 
-fn write_to_other_system() -> Result<String, HandlerError> {
+async fn write_to_other_system() -> Result<String, HandlerError> {
     Ok("Hello".to_string())
 }

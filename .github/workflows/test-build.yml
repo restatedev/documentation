@@ -114,7 +114,6 @@ jobs:
 
       # Setup Go
       - uses: actions/setup-go@v5
-        if: github.event.inputs.sdkGoVersion != ''
         with:
           go-version: "1.21"
 
@@ -131,7 +130,6 @@ jobs:
 
       # Setup Rust
       - name: Install Rust toolchain
-        if: inputs.sdkRustVersion != ''
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           components: clippy
@@ -139,5 +137,4 @@ jobs:
 
       # Run Rust tests
       - name: Run Rust tests
-        if: inputs.sdkRustVersion != ''
         run: cargo clippy --manifest-path ./code_snippets/rust/Cargo.toml
