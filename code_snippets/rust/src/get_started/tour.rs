@@ -1,4 +1,17 @@
-fn add_ticket(ctx: ObjectContext<'_>) -> Result<(), HandlerError> {
+#![allow(dead_code)]
+
+use restate_sdk::prelude::*;
+use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
+use std::time::Duration;
+use tracing::info;
+
+#[restate_sdk::object]
+pub(crate) trait TicketObject {
+    async fn unreserve() -> Result<(), HandlerError>;
+}
+
+async fn add_ticket(ctx: ObjectContext<'_>) -> Result<(), HandlerError> {
     // <start_sleep>
     ctx.sleep(Duration::from_millis(15 * 60 * 1000)).await?;
     // <end_sleep>
@@ -9,11 +22,8 @@ fn add_ticket(ctx: ObjectContext<'_>) -> Result<(), HandlerError> {
         .unreserve()
         .send();
     // <end_sleep_and_send>
+    Ok(())
 }
-
-use restate_sdk::prelude::*;
-use serde::{Deserialize, Serialize};
-use std::collections::HashSet;
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -29,12 +39,13 @@ pub(crate) trait CheckoutService {
 
 pub struct CheckoutServiceImpl;
 
+#[allow(unused_variables)]
 impl CheckoutService for CheckoutServiceImpl {
     // <start_uuid>
     async fn handle(
         &self,
         mut ctx: Context<'_>,
-        Json(CheckoutRequest { user_id, tickets }): Json<CheckoutRequest>,
+        Json(request): Json<CheckoutRequest>,
     ) -> Result<bool, HandlerError> {
         let idempotency_key = ctx.rand_uuid().to_string();
         info!("idempotent key: {}", idempotency_key);
@@ -44,7 +55,10 @@ impl CheckoutService for CheckoutServiceImpl {
     // <end_uuid>
 }
 
-impl OtherCheckoutService for CheckoutServiceImpl {
+pub struct OtherCheckoutService;
+
+#[allow(unused_variables)]
+impl CheckoutService for OtherCheckoutService {
     // <start_checkout>
     async fn handle(
         &self,
@@ -74,6 +88,7 @@ impl PaymentClient {
         PaymentClient {}
     }
 
+    #[allow(unused_variables)]
     pub async fn call(&self, idempotency_key: &str, amount: f64) -> Result<bool, HandlerError> {
         Ok(true)
     }

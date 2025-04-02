@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use crate::concepts::stubs::{create_user_entry, send_email_with_link, User};
 use restate_sdk::prelude::*;
 
@@ -19,7 +21,7 @@ impl SignupWorkflow for SignupWorkflowImpl {
         Json(user): Json<User>,
     ) -> Result<bool, HandlerError> {
         // workflow ID = user ID; workflow runs once per user
-        let user_id = ctx.key();
+        let user_id = ctx.key().to_owned();
 
         // <mark_2>
         ctx.run(|| create_user_entry(&user)).await?;
@@ -27,7 +29,7 @@ impl SignupWorkflow for SignupWorkflowImpl {
 
         // <mark_2>
         let secret = ctx.rand_uuid().to_string();
-        ctx.run(|| send_email_with_link(user_id, &user, &secret))
+        ctx.run(|| send_email_with_link(&user_id, &user, &secret))
             .await?;
         // </mark_2>
 

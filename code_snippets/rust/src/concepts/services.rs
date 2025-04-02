@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use crate::concepts::stubs::{create_recurring_payment, create_subscription, SubscriptionRequest};
 use restate_sdk::prelude::*;
 
