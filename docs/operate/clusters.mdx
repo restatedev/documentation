@@ -286,13 +286,12 @@ You can expand an existing cluster by adding new nodes after it has been started
     A Restate cluster can initially be started with a single node.
     Follow the [cluster deployment instructions](/deploy/server/cluster) and ensure that:
     - It uses the replicated loglet. If you use local loglet, check [this migration guide](/guides/local-to-replicated).
-    - `default-log-replication` is set to 1
+    - `default-replication` is set to 1
     - [Snapshotting is enabled](/operate/data-backup#snapshotting), to ensure that newly added nodes are fully utilized by the system.
 
     ```toml
-    [bifrost.replicated-loglet]
     # Replicating data to one node: the cluster cannot tolerate node failures.
-    default-log-replication = 1
+    default-replication = 1
     ```
 
 </Step>
@@ -309,20 +308,21 @@ This allows the new node to discover the metadata servers and join the cluster.
 
     <Terminal>
         ```shell !command
-        restatectl config set --log-replication 2
+        restatectl config set --log-replication 2 --partition-replication 2
         ```
 
         ```shell !output
         ⚙️ Cluster Configuration
-        ├ Number of partitions: 8
-        ├ Partition replication: *
+        ├ Number of partitions: 4
+        -├ Partition replication: {node: 1}
+        +├ Partition replication: {node: 2}
         └ Logs Provider: replicated
         - ├ Log replication: {node: 1}
         + ├ Log replication: {node: 2}
         └ Nodeset size: 0
 
 
-        ? Apply changes? (y/n) › yes
+        ? Apply changes? (y/n) › no
         ```
     </Terminal>
 
