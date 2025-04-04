@@ -20,15 +20,13 @@ Set up the [OTLP exporter](https://github.com/open-telemetry/opentelemetry-colle
 
 ### Exporting traces to Jaeger
 
-[Jaeger](https://www.jaegertracing.io/docs/1.46/deployment/) accepts OTLP trace data on port `4317`.
-Start Jaeger with OTLP enabled. For example, locally with Docker:
+[Jaeger](https://www.jaegertracing.io/docs/2.4/deployment/) accepts OTLP trace data on port `4317`.
+Start Jaeger locally with Docker, for example:
 
 ```shell
 docker run -d --name jaeger \
-# withClass highlight-line
-    -e COLLECTOR_OTLP_ENABLED=true \
     -p 4317:4317 -p 16686:16686 \
-    jaegertracing/all-in-one:1.46
+    jaegertracing/jaeger:2.4.0
 ```
 
 Configure the tracing endpoint in Restate as a fully specified URL:
