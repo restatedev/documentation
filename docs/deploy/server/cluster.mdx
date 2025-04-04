@@ -41,15 +41,18 @@ cluster-name = "CLUSTER_NAME"
 advertised-address = "ADVERTISED_ADDRESS"
 # At most one node can be configured with auto-provision = true
 auto-provision = false
+# Default replication factor for both the logs and the partitions.
+#
+# Replicate the data to 2 nodes. This requires that the cluster has at least 2 nodes to
+# become operational. If the cluster has at least 3 nodes, then it can tolerate 1 node failure.
+#
+# This also controls the default partition replication. A value of 2 means each partition
+# will be running on (max) of 2 nodes, ensuring redundancy and fault tolerance.
+default-replication = 2
 
 [bifrost]
 # Only the replicated Bifrost provider can be used in a distributed deployment
 default-provider = "replicated"
-
-[bifrost.replicated-loglet]
-# Replicate the data to 2 nodes. This requires that the cluster has at least 2 nodes to
-# become operational. If the cluster has at least 3 nodes, then it can tolerate 1 node failure.
-default-log-replication = 2
 
 [metadata-server]
 # To tolerate node failures, use the replicated metadata server
@@ -79,7 +82,7 @@ If no node is allowed to auto provision, then you have to manually provision the
 Refer to the [Cluster provisioning](#cluster-provisioning) section for more information.
 
 The log provider needs to be configured with `default-provider = "replicated"`.
-The `default-log-replication` should be set to the number of nodes that the data should be replicated to.
+The `default-replication` should be set to the number of nodes that the data should be replicated to.
 If you run at least `2 * default-replication-property - 1` nodes, then the cluster can tolerate `default-replication-property - 1` node failures.
 
 The metadata server type should be set to `replicated` to tolerate node failures.
