@@ -7,9 +7,9 @@ import dev.restate.sdk.SharedWorkflowContext;
 import dev.restate.sdk.WorkflowContext;
 import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.Workflow;
+import dev.restate.sdk.common.DurablePromiseKey;
 import dev.restate.sdk.endpoint.Endpoint;
 import dev.restate.sdk.http.vertx.RestateHttpServer;
-import dev.restate.sdk.types.DurablePromiseKey;
 import usecases.utils.User;
 
 // <start_here>

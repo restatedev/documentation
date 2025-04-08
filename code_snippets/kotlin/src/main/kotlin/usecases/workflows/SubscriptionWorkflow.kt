@@ -1,10 +1,10 @@
 package usecases.workflows
 
 import dev.restate.sdk.annotation.Workflow
+import dev.restate.sdk.common.TerminalException
 import dev.restate.sdk.endpoint.Endpoint
 import dev.restate.sdk.kotlin.*
 import dev.restate.sdk.lambda.BaseRestateLambdaHandler
-import dev.restate.sdk.types.TerminalException
 import kotlinx.serialization.Serializable
 
 // <start_here>

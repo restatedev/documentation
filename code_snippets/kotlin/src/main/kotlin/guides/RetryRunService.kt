@@ -4,10 +4,10 @@ import dev.restate.sdk.annotation.Accept
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Raw
 import dev.restate.sdk.annotation.Service
+import dev.restate.sdk.common.TerminalException
 import dev.restate.sdk.http.vertx.RestateHttpServer
 import dev.restate.sdk.kotlin.*
 import dev.restate.sdk.kotlin.endpoint.endpoint
-import dev.restate.sdk.types.TerminalException
 import develop.MyServiceClient
 import java.util.concurrent.TimeoutException
 import kotlin.time.Duration.Companion.milliseconds

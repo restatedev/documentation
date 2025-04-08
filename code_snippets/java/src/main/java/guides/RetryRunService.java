@@ -5,11 +5,11 @@ import dev.restate.sdk.annotation.Accept;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Raw;
 import dev.restate.sdk.annotation.Service;
+import dev.restate.sdk.common.RetryPolicy;
+import dev.restate.sdk.common.TerminalException;
+import dev.restate.sdk.common.TimeoutException;
 import dev.restate.sdk.endpoint.Endpoint;
 import dev.restate.sdk.http.vertx.RestateHttpServer;
-import dev.restate.sdk.types.RetryPolicy;
-import dev.restate.sdk.types.TerminalException;
-import dev.restate.sdk.types.TimeoutException;
 import develop.MyServiceClient;
 import java.time.Duration;
 
