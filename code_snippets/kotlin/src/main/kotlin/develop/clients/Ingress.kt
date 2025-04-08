@@ -1,8 +1,7 @@
 package operate.invocations
 
 import dev.restate.client.Client
-import dev.restate.client.kotlin.attachSuspend
-import dev.restate.client.kotlin.getOutputSuspend
+import dev.restate.client.kotlin.*
 import dev.restate.common.Output
 import develop.clients.GreetCounterObjectClient
 import develop.clients.GreeterServiceClient
@@ -61,22 +60,21 @@ class Ingress {
   suspend fun attach() {
     // <start_service_attach>
     val rs = Client.connect("http://localhost:8080")
-    val handle =
+    val sendResponse =
         GreeterServiceClient.fromClient(rs)
             .send()
             // !mark
             .greet("Hi") { idempotencyKey = "abcde" }
-            .invocationHandle
 
     // ... do something else ...
 
     // Option 1: Attach later to retrieve the result
     // !mark(1:1)
-    val greeting: String = handle.attachSuspend().response
+    val greeting: String = sendResponse.attachSuspend().response
 
     // Option 2: Peek to see if the result is ready
     // !mark(1:1)
-    val output: Output<String> = handle.getOutputSuspend().response
+    val output: Output<String> = sendResponse.getOutputSuspend().response
     if (output.isReady) {
       val result = output.value
     }

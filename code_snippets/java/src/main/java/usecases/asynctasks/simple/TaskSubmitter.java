@@ -31,8 +31,6 @@ public class TaskSubmitter {
     String result =
         sendResponse
             // break
-            .invocationHandle()
-            // break
             .attach()
             .response();
     // </mark_3>

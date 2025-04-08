@@ -62,7 +62,7 @@ public class Ingress {
 
     // <start_service_attach>
     Client rs = Client.connect("http://localhost:8080");
-    SendResponse<String> handle =
+    SendResponse<String> sendResponse =
         GreeterServiceClient.fromClient(rs)
             .send()
             // !mark
@@ -74,13 +74,13 @@ public class Ingress {
     // !mark
     String greeting =
         // !mark
-        handle.invocationHandle().attach().response();
+        sendResponse.attach().response();
 
     // Option 2: Peek to see if the result is ready
     // !mark
     Output<String> output =
         // !mark
-        handle.invocationHandle().getOutput().response();
+        sendResponse.getOutput().response();
     if (output.isReady()) {
       String result = output.getValue();
     }
