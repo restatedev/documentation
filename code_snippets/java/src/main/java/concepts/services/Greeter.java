@@ -5,9 +5,9 @@ import dev.restate.sdk.SharedObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.VirtualObject;
+import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.endpoint.Endpoint;
 import dev.restate.sdk.http.vertx.RestateHttpServer;
-import dev.restate.sdk.common.StateKey;
 
 // <start_here>
 // <mark_1>

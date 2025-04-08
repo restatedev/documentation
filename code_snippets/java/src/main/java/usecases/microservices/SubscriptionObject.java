@@ -6,9 +6,9 @@ import static usecases.microservices.Utils.createSubscription;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
+import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.endpoint.Endpoint;
 import dev.restate.sdk.lambda.BaseRestateLambdaHandler;
-import dev.restate.sdk.common.StateKey;
 
 // <start_here>
 // <mark_2>

@@ -1,7 +1,7 @@
 package develop
 
-import dev.restate.sdk.kotlin.Context
 import dev.restate.sdk.common.TerminalException
+import dev.restate.sdk.kotlin.Context
 
 class ErrorHandling {
   fun errorHandling(ctx: Context) {

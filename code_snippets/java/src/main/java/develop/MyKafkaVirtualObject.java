@@ -10,7 +10,7 @@ public class MyKafkaVirtualObject {
   @Handler
   public void handle(ObjectContext ctx, String req) {
     // <start_headers>
-    ctx.request().headers();
+    ctx.request().getHeaders();
     // <end_headers>
   }
 }

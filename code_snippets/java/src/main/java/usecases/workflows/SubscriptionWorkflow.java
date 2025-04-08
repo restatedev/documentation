@@ -4,10 +4,10 @@ import static usecases.microservices.Utils.*;
 
 import dev.restate.sdk.WorkflowContext;
 import dev.restate.sdk.annotation.Workflow;
-import dev.restate.sdk.endpoint.Endpoint;
-import dev.restate.sdk.lambda.BaseRestateLambdaHandler;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.lambda.BaseRestateLambdaHandler;
 import java.util.ArrayList;
 import java.util.List;
 
