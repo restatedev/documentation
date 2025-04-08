@@ -1,15 +1,14 @@
 package develop.workflows
 
 import dev.restate.client.Client
-import dev.restate.client.kotlin.attachSuspend
-import dev.restate.client.kotlin.getOutputSuspend
+import dev.restate.client.kotlin.*
 
 class WorkflowSubmitter {
 
   suspend fun submitWorkflow(email: Email) {
     // <start_submit>
     val restate = Client.connect("http://localhost:8080")
-    val handle = SignupWorkflowClient.fromClient(restate, "someone").submit(email).invocationHandle
+    val sendResponse = SignupWorkflowClient.fromClient(restate, "someone").submit(email)
     // <end_submit>
 
     // <start_query>

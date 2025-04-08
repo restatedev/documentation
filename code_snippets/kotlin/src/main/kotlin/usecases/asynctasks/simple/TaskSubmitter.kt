@@ -1,7 +1,7 @@
 package usecases.asynctasks.simple
 
 import dev.restate.client.Client
-import dev.restate.client.kotlin.attachSuspend
+import dev.restate.client.kotlin.*
 import kotlin.time.Duration.Companion.days
 
 class TaskSubmitter {
@@ -11,21 +11,18 @@ class TaskSubmitter {
     // <start_here>
     // The Kotlin SDK generates clients for each service
     val restateClient: Client = Client.connect(RESTATE_URL)
-    val handle =
+    val sendResponse =
         // <mark_1>
-        AsyncTaskServiceClient.fromClient(restateClient)
-            .send()
-            .runTask(taskOpts, 5.days) {
-              // <mark_2>
-              idempotencyKey = "dQw4w9WgXcQ"
-              // </mark_2>
-            }
-            .invocationHandle
+        AsyncTaskServiceClient.fromClient(restateClient).send().runTask(taskOpts, 5.days) {
+          // <mark_2>
+          idempotencyKey = "dQw4w9WgXcQ"
+          // </mark_2>
+        }
     // </mark_1>
 
     // Attach to the async task to get the result
     // <mark_3>
-    val result = handle.attachSuspend()
+    val result = sendResponse.attachSuspend()
     // </mark_3>
     // <end_here>
   }
