@@ -5,7 +5,7 @@ import static usecases.microservices.Utils.*;
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.types.TerminalException;
+import dev.restate.sdk.common.TerminalException;
 import java.util.ArrayList;
 import java.util.List;
 import usecases.microservices.Utils.SubscriptionRequest;

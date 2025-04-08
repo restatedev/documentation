@@ -1,7 +1,7 @@
 package develop;
 
 import dev.restate.sdk.ObjectContext;
-import dev.restate.sdk.types.StateKey;
+import dev.restate.sdk.common.StateKey;
 import java.util.Collection;
 
 public class State {

@@ -4,7 +4,7 @@ import dev.restate.sdk.*;
 import dev.restate.sdk.annotation.*;
 import dev.restate.sdk.endpoint.Endpoint;
 import dev.restate.sdk.http.vertx.RestateHttpServer;
-import dev.restate.sdk.types.StateKey;
+import dev.restate.sdk.common.StateKey;
 
 @VirtualObject
 public class Greeter {

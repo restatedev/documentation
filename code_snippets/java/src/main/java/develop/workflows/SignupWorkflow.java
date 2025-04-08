@@ -8,8 +8,8 @@ import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.Workflow;
 import dev.restate.sdk.endpoint.Endpoint;
 import dev.restate.sdk.http.vertx.RestateHttpServer;
-import dev.restate.sdk.types.DurablePromiseKey;
-import dev.restate.sdk.types.StateKey;
+import dev.restate.sdk.common.DurablePromiseKey;
+import dev.restate.sdk.common.StateKey;
 
 // <start_here>
 @Workflow

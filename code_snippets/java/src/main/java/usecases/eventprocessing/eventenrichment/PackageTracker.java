@@ -7,8 +7,8 @@ import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.endpoint.Endpoint;
 import dev.restate.sdk.http.vertx.RestateHttpServer;
-import dev.restate.sdk.types.StateKey;
-import dev.restate.sdk.types.TerminalException;
+import dev.restate.sdk.common.StateKey;
+import dev.restate.sdk.common.TerminalException;
 import usecases.eventprocessing.eventenrichment.types.LocationUpdate;
 import usecases.eventprocessing.eventenrichment.types.PackageInfo;
 
