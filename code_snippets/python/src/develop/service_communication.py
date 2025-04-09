@@ -1,7 +1,7 @@
 import json
 from datetime import timedelta
 
-from restate import Service, Context
+from restate import Service, Context, RestateDurableFuture
 import src.develop.my_service as my_service
 import src.develop.my_virtual_object as my_object
 import src.develop.my_workflow as my_workflow
@@ -81,7 +81,7 @@ async def calling_handler(ctx: Context, arg):
 
     # Now re-attach
     # !mark
-    result = await ctx.attach_invocation(invocation_id)
+    result: RestateDurableFuture[str] = await ctx.attach_invocation(invocation_id)
     # <end_attach>
 
     # <start_cancel>
