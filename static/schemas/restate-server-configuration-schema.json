@@ -17,7 +17,7 @@
           "in-memory-queue-length-limit": 66049,
           "inactivity-timeout": "1m",
           "message-size-limit": null,
-          "message-size-warning": "9.5 MiB",
+          "message-size-warning": "10.0 MiB",
           "retry-policy": {
             "factor": 2.0,
             "initial-interval": "50ms",
@@ -65,7 +65,7 @@
         "log-trim-check-interval": "1h",
         "log-trim-threshold": null,
         "query-engine": {
-          "memory-size": "3.7 GiB",
+          "memory-size": "4.0 GiB",
           "pgsql-bind-address": "0.0.0.0:9071",
           "query-parallelism": null,
           "tmp-dir": null
@@ -88,7 +88,7 @@
         "append-retry-max-interval": "1s",
         "append-retry-min-interval": "10ms",
         "auto-recovery-interval": "3s",
-        "default-provider": "replicated",
+        "default-provider": "local",
         "local": {
           "rocksdb-disable-wal": false,
           "rocksdb-disable-wal-fsync": false,
@@ -106,7 +106,7 @@
           "max-interval": "1s",
           "type": "exponential"
         },
-        "record-cache-memory-size": "238.4 MiB",
+        "record-cache-memory-size": "250.0 MiB",
         "replicated-loglet": {
           "default-log-replication": null,
           "log-server-retry-policy": {
@@ -145,7 +145,7 @@
         "rocksdb-log-max-file-size": null,
         "rocksdb-memory-ratio": 0.009999999776482582,
         "status-update-interval": "5s",
-        "type": "replicated"
+        "type": null
       },
       "$ref": "#/definitions/MetadataServerOptions"
     },
@@ -187,7 +187,7 @@
       "default": [
         "worker",
         "admin",
-        "metadata-store",
+        "metadata-server",
         "log-server"
       ],
       "type": "array",
@@ -355,7 +355,7 @@
     "rocksdb-total-memory-size": {
       "title": "Total memory limit for rocksdb caches and memtables.",
       "description": "This includes memory for uncompressed block cache and all memtables by all open databases. The memory size used for rocksdb caches.",
-      "default": "5.6 GiB",
+      "default": "6.0 GiB",
       "$ref": "#/definitions/NonZeroHumanBytes"
     },
     "rocksdb-total-memtables-ratio": {
@@ -699,7 +699,7 @@
             "in-memory-queue-length-limit": 66049,
             "inactivity-timeout": "1m",
             "message-size-limit": null,
-            "message-size-warning": "9.5 MiB",
+            "message-size-warning": "10.0 MiB",
             "retry-policy": {
               "factor": 2.0,
               "initial-interval": "50ms",
@@ -995,7 +995,7 @@
         "message-size-warning": {
           "title": "Message size warning",
           "description": "Threshold to log a warning in case protocol messages coming from a service are larger than the specified amount.",
-          "default": "9.5 MiB",
+          "default": "10.0 MiB",
           "$ref": "#/definitions/NonZeroHumanBytes"
         },
         "message-size-limit": {
@@ -1267,7 +1267,7 @@
         },
         "query-engine": {
           "default": {
-            "memory-size": "3.7 GiB",
+            "memory-size": "4.0 GiB",
             "pgsql-bind-address": "0.0.0.0:9071",
             "query-parallelism": null,
             "tmp-dir": null
@@ -1328,7 +1328,7 @@
         "memory-size": {
           "title": "Memory size limit",
           "description": "The total memory in bytes that can be used to preform sql queries",
-          "default": "3.7 GiB",
+          "default": "4.0 GiB",
           "$ref": "#/definitions/NonZeroHumanBytes"
         },
         "tmp-dir": {
@@ -1425,8 +1425,8 @@
       "properties": {
         "default-provider": {
           "title": "The default kind of loglet to be used",
-          "description": "Default: Replicated",
-          "default": "replicated",
+          "description": "Default: Local",
+          "default": "local",
           "$ref": "#/definitions/ProviderKind"
         },
         "local": {
@@ -1508,7 +1508,7 @@
         "record-cache-memory-size": {
           "title": "In-memory RecordCache memory limit",
           "description": "Optional size of record cache in bytes. If set to 0, record cache will be disabled. Defaults: 250MB",
-          "default": "238.4 MiB",
+          "default": "250.0 MiB",
           "$ref": "#/definitions/HumanBytes"
         }
       }
@@ -1516,6 +1516,13 @@
     "ProviderKind": {
       "description": "An enum with the list of supported loglet providers.",
       "oneOf": [
+        {
+          "description": "A local rocksdb-backed loglet.",
+          "type": "string",
+          "enum": [
+            "local"
+          ]
+        },
         {
           "description": "Replicated loglets are restate's native log replication system. This requires `log-server` role to run on enough nodes in the cluster.",
           "type": "string",
@@ -1601,60 +1608,6 @@
     "MetadataServerOptions": {
       "title": "Metadata store options",
       "type": "object",
-      "oneOf": [
-        {
-          "type": "object",
-          "required": [
-            "type"
-          ],
-          "properties": {
-            "type": {
-              "type": "string",
-              "enum": [
-                "local"
-              ]
-            }
-          }
-        },
-        {
-          "type": "object",
-          "required": [
-            "type"
-          ],
-          "properties": {
-            "type": {
-              "type": "string",
-              "enum": [
-                "replicated"
-              ]
-            },
-            "raft-election-tick": {
-              "description": "The number of ticks before triggering an election\n\nThe number of ticks before triggering an election. The value must be larger than `raft_heartbeat_tick`. It's recommended to set `raft_election_tick = 10 * raft_heartbeat_tick`. Decrease this value if you want to react faster to failed leaders. Note, decreasing this value too much can lead to cluster instabilities due to falsely detecting dead leaders.",
-              "default": 20,
-              "type": "integer",
-              "format": "uint",
-              "minimum": 1.0
-            },
-            "raft-heartbeat-tick": {
-              "description": "The number of ticks before sending a heartbeat\n\nA leader sends heartbeat messages to maintain its leadership every heartbeat ticks. Decrease this value to send heartbeats more often.",
-              "default": 2,
-              "type": "integer",
-              "format": "uint",
-              "minimum": 1.0
-            },
-            "raft-tick-interval": {
-              "description": "The raft tick interval\n\nThe interval at which the raft node will tick. Decrease this value in order to let the Raft node react more quickly to changes. Note, that every tick comes with an overhead. Moreover, the tick interval directly affects the election timeout. If the election timeout becomes too small, then this can cause cluster instabilities due to frequent leader changes.",
-              "default": "100ms",
-              "type": "string"
-            },
-            "status-update-interval": {
-              "description": "The status update interval\n\nThe interval at which the raft node will update its status. Decrease this value in order to see more recent status updates.",
-              "default": "5s",
-              "type": "string"
-            }
-          }
-        }
-      ],
       "properties": {
         "request-queue-length": {
           "description": "Limit number of in-flight requests\n\nNumber of in-flight metadata store requests.",
@@ -1679,6 +1632,18 @@
           "default": 0.009999999776482582,
           "type": "number",
           "format": "float"
+        },
+        "type": {
+          "description": "Type of metadata server to start\n\nThe type of metadata server to start when running the metadata store role.",
+          "default": null,
+          "anyOf": [
+            {
+              "$ref": "#/definitions/MetadataServerKind"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "rocksdb-disable-direct-io-for-reads": {
           "title": "Disable Direct IO for reads",
@@ -1793,8 +1758,39 @@
               "type": "null"
             }
           ]
+        },
+        "raft-election-tick": {
+          "description": "The number of ticks before triggering an election\n\nThe number of ticks before triggering an election. The value must be larger than `raft_heartbeat_tick`. It's recommended to set `raft_election_tick = 10 * raft_heartbeat_tick`. Decrease this value if you want to react faster to failed leaders. Note, decreasing this value too much can lead to cluster instabilities due to falsely detecting dead leaders.",
+          "default": 20,
+          "type": "integer",
+          "format": "uint",
+          "minimum": 1.0
+        },
+        "raft-heartbeat-tick": {
+          "description": "The number of ticks before sending a heartbeat\n\nA leader sends heartbeat messages to maintain its leadership every heartbeat ticks. Decrease this value to send heartbeats more often.",
+          "default": 2,
+          "type": "integer",
+          "format": "uint",
+          "minimum": 1.0
+        },
+        "raft-tick-interval": {
+          "description": "The raft tick interval\n\nThe interval at which the raft node will tick. Decrease this value in order to let the Raft node react more quickly to changes. Note, that every tick comes with an overhead. Moreover, the tick interval directly affects the election timeout. If the election timeout becomes too small, then this can cause cluster instabilities due to frequent leader changes.",
+          "default": "100ms",
+          "type": "string"
+        },
+        "status-update-interval": {
+          "description": "The status update interval\n\nThe interval at which the raft node will update its status. Decrease this value in order to see more recent status updates.",
+          "default": "5s",
+          "type": "string"
         }
       }
+    },
+    "MetadataServerKind": {
+      "type": "string",
+      "enum": [
+        "local",
+        "replicated"
+      ]
     },
     "NetworkingOptions": {
       "title": "Networking options",
@@ -1891,6 +1887,10 @@
           "type": "integer",
           "format": "uint32",
           "minimum": 0.0
+        },
+        "rocksdb-max-wal-size": {
+          "description": "The size limit of all WAL files\n\nUse this to limit the size of WAL files. If the size of all WAL files exceeds this limit, the oldest WAL file will be deleted and if needed, memtable flush will be triggered.\n\nNote: RocksDB internally counts the uncompressed bytes to determine the WAL size, and since the WAL is compressed, the actual size on disk will be significantly smaller than this value (~1/4 depending on the compression ratio). For instance, if this is set to \"1 MiB\", then rocksdb might decide to flush if the total WAL (on disk) reached ~260 KiB (compressed).\n\nDefault is `0` which translates into 6 times the memory allocated for membtables for this database.",
+          "$ref": "#/definitions/HumanBytes"
         },
         "writer-batch-commit-count": {
           "description": "Trigger a commit when the batch size exceeds this threshold.\n\nSet to 0 or 1 to commit the write batch on every command.",
