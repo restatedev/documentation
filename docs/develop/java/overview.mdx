@@ -37,13 +37,12 @@ Handlers can either be part of a [Service](/concepts/services#services-1), a [Vi
     ```
 </CodeWithTabs>
 
-- Use the `@Service` and `@Handler` annotations
-- Handlers have the `Context` parameter ([JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api/latest/dev/restate/sdk/Context.html)/[KotlinDocs](http://localhost:3000/ktdocs/sdk-api-kotlin/dev.restate.sdk.kotlin/-context/index.html)) as the first parameter.
+- Use the [`@Service`](http://docs.restate.dev/javadocs/dev/restate/sdk/annotation/Service.html) and [`@Handler`](http://docs.restate.dev/javadocs/dev/restate/sdk/annotation/Handler.html) annotations
+- Handlers have the `Context` parameter ([JavaDocs](https://docs.restate.dev/javadocs/dev/restate/sdk/ObjectContext)/[KotlinDocs](https://docs.restate.dev/ktdocs/sdk-api-kotlin/dev.restate.sdk.kotlin/-context/)) as the first parameter.
 Within the handler, you use the `Context` to interact with Restate.
 The SDK stores the actions you do on the context in the Restate journal to make them durable.
-- You can retrieve the key of the object you are in via `ctx.key()`.
-- The input parameter (at most one) and return type are optional and can be of any type, as long as they are serializable/deserializable using [Jackson Databind](https://github.com/FasterXML/jackson) ([see serialization docs](/develop/java/serialization)).
-- The service will be reachable under the simple class name `MyService`. You can override it by using the annotation field `name`.
+- The input parameter (at most one) and return type are optional and can be of any type. See [serialization](/develop/java/serialization) for more details.
+- The service will be reachable under the simple class name `MyService`. You can override it by using the annotation [`@Name`](http://docs.restate.dev/javadocs/dev/restate/sdk/annotation/Name.html).
 - Create an endpoint and bind the service(s) to the Restate endpoint. Listen on the specified port (default `9080`) for connections and requests.
 
 
@@ -62,11 +61,11 @@ The SDK stores the actions you do on the context in the Restate journal to make 
 </CodeWithTabs>
 
 - Use the `@VirtualObject` annotation.
-- The first argument of the handler must be the `ObjectContext` parameter ([JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api/latest/dev/restate/sdk/ObjectContext.html)/[KotlinDocs](http://localhost:3000/ktdocs/sdk-api-kotlin/dev.restate.sdk.kotlin/-object-context/index.html)).
+- The first argument of the handler must be the `ObjectContext` parameter ([JavaDocs](https://docs.restate.dev/javadocs/dev/restate/sdk/ObjectContext)/[KotlinDocs](https://docs.restate.dev/ktdocs/sdk-api-kotlin/dev.restate.sdk.kotlin/-object-context/)).
 Handlers with the `ObjectContext` parameter can write to the K/V state store.
 Only one handler can be active at a time, to ensure consistency.
-- You can retrieve the key of the object you are in via `ctx.key()`.
-- If you want to have a handler that executes concurrently to the others and doesn't have write access to the K/V state, use the `@Shared` annotation and the `SharedObjectContext`.
+- You can retrieve the key of the object you are in via [`ctx.key()`](https://docs.restate.dev/javadocs/dev/restate/sdk/SharedObjectContext#key()).
+- If you want to have a handler that executes concurrently to the others and doesn't have write access to the K/V state, use the [`@Shared`](http://docs.restate.dev/javadocs/dev/restate/sdk/annotation/Shared.html) annotation and the `SharedObjectContext` ([JavaDocs](https://docs.restate.dev/javadocs/dev/restate/sdk/SharedObjectContext)/[KotlinDocs](https://docs.restate.dev/ktdocs/sdk-api-kotlin/dev.restate.sdk.kotlin/-shared-object-context/)).
 You can use these handlers, for example, to read K/V state and expose it to the outside world, or to interact with the blocking handler (e.g. resolve awakeables).
 
 ## Workflows
@@ -84,12 +83,12 @@ You can use these handlers, for example, to read K/V state and expose it to the 
     ```
 </CodeWithTabs>
 
-- Create the workflow by using the `@Workflow` annotation.
-- Every workflow implementation needs to have a handler called `run` that implements the workflow logic and has the `@Workflow` annotation.
-This handler uses the `WorkflowContext` ([JavaDocs](https://javadoc.io/doc/dev.restate/sdk-api/latest/dev/restate/sdk/WorkflowContext.html)/[KotlinDocs](http://localhost:3000/ktdocs/sdk-api-kotlin/dev.restate.sdk.kotlin/-workflow-context/index.html))to interact with the SDK.
-- The `run` handler executes exactly one time per workflow execution/object. You can retrieve the ID of the workflow execution via `ctx.key()`.
-- The `run` handler executes a set of steps/activities. These can be inlined SDK actions (for example [run block](/develop/java/journaling-results#journaled-actions) or [sleep](/develop/java/durable-timers)), or abstracted into calls to other handlers.
-- The other handlers of the workflow definition are used to interact with the workflow: [either query it, or signal it](/develop/java/workflows#implementing-workflows). They use the `SharedWorkflowContext` to interact with the SDK. These handlers can run concurrently with the `run` handler and can still be called after the `run` handler has finished.
+- Create the workflow by using the [`@Workflow`](http://docs.restate.dev/javadocs/dev/restate/sdk/annotation/Workflow.html) annotation.
+- Every workflow implementation needs to have exactly one handler that implements the workflow logic and has the `@Workflow` annotation.
+This handler uses the `WorkflowContext` ([JavaDocs](https://docs.restate.dev/javadocs/dev/restate/sdk/WorkflowContext)/[KotlinDocs](https://docs.restate.dev/ktdocs/sdk-api-kotlin/dev.restate.sdk.kotlin/-workflow-context/)) to interact with the SDK.
+- The workflow handler executes exactly one time per workflow execution/object. You can retrieve the ID of the workflow execution via [`ctx.key()`](https://docs.restate.dev/javadocs/dev/restate/sdk/SharedObjectContext#key()).
+- The workflow handler executes a set of steps/activities. These can be inlined SDK actions (for example [run block](/develop/java/journaling-results#journaled-actions) or [sleep](/develop/java/durable-timers)), or abstracted into calls to other handlers.
+- The other handlers of the workflow definition are used to interact with the workflow: [either query it, or signal it](/develop/java/workflows#implementing-workflows). They use the `SharedWorkflowContext` ([JavaDocs](https://docs.restate.dev/javadocs/dev/restate/sdk/SharedWorkflowContext)/[KotlinDocs](https://docs.restate.dev/ktdocs/sdk-api-kotlin/dev.restate.sdk.kotlin/-shared-workflow-context/)) to interact with the SDK. These handlers can run concurrently with the workflow handler and can still be called after the workflow handler has finished.
 - [Have a look at the workflow docs to learn more.](/develop/java/workflows)
 
 Now that you have a high-level idea of what a Restate service might look like, let's have a look at what the Restate Context allows you to do.
@@ -119,17 +118,18 @@ Now that you have a high-level idea of what a Restate service might look like, l
             gradle init --type java-application
             ```
 
-            Add the following dependencies:
+            Add the following dependencies for deploying as HTTP service:
 
             ```kotlin
             annotationProcessor("dev.restate:sdk-api-gen:VAR::JAVA_SDK_VERSION")
-            implementation("dev.restate:sdk-api:VAR::JAVA_SDK_VERSION")
+            implementation("dev.restate:sdk-java-http:VAR::JAVA_SDK_VERSION")
             ```
 
-            When serializing composite types/POJOs with [Jackson Databind](https://github.com/FasterXML/jackson) (default), add the following dependency:
+            Add the following dependencies for deploying as Lambda:
 
             ```kotlin
-            implementation("dev.restate:sdk-serde-jackson:VAR::JAVA_SDK_VERSION")
+            annotationProcessor("dev.restate:sdk-api-gen:VAR::JAVA_SDK_VERSION")
+            implementation("dev.restate:sdk-java-lambda:VAR::JAVA_SDK_VERSION")
             ```
 
         </TabItem>
@@ -145,29 +145,31 @@ Now that you have a high-level idea of what a Restate service might look like, l
 
             ```kotlin
             plugins {
-                kotlin("plugin.serialization") version "1.9.22"
-                id("com.google.devtools.ksp") version "1.9.22-1.0.18"
+                kotlin("plugin.serialization") version "2.0.0"
+                id("com.google.devtools.ksp") version "2.0.0-1.0.21"
             }
             ```
 
-            Add the runtime dependency `sdk-api-kotlin` and the `ksp` dependency `sdk-api-kotlin-gen`:
+            Add the following dependencies for deploying as HTTP service:
 
             ```kotlin
             ksp("dev.restate:sdk-api-kotlin-gen:VAR::JAVA_SDK_VERSION")
-            implementation("dev.restate:sdk-api-kotlin:VAR::JAVA_SDK_VERSION")
+            implementation("dev.restate:sdk-kotlin-http:VAR::JAVA_SDK_VERSION")
+            ```
+
+            Add the following dependencies for deploying as Lambda:
+
+            ```kotlin
+            ksp("dev.restate:sdk-api-kotlin-gen:VAR::JAVA_SDK_VERSION")
+            implementation("dev.restate:sdk-kotlin-lambda:VAR::JAVA_SDK_VERSION")
             ```
 
         </TabItem>
     </Tabs>
-
-    Depending on the deployment target, add one of the following dependencies:
-
-    - To run as HTTP endpoint: `dev.restate:sdk-http-vertx:VAR::JAVA_SDK_VERSION`
-    - To run on AWS Lambda: `dev.restate:sdk-lambda:VAR::JAVA_SDK_VERSION`
 </details>
 
 <details className="grey-details">
     <summary>Manual service definition without annotation processing</summary>
 
-    In case you don't want to use annotation processing, you can manually define your service by using the class `dev.restate.sdk.common.syscalls.ServiceDefinition`. Check the respective JavaDocs/KTDocs for more details.
+    In case you don't want to use annotation processing, you can manually define your service by using the class [`dev.restate.sdk.endpoint.definition.ServiceDefinition`](https://docs.restate.dev/javadocs/dev/restate/sdk/endpoint/definition/ServiceDefinition.html) and [`dev.restate.sdk.HandlerRunner` for Java](https://docs.restate.dev/javadocs/dev/restate/sdk/HandlerRunner.html), [`dev.restate.sdk.HandlerRunner` for Kotlin](https://docs.restate.dev/ktdocs/sdk-api-kotlin/dev.restate.sdk.kotlin/-handler-runner).
 </details>

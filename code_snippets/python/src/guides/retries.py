@@ -16,7 +16,7 @@ async def my_service_handler(ctx: Context, greeting: str) -> str:
     # <start_here>
     await ctx.run(
         "write",
-        lambda: write_to_other_system(),
+        write_to_other_system,
         # <mark_1>
         # Max number of retry attempts to complete the action.
         max_attempts=3,
@@ -35,6 +35,16 @@ async def my_service_handler(ctx: Context, greeting: str) -> str:
         # propagate the error back to the caller
         raise err
     # <end_catch>
+
+    # <start_timeout>
+    match await restate.select(
+        greeting=ctx.service_call(my_service_handler, "value"),
+        timeout=ctx.sleep(timedelta(seconds=5))):
+        case ["greeting", greeting]:
+            print("Greeting:", greeting)
+        case ["timeout", _]:
+            print("Timeout occurred")
+    # <end_timeout>
 
     return f"${greeting}!"
 

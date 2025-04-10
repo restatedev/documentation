@@ -36,13 +36,13 @@ class Ingress {
     // <start_delayed_call_kotlin>
     val rs = Client.connect("http://localhost:8080")
     GreeterServiceClient.fromClient(rs)
-        // !mark
         .send()
+        // !mark
         .greet("Hi", 1.seconds)
 
     GreetCounterObjectClient.fromClient(rs, "Mary")
-        // !mark
         .send()
+        // !mark
         .greet("Hi", 1.seconds)
     // <end_delayed_call_kotlin>
   }
