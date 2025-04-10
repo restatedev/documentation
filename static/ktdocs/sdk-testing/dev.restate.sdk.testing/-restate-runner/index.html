@@ -41,7 +41,7 @@
 <a class="library-name--link" href="../../../index.html">
                             sdk-java
                     </a>            </div>
-            <div class="library-version">1.2.0
+            <div class="library-version">2.0.0
             </div>
         </div>
         <div class="filter-section" id="filter-section">
@@ -62,65 +62,167 @@
   <div class="breadcrumbs"><a href="../../index.html">sdk-testing</a><span class="delimiter">/</span><a href="../index.html">dev.restate.sdk.testing</a><span class="delimiter">/</span><span class="current">RestateRunner</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Restate</span><wbr><span><span>Runner</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-testing:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html"><strike>RestateRunner</strike></a> : <span data-unresolved-link="org.junit.jupiter.api.extension/BeforeAllCallback///PointingToDeclaration/">BeforeAllCallback</span>, <span data-unresolved-link="org.junit.jupiter.api.extension/ParameterResolver///PointingToDeclaration/">ParameterResolver</span></div><div class="deprecation-content"><h3 class="">Deprecated</h3></div><p class="paragraph">Restate runner for JUnit 5. Example: </p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea"><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">@RegisterExtension</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div>
-private final static RestateRunner restateRunner = RestateRunnerBuilder.create()
-        .withService(new MyService())
-        .buildRunner();
-</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><p class="paragraph">The runner will deploy the services locally, execute Restate as container using <a href="https://java.testcontainers.org/">Testcontainers</a>, and register the services. </p><p class="paragraph">This extension is scoped per test class, meaning that the restate runner will be shared among test methods. </p><p class="paragraph">Use the annotations <a href="../-restate-client/index.html">RestateClient</a>, <a href="../-restate-u-r-l/index.html">RestateURL</a> and <a href="../-restate-admin-client/index.html">RestateAdminClient</a> to interact with the deployed server: </p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea"><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">@Test</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div>
-void initialCountIsZero(<div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">@RestateClient</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div> Client client) {
-    var client = CounterClient.fromClient(ingressClient, "my-counter");
-
-    // Use client as usual
-    long response = client.get();
-    assertThat(response).isEqualTo(0L);
-}</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><span class="kdoc-tag"><h4 class="">Deprecated</h4><p class="paragraph">We now recommend using <a href="../-restate-test/index.html">RestateTest</a>.</p></span></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-testing:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">RestateRunner</a> : <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoCloseable.html">AutoCloseable</a>, <span data-unresolved-link="org.junit.jupiter.api.extension/ExtensionContext.Store.CloseableResource///PointingToDeclaration/">ExtensionContext.Store.CloseableResource</span></div><p class="paragraph">Manual runner for the Restate test infra, starting the Restate server container together with the provided services and automatically registering them. To start the infra use <a href="start.html">start</a> and to stop it use <a href="stop.html">stop</a>. </p><p class="paragraph">If you use JUnit 5, we suggest using <a href="../-restate-test/index.html">RestateTest</a> instead.</p></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="206221906%2FClasslikes%2F-101612483" anchor-label="Builder" id="206221906%2FClasslikes%2F-101612483" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-testing:dokkaHtmlPartial/main" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-builder/index.html"><span><span>Builder</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="206221906%2FClasslikes%2F-101612483"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-testing:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-builder/index.html">Builder</a></div><div class="brief ">Builder for <a href="index.html">RestateRunner</a>.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="-1604732032%2FProperties%2F-101612483" anchor-label="RESTATE_ADMIN_ENDPOINT_PORT" id="-1604732032%2FProperties%2F-101612483" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-testing:dokkaHtmlPartial/main" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-r-e-s-t-a-t-e_-a-d-m-i-n_-e-n-d-p-o-i-n-t_-p-o-r-t.html"><span><span>RESTATE_ADMIN_ENDPOINT_PORT</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1604732032%2FProperties%2F-101612483"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-testing:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="-r-e-s-t-a-t-e_-a-d-m-i-n_-e-n-d-p-o-i-n-t_-p-o-r-t.html">RESTATE_ADMIN_ENDPOINT_PORT</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">9070</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1032140326%2FProperties%2F-101612483" anchor-label="RESTATE_INGRESS_ENDPOINT_PORT" id="-1032140326%2FProperties%2F-101612483" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-testing:dokkaHtmlPartial/main" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-r-e-s-t-a-t-e_-i-n-g-r-e-s-s_-e-n-d-p-o-i-n-t_-p-o-r-t.html"><span><span>RESTATE_INGRESS_ENDPOINT_PORT</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1032140326%2FProperties%2F-101612483"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-testing:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="-r-e-s-t-a-t-e_-i-n-g-r-e-s-s_-e-n-d-p-o-i-n-t_-p-o-r-t.html">RESTATE_INGRESS_ENDPOINT_PORT</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">8080</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div data-togglable="FUNCTION">
         <h2 class="">Functions</h2>
-        <div class="table"><a data-name="-314213078%2FFunctions%2F-101612483" anchor-label="beforeAll" id="-314213078%2FFunctions%2F-101612483" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main"></a>
+        <div class="table"><a data-name="-1228576958%2FFunctions%2F-101612483" anchor-label="close" id="-1228576958%2FFunctions%2F-101612483" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main"></a>
           <div class="table-row" data-filterable-current=":sdk-testing:dokkaHtmlPartial/main" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="before-all.html"><span>before</span><wbr><span><span>All</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-314213078%2FFunctions%2F-101612483"></span>
+                  <div><a href="close.html"><span><span>close</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1228576958%2FFunctions%2F-101612483"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-testing:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="before-all.html"><span class="token function">beforeAll</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><span data-unresolved-link="org.junit.jupiter.api.extension/ExtensionContext///PointingToDeclaration/">ExtensionContext</span></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-testing:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="close.html"><span class="token function">close</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief ">Like <a href="stop.html">stop</a>.</div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1888577070%2FFunctions%2F-101612483" anchor-label="resolveParameter" id="-1888577070%2FFunctions%2F-101612483" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main"></a>
+<a data-name="-1028154629%2FFunctions%2F-101612483" anchor-label="from" id="-1028154629%2FFunctions%2F-101612483" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main"></a>
           <div class="table-row" data-filterable-current=":sdk-testing:dokkaHtmlPartial/main" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="resolve-parameter.html"><span>resolve</span><wbr><span><span>Parameter</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1888577070%2FFunctions%2F-101612483"></span>
+                  <div><a href="from.html"><span><span>from</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1028154629%2FFunctions%2F-101612483"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-testing:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="resolve-parameter.html"><span class="token function">resolveParameter</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">parameterContext<span class="token operator">: </span><span data-unresolved-link="org.junit.jupiter.api.extension/ParameterContext///PointingToDeclaration/">ParameterContext</span><span class="token punctuation">, </span></span><span class="parameter ">extensionContext<span class="token operator">: </span><span data-unresolved-link="org.junit.jupiter.api.extension/ExtensionContext///PointingToDeclaration/">ExtensionContext</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-testing:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="from.html"><span class="token function">from</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">endpoint<span class="token operator">: </span><a href="../../../sdk-common/dev.restate.sdk.endpoint/-endpoint/index.html">Endpoint</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="-builder/index.html">RestateRunner.Builder</a></div><div class="brief ">Create from <a href="../../../sdk-common/dev.restate.sdk.endpoint/-endpoint/index.html">Endpoint</a>.</div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1354071072%2FFunctions%2F-101612483" anchor-label="supportsParameter" id="-1354071072%2FFunctions%2F-101612483" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main"></a>
+<a data-name="-1282195420%2FFunctions%2F-101612483" anchor-label="getAdminUrl" id="-1282195420%2FFunctions%2F-101612483" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main"></a>
           <div class="table-row" data-filterable-current=":sdk-testing:dokkaHtmlPartial/main" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="supports-parameter.html"><span>supports</span><wbr><span><span>Parameter</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1354071072%2FFunctions%2F-101612483"></span>
+                  <div><a href="get-admin-url.html"><span>get</span><wbr><span>Admin</span><wbr><span><span>Url</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1282195420%2FFunctions%2F-101612483"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-testing:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="supports-parameter.html"><span class="token function">supportsParameter</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">parameterContext<span class="token operator">: </span><span data-unresolved-link="org.junit.jupiter.api.extension/ParameterContext///PointingToDeclaration/">ParameterContext</span><span class="token punctuation">, </span></span><span class="parameter ">extensionContext<span class="token operator">: </span><span data-unresolved-link="org.junit.jupiter.api.extension/ExtensionContext///PointingToDeclaration/">ExtensionContext</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-testing:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="get-admin-url.html"><span class="token function">getAdminUrl</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/net/URL.html">URL</a></div><div class="brief ">Get restate admin url to send HTTP requests to the admin API.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1923312193%2FFunctions%2F-101612483" anchor-label="getRestateContainer" id="1923312193%2FFunctions%2F-101612483" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-testing:dokkaHtmlPartial/main" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-restate-container.html"><span>get</span><wbr><span>Restate</span><wbr><span><span>Container</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1923312193%2FFunctions%2F-101612483"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-testing:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="get-restate-container.html"><span class="token function">getRestateContainer</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="org.testcontainers.containers/GenericContainer///PointingToDeclaration/">GenericContainer</span><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span></div><div class="brief ">Get the restate container.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1463007021%2FFunctions%2F-101612483" anchor-label="getRestateUrl" id="-1463007021%2FFunctions%2F-101612483" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-testing:dokkaHtmlPartial/main" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-restate-url.html"><span>get</span><wbr><span>Restate</span><wbr><span><span>Url</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1463007021%2FFunctions%2F-101612483"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-testing:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="get-restate-url.html"><span class="token function">getRestateUrl</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/net/URL.html">URL</a></div><div class="brief ">Get restate ingress url to send HTTP/gRPC requests to services.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1022645224%2FFunctions%2F-101612483" anchor-label="start" id="-1022645224%2FFunctions%2F-101612483" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-testing:dokkaHtmlPartial/main" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="start.html"><span><span>start</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1022645224%2FFunctions%2F-101612483"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-testing:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="start.html"><span class="token function">start</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief ">Run restate, run the embedded service endpoint server, and register the services.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1123877854%2FFunctions%2F-101612483" anchor-label="stop" id="1123877854%2FFunctions%2F-101612483" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":sdk-testing:dokkaHtmlPartial/main" data-filterable-set=":sdk-testing:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="stop.html"><span><span>stop</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1123877854%2FFunctions%2F-101612483"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":sdk-testing:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="stop.html"><span class="token function">stop</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief ">Stop restate and the embedded service endpoint server.</div></div></div>
                 </div>
               </div>
             </div>
@@ -131,7 +233,7 @@ void initialCountIsZero(<div class="sample-container"><pre><code class="block la
   </div>
 </div>
       <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2025 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
       </div>
             </div>
         </div>

@@ -96,12 +96,37 @@ loadScripts(document, 'script');</script>
  interact with other Restate services, record non-deterministic closures, execute timers and
  synchronize with external systems.
 
- <p>All methods of this interface, and related interfaces, throws either <a href="common/TerminalException.html" title="class in dev.restate.sdk.common"><code>TerminalException</code></a>
- or <a href="common/AbortedExecutionException.html" title="class in dev.restate.sdk.common"><code>AbortedExecutionException</code></a>, where the former can be caught and acted upon, while the
+ <h2 id="error-handling-heading">Error handling</h2>
+
+ All methods of this interface, and related interfaces, throws either <a href="common/TerminalException.html" title="class in dev.restate.sdk.common"><code>TerminalException</code></a> or
+ <a href="common/AbortedExecutionException.html" title="class in dev.restate.sdk.common"><code>AbortedExecutionException</code></a>, where the former can be caught and acted upon, while the
  latter MUST NOT be caught, but simply propagated for clean up purposes.
 
- <p>NOTE: This interface MUST NOT be accessed concurrently since it can lead to different
- orderings of user actions, corrupting the execution of the invocation.</div>
+ <h2 id="serialization-and-deserialization-heading">Serialization and Deserialization</h2>
+
+ The methods of this interface that need to serialize or deserialize payloads have an overload
+ both accepting <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link"><code>Class</code></a> or <a href="../serde/TypeTag.html" title="interface in dev.restate.serde"><code>TypeTag</code></a>. Depending on your case, you might use the <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link"><code>Class</code></a> overload for simple types, and <a href="../serde/TypeRef.html" title="class in dev.restate.serde"><code>TypeRef</code></a> for generic types:
+
+ <pre><code>
+ String result = ctx.run(
+    "my-http-request",
+    String.class,
+    () -&gt; doHttpRequest().getResult()
+ ).await();
+
+ List&lt;String&gt; result = ctx.run(
+    "my-http-request",
+    new TypeRef&lt;&gt;(){ },
+    () -&gt; doHttpRequest().getResult()
+ ).await();
+ </code></pre>
+
+ By default, Jackson Databind will be used for all serialization/deserialization. Check <a href="../serde/SerdeFactory.html" title="interface in dev.restate.serde"><code>SerdeFactory</code></a> for more details on how to customize that.
+
+ <h2 id="thread-safety-heading">Thread safety</h2>
+
+ This interface <b>MUST NOT</b> be accessed concurrently since it can lead to different orderings
+ of user actions, corrupting the execution of the invocation.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -117,125 +142,200 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>&lt;T&gt;&nbsp;<a href="Awakeable.html" title="class in dev.restate.sdk">Awakeable</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#awakeable(dev.restate.sdk.common.Serde)" class="member-name-link">awakeable</a><wbr>(<a href="common/Serde.html" title="interface in dev.restate.sdk.common">Serde</a>&lt;T&gt;&nbsp;serde)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#awakeable(dev.restate.serde.TypeTag)" class="member-name-link">awakeable</a><wbr>(<a href="../serde/TypeTag.html" title="interface in dev.restate.serde">TypeTag</a>&lt;T&gt;&nbsp;typeTag)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Create an <a href="Awakeable.html" title="class in dev.restate.sdk"><code>Awakeable</code></a>, addressable through <a href="Awakeable.html#id()"><code>Awakeable.id()</code></a>.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="AwakeableHandle.html" title="interface in dev.restate.sdk">AwakeableHandle</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#awakeableHandle(java.lang.String)" class="member-name-link">awakeableHandle</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;id)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T&gt;&nbsp;<a href="Awakeable.html" title="class in dev.restate.sdk">Awakeable</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#awakeable(java.lang.Class)" class="member-name-link">awakeable</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;clazz)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Create an <a href="Awakeable.html" title="class in dev.restate.sdk"><code>Awakeable</code></a>, addressable through <a href="Awakeable.html#id()"><code>Awakeable.id()</code></a>.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="AwakeableHandle.html" title="interface in dev.restate.sdk">AwakeableHandle</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#awakeableHandle(java.lang.String)" class="member-name-link">awakeableHandle</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;id)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Create a new <a href="AwakeableHandle.html" title="interface in dev.restate.sdk"><code>AwakeableHandle</code></a> for the provided identifier.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="Awaitable.html" title="class in dev.restate.sdk">Awaitable</a><wbr>&lt;byte[]&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#call(dev.restate.sdk.common.Target,byte%5B%5D)" class="member-name-link">call</a><wbr>(<a href="common/Target.html" title="class in dev.restate.sdk.common">Target</a>&nbsp;target,
- byte[]&nbsp;parameter)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
-<div class="block">Like <a href="#call(dev.restate.sdk.common.Target,dev.restate.sdk.common.Serde,dev.restate.sdk.common.Serde,T)"><code>call(Target, Serde, Serde, Object)</code></a> with raw input/output.</div>
-</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>&lt;T,<wbr>
-R&gt;&nbsp;<a href="Awaitable.html" title="class in dev.restate.sdk">Awaitable</a><wbr>&lt;R&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#call(dev.restate.sdk.common.Target,dev.restate.sdk.common.Serde,dev.restate.sdk.common.Serde,T)" class="member-name-link">call</a><wbr>(<a href="common/Target.html" title="class in dev.restate.sdk.common">Target</a>&nbsp;target,
- <a href="common/Serde.html" title="interface in dev.restate.sdk.common">Serde</a>&lt;T&gt;&nbsp;inputSerde,
- <a href="common/Serde.html" title="interface in dev.restate.sdk.common">Serde</a>&lt;R&gt;&nbsp;outputSerde,
- T&nbsp;parameter)</code></div>
+R&gt;&nbsp;<a href="CallDurableFuture.html" title="class in dev.restate.sdk">CallDurableFuture</a><wbr>&lt;R&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#call(dev.restate.common.Request)" class="member-name-link">call</a><wbr>(<a href="../common/Request.html" title="interface in dev.restate.common">Request</a>&lt;T,<wbr>R&gt;&nbsp;request)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Invoke another Restate service method.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="RestateRandom.html" title="class in dev.restate.sdk">RestateRandom</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#random()" class="member-name-link">random</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="common/Request.html" title="class in dev.restate.sdk.common">Request</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#request()" class="member-name-link">request</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#run(dev.restate.sdk.common.function.ThrowingRunnable)" class="member-name-link">run</a><wbr>(<a href="common/function/ThrowingRunnable.html" title="interface in dev.restate.sdk.common.function">ThrowingRunnable</a>&nbsp;runnable)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="InvocationHandle.html" title="interface in dev.restate.sdk">InvocationHandle</a><wbr>&lt;<a href="../common/Slice.html" title="interface in dev.restate.common">Slice</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#invocationHandle(java.lang.String)" class="member-name-link">invocationHandle</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;invocationId)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
-<div class="block">Like <a href="#run(java.lang.String,dev.restate.sdk.common.function.ThrowingRunnable)"><code>run(String, ThrowingRunnable)</code></a>, but without a name.</div>
+<div class="block">Like <a href="#invocationHandle(java.lang.String,java.lang.Class)"><code>invocationHandle(String, Class)</code></a>, without providing a response parser</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>&lt;R&gt;&nbsp;<a href="InvocationHandle.html" title="interface in dev.restate.sdk">InvocationHandle</a><wbr>&lt;R&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#invocationHandle(java.lang.String,dev.restate.serde.TypeTag)" class="member-name-link">invocationHandle</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;invocationId,
+ <a href="../serde/TypeTag.html" title="interface in dev.restate.serde">TypeTag</a>&lt;R&gt;&nbsp;responseTypeTag)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Like <a href="#invocationHandle(java.lang.String,java.lang.Class)"><code>invocationHandle(String, Class)</code></a></div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;R&gt;&nbsp;<a href="InvocationHandle.html" title="interface in dev.restate.sdk">InvocationHandle</a><wbr>&lt;R&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#invocationHandle(java.lang.String,java.lang.Class)" class="member-name-link">invocationHandle</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;invocationId,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;R&gt;&nbsp;responseClazz)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Get an <a href="InvocationHandle.html" title="interface in dev.restate.sdk"><code>InvocationHandle</code></a> for an already existing invocation.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="RestateRandom.html" title="class in dev.restate.sdk">RestateRandom</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#random()" class="member-name-link">random</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Returns a deterministic random.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="common/HandlerRequest.html" title="class in dev.restate.sdk.common">HandlerRequest</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#request()" class="member-name-link">request</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#run(dev.restate.sdk.common.RetryPolicy,dev.restate.sdk.common.function.ThrowingRunnable)" class="member-name-link">run</a><wbr>(<a href="common/RetryPolicy.html" title="class in dev.restate.sdk.common">RetryPolicy</a>&nbsp;retryPolicy,
- <a href="common/function/ThrowingRunnable.html" title="interface in dev.restate.sdk.common.function">ThrowingRunnable</a>&nbsp;runnable)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#run(dev.restate.common.function.ThrowingRunnable)" class="member-name-link">run</a><wbr>(<a href="../common/function/ThrowingRunnable.html" title="interface in dev.restate.common.function">ThrowingRunnable</a>&nbsp;runnable)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
-<div class="block">Like <a href="#run(dev.restate.sdk.common.function.ThrowingRunnable)"><code>run(ThrowingRunnable)</code></a>, but using a custom retry policy.</div>
+<div class="block">Like <a href="#run(java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>run(Class, ThrowingSupplier)</code></a> without output.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T&gt;&nbsp;T</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#run(dev.restate.sdk.common.Serde,dev.restate.sdk.common.function.ThrowingSupplier)" class="member-name-link">run</a><wbr>(<a href="common/Serde.html" title="interface in dev.restate.sdk.common">Serde</a>&lt;T&gt;&nbsp;serde,
- <a href="common/function/ThrowingSupplier.html" title="interface in dev.restate.sdk.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#run(dev.restate.serde.TypeTag,dev.restate.common.function.ThrowingSupplier)" class="member-name-link">run</a><wbr>(<a href="../serde/TypeTag.html" title="interface in dev.restate.serde">TypeTag</a>&lt;T&gt;&nbsp;typeTag,
+ <a href="../common/function/ThrowingSupplier.html" title="interface in dev.restate.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
-<div class="block">Like <a href="#run(java.lang.String,dev.restate.sdk.common.Serde,dev.restate.sdk.common.function.ThrowingSupplier)"><code>run(String, Serde, ThrowingSupplier)</code></a>, but without a name.</div>
+<div class="block">Like <a href="#run(java.lang.String,dev.restate.serde.TypeTag,dev.restate.common.function.ThrowingSupplier)"><code>run(String, TypeTag, ThrowingSupplier)</code></a>, without a name</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T&gt;&nbsp;T</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#run(dev.restate.sdk.common.Serde,dev.restate.sdk.common.RetryPolicy,dev.restate.sdk.common.function.ThrowingSupplier)" class="member-name-link">run</a><wbr>(<a href="common/Serde.html" title="interface in dev.restate.sdk.common">Serde</a>&lt;T&gt;&nbsp;serde,
- <a href="common/RetryPolicy.html" title="class in dev.restate.sdk.common">RetryPolicy</a>&nbsp;retryPolicy,
- <a href="common/function/ThrowingSupplier.html" title="interface in dev.restate.sdk.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#run(java.lang.Class,dev.restate.common.function.ThrowingSupplier)" class="member-name-link">run</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;clazz,
+ <a href="../common/function/ThrowingSupplier.html" title="interface in dev.restate.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
-<div class="block">Like <a href="#run(dev.restate.sdk.common.Serde,dev.restate.sdk.common.function.ThrowingSupplier)"><code>run(Serde, ThrowingSupplier)</code></a>, but using a custom retry policy.</div>
+<div class="block">Like <a href="#run(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>run(String, Class, ThrowingSupplier)</code></a>, without a name</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#run(java.lang.String,dev.restate.sdk.common.function.ThrowingRunnable)" class="member-name-link">run</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- <a href="common/function/ThrowingRunnable.html" title="interface in dev.restate.sdk.common.function">ThrowingRunnable</a>&nbsp;runnable)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#run(java.lang.String,dev.restate.common.function.ThrowingRunnable)" class="member-name-link">run</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../common/function/ThrowingRunnable.html" title="interface in dev.restate.common.function">ThrowingRunnable</a>&nbsp;runnable)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
-<div class="block">Like <a href="#run(java.lang.String,dev.restate.sdk.common.Serde,dev.restate.sdk.common.function.ThrowingSupplier)"><code>run(String, Serde, ThrowingSupplier)</code></a>, but without returning a value.</div>
+<div class="block">Like <a href="#run(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>run(String, Class, ThrowingSupplier)</code></a> without output.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#run(java.lang.String,dev.restate.sdk.common.RetryPolicy,dev.restate.sdk.common.function.ThrowingRunnable)" class="member-name-link">run</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#run(java.lang.String,dev.restate.sdk.common.RetryPolicy,dev.restate.common.function.ThrowingRunnable)" class="member-name-link">run</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="common/RetryPolicy.html" title="class in dev.restate.sdk.common">RetryPolicy</a>&nbsp;retryPolicy,
- <a href="common/function/ThrowingRunnable.html" title="interface in dev.restate.sdk.common.function">ThrowingRunnable</a>&nbsp;runnable)</code></div>
+ <a href="../common/function/ThrowingRunnable.html" title="interface in dev.restate.common.function">ThrowingRunnable</a>&nbsp;runnable)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
-<div class="block">Like <a href="#run(java.lang.String,dev.restate.sdk.common.function.ThrowingRunnable)"><code>run(String, ThrowingRunnable)</code></a>, but using a custom retry policy.</div>
+<div class="block">Like <a href="#run(java.lang.String,dev.restate.common.function.ThrowingRunnable)"><code>run(String, ThrowingRunnable)</code></a>, but without a return value and using a custom
+ retry policy.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T&gt;&nbsp;T</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#run(java.lang.String,dev.restate.sdk.common.Serde,dev.restate.sdk.common.function.ThrowingSupplier)" class="member-name-link">run</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- <a href="common/Serde.html" title="interface in dev.restate.sdk.common">Serde</a>&lt;T&gt;&nbsp;serde,
- <a href="common/function/ThrowingSupplier.html" title="interface in dev.restate.sdk.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#run(java.lang.String,dev.restate.serde.TypeTag,dev.restate.common.function.ThrowingSupplier)" class="member-name-link">run</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../serde/TypeTag.html" title="interface in dev.restate.serde">TypeTag</a>&lt;T&gt;&nbsp;typeTag,
+ <a href="../common/function/ThrowingSupplier.html" title="interface in dev.restate.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
-<div class="block">Execute a non-deterministic closure, recording the result value in the journal.</div>
+<div class="block">Like <a href="#run(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>run(String, Class, ThrowingSupplier)</code></a>, but providing a <a href="../serde/TypeTag.html" title="interface in dev.restate.serde"><code>TypeTag</code></a>.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>&lt;T&gt;&nbsp;T</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#run(java.lang.String,dev.restate.sdk.common.Serde,dev.restate.sdk.common.RetryPolicy,dev.restate.sdk.common.function.ThrowingSupplier)" class="member-name-link">run</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- <a href="common/Serde.html" title="interface in dev.restate.sdk.common">Serde</a>&lt;T&gt;&nbsp;serde,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T&gt;&nbsp;T</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#run(java.lang.String,dev.restate.serde.TypeTag,dev.restate.sdk.common.RetryPolicy,dev.restate.common.function.ThrowingSupplier)" class="member-name-link">run</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../serde/TypeTag.html" title="interface in dev.restate.serde">TypeTag</a>&lt;T&gt;&nbsp;typeTag,
  <a href="common/RetryPolicy.html" title="class in dev.restate.sdk.common">RetryPolicy</a>&nbsp;retryPolicy,
- <a href="common/function/ThrowingSupplier.html" title="interface in dev.restate.sdk.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
-<div class="block">Like <a href="#run(java.lang.String,dev.restate.sdk.common.Serde,dev.restate.sdk.common.function.ThrowingSupplier)"><code>run(String, Serde, ThrowingSupplier)</code></a>, but using a custom retry policy.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#send(dev.restate.sdk.common.Target,byte%5B%5D)" class="member-name-link">send</a><wbr>(<a href="common/Target.html" title="class in dev.restate.sdk.common">Target</a>&nbsp;target,
- byte[]&nbsp;parameter)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
-<div class="block">Like <a href="#send(dev.restate.sdk.common.Target,dev.restate.sdk.common.Serde,T)"><code>send(Target, Serde, Object)</code></a> with bytes input.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#send(dev.restate.sdk.common.Target,byte%5B%5D,java.time.Duration)" class="member-name-link">send</a><wbr>(<a href="common/Target.html" title="class in dev.restate.sdk.common">Target</a>&nbsp;target,
- byte[]&nbsp;parameter,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;delay)</code></div>
+ <a href="../common/function/ThrowingSupplier.html" title="interface in dev.restate.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
-<div class="block">Like <a href="#send(dev.restate.sdk.common.Target,dev.restate.sdk.common.Serde,T,java.time.Duration)"><code>send(Target, Serde, Object, Duration)</code></a> with bytes input.</div>
+<div class="block">Like <a href="#run(java.lang.String,dev.restate.serde.TypeTag,dev.restate.common.function.ThrowingSupplier)"><code>run(String, TypeTag, ThrowingSupplier)</code></a>, but using a custom retry policy.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>&lt;T&gt;&nbsp;void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#send(dev.restate.sdk.common.Target,dev.restate.sdk.common.Serde,T)" class="member-name-link">send</a><wbr>(<a href="common/Target.html" title="class in dev.restate.sdk.common">Target</a>&nbsp;target,
- <a href="common/Serde.html" title="interface in dev.restate.sdk.common">Serde</a>&lt;T&gt;&nbsp;inputSerde,
- T&nbsp;parameter)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T&gt;&nbsp;T</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#run(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)" class="member-name-link">run</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;clazz,
+ <a href="../common/function/ThrowingSupplier.html" title="interface in dev.restate.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Execute a closure, recording the result value in the journal.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T&gt;&nbsp;T</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#run(java.lang.String,java.lang.Class,dev.restate.sdk.common.RetryPolicy,dev.restate.common.function.ThrowingSupplier)" class="member-name-link">run</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;clazz,
+ <a href="common/RetryPolicy.html" title="class in dev.restate.sdk.common">RetryPolicy</a>&nbsp;retryPolicy,
+ <a href="../common/function/ThrowingSupplier.html" title="interface in dev.restate.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Like <a href="#run(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>run(String, Class, ThrowingSupplier)</code></a>, but using a custom retry policy.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="DurableFuture.html" title="class in dev.restate.sdk">DurableFuture</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#runAsync(dev.restate.common.function.ThrowingRunnable)" class="member-name-link">runAsync</a><wbr>(<a href="../common/function/ThrowingRunnable.html" title="interface in dev.restate.common.function">ThrowingRunnable</a>&nbsp;runnable)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Like <a href="#runAsync(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>runAsync(String, Class, ThrowingSupplier)</code></a> without output.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T&gt;&nbsp;<a href="DurableFuture.html" title="class in dev.restate.sdk">DurableFuture</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#runAsync(dev.restate.serde.TypeTag,dev.restate.common.function.ThrowingSupplier)" class="member-name-link">runAsync</a><wbr>(<a href="../serde/TypeTag.html" title="interface in dev.restate.serde">TypeTag</a>&lt;T&gt;&nbsp;typeTag,
+ <a href="../common/function/ThrowingSupplier.html" title="interface in dev.restate.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Like <a href="#runAsync(java.lang.String,dev.restate.serde.TypeTag,dev.restate.common.function.ThrowingSupplier)"><code>runAsync(String, TypeTag, ThrowingSupplier)</code></a>, without a name</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T&gt;&nbsp;<a href="DurableFuture.html" title="class in dev.restate.sdk">DurableFuture</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#runAsync(java.lang.Class,dev.restate.common.function.ThrowingSupplier)" class="member-name-link">runAsync</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;clazz,
+ <a href="../common/function/ThrowingSupplier.html" title="interface in dev.restate.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Like <a href="#runAsync(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>runAsync(String, Class, ThrowingSupplier)</code></a>, without a name</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="DurableFuture.html" title="class in dev.restate.sdk">DurableFuture</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#runAsync(java.lang.String,dev.restate.common.function.ThrowingRunnable)" class="member-name-link">runAsync</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../common/function/ThrowingRunnable.html" title="interface in dev.restate.common.function">ThrowingRunnable</a>&nbsp;runnable)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Like <a href="#runAsync(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>runAsync(String, Class, ThrowingSupplier)</code></a> without output.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="DurableFuture.html" title="class in dev.restate.sdk">DurableFuture</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#runAsync(java.lang.String,dev.restate.sdk.common.RetryPolicy,dev.restate.common.function.ThrowingRunnable)" class="member-name-link">runAsync</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="common/RetryPolicy.html" title="class in dev.restate.sdk.common">RetryPolicy</a>&nbsp;retryPolicy,
+ <a href="../common/function/ThrowingRunnable.html" title="interface in dev.restate.common.function">ThrowingRunnable</a>&nbsp;runnable)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Like <a href="#runAsync(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>runAsync(String, Class, ThrowingSupplier)</code></a>, but without an output and using a
+ custom retry policy.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T&gt;&nbsp;<a href="DurableFuture.html" title="class in dev.restate.sdk">DurableFuture</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#runAsync(java.lang.String,dev.restate.serde.TypeTag,dev.restate.common.function.ThrowingSupplier)" class="member-name-link">runAsync</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../serde/TypeTag.html" title="interface in dev.restate.serde">TypeTag</a>&lt;T&gt;&nbsp;typeTag,
+ <a href="../common/function/ThrowingSupplier.html" title="interface in dev.restate.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Like <a href="#runAsync(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>runAsync(String, Class, ThrowingSupplier)</code></a>, but providing a <a href="../serde/TypeTag.html" title="interface in dev.restate.serde"><code>TypeTag</code></a>.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>&lt;T&gt;&nbsp;<a href="DurableFuture.html" title="class in dev.restate.sdk">DurableFuture</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#runAsync(java.lang.String,dev.restate.serde.TypeTag,dev.restate.sdk.common.RetryPolicy,dev.restate.common.function.ThrowingSupplier)" class="member-name-link">runAsync</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../serde/TypeTag.html" title="interface in dev.restate.serde">TypeTag</a>&lt;T&gt;&nbsp;typeTag,
+ <a href="common/RetryPolicy.html" title="class in dev.restate.sdk.common">RetryPolicy</a>&nbsp;retryPolicy,
+ <a href="../common/function/ThrowingSupplier.html" title="interface in dev.restate.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Like <a href="#runAsync(java.lang.String,dev.restate.serde.TypeTag,dev.restate.common.function.ThrowingSupplier)"><code>runAsync(String, TypeTag, ThrowingSupplier)</code></a>, but using a custom retry policy.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T&gt;&nbsp;<a href="DurableFuture.html" title="class in dev.restate.sdk">DurableFuture</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#runAsync(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)" class="member-name-link">runAsync</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;clazz,
+ <a href="../common/function/ThrowingSupplier.html" title="interface in dev.restate.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Execute a closure asynchronously.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T&gt;&nbsp;<a href="DurableFuture.html" title="class in dev.restate.sdk">DurableFuture</a><wbr>&lt;T&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#runAsync(java.lang.String,java.lang.Class,dev.restate.sdk.common.RetryPolicy,dev.restate.common.function.ThrowingSupplier)" class="member-name-link">runAsync</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;clazz,
+ <a href="common/RetryPolicy.html" title="class in dev.restate.sdk.common">RetryPolicy</a>&nbsp;retryPolicy,
+ <a href="../common/function/ThrowingSupplier.html" title="interface in dev.restate.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Like <a href="#runAsync(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>runAsync(String, Class, ThrowingSupplier)</code></a>, but using a custom retry policy.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T,<wbr>
+R&gt;&nbsp;<a href="InvocationHandle.html" title="interface in dev.restate.sdk">InvocationHandle</a><wbr>&lt;R&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#send(dev.restate.common.Request)" class="member-name-link">send</a><wbr>(<a href="../common/Request.html" title="interface in dev.restate.common">Request</a>&lt;T,<wbr>R&gt;&nbsp;request)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Invoke another Restate service without waiting for the response.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>&lt;T,<wbr>
+R&gt;&nbsp;<a href="InvocationHandle.html" title="interface in dev.restate.sdk">InvocationHandle</a><wbr>&lt;R&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#send(dev.restate.common.Request,java.time.Duration)" class="member-name-link">send</a><wbr>(<a href="../common/Request.html" title="interface in dev.restate.common">Request</a>&lt;T,<wbr>R&gt;&nbsp;request,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;delay)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Invoke another Restate service without waiting for the response.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>&lt;T&gt;&nbsp;void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#send(dev.restate.sdk.common.Target,dev.restate.sdk.common.Serde,T,java.time.Duration)" class="member-name-link">send</a><wbr>(<a href="common/Target.html" title="class in dev.restate.sdk.common">Target</a>&nbsp;target,
- <a href="common/Serde.html" title="interface in dev.restate.sdk.common">Serde</a>&lt;T&gt;&nbsp;inputSerde,
- T&nbsp;parameter,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;delay)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
-<div class="block">Invoke another Restate service without waiting for the response after the provided <code>
- delay</code> has elapsed.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#sleep(java.time.Duration)" class="member-name-link">sleep</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;duration)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#sleep(java.time.Duration)" class="member-name-link">sleep</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;duration)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Causes the current execution of the function invocation to sleep for the given duration.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="Awaitable.html" title="class in dev.restate.sdk">Awaitable</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#timer(java.time.Duration)" class="member-name-link">timer</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;duration)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="DurableFuture.html" title="class in dev.restate.sdk">DurableFuture</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#timer(java.lang.String,java.time.Duration)" class="member-name-link">timer</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;duration)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Causes the start of a timer for the given duration.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="DurableFuture.html" title="class in dev.restate.sdk">DurableFuture</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#timer(java.time.Duration)" class="member-name-link">timer</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;duration)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Causes the start of a timer for the given duration.</div>
 </div>
 </div>
@@ -255,87 +355,85 @@ R&gt;&nbsp;<a href="Awaitable.html" title="class in dev.restate.sdk">Awaitable</
 <li>
 <section class="detail" id="request()">
 <h3>request</h3>
-<div class="member-signature"><span class="return-type"><a href="common/Request.html" title="class in dev.restate.sdk.common">Request</a></span>&nbsp;<span class="element-name">request</span>()</div>
+<div class="member-signature"><span class="return-type"><a href="common/HandlerRequest.html" title="class in dev.restate.sdk.common">HandlerRequest</a></span>&nbsp;<span class="element-name">request</span>()</div>
 </section>
 </li>
 <li>
-<section class="detail" id="call(dev.restate.sdk.common.Target,dev.restate.sdk.common.Serde,dev.restate.sdk.common.Serde,T)">
-<h3 id="call(dev.restate.sdk.common.Target,dev.restate.sdk.common.Serde,dev.restate.sdk.common.Serde,java.lang.Object)">call</h3>
+<section class="detail" id="call(dev.restate.common.Request)">
+<h3>call</h3>
 <div class="member-signature"><span class="type-parameters">&lt;T,<wbr>
-R&gt;</span>&nbsp;<span class="return-type"><a href="Awaitable.html" title="class in dev.restate.sdk">Awaitable</a>&lt;R&gt;</span>&nbsp;<span class="element-name">call</span><wbr><span class="parameters">(<a href="common/Target.html" title="class in dev.restate.sdk.common">Target</a>&nbsp;target,
- <a href="common/Serde.html" title="interface in dev.restate.sdk.common">Serde</a>&lt;T&gt;&nbsp;inputSerde,
- <a href="common/Serde.html" title="interface in dev.restate.sdk.common">Serde</a>&lt;R&gt;&nbsp;outputSerde,
- T&nbsp;parameter)</span></div>
+R&gt;</span>&nbsp;<span class="return-type"><a href="CallDurableFuture.html" title="class in dev.restate.sdk">CallDurableFuture</a>&lt;R&gt;</span>&nbsp;<span class="element-name">call</span><wbr><span class="parameters">(<a href="../common/Request.html" title="interface in dev.restate.common">Request</a>&lt;T,<wbr>R&gt;&nbsp;request)</span></div>
 <div class="block">Invoke another Restate service method.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>target</code> - the address of the callee</dd>
-<dd><code>inputSerde</code> - Input serde</dd>
-<dd><code>outputSerde</code> - Output serde</dd>
-<dd><code>parameter</code> - the invocation request parameter.</dd>
+<dd><code>request</code> - Request object. For each service, a class called <code>
+     &lt;your_class_name&gt;Handlers</code> is generated containing the request builders.</dd>
 <dt>Returns:</dt>
-<dd>an <a href="Awaitable.html" title="class in dev.restate.sdk"><code>Awaitable</code></a> that wraps the Restate service method result.</dd>
+<dd>an <a href="DurableFuture.html" title="class in dev.restate.sdk"><code>DurableFuture</code></a> that wraps the Restate service method result.</dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="call(dev.restate.sdk.common.Target,byte[])">
-<h3>call</h3>
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="Awaitable.html" title="class in dev.restate.sdk">Awaitable</a>&lt;byte[]&gt;</span>&nbsp;<span class="element-name">call</span><wbr><span class="parameters">(<a href="common/Target.html" title="class in dev.restate.sdk.common">Target</a>&nbsp;target,
- byte[]&nbsp;parameter)</span></div>
-<div class="block">Like <a href="#call(dev.restate.sdk.common.Target,dev.restate.sdk.common.Serde,dev.restate.sdk.common.Serde,T)"><code>call(Target, Serde, Serde, Object)</code></a> with raw input/output.</div>
-</section>
-</li>
-<li>
-<section class="detail" id="send(dev.restate.sdk.common.Target,dev.restate.sdk.common.Serde,T)">
-<h3 id="send(dev.restate.sdk.common.Target,dev.restate.sdk.common.Serde,java.lang.Object)">send</h3>
-<div class="member-signature"><span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">send</span><wbr><span class="parameters">(<a href="common/Target.html" title="class in dev.restate.sdk.common">Target</a>&nbsp;target,
- <a href="common/Serde.html" title="interface in dev.restate.sdk.common">Serde</a>&lt;T&gt;&nbsp;inputSerde,
- T&nbsp;parameter)</span></div>
+<section class="detail" id="send(dev.restate.common.Request)">
+<h3>send</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T,<wbr>
+R&gt;</span>&nbsp;<span class="return-type"><a href="InvocationHandle.html" title="interface in dev.restate.sdk">InvocationHandle</a>&lt;R&gt;</span>&nbsp;<span class="element-name">send</span><wbr><span class="parameters">(<a href="../common/Request.html" title="interface in dev.restate.common">Request</a>&lt;T,<wbr>R&gt;&nbsp;request)</span></div>
 <div class="block">Invoke another Restate service without waiting for the response.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>target</code> - the address of the callee</dd>
-<dd><code>inputSerde</code> - Input serde</dd>
-<dd><code>parameter</code> - the invocation request parameter.</dd>
+<dd><code>request</code> - Request object. For each service, a class called <code>
+     &lt;your_class_name&gt;Handlers</code> is generated containing the request builders.</dd>
+<dt>Returns:</dt>
+<dd>an <a href="InvocationHandle.html" title="interface in dev.restate.sdk"><code>InvocationHandle</code></a> that can be used to retrieve the invocation id, cancel the
+     invocation, attach to its result.</dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="send(dev.restate.sdk.common.Target,byte[])">
+<section class="detail" id="send(dev.restate.common.Request,java.time.Duration)">
 <h3>send</h3>
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">send</span><wbr><span class="parameters">(<a href="common/Target.html" title="class in dev.restate.sdk.common">Target</a>&nbsp;target,
- byte[]&nbsp;parameter)</span></div>
-<div class="block">Like <a href="#send(dev.restate.sdk.common.Target,dev.restate.sdk.common.Serde,T)"><code>send(Target, Serde, Object)</code></a> with bytes input.</div>
-</section>
-</li>
-<li>
-<section class="detail" id="send(dev.restate.sdk.common.Target,dev.restate.sdk.common.Serde,T,java.time.Duration)">
-<h3 id="send(dev.restate.sdk.common.Target,dev.restate.sdk.common.Serde,java.lang.Object,java.time.Duration)">send</h3>
-<div class="member-signature"><span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">send</span><wbr><span class="parameters">(<a href="common/Target.html" title="class in dev.restate.sdk.common">Target</a>&nbsp;target,
- <a href="common/Serde.html" title="interface in dev.restate.sdk.common">Serde</a>&lt;T&gt;&nbsp;inputSerde,
- T&nbsp;parameter,
+<div class="member-signature"><span class="type-parameters">&lt;T,<wbr>
+R&gt;</span>&nbsp;<span class="return-type"><a href="InvocationHandle.html" title="interface in dev.restate.sdk">InvocationHandle</a>&lt;R&gt;</span>&nbsp;<span class="element-name">send</span><wbr><span class="parameters">(<a href="../common/Request.html" title="interface in dev.restate.common">Request</a>&lt;T,<wbr>R&gt;&nbsp;request,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;delay)</span></div>
-<div class="block">Invoke another Restate service without waiting for the response after the provided <code>
- delay</code> has elapsed.
-
- <p>This method returns immediately, as the timer is executed and awaited on Restate.</div>
+<div class="block">Invoke another Restate service without waiting for the response.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>target</code> - the address of the callee</dd>
-<dd><code>inputSerde</code> - Input serde</dd>
-<dd><code>parameter</code> - the invocation request parameter.</dd>
-<dd><code>delay</code> - time to wait before executing the call.</dd>
+<dd><code>request</code> - Request object. For each service, a class called <code>
+     &lt;your_class_name&gt;Handlers</code> is generated containing the request builders.</dd>
+<dd><code>delay</code> - the delay to send the request</dd>
+<dt>Returns:</dt>
+<dd>an <a href="InvocationHandle.html" title="interface in dev.restate.sdk"><code>InvocationHandle</code></a> that can be used to retrieve the invocation id, cancel the
+     invocation, attach to its result.</dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="send(dev.restate.sdk.common.Target,byte[],java.time.Duration)">
-<h3>send</h3>
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">send</span><wbr><span class="parameters">(<a href="common/Target.html" title="class in dev.restate.sdk.common">Target</a>&nbsp;target,
- byte[]&nbsp;parameter,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;delay)</span></div>
-<div class="block">Like <a href="#send(dev.restate.sdk.common.Target,dev.restate.sdk.common.Serde,T,java.time.Duration)"><code>send(Target, Serde, Object, Duration)</code></a> with bytes input.</div>
+<section class="detail" id="invocationHandle(java.lang.String,dev.restate.serde.TypeTag)">
+<h3>invocationHandle</h3>
+<div class="member-signature"><span class="type-parameters">&lt;R&gt;</span>&nbsp;<span class="return-type"><a href="InvocationHandle.html" title="interface in dev.restate.sdk">InvocationHandle</a>&lt;R&gt;</span>&nbsp;<span class="element-name">invocationHandle</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;invocationId,
+ <a href="../serde/TypeTag.html" title="interface in dev.restate.serde">TypeTag</a>&lt;R&gt;&nbsp;responseTypeTag)</span></div>
+<div class="block">Like <a href="#invocationHandle(java.lang.String,java.lang.Class)"><code>invocationHandle(String, Class)</code></a></div>
+</section>
+</li>
+<li>
+<section class="detail" id="invocationHandle(java.lang.String,java.lang.Class)">
+<h3>invocationHandle</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;R&gt;</span>&nbsp;<span class="return-type"><a href="InvocationHandle.html" title="interface in dev.restate.sdk">InvocationHandle</a>&lt;R&gt;</span>&nbsp;<span class="element-name">invocationHandle</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;invocationId,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;R&gt;&nbsp;responseClazz)</span></div>
+<div class="block">Get an <a href="InvocationHandle.html" title="interface in dev.restate.sdk"><code>InvocationHandle</code></a> for an already existing invocation. This will let you interact
+ with a running invocation, for example to cancel it or retrieve its result.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>invocationId</code> - The invocation to interact with.</dd>
+<dd><code>responseClazz</code> - The response class.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="invocationHandle(java.lang.String)">
+<h3>invocationHandle</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="InvocationHandle.html" title="interface in dev.restate.sdk">InvocationHandle</a>&lt;<a href="../common/Slice.html" title="interface in dev.restate.common">Slice</a>&gt;</span>&nbsp;<span class="element-name">invocationHandle</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;invocationId)</span></div>
+<div class="block">Like <a href="#invocationHandle(java.lang.String,java.lang.Class)"><code>invocationHandle(String, Class)</code></a>, without providing a response parser</div>
 </section>
 </li>
 <li>
@@ -352,9 +450,9 @@ R&gt;</span>&nbsp;<span class="return-type"><a href="Awaitable.html" title="clas
 <li>
 <section class="detail" id="timer(java.time.Duration)">
 <h3>timer</h3>
-<div class="member-signature"><span class="return-type"><a href="Awaitable.html" title="class in dev.restate.sdk">Awaitable</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&gt;</span>&nbsp;<span class="element-name">timer</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;duration)</span></div>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="DurableFuture.html" title="class in dev.restate.sdk">DurableFuture</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&gt;</span>&nbsp;<span class="element-name">timer</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;duration)</span></div>
 <div class="block">Causes the start of a timer for the given duration. You can await on the timer end by invoking
- <a href="Awaitable.html#await()"><code>Awaitable.await()</code></a>.</div>
+ <a href="DurableFuture.html#await()"><code>DurableFuture.await()</code></a>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>duration</code> - for which to sleep.</dd>
@@ -362,22 +460,46 @@ R&gt;</span>&nbsp;<span class="return-type"><a href="Awaitable.html" title="clas
 </section>
 </li>
 <li>
-<section class="detail" id="run(java.lang.String,dev.restate.sdk.common.Serde,dev.restate.sdk.common.function.ThrowingSupplier)">
+<section class="detail" id="timer(java.lang.String,java.time.Duration)">
+<h3>timer</h3>
+<div class="member-signature"><span class="return-type"><a href="DurableFuture.html" title="class in dev.restate.sdk">DurableFuture</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&gt;</span>&nbsp;<span class="element-name">timer</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html" title="class or interface in java.time" class="external-link">Duration</a>&nbsp;duration)</span></div>
+<div class="block">Causes the start of a timer for the given duration. You can await on the timer end by invoking
+ <a href="DurableFuture.html#await()"><code>DurableFuture.await()</code></a>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>name</code> - name used for observability</dd>
+<dd><code>duration</code> - for which to sleep.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="run(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)">
 <h3>run</h3>
 <div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">run</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- <a href="common/Serde.html" title="interface in dev.restate.sdk.common">Serde</a>&lt;T&gt;&nbsp;serde,
- <a href="common/function/ThrowingSupplier.html" title="interface in dev.restate.sdk.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</span>
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;clazz,
+ <a href="../common/function/ThrowingSupplier.html" title="interface in dev.restate.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</span>
            throws <span class="exceptions"><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></span></div>
-<div class="block">Execute a non-deterministic closure, recording the result value in the journal. The result
- value will be re-played in case of re-invocation (e.g. because of failure recovery or
- suspension point) without re-executing the closure. Use this feature if you want to perform
- <b>non-deterministic operations</b>.
+<div class="block">Execute a closure, recording the result value in the journal. The result value will be
+ re-played in case of re-invocation (e.g. because of failure recovery or suspension point)
+ without re-executing the closure.
+
+ <pre><code>
+ String result = ctx.run(
+    "my-http-request",
+    String.class,
+    () -&gt; doHttpRequest().getResult()
+ ).await();
+ </code></pre>
+
+ If the result type contains generic types, e.g. a <code>List&lt;String&gt;</code>, you should use <a href="#run(java.lang.String,dev.restate.serde.TypeTag,dev.restate.common.function.ThrowingSupplier)"><code>run(String, TypeTag, ThrowingSupplier)</code></a>. See <a href="Context.html" title="interface in dev.restate.sdk"><code>Context</code></a> for more details about
+ serialization and deserialization.
 
  <p>You can name this closure using the <code>name</code> parameter. This name will be available in
  the observability tools.
 
  <p>The closure should tolerate retries, that is Restate might re-execute the closure multiple
- times until it records a result. You can control and limit the amount of retries using <a href="#run(java.lang.String,dev.restate.sdk.common.Serde,dev.restate.sdk.common.RetryPolicy,dev.restate.sdk.common.function.ThrowingSupplier)"><code>run(String, Serde, RetryPolicy, ThrowingSupplier)</code></a>.
+ times until it records a result. You can control and limit the amount of retries using <a href="#run(java.lang.String,java.lang.Class,dev.restate.sdk.common.RetryPolicy,dev.restate.common.function.ThrowingSupplier)"><code>run(String, Class, RetryPolicy, ThrowingSupplier)</code></a>.
 
  <p><b>Error handling</b>: Errors occurring within this closure won't be propagated to the
  caller, unless they are <a href="common/TerminalException.html" title="class in dev.restate.sdk.common"><code>TerminalException</code></a>. Consider the following code:
@@ -387,7 +509,7 @@ R&gt;</span>&nbsp;<span class="return-type"><a href="Awaitable.html" title="clas
  try {
      ctx.run(() -&gt; {
          throw new IllegalStateException();
-     });
+     }).await();
  } catch (IllegalStateException e) {
      // This will never be executed,
      // but the error will be retried by Restate,
@@ -398,7 +520,7 @@ R&gt;</span>&nbsp;<span class="return-type"><a href="Awaitable.html" title="clas
  try {
      ctx.run(() -&gt; {
          throw new TerminalException("my error");
-     });
+     }).await();
  } catch (TerminalException e) {
      // This is invoked
  }
@@ -410,7 +532,7 @@ R&gt;</span>&nbsp;<span class="return-type"><a href="Awaitable.html" title="clas
 <dd><code>T</code> - type of the return value.</dd>
 <dt>Parameters:</dt>
 <dd><code>name</code> - name of the side effect.</dd>
-<dd><code>serde</code> - the type tag of the return value, used to serialize/deserialize it.</dd>
+<dd><code>clazz</code> - the class of the return value, used to serialize/deserialize it.</dd>
 <dd><code>action</code> - closure to execute.</dd>
 <dt>Returns:</dt>
 <dd>value of the run operation.</dd>
@@ -420,14 +542,14 @@ R&gt;</span>&nbsp;<span class="return-type"><a href="Awaitable.html" title="clas
 </section>
 </li>
 <li>
-<section class="detail" id="run(java.lang.String,dev.restate.sdk.common.Serde,dev.restate.sdk.common.RetryPolicy,dev.restate.sdk.common.function.ThrowingSupplier)">
+<section class="detail" id="run(java.lang.String,dev.restate.serde.TypeTag,dev.restate.sdk.common.RetryPolicy,dev.restate.common.function.ThrowingSupplier)">
 <h3>run</h3>
-<div class="member-signature"><span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">run</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- <a href="common/Serde.html" title="interface in dev.restate.sdk.common">Serde</a>&lt;T&gt;&nbsp;serde,
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">run</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../serde/TypeTag.html" title="interface in dev.restate.serde">TypeTag</a>&lt;T&gt;&nbsp;typeTag,
  <a href="common/RetryPolicy.html" title="class in dev.restate.sdk.common">RetryPolicy</a>&nbsp;retryPolicy,
- <a href="common/function/ThrowingSupplier.html" title="interface in dev.restate.sdk.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</span>
-   throws <span class="exceptions"><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></span></div>
-<div class="block">Like <a href="#run(java.lang.String,dev.restate.sdk.common.Serde,dev.restate.sdk.common.function.ThrowingSupplier)"><code>run(String, Serde, ThrowingSupplier)</code></a>, but using a custom retry policy.
+ <a href="../common/function/ThrowingSupplier.html" title="interface in dev.restate.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</span>
+           throws <span class="exceptions"><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></span></div>
+<div class="block">Like <a href="#run(java.lang.String,dev.restate.serde.TypeTag,dev.restate.common.function.ThrowingSupplier)"><code>run(String, TypeTag, ThrowingSupplier)</code></a>, but using a custom retry policy.
 
  <p>When a retry policy is not specified, the <code>run</code> will be retried using the <a href="https://docs.restate.dev/operate/configuration/server">Restate invoker retry policy</a>,
  which by default retries indefinitely.</div>
@@ -436,7 +558,8 @@ R&gt;</span>&nbsp;<span class="return-type"><a href="Awaitable.html" title="clas
 <dd><code><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></code></dd>
 <dt>See Also:</dt>
 <dd>
-<ul class="tag-list">
+<ul class="tag-list-long">
+<li><a href="#run(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>run(String, Class, ThrowingSupplier)</code></a></li>
 <li><a href="common/RetryPolicy.html" title="class in dev.restate.sdk.common"><code>RetryPolicy</code></a></li>
 </ul>
 </dd>
@@ -444,13 +567,99 @@ R&gt;</span>&nbsp;<span class="return-type"><a href="Awaitable.html" title="clas
 </section>
 </li>
 <li>
-<section class="detail" id="run(java.lang.String,dev.restate.sdk.common.RetryPolicy,dev.restate.sdk.common.function.ThrowingRunnable)">
+<section class="detail" id="run(java.lang.String,java.lang.Class,dev.restate.sdk.common.RetryPolicy,dev.restate.common.function.ThrowingSupplier)">
+<h3>run</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">run</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;clazz,
+ <a href="common/RetryPolicy.html" title="class in dev.restate.sdk.common">RetryPolicy</a>&nbsp;retryPolicy,
+ <a href="../common/function/ThrowingSupplier.html" title="interface in dev.restate.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</span>
+           throws <span class="exceptions"><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></span></div>
+<div class="block">Like <a href="#run(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>run(String, Class, ThrowingSupplier)</code></a>, but using a custom retry policy.
+
+ <p>When a retry policy is not specified, the <code>run</code> will be retried using the <a href="https://docs.restate.dev/operate/configuration/server">Restate invoker retry policy</a>,
+ which by default retries indefinitely.</div>
+<dl class="notes">
+<dt>Throws:</dt>
+<dd><code><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list-long">
+<li><a href="#run(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>run(String, Class, ThrowingSupplier)</code></a></li>
+<li><a href="common/RetryPolicy.html" title="class in dev.restate.sdk.common"><code>RetryPolicy</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="run(java.lang.String,dev.restate.serde.TypeTag,dev.restate.common.function.ThrowingSupplier)">
+<h3>run</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">run</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../serde/TypeTag.html" title="interface in dev.restate.serde">TypeTag</a>&lt;T&gt;&nbsp;typeTag,
+ <a href="../common/function/ThrowingSupplier.html" title="interface in dev.restate.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</span>
+           throws <span class="exceptions"><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></span></div>
+<div class="block">Like <a href="#run(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>run(String, Class, ThrowingSupplier)</code></a>, but providing a <a href="../serde/TypeTag.html" title="interface in dev.restate.serde"><code>TypeTag</code></a>.
+
+ <p>See <a href="Context.html" title="interface in dev.restate.sdk"><code>Context</code></a> for more details about serialization and deserialization.</div>
+<dl class="notes">
+<dt>Throws:</dt>
+<dd><code><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list-long">
+<li><a href="#run(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>run(String, Class, ThrowingSupplier)</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="run(dev.restate.serde.TypeTag,dev.restate.common.function.ThrowingSupplier)">
+<h3>run</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">run</span><wbr><span class="parameters">(<a href="../serde/TypeTag.html" title="interface in dev.restate.serde">TypeTag</a>&lt;T&gt;&nbsp;typeTag,
+ <a href="../common/function/ThrowingSupplier.html" title="interface in dev.restate.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</span>
+           throws <span class="exceptions"><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></span></div>
+<div class="block">Like <a href="#run(java.lang.String,dev.restate.serde.TypeTag,dev.restate.common.function.ThrowingSupplier)"><code>run(String, TypeTag, ThrowingSupplier)</code></a>, without a name</div>
+<dl class="notes">
+<dt>Throws:</dt>
+<dd><code><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list-long">
+<li><a href="#run(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>run(String, Class, ThrowingSupplier)</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="run(java.lang.Class,dev.restate.common.function.ThrowingSupplier)">
+<h3>run</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">run</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;clazz,
+ <a href="../common/function/ThrowingSupplier.html" title="interface in dev.restate.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</span>
+           throws <span class="exceptions"><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></span></div>
+<div class="block">Like <a href="#run(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>run(String, Class, ThrowingSupplier)</code></a>, without a name</div>
+<dl class="notes">
+<dt>Throws:</dt>
+<dd><code><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list-long">
+<li><a href="#run(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>run(String, Class, ThrowingSupplier)</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="run(java.lang.String,dev.restate.sdk.common.RetryPolicy,dev.restate.common.function.ThrowingRunnable)">
 <h3>run</h3>
 <div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">run</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="common/RetryPolicy.html" title="class in dev.restate.sdk.common">RetryPolicy</a>&nbsp;retryPolicy,
- <a href="common/function/ThrowingRunnable.html" title="interface in dev.restate.sdk.common.function">ThrowingRunnable</a>&nbsp;runnable)</span>
+ <a href="../common/function/ThrowingRunnable.html" title="interface in dev.restate.common.function">ThrowingRunnable</a>&nbsp;runnable)</span>
           throws <span class="exceptions"><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></span></div>
-<div class="block">Like <a href="#run(java.lang.String,dev.restate.sdk.common.function.ThrowingRunnable)"><code>run(String, ThrowingRunnable)</code></a>, but using a custom retry policy.
+<div class="block">Like <a href="#run(java.lang.String,dev.restate.common.function.ThrowingRunnable)"><code>run(String, ThrowingRunnable)</code></a>, but without a return value and using a custom
+ retry policy.
 
  <p>When a retry policy is not specified, the <code>run</code> will be retried using the <a href="https://docs.restate.dev/operate/configuration/server">Restate invoker retry policy</a>,
  which by default retries indefinitely.</div>
@@ -459,7 +668,8 @@ R&gt;</span>&nbsp;<span class="return-type"><a href="Awaitable.html" title="clas
 <dd><code><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></code></dd>
 <dt>See Also:</dt>
 <dd>
-<ul class="tag-list">
+<ul class="tag-list-long">
+<li><a href="#run(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>run(String, Class, ThrowingSupplier)</code></a></li>
 <li><a href="common/RetryPolicy.html" title="class in dev.restate.sdk.common"><code>RetryPolicy</code></a></li>
 </ul>
 </dd>
@@ -467,82 +677,226 @@ R&gt;</span>&nbsp;<span class="return-type"><a href="Awaitable.html" title="clas
 </section>
 </li>
 <li>
-<section class="detail" id="run(dev.restate.sdk.common.Serde,dev.restate.sdk.common.RetryPolicy,dev.restate.sdk.common.function.ThrowingSupplier)">
-<h3>run</h3>
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">run</span><wbr><span class="parameters">(<a href="common/Serde.html" title="interface in dev.restate.sdk.common">Serde</a>&lt;T&gt;&nbsp;serde,
- <a href="common/RetryPolicy.html" title="class in dev.restate.sdk.common">RetryPolicy</a>&nbsp;retryPolicy,
- <a href="common/function/ThrowingSupplier.html" title="interface in dev.restate.sdk.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</span>
-           throws <span class="exceptions"><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></span></div>
-<div class="block">Like <a href="#run(dev.restate.sdk.common.Serde,dev.restate.sdk.common.function.ThrowingSupplier)"><code>run(Serde, ThrowingSupplier)</code></a>, but using a custom retry policy.
-
- <p>When a retry policy is not specified, the <code>run</code> will be retried using the <a href="https://docs.restate.dev/operate/configuration/server">Restate invoker retry policy</a>,
- which by default retries indefinitely.</div>
-<dl class="notes">
-<dt>Throws:</dt>
-<dd><code><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></code></dd>
-<dt>See Also:</dt>
-<dd>
-<ul class="tag-list">
-<li><a href="common/RetryPolicy.html" title="class in dev.restate.sdk.common"><code>RetryPolicy</code></a></li>
-</ul>
-</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="run(dev.restate.sdk.common.RetryPolicy,dev.restate.sdk.common.function.ThrowingRunnable)">
-<h3>run</h3>
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">run</span><wbr><span class="parameters">(<a href="common/RetryPolicy.html" title="class in dev.restate.sdk.common">RetryPolicy</a>&nbsp;retryPolicy,
- <a href="common/function/ThrowingRunnable.html" title="interface in dev.restate.sdk.common.function">ThrowingRunnable</a>&nbsp;runnable)</span>
-          throws <span class="exceptions"><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></span></div>
-<div class="block">Like <a href="#run(dev.restate.sdk.common.function.ThrowingRunnable)"><code>run(ThrowingRunnable)</code></a>, but using a custom retry policy.
-
- <p>When a retry policy is not specified, the <code>run</code> will be retried using the <a href="https://docs.restate.dev/operate/configuration/server">Restate invoker retry policy</a>,
- which by default retries indefinitely.</div>
-<dl class="notes">
-<dt>Throws:</dt>
-<dd><code><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></code></dd>
-<dt>See Also:</dt>
-<dd>
-<ul class="tag-list">
-<li><a href="common/RetryPolicy.html" title="class in dev.restate.sdk.common"><code>RetryPolicy</code></a></li>
-</ul>
-</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="run(java.lang.String,dev.restate.sdk.common.function.ThrowingRunnable)">
+<section class="detail" id="run(java.lang.String,dev.restate.common.function.ThrowingRunnable)">
 <h3>run</h3>
 <div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">run</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- <a href="common/function/ThrowingRunnable.html" title="interface in dev.restate.sdk.common.function">ThrowingRunnable</a>&nbsp;runnable)</span>
+ <a href="../common/function/ThrowingRunnable.html" title="interface in dev.restate.common.function">ThrowingRunnable</a>&nbsp;runnable)</span>
           throws <span class="exceptions"><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></span></div>
-<div class="block">Like <a href="#run(java.lang.String,dev.restate.sdk.common.Serde,dev.restate.sdk.common.function.ThrowingSupplier)"><code>run(String, Serde, ThrowingSupplier)</code></a>, but without returning a value.</div>
+<div class="block">Like <a href="#run(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>run(String, Class, ThrowingSupplier)</code></a> without output.</div>
 <dl class="notes">
 <dt>Throws:</dt>
 <dd><code><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list-long">
+<li><a href="#run(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>run(String, Class, ThrowingSupplier)</code></a></li>
+</ul>
+</dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="run(dev.restate.sdk.common.Serde,dev.restate.sdk.common.function.ThrowingSupplier)">
+<section class="detail" id="run(dev.restate.common.function.ThrowingRunnable)">
 <h3>run</h3>
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">run</span><wbr><span class="parameters">(<a href="common/Serde.html" title="interface in dev.restate.sdk.common">Serde</a>&lt;T&gt;&nbsp;serde,
- <a href="common/function/ThrowingSupplier.html" title="interface in dev.restate.sdk.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</span>
-           throws <span class="exceptions"><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></span></div>
-<div class="block">Like <a href="#run(java.lang.String,dev.restate.sdk.common.Serde,dev.restate.sdk.common.function.ThrowingSupplier)"><code>run(String, Serde, ThrowingSupplier)</code></a>, but without a name.</div>
-<dl class="notes">
-<dt>Throws:</dt>
-<dd><code><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="run(dev.restate.sdk.common.function.ThrowingRunnable)">
-<h3>run</h3>
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">run</span><wbr><span class="parameters">(<a href="common/function/ThrowingRunnable.html" title="interface in dev.restate.sdk.common.function">ThrowingRunnable</a>&nbsp;runnable)</span>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">run</span><wbr><span class="parameters">(<a href="../common/function/ThrowingRunnable.html" title="interface in dev.restate.common.function">ThrowingRunnable</a>&nbsp;runnable)</span>
           throws <span class="exceptions"><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></span></div>
-<div class="block">Like <a href="#run(java.lang.String,dev.restate.sdk.common.function.ThrowingRunnable)"><code>run(String, ThrowingRunnable)</code></a>, but without a name.</div>
+<div class="block">Like <a href="#run(java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>run(Class, ThrowingSupplier)</code></a> without output.</div>
+<dl class="notes">
+<dt>Throws:</dt>
+<dd><code><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list-long">
+<li><a href="#run(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>run(String, Class, ThrowingSupplier)</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="runAsync(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)">
+<h3>runAsync</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type"><a href="DurableFuture.html" title="class in dev.restate.sdk">DurableFuture</a>&lt;T&gt;</span>&nbsp;<span class="element-name">runAsync</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;clazz,
+ <a href="../common/function/ThrowingSupplier.html" title="interface in dev.restate.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</span>
+                               throws <span class="exceptions"><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></span></div>
+<div class="block">Execute a closure asynchronously. This is like <a href="#run(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>run(String, Class, ThrowingSupplier)</code></a>,
+ but it returns a <a href="DurableFuture.html" title="class in dev.restate.sdk"><code>DurableFuture</code></a> that you can combine and select.
+
+ <pre><code>
+ // Fan-out
+ var resultFutures = subTasks.stream()
+         .map(task -&gt;
+            ctx.runAsync(
+                 task.description(),
+                 String.class,
+                 () -&gt; task.execute()
+            )
+         )
+         .toList();
+
+ // Await all of them
+ DurableFuture.all(resultFutures).await();
+
+ // Fan in - Aggregate the results
+ var results = resultFutures.stream()
+         .map(future -&gt; future.await())
+         .toList();
+ </code></pre></div>
+<dl class="notes">
+<dt>Throws:</dt>
+<dd><code><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list-long">
+<li><a href="#run(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>run(String, Class, ThrowingSupplier)</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="runAsync(java.lang.String,dev.restate.serde.TypeTag,dev.restate.common.function.ThrowingSupplier)">
+<h3>runAsync</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type"><a href="DurableFuture.html" title="class in dev.restate.sdk">DurableFuture</a>&lt;T&gt;</span>&nbsp;<span class="element-name">runAsync</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../serde/TypeTag.html" title="interface in dev.restate.serde">TypeTag</a>&lt;T&gt;&nbsp;typeTag,
+ <a href="../common/function/ThrowingSupplier.html" title="interface in dev.restate.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</span>
+                               throws <span class="exceptions"><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></span></div>
+<div class="block">Like <a href="#runAsync(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>runAsync(String, Class, ThrowingSupplier)</code></a>, but providing a <a href="../serde/TypeTag.html" title="interface in dev.restate.serde"><code>TypeTag</code></a>.
+
+ <p>See <a href="Context.html" title="interface in dev.restate.sdk"><code>Context</code></a> for more details about serialization and deserialization.</div>
+<dl class="notes">
+<dt>Throws:</dt>
+<dd><code><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list-long">
+<li><a href="#runAsync(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>runAsync(String, Class, ThrowingSupplier)</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="runAsync(java.lang.String,java.lang.Class,dev.restate.sdk.common.RetryPolicy,dev.restate.common.function.ThrowingSupplier)">
+<h3>runAsync</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type"><a href="DurableFuture.html" title="class in dev.restate.sdk">DurableFuture</a>&lt;T&gt;</span>&nbsp;<span class="element-name">runAsync</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;clazz,
+ <a href="common/RetryPolicy.html" title="class in dev.restate.sdk.common">RetryPolicy</a>&nbsp;retryPolicy,
+ <a href="../common/function/ThrowingSupplier.html" title="interface in dev.restate.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</span>
+                               throws <span class="exceptions"><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></span></div>
+<div class="block">Like <a href="#runAsync(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>runAsync(String, Class, ThrowingSupplier)</code></a>, but using a custom retry policy.
+
+ <p>When a retry policy is not specified, the <code>run</code> will be retried using the <a href="https://docs.restate.dev/operate/configuration/server">Restate invoker retry policy</a>,
+ which by default retries indefinitely.</div>
+<dl class="notes">
+<dt>Throws:</dt>
+<dd><code><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list-long">
+<li><a href="#runAsync(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>runAsync(String, Class, ThrowingSupplier)</code></a></li>
+<li><a href="common/RetryPolicy.html" title="class in dev.restate.sdk.common"><code>RetryPolicy</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="runAsync(java.lang.String,dev.restate.serde.TypeTag,dev.restate.sdk.common.RetryPolicy,dev.restate.common.function.ThrowingSupplier)">
+<h3>runAsync</h3>
+<div class="member-signature"><span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type"><a href="DurableFuture.html" title="class in dev.restate.sdk">DurableFuture</a>&lt;T&gt;</span>&nbsp;<span class="element-name">runAsync</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../serde/TypeTag.html" title="interface in dev.restate.serde">TypeTag</a>&lt;T&gt;&nbsp;typeTag,
+ <a href="common/RetryPolicy.html" title="class in dev.restate.sdk.common">RetryPolicy</a>&nbsp;retryPolicy,
+ <a href="../common/function/ThrowingSupplier.html" title="interface in dev.restate.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</span>
+                       throws <span class="exceptions"><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></span></div>
+<div class="block">Like <a href="#runAsync(java.lang.String,dev.restate.serde.TypeTag,dev.restate.common.function.ThrowingSupplier)"><code>runAsync(String, TypeTag, ThrowingSupplier)</code></a>, but using a custom retry policy.
+
+ <p>When a retry policy is not specified, the <code>run</code> will be retried using the <a href="https://docs.restate.dev/operate/configuration/server">Restate invoker retry policy</a>,
+ which by default retries indefinitely.</div>
+<dl class="notes">
+<dt>Throws:</dt>
+<dd><code><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list-long">
+<li><a href="#runAsync(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>runAsync(String, Class, ThrowingSupplier)</code></a></li>
+<li><a href="common/RetryPolicy.html" title="class in dev.restate.sdk.common"><code>RetryPolicy</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="runAsync(dev.restate.serde.TypeTag,dev.restate.common.function.ThrowingSupplier)">
+<h3>runAsync</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type"><a href="DurableFuture.html" title="class in dev.restate.sdk">DurableFuture</a>&lt;T&gt;</span>&nbsp;<span class="element-name">runAsync</span><wbr><span class="parameters">(<a href="../serde/TypeTag.html" title="interface in dev.restate.serde">TypeTag</a>&lt;T&gt;&nbsp;typeTag,
+ <a href="../common/function/ThrowingSupplier.html" title="interface in dev.restate.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</span>
+                               throws <span class="exceptions"><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></span></div>
+<div class="block">Like <a href="#runAsync(java.lang.String,dev.restate.serde.TypeTag,dev.restate.common.function.ThrowingSupplier)"><code>runAsync(String, TypeTag, ThrowingSupplier)</code></a>, without a name</div>
+<dl class="notes">
+<dt>Throws:</dt>
+<dd><code><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list-long">
+<li><a href="#runAsync(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>runAsync(String, Class, ThrowingSupplier)</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="runAsync(java.lang.Class,dev.restate.common.function.ThrowingSupplier)">
+<h3>runAsync</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type"><a href="DurableFuture.html" title="class in dev.restate.sdk">DurableFuture</a>&lt;T&gt;</span>&nbsp;<span class="element-name">runAsync</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;clazz,
+ <a href="../common/function/ThrowingSupplier.html" title="interface in dev.restate.common.function">ThrowingSupplier</a>&lt;T&gt;&nbsp;action)</span>
+                               throws <span class="exceptions"><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></span></div>
+<div class="block">Like <a href="#runAsync(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>runAsync(String, Class, ThrowingSupplier)</code></a>, without a name</div>
+<dl class="notes">
+<dt>Throws:</dt>
+<dd><code><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list-long">
+<li><a href="#runAsync(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>runAsync(String, Class, ThrowingSupplier)</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="runAsync(java.lang.String,dev.restate.sdk.common.RetryPolicy,dev.restate.common.function.ThrowingRunnable)">
+<h3>runAsync</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="DurableFuture.html" title="class in dev.restate.sdk">DurableFuture</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&gt;</span>&nbsp;<span class="element-name">runAsync</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="common/RetryPolicy.html" title="class in dev.restate.sdk.common">RetryPolicy</a>&nbsp;retryPolicy,
+ <a href="../common/function/ThrowingRunnable.html" title="interface in dev.restate.common.function">ThrowingRunnable</a>&nbsp;runnable)</span>
+                              throws <span class="exceptions"><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></span></div>
+<div class="block">Like <a href="#runAsync(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>runAsync(String, Class, ThrowingSupplier)</code></a>, but without an output and using a
+ custom retry policy.
+
+ <p>When a retry policy is not specified, the <code>run</code> will be retried using the <a href="https://docs.restate.dev/operate/configuration/server">Restate invoker retry policy</a>,
+ which by default retries indefinitely.</div>
+<dl class="notes">
+<dt>Throws:</dt>
+<dd><code><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list-long">
+<li><a href="#runAsync(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>runAsync(String, Class, ThrowingSupplier)</code></a></li>
+<li><a href="common/RetryPolicy.html" title="class in dev.restate.sdk.common"><code>RetryPolicy</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="runAsync(java.lang.String,dev.restate.common.function.ThrowingRunnable)">
+<h3>runAsync</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="DurableFuture.html" title="class in dev.restate.sdk">DurableFuture</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&gt;</span>&nbsp;<span class="element-name">runAsync</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../common/function/ThrowingRunnable.html" title="interface in dev.restate.common.function">ThrowingRunnable</a>&nbsp;runnable)</span>
+                              throws <span class="exceptions"><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></span></div>
+<div class="block">Like <a href="#runAsync(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>runAsync(String, Class, ThrowingSupplier)</code></a> without output.</div>
 <dl class="notes">
 <dt>Throws:</dt>
 <dd><code><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></code></dd>
@@ -550,9 +904,21 @@ R&gt;</span>&nbsp;<span class="return-type"><a href="Awaitable.html" title="clas
 </section>
 </li>
 <li>
-<section class="detail" id="awakeable(dev.restate.sdk.common.Serde)">
+<section class="detail" id="runAsync(dev.restate.common.function.ThrowingRunnable)">
+<h3>runAsync</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="DurableFuture.html" title="class in dev.restate.sdk">DurableFuture</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&gt;</span>&nbsp;<span class="element-name">runAsync</span><wbr><span class="parameters">(<a href="../common/function/ThrowingRunnable.html" title="interface in dev.restate.common.function">ThrowingRunnable</a>&nbsp;runnable)</span>
+                              throws <span class="exceptions"><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></span></div>
+<div class="block">Like <a href="#runAsync(java.lang.String,java.lang.Class,dev.restate.common.function.ThrowingSupplier)"><code>runAsync(String, Class, ThrowingSupplier)</code></a> without output.</div>
+<dl class="notes">
+<dt>Throws:</dt>
+<dd><code><a href="common/TerminalException.html" title="class in dev.restate.sdk.common">TerminalException</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="awakeable(java.lang.Class)">
 <h3>awakeable</h3>
-<div class="member-signature"><span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type"><a href="Awakeable.html" title="class in dev.restate.sdk">Awakeable</a>&lt;T&gt;</span>&nbsp;<span class="element-name">awakeable</span><wbr><span class="parameters">(<a href="common/Serde.html" title="interface in dev.restate.sdk.common">Serde</a>&lt;T&gt;&nbsp;serde)</span></div>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type"><a href="Awakeable.html" title="class in dev.restate.sdk">Awakeable</a>&lt;T&gt;</span>&nbsp;<span class="element-name">awakeable</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;clazz)</span></div>
 <div class="block">Create an <a href="Awakeable.html" title="class in dev.restate.sdk"><code>Awakeable</code></a>, addressable through <a href="Awakeable.html#id()"><code>Awakeable.id()</code></a>.
 
  <p>You can use this feature to implement external asynchronous systems interactions, for
@@ -560,7 +926,31 @@ R&gt;</span>&nbsp;<span class="return-type"><a href="Awaitable.html" title="clas
  service consume from Kafka the responses of given external system interaction by using <a href="#awakeableHandle(java.lang.String)"><code>awakeableHandle(String)</code></a>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>serde</code> - the response type tag to use for deserializing the <a href="Awakeable.html" title="class in dev.restate.sdk"><code>Awakeable</code></a> result.</dd>
+<dd><code>clazz</code> - the response type to use for deserializing the <a href="Awakeable.html" title="class in dev.restate.sdk"><code>Awakeable</code></a> result. When
+     using generic types, use <a href="#awakeable(dev.restate.serde.TypeTag)"><code>awakeable(TypeTag)</code></a> instead.</dd>
+<dt>Returns:</dt>
+<dd>the <a href="Awakeable.html" title="class in dev.restate.sdk"><code>Awakeable</code></a> to await on.</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="Awakeable.html" title="class in dev.restate.sdk"><code>Awakeable</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="awakeable(dev.restate.serde.TypeTag)">
+<h3>awakeable</h3>
+<div class="member-signature"><span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type"><a href="Awakeable.html" title="class in dev.restate.sdk">Awakeable</a>&lt;T&gt;</span>&nbsp;<span class="element-name">awakeable</span><wbr><span class="parameters">(<a href="../serde/TypeTag.html" title="interface in dev.restate.serde">TypeTag</a>&lt;T&gt;&nbsp;typeTag)</span></div>
+<div class="block">Create an <a href="Awakeable.html" title="class in dev.restate.sdk"><code>Awakeable</code></a>, addressable through <a href="Awakeable.html#id()"><code>Awakeable.id()</code></a>.
+
+ <p>You can use this feature to implement external asynchronous systems interactions, for
+ example you can send a Kafka record including the <a href="Awakeable.html#id()"><code>Awakeable.id()</code></a>, and then let another
+ service consume from Kafka the responses of given external system interaction by using <a href="#awakeableHandle(java.lang.String)"><code>awakeableHandle(String)</code></a>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>typeTag</code> - the response type tag to use for deserializing the <a href="Awakeable.html" title="class in dev.restate.sdk"><code>Awakeable</code></a> result.</dd>
 <dt>Returns:</dt>
 <dd>the <a href="Awakeable.html" title="class in dev.restate.sdk"><code>Awakeable</code></a> to await on.</dd>
 <dt>See Also:</dt>
@@ -576,7 +966,7 @@ R&gt;</span>&nbsp;<span class="return-type"><a href="Awaitable.html" title="clas
 <section class="detail" id="awakeableHandle(java.lang.String)">
 <h3>awakeableHandle</h3>
 <div class="member-signature"><span class="return-type"><a href="AwakeableHandle.html" title="interface in dev.restate.sdk">AwakeableHandle</a></span>&nbsp;<span class="element-name">awakeableHandle</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;id)</span></div>
-<div class="block">Create a new <a href="AwakeableHandle.html" title="interface in dev.restate.sdk"><code>AwakeableHandle</code></a> for the provided identifier. You can use it to <a href="AwakeableHandle.html#resolve(dev.restate.sdk.common.Serde,T)"><code>AwakeableHandle.resolve(Serde, Object)</code></a> or <a href="AwakeableHandle.html#reject(java.lang.String)"><code>AwakeableHandle.reject(String)</code></a> the linked
+<div class="block">Create a new <a href="AwakeableHandle.html" title="interface in dev.restate.sdk"><code>AwakeableHandle</code></a> for the provided identifier. You can use it to <a href="AwakeableHandle.html#resolve(dev.restate.serde.TypeTag,T)"><code>AwakeableHandle.resolve(TypeTag, Object)</code></a> or <a href="AwakeableHandle.html#reject(java.lang.String)"><code>AwakeableHandle.reject(String)</code></a> the linked
  <a href="Awakeable.html" title="class in dev.restate.sdk"><code>Awakeable</code></a>.</div>
 <dl class="notes">
 <dt>See Also:</dt>
@@ -592,6 +982,7 @@ R&gt;</span>&nbsp;<span class="return-type"><a href="Awaitable.html" title="clas
 <section class="detail" id="random()">
 <h3>random</h3>
 <div class="member-signature"><span class="return-type"><a href="RestateRandom.html" title="class in dev.restate.sdk">RestateRandom</a></span>&nbsp;<span class="element-name">random</span>()</div>
+<div class="block">Returns a deterministic random.</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
