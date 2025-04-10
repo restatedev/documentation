@@ -967,25 +967,19 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
                     <Tabs groupId={"architecture"} className={"display-none"}>
                         <TabItem value={"spring"}>
                             ```java
-                            // !collapse(1:13) collapsed
-                            // !mark[//\/\ Click to expand imports/] grey
-                            // Click to expand imports
+                            // collapse_prequel
                             CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/java/templates/java-maven-spring-boot/src/main/java/com/example/restatestarter/Greeter.java
                             ```
                         </TabItem>
                         <TabItem value={"quarkus"}>
                             ```java
-                            // !collapse(1:15) collapsed
-                            // !mark[//\/\ Click to expand imports/] grey
-                            // Click to expand imports
+                            // collapse_prequel
                             CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/java/templates/java-maven-quarkus/src/main/java/org/acme/Greeter.java
                             ```
                         </TabItem>
                         <TabItem value={"vanilla"}>
                             ```java
-                            // !collapse(1:13) collapsed
-                            // !mark[//\/\ Click to expand imports/] grey
-                            // Click to expand imports
+                            // collapse_prequel
                             CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/java/templates/java-maven/src/main/java/my/example/Greeter.java
                             ```
                         </TabItem>
@@ -1009,6 +1003,12 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
 
     </TabItem>
     <TabItem value="kotlin" label="Kotlin">
+
+        Architecture:
+        <Tabs groupId={"architecture"} className={"selection-button"}>
+            <TabItem value={"spring"} label={<><img src='/img/quickstart/spring.svg' alt="Spring Boot" className="icon" />Spring Boot</>}/>
+            <TabItem value={"vanilla"} label={<><img src='/img/quickstart/java.svg' alt="Vanilla" className="icon" />Vanilla</>}/>
+        </Tabs>
 
         <Admonition type="note" title="Prerequisites">
             - [JDK](https://whichjdk.com/) >= 17
@@ -1115,21 +1115,40 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
             You can find the Restate UI running on port 9070 (`http://localhost:9070`) after starting the Restate Server.
         </Step>
         <Step stepLabel="2" title="Get the Greeter service template">
+            <Tabs groupId={"architecture"} className={"display-none"}>
+                <TabItem value={"spring"}>
+                    <CodeWithTabs>
 
-            <CodeWithTabs>
+                        ```shell !!tabs CLI
+                        restate example kotlin-hello-world-gradle-spring-boot &&
+                        cd kotlin-hello-world-gradle-spring-boot
+                        ```
 
-                ```shell !!tabs CLI
-                restate example kotlin-hello-world-gradle &&
-                cd kotlin-hello-world-gradle
-                ```
+                        ```shell !!tabs wget
+                        wget https://github.com/restatedev/examples/releases/latest/download/kotlin-hello-world-gradle-spring-boot.zip &&
+                        unzip kotlin-hello-world-gradle-spring-boot.zip -d kotlin-hello-world-gradle-spring-boot &&
+                        rm kotlin-hello-world-gradle-spring-boot.zip && cd kotlin-hello-world-gradle-spring-boot
+                        ```
 
-                ```shell !!tabs wget
-                wget https://github.com/restatedev/examples/releases/latest/download/kotlin-hello-world-gradle.zip &&
-                unzip kotlin-hello-world-gradle.zip -d kotlin-hello-world-gradle &&
-                rm kotlin-hello-world-gradle.zip && cd kotlin-hello-world-gradle
-                ```
+                    </CodeWithTabs>
+                </TabItem>
+                <TabItem value={"vanilla"}>
+                    <CodeWithTabs>
 
-            </CodeWithTabs>
+                        ```shell !!tabs CLI
+                        restate example kotlin-hello-world-gradle &&
+                        cd kotlin-hello-world-gradle
+                        ```
+
+                        ```shell !!tabs wget
+                        wget https://github.com/restatedev/examples/releases/latest/download/kotlin-hello-world-gradle.zip &&
+                        unzip kotlin-hello-world-gradle.zip -d kotlin-hello-world-gradle &&
+                        rm kotlin-hello-world-gradle.zip && cd kotlin-hello-world-gradle
+                        ```
+
+                    </CodeWithTabs>
+                </TabItem>
+            </Tabs>
 
         </Step>
         <Step stepLabel="3" title="Run the Greeter service">
@@ -1137,11 +1156,22 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
             You are all set to start developing your service.
             Open the project in an IDE and configure it to build with Gradle.
             Run your service and let it listen on port `9080` for requests:
+            <Tabs groupId={"architecture"} className={"display-none"}>
+                <TabItem value={"spring"}>
 
-            ```shell
-            ./gradlew run
-            ```
+                        ```shell
+                        ./gradlew bootRun
+                        ```
 
+                </TabItem>
+                <TabItem value={"vanilla"}>
+
+                    ```shell
+                    ./gradlew run
+                    ```
+
+                </TabItem>
+            </Tabs>
         </Step>
         <Step stepLabel="4" title="Register the service">
 
@@ -1228,12 +1258,22 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
             The invocation you just sent used Durable Execution to make sure the request ran till completion.
             For each request, it sent a notification, slept for a second, and then sent a reminder.
 
-            ```kotlin
-            // !collapse(1:10) collapsed
-            // !mark[//\/\ Click to expand imports/] grey
-            // Click to expand imports
-            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/kotlin/templates/kotlin-gradle/src/main/kotlin/my/example/Greeter.kt
-            ```
+            <Tabs groupId={"architecture"} className={"display-none"}>
+                <TabItem value={"spring"}>
+                    ```kotlin https://github.com/restatedev/examples/blob/main/kotlin/templates/kotlin-gradle-spring-boot/src/main/kotlin/com/example/restatestarter/Greeter.kt
+                    // collapse_prequel
+                    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/kotlin/templates/kotlin-gradle-spring-boot/src/main/kotlin/com/example/restatestarter/Greeter.kt
+                    ```
+                </TabItem>
+                <TabItem value={"vanilla"}>
+
+                    ```kotlin https://github.com/restatedev/examples/blob/main/kotlin/templates/kotlin-gradle/src/main/kotlin/my/example/Greeter.kt
+                    // collapse_prequel
+                    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/kotlin/templates/kotlin-gradle/src/main/kotlin/my/example/Greeter.kt
+                    ```
+
+                </TabItem>
+            </Tabs>
 
             It sometimes failed to send the notification and the reminder.
             You can see in the log how Restate retried the request.
@@ -1467,9 +1507,7 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
             For each request, it sent a notification, slept for a second, and then sent a reminder.
 
             ```go
-            // !collapse(1:8) collapsed
-            // !mark[//\/\ Click to expand imports/] grey
-            // Click to expand imports
+            // collapse_prequel
             CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/go/templates/go/greeter.go
             ```
 
@@ -1723,9 +1761,7 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
             For each request, it sent a notification, slept for a second, and then sent a reminder.
 
             ```python
-            # !collapse(1:8) collapsed
-            # !mark[/# Click to expand imports/] grey
-            # Click to expand imports
+            # collapse_prequel
             CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/python/templates/python/example.py
             ```
 
@@ -2058,17 +2094,13 @@ We will run a simple Restate Greeter service that listens on port `9080` and res
             <Tabs groupId={"rust-runtime"} className={"display-none"}>
                 <TabItem value={"Tokio"}>
                     ```rust
-                    // !collapse(1:12) collapsed
-                    // !mark[//\/\ Click to expand imports/] grey
-                    // Click to expand imports
+                    // collapse_prequel
                     CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/rust/templates/rust/src/main.rs
                     ```
                 </TabItem>
                 <TabItem value={"Shuttle"}>
                     ```rust
-                    // !collapse(1:10) collapsed
-                    // !mark[//\/\ Click to expand imports/] grey
-                    // Click to expand imports
+                    // collapse_prequel
                     CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/rust/templates/rust-shuttle/src/main.rs
                     ```
                 </TabItem>
