@@ -1,7 +1,7 @@
 roles = [
     "worker",
     "admin",
-    "metadata-store",
+    "metadata-server",
     "log-server",
 ]
 cluster-name = "localcluster"
@@ -18,7 +18,7 @@ tokio-console-bind-address = "0.0.0.0:6669"
 no-proxy = []
 connect-timeout = "10s"
 disable-prometheus = false
-rocksdb-total-memory-size = "5.6 GiB"
+rocksdb-total-memory-size = "6.0 GiB"
 rocksdb-total-memtables-ratio = 0.5
 rocksdb-high-priority-bg-threads = 2
 rocksdb-write-stall-threshold = "3s"
@@ -67,7 +67,7 @@ persist-lsn-threshold = 1000
 [worker.invoker]
 inactivity-timeout = "1m"
 abort-timeout = "1m"
-message-size-warning = "9.5 MiB"
+message-size-warning = "10.0 MiB"
 in-memory-queue-length-limit = 66049
 concurrent-invocations-limit = 100
 
@@ -93,7 +93,7 @@ disable-web-ui = false
 disable-cluster-controller = false
 
 [admin.query-engine]
-memory-size = "3.7 GiB"
+memory-size = "4.0 GiB"
 pgsql-bind-address = "0.0.0.0:9071"
 
 [ingress]
@@ -102,12 +102,12 @@ kafka-clusters = []
 experimental-feature-enable-separate-ingress-role = false
 
 [bifrost]
-default-provider = "replicated"
+default-provider = "local"
 seal-retry-interval = "2s"
 auto-recovery-interval = "3s"
 append-retry-min-interval = "10ms"
 append-retry-max-interval = "1s"
-record-cache-memory-size = "238.4 MiB"
+record-cache-memory-size = "250.0 MiB"
 
 [bifrost.local]
 rocksdb-disable-wal = false
@@ -147,7 +147,6 @@ max-interval = "1s"
 request-queue-length = 32
 rocksdb-memory-ratio = 0.009999999776482582
 rocksdb-disable-wal = false
-type = "replicated"
 raft-election-tick = 20
 raft-heartbeat-tick = 2
 raft-tick-interval = "100ms"
