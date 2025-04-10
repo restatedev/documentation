@@ -36,13 +36,13 @@ public class Ingress {
     // <start_delayed_call_java>
     Client rs = Client.connect("http://localhost:8080");
     GreeterServiceClient.fromClient(rs)
-        // !mark
         .send()
+        // !mark
         .greet("Hi", Duration.ofSeconds(1));
 
     GreetCounterObjectClient.fromClient(rs, "Mary")
-        // !mark
         .send()
+        // !mark
         .greet("Hi", Duration.ofSeconds(1));
     // <end_delayed_call_java>
 

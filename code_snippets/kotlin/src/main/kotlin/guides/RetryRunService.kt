@@ -8,7 +8,6 @@ import dev.restate.sdk.common.TerminalException
 import dev.restate.sdk.http.vertx.RestateHttpServer
 import dev.restate.sdk.kotlin.*
 import dev.restate.sdk.kotlin.endpoint.endpoint
-import develop.MyServiceClient
 import java.util.concurrent.TimeoutException
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
@@ -74,33 +73,14 @@ class RetryRunService {
   @Handler
   suspend fun myTimeoutHandler(ctx: Context) {
     // <start_timeout>
-    val awakeable = ctx.awakeable<String>()
-    // do something that will trigger the awakeable
-    // !mark(1:5
-    val timeout = ctx.timer(5.seconds)
     try {
-      val result = select {
-        awakeable.onAwait { it }
-        // !mark
-        timeout.onAwait { throw TimeoutException() }
-      }
+      ctx.awakeable<String>()
+          // !mark
+          .withTimeout(5.seconds)
+          .await()
     } catch (e: TimeoutException) {
       // Handle the timeout
     }
-
-    val callFuture = MyServiceClient.fromContext(ctx).myHandler("Hello")
-    // !mark
-    val callTimeout = ctx.timer(5.seconds)
-    try {
-      val result = select {
-        callFuture.onAwait { it }
-        // !mark
-        callTimeout.onAwait { throw TimeoutException() }
-      }
-    } catch (e: TimeoutException) {
-      // Handle the timeout
-    }
-    // ... rest of your business logic ...
     // <end_timeout>
   }
 
