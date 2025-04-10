@@ -38,8 +38,8 @@ loadScripts(document, 'script');</script>
 <li>
 <p>Summary:</p>
 <ul>
-<li>Nested</li>
-<li>Field</li>
+<li><a href="#nested-class-summary">Nested</a></li>
+<li><a href="#field-summary">Field</a></li>
 <li>Constr</li>
 <li><a href="#method-summary">Method</a></li>
 </ul>
@@ -47,7 +47,7 @@ loadScripts(document, 'script');</script>
 <li>
 <p>Detail:</p>
 <ul>
-<li>Field</li>
+<li><a href="#field-detail">Field</a></li>
 <li>Constr</li>
 <li><a href="#method-detail">Method</a></li>
 </ul>
@@ -58,14 +58,14 @@ loadScripts(document, 'script');</script>
 <div id="navbar-sub-list">
 <ul class="sub-nav-list">
 <li>Summary:&nbsp;</li>
-<li>Nested&nbsp;|&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#nested-class-summary">Nested</a>&nbsp;|&nbsp;</li>
+<li><a href="#field-summary">Field</a>&nbsp;|&nbsp;</li>
 <li>Constr&nbsp;|&nbsp;</li>
 <li><a href="#method-summary">Method</a></li>
 </ul>
 <ul class="sub-nav-list">
 <li>Detail:&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field-detail">Field</a>&nbsp;|&nbsp;</li>
 <li>Constr&nbsp;|&nbsp;</li>
 <li><a href="#method-detail">Method</a></li>
 </ul>
@@ -91,73 +91,101 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code>org.junit.jupiter.api.extension.BeforeAllCallback</code>, <code>org.junit.jupiter.api.extension.Extension</code>, <code>org.junit.jupiter.api.extension.ParameterResolver</code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code>, <code>org.junit.jupiter.api.extension.ExtensionContext.Store.CloseableResource</code></dd>
 </dl>
 <hr>
-<div class="type-signature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Deprecated.html" title="class or interface in java.lang" class="external-link">@Deprecated</a>
-</span><span class="modifiers">public class </span><span class="element-name type-name-label">RestateRunner</span>
+<div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">RestateRunner</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
-implements org.junit.jupiter.api.extension.BeforeAllCallback, org.junit.jupiter.api.extension.ParameterResolver</span></div>
-<div class="deprecation-block"><span class="deprecated-label">Deprecated.</span>
-<div class="deprecation-comment">We now recommend using <a href="RestateTest.html" title="annotation interface in dev.restate.sdk.testing"><code>RestateTest</code></a>.</div>
-</div>
-<div class="block">Restate runner for JUnit 5. Example:
+implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a>, org.junit.jupiter.api.extension.ExtensionContext.Store.CloseableResource</span></div>
+<div class="block">Manual runner for the Restate test infra, starting the Restate server container together with the
+ provided services and automatically registering them. To start the infra use <a href="#start()"><code>start()</code></a> and
+ to stop it use <a href="#stop()"><code>stop()</code></a>.
 
- <pre>
- <code>@RegisterExtension</code>
- private final static RestateRunner restateRunner = RestateRunnerBuilder.create()
-         .withService(new MyService())
-         .buildRunner();
- </pre>
-
- <p>The runner will deploy the services locally, execute Restate as container using <a href="https://java.testcontainers.org/">Testcontainers</a>, and register the services.
-
- <p>This extension is scoped per test class, meaning that the restate runner will be shared among
- test methods.
-
- <p>Use the annotations <a href="RestateClient.html" title="annotation interface in dev.restate.sdk.testing"><code>RestateClient</code></a>, <a href="RestateURL.html" title="annotation interface in dev.restate.sdk.testing"><code>RestateURL</code></a> and <a href="RestateAdminClient.html" title="annotation interface in dev.restate.sdk.testing"><code>RestateAdminClient</code></a>
- to interact with the deployed server:
-
- <pre>
- <code>@Test</code>
- void initialCountIsZero(<code>@RestateClient</code> Client client) {
-     var client = CounterClient.fromClient(ingressClient, "my-counter");
-
-     // Use client as usual
-     long response = client.get();
-     assertThat(response).isEqualTo(0L);
- }</pre></div>
+ <p>If you use JUnit 5, we suggest using <a href="RestateTest.html" title="annotation interface in dev.restate.sdk.testing"><code>RestateTest</code></a> instead.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
+<!-- ======== NESTED CLASS SUMMARY ======== -->
+<li>
+<section class="nested-class-summary" id="nested-class-summary">
+<h2>Nested Class Summary</h2>
+<div class="caption"><span>Nested Classes</span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Class</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>static class&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="RestateRunner.Builder.html" class="type-name-link" title="class in dev.restate.sdk.testing">RestateRunner.Builder</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Builder for <a href="RestateRunner.html" title="class in dev.restate.sdk.testing"><code>RestateRunner</code></a>.</div>
+</div>
+</div>
+</section>
+</li>
+<!-- =========== FIELD SUMMARY =========== -->
+<li>
+<section class="field-summary" id="field-summary">
+<h2>Field Summary</h2>
+<div class="caption"><span>Fields</span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Field</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>static final int</code></div>
+<div class="col-second even-row-color"><code><a href="#RESTATE_ADMIN_ENDPOINT_PORT" class="member-name-link">RESTATE_ADMIN_ENDPOINT_PORT</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>static final int</code></div>
+<div class="col-second odd-row-color"><code><a href="#RESTATE_INGRESS_ENDPOINT_PORT" class="member-name-link">RESTATE_INGRESS_ENDPOINT_PORT</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+</div>
+</section>
+</li>
 <!-- ========== METHOD SUMMARY =========== -->
 <li>
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button><button id="method-summary-table-tab6" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab6', 3)" class="table-tab">Deprecated Methods</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab1" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab1', 3)" class="table-tab">Static Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
 <div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#beforeAll(org.junit.jupiter.api.extension.ExtensionContext)" class="member-name-link">beforeAll</a><wbr>(org.junit.jupiter.api.extension.ExtensionContext&nbsp;context)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
-<div class="block"><span class="deprecated-label">Deprecated.</span></div>
-&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#resolveParameter(org.junit.jupiter.api.extension.ParameterContext,org.junit.jupiter.api.extension.ExtensionContext)" class="member-name-link">resolveParameter</a><wbr>(org.junit.jupiter.api.extension.ParameterContext&nbsp;parameterContext,
- org.junit.jupiter.api.extension.ExtensionContext&nbsp;extensionContext)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
-<div class="block"><span class="deprecated-label">Deprecated.</span></div>
-&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#supportsParameter(org.junit.jupiter.api.extension.ParameterContext,org.junit.jupiter.api.extension.ExtensionContext)" class="member-name-link">supportsParameter</a><wbr>(org.junit.jupiter.api.extension.ParameterContext&nbsp;parameterContext,
- org.junit.jupiter.api.extension.ExtensionContext&nbsp;extensionContext)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
-<div class="block"><span class="deprecated-label">Deprecated.</span></div>
-&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#close()" class="member-name-link">close</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Like <a href="#stop()"><code>stop()</code></a>.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="RestateRunner.Builder.html" title="class in dev.restate.sdk.testing">RestateRunner.Builder</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#from(dev.restate.sdk.endpoint.Endpoint)" class="member-name-link">from</a><wbr>(<a href="../endpoint/Endpoint.html" title="class in dev.restate.sdk.endpoint">Endpoint</a>&nbsp;endpoint)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Create from <a href="../endpoint/Endpoint.html" title="class in dev.restate.sdk.endpoint"><code>Endpoint</code></a>.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/URL.html" title="class or interface in java.net" class="external-link">URL</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getAdminUrl()" class="member-name-link">getAdminUrl</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get restate admin url to send HTTP requests to the admin API.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>org.testcontainers.containers.GenericContainer<wbr>&lt;?&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRestateContainer()" class="member-name-link">getRestateContainer</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the restate container.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/URL.html" title="class or interface in java.net" class="external-link">URL</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRestateUrl()" class="member-name-link">getRestateUrl</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get restate ingress url to send HTTP/gRPC requests to services.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#start()" class="member-name-link">start</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Run restate, run the embedded service endpoint server, and register the services.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#stop()" class="member-name-link">stop</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Stop restate and the embedded service endpoint server.</div>
+</div>
 </div>
 </div>
 </div>
@@ -170,49 +198,107 @@ implements org.junit.jupiter.api.extension.BeforeAllCallback, org.junit.jupiter.
 </section>
 <section class="details">
 <ul class="details-list">
+<!-- ============ FIELD DETAIL =========== -->
+<li>
+<section class="field-details" id="field-detail">
+<h2>Field Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="RESTATE_INGRESS_ENDPOINT_PORT">
+<h3>RESTATE_INGRESS_ENDPOINT_PORT</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">RESTATE_INGRESS_ENDPOINT_PORT</span></div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../constant-values.html#dev.restate.sdk.testing.RestateRunner.RESTATE_INGRESS_ENDPOINT_PORT">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="RESTATE_ADMIN_ENDPOINT_PORT">
+<h3>RESTATE_ADMIN_ENDPOINT_PORT</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">RESTATE_ADMIN_ENDPOINT_PORT</span></div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="../../../../constant-values.html#dev.restate.sdk.testing.RestateRunner.RESTATE_ADMIN_ENDPOINT_PORT">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+</ul>
+</section>
+</li>
 <!-- ============ METHOD DETAIL ========== -->
 <li>
 <section class="method-details" id="method-detail">
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="beforeAll(org.junit.jupiter.api.extension.ExtensionContext)">
-<h3>beforeAll</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">beforeAll</span><wbr><span class="parameters">(org.junit.jupiter.api.extension.ExtensionContext&nbsp;context)</span></div>
-<div class="deprecation-block"><span class="deprecated-label">Deprecated.</span></div>
+<section class="detail" id="from(dev.restate.sdk.endpoint.Endpoint)">
+<h3>from</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="RestateRunner.Builder.html" title="class in dev.restate.sdk.testing">RestateRunner.Builder</a></span>&nbsp;<span class="element-name">from</span><wbr><span class="parameters">(<a href="../endpoint/Endpoint.html" title="class in dev.restate.sdk.endpoint">Endpoint</a>&nbsp;endpoint)</span></div>
+<div class="block">Create from <a href="../endpoint/Endpoint.html" title="class in dev.restate.sdk.endpoint"><code>Endpoint</code></a>.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="start()">
+<h3>start</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">start</span>()</div>
+<div class="block">Run restate, run the embedded service endpoint server, and register the services.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getRestateUrl()">
+<h3>getRestateUrl</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/URL.html" title="class or interface in java.net" class="external-link">URL</a></span>&nbsp;<span class="element-name">getRestateUrl</span>()</div>
+<div class="block">Get restate ingress url to send HTTP/gRPC requests to services.</div>
 <dl class="notes">
-<dt>Specified by:</dt>
-<dd><code>beforeAll</code>&nbsp;in interface&nbsp;<code>org.junit.jupiter.api.extension.BeforeAllCallback</code></dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link">IllegalStateException</a></code> - if the restate container is not running.</dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="supportsParameter(org.junit.jupiter.api.extension.ParameterContext,org.junit.jupiter.api.extension.ExtensionContext)">
-<h3>supportsParameter</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">supportsParameter</span><wbr><span class="parameters">(org.junit.jupiter.api.extension.ParameterContext&nbsp;parameterContext,
- org.junit.jupiter.api.extension.ExtensionContext&nbsp;extensionContext)</span>
-                          throws <span class="exceptions">org.junit.jupiter.api.extension.ParameterResolutionException</span></div>
-<div class="deprecation-block"><span class="deprecated-label">Deprecated.</span></div>
+<section class="detail" id="getAdminUrl()">
+<h3>getAdminUrl</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/URL.html" title="class or interface in java.net" class="external-link">URL</a></span>&nbsp;<span class="element-name">getAdminUrl</span>()</div>
+<div class="block">Get restate admin url to send HTTP requests to the admin API.</div>
 <dl class="notes">
-<dt>Specified by:</dt>
-<dd><code>supportsParameter</code>&nbsp;in interface&nbsp;<code>org.junit.jupiter.api.extension.ParameterResolver</code></dd>
 <dt>Throws:</dt>
-<dd><code>org.junit.jupiter.api.extension.ParameterResolutionException</code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/IllegalStateException.html" title="class or interface in java.lang" class="external-link">IllegalStateException</a></code> - if the restate container is not running.</dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="resolveParameter(org.junit.jupiter.api.extension.ParameterContext,org.junit.jupiter.api.extension.ExtensionContext)">
-<h3>resolveParameter</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span>&nbsp;<span class="element-name">resolveParameter</span><wbr><span class="parameters">(org.junit.jupiter.api.extension.ParameterContext&nbsp;parameterContext,
- org.junit.jupiter.api.extension.ExtensionContext&nbsp;extensionContext)</span>
-                        throws <span class="exceptions">org.junit.jupiter.api.extension.ParameterResolutionException</span></div>
-<div class="deprecation-block"><span class="deprecated-label">Deprecated.</span></div>
+<section class="detail" id="getRestateContainer()">
+<h3>getRestateContainer</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">org.testcontainers.containers.GenericContainer&lt;?&gt;</span>&nbsp;<span class="element-name">getRestateContainer</span>()</div>
+<div class="block">Get the restate container.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="stop()">
+<h3>stop</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">stop</span>()</div>
+<div class="block">Stop restate and the embedded service endpoint server.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="close()">
+<h3>close</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">close</span>()</div>
+<div class="block">Like <a href="#stop()"><code>stop()</code></a>.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code>resolveParameter</code>&nbsp;in interface&nbsp;<code>org.junit.jupiter.api.extension.ParameterResolver</code></dd>
-<dt>Throws:</dt>
-<dd><code>org.junit.jupiter.api.extension.ParameterResolutionException</code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/AutoCloseable.html#close()" title="class or interface in java.lang" class="external-link">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
+<dt>Specified by:</dt>
+<dd><code>close</code>&nbsp;in interface&nbsp;<code>org.junit.jupiter.api.extension.ExtensionContext.Store.CloseableResource</code></dd>
 </dl>
 </section>
 </li>
