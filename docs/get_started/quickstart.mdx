@@ -65,7 +65,6 @@ SDK:
             <TabItem value={"Node.js"} label={<><img src='/img/quickstart/nodejs.svg' alt="Node.js" className="icon" />Node.js</>}>
                 <Admonition type="note" title="Prerequisites">
                     - [NodeJS](https://nodejs.org/en/) >= v18.17.1
-                    - [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 9.6.7
                 </Admonition>
             </TabItem>
             <TabItem value={"Bun"} label={<><img src='/img/quickstart/bun.svg' alt="bun" className="icon" />bun</>}>
@@ -83,7 +82,11 @@ SDK:
             <TabItem value={"CloudflareWorkers"} label={<><img src='/img/quickstart/cloudflare_workers.svg' alt="Cloudflare Workers" className="icon" />Cloudflare Workers</>}>
                 <Admonition type="note" title="Prerequisites">
                     - [NodeJS](https://nodejs.org/en/) >= v18.17.1
-                    - [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 9.6.7
+                </Admonition>
+            </TabItem>
+            <TabItem value={"Nextjs"} label={<><img src='/img/quickstart/nextjs.svg' alt="Next.js" className="icon" />Next.js</>}>
+                <Admonition type="note" title="Prerequisites">
+                    - [NodeJS](https://nodejs.org/en/) >= v18.18
                 </Admonition>
             </TabItem>
         </Tabs>
@@ -241,6 +244,13 @@ SDK:
                     npm install
                     ```
                 </TabItem>
+                <TabItem value={"Nextjs"}>
+                    ```shell
+                    restate example typescript-nextjs-hello-world &&
+                    cd typescript-nextjs-hello-world &&
+                    npm install
+                    ```
+                </TabItem>
             </Tabs>
 
         </Step>
@@ -313,6 +323,26 @@ SDK:
                     </Terminal>
 
                 </TabItem>
+                <TabItem value={"Nextjs"} >
+                    <Terminal>
+                        ```shell !command
+                        npm run dev
+                        ```
+
+                        ```log !output
+                        > next-restate@0.1.0 dev
+                        > next dev
+
+                        ▲ Next.js 15.2.4
+                        - Local:        http://localhost:3000
+                        - Network:      http://192.168.1.68:3000
+
+                        ✓ Starting...
+                        ✓ Ready in 1406ms
+                        ```
+                    </Terminal>
+
+                </TabItem>
             </Tabs>
 
         </Step>
@@ -377,6 +407,8 @@ SDK:
 
                     </TerminalWithTabs>
 
+                    If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
+
                 </TabItem>
                 <TabItem value={"Bun"}>
                     <TerminalWithTabs>
@@ -384,7 +416,7 @@ SDK:
                         # !!terminals
 
                         ```shell !command CLI
-                        restate dep add http://localhost:9080 --use-http1.1
+                        restate deployments register http://localhost:9080 --use-http1.1
                         ```
 
                         ```shell !output
@@ -434,6 +466,8 @@ SDK:
                     </TerminalWithTabs>
 
                     Bun does not support HTTP2, so we need to tell Restate to use HTTP1.1.
+
+                    If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
                 </TabItem>
                 <TabItem value={"Deno"}>
                     <TerminalWithTabs>
@@ -489,6 +523,8 @@ SDK:
                         ```
 
                     </TerminalWithTabs>
+
+                    If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
                 </TabItem>
                 <TabItem value={"CloudflareWorkers"}>
                     <TerminalWithTabs>
@@ -496,7 +532,7 @@ SDK:
                         # !!terminals
 
                         ```shell !command CLI
-                        restate dep add http://localhost:9080 --use-http1.1
+                        restate deployments register http://localhost:9080 --use-http1.1
                         ```
 
                         ```shell !output
@@ -545,13 +581,78 @@ SDK:
 
                     </TerminalWithTabs>
                     The local Workers dev server does not support HTTP2, so we need to tell Restate to use HTTP1.1.
+
+                    If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
+                </TabItem>
+                <TabItem value={"Nextjs"}>
+                    <TerminalWithTabs>
+
+                        # !!terminals
+
+                        ```shell !command CLI
+                        restate deployments register http://localhost:3000/restate/v1 --use-http1.1
+                        ```
+
+                        ```shell !output
+                        ❯ SERVICES THAT WILL BE ADDED:
+                        - Greeter
+                        Type: Service
+                        HANDLER  INPUT                                     OUTPUT
+                        greet    value of content-type 'application/json'  value of content-type 'application/json'
+
+
+                        ✔ Are you sure you want to apply those changes? · yes
+                        ✅ DEPLOYMENT:
+                        SERVICE  REV
+                        Greeter  1
+                        ```
+
+                        # !!terminals
+
+                        ```shell !command curl
+                        curl localhost:9070/deployments --json '{"uri": "http://localhost:3000/restate/v1", "use_http_11": true}'
+                        ```
+
+                        ```shell !output
+                        {
+                            "id": "dp_17sztQp4gnEC1L0OCFM9aEh",
+                            "services": [
+                        {
+                            "name": "Greeter",
+                            "handlers": [
+                        {
+                            "name": "greet",
+                            "ty": "Shared",
+                            "input_description": "one of [\"none\", \"value of content-type 'application/json'\"]",
+                            "output_description": "value of content-type 'application/json'"
+                        }
+                            ],
+                            "ty": "Service",
+                            "deployment_id": "dp_17sztQp4gnEC1L0OCFM9aEh",
+                            "revision": 1,
+                            "public": true,
+                            "idempotency_retention": "1day"
+                        }
+                            ]
+                        }
+                        ```
+
+                    </TerminalWithTabs>
+                    If you run Restate with Docker, use `http://host.docker.internal:3000/restate/v1` instead of `http://localhost:3000/restate/v1`.
                 </TabItem>
             </Tabs>
 
-            If you run Restate with Docker, use `http://host.docker.internal:9080` instead of `http://localhost:9080`.
         </Step>
         <Step stepLabel="5" title="Send a request to the Greeter service">
 
+
+            <Tabs groupId={"ts-runtime"} className={"display-none"}>
+                <TabItem value={"Nextjs"}>
+                    Invoke the greet handler via the Next.js UI: `http://localhost:3000`
+
+                    <img src={"/img/quickstart/nextjs_ui.png"} alt="Next.js UI" width="300rem"/>
+                </TabItem>
+            </Tabs>
             Invoke the service via the UI playground: click on your service and then on playground.
 
             Or invoke via `curl`:
@@ -594,6 +695,11 @@ SDK:
                     CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/typescript/templates/cloudflare-worker/src/index.ts
                     ```
                 </TabItem>
+                <TabItem value={"Nextjs"} >
+                    ```ts https://github.com/restatedev/examples/blob/main/typescript/templates/nextjs/restate/services/greeter.ts
+                    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/typescript/templates/nextjs/restate/services/greeter.ts
+                    ```
+                </TabItem>
             </Tabs>
 
 
@@ -632,7 +738,7 @@ SDK:
             </TabItem>
             <TabItem value={"Deno"}>
             </TabItem>
-                <TabItem value={"CloudflareWorkers"} >
+            <TabItem value={"CloudflareWorkers"} >
                 <details className="grey-details">
                     <summary>Next: Build and run the app</summary>
                         ```shell
@@ -640,8 +746,17 @@ SDK:
                         npm run start
                         ```
                 </details>
-                </TabItem>
-            </Tabs>
+            </TabItem>
+            <TabItem value={"Nextjs"} >
+                <details className="grey-details">
+                    <summary>Next: Build and run the app</summary>
+                        ```shell
+                        npm run build
+                        npm run start
+                        ```
+                </details>
+            </TabItem>
+        </Tabs>
     </TabItem>
     <TabItem value="java" label="Java">
         Build tool:
