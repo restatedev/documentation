@@ -23,7 +23,7 @@ The Restate Server accepts a [TOML](https://toml.io/en/) configuration file that
 Restate server accepts a sub-set of the configuration through command-line arguments, you can see all available options by adding `--help` to `restate-server`.
 
 The order of applying configuration layers follows the following order:
-1. Built-in defaults 
+1. Built-in defaults
 2. Configuration file (`--config-file` or via `RESTATE_CONFIG`)
 3. Environment variables
 4. Command line arguments (`--cluster-name=<VALUE>`)
@@ -35,7 +35,7 @@ Every layer overrides the previous. For instance, command-line arguments will ov
 ### Environment variables
 You can override any configuration entry with an environment variable, this overrides values loaded from the configuration file. To do that, the following rule applies:
 
-* Prefix the configuration entry key with `RESTATE_` 
+* Prefix the configuration entry key with `RESTATE_`
 * Separate every nested struct with `__` (double underscore) and all hyphens `-` with a `_` (single underscore).
 
 For example, to override the `admin.bind-address`, the corresponding environment variable is `RESTATE_ADMIN__BIND_ADDRESS`.
@@ -51,7 +51,8 @@ Example output:
 roles = [
     "worker",
     "admin",
-    "metadata-store",
+    "metadata-server",
+    "log-server",
 ]
 cluster-name = "mycluster"
 ...
@@ -69,4 +70,3 @@ Then send the signal to the process ID returned from `pgrep`'s output:
 kill -USR1 994921
 ```
 Observe the output of the server for a dump of the configuration file contents.
-

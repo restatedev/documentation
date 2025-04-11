@@ -24,8 +24,6 @@ To deploy a 3 node distributed Restate cluster, create a file `docker-compose.ym
 ```yaml docker-compose.yml
 x-environment: &common-env
   RESTATE_CLUSTER_NAME: "restate-cluster"
-  # Every node runs every role
-  RESTATE_ROLES: '["admin", "worker", "log-server", "metadata-server"]'
   # For more on logging, see: https://docs.restate.dev/operate/monitoring/logging
   RESTATE_LOG_FILTER: "restate=info"
   RESTATE_BIFROST__DEFAULT_PROVIDER: "replicated"
@@ -43,7 +41,7 @@ x-environment: &common-env
   RESTATE_WORKER__SNAPSHOTS__AWS_SECRET_ACCESS_KEY: "minioadmin"
 
 x-defaults: &defaults
-  image: docker.restate.dev/restatedev/restate:1.2
+  image: docker.restate.dev/restatedev/restate:VAR::RESTATE_VERSION
   extra_hosts:
     - "host.docker.internal:host-gateway"
 

@@ -39,7 +39,7 @@ destination = "s3://snapshots-bucket/cluster-prefix"
 
 <Step stepLabel="2" title="Enable the replicated loglet">
 
-To be able to use the replicated loglet, make sure the node includes the `log-server` role as following.
+To be able to use the replicated loglet, make sure the node includes the `log-server` role if you configure the roles explicitly.
 
 ```toml restate.toml
 roles = [
@@ -89,7 +89,6 @@ To add more nodes to your cluster, you need to start new Restate servers with th
 If you want the new nodes to participate in the replicated metadata cluster, then they should run the `metadata-server` role and use the `replicated` metadata server.
 
 ```toml restate.toml
-roles = ["metadata-server", "admin", "worker", "log-server"]
 cluster-name = "my-cluster"
 
 [metadata-client]
