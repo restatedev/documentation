@@ -44,6 +44,8 @@ x-defaults: &defaults
   image: docker.restate.dev/restatedev/restate:VAR::RESTATE_VERSION
   extra_hosts:
     - "host.docker.internal:host-gateway"
+  volumes:
+    - restate-data:/restate-data
 
 services:
   restate-1:
@@ -92,6 +94,10 @@ services:
     command: "-c 'mkdir -p /data/restate && /usr/bin/minio server --quiet /data'"
     ports:
       - "9000:9000"
+
+# We create a volume to persist data across container starts; delete it via `docker volume rm restate-data` if you want to start a fresh cluster
+volumes:
+  restate-data:
 ```
 
 The cluster uses the `replicated` Bifrost provider and replicates log writes to a minimum of 2 nodes.
