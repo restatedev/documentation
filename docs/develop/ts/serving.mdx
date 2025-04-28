@@ -67,6 +67,18 @@ and enabling bidirectional mode will cause invocations to stall and time out.
 Services running on Workers must be discovered with the `--use-http1.1`
 CLI flag.
 
+<details className={"grey-details"}>
+    <summary>Cloudflare Workers and minification</summary>
+
+    Cloudflare Workers minification is not working correctly with the Restate SDK. If you see an issue similar to:
+
+    ```
+    ✘ [ERROR] restate-cloudflare-worker: Uncaught TypeError: Cannot read properties of undefined (reading '__wbindgen_malloc')
+    ```
+
+    Then most likely you have enabled minification when deploying. Disable it with `minify = false` in your `workers.toml` file.
+</details>
+
 ## Validating request identity
 
 SDKs can validate that incoming requests come from a particular Restate
