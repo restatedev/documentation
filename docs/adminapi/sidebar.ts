@@ -8,19 +8,11 @@ const sidebar: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "cluster_health",
-      items: [
-        {
-          type: "doc",
-          id: "adminapi/cluster-health",
-          label: "Cluster health",
-          className: "api-method get",
-        },
-      ],
-    },
-    {
-      type: "category",
       label: "deployment",
+      link: {
+        type: "doc",
+        id: "adminapi/deployment",
+      },
       items: [
         {
           type: "doc",
@@ -56,19 +48,11 @@ const sidebar: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "health",
-      items: [
-        {
-          type: "doc",
-          id: "adminapi/health",
-          label: "Health check",
-          className: "api-method get",
-        },
-      ],
-    },
-    {
-      type: "category",
       label: "invocation",
+      link: {
+        type: "doc",
+        id: "adminapi/invocation",
+      },
       items: [
         {
           type: "doc",
@@ -80,19 +64,45 @@ const sidebar: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "openapi",
+      label: "subscription",
+      link: {
+        type: "doc",
+        id: "adminapi/subscription",
+      },
       items: [
         {
           type: "doc",
-          id: "adminapi/openapi-spec",
-          label: "OpenAPI specification",
+          id: "adminapi/list-subscriptions",
+          label: "List subscriptions",
           className: "api-method get",
+        },
+        {
+          type: "doc",
+          id: "adminapi/create-subscription",
+          label: "Create subscription",
+          className: "api-method post",
+        },
+        {
+          type: "doc",
+          id: "adminapi/get-subscription",
+          label: "Get subscription",
+          className: "api-method get",
+        },
+        {
+          type: "doc",
+          id: "adminapi/delete-subscription",
+          label: "Delete subscription",
+          className: "api-method delete",
         },
       ],
     },
     {
       type: "category",
       label: "service",
+      link: {
+        type: "doc",
+        id: "adminapi/service",
+      },
       items: [
         {
           type: "doc",
@@ -129,6 +139,10 @@ const sidebar: SidebarsConfig = {
     {
       type: "category",
       label: "service_handler",
+      link: {
+        type: "doc",
+        id: "adminapi/service-handler",
+      },
       items: [
         {
           type: "doc",
@@ -146,42 +160,60 @@ const sidebar: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "subscription",
+      label: "cluster_health",
+      link: {
+        type: "doc",
+        id: "adminapi/cluster-health",
+      },
       items: [
         {
           type: "doc",
-          id: "adminapi/list-subscriptions",
-          label: "List subscriptions",
+          id: "adminapi/cluster-health",
+          label: "Cluster health",
           className: "api-method get",
         },
+      ],
+    },
+    {
+      type: "category",
+      label: "health",
+      link: {
+        type: "doc",
+        id: "adminapi/health",
+      },
+      items: [
         {
           type: "doc",
-          id: "adminapi/create-subscription",
-          label: "Create subscription",
-          className: "api-method post",
-        },
-        {
-          type: "doc",
-          id: "adminapi/get-subscription",
-          label: "Get subscription",
+          id: "adminapi/health",
+          label: "Health check",
           className: "api-method get",
-        },
-        {
-          type: "doc",
-          id: "adminapi/delete-subscription",
-          label: "Delete subscription",
-          className: "api-method delete",
         },
       ],
     },
     {
       type: "category",
       label: "version",
+      link: {
+        type: "doc",
+        id: "adminapi/version",
+      },
       items: [
         {
           type: "doc",
           id: "adminapi/version",
           label: "Admin version information",
+          className: "api-method get",
+        },
+      ],
+    },
+    {
+      type: "category",
+      label: "openapi",
+      items: [
+        {
+          type: "doc",
+          id: "adminapi/openapi-spec",
+          label: "OpenAPI specification",
           className: "api-method get",
         },
       ],
