@@ -64,6 +64,7 @@
         "log-tail-update-interval": "5m",
         "log-trim-check-interval": "1h",
         "log-trim-threshold": null,
+        "metadata-sync-interval": "10s",
         "query-engine": {
           "memory-size": "4.0 GiB",
           "pgsql-bind-address": "0.0.0.0:9071",
@@ -1280,6 +1281,12 @@
           "default": "1s 500ms",
           "type": "string"
         },
+        "metadata-sync-interval": {
+          "title": "Controller metadata sync interval",
+          "description": "The interval at which the cluster controller syncs cluster metadata from the metadata service.",
+          "default": "10s",
+          "type": "string"
+        },
         "log-trim-check-interval": {
           "title": "Log trim check interval",
           "description": "Controls the interval at which cluster controller tries to trim the logs. Log trimming can be disabled by setting it to \"0s\".\n\nNote that this is only the interval at which logs are checked, and does not guarantee that trim will be performed. To safely trim the log, the log records must be known to be persisted by the corresponding partition processor(s). For single server deployments, use the `persist-lsn-*` settings in `worker.storage`. In distributed deployments, this is accomplished by configuring an external snapshot destination - see `worker.snapshots` for more.",
@@ -1578,7 +1585,7 @@
           "description": "Maximum number of records to prefetch from log servers\n\nThe number of records bifrost will attempt to prefetch from replicated loglet's log-servers for every loglet reader (e.g. partition processor). Note that this mainly impacts readers that are not co-located with the loglet sequencer (i.e. partition processor followers).",
           "default": 100,
           "type": "integer",
-          "format": "uint",
+          "format": "uint16",
           "minimum": 1.0
         },
         "readahead-trigger-ratio": {
