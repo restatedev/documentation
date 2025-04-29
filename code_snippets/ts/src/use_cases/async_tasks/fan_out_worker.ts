@@ -11,7 +11,7 @@ const workerService = restate.service({
         split(task)
       );
 
-      const resultPromises = [];
+      const resultPromises: CombineablePromise<void>[] = [];
       // <mark_1>
       for (const subtask of subtasks) {
         const subResultPromise = ctx
