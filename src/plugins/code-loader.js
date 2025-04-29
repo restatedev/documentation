@@ -16,7 +16,7 @@ const LANGUAGE_SYMBOLS = {
     },
     python: {
         commentSymbol: "#",
-        serviceSymbol: ["= VirtualObject(", "= Service(", "= Workflow("]
+        serviceSymbol: ["= VirtualObject(", "= restate.VirtualObject(", "= Service(", "= restate.Service(", "= Workflow(", "= restate.Workflow("]
     },
     go: {
         commentSymbol: "//",
