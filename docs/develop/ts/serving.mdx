@@ -61,11 +61,7 @@ do.
 However, you can use the method `.bidirectional()` on the endpoint builder to
 change this on supported platforms, which will improve latencies once the
 service is re-registered with the runtime.
-- Deno and Deno Deploy support HTTP2 and therefore bidirectional mode can be enabled.
-- Bun does not yet support HTTP2, but its HTTP1.1 implementation does support
-bidirectional communication, as long as there is not a buffering load balancer
-between the client and the Bun server. Bun services must be discovered with
-the `--use-http1.1` CLI flag.
+- Deno (including Deno Deploy) and Bun support HTTP2 and therefore bidirectional mode can be enabled.
 - Cloudflare Workers do not support end-to-end HTTP2 or bidirectional HTTP1.1,
 and enabling bidirectional mode will cause invocations to stall and time out.
 Services running on Workers must be discovered with the `--use-http1.1`
