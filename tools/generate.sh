@@ -30,3 +30,8 @@ $SCRIPT_DIR/generate_sql_introspection_page.sh $RESTATE_PATH
 
 
 popd
+
+# Regenerate OpenAPI docs
+pushd $DOCS_DIR
+yarn build-admin-api-docs
+popd
