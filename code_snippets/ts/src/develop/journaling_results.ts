@@ -1,5 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import { CombineablePromise } from "@restatedev/restate-sdk";
+import { RestatePromise } from "@restatedev/restate-sdk";
 import { MyService } from "./my_service";
 
 const service = restate.service({
@@ -16,7 +16,7 @@ const service = restate.service({
       const sleepPromise = ctx.sleep(100);
       const callPromise = ctx.serviceClient(MyService).myHandler("Hi");
       const externalCallPromise = ctx.run(() => httpCall())
-      const resultArray = await CombineablePromise.all([
+      const resultArray = await RestatePromise.all([
         sleepPromise,
         callPromise,
         externalCallPromise,
