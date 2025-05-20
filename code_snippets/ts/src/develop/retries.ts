@@ -1,5 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import { CombineablePromise } from "@restatedev/restate-sdk";
+import { RestatePromise } from "@restatedev/restate-sdk";
 import { MyService } from "./my_service";
 import { RunOptions } from "@restatedev/restate-sdk/dist/esm/src/context";
 

@@ -1,5 +1,5 @@
 import * as restate from "@restatedev/restate-sdk/lambda";
-import { Context, CombineablePromise } from "@restatedev/restate-sdk";
+import { Context, RestatePromise } from "@restatedev/restate-sdk";
 
 // <start_here>
 const workerService = restate.service({
@@ -11,7 +11,7 @@ const workerService = restate.service({
         split(task)
       );
 
-      const resultPromises: CombineablePromise<void>[] = [];
+      const resultPromises: RestatePromise<void>[] = [];
       // <mark_1>
       for (const subtask of subtasks) {
         const subResultPromise = ctx
@@ -22,7 +22,7 @@ const workerService = restate.service({
       }
 
       // <mark_2>
-      const results = await CombineablePromise.all(resultPromises);
+      const results = await RestatePromise.all(resultPromises);
       // </mark_2>
       return aggregate(results);
     },
