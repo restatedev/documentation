@@ -11,7 +11,7 @@ Restate uses an execution log for replay after failures and suspensions.
 This means that non-deterministic results (e.g. database responses, UUID generation) need to be stored in the execution log.
 The SDK offers some functionalities to help you with this:
 1. **[Journaled actions](/develop/ts/journaling-results#journaled-actions)**: Run any block of code and store the result in Restate. Restate replays the result instead of re-executing the block on retries.
-2. **[`RestatePromise` combinators](/develop/ts/journaling-results#combineable-promise-combinators)**: Log the order in which RestatePromises are resolved/rejected, to ensure deterministic replay.
+2. **[`RestatePromise` combinators](/develop/ts/journaling-results#restate-promise-combinators)**: Log the order in which RestatePromises are resolved/rejected, to ensure deterministic replay.
 3. **[Random generators](/develop/ts/journaling-results#generating-randoms)**: Built-in helpers for generating stable UUIDs and random numbers.
 
 ## Journaled actions
@@ -53,7 +53,7 @@ If you set a maximum number of attempts, then the `ctx.run` block will fail with
 Have a look at the [error handling docs](/develop/ts/error-handling) and [Sagas guide](/guides/sagas) to learn how to handle these.
 
 
-## Combineable Promise combinators
+## Restate Promise combinators
 Operations such as `ctx.run`, calls, awakeables, and sleep return a `RestatePromise`.
 The SDK provides combinators for working with `RestatePromise`.
 Restate then logs the order in which they are resolved or rejected, to make them deterministic on replay.
