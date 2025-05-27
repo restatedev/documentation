@@ -6,8 +6,8 @@ const variablesReplacements = require("./restate.config.json");
 const codeLoaderPlugin = require("./src/plugins/code-loader");
 
 import { remarkCodeHike, recmaCodeHike } from "codehike/mdx";
-const OpenApiPlugin = require("docusaurus-plugin-openapi-docs");
-const llmsPlugin = require("docusaurus-plugin-llms-txt");
+const openApiPlugin = require("docusaurus-plugin-openapi-docs");
+require("docusaurus-plugin-llms-txt");
 
 /** @type {import('codehike/mdx').CodeHikeConfig} */
 const chConfig = {
@@ -279,7 +279,7 @@ const config = {
       },
     ],
     [
-      'docusaurus-plugin-openapi-docs',
+      openApiPlugin,
       {
         id: "api", // plugin id
         docsPluginId: "classic", // configured for preset-classic
