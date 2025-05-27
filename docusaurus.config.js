@@ -7,7 +7,6 @@ const codeLoaderPlugin = require("./src/plugins/code-loader");
 
 import { remarkCodeHike, recmaCodeHike } from "codehike/mdx";
 const OpenApiPlugin = require("docusaurus-plugin-openapi-docs");
-import { llmsTxtPlugin } from "docusaurus-plugin-llms-txt";
 
 /** @type {import('codehike/mdx').CodeHikeConfig} */
 const chConfig = {
