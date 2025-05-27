@@ -7,6 +7,7 @@ const codeLoaderPlugin = require("./src/plugins/code-loader");
 
 import { remarkCodeHike, recmaCodeHike } from "codehike/mdx";
 const OpenApiPlugin = require("docusaurus-plugin-openapi-docs");
+import { llmsTxtPlugin } from "docusaurus-plugin-llms-txt";
 
 /** @type {import('codehike/mdx').CodeHikeConfig} */
 const chConfig = {
@@ -254,6 +255,29 @@ const config = {
       },
     },
   plugins: [
+    [
+      "docusaurus-plugin-llms-txt",
+      {
+        siteTitle: 'Restate Documentation',
+        siteDescription: 'Restate is a Durable Execution Engine for building resilient applications with ease.',
+        enableDescriptions: true,
+        logLevel: 2,
+        depth: 1,
+        runOnPostBuild: true,
+        enableCache: true,
+        relativePaths: false,
+        enableMarkdownFiles: true,
+
+        excludePaths: [
+          "/search",
+          "/category/**",
+          "/plugins/**",
+          "/assets/**",
+          "/404.html",
+        ],
+
+      },
+    ],
     [
       'docusaurus-plugin-openapi-docs',
       {
