@@ -2,9 +2,7 @@ import React from 'react';
 import {DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem} from '@radix-ui/react-dropdown-menu';
 import styles from "./styles.module.css";
 import clsx from "clsx";
-
-const llms_url = "https://docs.restate.dev/llms.txt"
-const llms_full_url = "https://docs.restate.dev/llms-full.txt"
+import BrowserOnly from "@docusaurus/BrowserOnly";
 
 const IconSize = "20"
 
@@ -54,69 +52,90 @@ const ClaudeIcon = <svg fill="currentColor" fill-rule="evenodd" height={IconSize
 </svg>
 
 
-const AskAiButton = () => {
-    const query = `Read the Restate Documentation ${llms_full_url} and Restate Examples https://github.com/restatedev/examples so I can ask questions about Restate.`;
-    const chatGPTUrl = `https://chatgpt.com/?hints=search&q=${encodeURIComponent(query)}`;
-    const claudeUrl = `https://claude.ai/new?q=${encodeURIComponent(query)}`;
+function getLlmsUrl(host){
+    return `${host}/llms.txt`
+}
 
+function getLlmsFullUrl(host){
+    return `${host}/llms-full.txt`
+}
+
+function getQuery(host){
+    const query = `Read the Restate Documentation ${getLlmsFullUrl(host)} and Restate Examples https://github.com/restatedev/examples so I can ask questions about Restate.`;
+    return encodeURIComponent(query)
+}
+
+function getChatGptUrl(host){
+    return `https://chatgpt.com/?hints=search&q=${getQuery(host)}`
+}
+
+function getClaudeUrl(host){
+    return `https://claude.ai/new?q==${getQuery(host)}`;
+}
+
+const AskAiButton = () => {
     return (
-        <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-            <DropdownMenu>
-                <DropdownMenuTrigger className={styles.dropdownTrigger}>
-                    <div className={styles.aiSearchTrigger}>
-                        <div className={clsx(styles.child, styles.listIcon)}>{AiIcon}</div>
-                        <div className={styles.child}>
-                            Ask AI
-                        </div>
-                    </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className={styles.dropdownContent}>
-                    <DropdownMenuItem className={styles.dropdownItem}>
-                        <a className={styles.dropdownLink} href={chatGPTUrl} target="_blank">
-                            <div className={clsx(styles.child, styles.listIcon)}>{ChatGptIcon}</div>
-                            <div className={styles.child}>
-                                Open in ChatGPT
-                                {ExternalLinkArrow}
-                                <br/>
-                                <small>Ask questions about Restate</small>
+        <BrowserOnly>
+            {() =>
+                <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger className={styles.dropdownTrigger}>
+                            <div className={styles.aiSearchTrigger}>
+                                <div className={clsx(styles.child, styles.listIcon)}>{AiIcon}</div>
+                                <div className={styles.child}>
+                                    Ask AI
+                                </div>
                             </div>
-                        </a>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                        <a className={styles.dropdownLink} href={claudeUrl} target="_blank">
-                            <div className={clsx(styles.child, styles.listIcon)}>{ClaudeIcon}</div>
-                            <div className={styles.child}>
-                                Open in Claude
-                                {ExternalLinkArrow}
-                                <br/>
-                                <small>Ask questions about Restate</small>
-                            </div>
-                        </a>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                        <a className={styles.dropdownLink} href={llms_url} target="_blank">
-                            <div className={clsx(styles.child, styles.listIcon)}>{RobotIcon}</div>
-                            <div className={styles.child}>
-                                View llms.txt
-                                <br/>
-                                <small>View docs index as LLM input</small>
-                            </div>
-                        </a>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                        <a className={styles.dropdownLink} href={llms_full_url} target="_blank">
-                            <div className={clsx(styles.child, styles.listIcon)}>{MarkdownIcon}</div>
-                            <div className={styles.child}>
-                                View llms-full.txt
-                                {ExternalLinkArrow}
-                                <br/>
-                                <small>View full docs as markdown</small>
-                            </div>
-                        </a>
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-        </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className={styles.dropdownContent}>
+                            <DropdownMenuItem className={styles.dropdownItem}>
+                                <a className={styles.dropdownLink} href={getChatGptUrl(window.location.origin)} target="_blank">
+                                    <div className={clsx(styles.child, styles.listIcon)}>{ChatGptIcon}</div>
+                                    <div className={styles.child}>
+                                        Open in ChatGPT
+                                        {ExternalLinkArrow}
+                                        <br/>
+                                        <small>Ask questions about Restate</small>
+                                    </div>
+                                </a>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                                <a className={styles.dropdownLink} href={getClaudeUrl(window.location.origin)} target="_blank">
+                                    <div className={clsx(styles.child, styles.listIcon)}>{ClaudeIcon}</div>
+                                    <div className={styles.child}>
+                                        Open in Claude
+                                        {ExternalLinkArrow}
+                                        <br/>
+                                        <small>Ask questions about Restate</small>
+                                    </div>
+                                </a>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                                <a className={styles.dropdownLink} href={getLlmsUrl(window.location.origin)} target="_blank">
+                                    <div className={clsx(styles.child, styles.listIcon)}>{RobotIcon}</div>
+                                    <div className={styles.child}>
+                                        View llms.txt
+                                        <br/>
+                                        <small>View docs index as LLM input</small>
+                                    </div>
+                                </a>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                                <a className={styles.dropdownLink} href={getLlmsFullUrl(window.location.origin)} target="_blank">
+                                    <div className={clsx(styles.child, styles.listIcon)}>{MarkdownIcon}</div>
+                                    <div className={styles.child}>
+                                        View llms-full.txt
+                                        {ExternalLinkArrow}
+                                        <br/>
+                                        <small>View full docs as markdown</small>
+                                    </div>
+                                </a>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            }
+        </BrowserOnly>
     );
 };
 
