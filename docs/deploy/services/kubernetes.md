@@ -10,24 +10,15 @@ import Admonition from '@theme/Admonition';
 
 This page describes how to deploy Restate services on [Kubernetes](https://kubernetes.io/).
 
-Service deployments can be deployed like any Kubernetes service; a Deployment of more than one replica is generally appropriate.
-The deployment should be load balanced at L7 if you want multiple service deployment pods.
-Native Kubernetes ClusterIP load balancing will lead to the Restate binary sending all requests to a single pod, as HTTP2 connections are aggressively reused.
-This is fine for local testing, but in production an approach must be found.
-If your infrastructure already has an approach for L7 load balancing services, you can use the same approach here.
-Otherwise, some recommended approaches are detailed below:
+Service deployments can be deployed like any Kubernetes service; a Deployment of more than one replica is generally appropriate,
+and a Service is used to provide a stable DNS name and IP for the pods.
+If your services are running over HTTP2 (the default), each Restate partition will generally have only one TCP connection to a single destination pod.
+However, because there are many partitions (by default 24, typically more in a larger cluster) your pods should get a reasonably
+even distribution of traffic even without a L7 load balancing solution (Cilium, Istio etc).
 
-| Infrastructure  | Approach                                                                                                                          |
-| --------------- |-----------------------------------------------------------------------------------------------------------------------------------|
-| Knative         | Use Knative for autoscaling, scale to zero and the integrated L7 load balancing                                                   |
-| Istio / LinkerD | Ensure sidecar is injected into Restate pod and all service pods                                                                  |
-| Cilium          | Ensure Cilium is installed with `loadBalancer.l7.backend=envoy`, and annotate service pods with `service.cilium.io/lb-l7=enabled` |
-| Minikube        | For local development it's likely not worth worrying about; see below                                                             |
-| Any             | Use an envoy sidecar on the Restate pod; see below                                                                                |
+### Deployment and Service
 
-### Local Kubernetes development
-
-A simple deployment setup (eg, for local use with Minikube) with a single pod in Kubernetes is as follows:
+A simple deployment setup with a single pod in Kubernetes is as follows:
 
 ```yaml
 apiVersion: apps/v1
@@ -67,8 +58,6 @@ spec:
   type: ClusterIP
 ```
 
-L7 load balancing is not needed when there is only one pod, so it's acceptable to use a normal ClusterIP Service.
-
 ### Knative
 
 Restate supports Knative services. Knative allows scaling to zero when there are no in-flight invocations and automatically configures an L7 load balancer. There are no special requirements to deploy a service deployment container with Knative:
@@ -97,91 +86,3 @@ spec:
 The service will be accessible at `http://<service-name>.<namespace>.svc`.
 
 By default Knative exposes the service through the Ingress. This is not required by Restate, and you can disable this behavior adding the argument `--cluster-local` to the aforementioned creation command.
-
-### Simple L7 load balancing with an Envoy sidecar
-
-A simple approach to L7 load balancing is to set up an Envoy sidecar in the Restate pod which acts as a transparent HTTP proxy which will resolve and L7 load balance to Kubernetes Services based on their DNS name.
-For this to work, Services must be deployed as Headless, ie without a ClusterIP. This is achieved by specifying `clusterIP: None` in a `type: ClusterIP` Service.
-
-```yaml
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: restate
-  namespace: restate
-spec:
-  # ...
-  template:
-    spec:
-      containers:
-        - name: restate
-          # ...
-          env:
-            - name: HTTP_PROXY
-              value: http://127.0.0.1:10001
-          # ...
-        - name: envoy
-          image: envoyproxy/envoy:distroless-v1.27-latest
-          volumeMounts:
-            - name: envoy-config
-              mountPath: /etc/envoy
-      # ...
-      volumes:
-        - name: envoy-config
-          configMap:
-            name: envoy-config
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: envoy-config
-data:
-  envoy.yaml: |
-    static_resources:
-      listeners:
-        - name: proxy
-          address:
-            socket_address:
-              address: "127.0.0.1"
-              port_value: 10001
-          filter_chains:
-            - filters:
-                - name: envoy.filters.network.http_connection_manager
-                  typed_config:
-                    '@type': type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
-                    stat_prefix: egress_http
-                    stream_idle_timeout: 0s
-                    route_config:
-                      name: local_route
-                      virtual_hosts:
-                        - name: http
-                          domains: ['*']
-                          routes:
-                            - match: {prefix: /}
-                              route:
-                                cluster: dynamic_forward_proxy_cluster
-                                timeout: 0s
-                    http_filters:
-                      - name: envoy.filters.http.dynamic_forward_proxy
-                        typed_config:
-                          '@type': type.googleapis.com/envoy.extensions.filters.http.dynamic_forward_proxy.v3.FilterConfig
-                          sub_cluster_config: {}
-                      - name: envoy.filters.http.router
-                        typed_config:
-                          "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
-      clusters:
-        - name: dynamic_forward_proxy_cluster
-          connect_timeout: 1s
-          lb_policy: CLUSTER_PROVIDED
-          # assume http2 in upstream
-          http2_protocol_options:
-            connection_keepalive:
-              interval: 40s
-              timeout: 20s
-          cluster_type:
-            name: envoy.clusters.dynamic_forward_proxy
-            typed_config:
-              '@type': type.googleapis.com/envoy.extensions.clusters.dynamic_forward_proxy.v3.ClusterConfig
-              sub_clusters_config:
-                lb_policy: ROUND_ROBIN
-```
