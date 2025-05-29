@@ -6,7 +6,7 @@ import { htmlPathToMdPath } from '../../fs/path';
 import { noopLogger } from '../../logging';
 import { createDocumentError, getErrorMessage, getErrorCause } from '../../utils';
 import {appendToMarkdownFile, saveMarkdownFile} from '../../fs/io/write';
-import {LLMS_FULL_TXT_FILENAME, LLMS_TXT_FILENAME, TITLE_TRUNCATE_LENGTH} from '../../constants';
+import {LLMS_FULL_TXT_FILENAME, TITLE_TRUNCATE_LENGTH} from '../../constants';
 
 /**
  * Check if a markdown file exists for the given HTML path

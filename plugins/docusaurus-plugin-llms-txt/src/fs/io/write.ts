@@ -34,7 +34,7 @@ export async function appendToMarkdownFile(
   } catch (error) {
     const errorCause = getErrorCause(error);
     throw createFileError(
-      `Failed to save markdown file to ${outputPath}`,
+      `Failed to append to markdown file at ${outputPath}`,
       outputPath,
       errorCause,
     );

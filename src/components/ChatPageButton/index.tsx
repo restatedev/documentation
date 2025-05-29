@@ -57,7 +57,7 @@ function getChatGptUrl(currentUrl){
 }
 
 function getClaudeUrl(currentUrl){
-    return `https://claude.ai/new?q==${getQuery(currentUrl)}`;
+    return `https://claude.ai/new?q=${getQuery(currentUrl)}`;
 }
 
 async function handleCopyMarkdown(url)  {
@@ -99,7 +99,7 @@ const ChatPageButton = () => {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className={styles.dropdownContent}>
                                 <DropdownMenuItem className={styles.dropdownItem}>
-                                    <a className={styles.dropdownLink} href={getChatGptUrl(window.location.href)} target="_blank">
+                                    <a className={styles.dropdownLink} href={getChatGptUrl(window.location.href)} target="_blank" rel="noopener noreferrer">
                                         <div className={clsx(styles.child, styles.listIcon)}>{ChatGptIcon}</div>
                                         <div className={styles.child}>
                                             Open in ChatGPT
@@ -110,7 +110,7 @@ const ChatPageButton = () => {
                                     </a>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem>
-                                    <a className={styles.dropdownLink} href={getClaudeUrl(window.location.href)} target="_blank">
+                                    <a className={styles.dropdownLink} href={getClaudeUrl(window.location.href)} target="_blank" rel="noopener noreferrer">
                                         <div className={clsx(styles.child, styles.listIcon)}>{ClaudeIcon}</div>
                                         <div className={styles.child}>
                                             Open in Claude
@@ -131,7 +131,7 @@ const ChatPageButton = () => {
                                     </a>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem>
-                                    <a className={styles.dropdownLink} href={window.location.href + '.md'} target="_blank">
+                                    <a className={styles.dropdownLink} href={window.location.href + '.md'} target="_blank" rel="noopener noreferrer">
                                         <div className={clsx(styles.child, styles.listIcon)}>{MarkdownIcon}</div>
                                         <div className={styles.child}>
                                             View as Markdown

@@ -61,7 +61,7 @@ function getLlmsFullUrl(host){
 }
 
 function getQuery(host){
-    const query = `Read the Restate Documentation ${getLlmsFullUrl(host)} and Restate Examples https://github.com/restatedev/examples so I can ask questions about Restate.`;
+    const query = `Read the Restate Documentation ${getLlmsUrl(host)} and Restate Examples https://github.com/restatedev/examples so I can ask questions about Restate.`;
     return encodeURIComponent(query)
 }
 
@@ -70,7 +70,7 @@ function getChatGptUrl(host){
 }
 
 function getClaudeUrl(host){
-    return `https://claude.ai/new?q==${getQuery(host)}`;
+    return `https://claude.ai/new?q=${getQuery(host)}`;
 }
 
 const AskAiButton = () => {
@@ -89,7 +89,7 @@ const AskAiButton = () => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className={styles.dropdownContent}>
                             <DropdownMenuItem className={styles.dropdownItem}>
-                                <a className={styles.dropdownLink} href={getChatGptUrl(window.location.origin)} target="_blank">
+                                <a className={styles.dropdownLink} href={getChatGptUrl(window.location.origin)} target="_blank" rel="noopener noreferrer">
                                     <div className={clsx(styles.child, styles.listIcon)}>{ChatGptIcon}</div>
                                     <div className={styles.child}>
                                         Open in ChatGPT
@@ -100,7 +100,7 @@ const AskAiButton = () => {
                                 </a>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
-                                <a className={styles.dropdownLink} href={getClaudeUrl(window.location.origin)} target="_blank">
+                                <a className={styles.dropdownLink} href={getClaudeUrl(window.location.origin)} target="_blank" rel="noopener noreferrer">
                                     <div className={clsx(styles.child, styles.listIcon)}>{ClaudeIcon}</div>
                                     <div className={styles.child}>
                                         Open in Claude
@@ -111,7 +111,7 @@ const AskAiButton = () => {
                                 </a>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
-                                <a className={styles.dropdownLink} href={getLlmsUrl(window.location.origin)} target="_blank">
+                                <a className={styles.dropdownLink} href={getLlmsUrl(window.location.origin)} target="_blank" rel="noopener noreferrer">
                                     <div className={clsx(styles.child, styles.listIcon)}>{RobotIcon}</div>
                                     <div className={styles.child}>
                                         View llms.txt
@@ -121,7 +121,7 @@ const AskAiButton = () => {
                                 </a>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
-                                <a className={styles.dropdownLink} href={getLlmsFullUrl(window.location.origin)} target="_blank">
+                                <a className={styles.dropdownLink} href={getLlmsFullUrl(window.location.origin)} target="_blank" rel="noopener noreferrer">
                                     <div className={clsx(styles.child, styles.listIcon)}>{MarkdownIcon}</div>
                                     <div className={styles.child}>
                                         View llms-full.txt
