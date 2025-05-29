@@ -23,18 +23,10 @@ const handler = restate
   .handler();
 // Cloudflare expects the handler as a default export
 export default handler;
-// Bun expects an object containing the inner fetch function
-Bun.serve({
-  port: 9080,
-  ...handler,
-});
 // Deno expects to be passed the fetch function
 Deno.serve({ port: 9080 }, handler.fetch);
 // <end_fetch>
 
-namespace Bun {
-  export function serve(_: object): void {}
-}
 namespace Deno {
   export function serve(a: object, b: object): void {}
 }
