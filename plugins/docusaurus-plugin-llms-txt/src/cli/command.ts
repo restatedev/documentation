@@ -96,6 +96,7 @@ export async function generateLlmsTxt(
  */
 async function runCliConversion(
   siteDir: string,
+  outDir: string,
   options: Partial<PluginOptions>,
   context: LoadContext,
 ): Promise<void> {
@@ -131,6 +132,7 @@ async function runCliConversion(
         directories.docsDir,
         directories.mdOutDir,
         siteDir,
+        outDir,
         config,
         log,
         siteUrl
@@ -172,7 +174,7 @@ export function registerLlmsTxt(
     .description('Generate llms.txt and/or Markdown files using cached routes from build')
     .action(async (siteDirArg: string | undefined) => {
       const siteDir = siteDirArg ? path.resolve(siteDirArg) : process.cwd();
-      await runCliConversion(siteDir, baseOptions, context);
+      await runCliConversion(siteDir, ".", baseOptions, context);
     });
 }
 
