@@ -37,7 +37,7 @@ Each Bifrost log is a chain of append-only segments. The control plane takes car
 
 The Processors (also called Partition Processors) receive invocations, process events from the durable log, and interact with the services/functions containing the application/workflow logic. The Processors encapsulate the state machines for durable execution and invocation life-cycles.
 
-The Processors maintain the “state of the world” which is derived from the events in the log. That state describes what invocations are ongoing, what is in the journal of each invocation, futures/promises, and the actual state of virtual objects. This state can be thought of as a materialized view that is deterministically derived from the log. The state is stored in RocksDB and periodically snapshotted to an object store, to bound the number of events to re-apply during a failure-recovery-catchup cycle.
+The Processors maintain the “state of the world” derived from log events. This state includes ongoing invocations, the journal of each invocation, durable promises, and persisted key-value state. Partition state is stored in RocksDB and can be periodically snapshotted to an object store (this is required in multi-node clusters).
 
 ## Nodes and roles
 
