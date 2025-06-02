@@ -16,12 +16,15 @@ import Admonition from '@theme/Admonition';
 </Admonition>
 
 <Admonition type="caution">
-    Snapshots are essential to support safe log trimming and also allow you to set partition replication to a subset of all cluster nodes, while still allowing for fast partition fail-over to any live node. Snapshots are also necessary to add more nodes in the future.
+    Snapshots are essential to support safe log trimming and fast partition fail-over to a different cluster node. Snapshots are optional for single-node deployments and required for multi-node clusters.
 </Admonition>
 
-Restate workers can be configured to periodically publish snapshots of their partition state to a shared destination. Snapshots are not necessarily backups. Rather, snapshots allow nodes that had not previously served a partition to bootstrap a copy of its state. Without snapshots, placing a partition processor on a node that wasn't previously a follower would require the full replay of that partition's log. Replaying the log from the start might take a long time, or be impossible if the log was trimmed.
+Restate Partition Processors can be configured to periodically publish snapshots of their partition state to a shared destination. Snapshots are not necessarily backups though retaining these historic checkpoints in object storage provides an added layer of safety. Snapshot serve to allow nodes that do not have an up-to-date local copy of a partition's state to quickly start a processor for the given partition. Without snapshots, trimming the log is impossible as that would lead to data loss. Additionally, starting new partition processor would require the full replay of that partition's log which might take a long time.
+
+When partition processors successfully publish a snapshot, this is reflected in the archived log sequence number (LSN). This value is the safe point up to which Restate can trim the Bifrost log.
 
 ## Configuring Snapshots
+
 Restate clusters should always be configured with a snapshot repository to allow nodes to efficiently share partition state, and for new nodes to be added to the cluster in the future.
 Restate currently supports using Amazon S3 (or an API-compatible object store) as a shared snapshot repository.
 To set up a snapshot destination, update your [server configuration](/operate/configuration/server) as follows:
@@ -97,9 +100,6 @@ In a distributed environment, the shared log is the mechanism for replicating pa
 Therefore it is critical to that all cluster members can get all the relevant events recorded in the log, even newly built nodes that will join the cluster in the future.
 This requirement is at odds with an immutable log growing unboundedly. Snapshots enable log trimming - the process of removing older segments of the log.
 
-When partition processors successfully publish a snapshot, they update their "archived" log sequence number (LSN).
-This reflects the position in the log at which the snapshot was taken and allows the cluster to safely trim its logs.
-
 By default, Restate will attempt to trim logs once an hour which you can override or disable in the server configuration:
 
 ```toml
@@ -109,15 +109,44 @@ log-trim-check-interval = "1h"
 
 This interval determines only how frequently the check is performed, and does not guarantee that logs will be trimmed. Restate will automatically determine the appropriate safe trim point for each partition's log.
 
-In multi-node clusters, or any time a snapshot repository is configured, the log safe trim point is determined based on the archived LSN. If a snapshot repository is not configured, then archived LSNs are not reported. Therefore, on multi-node deployments, always make sure to configure a snapshot repository so that the log size can be kept in check. On single-node deployments without a snapshot repository, the log is trimmed based only on the locally persisted LSN. If you intend to expand such a single-node into a distributed cluster in the future, you will need to enable snapshotting first.
+In multi-node clusters, or any time a snapshot repository is configured, the log safe trim point is determined based on the archived LSN. If a snapshot repository is not configured, then archived LSNs are not reported. Therefore, on multi-node deployments, always make sure to configure a snapshot repository so that the log size can be kept in check. On single-node deployments without a snapshot repository, the log is trimmed based on the latest LSN durably committed to local storage. If you decide to expand a single-node into a multi-node cluster in the future, you will need to configure snapshotting for partition state transfer to the new nodes.
 
-The presence of unreachable nodes in a cluster does not affect trimming, as long as other nodes continue to produce snapshots. However, partition processors that are behind the latest archived LSN will cause trimming to be delayed to allow them to catch up.
+The presence of unreachable nodes in a cluster does not affect trimming, as long as the remaining nodes continue to produce snapshots. However, active partition processors that behind the archived LSN will cause trimming to be delayed to allow them to catch up.
 
-Nodes that are temporarily down when the log is trimmed will use snapshots to fast-forward when they come back.
+Nodes that are temporarily down when the log is trimmed will use snapshots to fast-forward local state when they come back.
 
 <Admonition type="note" title="Handling log trim gap errors">
     If you observe repeated `Shutting partition processor down because it encountered a trim gap in the log.` errors in the Restate server log, it is an indication that a processor is failing to start up due to missing log records. To recover, you must ensure that a snapshot repository is correctly configured and accessible from the node reporting errors. You can still recover even if no snapshots were taken previously as long as there is at least one healthy node with a copy of the partition data. In that case, you must first configure the existing node(s) to publish snapshots for the affected partition(s) to a shared destination. See the [Handling missing snapshots](/operate/clusters#handling-missing-snapshots) section for detailed recovery steps.
 </Admonition>
+
+## Observing processor persisted state
+
+You can use [`restatectl`](/operate/clusters#controlling-clusters-with-restatectl) to see the progress of partition processors with the `list` subcommand:
+
+```shell
+restatectl partitions list
+```
+
+This will produce output similar to the below:
+
+```
+Alive partition processors (nodes config v6, partition table v2)
+ ID  NODE  MODE    STATUS  EPOCH  APPLIED  DURABLE  ARCHIVED  LSN-LAG  UPDATED
+ 0   N1:4  Leader  Active  e4     121428   121343   115779    0        268 ms ago
+ 1   N1:4  Leader  Active  e4     120778   120735   116216    0        376 ms ago
+ 2   N1:4  Leader  Active  e4     121348   121303   117677    0        394 ms ago
+ 3   N1:4  Leader  Active  e4     120328   120328   117303    0        259 ms ago
+ 4   N1:4  Leader  Active  e4     121108   120989   119359    0        909 ms ago
+ 5   N1:4  Leader  Active  e4     121543   121481   119818    0        467 ms ago
+ 6   N1:4  Leader  Active  e4     121253   121194   119568    0        254 ms ago
+ 7   N1:4  Leader  Active  e4     120598   120550   118923    0        387 ms ago
+```
+
+There are three notable persistence-related attributes in `restatectl`'s partition list output:
+
+- **Applied LSN** - the latest log record record applied by this processor
+- **Durable LSN** - the log position of the latest partition store flushed to local node storage; by default processors optimize performance by relying on Bifrost for durability and only periodically flush partition store to disk
+- **Archived LSN** - if a snapshot repository is configured, this LSN represents the latest published snapshot; this determines the log safe trim point in multi-node clusters
 
 ## Pruning the snapshot repository
 
