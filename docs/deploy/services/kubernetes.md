@@ -1,14 +1,23 @@
 ---
-title: "Kubernetes"
-sidebar_position: 2
+title: "Standalone/Kubernetes"
+sidebar_position: 1
 description: "Learn how to run Restate applications on Kubernetes."
 ---
 
 import Admonition from '@theme/Admonition';
 
-# Deploying Restate services to Kubernetes
+# Deploying Restate services
 
-This page describes how to deploy Restate services on [Kubernetes](https://kubernetes.io/).
+You can deploy your Restate service on any standalone machine.
+If you want to spread load across multiple machines, it is best to put them behind a load balancer (L4/L7).
+
+<Admonition type="info" title="Running services behind a load balancer">
+    If you want to run your service behind a load balancer, please make sure that you configure the load balancer to allow HTTP2 traffic.
+</Admonition>
+
+## Deploying Restate services to Kubernetes
+
+This section describes how to deploy Restate services on [Kubernetes](https://kubernetes.io/).
 
 Service deployments can be deployed like any Kubernetes service; a Deployment of more than one replica is generally appropriate,
 and a Service is used to provide a stable DNS name and IP for the pods.
