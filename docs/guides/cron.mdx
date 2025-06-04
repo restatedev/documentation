@@ -1,0 +1,232 @@
+---
+title: "Cron Jobs"
+description: "Schedule tasks periodically with Restate."
+pagination_next: null
+pagination_prev: null
+---
+
+import Admonition from "@theme/Admonition";
+import {CodeWithTabs} from "../../src/components/code/code";
+import {Step} from "../../src/components/Stepper";
+
+# Cron Jobs
+
+
+This guide shows how to use the Restate to **schedule tasks according to a defined schedule**, also known as cron jobs.
+
+<img src={"/img/guides/cron/cron-job.png"} width={"300px"}/>
+
+Restate has no built-in functionality for cron jobs.
+But Restate's durable building blocks make it easy to implement a service that does this for us, and uses the guarantees Restate gives to make sure tasks get executed reliably.
+
+We use the following Restate features to implement the cron service:
+- **Durable timers**: Restate allows the schedule tasks to run at a specific time in the future. Restate ensures execution.
+- **Task control**: Restate allows starting and cancelling tasks.
+- **K/V state**: We store the details of the cron jobs in Restate, so we can retrieve them later.
+
+The cron service schedules tasks based on a cron expression, lets you cancel jobs and retrieve information about them.
+
+## Example
+
+The example implements a cron service that creates cron jobs that run at a specific time, and can be cancelled.
+All timers are stored in Restate for durability.
+
+<img src={"/img/guides/cron/cron-jobs-diagram.png"} width={"600px"}/>
+
+The example implements a `TaskService` that implements a stub. This can be replaced with any service that you want to run periodically.
+
+You can run this on FaaS infrastructure, like AWS Lambda, and it will scale automatically to zero when nothing is executing.
+
+<CodeWithTabs groupId={"sdk"}>
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/parallelizework/fan_out_worker.ts
+    // collapse_prequel
+    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/typescript/patterns-use-cases/src/parallelizework/fan_out_worker.ts
+    ```
+
+    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/parallelizework/FanOutWorker.java
+    // collapse_prequel
+    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/java/patterns-use-cases/src/main/java/my/example/parallelizework/FanOutWorker.java
+    ```
+
+    ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/parallelizework/app.py
+    // collapse_prequel
+    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/python/patterns-use-cases/parallelizework/app.py
+    ```
+
+    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/parallelizework/fanoutworker.go
+    // collapse_prequel
+    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/go/patterns-use-cases/src/parallelizework/fanoutworker.go
+    ```
+</CodeWithTabs>
+
+<Admonition type={"note"} title={"Example not available in your language?"}>
+    This pattern is implementable with any of our SDKs. We are still working on translating all patterns to all SDK languages.
+    If you need help with a specific language, please reach out to us via [Discord](https://discord.com/invite/skW3AZ6uGd) or [Slack](https://join.slack.com/t/restatecommunity/shared_invite/zt-2v9gl005c-WBpr167o5XJZI1l7HWKImA).
+</Admonition>
+
+
+## Running the example
+
+<Step stepLabel="1" title="Download the example">
+    <CodeWithTabs groupId={"sdk"} className={"display-none"}>
+        ```shell !!tabs ts
+        restate example typescript-patterns-use-cases && cd typescript-patterns-use-cases
+        ```
+        ```shell !!tabs java
+        restate example java-patterns-use-cases && cd java-patterns-use-cases
+        ```
+        ```shell !!tabs python
+        restate example python-patterns-use-cases && cd python-patterns-use-cases
+        ```
+        ```shell !!tabs go
+        restate example go-patterns-use-cases && cd go-patterns-use-cases
+        ```
+    </CodeWithTabs>
+</Step>
+<Step stepLabel="2" title="Start the Restate Server">
+    ```shell
+    restate-server
+    ```
+</Step>
+<Step stepLabel="3" title="Start the Service">
+    <CodeWithTabs groupId={"sdk"} className={"display-none"}>
+        ```shell !!tabs ts
+        npx tsx watch ./src/cron/cron_service.ts
+        ```
+        ```shell !!tabs java
+        ./gradlew -PmainClass=my.example.cron.AppMain run
+        ```
+        ```shell !!tabs python
+        python cron/app.py
+        ```
+        ```shell !!tabs go
+        go run ./src/cron
+        ```
+    </CodeWithTabs>
+</Step>
+<Step stepLabel="4" title="Register the services">
+    ```shell
+    restate deployments register localhost:9080
+    ```
+</Step>
+<Step stepLabel="5" title="Send a request">
+
+    For example, run `executeTask` every minute:
+    <CodeWithTabs groupId={"sdk"} className={"display-none"}>
+        ```shell !!tabs ts
+        curl localhost:8080/CronService/create --json '{
+            "expr": "* * * * *",
+            "service": "TaskService",
+            "handler": "executeTask",
+            "payload": "Hello new minute!"
+        }'
+        ```
+
+        ```shell !!tabs java
+        curl localhost:8080/CronService/create --json '{
+            "expr": "* * * * *",
+            "service": "TaskService",
+            "handler": "executeTask",
+            "payload": "Hello new minute!"
+        }'
+        ```
+        ```shell !!tabs python
+        curl localhost:8080/CronService/create --json '{
+            "expr": "* * * * *",
+            "service": "TaskService",
+            "handler": "executeTask",
+            "payload": "Hello new minute!"
+        }'
+        ```
+        ```shell !!tabs go
+        curl localhost:8080/CronService/Create --json '{
+            "expr": "* * * * *",
+            "service": "TaskService",
+            "handler": "executeTask",
+            "payload": "Hello new minute!"
+        }'
+        ```
+    </CodeWithTabs>
+
+    For example, or run `executeTask` at midnight:
+    <CodeWithTabs groupId={"sdk"} className={"display-none"}>
+        ```shell !!tabs ts
+        curl localhost:8080/CronService/create --json '{
+            "expr": "0 0 * * *",
+            "service": "TaskService",
+            "handler": "executeTask",
+            "payload": "Hello midnight!"
+        }'
+        ```
+
+        ```shell !!tabs java
+        curl localhost:8080/CronService/create --json '{
+            "expr": "0 0 * * *",
+            "service": "TaskService",
+            "handler": "executeTask",
+            "payload": "Hello midnight!"
+        }'
+        ```
+        ```shell !!tabs python
+        curl localhost:8080/CronService/create --json '{
+            "expr": "0 0 * * *",
+            "service": "TaskService",
+            "handler": "executeTask",
+            "payload": "Hello midnight!"
+        }'
+        ```
+        ```shell !!tabs go
+        curl localhost:8080/CronService/Create --json '{
+            "expr": "0 0 * * *",
+            "service": "TaskService",
+            "handler": "executeTask",
+            "payload": "Hello midnight!"
+        }'
+        ```
+    </CodeWithTabs>
+
+    You can also use the cron service to execute handlers on Virtual Objects, by specifying the Virtual Object key in the request.
+
+
+    You will get back a response with the job ID.
+
+    Using the job ID, you can then get information about the job:
+    <CodeWithTabs groupId={"sdk"} className={"display-none"}>
+        ```shell !!tabs ts
+        curl localhost:8080/CronJob/myJobId/getInfo
+        ```
+        ```shell !!tabs java
+        curl localhost:8080/CronJob/myJobId/getInfo
+        ```
+        ```shell !!tabs python
+        curl localhost:8080/CronJob/myJobId/getInfo
+        ```
+        ```shell !!tabs go
+        curl localhost:8080/CronJob/myJobId/GetInfo
+        ```
+    </CodeWithTabs>
+
+    Or cancel the job later:
+    <CodeWithTabs groupId={"sdk"} className={"display-none"}>
+        ```shell !!tabs ts
+        curl localhost:8080/CronJob/myJobId/cancel
+        ```
+        ```shell !!tabs java
+        curl localhost:8080/CronJob/myJobId/cancel
+        ```
+        ```shell !!tabs python
+        curl localhost:8080/CronJob/myJobId/cancel
+        ```
+        ```shell !!tabs go
+        curl localhost:8080/CronJob/myJobId/Cancel
+        ```
+    </CodeWithTabs>
+</Step>
+
+<Step stepLabel="4" title="Check the scheduled tasks and state">
+    In the UI, you can see how the tasks are scheduled, and how the state of the cron jobs is stored in Restate.
+
+    <img src={"/img/guides/cron/cron_service_schedule.png"}/>
+    <img src={"/img/guides/cron/cron_state_ui.png"}/>
+
+</Step>
