@@ -27,7 +27,7 @@ const Guides: Guide[] = [
   {
     title: "Sagas",
     description: "Implementing undo operations in case of failures, to keep your system consistent.",
-    preview: require('./guides/cancellation-signal-propagation.png'),
+    preview: require('./guides/sagas.png'),
     website: '/guides/sagas',
     source: null,
     tags: ['patterns', 'java', 'typescript', 'go', 'python'],

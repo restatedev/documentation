@@ -15,7 +15,7 @@ This guide shows how to use the Restate to **execute a list of tasks in parallel
 
 <img src={"/img/guides/parallelizework.png"} width={"400px"}/>
 
-How does Restate help?
+## How does Restate help?
 - Restate lets you schedule the tasks asynchronously and guarantees that all tasks will run, with **retries and recovery** on failures.
 - Restate **turns promises into durable, distributed constructs** that are persisted in Restate and can be recovered and awaited on another process.
 - You can deploy the subtask executors on **serverless** infrastructure, like AWS Lambda, to let them scale automatically. The main task, that is idle while waiting on the subtasks, gets suspended until it can make progress.
@@ -96,7 +96,7 @@ Restate will then resume the handler when all subtasks are done.
         ./gradlew -PmainClass=my.example.parallelizework.FanOutWorker run
         ```
         ```shell !!tabs python
-        python -m hypercorn --config hypercorn-config.toml src/parallelizework/fan_out_worker:app
+        python parallelizework/app.py
         ```
         ```shell !!tabs go
         go run ./src/parallelizework
