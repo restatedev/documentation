@@ -93,18 +93,18 @@ You can run this on FaaS infrastructure, like AWS Lambda, and it will scale auto
     <CodeWithTabs groupId={"sdk"} className={"display-none"}>
         ```shell !!tabs ts
         curl localhost:8080/CronJobInitiator/create --json '{
-            "expr": "* * * * *",
+            "cronExpression": "* * * * *",
             "service": "TaskService",
-            "handler": "executeTask",
+            "method": "executeTask",
             "payload": "Hello new minute!"
         }'
         ```
 
         ```shell !!tabs java
         curl localhost:8080/CronJobInitiator/create --json '{
-            "expr": "* * * * *",
+            "cronExpression": "* * * * *",
             "service": "TaskService",
-            "handler": "executeTask",
+            "method": "executeTask",
             "payload": "Hello new minute!"
         }'
         ```
@@ -114,18 +114,18 @@ You can run this on FaaS infrastructure, like AWS Lambda, and it will scale auto
     <CodeWithTabs groupId={"sdk"} className={"display-none"}>
         ```shell !!tabs ts
         curl localhost:8080/CronService/create --json '{
-            "expr": "0 0 * * *",
+            "cronExpression": "0 0 * * *",
             "service": "TaskService",
-            "handler": "executeTask",
+            "method": "executeTask",
             "payload": "Hello midnight!"
         }'
         ```
 
         ```shell !!tabs java
         curl localhost:8080/CronService/create --json '{
-            "expr": "0 0 * * *",
+            "cronExpression": "0 0 * * *",
             "service": "TaskService",
-            "handler": "executeTask",
+            "method": "executeTask",
             "payload": "Hello midnight!"
         }'
         ```
