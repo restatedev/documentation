@@ -37,7 +37,7 @@ export function CopyButton({
           }}
           aria-label="Copy to clipboard"
         >
-          {copied ? <Check size={18} /> : <Copy size={18} color={"#57606a"} />}
+          {copied ? <Check size={18} color={"#57606a"} /> : <Copy size={18} color={"#57606a"} />}
         </button>
       </div>
 
