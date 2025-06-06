@@ -72,7 +72,7 @@ const Guides: Guide[] = [
     preview: require('./guides/cron-job.png'),
     website: '/guides/cron',
     source: null,
-    tags: ['patterns', 'typescript', 'java', 'go', 'python'],
+    tags: ['patterns', 'typescript', 'java'],
   },
   {
     title: "Durable webhooks",

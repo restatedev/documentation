@@ -38,24 +38,14 @@ The example implements a `TaskService` that implements a stub. This can be repla
 You can run this on FaaS infrastructure, like AWS Lambda, and it will scale automatically to zero when nothing is executing.
 
 <CodeWithTabs groupId={"sdk"}>
-    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/parallelizework/fan_out_worker.ts
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/cron_example/typescript/patterns-use-cases/src/cron/cron_service.ts
     // collapse_prequel
-    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/typescript/patterns-use-cases/src/parallelizework/fan_out_worker.ts
+    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/cron_example/typescript/patterns-use-cases/src/cron/cron_service.ts
     ```
 
-    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/parallelizework/FanOutWorker.java
+    ```java !!tabs Java https://github.com/restatedev/examples/blob/cron_example/java/patterns-use-cases/src/main/java/my/example/cron/Cron.java
     // collapse_prequel
-    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/java/patterns-use-cases/src/main/java/my/example/parallelizework/FanOutWorker.java
-    ```
-
-    ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/parallelizework/app.py
-    // collapse_prequel
-    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/python/patterns-use-cases/parallelizework/app.py
-    ```
-
-    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/parallelizework/fanoutworker.go
-    // collapse_prequel
-    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/go/patterns-use-cases/src/parallelizework/fanoutworker.go
+    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/cron_example/java/patterns-use-cases/src/main/java/my/example/cron/Cron.java
     ```
 </CodeWithTabs>
 
@@ -75,12 +65,6 @@ You can run this on FaaS infrastructure, like AWS Lambda, and it will scale auto
         ```shell !!tabs java
         restate example java-patterns-use-cases && cd java-patterns-use-cases
         ```
-        ```shell !!tabs python
-        restate example python-patterns-use-cases && cd python-patterns-use-cases
-        ```
-        ```shell !!tabs go
-        restate example go-patterns-use-cases && cd go-patterns-use-cases
-        ```
     </CodeWithTabs>
 </Step>
 <Step stepLabel="2" title="Start the Restate Server">
@@ -94,13 +78,7 @@ You can run this on FaaS infrastructure, like AWS Lambda, and it will scale auto
         npx tsx watch ./src/cron/cron_service.ts
         ```
         ```shell !!tabs java
-        ./gradlew -PmainClass=my.example.cron.AppMain run
-        ```
-        ```shell !!tabs python
-        python cron/app.py
-        ```
-        ```shell !!tabs go
-        go run ./src/cron
+        ./gradlew -PmainClass=my.example.cron.Cron run
         ```
     </CodeWithTabs>
 </Step>
@@ -114,7 +92,7 @@ You can run this on FaaS infrastructure, like AWS Lambda, and it will scale auto
     For example, run `executeTask` every minute:
     <CodeWithTabs groupId={"sdk"} className={"display-none"}>
         ```shell !!tabs ts
-        curl localhost:8080/CronService/create --json '{
+        curl localhost:8080/CronJobInitiator/create --json '{
             "expr": "* * * * *",
             "service": "TaskService",
             "handler": "executeTask",
@@ -123,23 +101,7 @@ You can run this on FaaS infrastructure, like AWS Lambda, and it will scale auto
         ```
 
         ```shell !!tabs java
-        curl localhost:8080/CronService/create --json '{
-            "expr": "* * * * *",
-            "service": "TaskService",
-            "handler": "executeTask",
-            "payload": "Hello new minute!"
-        }'
-        ```
-        ```shell !!tabs python
-        curl localhost:8080/CronService/create --json '{
-            "expr": "* * * * *",
-            "service": "TaskService",
-            "handler": "executeTask",
-            "payload": "Hello new minute!"
-        }'
-        ```
-        ```shell !!tabs go
-        curl localhost:8080/CronService/Create --json '{
+        curl localhost:8080/CronJobInitiator/create --json '{
             "expr": "* * * * *",
             "service": "TaskService",
             "handler": "executeTask",
@@ -167,22 +129,6 @@ You can run this on FaaS infrastructure, like AWS Lambda, and it will scale auto
             "payload": "Hello midnight!"
         }'
         ```
-        ```shell !!tabs python
-        curl localhost:8080/CronService/create --json '{
-            "expr": "0 0 * * *",
-            "service": "TaskService",
-            "handler": "executeTask",
-            "payload": "Hello midnight!"
-        }'
-        ```
-        ```shell !!tabs go
-        curl localhost:8080/CronService/Create --json '{
-            "expr": "0 0 * * *",
-            "service": "TaskService",
-            "handler": "executeTask",
-            "payload": "Hello midnight!"
-        }'
-        ```
     </CodeWithTabs>
 
     You can also use the cron service to execute handlers on Virtual Objects, by specifying the Virtual Object key in the request.
@@ -198,12 +144,6 @@ You can run this on FaaS infrastructure, like AWS Lambda, and it will scale auto
         ```shell !!tabs java
         curl localhost:8080/CronJob/myJobId/getInfo
         ```
-        ```shell !!tabs python
-        curl localhost:8080/CronJob/myJobId/getInfo
-        ```
-        ```shell !!tabs go
-        curl localhost:8080/CronJob/myJobId/GetInfo
-        ```
     </CodeWithTabs>
 
     Or cancel the job later:
@@ -214,12 +154,6 @@ You can run this on FaaS infrastructure, like AWS Lambda, and it will scale auto
         ```shell !!tabs java
         curl localhost:8080/CronJob/myJobId/cancel
         ```
-        ```shell !!tabs python
-        curl localhost:8080/CronJob/myJobId/cancel
-        ```
-        ```shell !!tabs go
-        curl localhost:8080/CronJob/myJobId/Cancel
-        ```
     </CodeWithTabs>
 </Step>
 
@@ -229,4 +163,5 @@ You can run this on FaaS infrastructure, like AWS Lambda, and it will scale auto
     <img src={"/img/guides/cron/cron_service_schedule.png"}/>
     <img src={"/img/guides/cron/cron_state_ui.png"}/>
 
+    You can kill and restart any of the services or the Restate Server, and the scheduled tasks will still be there.
 </Step>

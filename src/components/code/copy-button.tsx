@@ -19,16 +19,15 @@ export function CopyButton({
       <div className={clsx(
         className
     )}>
-        {(githubUrl) ? <a
-          href={githubUrl}
-          className="ch-code-github-button"
-          target="_blank"
-          rel="noopener noreferrer"
-
-          aria-label="Open GitHub link"
-      >
-        <img width={16} src={"/img/github.svg"}/>
-      </a> : null}
+          {(githubUrl) ? <a
+              href={githubUrl}
+              className="ch-code-github-button"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Open GitHub link"
+          >
+              <img src="/img/github.svg" height={18} alt="GitHub" className="github-open-link" color={"#57606a"} />
+          </a> : null}
       <button
           className="ch-code-copy-button"
           onClick={() => {
@@ -38,7 +37,7 @@ export function CopyButton({
           }}
           aria-label="Copy to clipboard"
         >
-          {copied ? <Check size={16} /> : <Copy size={16} />}
+          {copied ? <Check size={18} /> : <Copy size={18} color={"#57606a"} />}
         </button>
       </div>
 
