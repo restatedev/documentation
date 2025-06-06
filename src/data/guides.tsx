@@ -67,6 +67,14 @@ const Guides: Guide[] = [
     tags: ['patterns', 'typescript', 'java', 'go', 'python'],
   },
   {
+    title: "Cron Jobs",
+    description: 'Schedule tasks periodically with Restate.',
+    preview: require('./guides/cron-job.png'),
+    website: '/guides/cron',
+    source: null,
+    tags: ['patterns', 'typescript', 'java'],
+  },
+  {
     title: "Durable webhooks",
     description: 'Point webhook callbacks to a Restate handler for durable event processing.',
     preview: require('./guides/durable-webhooks.png'),
