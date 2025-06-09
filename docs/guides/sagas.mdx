@@ -21,19 +21,17 @@ One way to achieve this is by using the [Saga pattern](https://learn.microsoft.c
     If a failure occurs partway through, these compensations are triggered to **undo** completed steps, ensuring your system stays consistent even when things go wrong.
 </Admonition>
 
-
-
 ## How does Restate help?
 
 Restate makes it easy to implement resilient sagas in your code:
-- **Durable Execution**: Restate guarantees that your code runs to completion. If a failure occurs, Restate automatically retries from the point of failure and ensures that all compensations run.
+- **Durable Execution**: Restate guarantees that your code runs to completion. If a transient failure occurs, Restate automatically retries from the point of failure and ensures that all compensations run.
 - **Resilience built-in**: No need to manually track state or retry logic. Restate handles all persistence and compensation orchestration for you.
-- **Code-first approach**: Define sagas using regular code, no DSLs. Track compensations in a list, and execute them on failure.
+- **Code-first approach**: Define sagas using regular code, no DSLs. Track compensations in a list, and execute them on non-transient failures.
 
 ## Example
 
 Here is a typical travel booking workflow, where you book a flight, then rent a car, and finally book a hotel.
-If any step fails, we want to roll back the previous steps to keep the system consistent.
+If any step fails for a non-transient reason (e.g. driver license not accepted, hotel full), we want to roll back the previous steps to keep the system consistent.
 
 <img src={"/img/guides/sagas/saga_diagram.svg"} alt="Sagas example diagram" width={"550px"}/>
 
@@ -76,7 +74,7 @@ Note that for Golang we use `defer` to run the compensations at the end.
 
 Restate automatically retries all transient failures, like network hiccups or temporary service outages. But not all failures are temporary.
 
-In this case, sagas are essential:
+For these failures, sagas are essential:
 
 1. **Business logic requirements**:
     - Some failures are not transient but a business decision (e.g. “Hotel is full” or “Driver license not accepted”), retrying won't help.
@@ -90,12 +88,14 @@ In this case, sagas are essential:
 
 ## Idempotency and compensations
 
-Since sagas in Restate are implemented in user code, compensations are flexible and powerful, as long as they're idempotent.
-You can reset service state, call other services to undo prior actions, use `ctx.run` to delete rows or reverse database operations.
+Since sagas in Restate are implemented in user code, compensations are flexible and powerful, as long as they're idempotent: you can reset service state, call other services to undo prior actions, use `ctx.run` to delete rows or reverse database operations.
 
-Depending on the characteristics of the API, you might need to register compensations at different points in your code:
+The example above uses the customer ID to guarantee idempotency, so that on retries it will not create duplicate bookings or rentals.
+The example assumes that the API provider deduplicates the requests based on this ID.
 
-1. **Two-step APIs**: First you _reserve_, then _confirm_ or _cancel_. Register the compensation after reservation, when you have the resource ID.
+Based on the API you are using, generating the idempotency key and registering the compensation can be done in different ways:
+
+1. **Two-phase APIs**: First you _reserve_, then _confirm_ or _cancel_. Register the compensation after reservation, when you have the resource ID.
 Reservations that are not confirmed, get automatically cancelled by the API after a timeout.
 
 <CodeWithTabs groupId={"sdk"}>
@@ -117,8 +117,8 @@ Reservations that are not confirmed, get automatically cancelled by the API afte
 </CodeWithTabs>
 
 
-2. **One-shot APIs with idempotency key**: First, you generate an idempotency key and persist it in Restate. Then, you register the compensation, and finally call the API.
-We need to register the compensation before calling the API, because there is a chance that the API call succeeded but that we never got the confirmation. So in this case, we need to roll back to a consistent state.
+2. **One-shot APIs with idempotency key**: First, you generate an idempotency key and persist it in Restate. Then, you register the compensation (e.g. `refund`), and finally do the action (e.g. `charge`).
+We need to register the compensation before doing the action, because there is a chance that the action succeeded but that we never got the confirmation.
 
 <CodeWithTabs groupId={"sdk"}>
     ```ts !!tabs TypeScript
@@ -275,7 +275,7 @@ We need to register the compensation before calling the API, because there is a 
 </Step>
 
 <Step stepLabel="4" title="Check the UI or service logs">
-    See how all tasks get spawned in parallel, finish at different times, and then get aggregated.
+    See in the Restate UI (`localhost:9070`) how all steps were executed, and how the compensations were triggered because the hotel was full.
 
     <img src={"/img/guides/sagas/saga_journal.png"} alt="Sagas UI" />
 </Step>
