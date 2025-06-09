@@ -12,40 +12,50 @@ import {Step} from "../../src/components/Stepper";
 # Cron Jobs
 
 
-This guide shows how to use the Restate to **schedule tasks according to a defined schedule**, also known as cron jobs.
+This guide shows how to use the Restate to **schedule cron jobs**.
 
-<img src={"/img/guides/cron/cron-job.png"} width={"300px"}/>
+<Admonition type={"tip"} title={"What is a cron job?"}>
+    A cron job is a scheduled task that runs periodically at a specified time or interval. It is often used for background tasks like cleanup or sending notifications.
+</Admonition>
 
 Restate has no built-in functionality for cron jobs.
 But Restate's durable building blocks make it easy to implement a service that does this for us, and uses the guarantees Restate gives to make sure tasks get executed reliably.
 
-We use the following Restate features to implement the cron service:
-- **Durable timers**: Restate allows the schedule tasks to run at a specific time in the future. Restate ensures execution.
-- **Task control**: Restate allows starting and cancelling tasks.
-- **K/V state**: We store the details of the cron jobs in Restate, so we can retrieve them later.
+Restate has many features that make it a good fit for implementing cron jobs:
+- **Durable timers**: Schedule tasks to run at a specific time in the future. Restate ensures execution.
+- **Task resiliency**: Restate ensures that tasks are retried until they succeed.
+- **Task control**: Cancel and inspect running jobs.
+- **K/V state**: We store the details of the cron jobs in Restate, so we can retrieve them later and query them from the outside.
+- **Observability**: See the execution history of the cron jobs, and their status in the Restate UI.
+- **FaaS support**: Run your services on FaaS infrastructure, like AWS Lambda. Restate will scale your scheduler and tasks to zero while they sleep.
 
-The cron service schedules tasks based on a cron expression, lets you cancel jobs and retrieve information about them.
 
 ## Example
 
-The example implements a cron service that creates cron jobs that run at a specific time, and can be cancelled.
-All timers are stored in Restate for durability.
+The example implements a **cron service that you can copy over to your own project**.
+
+Features:
+- Create cron jobs with standard [cron expressions](https://www.baeldung.com/cron-expressions) (e.g., "0 0 * * *" for daily at midnight)
+- Schedule any Restate service handler or virtual object method
+
+Usage:
+1. Send requests to `CronJobInitiator.create()` to start new jobs
+2. Each job gets a unique ID and runs as a CronJob virtual object
+3. Jobs automatically reschedule themselves after each execution
+
 
 <img src={"/img/guides/cron/cron-jobs-diagram.png"} width={"600px"}/>
 
-The example implements a `TaskService` that implements a stub. This can be replaced with any service that you want to run periodically.
-
-You can run this on FaaS infrastructure, like AWS Lambda, and it will scale automatically to zero when nothing is executing.
 
 <CodeWithTabs groupId={"sdk"}>
-    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/cron_example/typescript/patterns-use-cases/src/cron/cron_service.ts
+    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/cron/cron_service.ts
     // collapse_prequel
-    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/cron_example/typescript/patterns-use-cases/src/cron/cron_service.ts
+    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/typescript/patterns-use-cases/src/cron/cron_service.ts
     ```
 
-    ```java !!tabs Java https://github.com/restatedev/examples/blob/cron_example/java/patterns-use-cases/src/main/java/my/example/cron/Cron.java
+    ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/cron/Cron.java
     // collapse_prequel
-    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/cron_example/java/patterns-use-cases/src/main/java/my/example/cron/Cron.java
+    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/java/patterns-use-cases/src/main/java/my/example/cron/Cron.java
     ```
 </CodeWithTabs>
 
