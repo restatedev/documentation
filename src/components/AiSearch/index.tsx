@@ -61,7 +61,16 @@ function getLlmsFullUrl(host){
 }
 
 function getQuery(host){
-    const query = `Read the Restate Documentation ${getLlmsUrl(host)} and Restate Examples https://github.com/restatedev/examples so I can ask questions about Restate.`;
+    const query = `Read the Restate Documentation ${getLlmsUrl(host)} 
+        and Restate Examples https://github.com/restatedev/examples 
+        so I can ask questions about Restate.
+        Guidelines:
+        - Answer the questions using only the documentation and examples above. 
+        - Restate has 6 SDKs: Python, JavaScript, TypeScript, Go, Java, and Rust. 
+        Make sure to answer in the context of the SDK the user is asking about. Don't mix up SDKs.
+        - Use the syntax that you find in the documentation, never make up your own syntax. 
+        - If unsure, say you don't know.  
+    `;
     return encodeURIComponent(query)
 }
 
