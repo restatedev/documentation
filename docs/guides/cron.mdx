@@ -26,20 +26,28 @@ Restate has many features that make it a good fit for implementing cron jobs:
 - **Task resiliency**: Restate ensures that tasks are retried until they succeed.
 - **Task control**: Cancel and inspect running jobs.
 - **K/V state**: We store the details of the cron jobs in Restate, so we can retrieve them later and query them from the outside.
-- **Observability**: See the execution history of the cron jobs, and their status in the Restate UI.
 - **FaaS support**: Run your services on FaaS infrastructure, like AWS Lambda. Restate will scale your scheduler and tasks to zero while they sleep.
 - **Scalability**: Restate can handle many cron jobs running in parallel, and can scale horizontally to handle more load.
+- **Observability**: See the execution history of the cron jobs, and their status in the Restate UI.
+
+<img src={"/img/guides/cron/cron_state_ui.png"}/>
+
 
 ## Example
 
 The example implements a **cron service that you can copy over to your own project**.
 
-Features:
-- Create cron jobs with standard [cron expressions](https://www.baeldung.com/cron-expressions) (e.g., "0 0 * * *" for daily at midnight)
-- Schedule any Restate service handler or virtual object method
-
 Usage:
-1. Send requests to `CronJobInitiator.create()` to start new jobs
+1. Send requests to `CronJobInitiator.create()` to start new jobs with standard [cron expressions](https://www.baeldung.com/cron-expressions):
+    ```shell
+    {
+        "cronExpression": "0 0 * * *", # E.g. run every day at midnight
+        "service": "TaskService", # Schedule any Restate handler
+        "method": "executeTask",
+        "key": "taskId", # Optional, Virtual Object key
+        "payload": "Hello midnight!"
+    }
+    ```
 2. Each job gets a unique ID and runs as a CronJob virtual object
 3. Jobs automatically reschedule themselves after each execution
 
