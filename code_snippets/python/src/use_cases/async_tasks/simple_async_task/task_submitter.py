@@ -26,9 +26,7 @@ def schedule_task(task: TaskOpts):
     # Attach to the async task to retrieve the result
     # <mark_3>
     # <mark_4>
-    attach_url = (
-        f"{RESTATE_URL}/restate/invocation/taskWorker/runTask/dQw4w9WgXcQ/attach"
-    )
+    attach_url = f"{RESTATE_URL}/restate/invocation/taskWorker/runTask/dQw4w9WgXcQ/attach"
     response = requests.get(attach_url)
     # </mark_3>
     # </mark_4>

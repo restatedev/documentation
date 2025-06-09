@@ -15,10 +15,12 @@ When building distributed systems, it is crucial to ensure that the system remai
 One way to achieve this is by using the [Saga pattern](https://learn.microsoft.com/en-us/azure/architecture/reference-architectures/saga/saga).
 
 <Admonition type={"tip"} title={"What is a Saga?"}>
-Sagas are a way to manage transactions that span multiple services.
-They allow you to run compensations when your code crashes halfway through.
-This way, you can **ensure that your system remains consistent even in the presence of failures**.
+    A *Saga* is a design pattern for handling transactions that span multiple services.
+    It breaks the process into a sequence of local operations, each with a corresponding **compensating action**.
+
+    If a failure occurs partway through, these compensations are triggered to **undo** completed steps, ensuring your system stays consistent even when things go wrong.
 </Admonition>
+
 
 
 ## How does Restate help?
@@ -40,6 +42,8 @@ If any step fails, we want to roll back the previous steps to keep the system co
 - For each step you do in your try-block, add a compensation to a list.
 - In the catch block, in case of a terminal error, you run the compensations in reverse order, and rethrow the error.
 
+Note that for Golang we use `defer` to run the compensations at the end.
+
 <CodeWithTabs groupId={"sdk"}>
         ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/sagas/booking_workflow.ts
         // collapse_prequel
@@ -47,7 +51,7 @@ If any step fails, we want to roll back the previous steps to keep the system co
         ```
         ```java !!tabs Java https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/src/main/java/my/example/sagas/BookingWorkflow.java
         // collapse_prequel
-        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/updates_giselle/java/patterns-use-cases/src/main/java/my/example/sagas/BookingWorkflow.java
+        CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/java/patterns-use-cases/src/main/java/my/example/sagas/BookingWorkflow.java
         ```
         ```kotlin !!tabs Kotlin https://github.com/restatedev/examples/blob/main/kotlin/patterns-use-cases/src/main/kotlin/my/example/sagas/BookingWorkflow.kt
         // collapse_prequel
@@ -70,76 +74,70 @@ If any step fails, we want to roll back the previous steps to keep the system co
 
 ## When to use Sagas
 
-It could seem that Durable Execution makes sagas less relevant.
-Durable Execution tries to push execution forward and will retry invocations until they are completed.
-On failures, the previous progress gets recovered and compensations don't need to run in between retries.
+Restate automatically retries all transient failures, like network hiccups or temporary service outages. But not all failures are temporary.
 
-However, sagas remain essential in the following cases:
+In this case, sagas are essential:
 
-1. **Business logic requirements**: When your business logic demands to stop further execution (whenever you throw a [terminal error](/guides/error-handling#application-errors-terminal)), you can use a saga to ensure consistent rollback.
-For example, if the hotel booking fails because the hotel is fully booked. Or if the car rental fails because the driving license country code is not accepted.
-
-2. **When cancelling invocations**: On a [cancellation](/operate/invocation#cancelling-invocations) (via CLI/programmatically/UI), Restate will throw a terminal error in your handler.
-If you have implemented a saga in your handler, then your system will gracefully roll back.
-For example, if an invocation gets stuck because an external system is not responding, you might want to cancel the invocation while keeping the overall system state consistent.
+1. **Business logic requirements**:
+    - Some failures are not transient but a business decision (e.g. “Hotel is full” or “Driver license not accepted”), retrying won't help.
+    - In this case, you can throw a terminal error to stop the execution and trigger the compensations.
 
 
-## Registering compensations
+2. **User/system-initiated cancellations**:
+    - If a user [cancels](/operate/invocation#cancelling-invocations) a long-running invocation (say via UI or CLI), this triggers a terminal error.
+    - Restate will not retry.
+    - Again, a saga can kick in to undo previous successful operations so the system doesn't end up in an inconsistent state (e.g., booking a hotel but not a car).
+
+## Idempotency and compensations
 
 Since sagas in Restate are implemented in user code, compensations are flexible and powerful, as long as they're idempotent.
 You can reset service state, call other services to undo prior actions, use `ctx.run` to delete rows or reverse database operations.
 
 Depending on the characteristics of the API, you might need to register compensations at different points in your code:
 
-1. Two-step APIs: First you _reserve_, then _confirm_ or _cancel_. Register the compensation after reservation, when you have the resource ID.
+1. **Two-step APIs**: First you _reserve_, then _confirm_ or _cancel_. Register the compensation after reservation, when you have the resource ID.
 Reservations that are not confirmed, get automatically cancelled by the API after a timeout.
+
 <CodeWithTabs groupId={"sdk"}>
-    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/sagas/booking_workflow.ts
-    // collapse_prequel
-    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/typescript/patterns-use-cases/src/sagas/booking_workflow.ts
+    ```ts !!tabs TypeScript
+    CODE_LOAD::ts/src/guides/sagas/booking_workflow.ts#twostep
+    ```
+    ```python !!tabs Python
+    CODE_LOAD::python/src/guides/sagas/app.py#twostep
     ```
     ```java !!tabs Java
     CODE_LOAD::java/src/main/java/guides/sagas/BookingWorkflow.java#twostep
     ```
-    ```kotlin !!tabs Kotlin https://github.com/restatedev/examples/blob/main/kotlin/patterns-use-cases/src/main/kotlin/my/example/sagas/BookingWorkflow.kt
-    // collapse_prequel
-    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/kotlin/patterns-use-cases/src/main/kotlin/my/example/sagas/BookingWorkflow.kt
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/guides/sagas/BookingWorkflow.kt#twostep
     ```
-    ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/sagas/app.py
-    // collapse_prequel
-    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/python/patterns-use-cases/sagas/app.py
-    ```
-    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/sagas/bookingworkflow.go
-    // collapse_prequel
-    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/go/patterns-use-cases/src/sagas/bookingworkflow.go
+    ```rust !!tabs Go
+    CODE_LOAD::go/guides/sagas/bookingworkflow.go#twostep
     ```
 </CodeWithTabs>
 
 
-2. One-shot APIs with idempotency key: First, you generate an idempotency key. Then, you register the compensation using the idempotency key. And finally, you call the API using the same idempotency key.
+2. **One-shot APIs with idempotency key**: First, you generate an idempotency key and persist it in Restate. Then, you register the compensation, and finally call the API.
 We need to register the compensation before calling the API, because there is a chance that the API call succeeded but that we never got the confirmation. So in this case, we need to roll back to a consistent state.
 
 <CodeWithTabs groupId={"sdk"}>
-    ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/sagas/booking_workflow.ts
-    // collapse_prequel
-    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/typescript/patterns-use-cases/src/sagas/booking_workflow.ts
+    ```ts !!tabs TypeScript
+    CODE_LOAD::ts/src/guides/sagas/booking_workflow.ts#idempotency
+    ```
+    ```python !!tabs Python
+    CODE_LOAD::python/src/guides/sagas/app.py#idempotency
     ```
     ```java !!tabs Java
     CODE_LOAD::java/src/main/java/guides/sagas/BookingWorkflow.java#idempotency
     ```
-    ```kotlin !!tabs Kotlin https://github.com/restatedev/examples/blob/main/kotlin/patterns-use-cases/src/main/kotlin/my/example/sagas/BookingWorkflow.kt
-    // collapse_prequel
-    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/kotlin/patterns-use-cases/src/main/kotlin/my/example/sagas/BookingWorkflow.kt
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/guides/sagas/BookingWorkflow.kt#idempotency
     ```
-    ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/sagas/app.py
-    // collapse_prequel
-    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/python/patterns-use-cases/sagas/app.py
-    ```
-    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/sagas/bookingworkflow.go
-    // collapse_prequel
-    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/go/patterns-use-cases/src/sagas/bookingworkflow.go
+    ```rust !!tabs Go
+    CODE_LOAD::go/guides/sagas/bookingworkflow.go#idempotency
     ```
 </CodeWithTabs>
+
 ## Running the example
 
 <Step stepLabel="1" title="Download the example">
@@ -149,6 +147,9 @@ We need to register the compensation before calling the API, because there is a 
         ```
         ```shell !!tabs java
         restate example java-patterns-use-cases && cd java-patterns-use-cases
+        ```
+        ```shell !!tabs kotlin
+        restate example kotlin-patterns-use-cases && cd kotlin-patterns-use-cases
         ```
         ```shell !!tabs python
         restate example python-patterns-use-cases && cd python-patterns-use-cases
@@ -171,6 +172,9 @@ We need to register the compensation before calling the API, because there is a 
         ```shell !!tabs java
         ./gradlew -PmainClass=my.example.sagas.BookingWorkflow run
         ```
+        ```shell !!tabs kotlin
+        ./gradlew -PmainClass=my.example.sagas.BookingWorkflowKt run
+        ```
         ```shell !!tabs python
         python sagas/app.py
         ```
@@ -188,7 +192,7 @@ We need to register the compensation before calling the API, because there is a 
     <CodeWithTabs groupId={"sdk"} className={"display-none"}>
         ```shell !!tabs ts
         curl localhost:8080/BookingWorkflow/run --json '{
-                    "flight": {
+                "flight": {
                     "flightId": "12345",
                     "passengerName": "John Doe"
                 },
@@ -204,7 +208,23 @@ We need to register the compensation before calling the API, because there is a 
         ```
         ```shell !!tabs java
         curl localhost:8080/BookingWorkflow/run --json '{
-                    "flight": {
+                "flight": {
+                    "flightId": "12345",
+                    "passengerName": "John Doe"
+                },
+                    "car": {
+                    "pickupLocation": "Airport",
+                    "rentalDate": "2024-12-16"
+                },
+                    "hotel": {
+                    "arrivalDate": "2024-12-16",
+                    "departureDate": "2024-12-20"
+                }
+            }'
+        ```
+        ```shell !!tabs kotlin
+        curl localhost:8080/BookingWorkflow/run --json '{
+                "flight": {
                     "flightId": "12345",
                     "passengerName": "John Doe"
                 },
@@ -220,7 +240,7 @@ We need to register the compensation before calling the API, because there is a 
         ```
         ```shell !!tabs python
         curl localhost:8080/BookingWorkflow/run --json '{
-                    "flight": {
+                "flight": {
                     "flightId": "12345",
                     "passengerName": "John Doe"
                 },
@@ -235,8 +255,8 @@ We need to register the compensation before calling the API, because there is a 
             }'
         ```
         ```shell !!tabs go
-        curl localhost:8080/BookingWorkflow/run --json '{
-                    "flight": {
+        curl localhost:8080/BookingWorkflow/Run --json '{
+                "flight": {
                     "flightId": "12345",
                     "passengerName": "John Doe"
                 },
@@ -258,31 +278,6 @@ We need to register the compensation before calling the API, because there is a 
     See how all tasks get spawned in parallel, finish at different times, and then get aggregated.
 
     <img src={"/img/guides/sagas/saga_journal.png"} alt="Sagas UI" />
-
-    <CodeWithTabs groupId={"sdk"} className={"display-none"}>
-        ```shell !!tabs ts
-
-        ```
-        ```shell !!tabs java
-        2025-05-29 11:08:09 INFO  [BookingWorkflow/run] dev.restate.sdk.core.statemachine.State - Start invocation
-        2025-05-29 11:08:09 INFO  [BookingWorkflow/run][inv_17GXsdM5pHmU2G6oBG6yNk9PyiEj67ZJMB] my.example.sagas.clients.FlightClient - Flight reservation created with id: d643fa74-b265-49b1-9b65-3f75c4e10039
-        2025-05-29 11:08:09 INFO  [BookingWorkflow/run][inv_17GXsdM5pHmU2G6oBG6yNk9PyiEj67ZJMB] my.example.sagas.clients.CarRentalClient - Car rental reservation created with id: 0ce92e7b-1d55-4c99-bbe3-1bb89695ccfd
-        2025-05-29 11:08:09 ERROR [BookingWorkflow/run][inv_17GXsdM5pHmU2G6oBG6yNk9PyiEj67ZJMB] my.example.sagas.clients.PaymentClient - [👻 SIMULATED] This credit card is not valid!
-        2025-05-29 11:08:09 INFO  [BookingWorkflow/run][inv_17GXsdM5pHmU2G6oBG6yNk9PyiEj67ZJMB] my.example.sagas.clients.FlightClient - Flight reservation cancelled with id: d643fa74-b265-49b1-9b65-3f75c4e10039
-        2025-05-29 11:08:09 INFO  [BookingWorkflow/run][inv_17GXsdM5pHmU2G6oBG6yNk9PyiEj67ZJMB] my.example.sagas.clients.CarRentalClient - Car rental reservation cancelled with id: 0ce92e7b-1d55-4c99-bbe3-1bb89695ccfd
-        2025-05-29 11:08:09 INFO  [BookingWorkflow/run][inv_17GXsdM5pHmU2G6oBG6yNk9PyiEj67ZJMB] my.example.sagas.clients.PaymentClient - Refunding payment with id: 93f00948-5c62-e7c8-a6e7-9c47df149bb2
-        2025-05-29 11:08:20 WARN  [BookingWorkflow/run][inv_17GXsdM5pHmU2G6oBG6yNk9PyiEj67ZJMB] dev.restate.sdk.core.RequestProcessorImpl - Error when processing the invocation
-        dev.restate.sdk.common.TerminalException: [👻 SIMULATED] This credit card is not valid!
-        ... rest of trace ...
-        2025-05-29 11:08:20 INFO  [BookingWorkflow/run][inv_17GXsdM5pHmU2G6oBG6yNk9PyiEj67ZJMB] dev.restate.sdk.core.statemachine.State - Invocation ended
-        ```
-        ```shell !!tabs python
-
-        ```
-        ```shell !!tabs go
-
-        ```
-    </CodeWithTabs>
 </Step>
 
 

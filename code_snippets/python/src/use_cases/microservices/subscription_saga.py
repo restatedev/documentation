@@ -40,9 +40,7 @@ async def add(ctx: Context, req: SubscriptionRequest):
             compensations.append(lambda: remove_subscription(req.user_id, subscription))
             # </mark_1>
             # <mark_1> green
-            await ctx.run(
-                "subscription", lambda: create_subscription(req.user_id, subscription)
-            )
+            await ctx.run("subscription", lambda: create_subscription(req.user_id, subscription))
             # </mark_1>
 
     except TerminalError as e:

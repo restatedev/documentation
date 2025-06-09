@@ -50,6 +50,8 @@ async def get_greet_count(ctx: restate.ObjectSharedContext) -> int:
     # <mark_2>
     return await ctx.get("count") or 0
     # </mark_2>
+
+
 # </mark_4>
 
 app = restate.app([greeter])

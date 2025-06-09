@@ -15,7 +15,7 @@ const service = restate.service({
       // <start_all>
       const sleepPromise = ctx.sleep(100);
       const callPromise = ctx.serviceClient(MyService).myHandler("Hi");
-      const externalCallPromise = ctx.run(() => httpCall())
+      const externalCallPromise = ctx.run(() => httpCall());
       const resultArray = await RestatePromise.all([
         sleepPromise,
         callPromise,
