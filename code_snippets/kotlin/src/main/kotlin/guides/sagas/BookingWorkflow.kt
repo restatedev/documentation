@@ -7,18 +7,17 @@ import dev.restate.sdk.kotlin.*
 import dev.restate.sdk.kotlin.endpoint.endpoint
 import kotlinx.serialization.Serializable
 import my.example.sagas.clients.FlightBookingRequest
-import my.example.sagas.clients.reserveFlight
 import my.example.sagas.clients.cancelFlight
 import my.example.sagas.clients.charge
 import my.example.sagas.clients.confirmFlight
 import my.example.sagas.clients.refund
+import my.example.sagas.clients.reserveFlight
 
 @Serializable
 data class BookingRequest(
-  val customerId: String,
-  val flight: FlightBookingRequest,
-  val paymentInfo: String,
-
+    val customerId: String,
+    val flight: FlightBookingRequest,
+    val paymentInfo: String,
 )
 
 @Service
@@ -48,7 +47,7 @@ class BookingWorkflow {
 
     // <start_idempotency>
     // !mark[/paymentId/] red
-    val paymentId = ctx.random().nextUUID().toString();
+    val paymentId = ctx.random().nextUUID().toString()
     // !mark[/paymentId/] red
     compensations.add { ctx.runBlock { refund(paymentId) } }
     // !mark[/paymentId/] red

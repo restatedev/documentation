@@ -26,11 +26,6 @@ fun confirmFlight(flightId: String) {
   logger.info("Flight reservation cancelled for customer: {}", flightId)
 }
 
+fun charge(paymentInfo: String, paymentId: String) {}
 
-fun charge(paymentInfo: String, paymentId: String) {
-
-}
-
-fun refund(paymentInfo: String) {
-
-}
+fun refund(paymentInfo: String) {}
