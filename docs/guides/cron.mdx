@@ -28,7 +28,7 @@ Restate has many features that make it a good fit for implementing cron jobs:
 - **K/V state**: We store the details of the cron jobs in Restate, so we can retrieve them later and query them from the outside.
 - **Observability**: See the execution history of the cron jobs, and their status in the Restate UI.
 - **FaaS support**: Run your services on FaaS infrastructure, like AWS Lambda. Restate will scale your scheduler and tasks to zero while they sleep.
-
+- **Scalability**: Restate can handle many cron jobs running in parallel, and can scale horizontally to handle more load.
 
 ## Example
 
@@ -46,7 +46,6 @@ Usage:
 
 <img src={"/img/guides/cron/cron-jobs-diagram.png"} width={"600px"}/>
 
-
 <CodeWithTabs groupId={"sdk"}>
     ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/cron/cron_service.ts
     // collapse_prequel
@@ -63,6 +62,12 @@ Usage:
     This pattern is implementable with any of our SDKs. We are still working on translating all patterns to all SDK languages.
     If you need help with a specific language, please reach out to us via [Discord](https://discord.com/invite/skW3AZ6uGd) or [Slack](https://join.slack.com/t/restatecommunity/shared_invite/zt-2v9gl005c-WBpr167o5XJZI1l7HWKImA).
 </Admonition>
+
+## Adapt to your use case
+
+Note that this implementation is fully resilient, but you might need to make some adjustments to make this fit your use case:
+- Take into account time zones.
+- Adjust how you want to handle tasks that fail until the next task gets scheduled. With the current implementation, you would have concurrent executions of the same cron job (one retrying and the other starting up).
 
 
 ## Running the example
