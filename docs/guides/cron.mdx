@@ -128,7 +128,7 @@ Note that this implementation is fully resilient, but you might need to make som
     For example, or run `executeTask` at midnight:
     <CodeWithTabs groupId={"sdk"} className={"display-none"}>
         ```shell !!tabs ts
-        curl localhost:8080/CronService/create --json '{
+        curl localhost:8080/CronJobInitiator/create --json '{
             "cronExpression": "0 0 * * *",
             "service": "TaskService",
             "method": "executeTask",
@@ -137,7 +137,7 @@ Note that this implementation is fully resilient, but you might need to make som
         ```
 
         ```shell !!tabs java
-        curl localhost:8080/CronService/create --json '{
+        curl localhost:8080/CronJobInitiator/create --json '{
             "cronExpression": "0 0 * * *",
             "service": "TaskService",
             "method": "executeTask",
@@ -147,7 +147,6 @@ Note that this implementation is fully resilient, but you might need to make som
     </CodeWithTabs>
 
     You can also use the cron service to execute handlers on Virtual Objects, by specifying the Virtual Object key in the request.
-
 
     You will get back a response with the job ID.
 
