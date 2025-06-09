@@ -6,8 +6,7 @@ pagination_prev: null
 ---
 
 import Admonition from "@theme/Admonition";
-import Tabs from "@theme/Tabs";
-import TabItem from "@theme/TabItem";
+import {Step} from "../../src/components/Stepper";
 import {CodeWithTabs} from "../../src/components/code/code";
 
 # Sagas
@@ -15,23 +14,33 @@ import {CodeWithTabs} from "../../src/components/code/code";
 When building distributed systems, it is crucial to ensure that the system remains consistent even in the presence of failures.
 One way to achieve this is by using the [Saga pattern](https://learn.microsoft.com/en-us/azure/architecture/reference-architectures/saga/saga).
 
-Sagas are a way to manage transactions that span multiple services.
-They allow you to run compensations when your code crashes halfway through.
-This way, you can **ensure that your system remains consistent even in the presence of failures**.
+<Admonition type={"tip"} title={"What is a Saga?"}>
+    A *Saga* is a design pattern for handling transactions that span multiple services.
+    It breaks the process into a sequence of local operations, each with a corresponding **compensating action**.
 
+    If a failure occurs partway through, these compensations are triggered to **undo** completed steps, ensuring your system stays consistent even when things go wrong.
+</Admonition>
 
-## Implementing Sagas in Restate
+## How does Restate help?
 
-Let’s assume we want to build a travel booking application.
-The core of our application is a workflow that first tries to book the flight, then rents a car, and finally processes the customer’s payment before confirming the flight and car rental.
-When the payment fails, we want to undo the flight booking and car rental.
+Restate makes it easy to implement resilient sagas in your code:
+- **Durable Execution**: Restate guarantees that your code runs to completion. If a transient failure occurs, Restate automatically retries from the point of failure and ensures that all compensations run.
+- **Resilience built-in**: No need to manually track state or retry logic. Restate handles all persistence and compensation orchestration for you.
+- **Code-first approach**: Define sagas using regular code, no DSLs. Track compensations in a list, and execute them on non-transient failures.
 
-**Restate lets us implement this purely in user code:**
+## Example
+
+Here is a typical travel booking workflow, where you book a flight, then rent a car, and finally book a hotel.
+If any step fails for a non-transient reason (e.g. driver license not accepted, hotel full), we want to roll back the previous steps to keep the system consistent.
+
+<img src={"/img/guides/sagas/saga_diagram.svg"} alt="Sagas example diagram" width={"550px"}/>
+
+**Restate lets us implement this purely in code without any DSLs or extra infrastructure.**
 - Wrap your business logic in a try-block, and throw a terminal error for cases where you want to compensate and finish.
 - For each step you do in your try-block, add a compensation to a list.
 - In the catch block, in case of a terminal error, you run the compensations in reverse order, and rethrow the error.
 
-Restate guarantees us that all code will execute. So if a terminal error is thrown, all compensations will run:
+Note that for Golang we use `defer` to run the compensations at the end.
 
 <CodeWithTabs groupId={"sdk"}>
         ```ts !!tabs TypeScript https://github.com/restatedev/examples/blob/main/typescript/patterns-use-cases/src/sagas/booking_workflow.ts
@@ -63,30 +72,214 @@ Restate guarantees us that all code will execute. So if a terminal error is thro
 
 ## When to use Sagas
 
-Restate runs invocations till completion, with infinite retries and recovery of partial progress.
-In that sense, you do not require to run compensations in between retries. Restate will start the retry attempt from the point where the invocation failed.
+Restate automatically retries all transient failures, like network hiccups or temporary service outages. But not all failures are temporary.
 
-However, there can still be cases in your business logic where you want to stop a handler from executing any further and run compensations for the work done so far.
+For these failures, sagas are essential:
 
-You will also need sagas to end up in a consistent state when you [cancel an invocation](/operate/invocation#cancelling-invocations) (via the CLI or programmatically).
-For example, if an invocation gets stuck because an external system is not responding, you might want to stop executing the invocation while keeping the overall system state consistent.
+1. **Business logic requirements**:
+    - Some failures are not transient but a business decision (e.g. “Hotel is full” or “Driver license not accepted”), retrying won't help.
+    - In this case, you can throw a terminal error to stop the execution and trigger the compensations.
 
-## Registering compensations
 
-Because this is all implemented in pure user code, there are no restrictions on what you can do in compensations, as long as its idempotent.
-It is for example possible to reset the state of the service, call other services to undo previously executed calls, or run `ctx.run` actions to delete previously inserted rows in a database.
+2. **User/system-initiated cancellations**:
+    - If a user [cancels](/operate/invocation#cancelling-invocations) a long-running invocation (say via UI or CLI), this triggers a terminal error.
+    - Restate will not retry.
+    - Again, a saga can kick in to undo previous successful operations so the system doesn't end up in an inconsistent state (e.g., booking a hotel but not a car).
 
-<details className={"grey-details"}>
-    <summary>Adding compensations</summary>
+## Idempotency and compensations
 
-    Depending on the characteristics of the API, adding the compensation might look different:
-    1. The flights and cars require to first reserve, and then use the ID you get to confirm or cancel.
-    In this case, we add the compensation after creating the reservation (because we need the ID).
+Since sagas in Restate are implemented in user code, compensations are flexible and powerful, as long as they're idempotent: you can reset service state, call other services to undo prior actions, use `ctx.run` to delete rows or reverse database operations.
 
-    2. The example of the payment API requires you to generate an idempotency key yourself, and executes in one shot.
-    Here, we add the compensation before performing the action, using the same UUID.
-    This way, we ensure that a payment which throws a terminal error did not go through.
-</details>
+The example above uses the customer ID to guarantee idempotency, so that on retries it will not create duplicate bookings or rentals.
+The example assumes that the API provider deduplicates the requests based on this ID.
+
+Based on the API you are using, generating the idempotency key and registering the compensation can be done in different ways:
+
+1. **Two-phase APIs**: First you _reserve_, then _confirm_ or _cancel_. Register the compensation after reservation, when you have the resource ID.
+Reservations that are not confirmed, get automatically cancelled by the API after a timeout.
+
+<CodeWithTabs groupId={"sdk"}>
+    ```ts !!tabs TypeScript
+    CODE_LOAD::ts/src/guides/sagas/booking_workflow.ts#twostep
+    ```
+    ```python !!tabs Python
+    CODE_LOAD::python/src/guides/sagas/app.py#twostep
+    ```
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/guides/sagas/BookingWorkflow.java#twostep
+    ```
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/guides/sagas/BookingWorkflow.kt#twostep
+    ```
+    ```rust !!tabs Go
+    CODE_LOAD::go/guides/sagas/bookingworkflow.go#twostep
+    ```
+</CodeWithTabs>
+
+
+2. **One-shot APIs with idempotency key**: First, you generate an idempotency key and persist it in Restate. Then, you register the compensation (e.g. `refund`), and finally do the action (e.g. `charge`).
+We need to register the compensation before doing the action, because there is a chance that the action succeeded but that we never got the confirmation.
+
+<CodeWithTabs groupId={"sdk"}>
+    ```ts !!tabs TypeScript
+    CODE_LOAD::ts/src/guides/sagas/booking_workflow.ts#idempotency
+    ```
+    ```python !!tabs Python
+    CODE_LOAD::python/src/guides/sagas/app.py#idempotency
+    ```
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/guides/sagas/BookingWorkflow.java#idempotency
+    ```
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/guides/sagas/BookingWorkflow.kt#idempotency
+    ```
+    ```rust !!tabs Go
+    CODE_LOAD::go/guides/sagas/bookingworkflow.go#idempotency
+    ```
+</CodeWithTabs>
+
+## Running the example
+
+<Step stepLabel="1" title="Download the example">
+    <CodeWithTabs groupId={"sdk"} className={"display-none"}>
+        ```shell !!tabs ts
+        restate example typescript-patterns-use-cases && cd typescript-patterns-use-cases
+        ```
+        ```shell !!tabs java
+        restate example java-patterns-use-cases && cd java-patterns-use-cases
+        ```
+        ```shell !!tabs kotlin
+        restate example kotlin-patterns-use-cases && cd kotlin-patterns-use-cases
+        ```
+        ```shell !!tabs python
+        restate example python-patterns-use-cases && cd python-patterns-use-cases
+        ```
+        ```shell !!tabs go
+        restate example go-patterns-use-cases && cd go-patterns-use-cases
+        ```
+    </CodeWithTabs>
+</Step>
+<Step stepLabel="2" title="Start the Restate Server">
+    ```shell
+    restate-server
+    ```
+</Step>
+<Step stepLabel="3" title="Start the Service">
+    <CodeWithTabs groupId={"sdk"} className={"display-none"}>
+        ```shell !!tabs ts
+        npx tsx watch ./src/sagas/booking_workflow.ts
+        ```
+        ```shell !!tabs java
+        ./gradlew -PmainClass=my.example.sagas.BookingWorkflow run
+        ```
+        ```shell !!tabs kotlin
+        ./gradlew -PmainClass=my.example.sagas.BookingWorkflowKt run
+        ```
+        ```shell !!tabs python
+        python sagas/app.py
+        ```
+        ```shell !!tabs go
+        go run ./src/sagas
+        ```
+    </CodeWithTabs>
+</Step>
+<Step stepLabel="4" title="Register the services">
+    ```shell
+    restate deployments register localhost:9080
+    ```
+</Step>
+<Step stepLabel="5" title="Send a request">
+    <CodeWithTabs groupId={"sdk"} className={"display-none"}>
+        ```shell !!tabs ts
+        curl localhost:8080/BookingWorkflow/run --json '{
+                "flight": {
+                    "flightId": "12345",
+                    "passengerName": "John Doe"
+                },
+                    "car": {
+                    "pickupLocation": "Airport",
+                    "rentalDate": "2024-12-16"
+                },
+                    "hotel": {
+                    "arrivalDate": "2024-12-16",
+                    "departureDate": "2024-12-20"
+                }
+            }'
+        ```
+        ```shell !!tabs java
+        curl localhost:8080/BookingWorkflow/run --json '{
+                "flight": {
+                    "flightId": "12345",
+                    "passengerName": "John Doe"
+                },
+                    "car": {
+                    "pickupLocation": "Airport",
+                    "rentalDate": "2024-12-16"
+                },
+                    "hotel": {
+                    "arrivalDate": "2024-12-16",
+                    "departureDate": "2024-12-20"
+                }
+            }'
+        ```
+        ```shell !!tabs kotlin
+        curl localhost:8080/BookingWorkflow/run --json '{
+                "flight": {
+                    "flightId": "12345",
+                    "passengerName": "John Doe"
+                },
+                    "car": {
+                    "pickupLocation": "Airport",
+                    "rentalDate": "2024-12-16"
+                },
+                    "hotel": {
+                    "arrivalDate": "2024-12-16",
+                    "departureDate": "2024-12-20"
+                }
+            }'
+        ```
+        ```shell !!tabs python
+        curl localhost:8080/BookingWorkflow/run --json '{
+                "flight": {
+                    "flightId": "12345",
+                    "passengerName": "John Doe"
+                },
+                    "car": {
+                    "pickupLocation": "Airport",
+                    "rentalDate": "2024-12-16"
+                },
+                    "hotel": {
+                    "arrivalDate": "2024-12-16",
+                    "departureDate": "2024-12-20"
+                }
+            }'
+        ```
+        ```shell !!tabs go
+        curl localhost:8080/BookingWorkflow/Run --json '{
+                "flight": {
+                    "flightId": "12345",
+                    "passengerName": "John Doe"
+                },
+                    "car": {
+                    "pickupLocation": "Airport",
+                    "rentalDate": "2024-12-16"
+                },
+                    "hotel": {
+                    "arrivalDate": "2024-12-16",
+                    "departureDate": "2024-12-20"
+                }
+            }'
+        ```
+    </CodeWithTabs>
+
+</Step>
+
+<Step stepLabel="4" title="Check the UI or service logs">
+    See in the Restate UI (`localhost:9070`) how all steps were executed, and how the compensations were triggered because the hotel was full.
+
+    <img src={"/img/guides/sagas/saga_journal.png"} alt="Sagas UI" />
+</Step>
+
 
 
 ## Related resources

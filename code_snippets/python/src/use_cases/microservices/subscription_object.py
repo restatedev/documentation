@@ -37,9 +37,7 @@ async def add(ctx: ObjectContext, req: SubscriptionRequest):
     # <mark_1>
     ctx.set("subscription", "creating_subscription")
     # </mark_1>
-    await ctx.run(
-        "subscription", lambda: create_subscription(req.user_id, req.subscription)
-    )
+    await ctx.run("subscription", lambda: create_subscription(req.user_id, req.subscription))
     # <mark_1>
     ctx.set("subscription", "created")
     # </mark_1>

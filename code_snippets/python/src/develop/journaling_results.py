@@ -5,8 +5,10 @@ import restate
 
 my_service = Service("MyService")
 
+
 def send_verification():
     pass
+
 
 @my_service.handler()
 async def my_handler(ctx: Context, arg):
@@ -21,13 +23,12 @@ async def my_handler(ctx: Context, arg):
 
     # <start_select>
     _, confirmation_future = ctx.awakeable()
-    match await restate.select(confirmation=confirmation_future,
-                               timeout=ctx.sleep(timedelta(days=1))):
-        case ['confirmation', 'ok']:
+    match await restate.select(confirmation=confirmation_future, timeout=ctx.sleep(timedelta(days=1))):
+        case ["confirmation", "ok"]:
             return "success!"
-        case ['confirmation', 'deny']:
+        case ["confirmation", "deny"]:
             raise TerminalError("Confirmation was denied!")
-        case ['timeout', _]:
+        case ["timeout", _]:
             raise TerminalError("Verification timer expired!")
     # <end_select>
 

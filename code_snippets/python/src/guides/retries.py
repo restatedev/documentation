@@ -39,7 +39,8 @@ async def my_service_handler(ctx: Context, greeting: str) -> str:
     # <start_timeout>
     match await restate.select(
         greeting=ctx.service_call(my_service_handler, "value"),
-        timeout=ctx.sleep(timedelta(seconds=5))):
+        timeout=ctx.sleep(timedelta(seconds=5)),
+    ):
         case ["greeting", greeting]:
             print("Greeting:", greeting)
         case ["timeout", _]:

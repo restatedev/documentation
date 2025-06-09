@@ -43,9 +43,7 @@ async def run(ctx: WorkflowContext, req: SubscriptionRequest):
             compensations.append(lambda: remove_subscription(req.user_id, subscription))
             # </mark_2>
             # <mark_2> green
-            await ctx.run(
-                "subscription", lambda: create_subscription(req.user_id, subscription)
-            )
+            await ctx.run("subscription", lambda: create_subscription(req.user_id, subscription))
             # </mark_2>
         # <mark_1>
         ctx.set("status", "subscribed")

@@ -27,9 +27,7 @@ async def run(ctx: WorkflowContext, user: User) -> bool:
 
     # <mark_2>
     secret = await ctx.run("secret", lambda: str(uuid.uuid4()))
-    await ctx.run(
-        "send_email", lambda: send_email_with_link(user_id, user.email, secret)
-    )
+    await ctx.run("send_email", lambda: send_email_with_link(user_id, user.email, secret))
     # </mark_2>
 
     # <mark_2>

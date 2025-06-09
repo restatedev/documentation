@@ -16,9 +16,7 @@ async def run(ctx: WorkflowContext, email: str):
     secret = await ctx.run("secret", lambda: str(uuid.uuid4()))
     ctx.set("onboarding_status", "Generated secret")
 
-    await ctx.run(
-        "send email", lambda: email_client.send_email_with_link(email, secret)
-    )
+    await ctx.run("send email", lambda: email_client.send_email_with_link(email, secret))
     ctx.set("onboarding_status", "Sent email")
 
     # <mark_3>
