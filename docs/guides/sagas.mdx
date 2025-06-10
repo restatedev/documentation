@@ -28,6 +28,8 @@ Restate makes it easy to implement resilient sagas in your code:
 - **Resilience built-in**: No need to manually track state or retry logic. Restate handles all persistence and compensation orchestration for you.
 - **Code-first approach**: Define sagas using regular code, no DSLs. Track compensations in a list, and execute them on non-transient failures.
 
+<img src={"/img/guides/sagas/saga_invocation.png"} alt="Sagas UI" />
+
 ## Example
 
 Here is a typical travel booking workflow, where you book a flight, then rent a car, and finally book a hotel.
@@ -86,57 +88,6 @@ For these failures, sagas are essential:
     - Restate will not retry.
     - Again, a saga can kick in to undo previous successful operations so the system doesn't end up in an inconsistent state (e.g., booking a hotel but not a car).
 
-## Idempotency and compensations
-
-Since sagas in Restate are implemented in user code, compensations are flexible and powerful, as long as they're idempotent: you can reset service state, call other services to undo prior actions, use `ctx.run` to delete rows or reverse database operations.
-
-The example above uses the customer ID to guarantee idempotency, so that on retries it will not create duplicate bookings or rentals.
-The example assumes that the API provider deduplicates the requests based on this ID.
-
-Based on the API you are using, generating the idempotency key and registering the compensation can be done in different ways:
-
-1. **Two-phase APIs**: First you _reserve_, then _confirm_ or _cancel_. Register the compensation after reservation, when you have the resource ID.
-Reservations that are not confirmed, get automatically cancelled by the API after a timeout.
-
-<CodeWithTabs groupId={"sdk"}>
-    ```ts !!tabs TypeScript
-    CODE_LOAD::ts/src/guides/sagas/booking_workflow.ts#twostep
-    ```
-    ```python !!tabs Python
-    CODE_LOAD::python/src/guides/sagas/app.py#twostep
-    ```
-    ```java !!tabs Java
-    CODE_LOAD::java/src/main/java/guides/sagas/BookingWorkflow.java#twostep
-    ```
-    ```kotlin !!tabs Kotlin
-    CODE_LOAD::kotlin/src/main/kotlin/guides/sagas/BookingWorkflow.kt#twostep
-    ```
-    ```rust !!tabs Go
-    CODE_LOAD::go/guides/sagas/bookingworkflow.go#twostep
-    ```
-</CodeWithTabs>
-
-
-2. **One-shot APIs with idempotency key**: First, you generate an idempotency key and persist it in Restate. Then, you register the compensation (e.g. `refund`), and finally do the action (e.g. `charge`).
-We need to register the compensation before doing the action, because there is a chance that the action succeeded but that we never got the confirmation.
-
-<CodeWithTabs groupId={"sdk"}>
-    ```ts !!tabs TypeScript
-    CODE_LOAD::ts/src/guides/sagas/booking_workflow.ts#idempotency
-    ```
-    ```python !!tabs Python
-    CODE_LOAD::python/src/guides/sagas/app.py#idempotency
-    ```
-    ```java !!tabs Java
-    CODE_LOAD::java/src/main/java/guides/sagas/BookingWorkflow.java#idempotency
-    ```
-    ```kotlin !!tabs Kotlin
-    CODE_LOAD::kotlin/src/main/kotlin/guides/sagas/BookingWorkflow.kt#idempotency
-    ```
-    ```rust !!tabs Go
-    CODE_LOAD::go/guides/sagas/bookingworkflow.go#idempotency
-    ```
-</CodeWithTabs>
 
 ## Running the example
 
@@ -281,6 +232,57 @@ We need to register the compensation before doing the action, because there is a
 </Step>
 
 
+## Advanced: Idempotency and compensations
+
+Since sagas in Restate are implemented in user code, compensations are flexible and powerful, as long as they're idempotent: you can reset service state, call other services to undo prior actions, use `ctx.run` to delete rows or reverse database operations.
+
+The example above uses the customer ID to guarantee idempotency, so that on retries it will not create duplicate bookings or rentals.
+The example assumes that the API provider deduplicates the requests based on this ID.
+
+Based on the API you are using, generating the idempotency key and registering the compensation can be done in different ways:
+
+1. **Two-phase APIs**: First you _reserve_, then _confirm_ or _cancel_. Register the compensation after reservation, when you have the resource ID.
+Reservations that are not confirmed, get automatically cancelled by the API after a timeout.
+
+<CodeWithTabs groupId={"sdk"}>
+    ```ts !!tabs TypeScript
+    CODE_LOAD::ts/src/guides/sagas/booking_workflow.ts#twostep
+    ```
+    ```python !!tabs Python
+    CODE_LOAD::python/src/guides/sagas/app.py#twostep
+    ```
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/guides/sagas/BookingWorkflow.java#twostep
+    ```
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/guides/sagas/BookingWorkflow.kt#twostep
+    ```
+    ```rust !!tabs Go
+    CODE_LOAD::go/guides/sagas/bookingworkflow.go#twostep
+    ```
+</CodeWithTabs>
+
+
+2. **One-shot APIs with idempotency key**: First, you generate an idempotency key and persist it in Restate. Then, you register the compensation (e.g. `refund`), and finally do the action (e.g. `charge`).
+We need to register the compensation before doing the action, because there is a chance that the action succeeded but that we never got the confirmation.
+
+<CodeWithTabs groupId={"sdk"}>
+    ```ts !!tabs TypeScript
+    CODE_LOAD::ts/src/guides/sagas/booking_workflow.ts#idempotency
+    ```
+    ```python !!tabs Python
+    CODE_LOAD::python/src/guides/sagas/app.py#idempotency
+    ```
+    ```java !!tabs Java
+    CODE_LOAD::java/src/main/java/guides/sagas/BookingWorkflow.java#idempotency
+    ```
+    ```kotlin !!tabs Kotlin
+    CODE_LOAD::kotlin/src/main/kotlin/guides/sagas/BookingWorkflow.kt#idempotency
+    ```
+    ```rust !!tabs Go
+    CODE_LOAD::go/guides/sagas/bookingworkflow.go#idempotency
+    ```
+</CodeWithTabs>
 
 ## Related resources
 
