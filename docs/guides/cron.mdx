@@ -88,6 +88,9 @@ Note that this implementation is fully resilient, but you might need to make som
         ```shell !!tabs java
         restate example java-patterns-use-cases && cd java-patterns-use-cases
         ```
+        ```shell !!tabs go
+        restate example go-patterns-use-cases && cd go-patterns-use-cases
+        ```
     </CodeWithTabs>
 </Step>
 <Step stepLabel="2" title="Start the Restate Server">
@@ -102,6 +105,9 @@ Note that this implementation is fully resilient, but you might need to make som
         ```
         ```shell !!tabs java
         ./gradlew -PmainClass=my.example.cron.TaskService run
+        ```
+        ```shell !!tabs go
+        go run ./src/cron
         ```
     </CodeWithTabs>
 </Step>
@@ -131,6 +137,14 @@ Note that this implementation is fully resilient, but you might need to make som
             "payload": "Hello new minute!"
         }'
         ```
+        ```shell !!tabs go
+        curl localhost:8080/CronJobInitiator/Create --json '{
+            "cronExpression": "* * * * *",
+            "service": "TaskService",
+            "method": "executeTask",
+            "payload": "Hello new minute!"
+        }'
+        ```
     </CodeWithTabs>
 
     For example, or run `executeTask` at midnight:
@@ -152,6 +166,15 @@ Note that this implementation is fully resilient, but you might need to make som
             "payload": "Hello midnight!"
         }'
         ```
+
+        ```shell !!tabs go
+        curl localhost:8080/CronJobInitiator/Create --json '{
+            "cronExpression": "0 0 * * *",
+            "service": "TaskService",
+            "method": "executeTask",
+            "payload": "Hello midnight!"
+        }'
+        ```
     </CodeWithTabs>
 
     You can also use the cron service to execute handlers on Virtual Objects, by specifying the Virtual Object key in the request.
@@ -166,6 +189,9 @@ Note that this implementation is fully resilient, but you might need to make som
         ```shell !!tabs java
         curl localhost:8080/CronJob/myJobId/getInfo
         ```
+        ```shell !!tabs go
+        curl localhost:8080/CronJob/myJobId/GetInfo
+        ```
     </CodeWithTabs>
 
     Or cancel the job later:
@@ -175,6 +201,9 @@ Note that this implementation is fully resilient, but you might need to make som
         ```
         ```shell !!tabs java
         curl localhost:8080/CronJob/myJobId/cancel
+        ```
+        ```shell !!tabs go
+        curl localhost:8080/CronJob/myJobId/Cancel
         ```
     </CodeWithTabs>
 </Step>
