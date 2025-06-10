@@ -233,8 +233,7 @@ SDK:
                 <TabItem value={"Deno"} >
                     ```shell
                     restate example typescript-deno-hello-world &&
-                    cd typescript-deno-hello-world &&
-                    npm install
+                    cd typescript-deno-hello-world
                     ```
                 </TabItem>
                 <TabItem value={"CloudflareWorkers"}>
@@ -646,19 +645,26 @@ SDK:
             </Admonition>
         </Step>
         <Step stepLabel="5" title="Send a request to the Greeter service">
-            Invoke the service via the Restate UI playground: go to `http://localhost:9070`,  click on your service and then on playground.
 
             <Tabs groupId={"ts-runtime"} className={"display-none"}>
                 <TabItem value={"Node.js"}>
+                    Invoke the service via the Restate UI playground: go to `http://localhost:9070`, click on your service and then on playground.
+                    <img src={"/img/quickstart/playground.png"} alt="Restate UI Playground" width="800rem"/>
                 </TabItem>
                 <TabItem value={"Bun"}>
+                    Invoke the service via the Restate UI playground: go to `http://localhost:9070`,  click on your service and then on playground.
+                    <img src={"/img/quickstart/playground.png"} alt="Restate UI Playground" width="800rem"/>
                 </TabItem>
                 <TabItem value={"Deno"}>
+                    Invoke the service via the Restate UI playground: go to `http://localhost:9070`,  click on your service and then on playground.
+                    <img src={"/img/quickstart/playground.png"} alt="Restate UI Playground" width="800rem"/>
                 </TabItem>
                 <TabItem value={"CloudflareWorkers"}>
+                    Invoke the service via the Restate UI playground: go to `http://localhost:9070`,  click on your service and then on playground.
+                    <img src={"/img/quickstart/playground.png"} alt="Restate UI Playground" width="800rem"/>
                 </TabItem>
                 <TabItem value={"Nextjs"}>
-                    Or invoke the greet handler via the Next.js UI at `http://localhost:3000`
+                    Invoke the greet handler via the Next.js UI at `http://localhost:3000`
 
                     <img src={"/img/quickstart/nextjs_ui.png"} alt="Next.js UI" width="300rem"/>
                 </TabItem>
@@ -678,6 +684,7 @@ SDK:
 
             The invocation you just sent used Durable Execution to make sure the request ran till completion.
             For each request, it sent a notification, slept for a second, and then sent a reminder.
+
             <Tabs groupId={"ts-runtime"} className={"display-none"}>
                 <TabItem value={"Node.js"}>
                     ```ts https://github.com/restatedev/examples/blob/main/typescript/templates/node/src/app.ts
@@ -706,15 +713,29 @@ SDK:
                 </TabItem>
             </Tabs>
 
+            Send a request for `Alice` to see how the service behaves when it occasionally fails to send the reminder and notification:
+            <Terminal>
+                ```shell !command
+                curl localhost:8080/Greeter/greet --json '"Alice"'
+                ```
+                ```shell !output
+                You said hi to Alice!
+                ```
+            </Terminal>
 
-            It sometimes failed to send the notification and the reminder.
-            You can see in the log how Restate retried the request.
+            You can see in the service logs and in the Restate UI how the request gets retried.
             On a retry, it skipped the steps that already succeeded.
+
+            <img src={"/img/quickstart/quickstart_retries.png"} alt="Restate UI Durable Execution" width="1000rem"/>
+
             Even the sleep is durable and tracked by Restate.
             If you kill/restart the service halfway through, the sleep will only last for what remained.
 
-            Restate does this by persisting the progress of the handler.
-            Letting you write code that is resilient to failures out of the box.
+            <Admonition type={"tip"} title={"Durable Execution"}>
+                Restate persists the progress of the handler.
+                Letting you write code that is resilient to failures out of the box.
+                Have a look at the [Durable Execution page](/concepts/durable_execution) to learn more.
+            </Admonition>
 
         </Step>
         <Tabs groupId={"ts-runtime"} className={"display-none"}>
@@ -1076,7 +1097,8 @@ SDK:
 
         <Step stepLabel="5" title="Send a request to the Greeter service">
 
-            Invoke the service via the UI playground: click on your service and then on playground.
+            Invoke the service via the Restate UI playground: go to `http://localhost:9070`, click on your service and then on playground.
+            <img src={"/img/quickstart/playground.png"} alt="Restate UI Playground" width="800rem"/>
 
             Or invoke via `curl`:
             <Terminal>
@@ -1097,15 +1119,6 @@ SDK:
 
             The invocation you just sent used Durable Execution to make sure the request ran till completion.
             For each request, it sent a notification, slept for a second, and then sent a reminder.
-
-            It sometimes failed to send the notification and the reminder.
-            You can see in the log how Restate retried the request.
-            On a retry, it skipped the steps that already succeeded.
-            Even the sleep is durable and tracked by Restate.
-            If you kill/restart the service halfway through, the sleep will only last for what remained.
-
-            Restate does this by persisting the progress of the handler.
-            Letting you write code that is resilient to failures out of the box.
 
             <Tabs groupId={"build-tool"} className={"display-none"}>
                 <TabItem value={"maven"}>
@@ -1142,6 +1155,29 @@ SDK:
                 </TabItem>
             </Tabs>
 
+            Send a request for `Alice` to see how the service behaves when it occasionally fails to send the reminder and notification:
+            <Terminal>
+                ```shell !command
+                curl localhost:8080/Greeter/greet --json '"Alice"'
+                ```
+                ```shell !output
+                You said hi to Alice!
+                ```
+            </Terminal>
+
+            You can see in the service logs and in the Restate UI how the request gets retried.
+            On a retry, it skipped the steps that already succeeded.
+
+            <img src={"/img/quickstart/quickstart_retries.png"} alt="Restate UI Durable Execution" width="1000rem"/>
+
+            Even the sleep is durable and tracked by Restate.
+            If you kill/restart the service halfway through, the sleep will only last for what remained.
+
+            <Admonition type={"tip"} title={"Durable Execution"}>
+                Restate persists the progress of the handler.
+                Letting you write code that is resilient to failures out of the box.
+                Have a look at the [Durable Execution page](/concepts/durable_execution) to learn more.
+            </Admonition>
         </Step>
 
     </TabItem>
@@ -1379,7 +1415,8 @@ SDK:
 
         <Step stepLabel="5" title="Send a request to the Greeter service">
 
-            Invoke the service via the UI playground: click on your service and then on playground.
+            Invoke the service via the Restate UI playground: go to `http://localhost:9070`, click on your service and then on playground.
+            <img src={"/img/quickstart/playground.png"} alt="Restate UI Playground" width="800rem"/>
 
             Or invoke via `curl`:
             <Terminal>
@@ -1418,14 +1455,29 @@ SDK:
                 </TabItem>
             </Tabs>
 
-            It sometimes failed to send the notification and the reminder.
-            You can see in the log how Restate retried the request.
+            Send a request for `Alice` to see how the service behaves when it occasionally fails to send the reminder and notification:
+            <Terminal>
+                ```shell !command
+                curl localhost:8080/Greeter/greet --json '"Alice"'
+                ```
+                ```shell !output
+                You said hi to Alice!
+                ```
+            </Terminal>
+
+            You can see in the service logs and in the Restate UI how the request gets retried.
             On a retry, it skipped the steps that already succeeded.
+
+            <img src={"/img/quickstart/quickstart_retries.png"} alt="Restate UI Durable Execution" width="1000rem"/>
+
             Even the sleep is durable and tracked by Restate.
             If you kill/restart the service halfway through, the sleep will only last for what remained.
 
-            Restate does this by persisting the progress of the handler.
-            Letting you write code that is resilient to failures out of the box.
+            <Admonition type={"tip"} title={"Durable Execution"}>
+                Restate persists the progress of the handler.
+                Letting you write code that is resilient to failures out of the box.
+                Have a look at the [Durable Execution page](/concepts/durable_execution) to learn more.
+            </Admonition>
 
         </Step>
 
@@ -1628,7 +1680,8 @@ SDK:
 
         <Step stepLabel="5" title="Send a request to the Greeter service">
 
-            Invoke the service via the UI playground: click on your service and then on playground.
+            Invoke the service via the Restate UI playground: go to `http://localhost:9070`, click on your service and then on playground.
+            <img src={"/img/quickstart/playground.png"} alt="Restate UI Playground" width="800rem"/>
 
             Or invoke via `curl`:
             <Terminal>
@@ -1654,14 +1707,29 @@ SDK:
             CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/go/templates/go/greeter.go
             ```
 
-            It sometimes failed to send the notification and the reminder.
-            You can see in the log how Restate retried the request.
+            Send a request for `Alice` to see how the service behaves when it occasionally fails to send the reminder and notification:
+            <Terminal>
+                ```shell !command
+                curl localhost:8080/Greeter/greet --json '"Alice"'
+                ```
+                ```shell !output
+                You said hi to Alice!
+                ```
+            </Terminal>
+
+            You can see in the service logs and in the Restate UI how the request gets retried.
             On a retry, it skipped the steps that already succeeded.
+
+            <img src={"/img/quickstart/quickstart_retries.png"} alt="Restate UI Durable Execution" width="1000rem"/>
+
             Even the sleep is durable and tracked by Restate.
             If you kill/restart the service halfway through, the sleep will only last for what remained.
 
-            Restate does this by persisting the progress of the handler.
-            Letting you write code that is resilient to failures out of the box.
+            <Admonition type={"tip"} title={"Durable Execution"}>
+                Restate persists the progress of the handler.
+                Letting you write code that is resilient to failures out of the box.
+                Have a look at the [Durable Execution page](/concepts/durable_execution) to learn more.
+            </Admonition>
 
         </Step>
 
@@ -1882,7 +1950,8 @@ SDK:
 
         <Step stepLabel="5" title="Send a request to the Greeter service">
 
-            Invoke the service via the UI playground: click on your service and then on playground.
+            Invoke the service via the Restate UI playground: go to `http://localhost:9070`, click on your service and then on playground.
+            <img src={"/img/quickstart/playground.png"} alt="Restate UI Playground" width="800rem"/>
 
             Or invoke via `curl`:
             <Terminal>
@@ -1908,14 +1977,29 @@ SDK:
             CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/python/templates/python/example.py
             ```
 
-            It sometimes failed to send the notification and the reminder.
-            You can see in the log how Restate retried the request.
+            Send a request for `Alice` to see how the service behaves when it occasionally fails to send the reminder and notification:
+            <Terminal>
+                ```shell !command
+                curl localhost:8080/Greeter/greet --json '"Alice"'
+                ```
+                ```shell !output
+                You said hi to Alice!
+                ```
+            </Terminal>
+
+            You can see in the service logs and in the Restate UI how the request gets retried.
             On a retry, it skipped the steps that already succeeded.
+
+            <img src={"/img/quickstart/quickstart_retries.png"} alt="Restate UI Durable Execution" width="1000rem"/>
+
             Even the sleep is durable and tracked by Restate.
             If you kill/restart the service halfway through, the sleep will only last for what remained.
 
-            Restate does this by persisting the progress of the handler.
-            Letting you write code that is resilient to failures out of the box.
+            <Admonition type={"tip"} title={"Durable Execution"}>
+                Restate persists the progress of the handler.
+                Letting you write code that is resilient to failures out of the box.
+                Have a look at the [Durable Execution page](/concepts/durable_execution) to learn more.
+            </Admonition>
 
         </Step>
 
@@ -2214,7 +2298,8 @@ SDK:
 
         <Step stepLabel="5" title="Send a request to the Greeter service">
 
-            Invoke the service via the UI playground: click on your service and then on playground.
+            Invoke the service via the Restate UI playground: go to `http://localhost:9070`, click on your service and then on playground.
+            <img src={"/img/quickstart/playground.png"} alt="Restate UI Playground" width="800rem"/>
 
             Or invoke via `curl`:
             <Terminal>
@@ -2249,15 +2334,29 @@ SDK:
                 </TabItem>
             </Tabs>
 
+            Send a request for `Alice` to see how the service behaves when it occasionally fails to send the reminder and notification:
+            <Terminal>
+                ```shell !command
+                curl localhost:8080/Greeter/greet --json '"Alice"'
+                ```
+                ```shell !output
+                You said hi to Alice!
+                ```
+            </Terminal>
 
-            It sometimes failed to send the notification and the reminder.
-            You can see in the log how Restate retried the request.
+            You can see in the service logs and in the Restate UI how the request gets retried.
             On a retry, it skipped the steps that already succeeded.
+
+            <img src={"/img/quickstart/quickstart_retries.png"} alt="Restate UI Durable Execution" width="1000rem"/>
+
             Even the sleep is durable and tracked by Restate.
             If you kill/restart the service halfway through, the sleep will only last for what remained.
 
-            Restate does this by persisting the progress of the handler.
-            Letting you write code that is resilient to failures out of the box.
+            <Admonition type={"tip"} title={"Durable Execution"}>
+                Restate persists the progress of the handler.
+                Letting you write code that is resilient to failures out of the box.
+                Have a look at the [Durable Execution page](/concepts/durable_execution) to learn more.
+            </Admonition>
 
         </Step>
     </TabItem>
