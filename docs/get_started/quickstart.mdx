@@ -1710,7 +1710,7 @@ SDK:
             Send a request for `Alice` to see how the service behaves when it occasionally fails to send the reminder and notification:
             <Terminal>
                 ```shell !command
-                curl localhost:8080/Greeter/greet --json '"Alice"'
+                curl localhost:8080/Greeter/Greet --json '"Alice"'
                 ```
                 ```shell !output
                 You said hi to Alice!
@@ -1751,6 +1751,7 @@ SDK:
 
         <Admonition type="note" title="Prerequisites">
             - Python >= v3.11
+            - [uv](https://docs.astral.sh/uv/getting-started/installation/)
         </Admonition>
         <Step stepLabel="1" title="Install Restate Server & CLI">
             Restate is a single self-contained binary. No external dependencies needed.
@@ -1871,18 +1872,10 @@ SDK:
         </Step>
         <Step stepLabel="3" title="Run the Greeter service">
 
-            Create a `venv` and install the requirements:
+            Run it and let it listen on port 9080 for requests:
 
             ```shell
-            python3 -m venv .venv
-            source .venv/bin/activate
-            pip install -r requirements.txt
-            ```
-
-            Now, start developing your service in `example.py`. Run it with a [Hypercorn](https://pypi.org/project/Hypercorn/) server, and let it listen on port `9080` for requests:
-
-            ```shell
-            python -m hypercorn --config hypercorn-config.toml example:app
+            uv run .
             ```
 
         </Step>
@@ -1972,15 +1965,15 @@ SDK:
             The invocation you just sent used Durable Execution to make sure the request ran till completion.
             For each request, it sent a notification, slept for a second, and then sent a reminder.
 
-            ```python https://github.com/restatedev/examples/blob/main/python/templates/python/example.py
+            ```python https://github.com/restatedev/examples/blob/main/python/templates/python/app/greeter.py
             # collapse_prequel
-            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/python/templates/python/example.py
+            CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/quickstart_update/python/templates/python/app/greeter.py
             ```
 
             Send a request for `Alice` to see how the service behaves when it occasionally fails to send the reminder and notification:
             <Terminal>
                 ```shell !command
-                curl localhost:8080/Greeter/greet --json '"Alice"'
+                curl localhost:8080/Greeter/greet --json '{"name": "Alice"}'
                 ```
                 ```shell !output
                 You said hi to Alice!
