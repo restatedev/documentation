@@ -64,6 +64,10 @@ Usage:
     // collapse_prequel
     CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/java/patterns-use-cases/src/main/java/my/example/cron/Cron.java
     ```
+    ```go !!tabs Go https://github.com/restatedev/examples/blob/main/go/patterns-use-cases/src/cron/cron.go
+    // collapse_prequel
+    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/go/patterns-use-cases/src/cron/cron.go
+    ```
 </CodeWithTabs>
 
 <Admonition type={"note"} title={"Example not available in your language?"}>
@@ -76,7 +80,7 @@ Usage:
 Note that this implementation is fully resilient, but you might need to make some adjustments to make this fit your use case:
 - Take into account time zones.
 - Adjust how you want to handle tasks that fail until the next task gets scheduled. With the current implementation, you would have concurrent executions of the same cron job (one retrying and the other starting up).
-
+  If you want to cancel the failing task when a new one needs to start, you can do the following: at the beginning of the `execute` call, retrieve the `next_execution_id` from the job state and check if it is completed by [attaching to it](/develop/ts/service-communication#re-attach-to-an-invocation) with [a timeout set to 0](/develop/ts/journaling-results#combineable-promise-combinators). If it is not completed, [cancel it](/develop/ts/service-communication#cancel-an-invocation) and start the new iteration.
 
 ## Running the example
 
