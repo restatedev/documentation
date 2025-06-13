@@ -17,7 +17,7 @@ This guide shows how to use the Restate to **execute a list of tasks in parallel
 
 ## How does Restate help?
 - Restate lets you schedule the tasks asynchronously and guarantees that all tasks will run, with **retries and recovery** on failures.
-- Restate **turns promises into durable, distributed constructs** that are persisted in Restate and can be recovered and awaited on another process.
+- Restate **turns Promises/Futures into durable, distributed constructs** that are persisted in Restate and can be recovered and awaited on another process.
 - You can deploy the subtask executors on **serverless** infrastructure, like AWS Lambda, to let them scale automatically. The main task, that is idle while waiting on the subtasks, gets suspended until it can make progress.
 
 **Fan out**: You can fan out tasks with Restate by creating a handler that processes a single subtask,
@@ -47,6 +47,11 @@ Restate will then resume the handler when all subtasks are done.
     CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/java/patterns-use-cases/src/main/java/my/example/parallelizework/FanOutWorker.java
     ```
 
+    ```kotlin !!tabs Kotlin https://github.com/restatedev/examples/blob/main/kotlin/patterns-use-cases/src/main/kotlin/my/example/parallelizework/FanOutWorker.kt
+    // collapse_prequel
+    CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/kotlin/patterns-use-cases/src/main/kotlin/my/example/parallelizework/FanOutWorker.kt
+    ```
+
     ```python !!tabs Python https://github.com/restatedev/examples/blob/main/python/patterns-use-cases/parallelizework/app.py
     // collapse_prequel
     CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/python/patterns-use-cases/parallelizework/app.py
@@ -57,6 +62,8 @@ Restate will then resume the handler when all subtasks are done.
     CODE_LOAD::https://raw.githubusercontent.com/restatedev/examples/refs/heads/main/go/patterns-use-cases/src/parallelizework/fanoutworker.go
     ```
 </CodeWithTabs>
+
+In this example, we parallelize RPC calls, but this can also be used to parallelize `ctx.run` actions.
 
 <Admonition type={"note"} title={"Example not available in your language?"}>
     This pattern is implementable with any of our SDKs. We are still working on translating all patterns to all SDK languages.
@@ -73,6 +80,9 @@ Restate will then resume the handler when all subtasks are done.
         ```
         ```shell !!tabs java
         restate example java-patterns-use-cases && cd java-patterns-use-cases
+        ```
+        ```shell !!tabs kotlin
+        restate example kotlin-patterns-use-cases && cd kotlin-patterns-use-cases
         ```
         ```shell !!tabs python
         restate example python-patterns-use-cases && cd python-patterns-use-cases
@@ -94,6 +104,9 @@ Restate will then resume the handler when all subtasks are done.
         ```
         ```shell !!tabs java
         ./gradlew -PmainClass=my.example.parallelizework.FanOutWorker run
+        ```
+        ```shell !!tabs kotlin
+        ./gradlew -PmainClass=my.example.parallelizework.FanOutWorkerKt run
         ```
         ```shell !!tabs python
         python parallelizework/app.py
@@ -117,6 +130,10 @@ Restate will then resume the handler when all subtasks are done.
         ```shell !!tabs java
         curl localhost:8080/FanOutWorker/run \
             --json '{"description": "get out of bed,shower,make coffee,have breakfast"}'
+        ```
+        ```shell !!tabs kotlin
+        curl localhost:8080/FanOutWorker/run \
+        --json '{"description": "get out of bed,shower,make coffee,have breakfast"}'
         ```
         ```shell !!tabs python
         curl localhost:8080/FanOutWorker/run \
@@ -189,6 +206,35 @@ Restate will then resume the handler when all subtasks are done.
         2025-01-17 10:01:05 INFO  [FanOutWorker/run][inv_1jNoSMJtWluo4Ir43OUyDAxD9weMAQ4OeR] my.example.parallelizework.utils.Utils - Aggregated result: get out of bed: DONE, shower: DONE, make coffee: DONE, have breakfast: DONE
         2025-01-17 10:01:05 INFO  [FanOutWorker/run][inv_1jNoSMJtWluo4Ir43OUyDAxD9weMAQ4OeR] dev.restate.sdk.core.InvocationStateMachine - End invocation
         ```
+        ```shell !!tabs kotlin
+        2025-03-06 12:20:18 INFO  [FanOutWorker/run][inv_1fGEUyfogPKK5cbSCSWzpCkcDpkQIKSzMB] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+        2025-03-06 12:20:18 INFO  [FanOutWorker/runSubtask][inv_146fBfVLISKb2sCWqesf6uMReXdRKvqmv7] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+        # !mark gold
+        2025-03-06 12:20:18 INFO  [FanOutWorker/runSubtask][inv_146fBfVLISKb2sCWqesf6uMReXdRKvqmv7] FanOutWorker - Started executing subtask: get out of bed
+        2025-03-06 12:20:18 INFO  [FanOutWorker/runSubtask][inv_18T9WW6paOhm6eciCeBt5iqHXRY4h2NRvP] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+        # !mark green
+        2025-03-06 12:20:18 INFO  [FanOutWorker/runSubtask][inv_18T9WW6paOhm6eciCeBt5iqHXRY4h2NRvP] FanOutWorker - Started executing subtask: shower
+        2025-03-06 12:20:18 INFO  [FanOutWorker/runSubtask][inv_10kE3b5UcL8L64ghFpHQjeeAEowKNis4dH] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+        # !mark blue
+        2025-03-06 12:20:18 INFO  [FanOutWorker/runSubtask][inv_10kE3b5UcL8L64ghFpHQjeeAEowKNis4dH] FanOutWorker - Started executing subtask: make coffee
+        2025-03-06 12:20:18 INFO  [FanOutWorker/runSubtask][inv_1fCFmQ9ulbxL2MBwYCDRgV8Was8PDBedW1] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+        # !mark red
+        2025-03-06 12:20:18 INFO  [FanOutWorker/runSubtask][inv_1fCFmQ9ulbxL2MBwYCDRgV8Was8PDBedW1] FanOutWorker - Started executing subtask: have breakfast
+        # !mark blue
+        2025-03-06 12:20:21 INFO  [FanOutWorker/runSubtask][inv_10kE3b5UcL8L64ghFpHQjeeAEowKNis4dH] FanOutWorker - Execution subtask finished: make coffee
+        2025-03-06 12:20:21 INFO  [FanOutWorker/runSubtask][inv_10kE3b5UcL8L64ghFpHQjeeAEowKNis4dH] dev.restate.sdk.core.InvocationStateMachine - End invocation
+        # !mark gold
+        2025-03-06 12:20:24 INFO  [FanOutWorker/runSubtask][inv_146fBfVLISKb2sCWqesf6uMReXdRKvqmv7] FanOutWorker - Execution subtask finished: get out of bed
+        2025-03-06 12:20:24 INFO  [FanOutWorker/runSubtask][inv_146fBfVLISKb2sCWqesf6uMReXdRKvqmv7] dev.restate.sdk.core.InvocationStateMachine - End invocation
+        # !mark red
+        2025-03-06 12:20:25 INFO  [FanOutWorker/runSubtask][inv_1fCFmQ9ulbxL2MBwYCDRgV8Was8PDBedW1] FanOutWorker - Execution subtask finished: have breakfast
+        2025-03-06 12:20:25 INFO  [FanOutWorker/runSubtask][inv_1fCFmQ9ulbxL2MBwYCDRgV8Was8PDBedW1] dev.restate.sdk.core.InvocationStateMachine - End invocation
+        # !mark green
+        2025-03-06 12:20:27 INFO  [FanOutWorker/runSubtask][inv_18T9WW6paOhm6eciCeBt5iqHXRY4h2NRvP] FanOutWorker - Execution subtask finished: shower
+        2025-03-06 12:20:27 INFO  [FanOutWorker/runSubtask][inv_18T9WW6paOhm6eciCeBt5iqHXRY4h2NRvP] dev.restate.sdk.core.InvocationStateMachine - End invocation
+        2025-03-06 12:20:27 INFO  [FanOutWorker/run][inv_1fGEUyfogPKK5cbSCSWzpCkcDpkQIKSzMB] FanOutWorker - Aggregated result: get out of bed: DONE, shower: DONE, make coffee: DONE, have breakfast: DONE
+        2025-03-06 12:20:27 INFO  [FanOutWorker/run][inv_1fGEUyfogPKK5cbSCSWzpCkcDpkQIKSzMB] dev.restate.sdk.core.InvocationStateMachine - End invocation
+        ```
         ```shell !!tabs python
         # !mark gold
         [2025-01-17 12:00:05,183] [12245] [INFO] - Started executing subtask: get out of bed
@@ -247,3 +293,13 @@ Restate will then resume the handler when all subtasks are done.
         ```
     </CodeWithTabs>
 </Step>
+
+## Related resources
+
+- Promise combinator docs: [TS](/develop/ts/journaling-results#combineable-promise-combinators) /
+[Java/Kotlin](/develop/java/journaling-results#durable-future-combinators) /
+[Python](/develop/python/journaling-results#waiting-multiple-futures) /
+[Go](/develop/go/journaling-results#selectors) /
+[Rust](https://docs.rs/restate-sdk/latest/restate_sdk/macro.select.html)
+- [Async Tasks use case page](/use-cases/async-tasks)
+- Concurrent async tasks with [Java](https://github.com/restatedev/examples/blob/main/java/patterns-use-cases/README.md#concurrent-async-tasks)
