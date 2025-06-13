@@ -8,6 +8,31 @@ import (
 
 type MyService struct{}
 
+func (MyService) Greet2(ctx restate.Context, name string) error {
+	// <start_here>
+	result, err := restate.Run(ctx,
+		func(ctx restate.RunContext) (string, error) {
+			return writeToOtherSystem()
+		},
+		// <mark_1>
+		// After 10 seconds, give up retrying
+		restate.WithMaxRetryDuration(time.Second*10),
+		// On the first retry, wait 100 milliseconds before next attempt
+		restate.WithInitialRetryInterval(time.Millisecond*100),
+		// Grow retry interval with factor 2
+		restate.WithRetryIntervalFactor(2.0),
+		// </mark_1>
+	)
+	if err != nil {
+		return err
+	}
+	// <end_here>
+
+	_ = result
+
+	return nil
+}
+
 func (MyService) Greet(ctx restate.Context, name string) error {
 	// <start_catch>
 	result, err := restate.Run(ctx, func(ctx restate.RunContext) (string, error) {
