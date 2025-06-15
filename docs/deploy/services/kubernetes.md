@@ -23,9 +23,45 @@ If your services are running over HTTP2 (the default), each Restate partition wi
 However, because there are many partitions (by default 24, typically more in a larger cluster) your pods should get a reasonably
 even distribution of traffic even without a L7 load balancing solution (Cilium, Istio etc).
 
+### RestateDeployment CRD
+The [Restate operator](https://github.com/restatedev/restate-operator) allows for the use of a `RestateDeployment` CRD to deploy your services.
+The CRD is an extension of a native `Deployment` object, but will manage registration and [versioning](/operate/versioning) for you, by keeping old
+ReplicaSets around with an associated Service object so that in-flight invocations can drain against the old code versions. You can deploy a CRD as follows:
+
+```yaml
+apiVersion: restate.dev/v1beta1
+kind: RestateDeployment
+metadata:
+  name: service
+spec:
+  replicas: 1
+  restate:
+    register:
+      # set this if you want to register against your RestateCluster named 'restate'
+      # alternatively, you can set a url or a Service reference to register against
+      cluster: restate
+  selector:
+    matchLabels:
+      app: service
+  template:
+    metadata:
+      labels:
+        app: service
+    spec:
+      containers:
+        - name: service
+          image: path.to/yourrepo:yourtag
+          env:
+            - name: PORT
+              value: "9080"
+          ports:
+            - containerPort: 9080
+              name: restate
+```
+
 ### Kubernetes Deployment and Service definition
 
-A simple deployment setup with a single pod in Kubernetes is as follows:
+If you want to deploy without the operator, a simple deployment setup with a single pod in Kubernetes is as follows:
 
 ```yaml
 apiVersion: apps/v1
@@ -50,7 +86,7 @@ spec:
               value: "9080"
           ports:
             - containerPort: 9080
-              name: http2
+              name: restate
 ---
 apiVersion: v1
 kind: Service
@@ -61,9 +97,11 @@ spec:
     app: service
   ports:
     - port: 9080
-      name: http2
+      name: restate
   type: ClusterIP
 ```
+
+You would then register the service at `http://<service>.<namespace>:9080`. Note however that this setup will not account for keeping around old code versions, so updating your code can break in-flight invocations.
 
 ### Knative
 
@@ -90,6 +128,6 @@ spec:
               containerPort: 9080
 ```
 
-The service will be accessible at `http://<service-name>.<namespace>.svc`.
+The service will be accessible at `http://<service-name>.<namespace>` but to handle [versioning](/operate/versioning), it is preferable to register the new revision url like `http://<service-name>-0001.<namespace>` as part of your deployment workflow.
 
 By default Knative exposes the service through the Ingress. This is not required by Restate, and you can disable this behavior adding the argument `--cluster-local` to the aforementioned creation command.
