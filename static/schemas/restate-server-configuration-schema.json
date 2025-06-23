@@ -13,7 +13,7 @@
         "internal-queue-length": 1000,
         "invoker": {
           "abort-timeout": "1m",
-          "concurrent-invocations-limit": 100,
+          "concurrent-invocations-limit": 1000,
           "in-memory-queue-length-limit": 66049,
           "inactivity-timeout": "1m",
           "message-size-limit": null,
@@ -41,8 +41,6 @@
           "snapshot-interval-num-records": null
         },
         "storage": {
-          "persist-lsn-interval": "1h",
-          "persist-lsn-threshold": 1000,
           "rocksdb-disable-wal": true,
           "rocksdb-log-keep-file-num": null,
           "rocksdb-log-level": null,
@@ -57,17 +55,13 @@
         "advertised-admin-endpoint": null,
         "bind-address": "0.0.0.0:9070",
         "concurrent-api-requests-limit": null,
-        "default-partition-replication": null,
         "disable-cluster-controller": false,
         "disable-web-ui": false,
+        "experimental-feature-force-journal-retention": null,
         "heartbeat-interval": "1s 500ms",
-        "log-tail-update-interval": "5m",
         "log-trim-check-interval": "1h",
-        "log-trim-threshold": null,
-        "metadata-sync-interval": "10s",
         "query-engine": {
           "memory-size": "4.0 GiB",
-          "pgsql-bind-address": "0.0.0.0:9071",
           "query-parallelism": null,
           "tmp-dir": null
         }
@@ -79,7 +73,6 @@
         "advertised-ingress-endpoint": null,
         "bind-address": "0.0.0.0:8080",
         "concurrent-api-requests-limit": null,
-        "experimental-feature-enable-separate-ingress-role": false,
         "kafka-clusters": []
       },
       "$ref": "#/definitions/IngressOptions"
@@ -88,8 +81,9 @@
       "default": {
         "append-retry-max-interval": "1s",
         "append-retry-min-interval": "10ms",
-        "auto-recovery-interval": "3s",
-        "default-provider": "local",
+        "auto-recovery-interval": "15s",
+        "default-provider": "replicated",
+        "disable-auto-improvement": false,
         "local": {
           "rocksdb-disable-wal": false,
           "rocksdb-disable-wal-fsync": false,
@@ -109,7 +103,6 @@
         },
         "record-cache-memory-size": "250.0 MiB",
         "replicated-loglet": {
-          "default-log-replication": null,
           "log-server-retry-policy": {
             "factor": 2.0,
             "initial-interval": "250ms",
@@ -136,7 +129,8 @@
     },
     "metadata-server": {
       "default": {
-        "raft-election-tick": 20,
+        "log-trim-threshold": 1000,
+        "raft-election-tick": 10,
         "raft-heartbeat-tick": 2,
         "raft-tick-interval": "100ms",
         "request-queue-length": 32,
@@ -145,8 +139,7 @@
         "rocksdb-log-level": null,
         "rocksdb-log-max-file-size": null,
         "rocksdb-memory-ratio": 0.009999999776482582,
-        "status-update-interval": "5s",
-        "type": null
+        "status-update-interval": "5s"
       },
       "$ref": "#/definitions/MetadataServerOptions"
     },
@@ -160,12 +153,11 @@
           "type": "exponential"
         },
         "connect-timeout": "3s",
+        "data-stream-window-size": "2.0 MiB",
         "handshake-timeout": "3s",
         "http2-adaptive-window": true,
-        "http2-keep-alive-interval": "5s",
-        "http2-keep-alive-timeout": "5s",
-        "num-concurrent-connections": 3,
-        "outbound-queue-length": 1000
+        "http2-keep-alive-interval": "1s",
+        "http2-keep-alive-timeout": "3s"
       },
       "$ref": "#/definitions/NetworkingOptions"
     },
@@ -189,7 +181,8 @@
         "worker",
         "admin",
         "metadata-server",
-        "log-server"
+        "log-server",
+        "http-ingress"
       ],
       "type": "array",
       "items": {
@@ -247,10 +240,10 @@
           "http://127.0.0.1:5122/"
         ],
         "backoff-policy": {
-          "factor": 2.0,
-          "initial-interval": "250ms",
+          "factor": 1.399999976158142,
+          "initial-interval": "100ms",
           "max-attempts": 10,
-          "max-interval": "3s",
+          "max-interval": "1s",
           "type": "exponential"
         },
         "connect-timeout": "3s",
@@ -323,8 +316,8 @@
       "type": "string"
     },
     "histogram-inactivity-timeout": {
-      "description": "Timeout for idle histograms.\n\nThe duration after which a histogram is considered idle and will be removed from metric responses to save memory. Unsetting means that histograms will never be removed.",
-      "default": null,
+      "description": "Timeout for idle histograms.\n\nThe duration after which a histogram is considered idle and will be removed from metric responses to save memory. This value should be configured higher than the scrape interval of the telemetry collection system (e.g. Prometheus).",
+      "default": "3m",
       "type": [
         "string",
         "null"
@@ -386,7 +379,7 @@
     },
     "rocksdb-write-stall-threshold": {
       "title": "Rocksdb stall detection threshold",
-      "description": "This defines the duration afterwhich a write is to be considered in \"stall\" state. For every write that meets this threshold, the system will increment the `restate.rocksdb_stall_flare` gauge, if the write is unstalled, the guage will be updated accordingly.",
+      "description": "This defines the duration after which a write is to be considered in \"stall\" state. For every write that meets this threshold, the system will increment the `restate.rocksdb_stall_flare` gauge, if the write is unstalled, the guage will be updated accordingly.",
       "default": "3s",
       "type": "string"
     },
@@ -404,7 +397,13 @@
     },
     "metadata-update-interval": {
       "title": "Metadata update interval",
-      "description": "The interval at which each node checks for metadata updates it has observed from different nodes or other sources.",
+      "description": "The idle time after which the node will check for metadata updates from metadata store. This helps the node detect if it has been operating with stale metadata for extended period of time, primarily because it didn't interact with other peers in the cluster during that period.",
+      "default": "10s",
+      "type": "string"
+    },
+    "metadata-fetch-from-peer-timeout": {
+      "title": "Timeout for metadata peer-to-peer fetching",
+      "description": "When a node detects that a new metadata version exists, it'll attempt to fetch it from its peers. After this timeout duration has passed, the node will attempt to fetch the metadata from metadata store as well. This is to ensure that the nodes converge quickly while reducing the load on the metadata store.",
       "default": "3s",
       "type": "string"
     },
@@ -518,6 +517,17 @@
       "description": "How long to wait for a TCP connection to be established before considering it a failed attempt.",
       "default": "10s",
       "type": "string"
+    },
+    "initial-max-send-streams": {
+      "title": "Initial Max Send Streams",
+      "description": "Sets the initial maximum of locally initiated (send) streams.\n\nThis value will be overwritten by the value included in the initial SETTINGS frame received from the peer as part of a [connection preface].\n\nDefault: None\n\n**NOTE**: Setting this value to None (default) users the default recommended value from HTTP2 specs",
+      "default": null,
+      "type": [
+        "integer",
+        "null"
+      ],
+      "format": "uint",
+      "minimum": 0.0
     },
     "aws-profile": {
       "title": "AWS Profile",
@@ -650,6 +660,63 @@
           "type": "null"
         }
       ]
+    },
+    "gossip-tick-interval": {
+      "title": "Gossip tick interval",
+      "description": "The interval at which the failure detector will tick. Decrease this value for faster reaction to node failures. Note, that every tick comes with an overhead.",
+      "default": "100ms",
+      "type": "string"
+    },
+    "gossip-failure-threshold": {
+      "title": "Gossip failure threshold",
+      "description": "Specifies how many gossip intervals of inactivity need to pass before considering a node as dead.",
+      "default": 10,
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 1.0
+    },
+    "gossip-num-peers": {
+      "title": "Number of peers to gossip",
+      "description": "On every gossip interval, how many peers each node attempts to gossip with. The default is optimized for small clusters (<5). On larger clusters, if gossip overhead is noticeable, consider reducing this value to 1.",
+      "default": 2,
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 1.0
+    },
+    "gossip-fd-stability-threshold": {
+      "title": "Gossips before failure detector is stable",
+      "default": 3,
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 1.0
+    },
+    "gossip-suspect-interval": {
+      "title": "Suspect duration",
+      "description": "How long to keep a node in a transient state (suspect) before marking it as available. Larger values mean that the cluster is less prone to flaky nodes but extends the time it takes for a node to participate.\n\nA node becomes a suspect if it has been previously marked as dead for a given generation number. If the node incremented its generation number, it will not be impacted by this threshold.",
+      "default": "5s",
+      "type": "string"
+    },
+    "gossip-loneliness-threshold": {
+      "title": "Gossip loneliness threshold",
+      "description": "How many intervals need to pass without receiving any gossip messages before considering this node as potentially isolated/dead. This threshold is used in the case where the node can still send gossip messages but did not receive any. This can rarely happen in asymmetric network partitions.\n\nIn this case, the node will advertise itself as dead in the gossip messages it sends out.\n\nNote: this threshold does not apply to a cluster that's configured with a single node.",
+      "default": 30,
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 1.0
+    },
+    "gossip-extras-exchange-frequency": {
+      "title": "Gossip extras exchange frequency",
+      "description": "In addition to basic health/liveness information, the gossip protocol is used to exchange extra information about the roles hosted by this node. For instance, which partitions are currently running, their configuration versions, and the durable LSN of the corresponding partition databases. This information is sent every Nth gossip message. This setting controls the frequency of this exchange. For instance, `10` means that every 10th gossip message will contain the extra information about.",
+      "default": 10,
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 1.0
+    },
+    "gossip-time-skew-threshold": {
+      "title": "Gossips time skew threshold",
+      "description": "The time skew is the maximum acceptable time difference between the local node and the time reported by peers via gossip messages. The time skew is also used to ignore gossip messages that are too old.",
+      "default": "1s",
+      "type": "string"
     }
   },
   "definitions": {
@@ -683,8 +750,6 @@
         },
         "storage": {
           "default": {
-            "persist-lsn-interval": "1h",
-            "persist-lsn-threshold": 1000,
             "rocksdb-disable-wal": true,
             "rocksdb-log-keep-file-num": null,
             "rocksdb-log-level": null,
@@ -696,7 +761,7 @@
         "invoker": {
           "default": {
             "abort-timeout": "1m",
-            "concurrent-invocations-limit": 100,
+            "concurrent-invocations-limit": 1000,
             "in-memory-queue-length-limit": 66049,
             "inactivity-timeout": "1m",
             "message-size-limit": null,
@@ -769,16 +834,24 @@
           "format": "float"
         },
         "persist-lsn-interval": {
-          "title": "Persist lsn interval",
-          "description": "Controls the interval at which worker tries to persist the last applied lsn. Lsn persisting can be disabled by setting it to \"0s\".",
-          "default": "1h",
-          "type": "string"
+          "title": "Persist LSN interval (deprecated)",
+          "description": "This configuration option is deprecated and ignored in Restate >= 1.3.3.",
+          "deprecated": true,
+          "writeOnly": true,
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "persist-lsn-threshold": {
-          "title": "Persist lsn threshold",
-          "description": "Minimum number of applied log entries before persisting the lsn. The worker will only persist a lsn if the partition processor has applied at least #threshold log entries since the last persisting. This prevents the worker from flushing the RocksDB memtables too often.",
-          "default": 1000,
-          "type": "integer",
+          "title": "Persist LSN threshold (deprecated)",
+          "description": "This configuration option is deprecated and ignored in Restate >= 1.3.3.",
+          "deprecated": true,
+          "writeOnly": true,
+          "type": [
+            "integer",
+            "null"
+          ],
           "format": "uint64",
           "minimum": 0.0
         },
@@ -1032,7 +1105,7 @@
         "concurrent-invocations-limit": {
           "title": "Limit number of concurrent invocations from this node",
           "description": "Number of concurrent invocations that can be processed by the invoker.",
-          "default": 100,
+          "default": 1000,
           "type": [
             "integer",
             "null"
@@ -1269,7 +1342,6 @@
         "query-engine": {
           "default": {
             "memory-size": "4.0 GiB",
-            "pgsql-bind-address": "0.0.0.0:9071",
             "query-parallelism": null,
             "tmp-dir": null
           },
@@ -1281,40 +1353,10 @@
           "default": "1s 500ms",
           "type": "string"
         },
-        "metadata-sync-interval": {
-          "title": "Controller metadata sync interval",
-          "description": "The interval at which the cluster controller syncs cluster metadata from the metadata service.",
-          "default": "10s",
-          "type": "string"
-        },
         "log-trim-check-interval": {
           "title": "Log trim check interval",
-          "description": "Controls the interval at which cluster controller tries to trim the logs. Log trimming can be disabled by setting it to \"0s\".\n\nNote that this is only the interval at which logs are checked, and does not guarantee that trim will be performed. To safely trim the log, the log records must be known to be persisted by the corresponding partition processor(s). For single server deployments, use the `persist-lsn-*` settings in `worker.storage`. In distributed deployments, this is accomplished by configuring an external snapshot destination - see `worker.snapshots` for more.",
+          "description": "Controls the interval at which cluster controller tries to trim the logs. Log trimming can be disabled by setting it to \"0s\".\n\nNote that this is only the interval at which logs are checked, and does not guarantee that trim will be performed. The conditions for safely trim the log vary depending on the deployment. For single nodes, the log records must be durably persisted to disk. In distributed deployments, automatic trimming requires an external snapshot destination - see `worker.snapshots` for more.",
           "default": "1h",
-          "type": "string"
-        },
-        "log-trim-threshold": {
-          "title": "Log trim threshold (deprecated)",
-          "description": "This configuration option is deprecated and ignored in Restate >= 1.2.",
-          "default": null,
-          "type": [
-            "integer",
-            "null"
-          ],
-          "format": "uint64",
-          "minimum": 0.0
-        },
-        "log-tail-update-interval": {
-          "title": "Log Tail Update interval",
-          "description": "Controls the interval at which cluster controller tries to refind the tails of logs. This is a safety-net check in case of a concurrent cluster controller crash.",
-          "default": "5m",
-          "type": "string"
-        },
-        "default-partition-replication": {
-          "title": "Default partition replication factor",
-          "description": "The default replication factor for partition processors, this impacts how many replicas each partition will have across the worker nodes of the cluster.\n\nNote that this value only impacts the cluster initial provisioning and will not be respected after the cluster has been provisioned.\n\nTo update existing clusters use the `restatectl` utility.",
-          "default": null,
-          "deprecated": true,
           "type": "string"
         },
         "disable-web-ui": {
@@ -1361,8 +1403,12 @@
         "pgsql-bind-address": {
           "title": "Pgsql Bind address",
           "description": "The address to bind for the psql service.",
-          "default": "0.0.0.0:9071",
-          "type": "string"
+          "deprecated": true,
+          "writeOnly": true,
+          "type": [
+            "string",
+            "null"
+          ]
         }
       }
     },
@@ -1432,8 +1478,8 @@
       "properties": {
         "default-provider": {
           "title": "The default kind of loglet to be used",
-          "description": "Default: Local",
-          "default": "local",
+          "description": "Default: Replicated",
+          "default": "replicated",
           "$ref": "#/definitions/ProviderKind"
         },
         "local": {
@@ -1453,7 +1499,6 @@
         "replicated-loglet": {
           "description": "Configuration of replicated loglet provider",
           "default": {
-            "default-log-replication": null,
             "log-server-retry-policy": {
               "factor": 2.0,
               "initial-interval": "250ms",
@@ -1497,7 +1542,7 @@
         "auto-recovery-interval": {
           "title": "Auto recovery threshold",
           "description": "Time interval after which bifrost's auto-recovery mechanism will kick in. This is triggered in scenarios where the control plane took too long to complete loglet reconfigurations.",
-          "default": "3s",
+          "default": "15s",
           "type": "string"
         },
         "append-retry-min-interval": {
@@ -1517,6 +1562,12 @@
           "description": "Optional size of record cache in bytes. If set to 0, record cache will be disabled. Defaults: 250MB",
           "default": "250.0 MiB",
           "$ref": "#/definitions/HumanBytes"
+        },
+        "disable-auto-improvement": {
+          "title": "Disable Automatic Improvement",
+          "description": "When enabled, automatic improvement periodically checks with the loglet provider if the loglet configuration can be improved by performing a reconfiguration.\n\nThis allows the log to pick up replication property changes, apply better placement of replicas, or for other reasons.",
+          "default": false,
+          "type": "string"
         }
       }
     },
@@ -1593,13 +1644,6 @@
           "default": 0.5,
           "type": "number",
           "format": "float"
-        },
-        "default-log-replication": {
-          "title": "Default log replication factor",
-          "description": "Configures the default replication factor to be used by the replicated loglets.\n\nNote that this value only impacts the cluster initial provisioning and will not be respected after the cluster has been provisioned.\n\nTo update existing clusters use the `restatectl` utility.",
-          "default": null,
-          "deprecated": true,
-          "type": "string"
         }
       }
     },
@@ -1639,18 +1683,6 @@
           "default": 0.009999999776482582,
           "type": "number",
           "format": "float"
-        },
-        "type": {
-          "description": "Type of metadata server to start\n\nThe type of metadata server to start when running the metadata store role.",
-          "default": null,
-          "anyOf": [
-            {
-              "$ref": "#/definitions/MetadataServerKind"
-            },
-            {
-              "type": "null"
-            }
-          ]
         },
         "rocksdb-disable-direct-io-for-reads": {
           "title": "Disable Direct IO for reads",
@@ -1768,7 +1800,7 @@
         },
         "raft-election-tick": {
           "description": "The number of ticks before triggering an election\n\nThe number of ticks before triggering an election. The value must be larger than `raft_heartbeat_tick`. It's recommended to set `raft_election_tick = 10 * raft_heartbeat_tick`. Decrease this value if you want to react faster to failed leaders. Note, decreasing this value too much can lead to cluster instabilities due to falsely detecting dead leaders.",
-          "default": 20,
+          "default": 10,
           "type": "integer",
           "format": "uint",
           "minimum": 1.0
@@ -1789,15 +1821,19 @@
           "description": "The status update interval\n\nThe interval at which the raft node will update its status. Decrease this value in order to see more recent status updates.",
           "default": "5s",
           "type": "string"
+        },
+        "log-trim-threshold": {
+          "title": "The raft log trim threshold",
+          "description": "The threshold for trimming the raft log. The log will be trimmed if the number of apply entries exceeds this threshold. The default value is `1000`.",
+          "default": 1000,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint64",
+          "minimum": 0.0
         }
       }
-    },
-    "MetadataServerKind": {
-      "type": "string",
-      "enum": [
-        "local",
-        "replicated"
-      ]
     },
     "NetworkingOptions": {
       "title": "Networking options",
@@ -1830,12 +1866,12 @@
         },
         "http2-keep-alive-interval": {
           "title": "HTTP/2 Keep Alive Interval",
-          "default": "5s",
+          "default": "1s",
           "type": "string"
         },
         "http2-keep-alive-timeout": {
           "title": "HTTP/2 Keep Alive Timeout",
-          "default": "5s",
+          "default": "3s",
           "type": "string"
         },
         "http2-adaptive-window": {
@@ -1843,21 +1879,11 @@
           "default": true,
           "type": "boolean"
         },
-        "outbound-queue-length": {
-          "title": "Connection Send Buffer",
-          "description": "The number of messages that can be queued on the outbound stream of a single connection.",
-          "default": 1000,
-          "type": "integer",
-          "format": "uint",
-          "minimum": 1.0
-        },
-        "num-concurrent-connections": {
-          "title": "Number of connections to each peer",
-          "description": "This is used as a guiding value for how many connections every node can maintain with each peer. With more connections, concurrency of network message processing increases, but it also increases the memory and CPU overhead.",
-          "default": 3,
-          "type": "integer",
-          "format": "uint",
-          "minimum": 1.0
+        "data-stream-window-size": {
+          "title": "Data Stream Window Size",
+          "description": "Controls the number of bytes the can be sent on every data stream before inducing back pressure. Data streams are used for sending messages between nodes.\n\nThe value should is often derived from BDP (Bandwidth Delay Product) of the network. For instance, if the network has a bandwidth of 10 Gbps with a round-trip time of 5 ms, the BDP is 10 Gbps * 0.005 s = 6.25 MB. This means that the window size should be at least 6.25 MB to fully utilize the network bandwidth assuming the latency is constant. Our recommendation is to set the window size to 2x the BDP to account for any variations in latency.\n\nIf network latency is high, it's recommended to set this to a higher value. Maximum theoretical value is 2^31-1 (2 GiB - 1), but we will sanitize this value to 500 MiB.",
+          "default": "2.0 MiB",
+          "$ref": "#/definitions/NonZeroHumanBytes"
         }
       }
     },
@@ -2060,7 +2086,7 @@
           ]
         },
         {
-          "description": "[EXPERIMENTAL FEATURE] Serves HTTP ingress requests (requires `experimental-feature-enable-separate-ingress-role` to be enabled)",
+          "description": "Serves HTTP ingress requests",
           "type": "string",
           "enum": [
             "http-ingress"
@@ -2226,10 +2252,10 @@
           "title": "Backoff policy used by the metadata client",
           "description": "Backoff policy used by the metadata client when it encounters concurrent modifications.",
           "default": {
-            "factor": 2.0,
-            "initial-interval": "250ms",
+            "factor": 1.399999976158142,
+            "initial-interval": "100ms",
             "max-attempts": 10,
-            "max-interval": "3s",
+            "max-interval": "1s",
             "type": "exponential"
           },
           "$ref": "#/definitions/RetryPolicy"

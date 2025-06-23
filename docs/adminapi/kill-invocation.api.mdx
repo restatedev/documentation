@@ -1,0 +1,71 @@
+---
+id: kill-invocation
+title: "Kill an invocation"
+description: "Kill the given invocation. This does not guarantee consistency for virtual object instance state, in-flight invocations to other services, etc."
+sidebar_label: "Kill an invocation"
+hide_title: true
+hide_table_of_contents: true
+api: eJztVsGOGzcM/RVCl2aBqe2220Pntg0axAjQLrabQ2EYC1qiZxTL0qzEsWMY8+8BNbZ31t7mliCH9cUekR6+90iK3CvGKqlypqzfBI1sg1fzQhlKOtomP5bqg3UOuCao7IY8PLmO4L62CUygBD4wVC1G9EwEOvhkE5PXO1iGCBsbuUUHYfGJNIP1idFrgsTIVID1Py+drWoevDwBBwhcU4REcWM1pQKI9UgVKjQUs9PUqFKtrHMPAwKFajDimpiicNsrj2tS5YDjgzWqUFbINci1Omc8PXmCNeTZLi1FCRzpsbWRjCo5tlSopGtaoyr3ineNxEgcra9U183FOTXBJ0pi/3Uyka/ncVRXqOvJNfwdGN6F1psXXAqlg2fyLDZsGmd7ZONPSRz2QwyWnYD4K8YQYfAeOEK5YHp0ZbQuQVjmPA+8D7T6vD0TYKbWlBJWJAXTREkJ257r0XApSxZFcv6gg6Eh5rv+HPL5OcqjkTJacTmwW1hfAUsRZtMT4EPAQvnWOVxICMlYlz+F+n3yG/zbVxV89LhBe3A6l7/XZ1uThxha7sOJQo8tJYat5dpmeQXf6DVZ3yJZ15MJ/IkG7nrRX3vke8n+B7wNfumsfkHz+5oGlzVsMQG6SGh2oMO6ccRkCkgBLINGL+NhQfJLk3NkwIcIcnGTGcF/oRVLHguEBpo2VpRVfoogQwJCNBTzQDlIJDNiGWJFDJZf2+8b1EFXqDVxHUw/K3WdxyvXqlTjwbAe759N124suc0zdhmG0G/M2nq4uZ1e4M6rxM3tFOhzExKlrC5m99O4z6ojnPi7NjHFAlKra8AEkSrZOoQOeNoeFwcw1LiwW5PnJHXEFFHnu1zub4it9/IwoFOcXgUfcLlCSO3iBDZbOVra0CnCmhgNMo7gXYiAHsJGLLQtQNekVxBazoxm/2QyBCboVhDlgPM3NXOTyvHYBJ1Gx3liaDPuydP4agTTJexC+1MkcCGsBLK0Qh220gYanRPzcF06Cz31VaSU4P39/a1I/ZWoosWKxmK/Oval9NeGYurz9cvoejSRKm1C4jXm9josWnlhxOGmeJ7t/VOj/oDr5aEvmD7zuHFovdBsoxPcfe0PF+akClWe75a5/OeFqoMMrJna7xeY6GN0XSfHjy3FnSpn80JtMNq+6WZ7ZWyS30aVS3SJvqLam7vD7XIF/7utvsjjcIh+J+lE11I/QVe0u9iRu3lXqJrQUMzwep8branhwb8vblrZfk+3xu3N/dv3quu+ANlpaMg=
+sidebar_class_name: "patch api-method"
+info_path: adminapi/admin-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Kill an invocation"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"patch"}
+  path={"/invocations/{invocation_id}/kill"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Kill the given invocation. This does not guarantee consistency for virtual object instance state, in-flight invocations to other services, etc.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"invocation_id","in":"path","description":"Invocation identifier.","required":true,"schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":""},"404 Not Found":{"description":"","content":{"application/json":{"schema":{"title":"Error description response","description":"Error details of the response","type":"object","required":["message"],"properties":{"message":{"type":"string"},"restate_code":{"title":"Restate code","description":"Restate error code describing this error","type":"string","nullable":true}}}}}},"503 Service Unavailable":{"description":"Error when routing the request within restate.","content":{"application/json":{"schema":{"title":"Error description response","description":"Error details of the response","type":"object","required":["message"],"properties":{"message":{"type":"string"},"restate_code":{"title":"Restate code","description":"Restate error code describing this error","type":"string","nullable":true}}}}}},"400 Bad Request":{"description":"","content":{"application/json":{"schema":{"title":"Error description response","description":"Error details of the response","type":"object","required":["message"],"properties":{"message":{"type":"string"},"restate_code":{"title":"Restate code","description":"Restate error code describing this error","type":"string","nullable":true}}}}}},"409 Conflict":{"description":"The invocation was already completed, so it cannot be cancelled nor killed. You can instead purge the invocation, in order for restate to forget it.","content":{"application/json":{"schema":{"title":"Error description response","description":"Error details of the response","type":"object","required":["message"],"properties":{"message":{"type":"string"},"restate_code":{"title":"Restate code","description":"Restate error code describing this error","type":"string","nullable":true}}}}}}}}
+>
+  
+</StatusCodes>
+
+
+      
