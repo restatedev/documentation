@@ -3,6 +3,7 @@ roles = [
     "admin",
     "metadata-server",
     "log-server",
+    "http-ingress",
 ]
 cluster-name = "localcluster"
 auto-provision = true
@@ -15,6 +16,7 @@ log-filter = "warn,restate=info"
 log-format = "pretty"
 log-disable-ansi-codes = false
 tokio-console-bind-address = "0.0.0.0:6669"
+histogram-inactivity-timeout = "3m"
 no-proxy = []
 connect-timeout = "10s"
 disable-prometheus = false
@@ -24,9 +26,18 @@ rocksdb-high-priority-bg-threads = 2
 rocksdb-write-stall-threshold = "3s"
 rocksdb-enable-stall-on-memory-limit = false
 rocksdb-perf-level = "enable-count"
-metadata-update-interval = "3s"
+metadata-update-interval = "10s"
+metadata-fetch-from-peer-timeout = "3s"
 initialization-timeout = "5m"
 disable-telemetry = false
+gossip-tick-interval = "100ms"
+gossip-failure-threshold = 10
+gossip-num-peers = 2
+gossip-fd-stability-threshold = 3
+gossip-suspect-interval = "5s"
+gossip-loneliness-threshold = 30
+gossip-extras-exchange-frequency = 10
+gossip-time-skew-threshold = "1s"
 
 [metadata-client]
 type = "replicated"
@@ -37,10 +48,10 @@ keep-alive-timeout = "5s"
 
 [metadata-client.backoff-policy]
 type = "exponential"
-initial-interval = "250ms"
-factor = 2.0
+initial-interval = "100ms"
+factor = 1.399999976158142
 max-attempts = 10
-max-interval = "3s"
+max-interval = "1s"
 
 [http-keep-alive-options]
 interval = "40s"
@@ -61,15 +72,13 @@ max-command-batch-size = 32
 [worker.storage]
 rocksdb-disable-wal = true
 rocksdb-memory-ratio = 0.49000000953674316
-persist-lsn-interval = "1h"
-persist-lsn-threshold = 1000
 
 [worker.invoker]
 inactivity-timeout = "1m"
 abort-timeout = "1m"
 message-size-warning = "10.0 MiB"
 in-memory-queue-length-limit = 66049
-concurrent-invocations-limit = 100
+concurrent-invocations-limit = 1000
 
 [worker.invoker.retry-policy]
 type = "exponential"
@@ -87,28 +96,25 @@ max-interval = "10s"
 [admin]
 bind-address = "0.0.0.0:9070"
 heartbeat-interval = "1s 500ms"
-metadata-sync-interval = "10s"
 log-trim-check-interval = "1h"
-log-tail-update-interval = "5m"
 disable-web-ui = false
 disable-cluster-controller = false
 
 [admin.query-engine]
 memory-size = "4.0 GiB"
-pgsql-bind-address = "0.0.0.0:9071"
 
 [ingress]
 bind-address = "0.0.0.0:8080"
 kafka-clusters = []
-experimental-feature-enable-separate-ingress-role = false
 
 [bifrost]
-default-provider = "local"
+default-provider = "replicated"
 seal-retry-interval = "2s"
-auto-recovery-interval = "3s"
+auto-recovery-interval = "15s"
 append-retry-min-interval = "10ms"
 append-retry-max-interval = "1s"
 record-cache-memory-size = "250.0 MiB"
+disable-auto-improvement = false
 
 [bifrost.local]
 rocksdb-disable-wal = false
@@ -148,19 +154,19 @@ max-interval = "1s"
 request-queue-length = 32
 rocksdb-memory-ratio = 0.009999999776482582
 rocksdb-disable-wal = false
-raft-election-tick = 20
+raft-election-tick = 10
 raft-heartbeat-tick = 2
 raft-tick-interval = "100ms"
 status-update-interval = "5s"
+log-trim-threshold = 1000
 
 [networking]
 connect-timeout = "3s"
 handshake-timeout = "3s"
-http2-keep-alive-interval = "5s"
-http2-keep-alive-timeout = "5s"
+http2-keep-alive-interval = "1s"
+http2-keep-alive-timeout = "3s"
 http2-adaptive-window = true
-outbound-queue-length = 1000
-num-concurrent-connections = 3
+data-stream-window-size = "2.0 MiB"
 
 [networking.connect-retry-policy]
 type = "exponential"

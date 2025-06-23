@@ -1,0 +1,71 @@
+---
+id: cancel-invocation
+title: "Cancel an invocation"
+description: "Cancel the given invocation. Canceling an invocation allows it to free any resources it is holding and roll back any changes it has made so far, running compensation code. For more details, checkout https://docs.restate.dev/guides/sagas"
+sidebar_label: "Cancel an invocation"
+hide_title: true
+hide_table_of_contents: true
+api: eJztV1Fv4zYM/iuEXnYFjDjruof5revtcMEBW9HrPQxBUDASY6uRJVeSkwaB//tA2UncpnfYy+1ll5ckImWSH/mR9F5ELIMo5kLbjZMYtbNikQlFQXrdpL+FuEEryUCsCEq9IQsn5Qn0Qm1LwLEA0Bi3DaAjRAcrTwRod+ApuNZLSgIdoHJG9XcVeGcMLFGuk6as0Ja9XoUBalQEwcEKfQa+tZZvSVc3ZENvUDpFE/jgPNTOEyiKqE3IQFYk166NUMXYhCLPlZNh4ilEjDRRtMnLVisKecASg8gEPUfyFs17J4Mo9qL1RhTi393uMuEa8smjmRKFkAmehxG8mWjQY02RPCO/FxZrEsUoAw9aiUxohr7BWInX+ZidUNaKbNQrTX4iMuHpqdWelCiibykTQVZUI8cQdw3bCNFrW4quW7ByaJwNlGK8nE7566Wd+4rGGeU0LIks9DEZUhOO93J6+fbVQa2/HHRp0cAWA2DTkFWkuDC4ph5dy3CnGthqrgGCxjtJIZCC5S4pfX7/KVm7ml7Bny7CB9dadW5XZEI6G8lGlmHTGN17nz8GVtiPMdHRMCh/eO88jJ4DB2jOkD+optICt0qujbQHmN3ykWR8kZC5qCkELInp1Xgukqh77A+C8zSlJHGhPXBxj32+689T0Z95eRBS8pZVhuiWTJpY6dCLTg4PBjNhW2NwySa4grr0ycSv01/gM/mNlgRfLG5QD0qv4e/x2VZkwbs29uYYoaeWQoStjpVO8Cb2/EjW90jW1XQKv6OCux70Hxz5r2D/DW6cXRkt38D8VStNbdB4QrVLQ8xQJJXxfNOR+6Z1kbvgsdGCdR7WOvVc+Nu1LAFtQyRU0LS+pITyyUIG2oLzijysnD8wLo1i50uKoOMP+n2HOugyUVOsnOpnt6zSuI+VKER+yk7I9y+mfZf3mU5Tf+XGzl+rWlu4vp2deX7Pvl3fzoCeGxcoJHwxqR9XkIQ7whEB04ZIPoPQygowgKdS8wnHamkLYWjyihrjdjXZGLiSInmUqZtzBz+uX6OAsuOj4BOu1gihXR6dTdLoNW3oaKGmiAoj9hsbWnAbltB2WNiANzaOaP5XCoZAOdmyR8ng4t1X97E+eMovJjBbwc61P3kC49yaXWYyVG7LRJBoDIv9wadwZnpmS08hwMf7+1uG+htWGYs15Sy/ODCTGbYhH/p8/Ty5mky5ThsXYo2JYMPqNyzYLxbo1/nen8j6f1vIB+JFeo55Y1BbRjFt5fuBXOP3F75RvF6mB34tMlE5nolzsd8vMdAXb7qOj59a8jtRzBeZ2KDXPa/ne6F04N9KFCs0gb6RlHd3QwO7gK8u6G9GMhyi3XG9oGmpH9Jr2p29FnSLLhMVoSKf3Ot1rqWkJo5unzVzXviPjen2+v7mo+i6fwA8nPaR
+sidebar_class_name: "patch api-method"
+info_path: adminapi/admin-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Cancel an invocation"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"patch"}
+  path={"/invocations/{invocation_id}/cancel"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Cancel the given invocation. Canceling an invocation allows it to free any resources it is holding and roll back any changes it has made so far, running compensation code. For more details, checkout https://docs.restate.dev/guides/sagas
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+  children={"Request"}
+>
+</Heading>
+
+<ParamsDetails
+  parameters={[{"name":"invocation_id","in":"path","description":"Invocation identifier.","required":true,"schema":{"type":"string"}}]}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  title={"Body"}
+  body={undefined}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  id={undefined}
+  label={undefined}
+  responses={{"200":{"description":"The invocation has been cancelled."},"202":{"description":"The cancellation signal was appended to the journal and will be processed by the SDK."},"404 Not Found":{"description":"","content":{"application/json":{"schema":{"title":"Error description response","description":"Error details of the response","type":"object","required":["message"],"properties":{"message":{"type":"string"},"restate_code":{"title":"Restate code","description":"Restate error code describing this error","type":"string","nullable":true}}}}}},"503 Service Unavailable":{"description":"Error when routing the request within restate.","content":{"application/json":{"schema":{"title":"Error description response","description":"Error details of the response","type":"object","required":["message"],"properties":{"message":{"type":"string"},"restate_code":{"title":"Restate code","description":"Restate error code describing this error","type":"string","nullable":true}}}}}},"400 Bad Request":{"description":"","content":{"application/json":{"schema":{"title":"Error description response","description":"Error details of the response","type":"object","required":["message"],"properties":{"message":{"type":"string"},"restate_code":{"title":"Restate code","description":"Restate error code describing this error","type":"string","nullable":true}}}}}},"409 Conflict":{"description":"The invocation was already completed, so it cannot be cancelled nor killed. You can instead purge the invocation, in order for restate to forget it.","content":{"application/json":{"schema":{"title":"Error description response","description":"Error details of the response","type":"object","required":["message"],"properties":{"message":{"type":"string"},"restate_code":{"title":"Restate code","description":"Restate error code describing this error","type":"string","nullable":true}}}}}}}}
+>
+  
+</StatusCodes>
+
+
+      
