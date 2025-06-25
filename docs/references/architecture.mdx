@@ -55,13 +55,13 @@ Here is an overview of the different roles that can run on a node:
 - Ingress: the entry point for external requests
 - Log server: responsible for durably persisting the log
 - Worker: houses the partition processors
+- Admin: giving access to the admin API and running the cluster controller
 
 ## Metadata store
 
 The Restate metadata store is part of the control plane and is the internal source of truth for node membership and responsibilities. It is essential to the correctness of the overall system: In a cluster this service enables distributed consensus about other components' configuration. All nodes in a Restate cluster must be able to access the metadata store, though not all members of the cluster need to be part of hosting it. Restate includes a built-in Raft-based metadata store which is hosted on all nodes running the `metadata-server` role.
 
 The metadata store is designed to support relatively low volumes of read and write operations (at least compared to other parts of Restate), with the highest level of integrity and availability.
-
 
 [//]: # (For some weird reason this shifts to the right if I use two hashtags)
 <h2>Ingress</h2>
@@ -95,7 +95,12 @@ In these cases, it's far more efficient to obtain a **snapshot** of the partitio
 Restate clusters can be configured to use an external **object store** as the snapshot repository, allowing partition processors to skip ahead in the log.
 This also enables us to **trim logs** which might otherwise grow unboundedly.
 
+## Admin
 
+Nodes running the `admin` role expose the admin REST API, which can be used to manage the cluster (e.g. registering services, canceling invocations, etc.) and to obtain information about available services and running invocations.
+The admin role also exposes the SQL endpoint to query the cluster status which gives advanced information about the cluster.
+One of the `admin` nodes runs the cluster controller which is responsible for configuring the partition processors and selecting the leader.
+In case the admin node running the cluster controller fails, another admin node will take over and start a new cluster controller.
 
 ## Other reading material
 - [Distributed Restate - a first look](https://restate.dev/blog/distributed-restate-a-first-look/)
