@@ -5,8 +5,8 @@ import { processHtmlToMarkdown, extractHtmlMetadata } from './html-converter';
 import { htmlPathToMdPath } from '../../fs/path';
 import { noopLogger } from '../../logging';
 import { createDocumentError, getErrorMessage, getErrorCause } from '../../utils';
-import { saveMarkdownFile } from '../../fs/io/write';
-import { TITLE_TRUNCATE_LENGTH } from '../../constants';
+import {appendToMarkdownFile, saveMarkdownFile} from '../../fs/io/write';
+import {LLMS_FULL_TXT_FILENAME, TITLE_TRUNCATE_LENGTH} from '../../constants';
 
 /**
  * Check if a markdown file exists for the given HTML path
@@ -32,6 +32,7 @@ export async function processHtmlFileWithRoute(
   routePath: string,
   docsDir: string,
   mdOutDir: string,
+  outDir: string,
   config: PluginOptions,
   logger: Logger = noopLogger,
   baseUrl: string = '',
@@ -75,6 +76,9 @@ export async function processHtmlFileWithRoute(
       logger.debug(`Saving markdown file for ${relHtmlPath}`);
       const mdPath = htmlPathToMdPath(relHtmlPath, mdOutDir);
       await saveMarkdownFile(mdPath, markdown);
+
+      // Append content to llms-full.txt
+      await appendToMarkdownFile(path.join(outDir, LLMS_FULL_TXT_FILENAME), `\n\n---\n\n# ${title}\n\n${markdown}`, logger);
     } else {
       // Lightweight processing for llms.txt only - just extract metadata
       const result = await extractHtmlMetadata(html, contentSelectors);
