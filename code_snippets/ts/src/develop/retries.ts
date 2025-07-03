@@ -15,11 +15,11 @@ const service = restate.service({
       try {
         // <mark_1>
         const myRunRetryPolicy = {
-          initialRetryIntervalMillis: 500,
+          initialRetryInterval: { milliseconds: 500 },
           retryIntervalFactor: 2,
-          maxRetryIntervalMillis: 1000,
+          maxRetryInterval: { seconds: 1 },
           maxRetryAttempts: 5,
-          maxRetryDurationMillis: 1000,
+          maxRetryDuration: { seconds: 1 },
         };
         // </mark_1>
         await ctx.run("write", () => writeToOtherSystem(), myRunRetryPolicy);
