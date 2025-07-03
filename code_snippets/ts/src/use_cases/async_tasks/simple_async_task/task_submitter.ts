@@ -26,7 +26,7 @@ async function scheduleTask(task: TaskOpts) {
     .runTask(
       task,
       // <mark_2>
-      SendOpts.from({ idempotencyKey: "dQw4w9WgXcQ", delay: 1000 })
+      SendOpts.from({ idempotencyKey: "dQw4w9WgXcQ", delay: { seconds: 1 } })
       // </mark_2>
     );
   // </mark_1>

@@ -13,7 +13,7 @@ const service = restate.service({
 
     promiseCombinators: async (ctx: restate.Context, name: string) => {
       // <start_all>
-      const sleepPromise = ctx.sleep(100);
+      const sleepPromise = ctx.sleep({ milliseconds: 100 });
       const callPromise = ctx.serviceClient(MyService).myHandler("Hi");
       const externalCallPromise = ctx.run(() => httpCall());
       const resultArray = await RestatePromise.all([

@@ -29,19 +29,19 @@ const service = restate.service({
       // <start_delayed_service>
       ctx
         .serviceSendClient(MyService)
-        .myHandler("Hi", restate.rpc.sendOpts({ delay: 5000 }));
+        .myHandler("Hi", restate.rpc.sendOpts({ delay: { seconds: 5 } }));
       // <end_delayed_service>
 
       // <start_delayed_object>
       ctx
         .objectSendClient(MyVirtualObject, "Mary")
-        .myHandler("Hi", restate.rpc.sendOpts({ delay: 5000 }));
+        .myHandler("Hi", restate.rpc.sendOpts({ delay: { seconds: 5 } }));
       // <end_delayed_object>
 
       // <start_delayed_workflow>
       ctx
         .workflowSendClient(MyWorkflow, "Mary")
-        .run("Hi", restate.rpc.sendOpts({ delay: 5000 }));
+        .run("Hi", restate.rpc.sendOpts({ delay: { seconds: 5 } }));
       // <end_delayed_workflow>
 
       // <start_ordering>
@@ -74,7 +74,7 @@ const service = restate.service({
         method: "myHandler",
         parameter: "Hi",
         inputSerde: restate.serde.json,
-        delay: 5000,
+        delay: { seconds: 5 },
       });
       // <end_generic_delayed>
     },
