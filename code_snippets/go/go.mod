@@ -6,7 +6,7 @@ require (
 	github.com/aws/aws-lambda-go v1.47.0
 	github.com/google/uuid v1.6.0
 	github.com/restatedev/examples/tutorials/tour-of-restate-go v0.0.0-20241215112244-6821fb89413e
-	github.com/restatedev/sdk-go v0.17.0
+	github.com/restatedev/sdk-go v0.18.0
 	google.golang.org/protobuf v1.36.5
 )
 
