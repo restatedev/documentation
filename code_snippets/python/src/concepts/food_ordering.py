@@ -53,7 +53,7 @@ async def process(ctx: ObjectContext, order: Order):
 
     # 4. Trigger preparation
     # <mark_3>
-    preparation_id, preparation_promise = ctx.awakeable()
+    preparation_id, preparation_promise = ctx.awakeable(type_hint=str)
     # <mark_5>
     await ctx.run("prepare", lambda: restaurant.prepare(order["id"], preparation_id))
     # </mark_5>
