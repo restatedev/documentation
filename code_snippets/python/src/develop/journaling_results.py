@@ -22,7 +22,7 @@ async def my_handler(ctx: Context, arg):
     # <end_side_effect>
 
     # <start_select>
-    _, confirmation_future = ctx.awakeable()
+    _, confirmation_future = ctx.awakeable(type_hint=str)
     match await restate.select(confirmation=confirmation_future, timeout=ctx.sleep(timedelta(days=1))):
         case ["confirmation", "ok"]:
             return "success!"

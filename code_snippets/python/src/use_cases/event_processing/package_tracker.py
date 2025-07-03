@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 import restate
 from pydantic import BaseModel
@@ -40,14 +40,14 @@ async def update_location(ctx: ObjectContext, location_update: LocationUpdate):
     # </mark_2>
     # </mark_3>
     # <mark_1>
-    package_info = await ctx.get("package-info")
+    package_info = await ctx.get("package-info", type_hint=PackageInfo)
     # </mark_1>
     if package_info is None:
         raise TerminalError(f"Package {ctx.key()} not found")
-
-    locations = package_info.get("locations", [])
-    locations.append(location_update.model_dump())
-    package_info["locations"] = locations
+    else:
+        locations = package_info.locations or []
+        locations.append(location_update)
+        package_info.locations = locations
 
     # <mark_1>
     ctx.set("package-info", package_info)
@@ -57,7 +57,7 @@ async def update_location(ctx: ObjectContext, location_update: LocationUpdate):
 # <mark_3>
 # <mark_2>
 @package_tracker.handler()
-async def get_package_info(ctx: ObjectContext):
+async def get_package_info(ctx: ObjectContext) -> Optional[PackageInfo]:
     # </mark_2>
     # </mark_3>
     # <mark_1>

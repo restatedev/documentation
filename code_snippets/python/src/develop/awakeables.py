@@ -8,7 +8,7 @@ async def my_handler(ctx: Context, arg):
 
     # <start_here>
     # <mark_1>
-    name, promise = ctx.awakeable()
+    name, promise = ctx.awakeable(type_hint=str)
     # </mark_1>
 
     # <mark_2>
