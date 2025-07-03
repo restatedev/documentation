@@ -21,7 +21,7 @@ const userFeed = restate.object({
       while ((await ctx.run(() => getPostStatus(postId))) === PENDING) {
         // </mark_3>
         // <mark_2>
-        await ctx.sleep(5_000);
+        await ctx.sleep({ seconds: 5 });
         // </mark_2>
       }
       // </mark_4>

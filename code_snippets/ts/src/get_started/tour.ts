@@ -7,11 +7,11 @@ const router = restate.service({
       const ticketId = "";
 
       // <start_sleep>
-      await ctx.sleep(15 * 60 * 1000);
+      await ctx.sleep({ minutes: 15 });
       // <end_sleep>
 
       // <start_sleep_and_send>
-      await ctx.sleep(15 * 60 * 1000);
+      await ctx.sleep({ minutes: 15 });
       ctx.objectSendClient(TicketObject, ticketId).unreserve();
       // <end_sleep_and_send>
     },

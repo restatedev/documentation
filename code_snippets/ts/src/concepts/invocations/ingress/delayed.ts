@@ -8,6 +8,6 @@ const myFunction = async () => {
   const restateClient = restate.connect({ url: "http://localhost:8080" });
   await restateClient
     .serviceSendClient(greeter)
-    .greet({ greeting: "Hi" }, restate.rpc.sendOpts({ delay: 1000 }));
+    .greet({ greeting: "Hi" }, restate.rpc.sendOpts({ delay: { seconds: 1 } }));
 };
 // <end_delayed_call_node>

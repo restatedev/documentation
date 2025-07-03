@@ -34,13 +34,12 @@ const paymentTracker = restate.object({
 
         // Schedule next reminder via a delayed self call
         // <mark_2>
-        await ctx
+        ctx
           .objectSendClient(
             PaymentTracker,
-            ctx.key, // this object's invoice id
-            { delay: 24 * 60 * 60 * 1000 }
+            ctx.key // this object's invoice id
           )
-          .onPaymentFailed(event);
+          .onPaymentFailed(event, restate.rpc.sendOpts({ delay: { days: 1 }}));
         // </mark_2>
       } else {
         // <mark_2>

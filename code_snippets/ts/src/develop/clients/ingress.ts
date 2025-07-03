@@ -34,11 +34,11 @@ const myPlainTSFunction3 = async () => {
   const rs = clients.connect({ url: "http://localhost:8080" });
   await rs
     .serviceSendClient(greeterService)
-    .greet({ greeting: "Hi" }, clients.rpc.sendOpts({ delay: 1000 }));
+    .greet({ greeting: "Hi" }, clients.rpc.sendOpts({ delay: { seconds: 1 } }));
 
   await rs
     .objectSendClient(greetCounterObject, "Mary")
-    .greet({ greeting: "Hi" }, clients.rpc.sendOpts({ delay: 1000 }));
+    .greet({ greeting: "Hi" }, clients.rpc.sendOpts({ delay: { seconds: 1 } }));
   // <end_delayed_call_node>
 };
 
