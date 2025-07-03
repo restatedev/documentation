@@ -10,8 +10,8 @@ async def caller(ctx: ObjectContext, arg):
     # <end_statekeys>
 
     # <start_get>
-    my_string = await ctx.get("my-string-key") or "default-key"
-    my_number = await ctx.get("my-number-key") or 123
+    my_string = await ctx.get("my-string-key", type_hint=str) or "default-key"
+    my_number = await ctx.get("my-number-key", type_hint=int) or 123
     # <end_get>
 
     # <start_set>

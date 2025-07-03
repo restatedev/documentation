@@ -15,7 +15,7 @@ async def greet(ctx: restate.ObjectContext, greeting: str) -> str:
     name = ctx.key
     # </mark_1>
     # <mark_2>
-    count = await ctx.get("count") or 0
+    count = await ctx.get("count", type_hint=int) or 0
     # </mark_2>
     count += 1
     # <mark_2>
@@ -32,7 +32,7 @@ async def ungreet(ctx: restate.ObjectContext) -> str:
     name = ctx.key
     # </mark_1>
     # <mark_2>
-    count = await ctx.get("count") or 0
+    count = await ctx.get("count", type_hint=int) or 0
     # </mark_2>
     if count > 0:
         count -= 1

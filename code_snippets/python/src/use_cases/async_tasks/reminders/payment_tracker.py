@@ -28,11 +28,11 @@ async def on_payment_success(ctx: ObjectContext, event: StripeEvent):
 async def on_payment_failed(ctx: ObjectContext, event: StripeEvent):
     # </mark_1>
     # <mark_3>
-    if await ctx.get("paid"):
+    if await ctx.get("paid", type_hint=bool):
         return
     # </mark_3>
 
-    reminder_count = await ctx.get("reminder_count") or 0
+    reminder_count = await ctx.get("reminder_count", type_hint=int) or 0
     if reminder_count < 3:
         ctx.set("reminder_count", reminder_count + 1)
         await ctx.run("send_reminder", lambda: send_reminder_email(event))

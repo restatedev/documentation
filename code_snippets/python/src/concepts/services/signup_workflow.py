@@ -26,12 +26,12 @@ async def run(ctx: WorkflowContext, user: User) -> bool:
     # </mark_2>
 
     # <mark_2>
-    secret = await ctx.run("secret", lambda: str(uuid.uuid4()))
+    secret = await ctx.run("secret", lambda: str(uuid.uuid4()), type_hint=str)
     await ctx.run("send_email", lambda: send_email_with_link(user_id, user.email, secret))
     # </mark_2>
 
     # <mark_3>
-    click_secret = await ctx.promise("link_clicked").value()
+    click_secret = await ctx.promise("link_clicked", type_hint=str).value()
     # </mark_3>
     return click_secret == secret
 
@@ -39,7 +39,7 @@ async def run(ctx: WorkflowContext, user: User) -> bool:
 # <mark_3>
 @user_signup.handler()
 async def click(ctx: WorkflowSharedContext, secret: str):
-    await ctx.promise("link_clicked").resolve(secret)
+    await ctx.promise("link_clicked", type_hint=str).resolve(secret)
     # </mark_3>
 
 
