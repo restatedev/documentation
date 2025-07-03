@@ -139,6 +139,20 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Like <a href="#bind(java.lang.Object)"><code>bind(Object)</code></a>, but allows to provide options for the handler runner.</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Endpoint.Builder.html" title="class in dev.restate.sdk.endpoint">Endpoint.Builder</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#bind(java.lang.Object,dev.restate.sdk.endpoint.definition.HandlerRunner.Options,java.util.function.Consumer)" class="member-name-link">bind</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;service,
+ <a href="definition/HandlerRunner.Options.html" title="interface in dev.restate.sdk.endpoint.definition">HandlerRunner.Options</a>&nbsp;options,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="definition/ServiceDefinition.Configurator.html" title="class in dev.restate.sdk.endpoint.definition">ServiceDefinition.Configurator</a>&gt;&nbsp;configurator)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Same as <a href="#bind(java.lang.Object,dev.restate.sdk.endpoint.definition.HandlerRunner.Options)"><code>bind(Object, HandlerRunner.Options)</code></a> but allows to configure the <a href="definition/ServiceDefinition.html" title="class in dev.restate.sdk.endpoint.definition"><code>ServiceDefinition</code></a> before binding it.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Endpoint.Builder.html" title="class in dev.restate.sdk.endpoint">Endpoint.Builder</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#bind(java.lang.Object,java.util.function.Consumer)" class="member-name-link">bind</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;service,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="definition/ServiceDefinition.Configurator.html" title="class in dev.restate.sdk.endpoint.definition">ServiceDefinition.Configurator</a>&gt;&nbsp;configurator)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Same as <a href="#bind(java.lang.Object)"><code>bind(Object)</code></a> but allows to configure the <a href="definition/ServiceDefinition.html" title="class in dev.restate.sdk.endpoint.definition"><code>ServiceDefinition</code></a> before
+ binding it.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Endpoint.html" title="class in dev.restate.sdk.endpoint">Endpoint</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#build()" class="member-name-link">build</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -209,6 +223,9 @@ loadScripts(document, 'script');</script>
 <div class="block">Add a Restate service to the endpoint. This will automatically discover the generated factory
  based on the class name.
 
+ <p>If you want to modify some of the service definition options, such as documentation,
+ inactivity timeout, and so on, use <a href="#bind(java.lang.Object,java.util.function.Consumer)"><code>bind(Object, Consumer)</code></a> instead.
+
  <p>You can also manually instantiate the <a href="definition/ServiceDefinition.html" title="class in dev.restate.sdk.endpoint.definition"><code>ServiceDefinition</code></a> using <a href="#bind(dev.restate.sdk.endpoint.definition.ServiceDefinition)"><code>bind(ServiceDefinition)</code></a>.</div>
 </section>
 </li>
@@ -222,12 +239,63 @@ loadScripts(document, 'script');</script>
  the coroutine context.
 
  <p>Look at the respective documentations of the HandlerRunner class in the Java or in the
- Kotlin module.</div>
+ Kotlin module.
+
+ <p>If you want to modify some of the service definition options, such as documentation,
+ inactivity timeout, and so on, use <a href="#bind(java.lang.Object,dev.restate.sdk.endpoint.definition.HandlerRunner.Options,java.util.function.Consumer)"><code>bind(Object, HandlerRunner.Options, Consumer)</code></a>
+ instead.</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
 <ul class="tag-list">
 <li><a href="#bind(java.lang.Object)"><code>bind(Object)</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="bind(java.lang.Object,java.util.function.Consumer)">
+<h3>bind</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Endpoint.Builder.html" title="class in dev.restate.sdk.endpoint">Endpoint.Builder</a></span>&nbsp;<span class="element-name">bind</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;service,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="definition/ServiceDefinition.Configurator.html" title="class in dev.restate.sdk.endpoint.definition">ServiceDefinition.Configurator</a>&gt;&nbsp;configurator)</span></div>
+<div class="block">Same as <a href="#bind(java.lang.Object)"><code>bind(Object)</code></a> but allows to configure the <a href="definition/ServiceDefinition.html" title="class in dev.restate.sdk.endpoint.definition"><code>ServiceDefinition</code></a> before
+ binding it.
+
+ <pre><code>
+ Endpoint endpoint = Endpoint
+   .builder()
+   .bind(
+     new Counter(),
+     // Configure the service
+     s -&gt; s.journalRetention(Duration.ofDays(1))
+   )
+   .build();
+ </code></pre></div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="#bind(java.lang.Object)"><code>bind(Object)</code></a></li>
+<li><a href="definition/ServiceDefinition.Configurator.html" title="class in dev.restate.sdk.endpoint.definition"><code>ServiceDefinition.Configurator</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="bind(java.lang.Object,dev.restate.sdk.endpoint.definition.HandlerRunner.Options,java.util.function.Consumer)">
+<h3>bind</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Endpoint.Builder.html" title="class in dev.restate.sdk.endpoint">Endpoint.Builder</a></span>&nbsp;<span class="element-name">bind</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;service,
+ <a href="definition/HandlerRunner.Options.html" title="interface in dev.restate.sdk.endpoint.definition">HandlerRunner.Options</a>&nbsp;options,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="definition/ServiceDefinition.Configurator.html" title="class in dev.restate.sdk.endpoint.definition">ServiceDefinition.Configurator</a>&gt;&nbsp;configurator)</span></div>
+<div class="block">Same as <a href="#bind(java.lang.Object,dev.restate.sdk.endpoint.definition.HandlerRunner.Options)"><code>bind(Object, HandlerRunner.Options)</code></a> but allows to configure the <a href="definition/ServiceDefinition.html" title="class in dev.restate.sdk.endpoint.definition"><code>ServiceDefinition</code></a> before binding it.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list-long">
+<li><a href="#bind(java.lang.Object,dev.restate.sdk.endpoint.definition.HandlerRunner.Options)"><code>bind(Object, HandlerRunner.Options)</code></a></li>
+<li><a href="definition/ServiceDefinition.Configurator.html" title="class in dev.restate.sdk.endpoint.definition"><code>ServiceDefinition.Configurator</code></a></li>
 </ul>
 </dd>
 </dl>
