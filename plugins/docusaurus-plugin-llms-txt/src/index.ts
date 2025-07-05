@@ -61,6 +61,7 @@ export default function llmsTxtPlugin(
           directories.docsDir,
           directories.mdOutDir,
           siteDir,
+          outDir,
           config,
           log,
           siteUrl
