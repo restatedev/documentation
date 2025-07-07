@@ -37,6 +37,7 @@ public class RetryRunService {
     } catch (TerminalException e) {
       // Handle the terminal error: undo previous actions and
       // propagate the error back to the caller
+      throw e;
     }
     // <end_catch>
 
