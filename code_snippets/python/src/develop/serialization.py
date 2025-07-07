@@ -74,7 +74,7 @@ class CompletedDelivery(BaseModel):
 
 
 # For the input/output serialization of your handlers
-@my_object.handler()
+@my_object.handler(input_serde=PydanticJsonSerde(Delivery), output_serde=PydanticJsonSerde(CompletedDelivery))
 async def deliver(ctx: ObjectContext, delivery: Delivery) -> CompletedDelivery:
 
     # To serialize state
