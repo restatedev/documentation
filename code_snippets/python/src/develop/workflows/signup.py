@@ -1,3 +1,4 @@
+from typing import Optional
 import uuid
 
 import restate
@@ -20,7 +21,7 @@ async def run(ctx: WorkflowContext, email: str):
     ctx.set("onboarding_status", "Sent email")
 
     # <mark_3>
-    click_secret = await ctx.promise("email.clicked").value()
+    click_secret = await ctx.promise("email.clicked", type_hint=str).value()
     # </mark_3>
     ctx.set("onboarding_status", "Clicked email")
 
@@ -33,14 +34,14 @@ async def run(ctx: WorkflowContext, email: str):
 @signup_workflow.handler()
 async def click(ctx: WorkflowSharedContext, secret: str):
     # <mark_3>
-    await ctx.promise("email.clicked").resolve(secret)
+    await ctx.promise("email.clicked", type_hint=str).resolve(secret)
     # </mark_3>
 
 
 # <mark_2>
 @signup_workflow.handler()
-async def get_status(ctx: WorkflowSharedContext):
-    return await ctx.get("onboarding_status")
+async def get_status(ctx: WorkflowSharedContext) -> str:
+    return await ctx.get("onboarding_status") or "Not started yet"
 
 
 # </mark_2>

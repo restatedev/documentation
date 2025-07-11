@@ -32,7 +32,7 @@ async def run(ctx: WorkflowContext, user: User) -> bool:
 
     # <mark_2>
     # <mark_3>
-    click_secret = await ctx.promise("link_clicked").value()
+    click_secret = await ctx.promise("link_clicked", type_hint=str).value()
     # </mark_3>
     # </mark_2>
     return click_secret == secret
@@ -41,7 +41,7 @@ async def run(ctx: WorkflowContext, user: User) -> bool:
 @user_signup.handler()
 async def click(ctx: WorkflowSharedContext, secret: str):
     # <mark_3>
-    await ctx.promise("link_clicked").resolve(secret)
+    await ctx.promise("link_clicked", type_hint=str).resolve(secret)
     # </mark_3>
 
 
