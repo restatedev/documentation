@@ -191,7 +191,7 @@ jobs:
         if: ${{ inputs.sdkJavaVersion != '' }}
         run: gradle -p code_snippets/kotlin check
 
-      # Checkout SDK java for the javadocs/ktdocs
+      # Generate Javadocs/Kotlindocs
       - name: Checkout SDK-Java
         uses: actions/checkout@v3
         if: ${{ inputs.sdkJavaVersion != '' }}
@@ -199,6 +199,23 @@ jobs:
           repository: restatedev/sdk-java
           ref: v${{ inputs.sdkJavaVersion }}
           path: temp-sdk-java
+      - name: Run the javadocs generate script
+        if: ${{ inputs.sdkJavaVersion != '' }}
+        run: |
+          ./tools/build_sdk_java_docs.sh temp-sdk-java
+
+      # Generate TSDocs
+      - name: Checkout sdk-typescript
+        uses: actions/checkout@v3
+        if: ${{ inputs.sdkTypescriptVersion != '' }}
+        with:
+          repository: restatedev/sdk-typescript
+          ref: v${{ inputs.sdkTypescriptVersion }}
+          path: temp-sdk-typescript
+      - name: Run the TSdocs generate script
+        if: ${{ inputs.sdkTypescriptVersion != '' }}
+        run: |
+          ./tools/build_sdk_ts_docs.sh temp-sdk-typescript
 
       # Setup Go
       - uses: actions/setup-go@v5
@@ -238,7 +255,6 @@ jobs:
         if: inputs.sdkRustVersion != ''
         run: cargo clippy --manifest-path ./code_snippets/rust/Cargo.toml
 
-
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
@@ -247,6 +263,7 @@ jobs:
           add-paths: |
             restate.config.json
             static/schemas/*
+            static/tsdocs/*
             static/javadocs/*
             static/ktdocs/*
             docs/references/*
