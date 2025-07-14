@@ -1,5 +1,30 @@
-import * as restate from "@restatedev/restate-sdk";
 import { Context, WorkflowContext } from "@restatedev/restate-sdk";
+
+// <start_zod>
+import * as restate from "@restatedev/restate-sdk";
+import { z } from "zod";
+import { serde } from "@restatedev/restate-sdk-zod";
+
+const Greeting = z.object({
+    name: z.string(),
+});
+
+const GreetingResponse = z.object({
+    result: z.string(),
+});
+
+const greeter = restate.service({
+    name: "Greeter",
+    handlers: {
+        greet: restate.handlers.handler(
+            { input: serde.zod(Greeting), output: serde.zod(GreetingResponse) },
+            async (ctx: restate.Context, { name }) => {
+                return { result: `You said hi to ${name}!` };
+            },
+        ),
+    },
+});
+// <end_zod>
 
 // <start_service_definition>
 const myService = restate.service({
@@ -34,17 +59,16 @@ ctx.serviceClient(myService).myHandler(
 );
 // <end_client>
 
-// <start_state>
-ctx.get("my-binary-data", restate.serde.binary);
-ctx.set("my-binary-data", new Uint8Array(), restate.serde.binary);
-// <end_state>
+async function tryOut(ctx: restate.ObjectContext){
+    // <start_actions>
+    ctx.get("my-binary-data", restate.serde.binary);
+    ctx.set("my-binary-data", new Uint8Array(), restate.serde.binary);
 
-// <start_awakeable>
-ctx.awakeable(restate.serde.binary);
-// <end_awakeable>
+    ctx.awakeable(restate.serde.binary);
 
-// <start_run>
-ctx.run("my-side-effect", () => new Uint8Array(), {
-  serde: restate.serde.binary,
-});
-// <end_run>
+    await ctx.run("my-side-effect", () => new Uint8Array(), {
+        serde: restate.serde.binary,
+    });
+    // <end_actions>
+}
+

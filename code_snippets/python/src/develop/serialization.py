@@ -77,15 +77,16 @@ class CompletedDelivery(BaseModel):
 @my_object.handler()
 async def deliver(ctx: ObjectContext, delivery: Delivery) -> CompletedDelivery:
 
-    # To serialize state
-    await ctx.get("delivery", serde=PydanticJsonSerde(Delivery))
-    ctx.set("delivery", delivery, serde=PydanticJsonSerde(Delivery))
+    # To get state
+    await ctx.get("delivery", type_hint=Delivery)
+    # To set state, the SDK will be able to serialize the Pydantic model
+    ctx.set("delivery", delivery)
 
     # To serialize awakeable payloads
-    ctx.awakeable(serde=PydanticJsonSerde(Delivery))
+    ctx.awakeable(type_hint=Delivery)
 
     # To serialize the results of actions
-    await ctx.run("some-task", some_task, serde=PydanticJsonSerde(Delivery))
+    await ctx.run("some-task", some_task, type_hint=Delivery)
 
     # etc.
 
