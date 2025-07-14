@@ -20,8 +20,6 @@ CODE_LOAD::python/src/develop/journaling_results.py#side_effect
 You cannot use the Restate context within `ctx.run`.
 This includes actions such as getting state, calling another service, and nesting other journaled actions.
 
-You can return any payload that can be serialized with `bytes(json.dumps(obj), "utf-8")` and deserialized with `json.loads(buf)`.
-If not, you can use [Pydantic](/develop/python/serialization#pydantic) or a [custom serializer](/develop/python/serialization#custom-serialization).
 
 <Admonition type="caution" title={"Immediately await journaled actions"}>
 Always immediately await `ctx.run`, before doing any other context calls.
@@ -32,6 +30,11 @@ because the journaled result can get interleaved with the other context calls in
 <Admonition type="note" title="Failure semantics">
 Failures in `ctx.run` have the same semantics as failures in the rest of your handler code.
 By default, the `ctx.run` function is retried infinitely on failure, unless you specify differently in the retry policy ([see below](/develop/python/journaling-results#run-block-retry-policies)) or throw a [`TerminalError`](/develop/python/error-handling).
+</Admonition>
+
+<Admonition type="note" title="Serialization">
+    By default, the SDK serializes the journal entry with the [`json`](https://docs.python.org/3/library/json.html#) library.
+    Alternatively, you can specify a [Pydantic model](/develop/python/serialization#pydantic) or [custom serializer](/develop/python/serialization#custom-serialization).
 </Admonition>
 
 ### Run-block Retry Policies
