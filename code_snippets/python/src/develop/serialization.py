@@ -79,8 +79,6 @@ async def deliver(ctx: ObjectContext, delivery: Delivery) -> CompletedDelivery:
 
     # To get state
     await ctx.get("delivery", type_hint=Delivery)
-    # To set state, the SDK will be able to serialize the Pydantic model
-    ctx.set("delivery", delivery)
 
     # To serialize awakeable payloads
     ctx.awakeable(type_hint=Delivery)
