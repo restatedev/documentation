@@ -41,8 +41,8 @@ my_object = VirtualObject("MyService")
 async def my_handler(ctx: ObjectContext, greeting: str) -> str:
 
     # To serialize state
-    my_data = await ctx.get("my_state", serde=MySerde())
-    ctx.set("my_state", my_data, serde=MySerde())
+    await ctx.get("my_state", serde=MySerde())
+    ctx.set("my_state", MyData(some_value="Hi", my_number=15), serde=MySerde())
 
     # To serialize awakeable payloads
     ctx.awakeable(serde=MySerde())
