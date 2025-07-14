@@ -41,8 +41,8 @@ my_object = VirtualObject("MyService")
 async def my_handler(ctx: ObjectContext, greeting: str) -> str:
 
     # To serialize state
-    await ctx.get("my_state", serde=MySerde())
-    ctx.set("my_state", MyData(some_value="value", my_number=123), serde=MySerde())
+    my_data = await ctx.get("my_state", serde=MySerde())
+    ctx.set("my_state", my_data, serde=MySerde())
 
     # To serialize awakeable payloads
     ctx.awakeable(serde=MySerde())
@@ -60,7 +60,6 @@ async def my_handler(ctx: ObjectContext, greeting: str) -> str:
 
 def some_task() -> MyData:
     return MyData(some_value="value", my_number=123)
-
 
 # <start_using_pydantic>
 class Delivery(BaseModel):
@@ -84,11 +83,13 @@ async def deliver(ctx: ObjectContext, delivery: Delivery) -> CompletedDelivery:
     ctx.awakeable(type_hint=Delivery)
 
     # To serialize the results of actions
-    await ctx.run("some-task", some_task, type_hint=Delivery)
-
-    # etc.
+    await ctx.run("some-task", do_something, type_hint=Delivery)
 
     return CompletedDelivery(status="delivered", timestamp=datetime.now())
 
 
 # <end_using_pydantic>
+
+
+def do_something() -> Delivery:
+    return Delivery(timestamp=datetime.now(), dimensions=(10, 20))
