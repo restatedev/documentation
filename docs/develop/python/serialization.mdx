@@ -11,17 +11,17 @@ Restate sends data over the network for storing state, journaling actions, awake
 There are multiple ways to specify which (de)serializers should be used.
 
 ## Default Serialization
-
-By default, payloads are serialized with `bytes(json.dumps(obj), "utf-8")` and deserialized with `json.loads(buf)`.
+By default, the SDK serializes the journal entry with the [`json`](https://docs.python.org/3/library/json.html#) library.
 If this does not work for your data type, then you need to specify a custom serializer, as shown below.
 
 ## Pydantic
 
 [Pydantic](https://docs.pydantic.dev/latest/) is a data validation and parsing library for Python.
-
 You can use Pydantic models to define the structure of your data: handler input/output, state, etc.
 
-To serialize and deserialize Pydantic models, you can use the `PydanticJsonSerde` included in the Restate SDK:
+Make sure to install the optional `serde` dependency of the Restate SDK: `restate-sdk[serde]`.
+
+Then do the following:
 
 ```python
 CODE_LOAD::python/src/develop/serialization.py#using_pydantic
@@ -32,6 +32,13 @@ CODE_LOAD::python/src/develop/serialization.py#using_pydantic
     If you use Pydantic, you can use the OpenAPI-generated clients to interact with your services.
     You can find example clients in the UI playground (click on your service in the overview and then on playground).
 </Admonition>
+
+## Dataclasses
+
+You can also use Python's built-in `dataclasses` to define the structure of your data.
+Make sure to install the optional `serde` dependency of the Restate SDK `restate-sdk[serde]`.
+
+Then add a type hint in a similar way as you would with Pydantic.
 
 ## Custom Serialization
 

@@ -26,7 +26,10 @@ CODE_LOAD::ts/src/develop/journaling_results.ts#side_effect
 You cannot use the Restate context within `ctx.run`.
 This includes actions such as getting state, calling another service, and nesting other journaled actions.
 
-You can store any result value that can be serialized as a Buffer with `Buffer.from(JSON.stringify(yourObject))` and deserialized with `JSON.parse(result.toString()) as T`.
+<Admonition type="info" title={"Serialization"}>
+    By default, Typescript SDK uses the built-in [JSON](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON) support to perform (de)serialization.
+    Consult the [serialization docs](/develop/ts/serialization) for other options.
+</Admonition>
 
 <Admonition type="caution" title={"Immediately await journaled actions"}>
 Always immediately await `ctx.run`, before doing any other context calls.

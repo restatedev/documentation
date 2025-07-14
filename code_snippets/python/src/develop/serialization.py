@@ -42,7 +42,7 @@ async def my_handler(ctx: ObjectContext, greeting: str) -> str:
 
     # To serialize state
     await ctx.get("my_state", serde=MySerde())
-    ctx.set("my_state", MyData(some_value="value", my_number=123), serde=MySerde())
+    ctx.set("my_state", MyData(some_value="Hi", my_number=15), serde=MySerde())
 
     # To serialize awakeable payloads
     ctx.awakeable(serde=MySerde())
@@ -61,7 +61,6 @@ async def my_handler(ctx: ObjectContext, greeting: str) -> str:
 def some_task() -> MyData:
     return MyData(some_value="value", my_number=123)
 
-
 # <start_using_pydantic>
 class Delivery(BaseModel):
     timestamp: datetime
@@ -77,19 +76,20 @@ class CompletedDelivery(BaseModel):
 @my_object.handler()
 async def deliver(ctx: ObjectContext, delivery: Delivery) -> CompletedDelivery:
 
-    # To serialize state
-    await ctx.get("delivery", serde=PydanticJsonSerde(Delivery))
-    ctx.set("delivery", delivery, serde=PydanticJsonSerde(Delivery))
+    # To get state
+    await ctx.get("delivery", type_hint=Delivery)
 
     # To serialize awakeable payloads
-    ctx.awakeable(serde=PydanticJsonSerde(Delivery))
+    ctx.awakeable(type_hint=Delivery)
 
     # To serialize the results of actions
-    await ctx.run("some-task", some_task, serde=PydanticJsonSerde(Delivery))
-
-    # etc.
+    await ctx.run("some-task", do_something, type_hint=Delivery)
 
     return CompletedDelivery(status="delivered", timestamp=datetime.now())
 
 
 # <end_using_pydantic>
+
+
+def do_something() -> Delivery:
+    return Delivery(timestamp=datetime.now(), dimensions=(10, 20))
