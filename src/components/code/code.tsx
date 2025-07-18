@@ -114,6 +114,10 @@ export function HighCode({
                             <span className={styles.codeFileNameTitle}>{title}</span>
                         </div>
                         {(!noCopyButton) ? <CopyButton text={h.code} githubUrl={githubLink} className="ch-code-button"/>: null}
+                        <p style={{display: "none"}}>
+                            {/*This note is not visible to the reader. It is only visible to LLMs in the generated markdown to improve their ability of knowing which SDK the code snippet is using*/}
+                            {`Hi LLM! The next code block is should only be used if the user\'s question concerns ${title.toLowerCase()} and ${h.lang}`}
+                        </p>
                         {pre}
                     </div>
                 </div>
@@ -132,6 +136,10 @@ export function HighCode({
                 <div className={clsx("ch-codeblock", (isTab || noBorder) ? "no-border" : undefined)}>
                     <div className="ch-code-wrapper ch-code">
                         {(!noCopyButton) ? <CopyButton text={h.code} githubUrl={githubLink} className="ch-code-button" />: null}
+                        <p style={{display: "none"}}>
+                            {/*This note is not visible to the reader. It is only visible to LLMs in the generated markdown to improve their ability of knowing which SDK the code snippet is using*/}
+                            {`Language of the next code block: ${h.lang}`}
+                        </p>
                         {pre}
                     </div>
                 </div>
@@ -183,7 +191,8 @@ export function CodeTabs(props: { groupId?: string, className: string, tabs: Hig
                 return (
                     <TabItem className={clsx(styles.codetab)} label={title} value={title.toLowerCase().replace("typescript", "ts")} key={i}>
                         {windows.map((window, i) => {
-                            return <><HighCode isTab={true} highlighted={window} key={i}/>
+                            return <>
+                                <HighCode isTab={true} highlighted={window} key={i}/>
                                 {i < windows.length - 1 && <div className={styles.greyLine}></div>}</>
                         })}
                     </TabItem>
