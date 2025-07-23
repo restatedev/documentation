@@ -127,6 +127,7 @@ async function processRouteAndUpdateCache(
   cachedRoutes: CachedRouteInfo[],
   docsDir: string,
   mdOutDir: string,
+  outDir: string,
   options: PluginOptions,
   logger: Logger,
   baseUrl: string
@@ -155,7 +156,8 @@ async function processRouteAndUpdateCache(
       route, 
       cachedRoute, 
       docsDir, 
-      mdOutDir, 
+      mdOutDir,
+      outDir,
       options, 
       logger, 
       baseUrl
@@ -185,6 +187,7 @@ export async function processRoutesStream(
   docsDir: string,
   mdOutDir: string,
   siteDir: string,
+  outDir: string,
   options: PluginOptions,
   logger: Logger,
   baseUrl: string = '',
@@ -213,6 +216,7 @@ export async function processRoutesStream(
       cachedRoutes,
       docsDir,
       mdOutDir,
+      outDir,
       options,
       logger,
       baseUrl
@@ -243,6 +247,7 @@ async function processRouteWithCache(
   cachedRoute: CachedRouteInfo,
   docsDir: string,
   mdOutDir: string,
+  outDir: string,
   options: PluginOptions,
   logger: Logger,
   baseUrl: string,
@@ -281,6 +286,7 @@ async function processRouteWithCache(
       route.path,
       docsDir,
       mdOutDir,
+      outDir,
       options,
       logger,
       baseUrl
