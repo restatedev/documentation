@@ -20,19 +20,20 @@ Set up the [OTLP exporter](https://github.com/open-telemetry/opentelemetry-colle
 
 ### Exporting traces to Jaeger
 
-[Jaeger](https://www.jaegertracing.io/docs/2.4/deployment/) accepts OTLP trace data on port `4317`.
+[Jaeger](https://www.jaegertracing.io/docs/2.4/deployment/) accepts OTLP trace data on port `4317` (gRPC) and `4318` (HTTP).
 Start Jaeger locally with Docker, for example:
 
 ```shell
 docker run -d --name jaeger \
-    -p 4317:4317 -p 16686:16686 \
+    -p 4317:4317 -p 4318:4318 -p 16686:16686 \
     jaegertracing/jaeger:2.4.0
 ```
 
-Configure the tracing endpoint in Restate as a fully specified URL:
+Configure the tracing endpoint in Restate as a valid URL:
 
 ```shell
-restate-server --tracing-endpoint http://localhost:4317
+restate-server --tracing-endpoint http://localhost:4317 # for gRPC
+restate-server --tracing-endpoint otlp+http://localhost:4318/v1/traces # for HTTP (note the /v1/traces path)
 ```
 
 If you run Restate in Docker, then instead add the environment variable `-e RESTATE_TRACING_ENDPOINT=http://host.docker.internal:4317`.
