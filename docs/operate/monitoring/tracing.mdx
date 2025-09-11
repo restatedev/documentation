@@ -17,22 +17,26 @@ Restate supports the following tracing features:
 ## Setting up OTLP exporter
 
 Set up the [OTLP exporter](https://github.com/open-telemetry/opentelemetry-collector/blob/main/exporter/otlpexporter/README.md) by pointing the configuration entry `tracing-endpoint` to your trace collector.
+By default, a `tracing-endpoint` using the `http://` or `https://` scheme will emit trace data in the OTLP/gRPC format. 
+Restate also supports the `otlp+http://` and `otlp+https://` schemes, to emit trace data in the OTLP/HTTP format.
+Note that when using OTLP/HTTP, the `tracing-endpoint` URI usually needs to include an e.g. `/v1/traces` path.
 
 ### Exporting traces to Jaeger
 
-[Jaeger](https://www.jaegertracing.io/docs/2.4/deployment/) accepts OTLP trace data on port `4317`.
+[Jaeger](https://www.jaegertracing.io/docs/2.4/deployment/) accepts OTLP trace data on port `4317` (gRPC) and `4318` (HTTP).
 Start Jaeger locally with Docker, for example:
 
 ```shell
 docker run -d --name jaeger \
-    -p 4317:4317 -p 16686:16686 \
+    -p 4317:4317 -p 4318:4318 -p 16686:16686 \
     jaegertracing/jaeger:2.4.0
 ```
 
-Configure the tracing endpoint in Restate as a fully specified URL:
+Configure the tracing endpoint in Restate as a valid URL:
 
 ```shell
-restate-server --tracing-endpoint http://localhost:4317
+restate-server --tracing-endpoint http://localhost:4317 # for gRPC
+restate-server --tracing-endpoint otlp+http://localhost:4318/v1/traces # for HTTP (note /v1/traces)
 ```
 
 If you run Restate in Docker, then instead add the environment variable `-e RESTATE_TRACING_ENDPOINT=http://host.docker.internal:4317`.
