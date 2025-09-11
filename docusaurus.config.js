@@ -274,6 +274,7 @@ const config = {
           "/plugins/**",
           "/assets/**",
           "/404.html",
+          "/adminapi/**"
         ],
 
       },
