@@ -1,3 +1,5 @@
+**The Restate documentation can now be found at: https://github.com/restatedev/docs-restate**
+
 # Restate documentation
 
 This repository contains Restate's documentation: https://docs.restate.dev/
